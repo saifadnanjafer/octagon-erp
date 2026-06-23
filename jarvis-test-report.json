@@ -1,0 +1,497 @@
+{
+  "timestamp": "2026-06-18T00:25:04.350Z",
+  "appVersion": "Octagon OMNISYSTEM V4.0",
+  "modules": {
+    "voiceRuntime": true,
+    "systemMap": true,
+    "actionAgent": true,
+    "brain": true,
+    "providers": true
+  },
+  "summary": {
+    "total": 53,
+    "pass": 48,
+    "fail": 0,
+    "warn": 0,
+    "manual": 5
+  },
+  "matrix": [
+    {
+      "id": 1,
+      "name": "App loads without console errors",
+      "category": "boot_ui",
+      "status": "PASS",
+      "details": "App state global is initialized successfully.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 2,
+      "name": "AI assistant button appears",
+      "category": "boot_ui",
+      "status": "PASS",
+      "details": "AI assistant launcher floating button found in document body.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 3,
+      "name": "AI assistant remains draggable/resizable",
+      "category": "boot_ui",
+      "status": "PASS",
+      "details": "AI assistant chat panel element found.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 4,
+      "name": "No old Pentagon branding in active UI",
+      "category": "boot_ui",
+      "status": "PASS",
+      "details": "Sidebar header correctly branded as Octagon.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 5,
+      "name": "Arabic navigation labels are clean",
+      "category": "boot_ui",
+      "status": "PASS",
+      "details": "Arabic page label clean: 📊\nالحاسبة الذكية",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 6,
+      "name": "Arabic command navigation resolving",
+      "category": "language",
+      "status": "PASS",
+      "details": "Arabic command \"المخزون\" resolved correctly to inventory page.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 7,
+      "name": "Mixed command navigation resolving",
+      "category": "language",
+      "status": "PASS",
+      "details": "Mixed language command resolved correctly to inventory.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 8,
+      "name": "English technical words language isolation",
+      "category": "language",
+      "status": "PASS",
+      "details": "Latin characters parsed as isolated token elements (<bdi class=\"jarvis-latin-token\">).",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 9,
+      "name": "RTL/LTR layout protection with <bdi> elements",
+      "category": "language",
+      "status": "PASS",
+      "details": "RTL protection verified via bdi tagging in chat messages.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 10,
+      "name": "Arabic-primary model response contract present",
+      "category": "language",
+      "status": "PASS",
+      "details": "Arabic-primary instruction rules injected in provider system context.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 11,
+      "name": "Navigation capability to Command Center",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #command_center",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 12,
+      "name": "Navigation capability to Inventory",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #inventory",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 13,
+      "name": "Navigation capability to Kanban",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #kanban",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 14,
+      "name": "Navigation capability to Task Manager",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #task_manager",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 15,
+      "name": "Navigation capability to Machines",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #machines",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 16,
+      "name": "Navigation capability to QC Center",
+      "category": "page_control",
+      "status": "PASS",
+      "details": "ERP contains the active page container for #qc_center",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 17,
+      "name": "Live read-only summary for low-stock materials",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Found 8 materials in live inventory snapshot.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 18,
+      "name": "Live read-only summary for overdue tasks",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Snapshot returned 0 overdue tasks.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 19,
+      "name": "Live read-only summary for machine status",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Snapshot returned 1 machines in maintenance.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 20,
+      "name": "Live read-only summary for pending approvals",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Snapshot returned 0 pending approvals in the queue.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 21,
+      "name": "Read current page context",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Read page context: {\"currentPage\":\"calculator\",\"timestamp\":\"2026-06-18T00:25:04.336Z\"}",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 22,
+      "name": "Read selected record/inspector context",
+      "category": "data_reading",
+      "status": "PASS",
+      "details": "Inspector active: false",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 23,
+      "name": "Collect visible JARVIS actions from current page",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Discovered 0 data-jarvis-action buttons on active viewport.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 24,
+      "name": "Execute safe action by action ID",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Action agent executeJarvisAction function is loaded and callable.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 25,
+      "name": "Visually highlight the target action element",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Visual overlay highlight targets method verified.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 26,
+      "name": "Trigger safe UI filter actions",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Safe filter click delegates verified.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 27,
+      "name": "Open page inspectors/modals",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Modal/inspector target elements verified.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 28,
+      "name": "Fill safe fields dynamically",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Controlled input typing/filling helpers verified.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 29,
+      "name": "Safety lock against clicking unknown elements",
+      "category": "dom_lite",
+      "status": "PASS",
+      "details": "Safety check properly classified risk for unmapped action: ui_safe",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 30,
+      "name": "Incomplete command triggers focused question",
+      "category": "beginner_guidance",
+      "status": "MANUAL REQUIRED",
+      "details": "Interactive conversation checks must be reviewed manually.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 31,
+      "name": "Ambiguous command offers choices instead of guessing",
+      "category": "beginner_guidance",
+      "status": "MANUAL REQUIRED",
+      "details": "Interactive conversation checks must be reviewed manually.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 32,
+      "name": "Missing parameters trigger request instead of hallucinating",
+      "category": "beginner_guidance",
+      "status": "MANUAL REQUIRED",
+      "details": "Interactive conversation checks must be reviewed manually.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 33,
+      "name": "Dangerous global destructive commands blocked",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Destructive command successfully blocked: إجراء مدمر ومحظور أمنياً.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 34,
+      "name": "Payroll write operations confirmation/approval gated",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Sensitive write gated through approval requirement policy.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 35,
+      "name": "Finance write operations confirmation/approval gated",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Sensitive write gated through approval requirement policy.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 36,
+      "name": "Permission/admin changes confirmation/approval gated",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Sensitive write gated through approval requirement policy.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 37,
+      "name": "Bulk delete/reset/import operations blocked",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Sensitive write gated through approval requirement policy.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 38,
+      "name": "Approval-required action proposes approval request",
+      "category": "safety",
+      "status": "PASS",
+      "details": "Sensitive write gated through approval requirement policy.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 39,
+      "name": "Offline deterministic commands bypass AI provider",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Deterministic commands handled locally in brain routing.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 40,
+      "name": "Simple page navigation bypasses AI provider",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Simple page control does not invoke external API endpoints.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 41,
+      "name": "Model planning mode routing configured (economy/balanced/strong)",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Provider ranking status config loaded: qwen/qwen3.5-flash-02-23",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 42,
+      "name": "Graceful handling of provider timeouts",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Fallbacks and timeout handling configured in modules/ai-providers.js.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 43,
+      "name": "Graceful fallback to offline/deterministic response",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Fallbacks and timeout handling configured in modules/ai-providers.js.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 44,
+      "name": "Real-time estimated token and cost tracking active",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Estimated cost tracking active: $0.0000",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 45,
+      "name": "Privacy guard (full DOM/database is not sent by default)",
+      "category": "budget",
+      "status": "PASS",
+      "details": "Context size capped: full DOM is blocked from default payloads.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 46,
+      "name": "Voice runtime initialization and state machine loaded",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Voice runtime initialized. State: idle",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 47,
+      "name": "Microphone permission failure handles text mode gracefully",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Text mode fallback handles mic permission errors gracefully.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 48,
+      "name": "Speech loop prevention (one command produces one response)",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Speech loop prevention active via timing gates and registers.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 49,
+      "name": "Echo self-listening prevention filter active",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Self-listening echo prevention filters loaded.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 50,
+      "name": "Voice barge-in (interruption) handler active",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Interruption barge-in handler is active.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 51,
+      "name": "Voice stop/cancel command triggers immediate halt",
+      "category": "voice",
+      "status": "PASS",
+      "details": "Voice runtime interrupt function is loaded and callable.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 52,
+      "name": "Fuzzy echo transcript rejection",
+      "category": "voice",
+      "status": "MANUAL REQUIRED",
+      "details": "Requires active voice conversation verification.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    },
+    {
+      "id": 53,
+      "name": "New command listening after interruption works",
+      "category": "voice",
+      "status": "MANUAL REQUIRED",
+      "details": "Requires active voice conversation verification.",
+      "error": "",
+      "timestamp": "2026-06-18T00:25:04.313Z"
+    }
+  ]
+}

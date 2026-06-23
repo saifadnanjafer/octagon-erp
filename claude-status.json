@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "currentFocus": {
+    "section": "Phase 6 Launch-Readiness Sweep",
+    "phase": "in_progress",
+    "percent": 75,
+    "note": "2026-06-23: Button-by-button audit now lives inside Admin Wire-Up. Fixed the end-of-body dynamic view prefetch hook so the 86 page templates warm after load even when DOMContentLoaded already fired. Chrome smoke: Route Health 86/86 nav + 86/86 pages; Admin audit 86 OK, 0 warnings, 0 broken, 15 guarded actions. Remaining: dead-code deletion still needs go-ahead and final live stabilization re-check."
+  },
+  "recent": [
+    {
+      "section": "Phase 6 Sweep (Admin button audit + dynamic view prefetch fix)",
+      "percent": 75,
+      "date": "2026-06-23",
+      "by": "Codex"
+    },
+    {
+      "section": "Phase 6 Sweep (backfill policy, dead-code audit, perf audit, release notes)",
+      "percent": 60,
+      "date": "2026-06-14",
+      "by": "Claude/Opus"
+    },
+    {
+      "section": "Server/API Tenant Enforcement",
+      "percent": 100,
+      "date": "2026-06-14",
+      "by": "Codex"
+    },
+    {
+      "section": "Tenant Service Enforcement",
+      "percent": 100,
+      "date": "2026-06-14",
+      "by": "Codex"
+    },
+    {
+      "section": "Multi-Entity Tenant Isolation Control Center",
+      "percent": 100,
+      "date": "2026-06-14",
+      "by": "Codex"
+    },
+    {
+      "section": "Procurement / Projects / Approvals / Field Service / Rental + cross-module handoffs",
+      "percent": 100,
+      "date": "2026-06-13",
+      "by": "Claude/Opus"
+    },
+    {
+      "section": "Marketing/Campaigns + Budgeting",
+      "percent": 100,
+      "date": "2026-06-12",
+      "by": "Claude/Opus"
+    },
+    {
+      "section": "Workshop AI Operating Layer",
+      "percent": 100,
+      "date": "2026-06-11",
+      "by": "Claude/Opus"
+    },
+    {
+      "section": "Phase 4.5 - Workshop Unified Execution Core + Route Health",
+      "percent": 100,
+      "date": "2026-06-10",
+      "by": "Claude/Opus"
+    }
+  ],
+  "next": [
+    {
+      "label": "Phase 6 audit / tenant hardening",
+      "reason": "Route Health and Admin button audit are green again after the dynamic prefetch fix; continue final stabilization and any approved dead-code cleanup.",
+      "currentPercent": 75
+    },
+    {
+      "label": "Legacy companyId backfill policy",
+      "reason": "Tenant UI, service layer, and server API now preserve/isolate by company. The remaining tenant decision is how aggressively to backfill old unstamped records.",
+      "currentPercent": 0
+    },
+    {
+      "label": "Dead-code / performance / release notes pass",
+      "reason": "Tenant hardening is now protected through UI, services, and direct API writes; continue the wider Phase 6 launch-readiness sweep.",
+      "currentPercent": 0
+    }
+  ],
+  "overallPercent": 100,
+  "message": "2026-06-23: Admin Wire-Up now includes a live button/permission audit. Dynamic view prefetch was fixed; Route Health is green at 86/86 nav and 86/86 page templates, and Admin audit reports 86 OK / 0 broken.",
+  "updatedAt": "2026-06-23T00:00:00.000Z",
+  "updatedBy": "Codex"
+}

@@ -1,0 +1,42 @@
+/* OCTAGON ERP — Fleet Management (إدارة المركبات). Add-only. RTL. */
+#pageFleet { direction: rtl; }
+.fl-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 2px solid var(--border-color, #e2e8f0); padding-bottom: 4px; }
+.fl-tab-btn { background: transparent; border: none; padding: 10px 18px; font-size: 15px; font-weight: 600; color: var(--text-secondary, #64748b); cursor: pointer; border-radius: 8px 8px 0 0; transition: all .15s; }
+.fl-tab-btn:hover { background: var(--hover-bg, #f1f5f9); }
+.fl-tab-btn.active { color: #0d9488; border-bottom: 3px solid #0d9488; }
+
+.fl-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.fl-kpi { background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+.fl-kpi-val { font-size: 24px; font-weight: 800; color: var(--text-primary, #0f172a); line-height: 1.15; }
+.fl-kpi-label { font-size: 13px; color: var(--text-secondary, #64748b); margin-top: 6px; font-weight: 600; }
+.fl-kpi-sub { font-size: 11px; color: var(--text-muted, #94a3b8); margin-top: 2px; }
+.fl-kpi-accent { border-color: #0d9488; } .fl-kpi-accent .fl-kpi-val { color: #0d9488; }
+.fl-kpi-warn { border-color: #f59e0b; background: #fffbeb; } .fl-kpi-warn .fl-kpi-val { color: #d97706; }
+
+.fl-panel { background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 14px; padding: 16px; margin-bottom: 18px; }
+.fl-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.fl-panel-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.fl-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.fl-input { padding: 8px 12px; border: 1px solid var(--border-color, #cbd5e1); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--input-bg, #fff); color: var(--text-primary, #0f172a); width: 100%; box-sizing: border-box; }
+.fl-input:focus { outline: none; border-color: #0d9488; }
+
+.fl-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.fl-table th { text-align: right; padding: 10px 12px; background: var(--table-head-bg, #f8fafc); color: var(--text-secondary, #475569); font-weight: 700; font-size: 13px; border-bottom: 2px solid var(--border-color, #e2e8f0); white-space: nowrap; }
+.fl-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color, #eef2f7); vertical-align: middle; }
+.fl-table tbody tr:hover { background: var(--hover-bg, #f8fafc); }
+.fl-empty { text-align: center; color: var(--text-muted, #94a3b8); padding: 24px !important; font-style: italic; }
+.fl-muted { color: var(--text-muted, #94a3b8); font-size: 12px; }
+.fl-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.fl-row-warn { background: #fffbeb !important; } .fl-row-danger { background: #fef2f2 !important; }
+.fl-exp-ok { color: #15803d; } .fl-exp-warn { color: #b45309; font-weight: 600; } .fl-exp-bad { color: #b91c1c; font-weight: 700; }
+
+.fl-mini-btn { background: var(--hover-bg, #f1f5f9); border: 1px solid var(--border-color, #e2e8f0); border-radius: 7px; padding: 5px 11px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-primary, #334155); transition: all .12s; }
+.fl-mini-btn:hover { background: #0d9488; color: #fff; border-color: #0d9488; }
+.fl-mini-btn.fl-danger:hover { background: #dc2626; border-color: #dc2626; }
+.fl-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.fl-st-ok { background: #dcfce7; color: #15803d; } .fl-st-maint { background: #fef3c7; color: #b45309; } .fl-st-idle { background: #e5e7eb; color: #4b5563; }
+
+.fl-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.fl-form-grid label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary, #475569); margin-bottom: 5px; }
+.fl-form-full { grid-column: 1 / -1; }
+.fl-form-actions { display: flex; gap: 10px; margin-top: 16px; }

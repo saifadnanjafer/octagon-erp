@@ -445,7 +445,20 @@
   const _origSwitch = window.switchPage;
   window.switchPage = function (page) {
     if (_origSwitch) _origSwitch(page);
-    if (page === 'hotel') { ensureData(); setTimeout(renderHotel, 0); }
+    if (page === 'hotel') {
+      // Core switchPage only activates pages in its built-in pageMap; like
+      // pos/pharmacy/assets, this module activates its own section explicitly
+      // so navigation actually shows it (otherwise the page stays hidden).
+      try {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const pg = document.getElementById('pageHotel'); if (pg) pg.classList.add('page-active');
+        const nav = document.getElementById('navHotel'); if (nav) nav.classList.add('active');
+        window.currentPage = 'hotel';
+        if (typeof window.ensureNavGroupForPage === 'function') window.ensureNavGroupForPage('hotel');
+      } catch (_) {}
+      ensureData(); setTimeout(renderHotel, 0);
+    }
   };
 
   /* ─────────────── Jarvis tool ─────────────── */

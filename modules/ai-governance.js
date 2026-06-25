@@ -181,7 +181,7 @@
     const m = o.aiSystem;
     const def = (k, v) => { if (m[k] === undefined) m[k] = v; };
     def('version', '2.0');
-    def('philosophy', 'AI-First, Not AI-Only');
+    def('philosophy', 'الذكاء أولاً، لا الذكاء وحده');
     def('activeProvider', 'openrouter');
     def('fallbackProvider', 'gemini');
     def('deterministicFallbackEnabled', true);
@@ -210,10 +210,10 @@
     const seed = [
       { id: 'openrouter', name: 'OpenRouter (DeepSeek/Qwen)', enabled: true, apiKeySource: 'localStorage:octagonAIProvider', model: 'deepseek/deepseek-chat', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: true, priority: 1 },
       { id: 'gemini', name: 'Google Gemini', enabled: true, apiKeySource: 'app.js inline / localStorage', model: 'gemini-flash', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 2 },
-      { id: 'openai', name: 'OpenAI (future)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 3 },
-      { id: 'anthropic', name: 'Anthropic Claude (future)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: false, supportsToolPlanning: true, priority: 4 },
-      { id: 'local', name: 'Local model (future)', enabled: false, apiKeySource: 'none (local)', model: '', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 5 },
-      { id: 'deterministic', name: 'Deterministic fallback (always on)', enabled: true, apiKeySource: 'none', model: 'local rules + real data', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 99 }
+      { id: 'openai', name: 'OpenAI (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 3 },
+      { id: 'anthropic', name: 'Anthropic Claude (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: false, supportsToolPlanning: true, priority: 4 },
+      { id: 'local', name: 'نموذج محلي (مستقبلاً)', enabled: false, apiKeySource: 'none (local)', model: '', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 5 },
+      { id: 'deterministic', name: 'احتياطي حتمي (مفعّل دائماً)', enabled: true, apiKeySource: 'none', model: 'local rules + real data', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 99 }
     ];
     seed.forEach(s => {
       let p = o.aiProviders.find(x => x.id === s.id);
@@ -563,7 +563,7 @@
       + '<div class="aigov-grid">'
       // manifest + health
       + '<div class="aigov-card"><div class="aigov-title">🧠 بيان النظام الذكي</div>'
-      + row('الفلسفة', pill(m.philosophy || 'AI-First, Not AI-Only', 'ai'))
+      + row('الفلسفة', pill(m.philosophy || 'الذكاء أولاً، لا الذكاء وحده', 'ai'))
       + row('المزوّد الفعّال', pill(h.activeProvider + (h.model ? ' · ' + h.model : ''), h.activeProvider === 'none' ? 'warn' : 'ai'))
       + row('المزوّد الاحتياطي', pill(h.fallbackProvider, 'muted'))
       + row('الاحتياطي الحتمي', pill('فعّال دائماً', 'ok'))

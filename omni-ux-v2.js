@@ -76,7 +76,7 @@
      State for the in-page barcode dispatcher
      ============================================================ */
   window.dispatchScanState = {
-    pendingItems: [],  // [{id, name, barcode, numericQR, location, category}]
+    pendingItems: [],  // [{id, name, barcode, location, category}]
     employee: '',
     jobSite: '',
     expectedReturn: '',
@@ -110,7 +110,6 @@
     window.dispatchScanState.pendingItems.push({
       id: eq.id, name: eq.name,
       barcode: eq.barcode,
-      numericQR: eq.numericQR || eq.barcode,
       location: eq.location,
       category: eq.category,
     });
@@ -159,7 +158,7 @@
           <div class="dispatch-item-row">
             <div style="display:flex;flex-direction:column;gap:2px;">
               <span class="eq-name">${escHtml(item.name)}</span>
-              <span class="eq-barcode">${escHtml(item.numericQR || item.barcode)}</span>
+              <span class="eq-barcode">${escHtml(item.barcode)}</span>
             </div>
             <span class="eq-loc"><i class="fa-solid fa-location-dot"></i> ${escHtml(item.location)}</span>
             <button class="remove-btn" onclick="window.removeScanItem('${item.id}')">
@@ -216,7 +215,7 @@
         equipmentId:      item.id,
         equipmentName:    item.name,
         equipmentBarcode: item.barcode,
-        equipmentNumericQR: item.numericQR,
+        equipmentNumericQR: item.barcode,
         employeeName:     employee,
         jobSite:          jobSite,
         checkoutDate,
@@ -282,7 +281,7 @@
     const itemsHtml = data.items.map(i =>
       `<tr>
         <td style="padding:6px 8px;">${i.name}</td>
-        <td style="padding:6px 8px;text-align:center;">${i.numericQR || i.barcode}</td>
+        <td style="padding:6px 8px;text-align:center;">${i.barcode}</td>
         <td style="padding:6px 8px;text-align:center;">${i.location}</td>
         <td style="padding:6px 8px;text-align:center;font-size:11px;">أدوات (Tools)</td>
       </tr>`
@@ -773,64 +772,12 @@ ${consHtml}
      ============================================================ */
   const _origPrintEquipmentBarcode = window.printEquipmentBarcode;
   window.printEquipmentBarcode = function (eqId) {
-    const eq = (window.omni?.equipment || []).find(e => e.id === eqId);
-    if (!eq) return;
-
-    // Ensure numeric QR is set
-    const idx = (window.omni.equipment || []).indexOf(eq);
-    if (!eq.numericQR) eq.numericQR = generateNumericQR(eq, idx);
-
-    const numGroups = eq.numericQR.split('-');
-
-    window.showOmniModal('طباعة ملصق الباركود', `
-      <div style="background:#fff;color:#111;padding:22px;border-radius:12px;text-align:center;direction:rtl;" id="eqBarcodeLabel">
-        <div style="display:inline-block;border:2px dashed #555;padding:14px;border-radius:9px;width:280px;font-family:Arial,sans-serif;box-shadow:0 3px 8px rgba(0,0,0,0.08);">
-          <div style="font-size:11px;font-weight:bold;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:10px;letter-spacing:1px;">
-            ⚙️ OCTAGON WORKSHOP ASSET
-          </div>
-          <div style="text-align:right;font-size:12px;margin:4px 0;"><b>الأداة:</b> ${escHtml(eq.name)}</div>
-          <div style="text-align:right;font-size:12px;margin:4px 0;"><b>الموقع:</b> ${escHtml(eq.location)}</div>
-          <div style="text-align:right;font-size:12px;margin:4px 0;"><b>التصنيف:</b> ${escHtml(eq.category)}</div>
-          <div style="margin:12px 0;padding:8px;background:#f8f8f8;border-radius:6px;border:1px solid #ddd;">
-            <div style="font-family:'Courier New',monospace;font-size:22px;font-weight:800;letter-spacing:4px;color:#000;margin-bottom:4px;">
-              ${numGroups.join('<span style="color:#aaa;margin:0 2px">-</span>')}
-            </div>
-            <div style="font-size:9px;color:#777;letter-spacing:1px;">ID NUMERIC CODE — OCTAGON ASSET</div>
-          </div>
-          <div style="font-size:9px;color:#666;">PROPERTY OF OCTAGON BASRAH • ${new Date().toLocaleDateString('ar-IQ')}</div>
-        </div>
-      </div>
-    `, () => {
-      const w = window.open('', '_blank', 'width=440,height=500');
-      w.document.open();
-      w.document.write(`<!DOCTYPE html><html dir="rtl"><head><title>ملصق: ${eq.name}</title>
-<style>
-body{font-family:Arial,sans-serif;padding:20px;background:#fff;color:#000;text-align:center;}
-.label{display:inline-block;border:2px dashed #000;padding:18px;border-radius:8px;width:290px;}
-.title{font-size:12px;font-weight:bold;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px;}
-.field{text-align:right;font-size:13px;margin:5px 0;}
-.qr-box{background:#f5f5f5;border:1px solid #ccc;border-radius:6px;padding:10px;margin:10px 0;}
-.qr-num{font-family:'Courier New',monospace;font-size:22px;font-weight:800;letter-spacing:4px;}
-.footer{font-size:9px;color:#555;margin-top:8px;}
-@media print{button{display:none;}}
-</style></head><body>
-<div class="label">
-  <div class="title">⚙️ OCTAGON WORKSHOP ASSET</div>
-  <div class="field"><b>الأداة:</b> ${eq.name}</div>
-  <div class="field"><b>الموقع:</b> ${eq.location}</div>
-  <div class="field"><b>التصنيف:</b> ${eq.category}</div>
-  <div class="qr-box">
-    <div class="qr-num">${numGroups.join(' - ')}</div>
-    <div style="font-size:9px;color:#777;letter-spacing:1px;">ID NUMERIC CODE</div>
-  </div>
-  <div class="footer">PROPERTY OF OCTAGON BASRAH</div>
-</div>
-<script>window.onload=function(){window.print();window.close();}<\/script>
-</body></html>`);
-      w.document.close();
-    });
-    const btn = document.getElementById('omniModalConfirm');
-    if (btn) btn.innerHTML = '<i class="fa-solid fa-print"></i> طباعة الملصق';
+    if (typeof window.printEquipmentBarcodeNow === 'function') {
+      return window.printEquipmentBarcodeNow(eqId);
+    }
+    if (typeof _origPrintEquipmentBarcode === 'function') {
+      return _origPrintEquipmentBarcode(eqId);
+    }
   };
 
   /* ============================================================

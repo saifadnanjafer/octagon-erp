@@ -13,6 +13,27 @@
     'finance.user': { implies: [] },
   };
 
+  const ROLE_GROUPS = {
+    system: ['system.admin'],
+    system_admin: ['system.admin'],
+    admin: ['system.admin'],
+    manager: ['workshop.manager', 'finance.manager'],
+    finance_manager: ['finance.manager'],
+    finance_user: ['finance.user'],
+    workshop_manager: ['workshop.manager'],
+    workshop_user: ['workshop.user'],
+    operator: ['workshop.user'],
+    operator_user: ['workshop.user'],
+    employee: [],
+    employee_user: [],
+    viewer: [],
+    viewer_user: [],
+    mgr_finance: ['finance.manager'],
+    user_finance: ['finance.user'],
+    mgr_workshop: ['workshop.manager'],
+    user_workshop: ['workshop.user'],
+  };
+
   const MODEL_PERMISSIONS = {
     employees: { read: ['workshop.user'], create: ['workshop.manager'], update: ['workshop.manager'], delete: ['system.admin'] },
     'omni.materials': { read: ['workshop.user'], create: ['workshop.manager'], update: ['workshop.manager'], delete: ['system.admin'] },
@@ -47,6 +68,14 @@
     'accounting.coa.deactivate': ['finance.manager'],
     'accounting.coa.deactivate_used': ['system.admin'],
     'risk_compliance.write': ['workshop.manager', 'finance.manager'],
+    'hr.salary.change': ['system.admin'],
+    'hr.attendance.locked_period_edit': ['system.admin'],
+    'hr.deduction_fine.create': ['system.admin'],
+    'hr.advance_loan.create': ['workshop.manager', 'finance.manager'],
+    'hr.employee.terminate': ['system.admin'],
+    'hr.role_permission.change': ['system.admin'],
+    'hr.leave.payroll_affecting_approve': ['workshop.manager'],
+    'hr.employee.delete': ['system.admin'],
   };
 
   const ACTION_METADATA = {
@@ -73,6 +102,14 @@
     'risk_compliance.write': { page: 'risk_compliance', module: 'risk_compliance', riskLevel: 'high', label: 'كتابة سجل مخاطر او رقابة' },
     'risk_compliance.delete': { page: 'risk_compliance', module: 'risk_compliance', riskLevel: 'critical', label: 'حذف سجل مخاطر او رقابة' },
     'ai.high_risk_write': { page: 'intelligence', module: 'jarvis', riskLevel: 'critical', approvalRequired: true, label: 'كتابة عالية الخطورة عبر الذكاء' },
+    'hr.salary.change': { page: 'employees', module: 'hr_payroll', riskLevel: 'critical', approvalRequired: true, label: 'تغيير راتب موظف' },
+    'hr.attendance.locked_period_edit': { page: 'timesheet', module: 'hr_payroll', riskLevel: 'critical', approvalRequired: true, label: 'تعديل حضور فترة رواتب مقفلة' },
+    'hr.deduction_fine.create': { page: 'employees', module: 'hr_payroll', riskLevel: 'high', approvalRequired: true, label: 'إضافة خصم أو غرامة' },
+    'hr.advance_loan.create': { page: 'employees', module: 'hr_payroll', riskLevel: 'high', approvalRequired: true, label: 'إضافة سلفة أو قرض' },
+    'hr.employee.terminate': { page: 'employees', module: 'hr', riskLevel: 'critical', approvalRequired: true, label: 'إنهاء أو تعطيل موظف' },
+    'hr.role_permission.change': { page: 'admin_panel', module: 'security', riskLevel: 'critical', approvalRequired: true, label: 'تغيير دور أو صلاحيات' },
+    'hr.leave.payroll_affecting_approve': { page: 'employees', module: 'hr_payroll', riskLevel: 'high', approvalRequired: true, label: 'اعتماد إجازة مؤثرة على الرواتب' },
+    'hr.employee.delete': { page: 'employees', module: 'hr', riskLevel: 'critical', approvalRequired: true, label: 'حذف سجل موظف' },
   };
 
   const SENSITIVE_FIELDS = {
@@ -99,6 +136,53 @@
     }
   };
   
+  const PAGE_METADATA = {
+    finance: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Finance dashboard' },
+    cashbox: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Cashbox' },
+    expenses: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Expenses' },
+    income: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Income' },
+    customers: { sensitivity: 'finance', riskLevel: 'medium', phase: 'core', label: 'Customer balances' },
+    receipt: { sensitivity: 'finance', riskLevel: 'medium', phase: 'core', label: 'Receipts' },
+    report: { sensitivity: 'finance/payroll', riskLevel: 'high', phase: 'core', label: 'Payroll report' },
+    ar_ap: { sensitivity: 'finance', riskLevel: 'high', phase: 'phase6e', label: 'AR/AP workbench' },
+    banking: { sensitivity: 'finance', riskLevel: 'high', phase: 'phase6a', label: 'Banking and treasury' },
+    budgeting: { sensitivity: 'finance', riskLevel: 'high', phase: 'phase6e', label: 'Budgeting' },
+    tax_compliance: { sensitivity: 'finance/compliance', riskLevel: 'high', phase: 'phase6b', label: 'Tax compliance' },
+    import: { sensitivity: 'hr/payroll', riskLevel: 'high', phase: 'phase6e', label: 'Attendance import' },
+    timesheet: { sensitivity: 'hr/payroll', riskLevel: 'high', phase: 'phase6e', label: 'Timesheet' },
+    calendar: { sensitivity: 'hr/payroll', riskLevel: 'medium', phase: 'phase6e', label: 'Attendance calendar' },
+    employees: { sensitivity: 'hr/payroll', riskLevel: 'high', phase: 'core', label: 'Employees and balances' },
+    people_ops: { sensitivity: 'hr/people', riskLevel: 'high', phase: 'phase6e', label: 'People operations' },
+    employee_ui: { sensitivity: 'employee_self_service', riskLevel: 'low', phase: 'phase6e', label: 'Employee self service' },
+    employee_mobile: { sensitivity: 'employee_self_service', riskLevel: 'low', phase: 'phase6e', label: 'Employee mobile' },
+    command_center: { sensitivity: 'manager/system', riskLevel: 'high', phase: 'core', label: 'Command Center' },
+    analytics: { sensitivity: 'manager/reporting', riskLevel: 'medium', phase: 'core', label: 'Analytics' },
+    nl_reports: { sensitivity: 'manager/reporting', riskLevel: 'medium', phase: 'core', label: 'Natural language reports' },
+    intelligence: { sensitivity: 'ai/system', riskLevel: 'high', phase: 'core', label: 'AI intelligence' },
+    automation: { sensitivity: 'ai/system', riskLevel: 'critical', phase: 'core', label: 'Automation engine' },
+    whatsapp: { sensitivity: 'ai/customer_comms', riskLevel: 'high', phase: 'core', label: 'WhatsApp control' },
+    ai_queue: { sensitivity: 'ai/system', riskLevel: 'high', phase: 'phase6e', label: 'AI approval queue' },
+    ai_factory: { sensitivity: 'ai/system', riskLevel: 'critical', phase: 'phase6e', label: 'AI factory' },
+    ai_tools: { sensitivity: 'ai/system', riskLevel: 'critical', phase: 'phase6e', label: 'AI tools' },
+    ai_status: { sensitivity: 'ai/system', riskLevel: 'medium', phase: 'phase6e', label: 'AI status' },
+    deploy_ready: { sensitivity: 'system/readiness', riskLevel: 'high', phase: 'phase6e', label: 'Deployment readiness' },
+    admin_panel: { sensitivity: 'admin/security', riskLevel: 'critical', phase: 'core', label: 'Admin panel' },
+    settings: { sensitivity: 'admin/security', riskLevel: 'critical', phase: 'core', label: 'Settings' },
+    multi_entity: { sensitivity: 'admin/tenant', riskLevel: 'critical', phase: 'phase6e', label: 'Multi-entity control' },
+    integration_hub: { sensitivity: 'admin/integration', riskLevel: 'critical', phase: 'phase6e', label: 'Integration hub' },
+    security_center: { sensitivity: 'admin/security', riskLevel: 'critical', phase: 'phase6e', label: 'Security center' },
+    data_quality: { sensitivity: 'admin/data', riskLevel: 'high', phase: 'phase6e', label: 'Data quality' },
+    route_health: { sensitivity: 'system/diagnostic', riskLevel: 'medium', phase: 'phase6e', label: 'Route health' },
+    scenario_planner: { sensitivity: 'manager/planning', riskLevel: 'medium', phase: 'phase6e', label: 'Scenario planner' },
+    device_center: { sensitivity: 'admin/device', riskLevel: 'high', phase: 'phase6e', label: 'Device center' },
+    training_lms: { sensitivity: 'hr/training', riskLevel: 'medium', phase: 'phase6e', label: 'Training LMS' },
+    risk_compliance: { sensitivity: 'compliance', riskLevel: 'high', phase: 'phase6b', label: 'Risk compliance' },
+    procurement: { sensitivity: 'procurement/finance', riskLevel: 'high', phase: 'phase6e', label: 'Procurement' },
+    supplier_portal: { sensitivity: 'procurement/finance', riskLevel: 'high', phase: 'phase6e', label: 'Supplier portal' },
+    approvals: { sensitivity: 'manager/approval', riskLevel: 'high', phase: 'phase6e', label: 'Approvals' },
+    customer_portal: { sensitivity: 'public/customer', riskLevel: 'low', phase: 'core', label: 'Customer portal' },
+  };
+
   const PAGE_PERMISSIONS = {
     finance: ['finance.user'],
     cashbox: ['finance.user'],
@@ -107,8 +191,18 @@
     customers: ['finance.user'],
     receipt: ['finance.user'],
     report: ['finance.user'],
+    ar_ap: ['finance.user'],
+    banking: ['finance.user'],
+    budgeting: ['finance.manager'],
+    tax_compliance: ['finance.manager', 'system.admin'],
     inventory: ['workshop.user'],
     employees: ['workshop.user'],
+    import: ['workshop.manager'],
+    timesheet: ['workshop.user'],
+    calendar: ['workshop.user'],
+    people_ops: ['workshop.manager'],
+    employee_ui: [],
+    employee_mobile: [],
     workflow: ['workshop.user'],
     kanban: ['workshop.user'],
     machines: ['workshop.user'],
@@ -124,9 +218,23 @@
     intelligence: ['workshop.manager', 'finance.manager'],
     whatsapp: ['workshop.manager', 'finance.manager'],
     automation: ['system.admin'],
-    tax_compliance: ['finance.manager', 'system.admin'],
+    ai_queue: ['workshop.manager', 'finance.manager'],
+    ai_factory: ['system.admin'],
+    ai_tools: ['system.admin'],
+    ai_status: ['workshop.manager', 'finance.manager'],
+    deploy_ready: ['system.admin', 'workshop.manager', 'finance.manager'],
     risk_compliance: ['workshop.manager', 'finance.manager'],
-    banking: ['finance.user'],
+    procurement: ['workshop.manager', 'finance.user'],
+    supplier_portal: ['workshop.manager', 'finance.user'],
+    approvals: ['workshop.manager', 'finance.manager'],
+    multi_entity: ['system.admin'],
+    integration_hub: ['system.admin'],
+    security_center: ['system.admin'],
+    data_quality: ['system.admin'],
+    route_health: ['system.admin', 'workshop.manager', 'finance.manager'],
+    scenario_planner: ['workshop.manager', 'finance.manager'],
+    device_center: ['system.admin', 'workshop.manager'],
+    training_lms: ['workshop.manager'],
     admin_panel: ['system.admin'],
     settings: ['system.admin'],
     customer_portal: [],
@@ -149,15 +257,43 @@
     return [...resolved];
   }
 
+  function groupsFromRole(roleId) {
+    const key = String(roleId || '').trim();
+    if (!key) return [];
+    if (Array.isArray(ROLE_GROUPS[key])) return ROLE_GROUPS[key].slice();
+    try {
+      const roles = Array.isArray(root.omni?.roles) ? root.omni.roles : [];
+      const role = roles.find(r => r.id === key);
+      if (role && Array.isArray(role.groups)) return role.groups.slice();
+      if (role && Array.isArray(role.permissions) && role.permissions.includes('all')) return ['system.admin'];
+    } catch (_) {}
+    return key.includes('.') ? [key] : [];
+  }
+
+  function normalizeUser(user = {}) {
+    if (!user || typeof user !== 'object') return user;
+    const roleId = user.roleId || user.role || '';
+    const groups = Array.isArray(user.groups) ? user.groups.slice() : groupsFromRole(roleId);
+    return {
+      ...user,
+      name: user.name || user.displayName || user.id || '',
+      displayName: user.displayName || user.name || user.id || '',
+      role: user.role || roleId,
+      roleId,
+      groups,
+    };
+  }
+
   const PermissionService = {
     groups: GROUPS,
     modelPermissions: MODEL_PERMISSIONS,
     actionPermissions: ACTION_PERMISSIONS,
     actionMetadata: ACTION_METADATA,
     pagePermissions: PAGE_PERMISSIONS,
+    pageMetadata: PAGE_METADATA,
 
     resolveGroups(user = root.PentagonAuth.getCurrentUser()) {
-      return expandGroups(user?.groups || []);
+      return expandGroups(normalizeUser(user)?.groups || []);
     },
 
     checkPage(page, user = root.PentagonAuth.getCurrentUser()) {
@@ -166,6 +302,8 @@
         console.debug(`Permission: Checking page "${page}" for user "${user?.id}" with groups:`, userGroups);
       }
       if (userGroups.includes('system.admin')) return true;
+      const mapped = Object.prototype.hasOwnProperty.call(this.pagePermissions, page);
+      if (!mapped) return true;
       const allowedGroups = this.pagePermissions[page] || [];
       if (!allowedGroups.length) return true;
       const result = allowedGroups.some(group => userGroups.includes(group));
@@ -173,6 +311,41 @@
         console.debug(`Permission: Page "${page}" access: ${result}`);
       }
       return result;
+    },
+
+    explainPage(page, userOrRole = root.PentagonAuth.getCurrentUser()) {
+      let user = userOrRole || {};
+      if (typeof userOrRole === 'string') {
+        user = { id: userOrRole, name: userOrRole, role: userOrRole, groups: groupsFromRole(userOrRole) };
+      }
+      user = normalizeUser(user);
+      const mapped = Object.prototype.hasOwnProperty.call(this.pagePermissions, page);
+      const allowedGroups = mapped ? (this.pagePermissions[page] || []) : [];
+      const userGroups = this.resolveGroups(user);
+      const systemAdmin = userGroups.includes('system.admin');
+      const directAllowed = systemAdmin || !mapped || !allowedGroups.length || allowedGroups.some(group => userGroups.includes(group));
+      const meta = this.pageMetadata[page] || {};
+      const outcome = !mapped ? 'default_allowed' : directAllowed ? 'allowed' : 'blocked';
+      const reason = !mapped
+        ? 'local_dev_unmapped_default_allow'
+        : (!allowedGroups.length ? 'explicit_public_or_self_service' : (directAllowed ? 'explicit_permission_match' : 'missing_required_page_permission'));
+
+      return {
+        page,
+        label: meta.label || page,
+        mapped,
+        allowedGroups,
+        userId: user?.id || '',
+        userName: user?.name || user?.id || '',
+        userGroups,
+        sensitivity: meta.sensitivity || 'normal business',
+        riskLevel: meta.riskLevel || 'low',
+        phase: meta.phase || (mapped ? 'explicit' : 'unmapped'),
+        defaultPolicy: mapped ? 'explicit_page_policy' : 'allow_local_dev_unmapped',
+        outcome,
+        allowed: directAllowed,
+        reason,
+      };
     },
 
     check(collection, action, user = root.PentagonAuth.getCurrentUser()) {
@@ -191,8 +364,9 @@
     explainAction(actionKey, context = {}, userOrRole = root.PentagonAuth.getCurrentUser()) {
       let user = userOrRole || {};
       if (typeof userOrRole === 'string') {
-        user = { id: userOrRole, name: userOrRole, groups: [userOrRole] };
+        user = { id: userOrRole, name: userOrRole, role: userOrRole, groups: groupsFromRole(userOrRole) };
       }
+      user = normalizeUser(user);
       const mapped = Object.prototype.hasOwnProperty.call(this.actionPermissions, actionKey);
       const meta = { ...(this.actionMetadata[actionKey] || {}), ...(context?.riskLevel ? { riskLevel: context.riskLevel } : {}) };
       const riskLevel = meta.riskLevel || 'low';

@@ -57,7 +57,7 @@
       host.appendChild(chip);
     }
 
-    chip.textContent = `V5 جاهز · schema ${health.schema} · ${health.auditEvents} تدقيق`;
+    chip.textContent = `الإصدار 5 جاهز · مخطط ${health.schema} · ${health.auditEvents} تدقيق`;
     chip.title = `الخدمات: ${health.ready ? 'جاهزة' : 'غير جاهزة'} | الأقسام: ${health.departments} | المواقع: ${health.locations}`;
     return true;
   }

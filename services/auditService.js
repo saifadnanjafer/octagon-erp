@@ -241,12 +241,22 @@
       const db = DB.getCached();
       if (!db) return { id: 'system', name: 'النظام', groups: ['system.admin'] };
       const users = userListFromDb(db);
-      const user = users.find(u => u.id === this._currentUserId && u.is_active !== false);
-      return user || users.find(u => u.id === 'system') || {
+      const roles = Array.isArray(db.omni?.roles) ? db.omni.roles : [];
+      const activeUsers = users.filter(u => u && u.is_active !== false && u.status !== 'inactive');
+      const requestedId = this._currentUserId === 'system' ? 'system_admin' : this._currentUserId;
+      const user = activeUsers.find(u => u.id === requestedId) || activeUsers.find(u => u.id === this._currentUserId);
+      const fallback = activeUsers.find(u => u.id === 'system_admin') || activeUsers.find(u => u.id === 'system');
+      const resolved = user || fallback || {
         id: 'system',
         name: 'النظام',
         groups: ['system.admin'],
       };
+      const role = roles.find(r => r.id === resolved.roleId || r.id === resolved.role);
+      if (!Array.isArray(resolved.groups)) resolved.groups = Array.isArray(role?.groups) ? role.groups.slice() : [];
+      if (!resolved.name && resolved.displayName) resolved.name = resolved.displayName;
+      if (!resolved.displayName && resolved.name) resolved.displayName = resolved.name;
+      if (!resolved.role && resolved.roleId) resolved.role = resolved.roleId;
+      return resolved;
     },
     setCurrentUser(userId) {
       this._currentUserId = userId;

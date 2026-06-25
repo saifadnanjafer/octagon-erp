@@ -585,7 +585,20 @@
   const _origSwitch = window.switchPage;
   window.switchPage = function (page) {
     if (_origSwitch) _origSwitch(page);
-    if (page === 'clinic') { ensureData(); setTimeout(renderClinic, 0); }
+    if (page === 'clinic') {
+      // Core switchPage only activates pages in its built-in pageMap; like
+      // pos/pharmacy/assets, this module activates its own section explicitly
+      // so navigation actually shows it (otherwise the page stays hidden).
+      try {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const pg = document.getElementById('pageClinic'); if (pg) pg.classList.add('page-active');
+        const nav = document.getElementById('navClinic'); if (nav) nav.classList.add('active');
+        window.currentPage = 'clinic';
+        if (typeof window.ensureNavGroupForPage === 'function') window.ensureNavGroupForPage('clinic');
+      } catch (_) {}
+      ensureData(); setTimeout(renderClinic, 0);
+    }
   };
 
   /* ─────────────── Jarvis tool ─────────────── */

@@ -3,10 +3,28 @@
   "currentFocus": {
     "section": "Phase 6 Launch-Readiness Sweep",
     "phase": "in_progress",
-    "percent": 75,
-    "note": "2026-06-23: Button-by-button audit now lives inside Admin Wire-Up. Fixed the end-of-body dynamic view prefetch hook so the 86 page templates warm after load even when DOMContentLoaded already fired. Chrome smoke: Route Health 86/86 nav + 86/86 pages; Admin audit 86 OK, 0 warnings, 0 broken, 15 guarded actions. Remaining: dead-code deletion still needs go-ahead and final live stabilization re-check."
+    "percent": 86,
+    "note": "2026-06-25: Phase 6G legal/AI-order/maintenance coverage added. Documents now prints employee contract drafts, company rules, and document sheets; Intelligence has a structured AI-assisted order/task form; maintenance coverage confirmed across Machines, Assets, and Equipment. Remaining: production auth/session model, company assignment/backfill policy, AI approval execution review, automatic recurring maintenance generation, performance, and release-readiness."
   },
   "recent": [
+    {
+      "section": "Phase 6G legal print kit, AI order/task form, and maintenance coverage",
+      "percent": 100,
+      "date": "2026-06-25",
+      "by": "Codex"
+    },
+    {
+      "section": "Phase 6F live Route Health + stabilization re-check",
+      "percent": 100,
+      "date": "2026-06-24",
+      "by": "Codex"
+    },
+    {
+      "section": "Phase 6F seeded-role permission regression harness",
+      "percent": 100,
+      "date": "2026-06-24",
+      "by": "Codex"
+    },
     {
       "section": "Phase 6 Sweep (Admin button audit + dynamic view prefetch fix)",
       "percent": 75,
@@ -65,8 +83,8 @@
   "next": [
     {
       "label": "Phase 6 audit / tenant hardening",
-      "reason": "Route Health and Admin button audit are green again after the dynamic prefetch fix; continue final stabilization and any approved dead-code cleanup.",
-      "currentPercent": 75
+      "reason": "Legal print kit, AI order/task form, seeded-role regression, and live stabilization are green; continue production auth/session model, AI approval execution review, recurring maintenance generation, performance, and release-readiness.",
+      "currentPercent": 86
     },
     {
       "label": "Legacy companyId backfill policy",
@@ -80,7 +98,7 @@
     }
   ],
   "overallPercent": 100,
-  "message": "2026-06-23: Admin Wire-Up now includes a live button/permission audit. Dynamic view prefetch was fixed; Route Health is green at 86/86 nav and 86/86 page templates, and Admin audit reports 86 OK / 0 broken.",
-  "updatedAt": "2026-06-23T00:00:00.000Z",
+  "message": "2026-06-25: Phase 6G covers printable legal docs, structured AI order/task issuance, and maintenance coverage confirmation; recurring maintenance generation remains next.",
+  "updatedAt": "2026-06-25T00:00:00.000Z",
   "updatedBy": "Codex"
 }

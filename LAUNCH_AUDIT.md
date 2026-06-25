@@ -172,3 +172,52 @@ The original audit above was run at the **47-page** scale. Since then 5 vertical
 ## Next step
 
 Once the owner has done the physical-device tests + key rotation, the next planned sprint is **Phase 6 audit** (dead-code pass + v6 receivable-mapping fix + release notes). Re-run **🏭 فحص استقرار الورشة** (in جاهزية التشغيل) after any structural edit — target 12/12.
+
+---
+
+## 6. Phase 6F Audit Delta - Seeded Role Regression (2026-06-24)
+
+The historical audit sections above are retained as point-in-time launch checks, but their 47-page and 53-page denominators are no longer current. The active governance/audit baseline is now:
+
+| Area | Current result |
+|---|---|
+| Sidebar route denominator | **86** unique `data-page` sidebar pages |
+| Explicit mapped sidebar pages | **53** mapped through `PermissionService.pagePermissions` |
+| Role-regression harness | **35/35 PASS** via `node scripts/permission-regression.mjs` |
+| Data mutation | None; the harness is read-only and seeds users only inside a VM sandbox |
+
+What the Phase 6F harness proves:
+
+- The six seeded development roles resolve correctly: `system_admin`, `finance_manager`, `workshop_manager`, `operator_user`, `employee_user`, and `viewer_user`.
+- Role inheritance works through `omni.roles`: system admin inherits workshop + finance manager/user groups; manager roles inherit their user groups.
+- Mapped page policies allow/block the expected users for finance, banking, inventory, risk compliance, people ops, route health, self-service, and public portal pages.
+- High-risk actions resolve to the correct outcome: direct allow for authorized roles, blocked where appropriate, and `approval_required` for sensitive routes that must not execute silently.
+- Unmapped normal pages still explain as `default_allowed` under the current local/dev policy.
+
+Validation run:
+
+```powershell
+node scripts\permission-regression.mjs
+node --check scripts\permission-regression.mjs
+node --check services\permissionService.js
+node -e "for (const f of ['database.json','claude-status.json','claude-review-pointer.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('json ok')"
+```
+
+Result: all checks passed. The local server was also started and responded at `http://127.0.0.1:8080/` with HTTP 200.
+
+Live browser re-check:
+
+- Route Health: **86/86 nav, 86/86 pages, 8/8 globals, 14/14 functions, 13/13 collections, 1/1 work-order links**.
+- Workshop Stabilization: **12/12 PASS**.
+- Security Center: Phase 6C action matrix visible and Phase 6E page-policy audit visible, including `53 mapped`.
+- Loading overlay: hidden.
+- Current user context: `system_admin`.
+- Console: clean after adding the inline favicon declaration to stop the browser's default `/favicon.ico` 404.
+- Advisory only: backup recency still warns until the owner runs **نسخة احتياطية الآن**.
+
+Remaining launch-readiness items:
+
+- Build the final production authentication/session model; current seeded users are local/dev identity scaffolding, not password authentication.
+- Decide tenant/company assignment and legacy `companyId` backfill policy.
+- Review AI approval execution paths end-to-end before enabling high-risk executors.
+- Continue performance, release notes, and final stabilization checks.

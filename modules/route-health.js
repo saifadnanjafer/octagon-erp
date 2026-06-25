@@ -250,6 +250,54 @@
       + (r.ok ? pill(true, r.count + ' سجل') : pill(false, r.count + ' مشكلة')) + '</div>').join('');
   }
 
+  let routeHealthViewsHydrated = false;
+  let routeHealthHydrationPromise = null;
+  function navPageKeys() {
+    const keys = Array.from(document.querySelectorAll('.nav-btn[data-page]'))
+      .map(btn => btn.getAttribute('data-page'))
+      .filter(Boolean);
+    return Array.from(new Set(keys));
+  }
+  function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  async function hydrateRouteHealthViews() {
+    if (routeHealthViewsHydrated) return;
+    if (routeHealthHydrationPromise) return routeHealthHydrationPromise;
+    routeHealthHydrationPromise = (async () => {
+      if (typeof window.ensurePageTemplateLoaded !== 'function') return;
+      const pages = navPageKeys();
+      // Load all templates in parallel, each guarded by its own timeout so one
+      // hanging loader can neither stall the others nor freeze the page render.
+      // (Sequential loading with per-item delays was slow/could wedge — parallel
+      // load of all 86 templates completes in well under a second locally.)
+      await Promise.all(pages.map(page =>
+        Promise.race([
+          Promise.resolve().then(() => window.ensurePageTemplateLoaded(page)),
+          delay(2500)
+        ]).catch(() => {})
+      ));
+      routeHealthViewsHydrated = true;
+    })().finally(() => {
+      routeHealthHydrationPromise = null;
+    });
+    return routeHealthHydrationPromise;
+  }
+
+  function renderLoading() {
+    const root = document.getElementById('routeHealthBody');
+    if (!root) return;
+    root.innerHTML = '<div class="rh-toolbar"><span class="rh-pill warn">جاري تحميل قوالب الصفحات للفحص الكامل...</span></div>';
+  }
+
+  async function renderReady() {
+    if (routeHealthViewsHydrated) { render(); return; }
+    renderLoading();
+    // Await hydration but cap the wait with an overall deadline so a hanging
+    // template loader can never freeze the page on the loading state. Each
+    // template is also individually timeout-guarded inside hydrateRouteHealthViews.
+    try { await Promise.race([hydrateRouteHealthViews(), delay(7000)]); } catch (_) {}
+    render();
+  }
+
   function render() {
     const root = document.getElementById('routeHealthBody');
     if (!root) return;
@@ -284,7 +332,7 @@
     window.__rhLastReport = rep;
   }
 
-  window.rhRunNow = function () { render(); toast('اكتمل فحص النظام', 'info'); };
+  window.rhRunNow = function () { renderReady().then(() => toast('اكتمل فحص النظام', 'info')); };
   window.rhCopyReport = function () {
     try {
       const txt = JSON.stringify(window.__rhLastReport || buildReport(), null, 2);
@@ -301,7 +349,7 @@
     const pg = document.getElementById('pageRouteHealth'); if (pg) pg.classList.add('page-active');
     const nav = document.getElementById('navRouteHealth'); if (nav) nav.classList.add('active');
     window.currentPage = 'route_health';
-    render();
+    renderReady();
   }
   function wireSwitch() {
     if (window.__rhWrapped) return;
@@ -324,5 +372,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  window.OctagonRouteHealth = { render: render, report: buildReport, open: function () { try { window.switchPage('route_health'); } catch (_) {} } };
+  window.OctagonRouteHealth = { render: renderReady, report: buildReport, hydrate: hydrateRouteHealthViews, open: function () { try { window.switchPage('route_health'); } catch (_) {} } };
 })();

@@ -33,6 +33,42 @@
   }
   function todayISO() { return new Date().toISOString().slice(0, 10); }
   function daysFromToday(iso) { return iso ? Math.round((new Date(iso) - new Date(todayISO())) / 86400000) : null; }
+  function companyName() {
+    try {
+      return (typeof window.getActiveOrgProfile === 'function' ? window.getActiveOrgProfile()?.companyName : '')
+        || O()?.adminSettings?.organization?.companyName
+        || 'ورشة أوكتاجون';
+    } catch (_) { return 'ورشة أوكتاجون'; }
+  }
+  function employeeList() {
+    try { return Array.isArray(window.employees) ? window.employees : []; } catch (_) { return []; }
+  }
+  function selectedEmployee() {
+    const id = val('docLegalEmployee');
+    return employeeList().find(e => String(e.id || e.name) === String(id)) || null;
+  }
+  function printHtml(title, bodyHtml) {
+    const w = window.open('', '_blank');
+    if (!w) { toast('تعذر فتح نافذة الطباعة', 'error'); return; }
+    w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${esc(title)}</title>
+      <style>
+        @page{size:A4;margin:14mm}
+        *{box-sizing:border-box}
+        body{font-family:Tajawal,Cairo,Arial,sans-serif;direction:rtl;color:#111827;background:#fff;margin:0;line-height:1.8}
+        .sheet{min-height:269mm;padding:8mm}
+        .head{text-align:center;border-bottom:2px solid #111827;padding-bottom:10px;margin-bottom:18px}
+        .head h1{font-size:22px;margin:0 0 4px}.head p{margin:0;color:#4b5563;font-size:12px}
+        .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;border:1px solid #d1d5db;background:#f9fafb;padding:10px;margin-bottom:16px}
+        .meta div{font-size:13px}.section{margin:14px 0}.section h2{font-size:15px;margin:0 0 6px;border-bottom:1px solid #d1d5db;padding-bottom:4px}
+        ol{padding-right:20px;margin:8px 0} li{margin:5px 0}
+        .signatures{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:42px;font-weight:700}
+        .sig{border-top:1px solid #111827;padding-top:8px;text-align:center;min-height:42px}
+        .note{font-size:11px;color:#6b7280;margin-top:18px;border-top:1px dashed #d1d5db;padding-top:8px}
+        .no-print{position:fixed;top:10px;left:10px}.no-print button{padding:8px 14px}
+        @media print{.no-print{display:none}.sheet{padding:0}}
+      </style></head><body><div class="no-print"><button onclick="window.print()">طباعة</button></div><main class="sheet">${bodyHtml}</main><script>window.onload=function(){setTimeout(function(){window.print()},250)}<\/script></body></html>`);
+    w.document.close();
+  }
 
   const CATEGORIES = [['license', '📜 إجازة/رخصة'], ['contract', '📝 عقد'], ['certificate', '🏅 شهادة'], ['permit', '✅ تصريح'], ['policy', '🛡️ بوليصة/سياسة'], ['id', '🪪 هوية/وثيقة'], ['other', '📄 أخرى']];
   const CAT_LABEL = Object.fromEntries(CATEGORIES);
@@ -106,6 +142,78 @@
     save(); toast('تم تحميل بيانات تجريبية', 'success'); render();
   };
 
+  window.docPrintDocument = function (id) {
+    const d = (D()?.docs || []).find(x => x.id === id);
+    if (!d) return;
+    const title = d.title || 'وثيقة';
+    printHtml(title, `
+      <div class="head"><h1>${esc(title)}</h1><p>${esc(companyName())} - نسخة جاهزة للطباعة</p></div>
+      <div class="meta">
+        <div><strong>الفئة:</strong> ${esc(CAT_LABEL[d.category] || d.category || '-')}</div>
+        <div><strong>الرقم المرجعي:</strong> ${esc(d.refNumber || '-')}</div>
+        <div><strong>الجهة المالكة:</strong> ${esc(d.owner || '-')}</div>
+        <div><strong>جهة الإصدار:</strong> ${esc(d.issuer || '-')}</div>
+        <div><strong>تاريخ الإصدار:</strong> ${esc(d.issueDate || '-')}</div>
+        <div><strong>تاريخ الانتهاء:</strong> ${esc(d.expiryDate || '-')}</div>
+      </div>
+      <div class="section"><h2>الملاحظات والمرفقات</h2><p>${esc(d.notes || 'لا توجد ملاحظات.')}</p><p><strong>ملف/رابط:</strong> ${esc(d.fileNote || '-')}</p></div>
+      <div class="signatures"><div class="sig">توقيع الإدارة</div><div class="sig">توقيع الاستلام/المراجعة</div></div>
+    `);
+  };
+
+  window.docPrintEmployeeContract = function () {
+    const emp = selectedEmployee();
+    const name = emp?.name || val('docLegalEmployeeName') || '................................';
+    const job = val('docLegalJob') || emp?.role || emp?.position || 'عامل/موظف ورشة';
+    const salary = val('docLegalSalary') || emp?.salary || emp?.nominalSalary || '................';
+    const start = val('docLegalStart') || todayISO();
+    printHtml('عقد عمل موظف', `
+      <div class="head"><h1>عقد عمل موظف</h1><p>${esc(companyName())}</p></div>
+      <div class="meta">
+        <div><strong>اسم الموظف:</strong> ${esc(name)}</div>
+        <div><strong>المسمى الوظيفي:</strong> ${esc(job)}</div>
+        <div><strong>تاريخ المباشرة:</strong> ${esc(start)}</div>
+        <div><strong>الأجر الشهري:</strong> ${esc(salary)} د.ع</div>
+      </div>
+      <div class="section"><h2>بنود العمل</h2><ol>
+        <li>يلتزم الموظف بأوقات الدوام والحضور والانصراف المعتمدة في نظام الورشة.</li>
+        <li>يلتزم الموظف بتعليمات السلامة، استخدام معدات الوقاية، والمحافظة على أدوات وممتلكات الورشة.</li>
+        <li>تحتسب الأجور والإضافي والاستقطاعات حسب سجلات الحضور والسياسة الداخلية المعتمدة.</li>
+        <li>أي سلفة أو عهدة أو تلفيات تسجل في النظام وتراجع من الإدارة قبل اعتمادها.</li>
+        <li>لا يجوز إفشاء معلومات العملاء أو الأسعار أو ملفات العمل خارج الورشة.</li>
+      </ol></div>
+      <div class="section"><h2>ملاحظات خاصة</h2><p>${esc(val('docLegalNotes') || 'لا توجد ملاحظات إضافية.')}</p></div>
+      <div class="signatures"><div class="sig">توقيع الموظف</div><div class="sig">توقيع الإدارة</div></div>
+      <p class="note">هذه مسودة تشغيلية جاهزة للطباعة والمراجعة القانونية المحلية قبل الاعتماد النهائي.</p>
+    `);
+  };
+
+  window.docPrintCompanyRules = function () {
+    printHtml('النظام الداخلي وقواعد الشركة', `
+      <div class="head"><h1>النظام الداخلي وقواعد الشركة</h1><p>${esc(companyName())}</p></div>
+      <div class="section"><h2>الحضور والانضباط</h2><ol>
+        <li>يلتزم جميع العاملين بمواعيد الدوام المسجلة في النظام.</li>
+        <li>أي تأخير، غياب، إجازة، أو خروج مبكر يجب أن يسجل ويعتمد من المسؤول المباشر.</li>
+        <li>تستخدم سجلات البصمة/الحضور كأساس للحساب والمراجعة.</li>
+      </ol></div>
+      <div class="section"><h2>السلامة والمعدات</h2><ol>
+        <li>ارتداء معدات الوقاية إلزامي في مناطق الإنتاج والقص واللحام والطباعة.</li>
+        <li>لا تستخدم أي ماكينة أو أداة قبل التأكد من صلاحيتها وحالتها في النظام.</li>
+        <li>أي عطل، تلف، أو خطر سلامة يسجل فوراً كمهمة أو طلب صيانة.</li>
+      </ol></div>
+      <div class="section"><h2>العهد والمواد</h2><ol>
+        <li>استلام الأدوات والمعدات عهدة شخصية حتى إرجاعها وفحصها.</li>
+        <li>لا تصرف مواد أو أدوات خارج الورشة إلا بسند أو ترحيل مسجل.</li>
+        <li>أي فقدان أو تلف يراجع من الإدارة قبل تسجيل أي استقطاع.</li>
+      </ol></div>
+      <div class="section"><h2>العملاء والسرية</h2><ol>
+        <li>تمنع مشاركة أسعار العملاء، التصاميم، الملفات، أو بيانات المشاريع خارج قنوات الإدارة.</li>
+        <li>التواصل الرسمي مع العملاء يتم عبر القنوات المعتمدة أو بتكليف واضح.</li>
+      </ol></div>
+      <div class="signatures"><div class="sig">توقيع الموظف بالاطلاع</div><div class="sig">توقيع الإدارة</div></div>
+    `);
+  };
+
   function kpi(label, value, sub, cls) { return `<div class="dc-kpi ${cls || ''}"><div class="dc-kpi-val">${value}</div><div class="dc-kpi-label">${label}</div>${sub ? `<div class="dc-kpi-sub">${sub}</div>` : ''}</div>`; }
 
   function renderDashboard() {
@@ -125,6 +233,27 @@
       ${p.byCategory.length ? `<div class="dc-panel"><div class="dc-panel-head"><h3>حسب الفئة</h3></div><div class="dc-cats">${p.byCategory.map(c => `<div class="dc-cat-chip">${c.label} <strong>${c.count}</strong></div>`).join('')}</div></div>` : ''}`;
   }
 
+  function renderLegalKit() {
+    const el = document.getElementById('dcLegalBody'); if (!el) return;
+    const opts = employeeList().map(e => `<option value="${esc(e.id || e.name)}">${esc(e.name || e.id)}</option>`).join('');
+    el.innerHTML = `
+      <div class="dc-panel">
+        <div class="dc-panel-head"><h3>حزمة قانونية جاهزة للطباعة</h3></div>
+        <div class="dc-form-grid">
+          <div><label>الموظف</label><select id="docLegalEmployee" class="dc-input"><option value="">موظف جديد / فارغ</option>${opts}</select></div>
+          <div><label>اسم يدوي عند الحاجة</label><input id="docLegalEmployeeName" class="dc-input" placeholder="اسم الموظف"></div>
+          <div><label>المسمى الوظيفي</label><input id="docLegalJob" class="dc-input" placeholder="عامل إنتاج / مشغل / إداري"></div>
+          <div><label>تاريخ المباشرة</label><input id="docLegalStart" type="date" class="dc-input" value="${todayISO()}"></div>
+          <div><label>الأجر الشهري</label><input id="docLegalSalary" type="number" class="dc-input" placeholder="0"></div>
+          <div class="dc-form-full"><label>ملاحظات خاصة بالعقد</label><input id="docLegalNotes" class="dc-input" placeholder="فترة تجربة، دوام، عهدة، أو شرط خاص"></div>
+        </div>
+        <div class="dc-form-actions">
+          <button class="btn-primary" onclick="docPrintEmployeeContract()">طباعة عقد موظف</button>
+          <button class="dc-mini-btn" onclick="docPrintCompanyRules()">طباعة النظام الداخلي</button>
+        </div>
+      </div>`;
+  }
+
   function renderRegistry() {
     const el = document.getElementById('dcRegBody'); if (!el) return;
     if (editing) { el.innerHTML = renderForm(); return; }
@@ -142,7 +271,7 @@
       <table class="dc-table"><thead><tr><th>الوثيقة</th><th>الفئة</th><th>الرقم</th><th>الجهة</th><th>الإصدار</th><th>الانتهاء</th><th>إجراءات</th></tr></thead>
       <tbody>${list.map(d => { const e = expiryView(d); const exp = !e.has ? '<span class="dc-muted">—</span>' : `<span class="${e.expired ? 'dc-exp-bad' : e.soon ? 'dc-exp-warn' : 'dc-exp-ok'}">${esc(d.expiryDate)}</span>`;
         return `<tr><td><strong>${esc(d.title)}</strong>${d.tags ? `<br><span class="dc-muted">${esc(d.tags)}</span>` : ''}</td><td>${CAT_LABEL[d.category] || d.category}</td><td class="dc-muted">${esc(d.refNumber || '—')}</td><td>${esc(d.owner || '—')}</td><td class="dc-muted">${esc(d.issueDate || '—')}</td><td>${exp}</td>
-        <td class="dc-actions"><button class="dc-mini-btn" onclick="docOpenForm('${d.id}')">تعديل</button><button class="dc-mini-btn dc-danger" onclick="docArchive('${d.id}')">أرشفة</button></td></tr>`;
+        <td class="dc-actions"><button class="dc-mini-btn" onclick="docPrintDocument('${d.id}')">طباعة</button><button class="dc-mini-btn" onclick="docOpenForm('${d.id}')">تعديل</button><button class="dc-mini-btn dc-danger" onclick="docArchive('${d.id}')">أرشفة</button></td></tr>`;
       }).join('') || '<tr><td colspan="7" class="dc-empty">لا توجد وثائق</td></tr>'}</tbody></table>`;
   }
   function renderForm() {
@@ -166,16 +295,18 @@
   }
 
   function renderTabContent() {
-    const map = { dcDashBody: 'dashboard', dcRegBody: 'registry' };
+    const map = { dcDashBody: 'dashboard', dcRegBody: 'registry', dcLegalBody: 'legal' };
     Object.keys(map).forEach(id => { const e = document.getElementById(id); if (e) e.style.display = map[id] === activeTab ? '' : 'none'; });
-    if (activeTab === 'dashboard') renderDashboard(); else renderRegistry();
+    if (activeTab === 'dashboard') renderDashboard();
+    else if (activeTab === 'legal') renderLegalKit();
+    else renderRegistry();
   }
   function render() {
     const body = document.getElementById('documentsBody'); if (!body) return;
     ensureData();
-    const tabs = [['dashboard', '📊 اللوحة'], ['registry', '🗂️ السجل']];
+    const tabs = [['dashboard', '📊 اللوحة'], ['registry', '🗂️ السجل'], ['legal', 'العقود والقواعد']];
     body.innerHTML = `<div class="dc-tabs">${tabs.map(([k, l]) => `<button class="dc-tab-btn ${activeTab === k ? 'active' : ''}" onclick="docOpenTab('${k}')">${l}</button>`).join('')}</div>
-      <div id="dcDashBody"></div><div id="dcRegBody"></div>`;
+      <div id="dcDashBody"></div><div id="dcRegBody"></div><div id="dcLegalBody"></div>`;
     renderTabContent();
   }
   window.renderDocuments = render;

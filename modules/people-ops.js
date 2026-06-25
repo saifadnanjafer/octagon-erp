@@ -223,9 +223,9 @@
     h.openings.push(o1, o2);
     const fwd = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
     h.candidates.push(
-      { id: uid('cand'), name: 'حسن كريم', phone: '0770xxxxxxx', openingId: o1.id, openingTitle: o1.title, source: 'إحالة', rating: 4, stage: 'interview', interviewDate: fwd(2), notes: '', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('cand'), name: 'زينب علي', phone: '0771xxxxxxx', openingId: o2.id, openingTitle: o2.title, source: 'موقع التواصل', rating: 5, stage: 'offer', interviewDate: '', notes: 'ممتازة', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('cand'), name: 'عمر صلاح', phone: '0772xxxxxxx', openingId: o1.id, openingTitle: o1.title, source: 'إعلان', rating: 3, stage: 'screening', interviewDate: '', notes: '', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() }
+      { id: uid('cand'), name: 'حسن كريم', phone: '07700000000', openingId: o1.id, openingTitle: o1.title, source: 'إحالة', rating: 4, stage: 'interview', interviewDate: fwd(2), notes: '', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
+      { id: uid('cand'), name: 'زينب علي', phone: '07710000000', openingId: o2.id, openingTitle: o2.title, source: 'موقع التواصل', rating: 5, stage: 'offer', interviewDate: '', notes: 'ممتازة', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
+      { id: uid('cand'), name: 'عمر صلاح', phone: '07720000000', openingId: o1.id, openingTitle: o1.title, source: 'إعلان', rating: 3, stage: 'screening', interviewDate: '', notes: '', appliedDate: todayISO(), is_active: true, companyId: coId(), createdAt: new Date().toISOString() }
     );
     const emp = getEmployees()[0];
     if (emp) h.leaveRequests.unshift({ id: uid('leave'), employeeId: emp.id || emp.name, employeeName: emp.name, type: 'annual', startDate: fwd(5), endDate: fwd(8), days: 4, reason: 'سفر عائلي', status: 'pending', requestedBy: userName(), requestedAt: new Date().toISOString(), companyId: coId() });

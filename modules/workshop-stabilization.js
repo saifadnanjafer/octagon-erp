@@ -27,7 +27,7 @@
   // broken probe never aborts the whole self-test.
   const CHECKS = [
     {
-      id: 'route_health', label: 'فحص صحة النظام أخضر بالكامل (Route Health all green)',
+      id: 'route_health', label: 'فحص صحة النظام أخضر بالكامل',
       fn: function () {
         const RH = window.OctagonRouteHealth;
         if (!RH || typeof RH.report !== 'function') return { ok: false, detail: 'Route Health غير محمَّل' };
@@ -41,7 +41,7 @@
       }
     },
     {
-      id: 'workshop_core', label: 'نواة الورشة محمَّلة (Execution Core + Frontline + AI brain)',
+      id: 'workshop_core', label: 'نواة الورشة محمَّلة',
       fn: function () {
         const need = ['OctagonWorkOrders', 'OctagonFrontline', 'OctagonWorkshopAI', 'JarvisBrain'];
         const miss = need.filter(n => !window[n]);
@@ -49,7 +49,7 @@
       }
     },
     {
-      id: 'mrp_ownership', label: 'فصل أوامر العمل: jobOrders ≠ workOrders (MRP ownership intact)',
+      id: 'mrp_ownership', label: 'فصل أوامر العمل: jobOrders ≠ workOrders',
       fn: function () {
         const o = O() || {};
         if (!isArr(o.jobOrders)) return { ok: false, detail: 'omni.jobOrders ليست مصفوفة' };
@@ -59,7 +59,7 @@
       }
     },
     {
-      id: 'ai_gate_sensitive', label: 'أدوات الذكاء الخطرة كلها مُبوَّبة (5 direct-writes gated)',
+      id: 'ai_gate_sensitive', label: 'أدوات الذكاء الخطرة كلها مُبوَّبة',
       fn: function () {
         const gov = window.OctagonAIGovernance;
         if (!gov || typeof gov.gateTool !== 'function') return { ok: false, detail: 'AI Governance غير محمَّل' };
@@ -69,7 +69,7 @@
       }
     },
     {
-      id: 'ai_gate_safe', label: 'الأدوات الآمنة تبقى بلا تبويب (navigate/report not over-gated)',
+      id: 'ai_gate_safe', label: 'الأدوات الآمنة تبقى بلا تبويب',
       fn: function () {
         const gov = window.OctagonAIGovernance;
         if (!gov || typeof gov.gateTool !== 'function') return { ok: false, detail: 'AI Governance غير محمَّل' };
@@ -78,7 +78,7 @@
       }
     },
     {
-      id: 'manager_only', label: 'الموافقة على high/critical للمدير فقط (manager-only enforced)',
+      id: 'manager_only', label: 'الموافقة على المخاطر العالية للمدير فقط',
       fn: function () {
         const gov = window.OctagonAIGovernance;
         if (!gov || typeof gov.canUserApproveAiAction !== 'function') return { ok: false, detail: 'دالة الموافقة غير موجودة' };
@@ -99,7 +99,7 @@
       }
     },
     {
-      id: 'injection_guard', label: 'حارس حقن الأوامر يعمل (prompt-injection guard fires)',
+      id: 'injection_guard', label: 'حارس حقن الأوامر يعمل',
       fn: function () {
         const gov = window.OctagonAIGovernance;
         const fn = (gov && gov.detectAiPromptInjectionSignals) || window.detectAiPromptInjectionSignals;
@@ -109,7 +109,7 @@
       }
     },
     {
-      id: 'ai_deterministic', label: 'الذكاء يعمل بلا مزوّد (deterministic fallback + briefing)',
+      id: 'ai_deterministic', label: 'الذكاء يعمل بلا مزوّد — احتياطي حتمي فعّال',
       fn: function () {
         const W = window.OctagonWorkshopAI;
         if (!W) return { ok: false, detail: 'OctagonWorkshopAI غير محمَّل' };
@@ -124,7 +124,7 @@
       }
     },
     {
-      id: 'verticals_intact', label: 'الأقسام الصناعية الستة سليمة (6 verticals render-ready)',
+      id: 'verticals_intact', label: 'الأقسام الصناعية الستة سليمة',
       fn: function () {
         const v = ['OctagonRetail', 'OctagonPharmacy', 'OctagonClinic', 'OctagonRestaurant', 'OctagonRealEstate', 'OctagonHotel'];
         const miss = v.filter(n => { const m = window[n]; return !m || typeof m.render !== 'function'; });
@@ -132,7 +132,7 @@
       }
     },
     {
-      id: 'jarvis_tools', label: 'أدوات جارفيس للورشة مُسجَّلة (workshop read tools present)',
+      id: 'jarvis_tools', label: 'أدوات جارفيس للورشة مُسجَّلة',
       fn: function () {
         const T = window.JarvisBrain && window.JarvisBrain.tools;
         if (!T) return { ok: false, detail: 'JarvisBrain.tools غير متاح' };
@@ -142,7 +142,7 @@
       }
     },
     {
-      id: 'module_css', label: 'أنماط الموديولات مربوطة (no unstyled-module regression)',
+      id: 'module_css', label: 'أنماط الموديولات مربوطة',
       fn: function () {
         const need = ['work-orders', 'route-health', 'workshop-ai', 'workshop-frontline', 'ai-governance', 'workshop-stabilization'];
         const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.getAttribute('href') || '');
@@ -151,7 +151,7 @@
       }
     },
     {
-      id: 'backup_recency', label: 'نسخة احتياطية مُسجَّلة (last backup timestamp present)',
+      id: 'backup_recency', label: 'نسخة احتياطية مُسجَّلة',
       fn: function () {
         const o = O() || {};
         const at = o.__lastBackupAt;
@@ -189,7 +189,7 @@
     }).join('');
     return '<div class="stab-wrap">'
       + '<div class="stab-head">'
-      + '<div class="stab-title">🏭 فحص استقرار الورشة <span class="stab-sub">Workshop-First Stabilization</span></div>'
+      + '<div class="stab-title">🏭 فحص استقرار الورشة <span class="stab-sub">الاستقرار التشغيلي أولاً</span></div>'
       + '<div class="stab-actions">'
       + '<span class="stab-pill ' + cls + '">' + (rep.failed === 0 ? 'جاهز للإطلاق ✅' : 'إخفاقات: ' + rep.failed) + '</span>'
       + '<button class="stab-btn" onclick="stabRun()">🔄 إعادة الفحص</button>'

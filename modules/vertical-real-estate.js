@@ -447,7 +447,20 @@
   const _origSwitch = window.switchPage;
   window.switchPage = function (page) {
     if (_origSwitch) _origSwitch(page);
-    if (page === 'real-estate') { ensureData(); setTimeout(renderRealEstate, 0); }
+    if (page === 'real-estate') {
+      // Core switchPage only activates pages in its built-in pageMap; like
+      // pos/pharmacy/assets, this module activates its own section explicitly
+      // so navigation actually shows it (otherwise the page stays hidden).
+      try {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const pg = document.getElementById('pageRealEstate'); if (pg) pg.classList.add('page-active');
+        const nav = document.getElementById('navRealEstate'); if (nav) nav.classList.add('active');
+        window.currentPage = 'real-estate';
+        if (typeof window.ensureNavGroupForPage === 'function') window.ensureNavGroupForPage('real-estate');
+      } catch (_) {}
+      ensureData(); setTimeout(renderRealEstate, 0);
+    }
   };
 
   /* ─────────────── Jarvis tool ─────────────── */

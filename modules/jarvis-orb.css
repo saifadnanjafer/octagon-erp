@@ -207,6 +207,12 @@
 /* Hover affordance only when idle */
 #jarvisOrb:not(.is-center):not(.is-side):hover { transform: scale(1.08); }
 
+body.ai-cluster-enabled #jarvisOrb:not(.is-center):not(.is-side) {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.34);
+}
+
 /* ---------- keyframes ---------- */
 @keyframes jorb-spin   { to { transform: rotate(360deg); } }
 @keyframes jorb-breathe{ 0%,100% { box-shadow: 0 8px 26px rgba(56,189,248,.45), 0 0 40px rgba(129,140,248,.35); } 50% { box-shadow: 0 10px 34px rgba(56,189,248,.7), 0 0 60px rgba(129,140,248,.55); } }

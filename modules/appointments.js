@@ -127,7 +127,7 @@
       ];
       seed.forEach(s => a.resources.push(stamp({ id: uid('res'), name: s.name, type: s.type, color: s.color, capacity: 1, active: true, createdAt: new Date().toISOString() })));
       const r0 = a.resources[0].id, r2 = a.resources[2].id;
-      a.bookings.push(stamp({ id: uid('bk'), resourceId: r0, customerName: 'سارة محمد', customerPhone: '0770xxxxxxx', title: 'كشف دوري', date: todayISO(), time: '10:00', durationMin: 30, status: 'confirmed', note: '', source: 'seed', createdBy: 'system', createdAt: new Date().toISOString() }));
+      a.bookings.push(stamp({ id: uid('bk'), resourceId: r0, customerName: 'سارة محمد', customerPhone: '07700000000', title: 'كشف دوري', date: todayISO(), time: '10:00', durationMin: 30, status: 'confirmed', note: '', source: 'seed', createdBy: 'system', createdAt: new Date().toISOString() }));
       a.bookings.push(stamp({ id: uid('bk'), resourceId: r2, customerName: 'عائلة العبيدي (4)', customerPhone: '', title: 'حجز عشاء', date: todayISO(), time: '20:00', durationMin: 90, status: 'requested', note: 'بالقرب من النافذة', source: 'seed', createdBy: 'system', createdAt: new Date().toISOString() }));
     }
   }

@@ -595,7 +595,20 @@
   const _origSwitch = window.switchPage;
   window.switchPage = function (page) {
     if (_origSwitch) _origSwitch(page);
-    if (page === 'restaurant') { ensureData(); setTimeout(renderRestaurant, 0); }
+    if (page === 'restaurant') {
+      // Core switchPage only activates pages in its built-in pageMap; like
+      // pos/pharmacy/assets, this module activates its own section explicitly
+      // so navigation actually shows it (otherwise the page stays hidden).
+      try {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const pg = document.getElementById('pageRestaurant'); if (pg) pg.classList.add('page-active');
+        const nav = document.getElementById('navRestaurant'); if (nav) nav.classList.add('active');
+        window.currentPage = 'restaurant';
+        if (typeof window.ensureNavGroupForPage === 'function') window.ensureNavGroupForPage('restaurant');
+      } catch (_) {}
+      ensureData(); setTimeout(renderRestaurant, 0);
+    }
   };
 
   /* ─────────────── Jarvis tool ─────────────── */

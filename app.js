@@ -47,7 +47,7 @@ function updateHeaderClock() {
   const dateEl = document.getElementById('globalDate');
   
   if(clockEl) clockEl.textContent = now.toLocaleTimeString('en-GB');
-  if(dateEl) dateEl.textContent = now.toLocaleDateString('en-GB', options);
+  if(dateEl) dateEl.textContent = now.toLocaleDateString('ar-IQ', options);
   
   if (typeof runManualAuditScanSilent === 'function') {
     try {
@@ -104,6 +104,63 @@ function showOmniModal(title, contentHtml, onConfirm, onOpen) {
     };
   });
 }
+
+// Global close helper for custom buttons rendered INSIDE an omni modal body
+// (e.g. the stock-transfer document actions). Without this, onclick handlers
+// like `closeOmniModal(); validateTransferFrontend(...)` throw a ReferenceError
+// and the action after the `;` never runs.
+function closeOmniModal() {
+  const overlay = document.getElementById('omniModalOverlay');
+  if (!overlay) return;
+  overlay.style.display = 'none';
+  const cancelBtn = document.getElementById('omniModalCancel');
+  const confirmBtn = document.getElementById('omniModalConfirm');
+  if (cancelBtn) cancelBtn.onclick = null;
+  if (confirmBtn) confirmBtn.onclick = null;
+}
+window.closeOmniModal = closeOmniModal;
+
+function loadOctagonAIAssistantFromApp() {
+  if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
+    return Promise.resolve(window.octagonAIAssistant);
+  }
+  if (window.__octagonAIAssistantPromise) return window.__octagonAIAssistantPromise;
+  window.__octagonAIAssistantPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'omni-ai-assistant.js?v=20260625-agent-orb-v1';
+    script.async = true;
+    script.onload = () => resolve(window.octagonAIAssistant || null);
+    script.onerror = () => reject(new Error('AI assistant failed to load'));
+    document.body.appendChild(script);
+  });
+  return window.__octagonAIAssistantPromise;
+}
+
+function toggleAIChatFromApp() {
+  if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
+    window.octagonAIAssistant.open();
+    return;
+  }
+  loadOctagonAIAssistantFromApp().then((assistant) => {
+    if (assistant && typeof assistant.open === 'function') assistant.open();
+  }).catch((err) => {
+    console.error(err);
+    if (typeof showToast === 'function') {
+      showToast('تعذر تحميل مساعد الذكاء حالياً. الواجهة الأساسية تعمل بشكل طبيعي.', 'warning');
+    }
+  });
+}
+
+function ensureAIChatLauncherFromApp() {
+  if (document.getElementById('ptxAIButton') || window.octagonAIAssistant) return;
+  loadOctagonAIAssistantFromApp().catch((err) => {
+    console.warn('AI assistant launcher preload failed:', err);
+  });
+}
+
+window.loadOctagonAIAssistant = window.loadOctagonAIAssistant || loadOctagonAIAssistantFromApp;
+window.toggleAIChat = window.toggleAIChat || toggleAIChatFromApp;
+window.ensureAIChatLauncher = window.ensureAIChatLauncher || ensureAIChatLauncherFromApp;
 
 function showOmniPrompt(message, defaultVal = '') {
   const html = `
@@ -371,6 +428,21 @@ function makeId(prefix = 'id') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function translatePriority(p) {
+  return ({Urgent:'عاجل',High:'عالي',Normal:'عادي',Low:'منخفض'})[p] || p;
+}
+function translateQcType(t) {
+  return ({dimensional:'أبعاد',visual:'بصري',functional:'وظيفي',finish:'تشطيب',paint:'دهان',assembly:'تجميع',welding:'لحام',electrical:'كهربائي',packaging:'تغليف',material:'مواد',weight:'وزن',surface:'سطح'})[String(t||'').toLowerCase()] || t;
+}
+function translateQcResult(r) {
+  return ({pass:'ناجح',fail:'فاشل',rework:'إعادة عمل',pending:'قيد الانتظار',na:'لا ينطبق'})[String(r||'').toLowerCase()] || r;
+}
+function translateMachineStatus(s) {
+  return ({operational:'تعمل',idle:'خامل',maintenance:'صيانة',offline:'غير متصل'})[String(s||'').toLowerCase()] || s;
+}
+function translateHrCardType(t) {
+  return ({payroll_anomaly:'شذوذ رواتب',timesheet_consistency:'اتساق الدوام',employee_request:'طلب موظف',overtime:'وقت إضافي',advance:'سلفة'})[String(t||'').toLowerCase()] || t;
+}
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -1069,13 +1141,142 @@ function getEmployeeDailyFinancialSummary(emp, rec, cfg) {
 }
 
 // ─── Page Navigation ───
-const navGroupPages = {
-  octagon: ['calculator', 'timesheet', 'calendar', 'import', 'employees', 'finance', 'cashbox', 'expenses', 'income', 'customers', 'receipt', 'report'],
-  omni_ops: ['command_center', 'kanban', 'workflow', 'op_packs', 'mrp', 'work_orders', 'task_manager', 'sop', 'machines', 'inventory', 'equipment', 'qc_center', 'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk'],
-  omni_analytics: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
-  omni_business: ['sales', 'pos', 'pharmacy', 'retail', 'clinic', 'restaurant', 'real-estate', 'hotel', 'assets', 'subscriptions', 'appointments', 'loyalty', 'events', 'people_ops', 'helpdesk', 'fleet', 'documents', 'esign', 'knowledge', 'surveys', 'visitors', 'risk_compliance', 'marketing', 'budgeting', 'procurement', 'projects', 'approvals', 'field_service', 'rental'],
-  omni_dev: ['multi_entity', 'tax_compliance', 'employee_ui', 'customer_portal', 'admin_panel', 'help_manual', 'ai_queue', 'ai_factory', 'ai_tools', 'deploy_ready']
+const navDomains = [
+  { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
+  { key: 'ops', label: 'التشغيل والورشة', icon: 'fa-industry', groups: ['ops_control', 'ops_production', 'ops_frontline'] },
+  { key: 'finance', label: 'المالية', icon: 'fa-building-columns', groups: ['finance_accounts'] },
+  { key: 'commercial', label: 'العملاء والقطاعات', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_verticals'] },
+  { key: 'resources', label: 'الموارد والإمداد', icon: 'fa-people-carry-box', groups: ['resources_org', 'resources_supply'] },
+  { key: 'intelligence', label: 'الذكاء والتحكم', icon: 'fa-brain', groups: ['intelligence_core', 'intelligence_ai'] },
+  { key: 'admin', label: 'الإدارة والنظام', icon: 'fa-screwdriver-wrench', groups: ['admin_org'] }
+];
+
+const navGroupMeta = {
+  core_daily: { label: 'اليومي والموظفون', domain: 'core', icon: 'fa-calendar-check' },
+  core_records: { label: 'المدخلات والمخرجات', domain: 'core', icon: 'fa-folder-open' },
+  ops_control: { label: 'القيادة وسير العمل', domain: 'ops', icon: 'fa-diagram-project' },
+  ops_production: { label: 'الإنتاج والمواد والجودة', domain: 'ops', icon: 'fa-gears' },
+  ops_frontline: { label: 'واجهات التشغيل', domain: 'ops', icon: 'fa-display' },
+  finance_accounts: { label: 'الحسابات والخزينة', domain: 'finance', icon: 'fa-file-invoice-dollar' },
+  commercial_sales: { label: 'المبيعات وخدمة العملاء', domain: 'commercial', icon: 'fa-cart-shopping' },
+  commercial_verticals: { label: 'قطاعات الأعمال', domain: 'commercial', icon: 'fa-store' },
+  resources_org: { label: 'الموارد والوثائق', domain: 'resources', icon: 'fa-users-gear' },
+  resources_supply: { label: 'الإمداد والمشاريع', domain: 'resources', icon: 'fa-truck-fast' },
+  intelligence_core: { label: 'التحليلات والأتمتة', domain: 'intelligence', icon: 'fa-chart-line' },
+  intelligence_ai: { label: 'مصنع الذكاء', domain: 'intelligence', icon: 'fa-robot' },
+  admin_org: { label: 'الحوكمة والإعدادات', domain: 'admin', icon: 'fa-shield-halved' }
 };
+
+const navGroupPages = {
+  core_daily: ['calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
+  core_records: ['import', 'receipt', 'report', 'help_manual'],
+  ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
+  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
+  ops_frontline: ['workshop_tv', 'kiosk'],
+  finance_accounts: ['finance', 'cashbox', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
+  commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty'],
+  commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service'],
+  resources_org: ['people_ops', 'fleet', 'assets', 'documents', 'esign', 'knowledge', 'surveys', 'visitors'],
+  resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
+  intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
+  intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
+  admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+};
+
+function getNavGroupForPage(page) {
+  return Object.keys(navGroupPages).find(key => navGroupPages[key].includes(page));
+}
+
+function getNavDomainForGroup(group) {
+  return navGroupMeta[group]?.domain || navDomains.find(domain => domain.groups.includes(group))?.key || 'core';
+}
+
+function getNavDomainForPage(page) {
+  const group = getNavGroupForPage(page);
+  return group ? getNavDomainForGroup(group) : null;
+}
+
+function getStoredNavDomain() {
+  let stored = null;
+  try { stored = localStorage.getItem('omniNavDomain'); } catch (err) {}
+  return navDomains.some(domain => domain.key === stored) ? stored : 'core';
+}
+
+function renderNavDomainTabs() {
+  const host = document.getElementById('moduleDomainTabs');
+  if (!host) return;
+  host.innerHTML = navDomains.map(domain => {
+    const count = domain.groups.reduce((sum, group) => sum + (navGroupPages[group]?.length || 0), 0);
+    return `<button class="module-domain-tab" type="button" data-nav-domain="${domain.key}" onclick="setNavDomain('${domain.key}')">
+      <i class="fa-solid ${domain.icon}"></i>
+      <span>${domain.label}</span>
+      <em>${count}</em>
+    </button>`;
+  }).join('');
+}
+
+function syncNavDomainVisibility() {
+  const activeDomain = document.body.dataset.navDomain || getStoredNavDomain();
+  document.querySelectorAll('.module-domain-tab[data-nav-domain]').forEach(btn => {
+    const isActive = btn.dataset.navDomain === activeDomain;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+  document.querySelectorAll('.sidebar-nav .nav-group[data-nav-group]').forEach(group => {
+    group.hidden = getNavDomainForGroup(group.dataset.navGroup) !== activeDomain;
+  });
+}
+
+function setNavDomain(domainKey, persist = true) {
+  const domain = navDomains.find(item => item.key === domainKey) || navDomains[0];
+  document.body.dataset.navDomain = domain.key;
+  if (persist) {
+    try { localStorage.setItem('omniNavDomain', domain.key); } catch (err) {}
+  }
+  syncNavDomainVisibility();
+}
+
+function rebuildSidebarNavigation() {
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav || nav.dataset.registryBuilt === '1') return;
+
+  const buttons = {};
+  nav.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
+    buttons[btn.dataset.page] = btn;
+  });
+
+  const pagesInRegistry = new Set(Object.values(navGroupPages).flat());
+  const missingPages = Object.keys(buttons).filter(page => !pagesInRegistry.has(page));
+  if (missingPages.length) {
+    navGroupPages.admin_org.push(...missingPages);
+  }
+
+  nav.innerHTML = '';
+  navDomains.forEach(domain => {
+    domain.groups.forEach(groupKey => {
+      const meta = navGroupMeta[groupKey] || { label: groupKey, icon: 'fa-layer-group' };
+      const group = document.createElement('div');
+      group.className = 'nav-group';
+      group.dataset.navGroup = groupKey;
+      group.dataset.navDomain = domain.key;
+      group.innerHTML = `<button class="nav-group-toggle" type="button" onclick="toggleNavGroup('${groupKey}')">
+        <span><i class="fa-solid ${meta.icon}"></i> ${meta.label}</span>
+        <i class="fa-solid fa-chevron-down"></i>
+      </button><div class="nav-group-body" id="navGroup-${groupKey}"></div>`;
+      const body = group.querySelector('.nav-group-body');
+      (navGroupPages[groupKey] || []).forEach(page => {
+        if (buttons[page]) body.appendChild(buttons[page]);
+      });
+      if (body.children.length) nav.appendChild(group);
+    });
+  });
+
+  nav.dataset.registryBuilt = '1';
+  renderNavDomainTabs();
+  bindSidebarNavigation();
+  applyNavGroupState();
+  setNavDomain(getNavDomainForPage(currentPage) || getStoredNavDomain(), false);
+}
 
 function getNavGroupState() {
   try {
@@ -1097,6 +1298,7 @@ function applyNavGroupState() {
     const isOpen = state[group] !== false;
     el.classList.toggle('collapsed', !isOpen);
   });
+  syncNavDomainVisibility();
 }
 
 function setNavGroupOpen(group, isOpen) {
@@ -1112,17 +1314,22 @@ function toggleNavGroup(group) {
 }
 
 function ensureNavGroupForPage(page) {
-  const group = Object.keys(navGroupPages).find(key => navGroupPages[key].includes(page));
-  if (group) setNavGroupOpen(group, true);
+  const group = getNavGroupForPage(page);
+  if (!group) return;
+  setNavDomain(getNavDomainForGroup(group), true);
+  setNavGroupOpen(group, true);
 }
 
 function switchAuthUser(userId) {
   if (!window.PentagonAuth) return;
   window.PentagonAuth.setCurrentUser(userId);
   showToast(`تم التبديل إلى: ${window.PentagonAuth.getCurrentUser()?.name || userId}`, 'success');
-  
+
   checkLoginStatus();
   enforceUIPermissions();
+
+  const devBtn = document.getElementById('btnDevClearCache');
+  if (devBtn) devBtn.style.display = userId === 'system' ? 'block' : 'none';
 
   // Refresh current page to apply permissions
   if (typeof currentPage !== 'undefined') {
@@ -1132,10 +1339,20 @@ function switchAuthUser(userId) {
 
 function refreshAuthUserSwitcher() {
   const sel = document.getElementById('authUserSwitcher');
-  if (!sel || !omni || !Array.isArray(omni.users)) return;
+  if (!sel) return;
+  try { if (typeof ensureOmni === 'function') ensureOmni(); } catch (_) {}
+  const fallbackUsers = [
+    { id: 'system_admin', name: 'مدير النظام', displayName: 'مدير النظام', role: 'system_admin', roleId: 'system_admin', groups: ['system.admin'], status: 'active', is_active: true, source: 'phase6d_fallback' },
+    { id: 'finance_manager', name: 'مدير المالية', displayName: 'مدير المالية', role: 'finance_manager', roleId: 'finance_manager', groups: ['finance.manager'], status: 'active', is_active: true, source: 'phase6d_fallback' },
+    { id: 'workshop_manager', name: 'مدير الورشة', displayName: 'مدير الورشة', role: 'workshop_manager', roleId: 'workshop_manager', groups: ['workshop.manager'], status: 'active', is_active: true, source: 'phase6d_fallback' },
+    { id: 'operator_user', name: 'مشغل الورشة', displayName: 'مشغل الورشة', role: 'operator_user', roleId: 'operator_user', groups: ['workshop.user'], status: 'active', is_active: true, source: 'phase6d_fallback' },
+    { id: 'employee_user', name: 'موظف', displayName: 'موظف', role: 'employee_user', roleId: 'employee_user', groups: [], status: 'active', is_active: true, source: 'phase6d_fallback' },
+    { id: 'viewer_user', name: 'مراقب قراءة', displayName: 'مراقب قراءة', role: 'viewer_user', roleId: 'viewer_user', groups: [], status: 'active', is_active: true, source: 'phase6d_fallback' }
+  ];
   const currentId = window.PentagonAuth?._currentUserId || sel.value || 'system';
-  const activeUsers = omni.users.filter(u => u.is_active !== false);
-  const rank = id => ({ system: 0, mgr_finance: 1, user_finance: 2, mgr_workshop: 3 }[id] ?? 50);
+  const sourceUsers = (omni && Array.isArray(omni.users) && omni.users.length) ? omni.users : fallbackUsers;
+  const activeUsers = sourceUsers.filter(u => u && u.is_active !== false && u.status !== 'inactive');
+  const rank = id => ({ system: 0, system_admin: 1, finance_manager: 2, workshop_manager: 3, operator_user: 4, employee_user: 5, viewer_user: 6, mgr_finance: 7, user_finance: 8, mgr_workshop: 9 }[id] ?? 50);
   const sorted = [...activeUsers].sort((a, b) => {
     const ra = rank(a.id);
     const rb = rank(b.id);
@@ -1145,9 +1362,12 @@ function refreshAuthUserSwitcher() {
   
   // 1. Sidebar Switcher
   sel.innerHTML = sorted
-    .map(u => `<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)} (${escapeHtml(u.id)})</option>`)
+    .map(u => {
+      const label = u.displayName || u.name || u.id;
+      return `<option value="${escapeHtml(u.id)}">${escapeHtml(label)}</option>`;
+    })
     .join('');
-  const fallback = sorted.find(u => u.id === 'system')?.id || sorted[0]?.id || 'system';
+  const fallback = sorted.find(u => u.id === 'system_admin')?.id || sorted.find(u => u.id === 'system')?.id || sorted[0]?.id || 'system';
   const nextId = sorted.some(u => u.id === currentId) ? currentId : fallback;
   sel.value = nextId;
   if (window.PentagonAuth && nextId && nextId !== window.PentagonAuth._currentUserId) {
@@ -1163,8 +1383,8 @@ function refreshAuthUserSwitcher() {
           <i class="fa-solid fa-user"></i>
         </div>
         <div style="flex:1;">
-          <div style="font-weight:600; font-size:14px; color:var(--text);">${escapeHtml(u.name)}</div>
-          <div style="font-size:11px; color:var(--text-muted);">${escapeHtml(u.id)}</div>
+          <div style="font-weight:600; font-size:14px; color:var(--text);">${escapeHtml(u.displayName || u.name || u.id)}</div>
+          <div style="font-size:11px; color:var(--text-muted);">${escapeHtml(({'system':'صلاحية كاملة','system_admin':'صلاحية كاملة','finance_manager':'إدارة المالية والحسابات','workshop_manager':'إدارة الورشة والإنتاج','operator_user':'تشغيل الورشة','employee_user':'وصول الموظف','viewer_user':'قراءة فقط','mgr_finance':'إدارة المالية','user_finance':'محاسب','mgr_workshop':'إدارة الورشة'})[u.id] || escapeHtml(u.displayName || u.name || ''))}</div>
         </div>
         <i class="fa-solid fa-chevron-left" style="font-size:10px; color:var(--text-muted);"></i>
       </button>
@@ -1203,6 +1423,35 @@ function checkLoginStatus() {
   }
 }
 
+function hideLoadingOverlay(reason = 'ready') {
+  if (typeof window.hideOctagonLoadingOverlay === 'function') {
+    window.hideOctagonLoadingOverlay(reason);
+    return;
+  }
+  const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
+  overlay.classList.add('hidden');
+  overlay.style.opacity = '0';
+  overlay.style.visibility = 'hidden';
+  overlay.style.pointerEvents = 'none';
+  setTimeout(() => {
+    if (overlay && overlay.parentNode) overlay.style.display = 'none';
+  }, 550);
+  window.__octagonLoadingHiddenReason = reason;
+}
+
+async function ensureOctagonLibrary(key, globalName, errorMessage) {
+  if (globalName && window[globalName]) return window[globalName];
+  if (typeof window.loadOctagonBootLib !== 'function') {
+    throw new Error(errorMessage || `Library loader unavailable: ${key}`);
+  }
+  const lib = await window.loadOctagonBootLib(key, globalName);
+  if (globalName && !window[globalName]) {
+    throw new Error(errorMessage || `Library unavailable: ${globalName}`);
+  }
+  return lib;
+}
+
 function performLogin(userId) {
   switchAuthUser(userId);
   const overlay = document.getElementById('loginOverlay');
@@ -1229,6 +1478,7 @@ function performLogout() {
 window.showLoginFromIntro = function () {
   const intro = document.getElementById('introScreen');
   const overlay = document.getElementById('loginOverlay');
+  refreshAuthUserSwitcher();
   if (intro) intro.style.display = 'none';
   if (overlay) overlay.style.display = 'flex';
 };
@@ -1303,7 +1553,7 @@ function switchPage(page) {
   currentPage = page;
   enforceUIPermissions();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   const mainContent = document.getElementById('mainContent');
   if (mainContent) {
     mainContent.scrollTop = 0;
@@ -1378,9 +1628,9 @@ function switchPage(page) {
   };
 
   const pageEl = document.getElementById(pageMap[page]);
-  const navEl = document.getElementById(navMap[page]);
+  const navEl = document.getElementById(navMap[page]) || document.querySelector(`.nav-btn[data-page="${page}"]`);
   if (pageEl) pageEl.classList.add('page-active');
-  if (navEl) navEl.classList.add('active');
+  if (navEl) { navEl.classList.add('active'); navEl.setAttribute('aria-current', 'page'); }
   ensureNavGroupForPage(page);
 
   if (page === 'calculator') refreshCalcEmpDropdown();
@@ -2375,7 +2625,7 @@ function renderV6FinanceOverview() {
         <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px">
           <div>
             <h3 class="section-title" style="margin:0">المالية V6</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">محرك account.move نشط · schema ${escapeHtml(db._schema_version || '-')} · tag ${escapeHtml(db._release_tag || '-')}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">محرك القيود المحاسبية نشط · المخطط ${escapeHtml(db._schema_version || '-')} · الإصدار ${escapeHtml(db._release_tag || '-')}</div>
           </div>
         </div>
         <div class="stats-grid" style="margin-bottom:12px">
@@ -2387,7 +2637,7 @@ function renderV6FinanceOverview() {
         <div style="display:flex;gap:10px;flex-wrap:wrap;color:var(--text-muted);font-size:12px">
           <span class="je-balance-chip">تاريخ الإقفال: ${escapeHtml(db._lock_date || 'غير محدد')}</span>
           <span class="je-balance-chip">الحركات القديمة محفوظة: ${(db.journal_entries || []).length}</span>
-          <span class="je-balance-chip">account_moves: ${(db.account_moves || []).length}</span>
+          <span class="je-balance-chip">القيود: ${(db.account_moves || []).length}</span>
         </div>
       </div>`;
   }).catch(error => {
@@ -3053,19 +3303,19 @@ function defaultOmniState() {
       spaces: [
         {
           id: 'space_ops',
-          name: 'Operations Space',
+          name: 'فضاء العمليات',
           departments: [
             {
               id: 'dep_workshop_ops',
-              name: 'Department: الورشة',
+              name: 'القسم: الورشة',
               sections: [
                 {
                   id: 'sec_production',
-                  name: 'Section: الإنتاج',
+                  name: 'المجموعة: الإنتاج',
                   taskTypes: [
                     {
                       id: 'type_job',
-                      name: 'Task Type: أمر تشغيل',
+                      name: 'نوع المهمة: أمر تشغيل',
                       tasks: [
                         { id: 'task_sample', title: 'تنفيذ واجهة محل', status: 'In Progress', priority: 'High', owner: 'فريق الورشة', dueDate: todayISO(), subtasks: [{ id: 'sub_1', title: 'قص المواد', done: true }, { id: 'sub_2', title: 'تجميع وتركيب', done: false }] }
                       ]
@@ -3085,7 +3335,14 @@ function defaultOmniState() {
   };
 }
 
+let isEnsuringOmni = false;
 function ensureOmni() {
+  if (isEnsuringOmni) {
+    if (!omni || typeof omni !== 'object') omni = {};
+    return omni;
+  }
+  isEnsuringOmni = true;
+  try {
   const defaults = defaultOmniState();
   if (!omni || typeof omni !== 'object') omni = {};
   omni.kanban = omni.kanban || defaults.kanban;
@@ -3140,7 +3397,88 @@ function ensureOmni() {
   normalizeOmniWorkOrders();
   normalizeInventoryDeepening();
   ensureOmniSurfaceExamples();
+  // One-time i18n migration: rename English seed data to Arabic
+  if (!omni.__i18nMigrated) {
+    const machMap = { 'Laser 120×90':'ليزر 120×90','Laser 100×80':'ليزر 100×80','Laser 125×250':'ليزر 125×250','CNC Router 125×250':'راوتر CNC 125×250','Fiber Galvo Marker':'ماركر ألياف ضوئية','3D Printer':'طابعة ثلاثية الأبعاد','Large Format Printer':'طابعة عريضة' };
+    (omni.machines || []).forEach(m => { if (machMap[m.name]) m.name = machMap[m.name]; });
+    const deptFix = s => s === 'Department: الورشة' ? 'القسم: الورشة' : s === 'Section: الإنتاج' ? 'المجموعة: الإنتاج' : s;
+    (omni.taskManager?.spaces || []).forEach(sp => (sp.departments || []).forEach(dep => {
+      dep.name = deptFix(dep.name);
+      (dep.sections || []).forEach(sec => {
+        sec.name = deptFix(sec.name);
+        (sec.taskTypes || []).forEach(tt => (tt.tasks || []).forEach(t => { if (t.department) t.department = deptFix(t.department); if (t.section) t.section = deptFix(t.section); }));
+      });
+    }));
+    (omni.kanban?.cards || []).forEach(c => { if (c.department) c.department = deptFix(c.department); });
+    omni.__i18nMigrated = true;
+  }
+  // v2 migration: rename task manager spaces (separate flag so it runs even if v1 was already saved)
+  if (!omni.__i18nMigrated2) {
+    const spaceNameMap = { 'Operations Space':'فضاء العمليات','إعادة التدوير (Recycling)':'إعادة التدوير','الإعلانات (Advertising)':'الإعلانات','الذكاء الصناعي (AI)':'الذكاء الاصطناعي','الطابعة (Printing)':'الطابعة','المجتمع (Community)':'المجتمع','المنتجات (Products)':'المنتجات','الهندسي (Engineering)':'الهندسة','إدارة الورشة (Workshop Management)':'إدارة الورشة','الأشخاص (People & HR)':'الأشخاص والموارد البشرية','مشاريع العملاء (Client Projects)':'مشاريع العملاء' };
+    (omni.taskManager?.spaces || []).forEach(sp => { if (spaceNameMap[sp.name]) sp.name = spaceNameMap[sp.name]; });
+    // Translate Backlog column
+    (omni.kanban?.columns || []).forEach(col => { if (col.title === 'Backlog') col.title = 'قيد الانتظار'; });
+    omni.__i18nMigrated2 = true;
+  }
+  // v3 migration: translate op-pack names/steps stored in localStorage
+  if (!omni.__i18nMigrated3) {
+    const packNameMap = { 'Acrylic LED Sign Production':'إنتاج لافتة أكريليك مضيئة','MDF Router Decoration':'ديكور راوتر على MDF','3D Print Job':'طباعة ثلاثية الأبعاد','Fiber Marking Job':'نقش ليزر ألياف ضوئية','Large Format Printing':'طباعة عريضة','Maintenance Pack':'باقة الصيانة الدورية','باقة تشغيل CNC Router لقطع وتشكيل MDF':'باقة تشغيل راوتر CNC لقطع وتشكيل MDF' };
+    const stepTitleMap = { 'تحضير Toolpath':'تحضير مسار الأداة','حجز CNC Router':'حجز راوتر CNC','تحضير Slice':'تحضير التقطيع','حجز Fiber Galvo':'حجز ماركر الألياف' };
+    (omni.opPacks || []).forEach(p => {
+      if (packNameMap[p.name]) p.name = packNameMap[p.name];
+      if (packNameMap[p.description]) p.description = packNameMap[p.description];
+      (p.steps || []).forEach(s => { if (stepTitleMap[s.title]) s.title = stepTitleMap[s.title]; });
+    });
+    omni.__i18nMigrated3 = true;
+  }
+  // v4 migration: translate MRP BOM product names
+  if (!omni.__i18nMigrated4) {
+    const bomNameMap = { 'Acrylic LED Sign Production':'إنتاج لافتة أكريليك مضيئة','MDF Router Decoration':'ديكور راوتر على MDF','3D Print Job':'طباعة ثلاثية الأبعاد','Fiber Marking Job':'نقش ليزر ألياف ضوئية','Large Format Printing':'طباعة عريضة','Maintenance Pack':'باقة الصيانة الدورية' };
+    (omni.boms || []).forEach(b => { if (bomNameMap[b.productName]) b.productName = bomNameMap[b.productName]; });
+    omni.__i18nMigrated4 = true;
+  }
+  // v5 migration: strip remaining "Department:", "Section:", "Task Type:" English prefixes and fix SOP titles
+  if (!omni.__i18nMigrated5) {
+    const fixPrefixed = s => {
+      if (!s) return s;
+      return s.replace(/^Department:\s*/i, 'القسم: ').replace(/^Section:\s*/i, 'المجموعة: ').replace(/^Task Type:\s*/i, 'نوع المهمة: ');
+    };
+    (omni.taskManager?.spaces || []).forEach(sp => {
+      (sp.departments || []).forEach(dep => {
+        dep.name = fixPrefixed(dep.name);
+        (dep.sections || []).forEach(sec => {
+          sec.name = fixPrefixed(sec.name);
+          (sec.taskTypes || []).forEach(tt => {
+            tt.name = fixPrefixed(tt.name);
+            (tt.tasks || []).forEach(t => { if (t.department) t.department = fixPrefixed(t.department); if (t.section) t.section = fixPrefixed(t.section); });
+          });
+        });
+      });
+    });
+    (omni.kanban?.cards || []).forEach(c => { if (c.department) c.department = fixPrefixed(c.department); if (c.section) c.section = fixPrefixed(c.section); });
+    (omni.jobOrders || []).forEach(j => { if (j.department) j.department = fixPrefixed(j.department); });
+    (omni.sops || []).forEach(s => { if (s.title) s.title = s.title.replace(/\s*-?\s*Brand Guidelines/gi, ''); });
+    omni.__i18nMigrated5 = true;
+  }
+  if (!omni.__i18nMigrated6) {
+    const fixPhone = p => typeof p === 'string' ? p.replace(/x{4,}/gi, '0000000') : p;
+    (omni.appointments?.bookings || []).forEach(b => { if (b.customerPhone) b.customerPhone = fixPhone(b.customerPhone); });
+    (omni.events?.registrations || []).forEach(r => { if (r.contact) r.contact = fixPhone(r.contact); });
+    (omni.loyalty?.members || []).forEach(m => { if (m.phone) m.phone = fixPhone(m.phone); });
+    (omni.visitors?.visits || []).forEach(v => { if (v.contact) v.contact = fixPhone(v.contact); });
+    (omni.peopleOps?.candidates || []).forEach(c => { if (c.phone) c.phone = fixPhone(c.phone); });
+    (omni.esign?.requests || []).forEach(r => { if (r.signerContact) r.signerContact = fixPhone(r.signerContact); });
+    (omni.qcRecords || []).forEach(q => {
+      if (q.machineId === 'm_laser_1') q.machineId = 'mach_laser_120';
+      if (q.machineId === 'm_oven_1') q.machineId = '';
+    });
+    omni.__i18nMigrated6 = true;
+    saveData();
+  }
   return omni;
+  } finally {
+    isEnsuringOmni = false;
+  }
 }
 
 function countTaskManagerTasksInSpace(space) {
@@ -3250,16 +3588,16 @@ function seedCompanyStructure() {
   
   // 1. Task Manager Spaces
   const newSpaces = [
-    { id: makeId('space'), name: 'إعادة التدوير (Recycling)', departments: [{ id: makeId('dep'), name: 'عمليات', sections: []}, { id: makeId('dep'), name: 'جودة', sections: []}] },
-    { id: makeId('space'), name: 'الإعلانات (Advertising)', departments: [{ id: makeId('dep'), name: 'حملات', sections: []}, { id: makeId('dep'), name: 'تصميم', sections: []}] },
-    { id: makeId('space'), name: 'الذكاء الصناعي (AI)', departments: [{ id: makeId('dep'), name: 'تطوير', sections: []}] },
-    { id: makeId('space'), name: 'الطابعة (Printing)', departments: [{ id: makeId('dep'), name: 'تحضير', sections: []}, { id: makeId('dep'), name: 'طباعة', sections: []}, { id: makeId('dep'), name: 'تغليف', sections: []}] },
-    { id: makeId('space'), name: 'المجتمع (Community)', departments: [{ id: makeId('dep'), name: 'مبادرات', sections: []}] },
-    { id: makeId('space'), name: 'المنتجات (Products)', departments: [{ id: makeId('dep'), name: 'أبحاث', sections: []}, { id: makeId('dep'), name: 'تصنيع', sections: []}] },
-    { id: makeId('space'), name: 'الهندسي (Engineering)', departments: [{ id: makeId('dep'), name: 'تصميم CAD', sections: []}, { id: makeId('dep'), name: 'تصنيع CNC', sections: []}] },
-    { id: makeId('space'), name: 'إدارة الورشة (Workshop Management)', departments: [{ id: makeId('dep'), name: 'استراتيجية', sections: []}, { id: makeId('dep'), name: 'أرشيف', sections: []}] },
-    { id: makeId('space'), name: 'الأشخاص (People & HR)', departments: [{ id: makeId('dep'), name: 'موظفين', sections: []}, { id: makeId('dep'), name: 'شركاء', sections: []}] },
-    { id: makeId('space'), name: 'مشاريع العملاء (Client Projects)', departments: [{ id: makeId('dep'), name: 'نشط', sections: []}, { id: makeId('dep'), name: 'مقترح', sections: []}, { id: makeId('dep'), name: 'مكتمل', sections: []}] }
+    { id: makeId('space'), name: 'إعادة التدوير', departments: [{ id: makeId('dep'), name: 'عمليات', sections: []}, { id: makeId('dep'), name: 'جودة', sections: []}] },
+    { id: makeId('space'), name: 'الإعلانات', departments: [{ id: makeId('dep'), name: 'حملات', sections: []}, { id: makeId('dep'), name: 'تصميم', sections: []}] },
+    { id: makeId('space'), name: 'الذكاء الاصطناعي', departments: [{ id: makeId('dep'), name: 'تطوير', sections: []}] },
+    { id: makeId('space'), name: 'الطابعة', departments: [{ id: makeId('dep'), name: 'تحضير', sections: []}, { id: makeId('dep'), name: 'طباعة', sections: []}, { id: makeId('dep'), name: 'تغليف', sections: []}] },
+    { id: makeId('space'), name: 'المجتمع', departments: [{ id: makeId('dep'), name: 'مبادرات', sections: []}] },
+    { id: makeId('space'), name: 'المنتجات', departments: [{ id: makeId('dep'), name: 'أبحاث', sections: []}, { id: makeId('dep'), name: 'تصنيع', sections: []}] },
+    { id: makeId('space'), name: 'الهندسة', departments: [{ id: makeId('dep'), name: 'تصميم هندسي', sections: []}, { id: makeId('dep'), name: 'تصنيع رقمي', sections: []}] },
+    { id: makeId('space'), name: 'إدارة الورشة', departments: [{ id: makeId('dep'), name: 'استراتيجية', sections: []}, { id: makeId('dep'), name: 'أرشيف', sections: []}] },
+    { id: makeId('space'), name: 'الأشخاص والموارد البشرية', departments: [{ id: makeId('dep'), name: 'موظفين', sections: []}, { id: makeId('dep'), name: 'شركاء', sections: []}] },
+    { id: makeId('space'), name: 'مشاريع العملاء', departments: [{ id: makeId('dep'), name: 'نشط', sections: []}, { id: makeId('dep'), name: 'مقترح', sections: []}, { id: makeId('dep'), name: 'مكتمل', sections: []}] }
   ];
   
   if (!omni.taskManager) omni.taskManager = { spaces: [] };
@@ -3270,7 +3608,7 @@ function seedCompanyStructure() {
   
   // 2. SOP Hub stubs
   const newSops = [
-    { id: makeId('sop'), title: 'دليل هوية الورشة - Brand Guidelines', type: 'Strategy', owner: 'إدارة الورشة', text: 'شعار الورشة، الألوان، الرؤية والرسالة.' },
+    { id: makeId('sop'), title: 'دليل هوية الورشة', type: 'Strategy', owner: 'إدارة الورشة', text: 'شعار الورشة، الألوان، الرؤية والرسالة.' },
     { id: makeId('sop'), title: 'دليل التشغيل للطباعة', type: 'Operations', owner: 'الطابعة', text: 'خطوات ما قبل الطباعة (Pre-press)، إعداد الماكينة، والمراقبة.' },
     { id: makeId('sop'), title: 'دليل جودة التصنيع الهندسي', type: 'Operations', owner: 'الهندسي', text: 'فحص الحواف، الأبعاد، والتجميع النهائي.' }
   ];
@@ -3359,30 +3697,100 @@ function normalizeOmniNotifications() {
 function normalizeOmniUsersRolesPermissions() {
   if (!Array.isArray(omni.users)) omni.users = [];
   if (!Array.isArray(omni.roles)) omni.roles = [];
+  if (!Array.isArray(omni.userRoles)) omni.userRoles = [];
   if (!omni.permissions || typeof omni.permissions !== 'object' || Array.isArray(omni.permissions)) omni.permissions = {};
+  const now = new Date().toISOString();
+  const activeProfile = (() => {
+    try {
+      if (typeof getActiveOrgProfile === 'function') return getActiveOrgProfile() || {};
+    } catch (_) {}
+    const org = omni.adminSettings?.organization || {};
+    const companies = Array.isArray(org.companies) ? org.companies : [];
+    const company = companies.find(c => c.id === org.activeCompanyId) || companies.find(c => c.isPrimary) || companies[0] || {};
+    return { companyId: company.id || org.activeCompanyId || '', companyName: company.name || org.name || '' };
+  })();
   const defaults = [
     { id: 'manager', name: 'مدير', permissions: ['all'] },
     { id: 'employee', name: 'موظف', permissions: ['employee_ui', 'create_request', 'view_own_requests'] },
-    { id: 'operator', name: 'مشغل', permissions: ['kanban_view', 'task_update', 'qc_view'] }
+    { id: 'operator', name: 'مشغل', permissions: ['kanban_view', 'task_update', 'qc_view'] },
+    { id: 'system_admin', name: 'مدير النظام', groups: ['system.admin'], permissions: ['all'], source: 'phase6d_seed' },
+    { id: 'finance_manager', name: 'مدير المالية', groups: ['finance.manager'], permissions: ['finance_manage', 'approval_route', 'coa_manage_safe'], source: 'phase6d_seed' },
+    { id: 'workshop_manager', name: 'مدير الورشة', groups: ['workshop.manager'], permissions: ['workshop_manage', 'inventory_manage', 'approval_route'], source: 'phase6d_seed' },
+    { id: 'operator_user', name: 'مشغل', groups: ['workshop.user'], permissions: ['kanban_view', 'task_update', 'inventory_transfer'], source: 'phase6d_seed' },
+    { id: 'employee_user', name: 'موظف', groups: [], permissions: ['employee_ui', 'create_request', 'view_own_requests'], source: 'phase6d_seed' },
+    { id: 'viewer_user', name: 'مراقب قراءة', groups: [], permissions: ['read_only'], source: 'phase6d_seed' }
   ];
   defaults.forEach(role => {
     const existing = omni.roles.find(r => r.id === role.id);
     if (existing) {
       existing.name = existing.name || role.name;
       if (!Array.isArray(existing.permissions)) existing.permissions = role.permissions.slice();
+      if (!Array.isArray(existing.groups) && Array.isArray(role.groups)) existing.groups = role.groups.slice();
+      existing.source = existing.source || role.source || 'legacy';
     } else {
-      omni.roles.push({ ...role, permissions: role.permissions.slice() });
+      omni.roles.push({ ...role, permissions: role.permissions.slice(), groups: Array.isArray(role.groups) ? role.groups.slice() : [] });
     }
     if (!Array.isArray(omni.permissions[role.id])) omni.permissions[role.id] = role.permissions.slice();
   });
+  const phase6dUsers = [
+    { id: 'system_admin', displayName: 'مدير النظام', role: 'system_admin', roleId: 'system_admin', groups: ['system.admin'] },
+    { id: 'finance_manager', displayName: 'مدير المالية', role: 'finance_manager', roleId: 'finance_manager', groups: ['finance.manager'] },
+    { id: 'workshop_manager', displayName: 'مدير الورشة', role: 'workshop_manager', roleId: 'workshop_manager', groups: ['workshop.manager'] },
+    { id: 'operator_user', displayName: 'مشغل الورشة', role: 'operator_user', roleId: 'operator_user', groups: ['workshop.user'] },
+    { id: 'employee_user', displayName: 'موظف', role: 'employee_user', roleId: 'employee_user', groups: [] },
+    { id: 'viewer_user', displayName: 'مراقب قراءة', role: 'viewer_user', roleId: 'viewer_user', groups: [] }
+  ];
+  phase6dUsers.forEach(seed => {
+    const existing = omni.users.find(u => u.id === seed.id);
+    if (existing) {
+      existing.displayName = existing.displayName || existing.name || seed.displayName;
+      existing.name = existing.name || existing.displayName || seed.displayName;
+      existing.role = existing.role || seed.role;
+      existing.roleId = existing.roleId || seed.roleId;
+      if (!Array.isArray(existing.groups)) existing.groups = seed.groups.slice();
+      existing.status = existing.status || 'active';
+      if (existing.is_active === undefined) existing.is_active = existing.status !== 'inactive';
+      existing.companyId = existing.companyId || activeProfile.companyId || '';
+      existing.tenantId = existing.tenantId || activeProfile.companyId || '';
+      existing.companyName = existing.companyName || activeProfile.companyName || '';
+      existing.source = existing.source || 'phase6d_seed';
+      existing.createdAt = existing.createdAt || now;
+    } else {
+      omni.users.push({
+        ...seed,
+        name: seed.displayName,
+        status: 'active',
+        is_active: true,
+        companyId: activeProfile.companyId || '',
+        tenantId: activeProfile.companyId || '',
+        companyName: activeProfile.companyName || '',
+        createdAt: now,
+        source: 'phase6d_seed',
+        permissions: []
+      });
+    }
+    if (!omni.userRoles.some(link => link.userId === seed.id && link.roleId === seed.roleId)) {
+      omni.userRoles.push({ userId: seed.id, roleId: seed.roleId, source: 'phase6d_seed', createdAt: now });
+    }
+  });
   omni.users.forEach(user => {
     if (!user.id) user.id = makeId('user');
-    if (!user.name) user.name = 'مستخدم';
+    if (!user.displayName && user.name) user.displayName = user.name;
+    if (!user.name) user.name = user.displayName || 'مستخدم';
     if (!user.roleId) user.roleId = 'employee';
+    if (!user.role) user.role = user.roleId;
     if (!Array.isArray(user.permissions)) user.permissions = [];
+    if (!Array.isArray(user.groups)) {
+      const role = omni.roles.find(r => r.id === user.roleId || r.id === user.role);
+      user.groups = Array.isArray(role?.groups) ? role.groups.slice() : [];
+    }
     if (!user.status) user.status = 'active';
+    if (user.is_active === undefined) user.is_active = user.status !== 'inactive';
+    if (!user.createdAt) user.createdAt = now;
+    if (!user.source) user.source = 'legacy';
   });
   if (!omni.migrationsApplied.includes('omni_permissions_foundation_v1')) omni.migrationsApplied.push('omni_permissions_foundation_v1');
+  if (!omni.migrationsApplied.includes('phase6d_real_users_foundation_v1')) omni.migrationsApplied.push('phase6d_real_users_foundation_v1');
 }
 
 function normalizeOmniSystemLog() {
@@ -3852,6 +4260,10 @@ function getUnreadNotifications() {
   ensureOmni();
   return (omni.notifications || []).filter(n => n.status === 'unread');
 }
+window.getUnreadNotifications = getUnreadNotifications;
+window.getOctagonUnreadNotificationCount = function getOctagonUnreadNotificationCount() {
+  return getUnreadNotifications().length;
+};
 
 function markOmniNotificationRead(notificationId) {
   ensureOmni();
@@ -3914,6 +4326,7 @@ function renderOmniNotificationBell() {
   if (!host) return;
   ensureOmni();
   const unread = getUnreadNotifications().length;
+  window.__octagonUnreadNotificationCount = unread;
   host.innerHTML = `
     <button class="omni-notification-bell ${unread ? 'has-unread' : ''}" onclick="toggleOmniNotificationDropdown(event)" title="الإشعارات">
       <i class="fa-solid fa-bell"></i>
@@ -3922,6 +4335,8 @@ function renderOmniNotificationBell() {
     <div id="omniNotificationDropdown" class="omni-notification-dropdown ${omniNotificationDropdownOpen ? 'open' : ''}"></div>
   `;
   renderOmniNotificationDropdown();
+  window.ptxAIAssistant?.refreshBadge?.();
+  window.dispatchEvent(new CustomEvent('octagon:notifications-updated', { detail: { unread } }));
 }
 
 function toggleOmniNotificationDropdown(event) {
@@ -4575,7 +4990,7 @@ function renderCommandCenterRequests(activeType = 'all') {
 
           <div class="cc-request-meta" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.03); padding-top: 8px;">
             <span>الطالب: <strong>${escapeHtml(req.requesterName || 'النظام')}</strong></span>
-            <span>المصدر: ${escapeHtml(req.sourcePage || '-')}</span>
+            <span>المصدر: ${escapeHtml(_pageKeyAr[req.sourcePage] || req.sourcePage || '-')}</span>
             <span>تاريخ الطلب: ${formatOmniDateTime(req.createdAt)}</span>
             <span>الأولوية: ${escapeHtml(getOmniPriorityLabel(req.priority))}</span>
           </div>
@@ -4854,6 +5269,7 @@ function applyApprovedOmniRequest(requestId, options = {}) {
     const eventData = req.payload?.eventData;
     const proposalSummary = `تحليل ذكي تلقائي ناتج عن حدث [${eventType}] بواسطة القاعدة [${rule?.name || ruleId}]. البيانات: ${JSON.stringify(eventData || {})}`;
     const ai = getAiControl();
+    const aiCtx = getAiCurrentUserContext();
     const proposal = {
       id: makeId('aiprop'),
       actionId: 'trigger_ai_analysis',
@@ -4864,7 +5280,12 @@ function applyApprovedOmniRequest(requestId, options = {}) {
       status: 'pending',
       summary: proposalSummary,
       affectedRecords: 1,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      requestedBy: aiCtx.name,
+      requestedById: aiCtx.id,
+      requestedByRole: aiCtx.role,
+      source: 'automation_ai_analysis',
+      payload: { userId: aiCtx.id, userName: aiCtx.name, userRole: aiCtx.role, source: 'automation_ai_analysis', ruleId, eventType, eventData }
     };
     ai.actionQueue.unshift(proposal);
     addAiRunHistory({ actionId: 'trigger_ai_analysis', title: proposal.title, status: 'queued', note: 'AI Analysis triggered and proposal added to AI action queue.' });
@@ -9106,9 +9527,16 @@ function printTimesheetForSelectedMonth() {
   w.document.close();
 }
 
-function exportPayrollPdf() {
+async function exportPayrollPdf() {
   if (employees.length === 0 || !employees[reportEmpIdx]) {
     showToast('لا توجد بيانات للطباعة', 'error');
+    return;
+  }
+  try {
+    await ensureOctagonLibrary('html2pdf', 'html2pdf', 'PDF export library unavailable');
+  } catch (err) {
+    console.error('PDF library load failed:', err);
+    showToast('تعذر تحميل مكتبة تصدير PDF. تأكد من الاتصال ثم جرب مرة أخرى.', 'error');
     return;
   }
 
@@ -9352,6 +9780,14 @@ let _serverDownWarned = false;
 let _lastFileSaveOk = true;
 
 function saveData(skipAutomation = false) {
+  // Guard: never persist before the initial loadData() has completed at least once.
+  // A race where any save fires DURING the loadData() await posts the default/empty
+  // finance+omni over the server, wiping real data (customers/modules) on every reload.
+  // employees were already protected server-side; this protects finance+omni client-side.
+  if (!window.__dataLoadComplete) {
+    console.warn('[saveData] skipped — initial data load not complete yet (prevents reload data-wipe).');
+    return;
+  }
   try {
     if (!skipAutomation && window.omni) runOmniAutomationTick();
     // Record last save timestamp so the Admin Panel's System Health card can display it.
@@ -9723,6 +10159,14 @@ async function uploadTimesheet() {
   const file = fileInput?.files?.[0];
   if (!file) { showToast('⚠️ اختر ملف أولاً', 'warning'); return; }
   
+  try {
+    await ensureOctagonLibrary('xlsx', 'XLSX', 'Excel import library unavailable');
+  } catch (err) {
+    console.error('XLSX library load failed:', err);
+    showToast('تعذر تحميل مكتبة Excel. تأكد من الاتصال ثم جرب مرة أخرى.', 'error');
+    return;
+  }
+
   const nameArea = document.getElementById('selectedFileName');
   if (nameArea) {
     nameArea.textContent = `الملف المختار: ${file.name}`;
@@ -10967,11 +11411,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   // 1. Initial Setup
   initTheme();
   bindSidebarNavigation();
+  rebuildSidebarNavigation();
   const switcher = document.getElementById('authUserSwitcher');
   if (switcher && window.PentagonAuth) {
     switcher.value = window.PentagonAuth._currentUserId;
   }
   await loadData();
+  window.__dataLoadComplete = true; // unlock saveData() now that real data is loaded
   ensureFinance();
   if (!finance.customers || finance.customers.length === 0) {
     finance.customers = [{
@@ -11026,6 +11472,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const response = await fetch('merged_attendance_biometric.xlsx');
       if (!response.ok) throw new Error('not found');
       const buffer = await response.arrayBuffer();
+      await ensureOctagonLibrary('xlsx', 'XLSX', 'Excel import library unavailable');
       await processExcelBuffer(buffer);
       showToast('تم تحديث البيانات تلقائياً من ملف البصمة', 'success');
     } catch (e) {
@@ -11051,8 +11498,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // 6. Cleanup
   setTimeout(() => {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.classList.add('hidden');
+    hideLoadingOverlay('init-success');
     console.log('✨ System Ready');
   }, 500);
 
@@ -11062,6 +11508,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // 8. Claude/Codex Review Pointer — auto-navigate to the section the AI flagged for review
   // (dismissable via "تم الفحص" button; appears BELOW the status strip when active).
   checkClaudeReviewPointer();
+  setTimeout(ensureAIChatLauncherFromApp, 650);
   } catch (error) {
     console.error('Octagon startup interrupted:', error);
     try {
@@ -11069,8 +11516,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch (toastError) {}
   } finally {
     setTimeout(() => {
-      const overlay = document.getElementById('loadingOverlay');
-      if (overlay) overlay.classList.add('hidden');
+      hideLoadingOverlay('init-finally');
       console.log('System Ready');
     }, 500);
   }
@@ -11555,14 +12001,14 @@ function renderKanbanToolbar() {
   return `
     <div class="kanban-board-toolbar">
       <div class="kanban-view-tabs">
-        <button class="${kanbanViewMode === 'board' ? 'active' : ''}" onclick="setKanbanViewMode('board')"><i class="fa-solid fa-table-columns"></i> Board</button>
-        <button class="${kanbanViewMode === 'list' ? 'active' : ''}" onclick="setKanbanViewMode('list')"><i class="fa-solid fa-list"></i> List</button>
-        <button class="${kanbanViewMode === 'workload' ? 'active' : ''}" onclick="setKanbanViewMode('workload')"><i class="fa-solid fa-chart-simple"></i> Workload</button>
+        <button class="${kanbanViewMode === 'board' ? 'active' : ''}" onclick="setKanbanViewMode('board')"><i class="fa-solid fa-table-columns"></i> لوحة</button>
+        <button class="${kanbanViewMode === 'list' ? 'active' : ''}" onclick="setKanbanViewMode('list')"><i class="fa-solid fa-list"></i> قائمة</button>
+        <button class="${kanbanViewMode === 'workload' ? 'active' : ''}" onclick="setKanbanViewMode('workload')"><i class="fa-solid fa-chart-simple"></i> عبء العمل</button>
       </div>
       <div class="kanban-filter-grid">
         <input class="kanban-filter-control" value="${escapeHtml(kanbanFilters.search)}" placeholder="بحث" oninput="updateKanbanFilters({search:this.value})">
         <select class="kanban-filter-control" onchange="updateKanbanFilters({assigneeId:this.value})">${option('all', 'كل المسؤولين', kanbanFilters.assigneeId)}${assignees.map(([id, name]) => option(id, name, kanbanFilters.assigneeId)).join('')}</select>
-        <select class="kanban-filter-control" onchange="updateKanbanFilters({priority:this.value})">${option('all', 'كل الأولويات', kanbanFilters.priority)}${['Urgent','High','Normal','Low'].map(p => option(p, p, kanbanFilters.priority)).join('')}</select>
+        <select class="kanban-filter-control" onchange="updateKanbanFilters({priority:this.value})">${option('all', 'كل الأولويات', kanbanFilters.priority)}${[['Urgent','عاجل'],['High','عالي'],['Normal','عادي'],['Low','منخفض']].map(([v,l]) => option(v, l, kanbanFilters.priority)).join('')}</select>
         <select class="kanban-filter-control" onchange="updateKanbanFilters({department:this.value})">${option('all', 'كل الأقسام', kanbanFilters.department)}${departments.map(d => option(d, d, kanbanFilters.department)).join('')}</select>
         <select class="kanban-filter-control" onchange="updateKanbanFilters({machineId:this.value})">${option('all', 'كل المكائن', kanbanFilters.machineId)}${machines.map(m => option(m.id, m.name || m.id, kanbanFilters.machineId)).join('')}</select>
         <select class="kanban-filter-control" onchange="updateKanbanFilters({status:this.value})">${option('all', 'كل الحالات', kanbanFilters.status)}${columns.map(c => option(c.id, c.title || c.name || c.id, kanbanFilters.status)).join('')}</select>
@@ -11628,7 +12074,7 @@ function renderLoadChip(item, type) {
       <span class="kanban-load-title">${escapeHtml(item.name)}</span>
       <span class="kanban-load-meta">${count} مفتوحة · ${item.overdueCards || 0} متأخرة</span>
       <span class="kanban-load-bar"><i style="width:${Math.min(100, score)}%;background:${status.color || (item.unavailable ? '#f87171' : '#38bdf8')}"></i></span>
-      <small style="color:${status.color || '#cbd5e1'}">${escapeHtml(status.label || item.status || '')}</small>
+      <small style="color:${status.color || '#cbd5e1'}">${escapeHtml(status.label || translateMachineStatus(item.status) || '')}</small>
     </button>`;
 }
 
@@ -11640,7 +12086,7 @@ function renderKanbanWorkloadPanel() {
     <div class="kanban-workload-panel">
       <section><h3>ضغط الأقسام</h3><div class="kanban-load-row">${departments.map(d => renderLoadChip(d, 'department')).join('') || '<div class="kanban-empty-inline">لا توجد بطاقات هنا حالياً</div>'}</div></section>
       <section><h3>ضغط الموظفين</h3><div class="kanban-load-row">${employeesLoad.map(e => renderLoadChip(e, 'employee')).join('') || '<div class="kanban-empty-inline">لا توجد مهام مسندة</div>'}</div></section>
-      <section><h3>ضغط المكائن</h3><div class="kanban-load-row">${machines.map(m => renderLoadChip({ ...m, name: m.name, openCards: m.linkedCards, overdueCards: m.queueLength, status: { label: m.unavailable ? 'صيانة / متوقفة' : m.status, color: m.unavailable ? '#f87171' : '#38bdf8' } }, 'machine')).join('') || '<div class="kanban-empty-inline">لم يتم تحديد ماكينة لهذه البطاقة</div>'}</div></section>
+      <section><h3>ضغط المكائن</h3><div class="kanban-load-row">${machines.map(m => renderLoadChip({ ...m, name: m.name, openCards: m.linkedCards, overdueCards: m.queueLength, status: { label: m.unavailable ? 'صيانة / متوقفة' : translateMachineStatus(m.status), color: m.unavailable ? '#f87171' : '#38bdf8' } }, 'machine')).join('') || '<div class="kanban-empty-inline">لم يتم تحديد ماكينة لهذه البطاقة</div>'}</div></section>
     </div>`;
 }
 
@@ -11791,7 +12237,7 @@ function renderKanbanCardV2(card) {
     <div class="kanban-card-v2 omni-kanban-card ${dueClass} kanban-risk-${risk.level} kanban-card-color-${cardColor}" style="${getKanbanCardStyleVars(card)}" draggable="true" ondragstart="omniDragCard(event, '${card.id}')" ondragend="this.classList.remove('kanban-card-dragging')" onclick="openKanbanCardInspector('${card.id}')">
       <span class="kanban-card-accent"></span>
       <div class="kanban-card-header-v2">
-        <span class="card-priority ${priorityClass(card.priority)}">${escapeHtml(card.priority || 'Normal')}</span>
+        <span class="card-priority ${priorityClass(card.priority)}">${escapeHtml(translatePriority(card.priority || 'Normal'))}</span>
         <span class="kanban-risk-badge kanban-risk-${risk.level}">${risk.label}</span>
       </div>
       ${card.clientName ? `<div class="card-client"><i class="fa-solid fa-building"></i> ${escapeHtml(card.clientName)}</div>` : ''}
@@ -11841,7 +12287,7 @@ function renderKanbanListView() {
                 <td>${escapeHtml(col?.title || '-')}</td>
                 <td>${escapeHtml(getCardAssigneeName(card))}</td>
                 <td>${escapeHtml(getKanbanDepartmentName(card))}</td>
-                <td><span class="${priorityClass(card.priority)}">${escapeHtml(card.priority || 'Normal')}</span></td>
+                <td><span class="${priorityClass(card.priority)}">${escapeHtml(translatePriority(card.priority || 'Normal'))}</span></td>
                 <td><span class="kanban-risk-badge kanban-risk-${risk.level}">${risk.label}</span></td>
                 <td>${escapeHtml(card.dueDate || '-')}</td>
                 <td>${calculateCardReadiness(card).percent}%</td>
@@ -12158,7 +12604,7 @@ function openKanbanCardInspector(cardId) {
       body.innerHTML = `
         <div class="kanban-inspector-header-v2">
           <div>
-            <span class="cc-source-label">Kanban Executive Board V2</span>
+            <span class="cc-source-label">اللوحة التنفيذية</span>
             <h3>${escapeHtml(card.title || '-')}</h3>
             <p>${escapeHtml(card.description || 'لا يوجد وصف مختصر بعد')}</p>
           </div>
@@ -12241,7 +12687,7 @@ function openKanbanCardInspector(cardId) {
       const machineOptions = (omni.machines || []).map(m => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.status || '-')})</option>`).join('');
       body.innerHTML = `
         <div class="insp-section"><h4>المكائن المطلوبة (${machines.length})</h4>
-        ${machines.map(m => `<div class="insp-linked-item"><b>${m.name}</b><small>${m.status} · طابور: ${getMachineQueueCount(m)} · ${m.operator}</small></div>`).join('') || '<p>لا ماكينة مرتبطة</p>'}
+        ${machines.map(m => `<div class="insp-linked-item"><b>${m.name}</b><small>${translateMachineStatus(m.status)} · طابور: ${getMachineQueueCount(m)} · ${m.operator}</small></div>`).join('') || '<p>لا ماكينة مرتبطة</p>'}
           ${machineOptions ? `<div class="kanban-inline-linker"><select class="kanban-inline-control" id="kanbanMachineSelect_${card.id}"><option value="">اختر ماكينة</option>${machineOptions}</select><button class="btn-primary" onclick="linkMachineToCardDirect('${card.id}', document.getElementById('kanbanMachineSelect_${card.id}').value)"><i class="fa-solid fa-link"></i> ربط ماكينة</button></div>` : '<div class="cc-empty">لا توجد مكائن محفوظة بعد. افتح صفحة المكائن لإضافتها.</div>'}
           <div style="margin-top:10px"><button class="btn-ghost" onclick="linkMachineToCard('${card.id}')"><i class="fa-solid fa-keyboard"></i> إدخال يدوي احتياطي</button></div>
         </div>
@@ -13109,7 +13555,7 @@ function renderWorkflowLinksTab(node) {
       <label>باقة عمليات<select class="workflow-insp-input" onchange="workflowNodeSelectChanged('${node.id}', 'linkedOperationPackId', this.value, 'تم ربط باقة عمليات')">
         <option value="">بدون باقة عمليات</option>${(omni.opPacks || []).map(p => `<option value="${p.id}" ${node.linkedOperationPackId === p.id ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('')}
       </select></label>
-      <label>بطاقة Kanban<select class="workflow-insp-input" onchange="workflowNodeSelectChanged('${node.id}', 'linkedCardId', this.value, 'تم ربط بطاقة Kanban')">
+      <label>بطاقة اللوحة<select class="workflow-insp-input" onchange="workflowNodeSelectChanged('${node.id}', 'linkedCardId', this.value, 'تم ربط بطاقة اللوحة')">
         <option value="">بدون بطاقة</option>${(omni.kanban?.cards || []).map(c => `<option value="${c.id}" ${node.linkedCardId === c.id ? 'selected' : ''}>${escapeHtml(c.title)}</option>`).join('')}
       </select></label>
       <label>سجل QC<select class="workflow-insp-input" onchange="workflowNodeSelectChanged('${node.id}', 'linkedQcRecordId', this.value, 'تم ربط سجل QC')">
@@ -13121,7 +13567,7 @@ function renderWorkflowLinksTab(node) {
       <p>SOP: ${escapeHtml(getSopById(node.linkedSopId)?.title || '-')}</p>
       <p>الماكينة: ${escapeHtml(getMachineById(node.linkedMachineId)?.name || '-')}</p>
       <p>باقة العمليات: ${escapeHtml(getOperationPackById(node.linkedOperationPackId)?.name || '-')}</p>
-      <p>بطاقة Kanban: ${escapeHtml((omni.kanban?.cards || []).find(c => c.id === node.linkedCardId)?.title || '-')}</p>
+      <p>بطاقة اللوحة: ${escapeHtml((omni.kanban?.cards || []).find(c => c.id === node.linkedCardId)?.title || '-')}</p>
     </div>
   `;
 }
@@ -13131,7 +13577,7 @@ function getWorkflowNodeRelations(node) {
     node.linkedSopId && { type: 'sop', id: node.linkedSopId, title: getSopById(node.linkedSopId)?.title || node.linkedSopId, label: 'SOP' },
     node.linkedMachineId && { type: 'machine', id: node.linkedMachineId, title: getMachineById(node.linkedMachineId)?.name || node.linkedMachineId, label: 'ماكينة' },
     node.linkedOperationPackId && { type: 'op_pack', id: node.linkedOperationPackId, title: getOperationPackById(node.linkedOperationPackId)?.name || node.linkedOperationPackId, label: 'باقة عمليات' },
-    node.linkedCardId && { type: 'kanban_card', id: node.linkedCardId, title: (omni.kanban?.cards || []).find(c => c.id === node.linkedCardId)?.title || node.linkedCardId, label: 'بطاقة Kanban' },
+    node.linkedCardId && { type: 'kanban_card', id: node.linkedCardId, title: (omni.kanban?.cards || []).find(c => c.id === node.linkedCardId)?.title || node.linkedCardId, label: 'بطاقة اللوحة' },
     node.linkedQcRecordId && { type: 'qc_record', id: node.linkedQcRecordId, title: getQcRecordById(node.linkedQcRecordId)?.type || node.linkedQcRecordId, label: 'QC' },
     node.orderId && { type: 'order', id: node.orderId, title: getOrderById(node.orderId)?.title || node.orderId, label: 'طلب' },
     ...(node.materialRequirements || []).map(req => ({ type: 'material', id: req.materialId, title: getMaterialById(req.materialId)?.name || req.materialId, label: 'مادة' }))
@@ -13221,7 +13667,7 @@ function renderWorkflowSimulationTab() {
     </div>
     <div class="insp-section"><h4>المواد</h4>${result.materials.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>مطلوب ${m.qty} ${escapeHtml(m.unit)} / متاح ${m.available}</small></div>`).join('') || '<p>لا توجد مواد مطلوبة</p>'}</div>
     <div class="insp-section"><h4>مواد ناقصة</h4>${result.missingMaterials.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>مطلوب ${m.qty} / متاح ${m.available}</small></div>`).join('') || '<p>لا يوجد نقص مواد</p>'}</div>
-    <div class="insp-section"><h4>المكائن</h4>${result.machines.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>${escapeHtml(m.status)} / طابور ${getMachineQueueCount(m)}</small></div>`).join('') || '<p>لا توجد مكائن مطلوبة</p>'}</div>
+    <div class="insp-section"><h4>المكائن</h4>${result.machines.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>${escapeHtml(translateMachineStatus(m.status))} / طابور ${getMachineQueueCount(m)}</small></div>`).join('') || '<p>لا توجد مكائن مطلوبة</p>'}</div>
     <div class="insp-section"><h4>SOPs</h4>${result.sops.map(s => `<div class="insp-linked-item"><b>${escapeHtml(s.title)}</b><small>${escapeHtml(s.code || '')}</small></div>`).join('') || '<p>No SOPs linked</p>'}</div>
     <div class="insp-section"><h4>تحذيرات</h4>${result.routingWarnings.map(w => `<div class="insp-linked-item"><b>${escapeHtml(w.text || w.type)}</b></div>`).join('') || '<p>لا توجد تحذيرات مسار</p>'}</div>
     <div class="insp-actions"><button class="btn-primary" onclick="runWorkflowSimulation()"><i class="fa-solid fa-play"></i> اختبار وفحص العملية</button></div>
@@ -13350,7 +13796,7 @@ function renderWorkflowExecutionPreview(preview) {
       </div>
 
       <div class="insp-section"><h4>SOPs المطلوبة</h4>${preview.sops.map(s => `<div class="insp-linked-item"><b>${escapeHtml(s.title)}</b><small>${escapeHtml(s.code || '')}</small></div>`).join('') || '<p>لا توجد SOPs مرتبطة</p>'}</div>
-      <div class="insp-section"><h4>المكائن المطلوبة</h4>${preview.machines.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>${escapeHtml(m.status || '')} · طابور ${getMachineQueueCount(m)}</small></div>`).join('') || '<p>لا توجد مكائن مرتبطة</p>'}</div>
+      <div class="insp-section"><h4>المكائن المطلوبة</h4>${preview.machines.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>${escapeHtml(translateMachineStatus(m.status || ''))} · طابور ${getMachineQueueCount(m)}</small></div>`).join('') || '<p>لا توجد مكائن مرتبطة</p>'}</div>
       <div class="insp-section"><h4>المواد المطلوبة</h4>${preview.materials.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>مطلب ${m.qty} ${escapeHtml(m.unit)} · متاح ${m.available}</small></div>`).join('') || '<p>لا توجد مواد مطلوبة</p>'}</div>
       <div class="insp-section"><h4>اختناقات محتملة</h4>${preview.bottlenecks.map(m => `<div class="insp-linked-item"><b>${escapeHtml(m.name)}</b><small>${escapeHtml(m.status || '')} · طابور ${getMachineQueueCount(m)}</small></div>`).join('') || '<p>لا توجد اختناقات واضحة</p>'}</div>
       <div class="insp-section"><h4>روابط مفقودة</h4>${preview.missingLinks.slice(0, 12).map(w => `<div class="insp-linked-item"><b>${escapeHtml(w.severity || 'تحذير')}</b><small>${escapeHtml(w.text || '')}</small></div>`).join('') || '<p>لا توجد روابط مفقودة مؤثرة</p>'}</div>
@@ -13483,7 +13929,7 @@ async function triggerWorkflowExecution() {
     (node.materialRequirements||[]).forEach(req => reserveMaterial(req.materialId, getMaterialRequirementQty(req), 'workflow', 'wf_run', `${client}: ${node.title}`));
   });
   saveData();
-  showToast(`تم توليد ${sortedNodes.length} مهمة في لوحة Kanban`, 'success');
+  showToast(`تم توليد ${sortedNodes.length} مهمة في اللوحة التنفيذية`, 'success');
   switchPage('kanban');
 }
 
@@ -13954,9 +14400,9 @@ function renderTaskManager() {
 }
 
 function selectTaskSpace(spaceId) { ensureOmni(); omni.taskManager.selectedSpaceId = spaceId; saveData(); renderTaskManager(); }
-async function addTaskSpace() { ensureOmni(); const name = await showOmniPrompt('اسم Space:'); if (!name) return; omni.taskManager.spaces.push({ id: makeId('space'), name, departments: [] }); omni.taskManager.selectedSpaceId = omni.taskManager.spaces.at(-1).id; saveData(); renderTaskManager(); }
-async function addTaskDepartment() { const space = getSelectedSpace(); const name = await showOmniPrompt('اسم Department:'); if (!name || !space) return; space.departments.push({ id: makeId('dep'), name, sections: [] }); saveData(); renderTaskManager(); }
-async function addTaskSection(spaceId, depId) { const dep = findTaskDepartment(spaceId, depId); const name = await showOmniPrompt('اسم Section:'); if (!name || !dep) return; dep.sections.push({ id: makeId('sec'), name, taskTypes: [] }); saveData(); renderTaskManager(); }
+async function addTaskSpace() { ensureOmni(); const name = await showOmniPrompt('اسم الفضاء:'); if (!name) return; omni.taskManager.spaces.push({ id: makeId('space'), name, departments: [] }); omni.taskManager.selectedSpaceId = omni.taskManager.spaces.at(-1).id; saveData(); renderTaskManager(); }
+async function addTaskDepartment() { const space = getSelectedSpace(); const name = await showOmniPrompt('اسم القسم:'); if (!name || !space) return; space.departments.push({ id: makeId('dep'), name, sections: [] }); saveData(); renderTaskManager(); }
+async function addTaskSection(spaceId, depId) { const dep = findTaskDepartment(spaceId, depId); const name = await showOmniPrompt('اسم المجموعة:'); if (!name || !dep) return; dep.sections.push({ id: makeId('sec'), name, taskTypes: [] }); saveData(); renderTaskManager(); }
 async function addTaskType(spaceId, depId, secId) { const sec = findTaskSection(spaceId, depId, secId); const name = await showOmniPrompt('اسم Task Type:'); if (!name || !sec) return; sec.taskTypes.push({ id: makeId('type'), name, tasks: [] }); saveData(); renderTaskManager(); }
 async function addClickupTask(spaceId, depId, secId, typeId) { const type = findTaskType(spaceId, depId, secId, typeId); const title = await showOmniPrompt('عنوان Task:'); if (!title || !type) return; type.tasks.push({ id: makeId('task'), title, status: 'Open', priority: 'Normal', owner: '', dueDate: todayISO(), subtasks: [] }); saveData(); renderTaskManager(); }
 function editClickupTask(taskId) { openInspector('task', taskId); }
@@ -14319,11 +14765,11 @@ function renderTaskManager() {
   const title = page?.querySelector('.page-title');
   const subtitle = page?.querySelector('.page-subtitle');
   if (title) title.innerHTML = '<span class="title-icon">✅</span> إدارة المهام';
-  if (subtitle) subtitle.textContent = 'قاعدة المهام والمسؤوليات الداخلية المرتبطة باللوحة التنفيذية، Workflow، SOP، المكائن، المواد، QC، وطلبات الموظفين.';
+  if (subtitle) subtitle.textContent = 'قاعدة المهام والمسؤوليات الداخلية المرتبطة باللوحة التنفيذية ومصمم العمليات والإجراءات والمكائن والمواد والجودة وطلبات الموظفين.';
   tabs.innerHTML = (omni.taskManager.spaces || []).map(space => `<button class="emp-tab ${space.id === omni.taskManager.selectedSpaceId ? 'active' : ''}" onclick="selectTaskSpace('${space.id}')">${escapeHtml(space.name)}</button>`).join('');
   body.className = 'task-manager-shell task-manager-v2';
   body.innerHTML = `
-    <div class="task-purpose-card"><div><h3>إدارة المهام هي قاعدة العمل الداخلية للنظام</h3><p>هنا تُدار المهام الإدارية، الإنتاجية، المتكررة، مهام الصيانة، مهام الجودة، ومهام المتابعة. أما اللوحة التنفيذية Kanban فهي للمتابعة اليومية المباشرة، ومصمم العمليات Workflow هو لرسم طريقة العمل القياسية.</p></div><div class="task-purpose-map"><span>Workflow = طريقة العمل</span><span>Kanban = التنفيذ اليومي</span><span>Task Manager = قاعدة المهام والمسؤوليات</span></div></div>
+    <div class="task-purpose-card"><div><h3>إدارة المهام هي قاعدة العمل الداخلية للنظام</h3><p>هنا تُدار المهام الإدارية، الإنتاجية، المتكررة، مهام الصيانة، مهام الجودة، ومهام المتابعة. أما اللوحة التنفيذية فهي للمتابعة اليومية المباشرة، ومصمم العمليات هو لرسم طريقة العمل القياسية.</p></div><div class="task-purpose-map"><span>مصمم العمليات = طريقة العمل</span><span>اللوحة التنفيذية = التنفيذ اليومي</span><span>إدارة المهام = قاعدة المهام والمسؤوليات</span></div></div>
     ${renderTaskManagerToolbar()}
     ${renderTaskManagerFilters()}
     ${renderTaskSourceSummary()}
@@ -14332,7 +14778,8 @@ function renderTaskManager() {
 }
 function renderTaskManagerToolbar() {
   const views = [['list','قائمة','fa-list'],['board','لوحة','fa-table-columns'],['table','جدول','fa-table'],['workload','عبء العمل','fa-chart-simple'],['overdue','المتأخرة','fa-clock'],['my','مهامي','fa-user-check']];
-
+  const cur = taskManagerViewMode || 'list';
+  return `<div class="task-view-tabs">${views.map(([k,l,i])=>`<button class="${cur===k?'active':''}" onclick="setTaskManagerViewMode('${k}')"><i class="fa-solid ${i}"></i> ${l}</button>`).join('')}</div>`;
 }
 function renderTaskManagerFilters() {
   const tasks = getAllTaskManagerTasks(true).map(x => x.task);
@@ -14380,9 +14827,9 @@ function renderTaskCardV2(task) {
   const status = taskStatusMeta(task.status), priority = taskPriorityMeta(task.priority);
   const srcType = getTaskSourceType(task);
   const srcMeta = TASK_SOURCE_METADATA[srcType] || TASK_SOURCE_METADATA.manual;
-  const linked = [task.kanbanCardId && 'Kanban', task.workflowNodeId && 'Workflow', task.operationPackId && 'Op Pack', (task.sopIds||[]).length && 'SOP', (task.machineIds||[]).length && 'ماكينة', (task.materialRequirements||[]).length && 'مواد', (task.qcRecordIds||[]).length && 'QC'].filter(Boolean);
+  const linked = [task.kanbanCardId && 'اللوحة', task.workflowNodeId && 'مصمم العمليات', task.operationPackId && 'باقة تشغيل', (task.sopIds||[]).length && 'إجراء', (task.machineIds||[]).length && 'ماكينة', (task.materialRequirements||[]).length && 'مواد', (task.qcRecordIds||[]).length && 'جودة'].filter(Boolean);
   const checks = [...(task.checklist || []), ...(task.subtasks || [])]; const done = checks.filter(x => x.done || x.passed).length; const pct = checks.length ? Math.round(done / checks.length * 100) : 0;
-  return `<div class="task-card-v2 ${taskManagerTaskIsOverdue(task) ? 'task-overdue' : ''}" onclick="openTaskManagerInspector('${task.id}', 0)"><div class="task-card-title">${escapeHtml(task.title)}</div><div class="task-card-meta">${escapeHtml(task.department || 'غير مصنف')} · ${escapeHtml(task.section || 'قائمة عامة')}</div><div class="task-card-badges"><span class="task-status-badge" style="--badge-color:${status.color}">${status.label}</span><span class="task-priority-badge" style="--badge-color:${priority.color}">${priority.label}</span><span class="task-source-badge" style="--source-color:${srcMeta.color}"><i class="fa-solid ${srcMeta.icon}"></i> ${srcMeta.label}</span>${task.dueDate ? `<span class="task-linked-chip ${taskManagerTaskIsOverdue(task) ? 'danger' : ''}">${task.dueDate}</span>` : ''}</div><p>${escapeHtml(task.description || '')}</p><div class="task-card-links">${linked.map(l => `<span class="task-linked-chip">${escapeHtml(l)}</span>`).join('') || '<span class="task-linked-chip muted">بدون روابط</span>'}</div><div class="task-card-footer"><span>${escapeHtml(task.owner || task.assignedTo || 'بدون مسؤول')}</span><span>${checks.length ? pct + '%' : 'لا توجد Checklist'}</span></div></div>`;
+  return `<div class="task-card-v2 ${taskManagerTaskIsOverdue(task) ? 'task-overdue' : ''}" onclick="openTaskManagerInspector('${task.id}', 0)"><div class="task-card-title">${escapeHtml(task.title)}</div><div class="task-card-meta">${escapeHtml(task.department || 'غير مصنف')} · ${escapeHtml(task.section || 'قائمة عامة')}</div><div class="task-card-badges"><span class="task-status-badge" style="--badge-color:${status.color}">${status.label}</span><span class="task-priority-badge" style="--badge-color:${priority.color}">${priority.label}</span><span class="task-source-badge" style="--source-color:${srcMeta.color}"><i class="fa-solid ${srcMeta.icon}"></i> ${srcMeta.label}</span>${task.dueDate ? `<span class="task-linked-chip ${taskManagerTaskIsOverdue(task) ? 'danger' : ''}">${task.dueDate}</span>` : ''}</div><p>${escapeHtml(task.description || '')}</p><div class="task-card-links">${linked.map(l => `<span class="task-linked-chip">${escapeHtml(l)}</span>`).join('') || '<span class="task-linked-chip muted">بدون روابط</span>'}</div><div class="task-card-footer"><span>${escapeHtml(task.owner || task.assignedTo || 'بدون مسؤول')}</span><span>${checks.length ? pct + '%' : 'لا توجد قائمة مراجعة'}</span></div></div>`;
 }
 function renderTaskManagerListView() {
   const grouped = {};
@@ -14431,7 +14878,7 @@ function renderTaskManagerTableView() {
             <td><span class="task-source-badge" style="--source-color:${srcMeta.color}"><i class="fa-solid ${srcMeta.icon}"></i> ${srcMeta.label}</span></td>
             <td>${escapeHtml(task.owner || task.assignedTo || '-')}</td>
             <td class="${taskManagerTaskIsOverdue(task) ? 'text-danger' : ''}">${task.dueDate || '-'}</td>
-            <td>${[task.kanbanCardId ? 'Kanban' : '', task.workflowNodeId ? 'Workflow' : '', (task.sopIds || []).length ? 'SOP' : '', (task.qcRecordIds || []).length ? 'QC' : ''].filter(Boolean).join(' · ') || '-'}</td>
+            <td>${[task.kanbanCardId ? 'اللوحة' : '', task.workflowNodeId ? 'مصمم العمليات' : '', (task.sopIds || []).length ? 'إجراء' : '', (task.qcRecordIds || []).length ? 'جودة' : ''].filter(Boolean).join(' · ') || '-'}</td>
           </tr>`;
         }).join('') || '<tr><td colspan="8">لا توجد مهام حسب الفلاتر الحالية</td></tr>'}
       </tbody>
@@ -14528,7 +14975,7 @@ function renderTaskManagerRelationsTab(task) {
     <div style="display:flex; flex-direction:column; gap:10px; margin: 10px 0;">
       <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border:1px solid rgba(148,163,184,0.14); border-radius:8px; background:rgba(255,255,255,0.02)">
         <div>
-          <b style="font-size:12px; display:block;">لوحة المتابعة اليومية (Kanban)</b>
+          <b style="font-size:12px; display:block;">اللوحة التنفيذية</b>
           <small style="color:var(--text-muted); font-size:11px;">${card ? 'مرتبط بـ: ' + escapeHtml(card.title) : 'لم يتم ربط بطاقة كانبان بعد'}</small>
         </div>
         <div style="display:flex; gap:6px;">
@@ -14557,7 +15004,7 @@ function renderTaskManagerRelationsTab(task) {
       </div>
     </div>
     <div class="insp-actions" style="margin-top:14px; border-top:1px solid rgba(255,255,255,0.05); padding-top:12px;">
-      <button class="btn-primary" onclick="createKanbanCardFromTask('${task.id}')"><i class="fa-solid fa-rocket"></i> تحويل سريع لـ Kanban</button>
+      <button class="btn-primary" onclick="createKanbanCardFromTask('${task.id}')"><i class="fa-solid fa-rocket"></i> تحويل سريع للوحة التنفيذية</button>
     </div>
   </div>`;
 }
@@ -14587,7 +15034,7 @@ function updateTaskField(taskId, field, value) { updateTaskManagerTask(taskId, {
 function updateTaskManagerAssignee(taskId, assigneeId) { const emp = (employees || []).find(e => String(e.id || e.name) === String(assigneeId)); updateTaskManagerTask(taskId, { assigneeId: assigneeId || '', employeeId: assigneeId || '', owner: emp?.name || '', assignedTo: emp?.name || '' }); renderTaskManagerInspectorTab(taskId, 0); }
 async function archiveTaskManagerTask(taskId) { const ok = await showOmniModal('أرشفة المهمة','<p>سيتم إخفاء المهمة من العروض النشطة بدون حذف روابطها. هل تريد المتابعة؟</p>',() => true); if (!ok) return; updateTaskManagerTask(taskId,{ archived:true, archivedAt:new Date().toISOString() }); closeInspector(); showToast('تمت أرشفة المهمة','success'); }
 function restoreTaskManagerTask(taskId) { updateTaskManagerTask(taskId,{ archived:false, archivedAt:'' }); }
-async function deleteTaskManagerTask(taskId) { const ok = await showOmniModal('حذف نهائي','<p>سيتم تعليم المهمة كمحذوفة ولن يتم حذف بطاقة Kanban المرتبطة. هل تريد المتابعة؟</p>',() => true); if (!ok) return; updateTaskManagerTask(taskId,{ deleted:true, deletedAt:new Date().toISOString() }); closeInspector(); showToast('تم حذف المهمة','success'); }
+async function deleteTaskManagerTask(taskId) { const ok = await showOmniModal('حذف نهائي','<p>سيتم تعليم المهمة كمحذوفة ولن يتم حذف بطاقة اللوحة المرتبطة. هل تريد المتابعة؟</p>',() => true); if (!ok) return; updateTaskManagerTask(taskId,{ deleted:true, deletedAt:new Date().toISOString() }); closeInspector(); showToast('تم حذف المهمة','success'); }
 async function deleteClickupTask(taskId) { return deleteTaskManagerTask(taskId); }
 async function renameTaskManagerLevel(id) { let target = null; for (const space of omni.taskManager.spaces) for (const dep of space.departments) { if (dep.id === id) target = dep; for (const sec of dep.sections || []) { if (sec.id === id) target = sec; for (const type of sec.taskTypes || []) if (type.id === id) target = type; } } if (!target) return; const name = await showOmniPrompt('تعديل الاسم:', target.name); if (!name) return; target.name = name.trim(); saveData(); renderTaskManager(); }
 async function addSubtask(taskId) { const task = findTaskById(taskId); const title = await showOmniPrompt('عنوان الخطوة الفرعية:'); if (!title || !task) return; task.subtasks.push({ id: makeId('sub'), title, done: false }); addTaskManagerActivity(taskId,'تمت إضافة خطوة فرعية'); saveData(); renderTaskManager(); renderTaskManagerInspectorTab(taskId,1); }
@@ -14597,8 +15044,8 @@ function updateSubtaskTitle(taskId, subId, newTitle) { const task = findTaskById
 function addTaskManagerComment(taskId, text) { const task = findTaskById(taskId); if (!task || !text?.trim()) return; task.comments.push({ id: makeId('cmt'), text: text.trim(), author: 'النظام', createdAt: new Date().toISOString(), date: todayISO() }); addTaskManagerActivity(taskId,'تمت إضافة تعليق'); saveData(); renderTaskManagerInspectorTab(taskId,7); }
 function getTaskLinkedKanbanCard(task) { return task?.kanbanCardId ? (omni.kanban.cards || []).find(c => c.id === task.kanbanCardId) || null : null; }
 function createKanbanCardFromTask(taskId) { const task = findTaskById(taskId); if (!task) return; if (task.kanbanCardId && getTaskLinkedKanbanCard(task)) return showToast('المهمة مرتبطة ببطاقة Kanban مسبقاً','warning'); const col = (omni.kanban.columns || [])[0]; const card = { id: makeId('card'), columnId: col?.id || 'kb_backlog', title: task.title, description: task.description || '', owner: task.owner || task.assignedTo || '', assigneeId: task.assigneeId || '', priority: task.priority, dueDate: task.dueDate || '', department: task.department || '', section: task.section || '', tags: [...(task.tags || []), 'task_manager'], checklist: (task.subtasks || []).map(st => ({ id: st.id || makeId('chk'), text: st.title || st.text, done: !!st.done })), sopIds: [...(task.sopIds || [])], machineIds: [...(task.machineIds || [])], materialRequirements: [...(task.materialRequirements || [])], qcRecordIds: [...(task.qcRecordIds || [])], sourceType: 'task_manager', sourceId: task.id, taskManagerTaskId: task.id, activityLog: [{ date: new Date().toISOString(), text: `تم إنشاء البطاقة من إدارة المهام: ${task.title}` }] }; omni.kanban.cards.push(card); task.kanbanCardId = card.id; addTaskManagerActivity(taskId, `تم إنشاء بطاقة Kanban: ${card.title}`); saveData(); renderTaskManager(); showToast('تم إنشاء بطاقة Kanban من المهمة','success'); }
-function linkTaskToKanbanCard(taskId, cardId) { const task = findTaskById(taskId); const card = (omni.kanban.cards || []).find(c => c.id === cardId); if (!task || !card) return showToast('اختر بطاقة صحيحة','warning'); task.kanbanCardId = card.id; card.taskManagerTaskId = task.id; card.sourceType = card.sourceType || 'task_manager'; card.sourceId = card.sourceId || task.id; addTaskManagerActivity(taskId, `تم ربط بطاقة Kanban: ${card.title}`); saveData(); renderTaskManagerInspectorTab(taskId,2); showToast('تم الربط بالبطاقة','success'); }
-async function linkTaskToKanbanCardModal(taskId) { const opts = (omni.kanban.cards || []).map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join(''); const cardId = await showOmniModal('ربط ببطاقة Kanban', `<select id="tmCardLink" class="form-input"><option value="">اختر بطاقة</option>${opts}</select>`, body => body.querySelector('#tmCardLink')?.value || ''); if (cardId) linkTaskToKanbanCard(taskId, cardId); }
+function linkTaskToKanbanCard(taskId, cardId) { const task = findTaskById(taskId); const card = (omni.kanban.cards || []).find(c => c.id === cardId); if (!task || !card) return showToast('اختر بطاقة صحيحة','warning'); task.kanbanCardId = card.id; card.taskManagerTaskId = task.id; card.sourceType = card.sourceType || 'task_manager'; card.sourceId = card.sourceId || task.id; addTaskManagerActivity(taskId, `تم ربط بطاقة اللوحة: ${card.title}`); saveData(); renderTaskManagerInspectorTab(taskId,2); showToast('تم الربط بالبطاقة','success'); }
+async function linkTaskToKanbanCardModal(taskId) { const opts = (omni.kanban.cards || []).map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join(''); const cardId = await showOmniModal('ربط ببطاقة اللوحة', `<select id="tmCardLink" class="form-input"><option value="">اختر بطاقة</option>${opts}</select>`, body => body.querySelector('#tmCardLink')?.value || ''); if (cardId) linkTaskToKanbanCard(taskId, cardId); }
 function syncTaskFromKanbanCard(cardId) { const card = (omni.kanban.cards || []).find(c => c.id === cardId); const task = getAllTaskManagerTasks(true).map(x => x.task).find(t => t.kanbanCardId === cardId); if (!card || !task) return; updateTaskManagerTask(task.id, { title: card.title, status: card.status === 'done' ? 'done' : task.status, priority: normalizeTaskPriority(card.priority), dueDate: card.dueDate || task.dueDate }); }
 function syncKanbanCardFromTask(taskId) { const task = findTaskById(taskId); const card = getTaskLinkedKanbanCard(task); if (!task || !card) return; card.title = task.title; card.priority = task.priority; card.dueDate = task.dueDate; card.owner = task.owner; saveData(); }
 function createTaskFromWorkflowNode(nodeId) { const node = (omni.workflow?.nodes || []).find(n => n.id === nodeId); if (!node) return null; const task = createTaskInSelectedSpace(node.title || 'مهمة Workflow', { workflowId:'default', workflowNodeId:node.id, sourceType:'workflow_node', sourceId:node.id, department:node.department || 'Workflow' }); saveData(); return task; }
@@ -14799,12 +15246,12 @@ function renderCommandCenter() {
 
   const ccSuggestions = [
     ...overdueCards.slice(0, 3).map(card => ({ severity: 'danger', source: 'من اللوحة التنفيذية', icon: 'fa-triangle-exclamation', title: `متابعة بطاقة متأخرة: ${card.title}`, reason: `موعد التسليم ${card.dueDate || '-'} ويحتاج قرار أولوية.`, page: 'kanban', action: 'فتح اللوحة' })),
-    ...blockedCards.slice(0, 2).map(card => ({ severity: 'warning', source: 'من اللوحة التنفيذية', icon: 'fa-ban', title: `إزالة التعطيل: ${card.title}`, reason: 'البطاقة تحمل وسم Blocked / متوقف.', page: 'kanban', action: 'فتح اللوحة' })),
+    ...blockedCards.slice(0, 2).map(card => ({ severity: 'warning', source: 'من اللوحة التنفيذية', icon: 'fa-ban', title: `إزالة التعطيل: ${card.title}`, reason: 'البطاقة في وضع متوقف وتحتاج تدخلاً.', page: 'kanban', action: 'فتح اللوحة' })),
     ...machinesDown.slice(0, 2).map(machine => ({ severity: 'danger', source: 'من المكائن', icon: 'fa-wrench', title: `بديل تشغيل للماكينة: ${machine.name}`, reason: 'الماكينة في الصيانة، راجع توزيع الأعمال على ماكينة متاحة.', page: 'machines', action: 'فتح المكائن' })),
     ...lowStock.slice(0, 3).map(mat => ({ severity: 'warning', source: 'من المخزون', icon: 'fa-box-open', title: `مراجعة شراء/حجز: ${mat.name}`, reason: `المتاح ${getMaterialAvailableQty(mat)} ${mat.unit || ''} أقل أو يساوي الحد الأدنى ${mat.minimum || 0}.`, page: 'inventory', action: 'فتح المخزون' })),
     ...(typeof getQcCommandCenterAlerts === 'function' ? getQcCommandCenterAlerts().slice(0, 4) : []),
-    ...qcFails.slice(0, 2).map(qc => ({ severity: 'danger', source: 'من الجودة', icon: 'fa-microscope', title: `إعادة عمل لفحص: ${qc.type || qc.id}`, reason: qc.reason || 'فحص جودة فاشل يحتاج متابعة.', page: 'qc_center', action: 'فتح الجودة' })),
-    ...pendingSops.slice(0, 2).map(sop => ({ severity: 'warning', source: 'من SOP', icon: 'fa-book', title: `مراجعة SOP: ${sop.title}`, reason: 'الإجراء غير معتمد بعد، راجعه قبل ربطه بالتنفيذ.', page: 'sop', action: 'فتح SOP' })),
+    ...qcFails.slice(0, 2).map(qc => ({ severity: 'danger', source: 'من الجودة', icon: 'fa-microscope', title: `إعادة عمل لفحص: ${translateQcType(qc.type) || qc.id}`, reason: qc.reason || 'فحص جودة فاشل يحتاج متابعة.', page: 'qc_center', action: 'فتح الجودة' })),
+    ...pendingSops.slice(0, 2).map(sop => ({ severity: 'warning', source: 'من الإجراءات', icon: 'fa-book', title: `مراجعة إجراء: ${sop.title}`, reason: 'الإجراء غير معتمد بعد، راجعه قبل ربطه بالتنفيذ.', page: 'sop', action: 'فتح الإجراءات' })),
     ...opPackWarnings.slice(0, 2).map(pack => ({ severity: 'warning', source: 'من باقات العمليات', icon: 'fa-boxes-stacked', title: `تحذير مواد في باقة: ${pack.name}`, reason: 'إحدى خطوات الباقة تحتاج مادة غير كافية حالياً.', page: 'op_packs', action: 'فتح الباقات' })),
     ...queuePressure.slice(0, 2).map(machine => ({ severity: 'info', source: 'من المكائن', icon: 'fa-gauge-high', title: `ضغط طابور على ${machine.name}`, reason: `الطابور الحالي ${getMachineQueueCount(machine)} مهام.`, page: 'machines', action: 'فتح المكائن' }))
   ];
@@ -14850,7 +15297,7 @@ function renderCommandCenter() {
 
   const alertItems = [];
   if (overdueCards.length) alertItems.push({ severity: 'danger', icon: 'fa-triangle-exclamation', text: `${overdueCards.length} بطاقة متأخرة عن موعد التسليم`, page: 'kanban' });
-  if (blockedCards.length) alertItems.push({ severity: 'warning', icon: 'fa-ban', text: `${blockedCards.length} بطاقة متوقفة (Blocked)`, page: 'kanban' });
+  if (blockedCards.length) alertItems.push({ severity: 'warning', icon: 'fa-ban', text: `${blockedCards.length} بطاقة متوقفة`, page: 'kanban' });
   if (machinesDown.length) alertItems.push({ severity: 'danger', icon: 'fa-wrench', text: `${machinesDown.length} ماكينة في الصيانة: ${machinesDown.map(m=>m.name).join('، ')}`, page: 'machines' });
   if (lowStock.length) alertItems.push({ severity: 'warning', icon: 'fa-box-open', text: `${lowStock.length} مادة وصلت للحد الأدنى: ${lowStock.slice(0,3).map(m=>m.name).join('، ')}${lowStock.length>3?'…':''}`, page: 'inventory' });
   if (qcFails.length) alertItems.push({ severity: 'danger', icon: 'fa-xmark-circle', text: `${qcFails.length} فحص جودة فاشل يحتاج إعادة عمل`, page: 'qc_center' });
@@ -14905,7 +15352,7 @@ function renderCommandCenter() {
   el.innerHTML = `
     <div class="cc-hero-banner">
       <div class="cc-hero-left">
-        <span class="cc-hero-eyebrow"><i class="fa-solid fa-bolt"></i> OMNISYSTEM V4 · مركز القيادة التنفيذي</span>
+        <span class="cc-hero-eyebrow"><i class="fa-solid fa-bolt"></i> أوكتاغون · مركز القيادة التنفيذي</span>
         <h2 class="cc-hero-greeting">${greeting} 👋</h2>
         <p class="cc-hero-date"><i class="fa-solid fa-calendar-day"></i> ${escapeHtml(dateStr)} · <i class="fa-solid fa-clock"></i> ${escapeHtml(timeStr)}</p>
         <p class="cc-hero-sub">شاشة المدير اليومية — كل التنبيهات والقرارات المطلوبة في مكان واحد.</p>
@@ -15010,7 +15457,7 @@ function renderCommandCenter() {
     </div>
 
     <div class="cc-section-v2 cc-health-section">
-      <h3 class="cc-section-v2-title"><i class="fa-solid fa-heart-pulse"></i> صحة ترابط النظام (OMNI Health)
+      <h3 class="cc-section-v2-title"><i class="fa-solid fa-heart-pulse"></i> صحة ترابط النظام
         <span class="cc-section-v2-count">${healthIssues.length}</span></h3>
       <div class="cc-health-head-stats">
         <div class="cc-health-stat"><b>${health.totalEntities || 0}</b><span>كيانات مرتبطة</span></div>
@@ -15035,7 +15482,7 @@ function renderCommandCenter() {
       <button onclick="switchPage('qc_center')"><i class="fa-solid fa-microscope"></i><span>الجودة</span></button>
       <button onclick="switchPage('analytics')"><i class="fa-solid fa-chart-line"></i><span>التحليلات</span></button>
       <button onclick="switchPage('employee_ui')"><i class="fa-solid fa-user-gear"></i><span>الموظف</span></button>
-      <button onclick="openCmdPalette()"><i class="fa-solid fa-terminal"></i><span>Ctrl+K</span></button>
+      <button onclick="openCmdPalette()"><i class="fa-solid fa-terminal"></i><span>الأوامر</span></button>
     </div>
   `;
 }
@@ -15074,7 +15521,7 @@ function renderOperationPackTracePanel() {
         const trace = getOperationPackTrace(pack.id);
         return `<button class="op-pack-trace-card" onclick="openInspector('oppack','${pack.id}')">
           <b>${escapeHtml(pack.name || pack.id)}</b>
-          <div><span>${trace.cards.length}</span><small>Kanban</small></div>
+          <div><span>${trace.cards.length}</span><small>اللوحة</small></div>
           <div><span>${trace.tasks.length}</span><small>مهام</small></div>
           <div><span>${trace.qcRecords.length}</span><small>QC</small></div>
           <small>${trace.openCards} بطاقات مفتوحة · ${trace.openTasks} مهام مفتوحة · ${trace.overdueTasks} متأخرة</small>
@@ -15107,23 +15554,23 @@ function renderOperationPackInspectorTrace(pack) {
   return `<div class="pack-designer-section op-pack-trace-section">
     <h4 class="pack-designer-section-title"><i class="fa-solid fa-route"></i> أثر الربط المباشر</h4>
     <div class="op-pack-trace-kpis">
-      <div><b>${trace.cards.length}</b><span>بطاقات Kanban</span></div>
+      <div><b>${trace.cards.length}</b><span>بطاقات اللوحة</span></div>
       <div><b>${trace.tasks.length}</b><span>مهام Task Manager</span></div>
       <div><b>${trace.qcRecords.length}</b><span>سجلات QC</span></div>
       <div><b>${trace.overdueTasks}</b><span>مهام متأخرة</span></div>
     </div>
     <div class="op-pack-trace-lists">
       <div>
-        <h5>Kanban</h5>
-        ${trace.cards.slice(0, 6).map(card => `<button onclick="openOperationPackTraceCard('${card.id}')"><b>${escapeHtml(card.title || card.id)}</b><span>${escapeHtml(card.columnId || '-')} · ${escapeHtml(card.priority || 'Normal')}</span></button>`).join('') || '<p class="muted">لا توجد بطاقات Kanban مرتبطة بعد.</p>'}
+        <h5>اللوحة</h5>
+        ${trace.cards.slice(0, 6).map(card => `<button onclick="openOperationPackTraceCard('${card.id}')"><b>${escapeHtml(card.title || card.id)}</b><span>${escapeHtml(card.columnId || '-')} · ${escapeHtml(translatePriority(card.priority || 'Normal'))}</span></button>`).join('') || '<p class="muted">لا توجد بطاقات اللوحة مرتبطة بعد.</p>'}
       </div>
       <div>
         <h5>Tasks</h5>
         ${trace.tasks.slice(0, 6).map(task => `<button onclick="openOperationPackTraceTask('${task.id}')"><b>${escapeHtml(task.title || task.id)}</b><span>${escapeHtml(taskStatusMeta(task.status).label)} · ${escapeHtml(task.owner || task.assignedTo || 'بدون مسؤول')}</span></button>`).join('') || '<p class="muted">لا توجد مهام مرتبطة بعد.</p>'}
       </div>
       <div>
-        <h5>QC</h5>
-        ${trace.qcRecords.slice(0, 6).map(qc => `<button onclick="openOperationPackTraceQc('${qc.id}')"><b>${escapeHtml(qc.title || qc.type || qc.id)}</b><span>${escapeHtml(qc.result || qc.status || 'pending')}</span></button>`).join('') || '<p class="muted">لا توجد سجلات QC مرتبطة بعد.</p>'}
+        <h5>الجودة</h5>
+        ${trace.qcRecords.slice(0, 6).map(qc => `<button onclick="openOperationPackTraceQc('${qc.id}')"><b>${escapeHtml(qc.title || translateQcType(qc.type) || qc.id)}</b><span>${escapeHtml(translateQcResult(qc.result || qc.status) || 'قيد الانتظار')}</span></button>`).join('') || '<p class="muted">لا توجد سجلات جودة مرتبطة بعد.</p>'}
       </div>
     </div>
   </div>`;
@@ -15174,7 +15621,7 @@ function renderOpPacks() {
         <div class="op-pack-meta">
           <span><i class="fa-solid fa-list-check"></i> ${pack.steps.length} خطوة</span>
           <span><i class="fa-solid fa-clock"></i> ${pack.estimatedTime}</span>
-          <span><i class="fa-solid fa-route"></i> ${trace.cards.length} Kanban · ${trace.tasks.length} Tasks</span>
+          <span><i class="fa-solid fa-route"></i> ${trace.cards.length} بطاقة · ${trace.tasks.length} مهمة</span>
         </div>
         <div class="op-pack-tags">
           ${(pack.machines||[]).map(m => `<span class="op-tag op-tag-machine"><i class="fa-solid fa-gear"></i> ${m}</span>`).join('')}
@@ -15308,7 +15755,7 @@ async function deleteOpPack(packId) {
   ensureOmni();
   const pack = (omni.opPacks || []).find(p => p.id === packId);
   if (!pack) return;
-  const ok = await showOmniConfirm('حذف الباقة', `هل أنت متأكد من حذف الباقة "${pack.name}"؟ لن يتم حذف بطاقات Kanban المولّدة سابقاً.`, 'حذف', 'إلغاء');
+  const ok = await showOmniConfirm('حذف الباقة', `هل أنت متأكد من حذف الباقة "${pack.name}"؟ لن يتم حذف بطاقات اللوحة المولّدة سابقاً.`, 'حذف', 'إلغاء');
   if (!ok) return;
   omni.opPacks = (omni.opPacks || []).filter(p => p.id !== packId);
   saveData(); renderOpPacks();
@@ -15485,7 +15932,7 @@ function previewOperationPackExecution(packId) {
       <input id="opPackPreviewClient" class="workflow-insp-input" value="${escapeHtml(sampleClient)}" oninput="refreshOpPackGeneratedPreview('${pack.id}')" placeholder="اكتب اسم العميل أو رقم المشروع">
     </div>
     <div class="insp-section">
-      <h4><i class="fa-solid fa-table-cells"></i> بطاقات Kanban التي ستُولَّد</h4>
+      <h4><i class="fa-solid fa-table-cells"></i> بطاقات اللوحة التي ستُولَّد</h4>
       <div id="opPackGeneratedPreview" class="op-pack-generated-list">
         ${renderOperationPackGeneratedCardsPreview(generatedCards)}
       </div>
@@ -15519,7 +15966,7 @@ function previewOperationPackExecution(packId) {
     </div>
     <div class="insp-actions">
       <button class="btn-secondary" onclick="closeInspector()">إلغاء</button>
-      <button class="btn-primary" onclick="executeOperationPackWithLinks('${pack.id}')"><i class="fa-solid fa-table-columns"></i> إنشاء البطاقات في لوحة Kanban الآن</button>
+      <button class="btn-primary" onclick="executeOperationPackWithLinks('${pack.id}')"><i class="fa-solid fa-table-columns"></i> إنشاء البطاقات في اللوحة التنفيذية الآن</button>
     </div>
   `;
   panel.classList.remove('hidden');
@@ -15747,7 +16194,7 @@ async function executeOperationPackWithLinks(packId) {
       }
     });
     saveData();
-    showToast(`✓ تم إنشاء ${pack.steps.length} بطاقة شغل وأمر عمل لـ "${client}" في لوحة Kanban والإنتاج`, 'success');
+    showToast(`✓ تم إنشاء ${pack.steps.length} بطاقة شغل وأمر عمل لـ "${client}" في اللوحة التنفيذية والإنتاج`, 'success');
     switchPage('kanban');
   }
 
@@ -17724,9 +18171,9 @@ function getAdminSystemCounts() {
   ensureOmni();
   ensureFinance();
   return [
-    ['عقد Workflow', omni.workflow?.nodes?.length || 0],
-    ['روابط Workflow', omni.workflow?.edges?.length || 0],
-    ['بطاقات Kanban', omni.kanban?.cards?.length || 0],
+    ['عقد سير العمل', omni.workflow?.nodes?.length || 0],
+    ['روابط سير العمل', omni.workflow?.edges?.length || 0],
+    ['بطاقات اللوحة', omni.kanban?.cards?.length || 0],
     ['مكائن', omni.machines?.length || 0],
     ['مواد', omni.materials?.length || 0],
     ['SOP', omni.sops?.length || 0],
@@ -17781,7 +18228,7 @@ function renderAdminPanel() {
 
   if (!tabs.some(tab => tab.id === 'history')) {
     const logsIndex = tabs.findIndex(tab => tab.id === 'logs');
-    const historyTab = { id: 'history', label: 'History', icon: 'fa-clock-rotate-left' };
+    const historyTab = { id: 'history', label: 'السجل', icon: 'fa-clock-rotate-left' };
     if (logsIndex >= 0) tabs.splice(logsIndex, 0, historyTab);
     else tabs.push(historyTab);
   }
@@ -17873,7 +18320,7 @@ function renderAdminTabOverview() {
 
       <div style="margin: 16px 0; padding: 12px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
         <input type="checkbox" id="multiTenantCheckbox" ${org.multiTenant ? 'checked' : ''} onchange="updateOrganizationGlobalField('multiTenant', this.checked)" style="width:16px; height:16px; cursor:pointer;">
-        <label for="multiTenantCheckbox" style="cursor:pointer; font-size:12.5px; font-weight:bold; color:var(--text-primary);">تفعيل عزل بيانات المستأجرين والفروع (Multi-Tenant Data Isolation)</label>
+        <label for="multiTenantCheckbox" style="cursor:pointer; font-size:12.5px; font-weight:bold; color:var(--text-primary);">تفعيل عزل بيانات المستأجرين والفروع</label>
       </div>
 
       <!-- Companies list -->
@@ -17898,7 +18345,7 @@ function renderAdminTabOverview() {
     <section class="admin-card admin-card-wide">
       <h3><i class="fa-solid fa-heart-pulse"></i> صحة النظام</h3>
       <div class="admin-health-grid">
-        <div class="admin-health-tile"><span>إصدار المشروع</span><b>OMNISYSTEM V${omni.version || 4}.0</b></div>
+        <div class="admin-health-tile"><span>إصدار المشروع</span><b>أوكتاغون الإصدار ${omni.version || 4}.0</b></div>
         <div class="admin-health-tile"><span>حجم قاعدة البيانات</span><b>${health.dbSizeStr}</b></div>
         <div class="admin-health-tile"><span>إجمالي السجلات</span><b>${health.totalRecords.toLocaleString()}</b></div>
         <div class="admin-health-tile"><span>الهجرات المطبّقة</span><b>${health.migrationsCount}</b></div>
@@ -18954,7 +19401,7 @@ function renderQcDashboard() {
             <i class="fa-solid fa-circle-check" style="color: #34d399;"></i> مسار النجاح (Pass)
           </button>
           <button id="simBtnFail" class="qc-sim-btn" onclick="triggerQcSimulation('fail')">
-            <i class="fa-solid fa-circle-xmark" style="color: #f87171;"></i> مسار الفشل (Fail & Rework)
+            <i class="fa-solid fa-circle-xmark" style="color: #f87171;"></i> مسار الفشل وإعادة العمل
           </button>
           <button id="simBtnMulti" class="qc-sim-btn" onclick="triggerQcSimulation('multi')">
             <i class="fa-solid fa-network-wired" style="color: #60a5fa;"></i> بوابات متعددة
@@ -19042,7 +19489,7 @@ function triggerQcSimulation(mode) {
       <div class="qc-sim-arrow active"><i class="fa-solid fa-circle-chevron-left"></i></div>
       <div class="qc-sim-node active rework">
         <div class="qc-sim-bubble"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-        <div class="qc-sim-label">إعادة عمل (Rework)</div>
+        <div class="qc-sim-label">إعادة العمل</div>
       </div>
       <div class="qc-sim-arrow active"><i class="fa-solid fa-circle-chevron-left"></i></div>
       <div class="qc-sim-node active pass">
@@ -19052,18 +19499,18 @@ function triggerQcSimulation(mode) {
     `;
 
     detailsEl.innerHTML = `
-      <h5><i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> مسار الفشل والتحجيم التلقائي (Rework)</h5>
+      <h5><i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i> مسار الفشل والتحجيم التلقائي</h5>
       <div class="qc-sim-detail-row">
         <span><i class="fa-solid fa-users"></i>المسؤولون:</span>
-        <b>المفتش</b> (يسجل الفشل والكلفة) ➡️ <b>مشرف الإنتاج</b> (يستلم بطاقة Rework جديدة لإصلاح الخلل).
+        <b>المفتش</b> (يسجل الفشل والكلفة) ➡️ <b>مشرف الإنتاج</b> (يستلم بطاقة إعادة عمل جديدة لإصلاح الخلل).
       </div>
       <div class="qc-sim-detail-row">
-        <span><i class="fa-solid fa-map-location-dot"></i>المكان في ERP:</span>
-        عمود <b>إعادة العمل</b> في Kanban + تبويبات <b>"كلفة"</b> و<b>"إعادة العمل"</b> في الجودة.
+        <span><i class="fa-solid fa-map-location-dot"></i>المكان في النظام:</span>
+        عمود <b>إعادة العمل</b> في اللوحة التنفيذية + تبويبات <b>"كلفة"</b> و<b>"إعادة العمل"</b> في الجودة.
       </div>
       <div class="qc-sim-detail-row">
         <span><i class="fa-solid fa-circle-info"></i>التأثير والنتيجة:</span>
-        <b>حجب فوري للبطاقة الأصلية</b> (يمنع نقلها إلى "مكتمل"). ينشئ النظام بطاقة <b>Rework</b> مرتبطة لإصلاح العيوب. تُسجل كلفة الهدر بالتفصيل (أجور، مواد مهدورة، ماكينة) وتظهر فوراً في الإحصائيات لمراقبة تكاليف الفشل.
+        <b>حجب فوري للبطاقة الأصلية</b> (يمنع نقلها إلى "مكتمل"). ينشئ النظام بطاقة <b>إعادة عمل</b> مرتبطة لإصلاح العيوب. تُسجل كلفة الهدر بالتفصيل (أجور، مواد مهدورة، ماكينة) وتظهر فوراً في الإحصائيات لمراقبة تكاليف الفشل.
       </div>
     `;
   } else if (mode === 'multi') {
@@ -19206,23 +19653,23 @@ function renderAdminTabHistory() {
     <section class="admin-card admin-card-wide history-ledger-card">
       <div class="history-ledger-head">
         <div>
-          <h3><i class="fa-solid fa-clock-rotate-left"></i> Full Activity History</h3>
-          <p>Append-only ledger for WhatsApp, AI, approvals, automation, dashboard changes, and system events.</p>
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> سجل النشاط الكامل</h3>
+          <p>سجل أحداث النظام: رسائل العملاء، الذكاء، الموافقات، الأتمتة، ولوحة التحكم.</p>
         </div>
-        <button class="btn-secondary" onclick="downloadAdminHistory()"><i class="fa-solid fa-download"></i> Export NDJSON</button>
+        <button class="btn-secondary" onclick="downloadAdminHistory()"><i class="fa-solid fa-download"></i> تصدير النشاط</button>
       </div>
       <div class="history-kpi-grid">
-        <div><span>Total events</span><b>${all.length}</b></div>
-        <div><span>WhatsApp</span><b>${waCount}</b></div>
-        <div><span>AI</span><b>${aiCount}</b></div>
-        <div><span>Approvals</span><b>${approvalCount}</b></div>
-        <div><span>Blocked/errors</span><b>${errorCount}</b></div>
+        <div><span>إجمالي الأحداث</span><b>${all.length}</b></div>
+        <div><span>رسائل العملاء</span><b>${waCount}</b></div>
+        <div><span>الذكاء</span><b>${aiCount}</b></div>
+        <div><span>الموافقات</span><b>${approvalCount}</b></div>
+        <div><span>محظور/أخطاء</span><b>${errorCount}</b></div>
       </div>
       <div class="history-filter-grid">
-        <input type="text" class="form-input" placeholder="Search text, transcript, ids, actor..." value="${escapeHtml(adminHistorySearch)}" oninput="updateAdminHistorySearch(this.value)">
-        <select class="form-input" onchange="updateAdminHistoryModule(this.value)">${modules.map(value => `<option value="${escapeHtml(value)}" ${adminHistoryModuleFilter === value ? 'selected' : ''}>${value === 'all' ? 'All modules' : escapeHtml(value)}</option>`).join('')}</select>
-        <select class="form-input" onchange="updateAdminHistorySource(this.value)">${sources.map(value => `<option value="${escapeHtml(value)}" ${adminHistorySourceFilter === value ? 'selected' : ''}>${value === 'all' ? 'All sources' : escapeHtml(value)}</option>`).join('')}</select>
-        <select class="form-input" onchange="updateAdminHistoryAction(this.value)">${actions.map(value => `<option value="${escapeHtml(value)}" ${adminHistoryActionFilter === value ? 'selected' : ''}>${value === 'all' ? 'All actions' : escapeHtml(value)}</option>`).join('')}</select>
+        <input type="text" class="form-input" placeholder="ابحث بالنص أو المعرّف أو المنفّذ..." value="${escapeHtml(adminHistorySearch)}" oninput="updateAdminHistorySearch(this.value)">
+        <select class="form-input" onchange="updateAdminHistoryModule(this.value)">${modules.map(value => `<option value="${escapeHtml(value)}" ${adminHistoryModuleFilter === value ? 'selected' : ''}>${value === 'all' ? 'كل الوحدات' : escapeHtml(value)}</option>`).join('')}</select>
+        <select class="form-input" onchange="updateAdminHistorySource(this.value)">${sources.map(value => `<option value="${escapeHtml(value)}" ${adminHistorySourceFilter === value ? 'selected' : ''}>${value === 'all' ? 'كل المصادر' : escapeHtml(value)}</option>`).join('')}</select>
+        <select class="form-input" onchange="updateAdminHistoryAction(this.value)">${actions.map(value => `<option value="${escapeHtml(value)}" ${adminHistoryActionFilter === value ? 'selected' : ''}>${value === 'all' ? 'كل الإجراءات' : escapeHtml(value)}</option>`).join('')}</select>
       </div>
       <div class="history-timeline">
         ${filtered.slice(0, 400).map(event => `<button class="history-row" onclick="openAdminHistoryEvent('${jsString(event.id)}')">
@@ -19235,9 +19682,9 @@ function renderAdminTabHistory() {
             <em>${escapeHtml(event.module || '')} / ${escapeHtml(event.action || '')}</em>
             <small>${escapeHtml(event.actorName || '')} · ${escapeHtml(formatOmniDateTime(event.timestamp) || event.timestamp || '')}</small>
           </span>
-          <span class="history-status history-status-${escapeHtml(event.status || 'logged')}">${escapeHtml(event.status || 'logged')}</span>
-        </button>`).join('') || '<div class="admin-empty">No History events match the current filters.</div>'}
-        ${filtered.length > 400 ? `<div class="admin-empty">Showing newest 400 of ${filtered.length}. Use filters for investigation.</div>` : ''}
+          <span class="history-status history-status-${escapeHtml(event.status || 'logged')}">${escapeHtml(({'logged':'مسجّل','success':'نجاح','error':'خطأ','blocked':'محظور','failed':'فشل','pending':'معلّق'})[event.status] || event.status || 'مسجّل')}</span>
+        </button>`).join('') || '<div class="admin-empty">لا توجد أحداث تطابق الفلتر الحالي.</div>'}
+        ${filtered.length > 400 ? `<div class="admin-empty">عرض أحدث 400 من ${filtered.length}. استخدم الفلاتر للتضييق.</div>` : ''}
       </div>
     </section>
   `;
@@ -20379,7 +20826,7 @@ function renderV5InventoryDashboard(locations, quants, moves) {
       <div class="v5-inventory-toolbar glass-card">
         <div>
           <b>مخزون V5 حسب المواقع</b>
-          <span>مبني على locations و quants و stock_moves</span>
+          <span>مبني على مواقع التخزين والكميات وحركات المخزون</span>
         </div>
         <div class="v5-inventory-actions">
           <button class="btn-secondary" onclick="renderInventoryPage()">تحديث</button>
@@ -20793,21 +21240,21 @@ function calculateHealthScore() {
 
 function buildOperationalCompletionSnapshot() {
   const modules = [
-    { key: 'command_center', label: 'Command Center', percent: 95, status: 'near', page: 'command_center' },
-    { key: 'kanban', label: 'Executive Kanban', percent: 98, status: 'near', page: 'kanban' },
-    { key: 'workflow', label: 'Workflow Designer', percent: 82, status: 'todo', page: 'workflow' },
-    { key: 'op_packs', label: 'Operation Packs', percent: 100, status: 'done', page: 'op_packs' },
-    { key: 'task_manager', label: 'Task Manager', percent: 100, status: 'done', page: 'task_manager' },
-    { key: 'machines', label: 'Machine Control', percent: 100, status: 'done', page: 'machines' },
-    { key: 'inventory', label: 'Inventory', percent: 100, status: 'done', page: 'inventory' },
-    { key: 'qc_center', label: 'QC Center', percent: 100, status: 'done', page: 'qc_center' },
-    { key: 'employee_ui', label: 'Employee UI', percent: 100, status: 'done', page: 'employee_ui' },
-    { key: 'sop', label: 'SOP Library', percent: 96, status: 'near', page: 'sop' },
-    { key: 'analytics', label: 'Analytics / BI', percent: 98, status: 'near', page: 'analytics' },
-    { key: 'intelligence', label: 'AI Control Dashboard', percent: 80, status: 'todo', page: 'intelligence' },
-    { key: 'automation', label: 'Automation Engine', percent: 100, status: 'done', page: 'automation' },
-    { key: 'whatsapp', label: 'WhatsApp Operational Inbox', percent: 75, status: 'todo', page: 'whatsapp' },
-    { key: 'admin_panel', label: 'Admin Panel', percent: 85, status: 'todo', page: 'admin_panel', note: 'deferred' }
+    { key: 'command_center', label: 'مركز القيادة', percent: 95, status: 'near', page: 'command_center' },
+    { key: 'kanban', label: 'اللوحة التنفيذية', percent: 98, status: 'near', page: 'kanban' },
+    { key: 'workflow', label: 'مصمم سير العمل', percent: 82, status: 'todo', page: 'workflow' },
+    { key: 'op_packs', label: 'باقات العمليات', percent: 100, status: 'done', page: 'op_packs' },
+    { key: 'task_manager', label: 'إدارة المهام', percent: 100, status: 'done', page: 'task_manager' },
+    { key: 'machines', label: 'لوحة المكائن', percent: 100, status: 'done', page: 'machines' },
+    { key: 'inventory', label: 'المخزون والمواد', percent: 100, status: 'done', page: 'inventory' },
+    { key: 'qc_center', label: 'مركز الجودة', percent: 100, status: 'done', page: 'qc_center' },
+    { key: 'employee_ui', label: 'لوحة الموظف', percent: 100, status: 'done', page: 'employee_ui' },
+    { key: 'sop', label: 'مكتبة الإجراءات', percent: 96, status: 'near', page: 'sop' },
+    { key: 'analytics', label: 'التحليلات والذكاء', percent: 98, status: 'near', page: 'analytics' },
+    { key: 'intelligence', label: 'لوحة الذكاء التشغيلي', percent: 80, status: 'todo', page: 'intelligence' },
+    { key: 'automation', label: 'محرك الأتمتة', percent: 100, status: 'done', page: 'automation' },
+    { key: 'whatsapp', label: 'استيراد واتساب', percent: 75, status: 'todo', page: 'whatsapp' },
+    { key: 'admin_panel', label: 'لوحة الإعدادات', percent: 85, status: 'todo', page: 'admin_panel', note: 'مؤجل' }
   ];
   const average = Math.round(modules.reduce((sum, item) => sum + item.percent, 0) / Math.max(1, modules.length));
   const doneCount = modules.filter(item => item.percent >= 100).length;
@@ -20819,23 +21266,23 @@ function buildOperationalCompletionSnapshot() {
 
 function renderOperationalCompletionSnapshot() {
   const snapshot = buildOperationalCompletionSnapshot();
-  const nextLabel = snapshot.next ? `${snapshot.next.label} ${snapshot.next.percent}%` : 'All sections closed';
+  const nextLabel = snapshot.next ? `${snapshot.next.label} ${snapshot.next.percent}%` : 'كل الأقسام مكتملة';
   return `<section class="analytics-completion-section">
     <div class="analytics-completion-summary">
       <div>
-        <h2>Operational Completion Snapshot</h2>
-        <p>Live project-progress view for the open OMNISYSTEM surfaces. It is read-only and mirrors the current build checkpoint.</p>
+        <h2>لقطة الإنجاز التشغيلي</h2>
+        <p>عرض تقدم المشروع في الوقت الفعلي — قراءة فقط ويعكس نقطة التطوير الحالية.</p>
       </div>
       <div class="analytics-completion-score">
         <strong>${snapshot.average}%</strong>
-        <span>open-section average</span>
+        <span>متوسط الأقسام المفتوحة</span>
       </div>
     </div>
     <div class="analytics-completion-kpis">
-      <div><b>${snapshot.doneCount}</b><span>100% sections</span></div>
-      <div><b>${snapshot.nearCount}</b><span>near close-out</span></div>
-      <div><b>${snapshot.openCount}</b><span>still building</span></div>
-      <div><b>${escapeHtml(nextLabel)}</b><span>lowest current lane</span></div>
+      <div><b>${snapshot.doneCount}</b><span>قسم مكتمل</span></div>
+      <div><b>${snapshot.nearCount}</b><span>قريب من الإغلاق</span></div>
+      <div><b>${snapshot.openCount}</b><span>قيد البناء</span></div>
+      <div><b>${escapeHtml(nextLabel)}</b><span>أقل قسم حالياً</span></div>
     </div>
     <div class="analytics-completion-grid">
       ${snapshot.modules.map(item => `<button class="analytics-completion-row ${item.status}" onclick="switchPage('${item.page}')">
@@ -20939,7 +21386,7 @@ function renderAnalyticsDonut(title, rows, valueKey, labelKey = 'name') {
   const colors = ['#38bdf8', '#34d399', '#fbbf24', '#fb7185', '#a78bfa', '#22d3ee', '#f97316'];
   let offset = 25;
   const circles = rows.slice(0, 7).map((row, idx) => { const pct = Number(row[valueKey] || 0) / total * 100; const circle = `<circle cx="60" cy="60" r="42" fill="none" stroke="${colors[idx % colors.length]}" stroke-width="16" stroke-dasharray="${pct} ${100 - pct}" stroke-dashoffset="${offset}" pathLength="100"/>`; offset -= pct; return circle; }).join('');
-  return `<section class="analytics-donut-panel"><h3>${escapeHtml(title)}</h3><div class="analytics-donut-wrap"><svg class="analytics-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="42" fill="none" stroke="rgba(148,163,184,.14)" stroke-width="16"/>${circles}<text x="60" y="58" text-anchor="middle">${analyticsFormatNumber(total)}</text><text x="60" y="75" text-anchor="middle">total</text></svg><div class="analytics-donut-legend">${rows.slice(0, 7).map((row, idx) => `<span><i style="background:${colors[idx % colors.length]}"></i>${escapeHtml(row[labelKey] || row.label || '-')} <b>${analyticsFormatNumber(row[valueKey])}</b></span>`).join('')}</div></div></section>`;
+  return `<section class="analytics-donut-panel"><h3>${escapeHtml(title)}</h3><div class="analytics-donut-wrap"><svg class="analytics-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="42" fill="none" stroke="rgba(148,163,184,.14)" stroke-width="16"/>${circles}<text x="60" y="58" text-anchor="middle">${analyticsFormatNumber(total)}</text><text x="60" y="75" text-anchor="middle">إجمالي</text></svg><div class="analytics-donut-legend">${rows.slice(0, 7).map((row, idx) => `<span><i style="background:${colors[idx % colors.length]}"></i>${escapeHtml(row[labelKey] || row.label || '-')} <b>${analyticsFormatNumber(row[valueKey])}</b></span>`).join('')}</div></div></section>`;
 }
 
 function renderAnalyticsStackedCost(costIntel) {
@@ -20950,9 +21397,11 @@ function renderAnalyticsStackedCost(costIntel) {
   return `<section class="analytics-cost-stack"><h3><i class="fa-solid fa-chart-simple"></i> توزيع الكلفة</h3><svg viewBox="0 0 100 18" preserveAspectRatio="none" aria-hidden="true">${rows.slice(0, 6).map(([name, value], idx) => { const width = Math.max(2, Number(value || 0) / total * 100); const rect = `<rect x="${x}" y="2" width="${width}" height="14" rx="3" fill="${colors[idx % colors.length]}"><title>${escapeHtml(name)} · ${analyticsFormatNumber(value)}</title></rect>`; x += width; return rect; }).join('')}</svg><div class="analytics-cost-legend">${rows.slice(0, 6).map(([name, value], idx) => `<span><i style="background:${colors[idx % colors.length]}"></i>${escapeHtml(name)} <b>${analyticsFormatNumber(value)}</b></span>`).join('') || '<span>لا توجد كلفة مسجلة</span>'}</div></section>`;
 }
 
+const _pageKeyAr = {kanban:'اللوحة التنفيذية',analytics:'التحليلات',qc_center:'مركز الجودة',machines:'المكائن',inventory:'المخزون',sop:'الإجراءات',op_packs:'باقات العمليات',command_center:'مركز القيادة',employees:'الموظفون',finance:'المالية',task_manager:'إدارة المهام',workflow:'سير العمل',mrp:'تخطيط الإنتاج',customers:'العملاء',admin_panel:'لوحة الإعدادات'};
 function renderAnalyticsRecommendationCard(item) {
   const severity = String(item.severity || '').includes('حرج') || String(item.severity || '').includes('عالي') ? 'critical' : String(item.severity || '').includes('متوسط') ? 'warning' : 'good';
-  return `<div class="analytics-rec-card analytics-rec-${severity}" style="--rec-color:${item.color || '#38bdf8'}"><div class="analytics-rec-source"><span>${escapeHtml(item.severity || 'متابعة')}</span><em>${escapeHtml(item.action || 'system')}</em></div><div class="analytics-rec-title">${escapeHtml(item.title)}</div><div class="analytics-rec-reason">${escapeHtml(item.reason)}</div><div class="analytics-rec-actions"><button class="btn-primary" onclick="switchPage('${jsString(item.action || 'analytics')}')"><i class="fa-solid fa-arrow-up-right-from-square"></i> فتح المصدر</button><button class="btn-secondary" onclick="showOmniModal('تفاصيل التوصية','<p>${jsString(escapeHtml(item.reason || ''))}</p>',()=>true)">تفاصيل</button></div></div>`;
+  const actionLabel = _pageKeyAr[item.action] || item.action || 'النظام';
+  return `<div class="analytics-rec-card analytics-rec-${severity}" style="--rec-color:${item.color || '#38bdf8'}"><div class="analytics-rec-source"><span>${escapeHtml(item.severity || 'متابعة')}</span><em>${escapeHtml(actionLabel)}</em></div><div class="analytics-rec-title">${escapeHtml(item.title)}</div><div class="analytics-rec-reason">${escapeHtml(item.reason)}</div><div class="analytics-rec-actions"><button class="btn-primary" onclick="switchPage('${jsString(item.action || 'analytics')}')"><i class="fa-solid fa-arrow-up-right-from-square"></i> فتح المصدر</button><button class="btn-secondary" onclick="showOmniModal('تفاصيل التوصية','<p>${jsString(escapeHtml(item.reason || ''))}</p>',()=>true)">تفاصيل</button></div></div>`;
 }
 
 function renderAnalyticsAlertCard(item) {
@@ -21898,9 +22347,9 @@ const CMD_PALETTE_COMMANDS = [
   { label: 'إضافة ماكينة', action: () => { switchPage('machines'); setTimeout(()=>addMachine(), 100); }, keywords: 'add machine ماكينة' },
   { label: 'إضافة مادة', action: () => { switchPage('inventory'); setTimeout(()=>addMaterial(), 100); }, keywords: 'add material مادة' },
   { label: 'إضافة فحص جودة', action: () => { switchPage('qc_center'); setTimeout(()=>addQcRecord(), 100); }, keywords: 'add qc فحص' },
-  { label: 'تشغيل باقة Acrylic LED Sign', action: () => executeOpPack('pack_acrylic_sign'), keywords: 'run acrylic sign أكريلك' },
-  { label: 'تشغيل باقة MDF Router', action: () => executeOpPack('pack_mdf_router'), keywords: 'run mdf router خشب' },
-  { label: 'تشغيل باقة 3D Print', action: () => executeOpPack('pack_3dprint'), keywords: 'run 3d print طباعة' },
+  { label: 'تشغيل باقة لافتة أكريليك', action: () => executeOpPack('pack_acrylic_sign'), keywords: 'run acrylic sign أكريلك' },
+  { label: 'تشغيل باقة راوتر MDF', action: () => executeOpPack('pack_mdf_router'), keywords: 'run mdf router خشب' },
+  { label: 'تشغيل باقة طباعة ثلاثية الأبعاد', action: () => executeOpPack('pack_3dprint'), keywords: 'run 3d print طباعة' },
   { label: 'فتح لوحة المالية', action: () => switchPage('finance'), keywords: 'finance مالية' },
   { label: 'فتح القاصة', action: () => switchPage('cashbox'), keywords: 'cashbox قاصة' },
   { label: 'فتح حاسبة الرواتب', action: () => switchPage('calculator'), keywords: 'calculator payroll رواتب' },
@@ -21961,7 +22410,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ─── Theme Switcher ───
-const THEMES = ['default', 'glass', 'abstract'];
+const THEMES = ['default', 'glass', 'abstract', 'neumorphism', 'clean', 'bento', 'premium', 'glassmorphism', 'dashboard', 'refined', 'shadcn', 'perspective'];
 let currentTheme = 'default';
 
 function initTheme() {
@@ -21985,7 +22434,7 @@ function setTheme(theme) {
   const body = document.body;
 
   // Remove all theme classes
-  body.classList.remove('theme-glass', 'theme-abstract');
+  body.classList.remove('theme-glass', 'theme-abstract', 'theme-neumorphism', 'theme-clean', 'theme-bento', 'theme-premium', 'theme-glassmorphism', 'theme-dashboard', 'theme-refined', 'theme-shadcn');
 
   // Add new theme class if not default
   if (theme === 'glass') {
@@ -21998,6 +22447,22 @@ function setTheme(theme) {
     }, 100);
   } else if (theme === 'abstract') {
     body.classList.add('theme-abstract');
+  } else if (theme === 'neumorphism') {
+    body.classList.add('theme-neumorphism');
+  } else if (theme === 'clean') {
+    body.classList.add('theme-clean');
+  } else if (theme === 'bento') {
+    body.classList.add('theme-bento');
+  } else if (theme === 'premium') {
+    body.classList.add('theme-premium');
+  } else if (theme === 'glassmorphism') {
+    body.classList.add('theme-glassmorphism');
+  } else if (theme === 'dashboard') {
+    body.classList.add('theme-dashboard');
+  } else if (theme === 'refined') {
+    body.classList.add('theme-refined');
+  } else if (theme === 'shadcn') {
+    body.classList.add('theme-shadcn');
   }
 
   // Save to localStorage
@@ -22022,11 +22487,78 @@ function updateThemeIndicator() {
   const themeNames = {
     'default': 'الافتراضي',
     'glass': 'زجاجي',
-    'abstract': 'حديث'
+    'abstract': 'حديث',
+    'neumorphism': 'مجسّم',
+    'clean': 'نظيف',
+    'bento': 'بنتو',
+    'premium': 'بريميوم',
+    'glassmorphism': 'زجاجي ضبابي',
+    'dashboard': 'لوحة بيانات',
+    'refined': 'راقٍ',
+    'shadcn': 'شادسـن'
   };
 
   if (label) label.textContent = themeNames[currentTheme] || 'المظهر';
+  if (typeof renderThemeMenu === 'function') renderThemeMenu();
 }
+
+// ─── Appearance dropdown menu ───
+const THEME_META = {
+  'default':       { label: 'الافتراضي',    swatch: '#0a0e1a' },
+  'glass':         { label: 'زجاجي',         swatch: '#1e3a5f' },
+  'abstract':      { label: 'حديث',          swatch: '#818cf8' },
+  'neumorphism':   { label: 'مجسّم',         swatch: '#e7e5e4' },
+  'clean':         { label: 'نظيف',          swatch: '#ffffff' },
+  'bento':         { label: 'بنتو',          swatch: '#fff5e6' },
+  'premium':       { label: 'بريميوم',       swatch: '#0071e3' },
+  'glassmorphism': { label: 'زجاجي ضبابي',   swatch: 'linear-gradient(135deg,#312e81,#1856ff)' },
+  'dashboard':     { label: 'لوحة بيانات',   swatch: 'linear-gradient(135deg,#0d1117,#2f81f7)' },
+  'refined':       { label: 'راقٍ',          swatch: '#8b5cf6' },
+  'shadcn':        { label: 'شادسـن',        swatch: '#18181b' }
+};
+
+function renderThemeMenu() {
+  const menu = document.getElementById('themeMenu');
+  if (!menu) return;
+  menu.innerHTML = THEMES.map(function (t) {
+    const m = THEME_META[t] || { label: t, swatch: '#888' };
+    const active = (t === currentTheme) ? ' active' : '';
+    const check = active ? '<span class="theme-check">✓</span>' : '';
+    return '<button class="theme-menu-item' + active + '" role="menuitem" onclick="selectTheme(\'' + t + '\')">' +
+           '<span class="theme-swatch" style="background:' + m.swatch + '"></span>' +
+           '<span>' + m.label + '</span>' + check + '</button>';
+  }).join('');
+}
+
+function toggleThemeMenu(e) {
+  if (e) e.stopPropagation();
+  const wrap = document.getElementById('themeSwitcherWrap');
+  const btn = document.getElementById('btnThemeSwitcher');
+  if (!wrap) return;
+  const open = wrap.classList.toggle('open');
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) renderThemeMenu();
+}
+
+function closeThemeMenu() {
+  const wrap = document.getElementById('themeSwitcherWrap');
+  const btn = document.getElementById('btnThemeSwitcher');
+  if (wrap) wrap.classList.remove('open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function selectTheme(t) {
+  setTheme(t);
+  closeThemeMenu();
+  if (t === 'glass' && window.initRealGlassEffect) {
+    setTimeout(function () { window.initRealGlassEffect(); }, 100);
+  }
+}
+
+document.addEventListener('click', function (e) {
+  const wrap = document.getElementById('themeSwitcherWrap');
+  if (wrap && !wrap.contains(e.target)) closeThemeMenu();
+});
 
 
 // Glass effects are now in glass-effects.js module
@@ -22539,7 +23071,7 @@ function getEmployeeAssignedTasks(emp, empIdx) {
   const results = [];
   (omni.kanban.cards || []).forEach(c => {
     if (employeeTaskBelongsTo(c, employee, idx)) {
-      results.push({ ...c, sourceType: 'kanban', sourceLabel: 'Kanban' });
+      results.push({ ...c, sourceType: 'kanban', sourceLabel: 'اللوحة' });
     }
   });
   if (typeof getAllTaskManagerTasks === 'function') {
@@ -22668,7 +23200,7 @@ function getEmployeePortalFeed(empIdx, emp, tasks = [], centralRequests = []) {
     status: t.dueDate && t.dueDate <= todayISO() ? 'unread' : 'read',
     kind: 'مهمة',
     actionHtml: t.sourceType === 'kanban'
-      ? `<button class="btn-primary" onclick="switchPage('kanban')">فتح Kanban</button>`
+      ? `<button class="btn-primary" onclick="switchPage('kanban')">فتح اللوحة</button>`
       : `<button class="btn-primary" onclick="switchPage('task_manager')">فتح Task Manager</button>`
   }));
   return [...notificationItems, ...requestItems, ...taskItems]
@@ -23345,7 +23877,7 @@ function renderJournalEntryTab(selectedMoveId = '') {
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
           <div>
             <h3 class="section-title" style="margin:0">القيود المحاسبية</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Unified account.move · ${moves.length} حركة</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">قيود موحدة · ${moves.length} حركة</div>
           </div>
           <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
             <label style="font-size:12px;color:var(--text-muted)">تاريخ الإقفال
@@ -23387,7 +23919,7 @@ function renderReconciliationPanel(recon, canCreatePayment = false) {
     <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
       <div>
         <h3 class="section-title" style="margin:0">الدفعات والمطابقة</h3>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Payment/reconciliation awareness على account.move فقط</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">دفعات ومطابقة الحركات المحاسبية</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <span class="je-balance-chip">ذمم العملاء: ${formatNum(recon.totals?.receivables || 0)}</span>
@@ -25520,7 +26052,11 @@ function renderAutomationRules() {
   return rules.map(rule => {
     const conditionsHtml = (rule.conditions || []).map(c => {
       const opLabels = { eq: '=', ne: '≠', gt: '>', gte: '≥', lt: '<', lte: '≤', in: 'في', contains: 'يشتمل على' };
-      return `<span>${escapeHtml(c.field)} <b>${opLabels[c.operator] || c.operator}</b> "${escapeHtml(c.value)}"</span>`;
+      const fieldAr = { priority: 'الأولوية', stock: 'المخزون', totalMinutes: 'وقت العملية', status: 'الحالة', type: 'النوع', amount: 'المبلغ', score: 'النقاط', risk: 'المخاطر', count: 'العدد' };
+      const valAr = { Urgent: 'عاجل', High: 'عالي', Normal: 'عادي', Low: 'منخفض', minimum: 'الحد الأدنى', operational: 'تعمل', idle: 'خامل', maintenance: 'صيانة', offline: 'غير متصل' };
+      const fieldLabel = fieldAr[c.field] || c.field;
+      const valLabel = valAr[c.value] || c.value;
+      return `<span>${escapeHtml(fieldLabel)} <b>${opLabels[c.operator] || c.operator}</b> "${escapeHtml(valLabel)}"</span>`;
     }).join(' و ') || '<span class="muted">بدون شروط إضافية</span>';
     
     const isAutoDisabled = !rule.active && rule.consecutiveErrors >= 3;
@@ -25684,20 +26220,20 @@ function renderAutomationHealthAndPoliciesContent() {
               <tr><th>الوحدة / الإجراء</th><th>النوع</th><th>سياسة الأمان</th><th>الحالة</th></tr>
             </thead>
             <tbody>
-              <tr><td>تعديلات الرواتب والموظفين</td><td>حقل حساس</td><td>كتابة محظورة / موافقة المدير مطلوبة</td><td><span class="policy-locked-badge">تأكيد Gated</span></td></tr>
-              <tr><td>تعديلات المالية والقيود المحاسبية</td><td>حقل حساس</td><td>كتابة محظورة / موافقة المدير مطلوبة</td><td><span class="policy-locked-badge">تأكيد Gated</span></td></tr>
-              <tr><td>إجراء <code>trigger_ai_analysis</code></td><td>إجراء أتمتة</td><td>يمر عبر طابور موافقة AI مركز القيادة</td><td><span class="policy-gated-badge">تأكيد Gated</span></td></tr>
-              <tr><td>إجراء <code>propose_purchase</code></td><td>إجراء أتمتة</td><td>ينشئ مسودة طلب شراء للمراجعة والاعتماد</td><td><span class="policy-gated-badge">تأكيد Gated</span></td></tr>
-              <tr><td>إجراء <code>create_request</code></td><td>إجراء أتمتة</td><td>ينشئ طلب موافقة عام للمراجعة والاعتماد</td><td><span class="policy-gated-badge">تأكيد Gated</span></td></tr>
-              <tr><td>إجراء <code>create_task</code></td><td>إجراء أتمتة</td><td>تأثير على مدير المهام المفتوح مباشرة</td><td><span class="policy-safe-badge">آمن Safe</span></td></tr>
-              <tr><td>إجراء <code>schedule_inspection</code></td><td>إجراء أتمتة</td><td>جدولة فحص جودة معلق بدون تعديل مباشر</td><td><span class="policy-safe-badge">آمن Safe</span></td></tr>
+              <tr><td>تعديلات الرواتب والموظفين</td><td>حقل حساس</td><td>كتابة محظورة / موافقة المدير مطلوبة</td><td><span class="policy-locked-badge">موافقة مطلوبة</span></td></tr>
+              <tr><td>تعديلات المالية والقيود المحاسبية</td><td>حقل حساس</td><td>كتابة محظورة / موافقة المدير مطلوبة</td><td><span class="policy-locked-badge">موافقة مطلوبة</span></td></tr>
+              <tr><td>إجراء <code>trigger_ai_analysis</code></td><td>إجراء أتمتة</td><td>يمر عبر طابور موافقة AI مركز القيادة</td><td><span class="policy-gated-badge">موافقة مطلوبة</span></td></tr>
+              <tr><td>إجراء <code>propose_purchase</code></td><td>إجراء أتمتة</td><td>ينشئ مسودة طلب شراء للمراجعة والاعتماد</td><td><span class="policy-gated-badge">موافقة مطلوبة</span></td></tr>
+              <tr><td>إجراء <code>create_request</code></td><td>إجراء أتمتة</td><td>ينشئ طلب موافقة عام للمراجعة والاعتماد</td><td><span class="policy-gated-badge">موافقة مطلوبة</span></td></tr>
+              <tr><td>إجراء <code>create_task</code></td><td>إجراء أتمتة</td><td>تأثير على مدير المهام المفتوح مباشرة</td><td><span class="policy-safe-badge">آمن</span></td></tr>
+              <tr><td>إجراء <code>schedule_inspection</code></td><td>إجراء أتمتة</td><td>جدولة فحص جودة معلق بدون تعديل مباشر</td><td><span class="policy-safe-badge">آمن</span></td></tr>
             </tbody>
           </table>
         </div>
       </div>
       
       <div class="glass-card" style="padding:16px;">
-        <h3 style="margin-top:0; margin-bottom:12px;"><i class="fa-solid fa-vial"></i> محاكي الأتمتة التفاعلي (Sandbox)</h3>
+        <h3 style="margin-top:0; margin-bottom:12px;"><i class="fa-solid fa-vial"></i> محاكي الأتمتة التفاعلي</h3>
         <p style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:14px;">اختر قاعدة أتمتة ونموذج حدث تشغيلي لمحاكاة طريقة تقييم وتصرف النظام في بيئة معزولة وآمنة.</p>
         
         <div style="display:grid; gap:12px; margin-bottom:16px;">
@@ -25710,19 +26246,19 @@ function renderAutomationHealthAndPoliciesContent() {
           </div>
           
           <div>
-            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">حدث المحاكاة المسبق (Preset)</label>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">حدث المحاكاة المسبق</label>
             <select id="simPresetSelect" class="form-input" onchange="omniSelectedSimPreset = this.value; renderAutomationEngine();">
-              <option value="stuck_card" ${omniSelectedSimPreset === 'stuck_card' ? 'selected' : ''}>بطاقة كانبان عالقة (KANBAN_CARD_STUCK)</option>
-              <option value="low_stock" ${omniSelectedSimPreset === 'low_stock' ? 'selected' : ''}>نقص المواد بالمخزون (MATERIAL_LOW_STOCK)</option>
-              <option value="qc_fail" ${omniSelectedSimPreset === 'qc_fail' ? 'selected' : ''}>تكرار فشل الجودة (QC_REPEATED_FAIL)</option>
-              <option value="machine_overload" ${omniSelectedSimPreset === 'machine_overload' ? 'selected' : ''}>تحميل زائد على ماكينة (MACHINE_OVERLOADED)</option>
-              <option value="employee_req" ${omniSelectedSimPreset === 'employee_req' ? 'selected' : ''}>موافقة طلب موظف (EMPLOYEE_REQUEST_APPROVED)</option>
-              <option value="whatsapp_app" ${omniSelectedSimPreset === 'whatsapp_app' ? 'selected' : ''}>اعتماد WhatsApp (WHATSAPP_APPROVED)</option>
+              <option value="stuck_card" ${omniSelectedSimPreset === 'stuck_card' ? 'selected' : ''}>بطاقة عالقة في اللوحة</option>
+              <option value="low_stock" ${omniSelectedSimPreset === 'low_stock' ? 'selected' : ''}>نقص المواد بالمخزون</option>
+              <option value="qc_fail" ${omniSelectedSimPreset === 'qc_fail' ? 'selected' : ''}>تكرار فشل الجودة</option>
+              <option value="machine_overload" ${omniSelectedSimPreset === 'machine_overload' ? 'selected' : ''}>تحميل زائد على ماكينة</option>
+              <option value="employee_req" ${omniSelectedSimPreset === 'employee_req' ? 'selected' : ''}>موافقة طلب موظف</option>
+              <option value="whatsapp_app" ${omniSelectedSimPreset === 'whatsapp_app' ? 'selected' : ''}>اعتماد رسائل العملاء</option>
             </select>
           </div>
           
           <div>
-            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات الحدث المرسلة (Mock Payload)</label>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات الحدث المرسلة</label>
             <pre style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px; font-size:11px; color:#a7f3d0; margin:0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
           </div>
           
@@ -25730,7 +26266,7 @@ function renderAutomationHealthAndPoliciesContent() {
         </div>
         
         <div>
-          <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">مخرجات الكونسول (Simulation Console)</label>
+          <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">مخرجات المحاكاة</label>
           <div class="automation-simulation-console">
             ${consoleOutputHtml}
           </div>
@@ -26425,10 +26961,10 @@ function renderWhatsAppSimulatorPanel() {
         </div>
       </div>
       <div class="automation-rule-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;opacity:0.85;">
-        <label class="field"><span>Webhook URL</span><input value="http://localhost:8080/api/whatsapp/webhook" readonly></label>
-      <label class="field"><span>Verify Token</span><input value="octagon_wa_secret_token" readonly></label>
-        <label class="field"><span>Phone Number ID</span><input value="wa_phone_prod_3321" readonly></label>
-        <label class="field"><span>API Version</span><input value="v20.0" readonly></label>
+        <label class="field"><span>رابط الـ Webhook</span><input value="http://localhost:8080/api/whatsapp/webhook" readonly></label>
+      <label class="field"><span>رمز التحقق (Verify Token)</span><input value="octagon_wa_secret_token" readonly></label>
+        <label class="field"><span>معرّف رقم الهاتف (Phone Number ID)</span><input value="wa_phone_prod_3321" readonly></label>
+        <label class="field"><span>إصدار الواجهة (API)</span><input value="v20.0" readonly></label>
       </div>
     </div>
   `;
@@ -26659,16 +27195,16 @@ const buildPentagonRouteHealth = buildOctagonRouteHealth;
 function renderOctagonRouteHealthPanel() {
   const health = buildOctagonRouteHealth();
   return `<div class="automation-panel" style="margin-top:20px;">
-    <div class="automation-section-head"><h3>Route / Page / Render Self-Test</h3><span>${health.okCount}/${health.total} ready</span></div>
+    <div class="automation-section-head"><h3>فحص صحة المسارات والصفحات</h3><span>${health.okCount}/${health.total} جاهزة</span></div>
     <div class="analytics-table-wrap"><table class="analytics-mini-table">
-      <thead><tr><th>Page</th><th>Section</th><th>Nav</th><th>Page</th><th>Renderer</th><th>Status</th></tr></thead>
+      <thead><tr><th>الصفحة</th><th>القسم</th><th>الناف</th><th>الصفحة</th><th>المُصيِّر</th><th>الحالة</th></tr></thead>
       <tbody>${health.rows.map(row => `<tr>
         <td><button class="btn-secondary" style="padding:3px 8px;font-size:11px" onclick="switchPage('${row.page}')">${escapeHtml(row.label)}</button></td>
         <td>${escapeHtml(row.section)}</td>
-        <td><span class="analytics-risk-badge" style="background:${row.navOk ? '#34d399' : '#f87171'}">${row.navOk ? 'OK' : 'Missing'}</span></td>
-        <td><span class="analytics-risk-badge" style="background:${row.pageOk ? '#34d399' : '#f87171'}">${row.pageOk ? 'OK' : 'Missing'}</span></td>
-        <td><span class="analytics-risk-badge" style="background:${row.renderOk ? '#34d399' : '#f87171'}">${row.renderOk ? (row.staticPage ? 'Static' : 'OK') : 'Missing'}</span></td>
-        <td><b style="color:${row.ok ? '#34d399' : '#f87171'}">${row.ok ? 'Ready' : 'Fix'}</b></td>
+        <td><span class="analytics-risk-badge" style="background:${row.navOk ? '#34d399' : '#f87171'}">${row.navOk ? '✓' : 'مفقود'}</span></td>
+        <td><span class="analytics-risk-badge" style="background:${row.pageOk ? '#34d399' : '#f87171'}">${row.pageOk ? '✓' : 'مفقود'}</span></td>
+        <td><span class="analytics-risk-badge" style="background:${row.renderOk ? '#34d399' : '#f87171'}">${row.renderOk ? (row.staticPage ? 'ثابت' : '✓') : 'مفقود'}</span></td>
+        <td><b style="color:${row.ok ? '#34d399' : '#f87171'}">${row.ok ? 'جاهز' : 'يحتاج إصلاح'}</b></td>
       </tr>`).join('')}</tbody>
     </table></div>
   </div>`;
@@ -26681,16 +27217,16 @@ function renderOdooPlusGapRegistry() {
   const avg = Math.round(rows.reduce((sum, row) => sum + row.percent, 0) / Math.max(1, rows.length));
   const critical = rows.filter(row => row.priority === 'Critical').length;
   return `<div class="automation-panel" style="margin-top:20px;">
-    <div class="automation-section-head"><h3>Odoo-Plus Gap Registry</h3><span>${avg}% average · ${critical} critical</span></div>
+    <div class="automation-section-head"><h3>سجل الفجوات مقابل أودو</h3><span>متوسط ${avg}% · ${critical} حرجة</span></div>
     <div class="analytics-table-wrap"><table class="analytics-mini-table">
-      <thead><tr><th>Area</th><th>Odoo baseline</th><th>Current Octagon</th><th>Readiness</th><th>Main gap</th><th>Next page</th></tr></thead>
+      <thead><tr><th>المجال</th><th>أساس أودو</th><th>أوكتاغون الحالي</th><th>الجاهزية</th><th>الفجوة الرئيسية</th><th>الصفحة</th></tr></thead>
       <tbody>${rows.map(row => `<tr>
-        <td><b>${escapeHtml(row.area)}</b><br><span class="analytics-risk-badge" style="background:${row.priority === 'Critical' ? '#f87171' : row.priority === 'High' ? '#fbbf24' : '#38bdf8'}">${escapeHtml(row.priority)}</span></td>
+        <td><b>${escapeHtml(row.area)}</b><br><span class="analytics-risk-badge" style="background:${row.priority === 'Critical' ? '#f87171' : row.priority === 'High' ? '#fbbf24' : '#38bdf8'}">${row.priority === 'Critical' ? 'حرج' : row.priority === 'High' ? 'عالي' : 'متوسط'}</span></td>
         <td>${escapeHtml(row.odoo)}</td>
         <td>${escapeHtml(row.current)}</td>
         <td><span class="analytics-completion-meter"><i style="width:${row.percent}%"></i></span><b>${row.percent}%</b></td>
         <td>${escapeHtml(row.gap)}</td>
-        <td><button class="btn-secondary" style="padding:3px 8px;font-size:11px" onclick="switchPage('${row.page}')">Open</button></td>
+        <td><button class="btn-secondary" style="padding:3px 8px;font-size:11px" onclick="switchPage('${row.page}')">فتح</button></td>
       </tr>`).join('')}</tbody>
     </table></div>
   </div>`;
@@ -26711,23 +27247,23 @@ function getAiDashboardStats() {
   const payrollRows = Array.isArray(employees) ? employees.length : 0;
   const financeRows = Array.isArray(finance?.transactions) ? finance.transactions.length : 0;
   const inputSources = [
-    { key: 'payroll', label: 'Payroll / HR', count: payrollRows, read: true, write: false, note: 'قراءة عالية الحساسية؛ الكتابة تبقى يدوية أو عبر طلبات موافقة.' },
-    { key: 'finance', label: 'Finance', count: financeRows, read: true, write: false, note: 'قراءة وتحليل فقط حالياً؛ أي قيد مالي مباشر يحتاج backup-first وموافقة.' },
-    { key: 'tasks', label: 'Task Manager', count: tasks.length, read: true, write: true, note: 'يمكن إنشاء مهام متابعة آمنة من AI أو WhatsApp.' },
-    { key: 'kanban', label: 'Kanban', count: kanbanCards.length, read: true, write: 'limited', note: 'الأتمتة تستطيع التصعيد ووضع وسوم؛ إنشاء بطاقات AI شامل غير مكتمل.' },
-    { key: 'inventory', label: 'Inventory', count: materials.length, read: true, write: 'limited', note: 'الأتمتة تقرأ المخزون وتصدر تنبيهات؛ الشراء/الصرف يحتاج مسار موافقة.' },
-    { key: 'machines', label: 'Machines', count: machines.length, read: true, write: false, note: 'جاهز للقراءة والتوصية؛ لا يوجد تحكم مباشر بالمكائن.' },
-    { key: 'qc', label: 'QC', count: qcRecords.length, read: true, write: 'limited', note: 'فشل QC يطلق أتمتة؛ قرارات إعادة العمل تبقى واضحة للمستخدم.' },
-    { key: 'sop', label: 'SOP', count: sops.length, read: true, write: false, note: 'قاعدة معرفة ممتازة، لكن لا يوجد توليد/تعديل SOP آلي مع اعتماد.' },
-    { key: 'whatsapp', label: 'WhatsApp', count: whatsapp.length, read: true, write: 'review', note: 'استيراد واقتراحات بمراجعة؛ ليس تكاملاً مباشراً مع WhatsApp API.' }
+    { key: 'payroll', label: 'الرواتب والموارد البشرية', count: payrollRows, read: true, write: false, note: 'قراءة عالية الحساسية؛ الكتابة تبقى يدوية أو عبر طلبات موافقة.' },
+    { key: 'finance', label: 'المالية', count: financeRows, read: true, write: false, note: 'قراءة وتحليل فقط حالياً؛ أي قيد مالي مباشر يحتاج موافقة ونسخ احتياطي أولاً.' },
+    { key: 'tasks', label: 'إدارة المهام', count: tasks.length, read: true, write: true, note: 'يمكن إنشاء مهام متابعة آمنة من الذكاء الاصطناعي أو رسائل العملاء.' },
+    { key: 'kanban', label: 'اللوحة التنفيذية', count: kanbanCards.length, read: true, write: 'limited', note: 'الأتمتة تستطيع التصعيد ووضع وسوم؛ إنشاء بطاقات ذكاء شامل غير مكتمل.' },
+    { key: 'inventory', label: 'المخزون', count: materials.length, read: true, write: 'limited', note: 'الأتمتة تقرأ المخزون وتصدر تنبيهات؛ الشراء/الصرف يحتاج مسار موافقة.' },
+    { key: 'machines', label: 'المكائن', count: machines.length, read: true, write: false, note: 'جاهز للقراءة والتوصية؛ لا يوجد تحكم مباشر بالمكائن.' },
+    { key: 'qc', label: 'الجودة', count: qcRecords.length, read: true, write: 'limited', note: 'فشل الجودة يطلق أتمتة؛ قرارات إعادة العمل تبقى واضحة للمستخدم.' },
+    { key: 'sop', label: 'الإجراءات', count: sops.length, read: true, write: false, note: 'قاعدة معرفة ممتازة، لكن لا يوجد توليد/تعديل إجراء آلي مع اعتماد.' },
+    { key: 'whatsapp', label: 'واتساب', count: whatsapp.length, read: true, write: 'review', note: 'استيراد واقتراحات بمراجعة؛ ليس تكاملاً مباشراً مع واجهة برمجة واتساب.' }
   ];
   const gaps = [
-    { page: 'intelligence', title: 'AI dashboard is local/deterministic, not a live model brain yet', severity: 'critical' },
-    { page: 'whatsapp', title: 'WhatsApp is paste/review ingestion, not a full two-way integration', severity: 'critical' },
-    { page: 'automation', title: 'Automation rules react to selected events only; no full AI policy engine yet', severity: 'high' },
-    { page: 'finance', title: 'AI writes to finance are intentionally blocked until approval and backup-first paths exist', severity: 'high' },
-    { page: 'admin_panel', title: 'Admin settings are not fully wired across all modules', severity: 'high' },
-    { page: 'sop', title: 'SOP Library needs visual close-out and upload decision', severity: 'medium' }
+    { page: 'intelligence', title: 'لوحة الذكاء محلية/حتمية، ليست نموذجاً حياً بعد', severity: 'critical' },
+    { page: 'whatsapp', title: 'تكامل واتساب للمراجعة فقط، وليس تكاملاً ثنائي الاتجاه', severity: 'critical' },
+    { page: 'automation', title: 'قواعد الأتمتة تستجيب لأحداث محددة فقط؛ لا يوجد محرك سياسة ذكاء شامل', severity: 'high' },
+    { page: 'finance', title: 'كتابة الذكاء على المالية محظورة حتى توفر مسار الموافقة والنسخ الاحتياطي', severity: 'high' },
+    { page: 'admin_panel', title: 'إعدادات الإدارة غير مرتبطة بالكامل بجميع الوحدات بعد', severity: 'high' },
+    { page: 'sop', title: 'مكتبة الإجراءات تحتاج قرار الإغلاق البصري والرفع', severity: 'medium' }
   ];
   return {
     tasks,
@@ -26876,8 +27412,8 @@ function renderHrPayrollAiReviewPanel() {
   const monthLabel = `${review.cfg.month || '-'} / ${review.cfg.year || '-'}`;
   return `<div class="automation-panel hr-ai-review-panel">
     <div class="automation-section-head">
-      <h3>HR / Payroll AI Review Layer</h3>
-      <span>read-only · ${monthLabel}</span>
+      <h3>مراجعة الذكاء للرواتب والموارد البشرية</h3>
+      <span>قراءة فقط · ${monthLabel}</span>
     </div>
     <div class="hr-ai-kpis">
       <div><span>موظفون ضمن المراجعة</span><b>${review.reviewedEmployeeCount}/${review.employeeCount}</b></div>
@@ -26890,7 +27426,7 @@ function renderHrPayrollAiReviewPanel() {
         const badge = getHrPayrollAiSeverityBadge(card.severity);
         return `<div class="hr-ai-review-card hr-ai-${escapeHtml(card.severity)}">
           <div class="hr-ai-card-head">
-            <div><b>${escapeHtml(card.title)}</b><small>${escapeHtml(card.employeeName)} · ${escapeHtml(card.type)}</small></div>
+            <div><b>${escapeHtml(card.title)}</b><small>${escapeHtml(card.employeeName)} · ${escapeHtml(translateHrCardType(card.type))}</small></div>
             <span class="analytics-risk-badge" style="background:${badge.color}">${badge.label}</span>
           </div>
           <p>${escapeHtml(card.detail)}</p>
@@ -26900,7 +27436,7 @@ function renderHrPayrollAiReviewPanel() {
             <button class="btn-primary" onclick="createHrPayrollAiProposal('${card.id}')"><i class="fa-solid fa-shield-halved"></i> اقتراح مراجعة</button>
           </div>
         </div>`;
-      }).join('') || '<div class="omni-notification-empty">لا توجد إشارات Payroll/HR خطرة لهذا الشهر. التحليل بقي قراءة فقط.</div>'}
+      }).join('') || '<div class="omni-notification-empty">لا توجد إشارات رواتب أو موارد بشرية خطرة لهذا الشهر. التحليل بقي قراءة فقط.</div>'}
     </div>
     <p class="muted" style="margin:12px 0 0;">هذه الطبقة لا تعدل الراتب أو البصمة. أي تصحيح يتحول إلى طابور موافقة أو مهمة مراجعة فقط.</p>
   </div>`;
@@ -26916,10 +27452,11 @@ function createHrPayrollAiProposal(cardId) {
     renderAiControlDashboard();
     return;
   }
+  const aiCtx = getAiCurrentUserContext();
   ai.actionQueue.unshift({
     id: makeId('aiprop'),
     actionId: 'hr_payroll_review_proposal',
-    title: `مراجعة Payroll/HR: ${card.employeeName}`,
+    title: `مراجعة رواتب: ${card.employeeName}`,
     target: 'payroll',
     mode: 'approval_required',
     risk: card.severity === 'critical' ? 'critical' : card.severity === 'high' ? 'high' : 'medium',
@@ -26928,18 +27465,36 @@ function createHrPayrollAiProposal(cardId) {
     affectedRecords: 1,
     sourceType: 'hr_payroll_ai_review',
     sourceId: card.id,
-    payload: card,
+    requestedBy: aiCtx.name,
+    requestedById: aiCtx.id,
+    requestedByRole: aiCtx.role,
+    payload: { ...card, userId: aiCtx.id, userName: aiCtx.name, userRole: aiCtx.role, source: 'hr_payroll_ai_review' },
     createdAt: new Date().toISOString()
   });
   addAiRunHistory({
     actionId: 'hr_payroll_review_proposal',
-    title: `HR/Payroll review queued: ${card.employeeName}`,
+    title: `مراجعة رواتب مُدرجة: ${card.employeeName}`,
     status: 'queued',
     note: 'Read-only payroll finding was routed to AI approval queue. No payroll write was performed.'
   });
   saveData();
   showToast('تم تحويل ملاحظة الرواتب إلى طابور موافقة بدون تعديل أي راتب.', 'success');
   renderAiControlDashboard();
+}
+
+function getAiCurrentUserContext() {
+  const user = window.PentagonAuth?.getCurrentUser?.() || {};
+  let groups = [];
+  try {
+    groups = window.PermissionService?.resolveGroups?.(user) || user.groups || [];
+  } catch (_) {
+    groups = user.groups || [];
+  }
+  return {
+    id: user.id || 'system',
+    name: user.name || user.displayName || user.id || 'system',
+    role: Array.isArray(groups) && groups.length ? groups.join(',') : (user.role || user.roleId || 'unmapped')
+  };
 }
 
 function getAiControl() {
@@ -26950,14 +27505,14 @@ function getAiControl() {
 function getAiActionRegistry() {
   return [
     { id: 'read_payroll_summary', label: 'قراءة ملخص الرواتب والحضور', target: 'payroll', risk: 'high', mode: 'read_only', output: 'history', description: 'تحليل بدون تعديل أي راتب أو دوام.' },
-    { id: 'hr_payroll_review_proposal', label: 'اقتراح مراجعة HR/Payroll', target: 'payroll', risk: 'high', mode: 'approval_required', output: 'command_center_request', description: 'يحوّل ملاحظة رواتب/دوام إلى طلب مراجعة، ولا يغير أي راتب.' },
+    { id: 'hr_payroll_review_proposal', label: 'اقتراح مراجعة رواتب وموارد بشرية', target: 'payroll', risk: 'high', mode: 'approval_required', output: 'command_center_request', description: 'يحوّل ملاحظة رواتب/دوام إلى طلب مراجعة، ولا يغير أي راتب.' },
     { id: 'analyze_finance_risk', label: 'تحليل مخاطر مالية', target: 'finance', risk: 'high', mode: 'read_only', output: 'history', description: 'قراءة وتحليل فقط؛ لا ينشئ قيوداً أو سندات.' },
-    { id: 'create_task_followup', label: 'إنشاء مهمة متابعة آمنة', target: 'task_manager', risk: 'low', mode: 'approved_write', output: 'task_manager', description: 'بعد الموافقة ينشئ مهمة واضحة في Task Manager.' },
-    { id: 'propose_kanban_card', label: 'اقتراح بطاقة Kanban', target: 'kanban', risk: 'medium', mode: 'approval_required', output: 'command_center_request', description: 'ينشئ طلب مراجعة ولا يغير اللوحة مباشرة.' },
+    { id: 'create_task_followup', label: 'إنشاء مهمة متابعة آمنة', target: 'task_manager', risk: 'low', mode: 'approved_write', output: 'task_manager', description: 'بعد الموافقة ينشئ مهمة واضحة في مدير المهام.' },
+    { id: 'propose_kanban_card', label: 'اقتراح بطاقة اللوحة', target: 'kanban', risk: 'medium', mode: 'approval_required', output: 'command_center_request', description: 'ينشئ طلب مراجعة ولا يغير اللوحة مباشرة.' },
     { id: 'propose_inventory_purchase', label: 'اقتراح شراء مخزون', target: 'inventory', risk: 'medium', mode: 'approval_required', output: 'command_center_request', description: 'ينشئ طلب شراء/مراجعة دون صرف أو شراء مباشر.' },
-    { id: 'propose_whatsapp_reply', label: 'اقتراح رد WhatsApp', target: 'whatsapp', risk: 'medium', mode: 'approval_required', output: 'command_center_request', description: 'يحضر مسودة رد للمراجعة فقط.' },
+    { id: 'propose_whatsapp_reply', label: 'اقتراح رد للعميل', target: 'whatsapp', risk: 'medium', mode: 'approval_required', output: 'command_center_request', description: 'يحضر مسودة رد للمراجعة فقط.' },
     { id: 'direct_payroll_edit', label: 'تعديل راتب مباشر', target: 'payroll', risk: 'critical', mode: 'forbidden', output: 'blocked', description: 'محظور بالكامل في هذه المرحلة.' },
-    { id: 'direct_journal_entry', label: 'قيد مالي مباشر', target: 'finance', risk: 'critical', mode: 'forbidden', output: 'blocked', description: 'محظور بالكامل حتى مسار backup-first وموافقات.' },
+    { id: 'direct_journal_entry', label: 'قيد مالي مباشر', target: 'finance', risk: 'critical', mode: 'forbidden', output: 'blocked', description: 'محظور بالكامل حتى اكتمال مسار النسخ الاحتياطي والموافقات.' },
     { id: 'admin_settings_change', label: 'تغيير إعدادات النظام', target: 'admin', risk: 'critical', mode: 'forbidden', output: 'blocked', description: 'محظور لمنع تغيير الصلاحيات أو الشركات آلياً.' }
   ];
 }
@@ -26965,13 +27520,13 @@ function getAiActionRegistry() {
 function getAiContextMap() {
   const ai = getAiControl();
   const defaults = [
-    { module: 'Payroll / HR', key: 'payroll', records: Array.isArray(employees) ? employees.length : 0, readable: true, sensitive: 'salary, attendance, advances, employee identity', writePolicy: ai.permissions.payroll, owner: 'Payroll' },
-    { module: 'Finance', key: 'finance', records: Array.isArray(finance?.transactions) ? finance.transactions.length : 0, readable: true, sensitive: 'cash movements, ledgers, receipts, customer balances', writePolicy: ai.permissions.finance, owner: 'Finance' },
-    { module: 'Task Manager', key: 'task_manager', records: typeof getAllTaskManagerTasks === 'function' ? getAllTaskManagerTasks(true).length : 0, readable: true, sensitive: 'owners, due dates, operational blockers', writePolicy: ai.permissions.task_manager, owner: 'Operations' },
-    { module: 'Kanban', key: 'kanban', records: omni.kanban?.cards?.length || 0, readable: true, sensitive: 'customer orders, priorities, internal status', writePolicy: ai.permissions.kanban, owner: 'Operations' },
-    { module: 'Inventory', key: 'inventory', records: omni.materials?.length || 0, readable: true, sensitive: 'supplier names, cost, stock shortage', writePolicy: ai.permissions.inventory, owner: 'Inventory' },
-    { module: 'WhatsApp', key: 'whatsapp', records: omni.whatsappSuggestions?.length || 0, readable: true, sensitive: 'phone messages, customer/employee text, payment requests', writePolicy: ai.permissions.whatsapp, owner: 'Front Office' },
-    { module: 'Admin / Settings', key: 'admin', records: (omni.users?.length || 0) + (omni.companies?.length || 0), readable: false, sensitive: 'users, permissions, companies, backups', writePolicy: ai.permissions.admin, owner: 'System' }
+    { module: 'الرواتب والموارد البشرية', key: 'payroll', records: Array.isArray(employees) ? employees.length : 0, readable: true, sensitive: 'الرواتب، الحضور، السلف، هوية الموظف', writePolicy: ai.permissions.payroll, owner: 'الرواتب' },
+    { module: 'المالية', key: 'finance', records: Array.isArray(finance?.transactions) ? finance.transactions.length : 0, readable: true, sensitive: 'الحركات النقدية، الدفاتر، الإيصالات، أرصدة العملاء', writePolicy: ai.permissions.finance, owner: 'المالية' },
+    { module: 'إدارة المهام', key: 'task_manager', records: typeof getAllTaskManagerTasks === 'function' ? getAllTaskManagerTasks(true).length : 0, readable: true, sensitive: 'المسؤولون، تواريخ الاستحقاق، المعوقات التشغيلية', writePolicy: ai.permissions.task_manager, owner: 'العمليات' },
+    { module: 'اللوحة التنفيذية', key: 'kanban', records: omni.kanban?.cards?.length || 0, readable: true, sensitive: 'طلبات العملاء، الأولويات، الحالة الداخلية', writePolicy: ai.permissions.kanban, owner: 'العمليات' },
+    { module: 'المخزون', key: 'inventory', records: omni.materials?.length || 0, readable: true, sensitive: 'أسماء الموردين، التكلفة، نقص المخزون', writePolicy: ai.permissions.inventory, owner: 'المخزون' },
+    { module: 'واتساب', key: 'whatsapp', records: omni.whatsappSuggestions?.length || 0, readable: true, sensitive: 'رسائل الهاتف، نصوص العملاء والموظفين، طلبات الدفع', writePolicy: ai.permissions.whatsapp, owner: 'الاستقبال' },
+    { module: 'الإعدادات والصلاحيات', key: 'admin', records: (omni.users?.length || 0) + (omni.companies?.length || 0), readable: false, sensitive: 'المستخدمون، الصلاحيات، الشركات، النسخ الاحتياطية', writePolicy: ai.permissions.admin, owner: 'النظام' }
   ];
   return defaults.map(row => ({ ...row, ...(ai.contextMap.find(saved => saved.key === row.key) || {}) }));
 }
@@ -26990,38 +27545,44 @@ function getAiPolicyBadge(mode) {
 function getAiRiskColor(risk) {
   return risk === 'critical' ? '#ef4444' : risk === 'high' ? '#f97316' : risk === 'medium' ? '#fbbf24' : '#34d399';
 }
+function translateAiRisk(r) {
+  return ({critical:'حرج',high:'عالي',medium:'متوسط',low:'منخفض'})[r] || r;
+}
+function translateAiTarget(t) {
+  return ({payroll:'الرواتب',finance:'المالية',task_manager:'المهام',kanban:'اللوحة',inventory:'المخزون',whatsapp:'واتساب',admin:'الإدارة',command_center_request:'طلب مركز القيادة',blocked:'محظور',history:'سجل'})[t] || t;
+}
 
 function renderAiProviderSettingsPanel() {
   const provider = getAiControl().provider;
   return `<div class="automation-panel">
-    <div class="automation-section-head"><h3>AI Provider / Mode Settings</h3><span>${provider.enabled ? 'Enabled' : 'Disabled'}</span></div>
+    <div class="automation-section-head"><h3>إعدادات المزوّد والوضع</h3><span>${provider.enabled ? 'مفعّل' : 'معطّل'}</span></div>
     <div class="automation-rule-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
-      <label class="field"><span>Provider</span><select id="aiProviderName"><option value="openai" ${provider.provider === 'openai' ? 'selected' : ''}>OpenAI</option><option value="local" ${provider.provider === 'local' ? 'selected' : ''}>Local / Private</option><option value="manual" ${provider.provider === 'manual' ? 'selected' : ''}>Manual Review</option></select></label>
-      <label class="field"><span>Model</span><input id="aiProviderModel" value="${escapeHtml(provider.model || '')}" placeholder="gpt-4.1-mini"></label>
-      <label class="field"><span>Mode</span><select id="aiProviderMode"><option value="review_only" ${provider.mode === 'review_only' ? 'selected' : ''}>Review only</option><option value="assisted" ${provider.mode === 'assisted' ? 'selected' : ''}>Assisted</option><option value="autopilot_locked" ${provider.mode === 'autopilot_locked' ? 'selected' : ''}>Autopilot locked</option></select></label>
-      <label class="field"><span>Safety</span><select id="aiSafetyLevel"><option value="strict" ${provider.safetyLevel === 'strict' ? 'selected' : ''}>Strict</option><option value="balanced" ${provider.safetyLevel === 'balanced' ? 'selected' : ''}>Balanced</option><option value="experimental" ${provider.safetyLevel === 'experimental' ? 'selected' : ''}>Experimental</option></select></label>
-      <label class="field"><span>API Key Label</span><input id="aiApiKeyLabel" value="${escapeHtml(provider.apiKeyLabel || '')}" placeholder="not stored here"></label>
-      <label class="field"><span>Status</span><select id="aiProviderEnabled"><option value="false" ${!provider.enabled ? 'selected' : ''}>Disabled</option><option value="true" ${provider.enabled ? 'selected' : ''}>Enabled</option></select></label>
+      <label class="field"><span>المزوّد</span><select id="aiProviderName"><option value="openai" ${provider.provider === 'openai' ? 'selected' : ''}>OpenAI</option><option value="local" ${provider.provider === 'local' ? 'selected' : ''}>محلي / خاص</option><option value="manual" ${provider.provider === 'manual' ? 'selected' : ''}>مراجعة يدوية</option></select></label>
+      <label class="field"><span>النموذج</span><input id="aiProviderModel" value="${escapeHtml(provider.model || '')}" placeholder="gpt-4.1-mini"></label>
+      <label class="field"><span>الوضع</span><select id="aiProviderMode"><option value="review_only" ${provider.mode === 'review_only' ? 'selected' : ''}>مراجعة فقط</option><option value="assisted" ${provider.mode === 'assisted' ? 'selected' : ''}>مساعدة</option><option value="autopilot_locked" ${provider.mode === 'autopilot_locked' ? 'selected' : ''}>طيار آلي مقفّل</option></select></label>
+      <label class="field"><span>الأمان</span><select id="aiSafetyLevel"><option value="strict" ${provider.safetyLevel === 'strict' ? 'selected' : ''}>صارم</option><option value="balanced" ${provider.safetyLevel === 'balanced' ? 'selected' : ''}>متوازن</option><option value="experimental" ${provider.safetyLevel === 'experimental' ? 'selected' : ''}>تجريبي</option></select></label>
+      <label class="field"><span>تسمية مفتاح API</span><input id="aiApiKeyLabel" value="${escapeHtml(provider.apiKeyLabel || '')}" placeholder="لا يُخزَّن هنا"></label>
+      <label class="field"><span>الحالة</span><select id="aiProviderEnabled"><option value="false" ${!provider.enabled ? 'selected' : ''}>معطّل</option><option value="true" ${provider.enabled ? 'selected' : ''}>مفعّل</option></select></label>
     </div>
-    <div class="automation-rule-foot" style="justify-content:flex-end;margin-top:12px;"><button class="btn-primary" onclick="saveAiProviderSettingsFromForm()"><i class="fa-solid fa-floppy-disk"></i> Save AI Settings</button></div>
-    <p class="muted" style="margin:10px 0 0;">Real API keys are not stored in this browser model. Store secrets only through a backend vault/env path later.</p>
+    <div class="automation-rule-foot" style="justify-content:flex-end;margin-top:12px;"><button class="btn-primary" onclick="saveAiProviderSettingsFromForm()"><i class="fa-solid fa-floppy-disk"></i> حفظ إعدادات الذكاء</button></div>
+    <p class="muted" style="margin:10px 0 0;">مفاتيح API الحقيقية لا تُخزَّن في هذا النموذج. احفظ الأسرار عبر المسار الآمن في الخادم لاحقاً.</p>
   </div>`;
 }
 
 function renderAiActionRegistryPanel() {
   return `<div class="automation-panel">
-    <div class="automation-section-head"><h3>AI Action Registry</h3><span>read / propose / approve / forbid</span></div>
+    <div class="automation-section-head"><h3>سجل إجراءات الذكاء</h3><span>قراءة / اقتراح / موافقة / حظر</span></div>
     <div class="analytics-table-wrap"><table class="analytics-mini-table">
-      <thead><tr><th>Action</th><th>Target</th><th>Policy</th><th>Risk</th><th>Output</th><th></th></tr></thead>
+      <thead><tr><th>الإجراء</th><th>الهدف</th><th>السياسة</th><th>الخطورة</th><th>المخرج</th><th></th></tr></thead>
       <tbody>${getAiActionRegistry().map(action => {
         const policy = getAiPolicyBadge(action.mode);
         return `<tr>
           <td><b>${escapeHtml(action.label)}</b><br><span>${escapeHtml(action.description)}</span></td>
-          <td>${escapeHtml(action.target)}</td>
+          <td>${escapeHtml(translateAiTarget(action.target))}</td>
           <td><span class="analytics-risk-badge" style="background:${policy.color}">${escapeHtml(policy.label)}</span></td>
-          <td><span class="analytics-risk-badge" style="background:${getAiRiskColor(action.risk)}">${escapeHtml(action.risk)}</span></td>
-          <td>${escapeHtml(action.output)}</td>
-          <td><button class="btn-secondary" style="padding:4px 9px;font-size:11px" onclick="createAiProposal('${action.id}')">Run / Propose</button></td>
+          <td><span class="analytics-risk-badge" style="background:${getAiRiskColor(action.risk)}">${escapeHtml(translateAiRisk(action.risk))}</span></td>
+          <td>${escapeHtml(translateAiTarget(action.output))}</td>
+          <td><button class="btn-secondary" style="padding:4px 9px;font-size:11px" onclick="createAiProposal('${action.id}')">تشغيل / اقتراح</button></td>
         </tr>`;
       }).join('')}</tbody>
     </table></div>
@@ -27030,15 +27591,15 @@ function renderAiActionRegistryPanel() {
 
 function renderAiContextMapPanel() {
   return `<div class="automation-panel">
-    <div class="automation-section-head"><h3>AI Context Map</h3><span>sensitive fields visible</span></div>
+    <div class="automation-section-head"><h3>خريطة سياق الذكاء</h3><span>الحقول الحساسة مرئية</span></div>
     <div class="analytics-table-wrap"><table class="analytics-mini-table">
-      <thead><tr><th>Module</th><th>Records</th><th>Read</th><th>Sensitive Fields</th><th>Write Policy</th><th>Owner</th></tr></thead>
+      <thead><tr><th>الوحدة</th><th>السجلات</th><th>قراءة</th><th>الحقول الحساسة</th><th>سياسة الكتابة</th><th>المسؤول</th></tr></thead>
       <tbody>${getAiContextMap().map(row => {
         const policy = getAiPolicyBadge(row.writePolicy);
         return `<tr>
           <td><b>${escapeHtml(row.module)}</b></td>
           <td>${row.records}</td>
-          <td><span class="analytics-risk-badge" style="background:${row.readable ? '#34d399' : '#f87171'}">${row.readable ? 'Yes' : 'No'}</span></td>
+          <td><span class="analytics-risk-badge" style="background:${row.readable ? '#34d399' : '#f87171'}">${row.readable ? 'نعم' : 'لا'}</span></td>
           <td>${escapeHtml(row.sensitive)}</td>
           <td><span class="analytics-risk-badge" style="background:${policy.color}">${escapeHtml(policy.label)}</span></td>
           <td>${escapeHtml(row.owner)}</td>
@@ -27053,18 +27614,18 @@ function renderAiProposalQueuePanel() {
   const pending = queue.filter(item => item.status === 'pending');
   const history = (getAiControl().runHistory || []).slice(0, 6);
   return `<div class="automation-panel">
-    <div class="automation-section-head"><h3>AI Approval Queue</h3><span>${pending.length} pending</span></div>
+    <div class="automation-section-head"><h3>طابور موافقة الذكاء</h3><span>${pending.length} بانتظار</span></div>
     <div class="automation-fire-list">
       ${pending.map(item => `<div class="automation-fire-row">
-        <div><b>${escapeHtml(item.title)}</b><p>${escapeHtml(item.summary || '')}</p><small>${escapeHtml(item.target)} · ${escapeHtml(item.mode)} · ${formatOmniDateTime(item.createdAt)}</small></div>
+        <div><b>${escapeHtml(item.title)}</b><p>${escapeHtml(item.summary || '')}</p><small>${escapeHtml(translateAiTarget(item.target))} · ${escapeHtml(item.mode)} · ${formatOmniDateTime(item.createdAt)}</small></div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-          <span class="analytics-risk-badge" style="background:${getAiRiskColor(item.risk)}">${escapeHtml(item.risk)}</span>
-          <button class="btn-primary" style="padding:4px 9px;font-size:11px" onclick="approveAiProposal('${item.id}')">Approve</button>
-          <button class="btn-secondary" style="padding:4px 9px;font-size:11px" onclick="rejectAiProposal('${item.id}')">Reject</button>
+          <span class="analytics-risk-badge" style="background:${getAiRiskColor(item.risk)}">${escapeHtml(translateAiRisk(item.risk))}</span>
+          <button class="btn-primary" style="padding:4px 9px;font-size:11px" onclick="approveAiProposal('${item.id}')">موافقة</button>
+          <button class="btn-secondary" style="padding:4px 9px;font-size:11px" onclick="rejectAiProposal('${item.id}')">رفض</button>
         </div>
-      </div>`).join('') || '<div class="omni-notification-empty">لا توجد مقترحات AI بانتظار الموافقة.</div>'}
+      </div>`).join('') || '<div class="omni-notification-empty">لا توجد مقترحات بانتظار الموافقة.</div>'}
     </div>
-    <div class="automation-section-head" style="margin-top:16px;"><h3>Recent AI Runs</h3><span>${history.length}</span></div>
+    <div class="automation-section-head" style="margin-top:16px;"><h3>آخر تشغيلات الذكاء</h3><span>${history.length}</span></div>
     <div class="automation-fire-list">
       ${history.map(item => `<div class="automation-fire-row"><div><b>${escapeHtml(item.title)}</b><p>${escapeHtml(item.note || '')}</p><small>${escapeHtml(item.status)} · ${formatOmniDateTime(item.createdAt)}</small></div><span class="analytics-risk-badge" style="background:${item.status === 'blocked' ? '#f87171' : '#38bdf8'}">${escapeHtml(item.actionId || 'run')}</span></div>`).join('') || '<div class="omni-notification-empty">لم يتم تشغيل أي إجراء AI بعد.</div>'}
     </div>
@@ -27134,6 +27695,7 @@ function createAiProposal(actionId) {
     renderAiControlDashboard();
     return;
   }
+  const aiCtx = getAiCurrentUserContext();
   const proposal = {
     id: makeId('aiprop'),
     actionId,
@@ -27144,6 +27706,10 @@ function createAiProposal(actionId) {
     status: 'pending',
     summary: action.description,
     affectedRecords: action.target === 'task_manager' ? 1 : 0,
+    requestedBy: aiCtx.name,
+    requestedById: aiCtx.id,
+    requestedByRole: aiCtx.role,
+    payload: { userId: aiCtx.id, userName: aiCtx.name, userRole: aiCtx.role, source: 'ai_control_dashboard', actionId },
     createdAt: new Date().toISOString()
   };
   ai.actionQueue.unshift(proposal);
@@ -27161,7 +27727,7 @@ function approveAiProposal(id) {
   if (proposal.actionId === 'hr_payroll_review_proposal') {
     const req = createOmniRequest({
       type: 'ai_analysis',
-      title: proposal.title || 'مراجعة HR/Payroll من AI',
+      title: proposal.title || 'مراجعة رواتب وموارد بشرية من الذكاء',
       description: proposal.summary || 'ملاحظة قراءة فقط من طبقة مراجعة الرواتب.',
       requesterName: 'AI Control',
       sourcePage: 'intelligence',
@@ -27274,7 +27840,7 @@ function renderAiControlDashboard_deprecatedAuditView() {
     <div style="margin-top:20px;">${renderHrPayrollAiReviewPanel()}</div>
     <div class="automation-layout" style="grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);">
       <div class="automation-panel">
-        <div class="automation-section-head"><h3>مصفوفة AI Input / Output</h3></div>
+        <div class="automation-section-head"><h3>مصفوفة مدخلات ومخرجات الذكاء</h3></div>
         <div class="analytics-table-wrap"><table class="analytics-mini-table">
           <thead><tr><th>المصدر</th><th>السجلات</th><th>قراءة AI</th><th>كتابة AI</th><th>ملاحظة تشغيلية</th></tr></thead>
           <tbody>${stats.inputSources.map(src => `<tr><td><b>${escapeHtml(src.label)}</b></td><td>${src.count}</td><td><span class="analytics-risk-badge" style="background:${src.read ? '#34d399' : '#f87171'}">${src.read ? 'جاهز' : 'غير جاهز'}</span></td><td><span class="analytics-risk-badge" style="background:${src.write === true ? '#34d399' : src.write ? '#fbbf24' : '#f87171'}">${src.write === true ? 'مباشر آمن' : src.write === 'limited' ? 'محدود' : src.write === 'review' ? 'بمراجعة' : 'مغلق'}</span></td><td>${escapeHtml(src.note)}</td></tr>`).join('')}</tbody>
@@ -27283,16 +27849,16 @@ function renderAiControlDashboard_deprecatedAuditView() {
       <div class="automation-panel">
         <div class="automation-section-head"><h3>حالة الطبقات الذكية</h3></div>
         <div class="automation-fire-list">
-          <div class="automation-fire-row"><div><b>Intelligence Findings</b><p>نتائج مفتوحة تحتاج قرار أو تحويل لمهام.</p></div><b>${stats.openFindings}</b></div>
-          <div class="automation-fire-row"><div><b>WhatsApp Queue</b><p>اقتراحات بانتظار مراجعة المستخدم.</p></div><b>${stats.pendingWhatsapp}</b></div>
-          <div class="automation-fire-row"><div><b>Automation Fire Log</b><p>سجل التنفيذ الفعلي للقواعد.</p></div><b>${stats.fireLog.length}</b></div>
-          <div class="automation-fire-row"><div><b>Task Manager</b><p>أفضل قناة آمنة لمخرجات AI حالياً.</p></div><b>${stats.tasks.length}</b></div>
+          <div class="automation-fire-row"><div><b>نتائج التحليل</b><p>نتائج مفتوحة تحتاج قرار أو تحويل لمهام.</p></div><b>${stats.openFindings}</b></div>
+          <div class="automation-fire-row"><div><b>طابور رسائل العملاء</b><p>اقتراحات بانتظار مراجعة المستخدم.</p></div><b>${stats.pendingWhatsapp}</b></div>
+          <div class="automation-fire-row"><div><b>سجل تنفيذ الأتمتة</b><p>سجل التنفيذ الفعلي للقواعد.</p></div><b>${stats.fireLog.length}</b></div>
+          <div class="automation-fire-row"><div><b>مدير المهام</b><p>أفضل قناة آمنة لمخرجات الذكاء حالياً.</p></div><b>${stats.tasks.length}</b></div>
         </div>
       </div>
     </div>
     <div class="automation-panel" style="margin-top:20px;">
       <div class="automation-section-head"><h3>الفجوات التي تمنع AI من التحكم بكل النظام</h3></div>
-      <div class="automation-rule-grid">${stats.gaps.map(gap => `<div class="automation-rule-card"><div class="automation-rule-head"><h3>${escapeHtml(gap.title)}</h3><span class="task-priority-chip" style="--chip-color:${gap.severity === 'critical' ? 'var(--danger)' : gap.severity === 'high' ? 'var(--warning)' : 'var(--accent-blue)'}">${escapeHtml(gap.severity)}</span></div><div class="automation-rule-foot"><button class="btn-secondary" onclick="switchPage('${gap.page}')"><i class="fa-solid fa-up-right-from-square"></i> فتح الصفحة</button><button class="btn-primary" onclick="createAiFollowupTask('${jsString(gap.title)}','${gap.page}','${gap.severity}')"><i class="fa-solid fa-plus"></i> مهمة متابعة</button></div></div>`).join('')}</div>
+      <div class="automation-rule-grid">${stats.gaps.map(gap => `<div class="automation-rule-card"><div class="automation-rule-head"><h3>${escapeHtml(gap.title)}</h3><span class="task-priority-chip" style="--chip-color:${gap.severity === 'critical' ? 'var(--danger)' : gap.severity === 'high' ? 'var(--warning)' : 'var(--accent-blue)'}">${escapeHtml(translateAiRisk(gap.severity))}</span></div><div class="automation-rule-foot"><button class="btn-secondary" onclick="switchPage('${gap.page}')"><i class="fa-solid fa-up-right-from-square"></i> فتح الصفحة</button><button class="btn-primary" onclick="createAiFollowupTask('${jsString(gap.title)}','${gap.page}','${gap.severity}')"><i class="fa-solid fa-plus"></i> مهمة متابعة</button></div></div>`).join('')}</div>
     </div>
     ${renderOdooPlusGapRegistry()}
     ${renderOctagonRouteHealthPanel()}
@@ -27966,10 +28532,10 @@ function renderWhatsAppSimulatorPanel() {
         </div>
       </div>
       <div class="automation-rule-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap: 10px; opacity: 0.85;">
-        <label class="field"><span>Webhook URL</span><input value="http://localhost:8080/api/whatsapp/webhook" readonly></label>
-        <label class="field"><span>Verify Token</span><input value="octagon_wa_secret_token" readonly></label>
-        <label class="field"><span>App ID</span><input value="wa_app_prod_3321" readonly></label>
-        <label class="field"><span>API Version</span><input value="v20.0" readonly></label>
+        <label class="field"><span>رابط الـ Webhook</span><input value="http://localhost:8080/api/whatsapp/webhook" readonly></label>
+        <label class="field"><span>رمز التحقق (Verify Token)</span><input value="octagon_wa_secret_token" readonly></label>
+        <label class="field"><span>معرّف التطبيق (App ID)</span><input value="wa_app_prod_3321" readonly></label>
+        <label class="field"><span>إصدار الواجهة (API)</span><input value="v20.0" readonly></label>
       </div>
       <p class="muted" style="margin-top:10px; font-size:11px; direction:rtl; text-align:right;">
         <i class="fa-solid fa-circle-info"></i> تم صياغة خطة التكامل الكاملة مع Meta في الدليل: 
@@ -31343,6 +31909,49 @@ function generateEquipmentBarcode(location = 'GEN') {
   return makeUniqueEquipmentBarcode(`${base}-${String(next).padStart(2, '0')}`);
 }
 
+const EQUIPMENT_CATEGORY_CODES = {
+  'أدوات يدوية': '11',
+  'أدوات كهربائية': '12',
+  'أدوات هوائية': '13',
+  'أدوات قياس': '14',
+  'كوابس': '15',
+  'أجهزة مكتبية': '21',
+  'أجهزة كهربائية': '22',
+  'طابعات ومكائن': '23',
+  'كوابس حرارية': '24'
+};
+
+const EQUIPMENT_LOCATION_CODES = {
+  'الادارة': '01',
+  'المطبخ': '02',
+  'غرفة الطابعات': '03',
+  'غرفة لصق وتجليد': '04',
+  'المكتب': '05',
+  'المستودع': '06',
+  'ساحة الورشة': '07'
+};
+
+function getEquipmentStatusCode(status) {
+  return ({ operational: '01', dispatched: '02', maintenance: '03', broken: '04' })[status] || '04';
+}
+
+function buildEquipmentNumericQR(eq, index) {
+  const catC = EQUIPMENT_CATEGORY_CODES[eq.category] || '99';
+  const locC = EQUIPMENT_LOCATION_CODES[eq.location] || '00';
+  const statC = getEquipmentStatusCode(eq.status);
+  const seq = String(index + 1).padStart(4, '0');
+  return `${catC}${locC}-${statC}${seq}-${catC}${locC}-${statC}${seq}`;
+}
+
+function syncEquipmentNumericQR(eq) {
+  const index = (omni.equipment || []).findIndex(item => item.id === eq.id);
+  if (index < 0) return false;
+  const nextQR = buildEquipmentNumericQR(eq, index);
+  if (eq.numericQR === nextQR) return false;
+  eq.numericQR = nextQR;
+  return true;
+}
+
 function splitEquipmentQuantitiesIntoAssets() {
   if (!Array.isArray(omni.migrationsApplied)) omni.migrationsApplied = [];
   if (omni.migrationsApplied.includes('equipment_physical_assets_v1')) {
@@ -31395,35 +32004,18 @@ function normalizeEquipment() {
     omni.equipmentAuditLogs = [];
   }
   let equipmentChanged = splitEquipmentQuantitiesIntoAssets();
-  // Category → 2-digit code
-  const CAT_CODES = {
-    'أدوات يدوية':'11','أدوات كهربائية':'12','أدوات هوائية':'13',
-    'أدوات قياس':'14','كوابس':'15','أجهزة مكتبية':'21',
-    'أجهزة كهربائية':'22','طابعات ومكائن':'23','كوابس حرارية':'24'
-  };
-  // Location → 2-digit code
-  const LOC_CODES = {
-    'الادارة':'01','المطبخ':'02','غرفة الطابعات':'03',
-    'غرفة لصق وتجليد':'04','المكتب':'05','المستودع':'06','ساحة الورشة':'07'
-  };
   omni.equipment.forEach((eq, index) => {
     // Legacy alphanumeric barcode — keep for scanner compatibility
     if (!eq.barcode) {
       const locCode = String(eq.location || 'GEN').slice(0, 4).toUpperCase();
       eq.barcode = `EQ-${locCode}-${(index + 1).toString().padStart(2, '0')}`;
-    }
-    // Generate structured numeric QR  CCLL-SSNN-CCLL-SSNN
-    if (!eq.numericQR) {
-      const catC  = CAT_CODES[eq.category]  || '99';
-      const locC  = LOC_CODES[eq.location]   || '00';
-      const statC = eq.status === 'operational' ? '01'
-                  : eq.status === 'dispatched'  ? '02'
-                  : eq.status === 'maintenance' ? '03' : '04';
-      const seq   = String(index + 1).padStart(4, '0');
-      eq.numericQR = `${catC}${locC}-${statC}${seq}-${catC}${locC}-${statC}${seq}`;
+      equipmentChanged = true;
     }
     if (!eq.status) {
       eq.status = 'operational';
+      equipmentChanged = true;
+    }
+    if (syncEquipmentNumericQR(eq)) {
       equipmentChanged = true;
     }
     if ((parseInt(eq.quantity || 1, 10) || 1) !== 1) {
@@ -31431,7 +32023,7 @@ function normalizeEquipment() {
       equipmentChanged = true;
     }
   });
-  if (equipmentChanged && typeof saveData === 'function') {
+  if (equipmentChanged && typeof saveData === 'function' && !isEnsuringOmni) {
     saveData();
   }
 }
@@ -31494,12 +32086,24 @@ function renderEquipmentStatusControl(eq) {
 
 function updateEquipmentStatusInline(eqId, status) {
   ensureOmni();
+  normalizeEquipment();
   const eq = (omni.equipment || []).find(item => item.id === eqId);
   if (!eq) return;
-  if (status === eq.status) return;
-  if (status === 'dispatched') {
-    showToast('استخدم تبويب العهد الخارجية لإخراج القطعة بالباركود حتى يتم تسجيل المستلم والموقع.', 'warning');
+  const nextStatus = String(status || '').trim();
+  const validStatuses = ['operational', 'maintenance', 'broken', 'dispatched'];
+  if (!validStatuses.includes(nextStatus)) {
+    showToast('حالة المعدة غير معروفة. اختر حالة من القائمة.', 'warning');
     renderEquipmentPage();
+    return;
+  }
+  if (nextStatus === eq.status) return;
+  if (nextStatus === 'dispatched') {
+    if (eq.status !== 'operational') {
+      showToast(`[${eq.name}] ليست جاهزة للإخراج. الحالة الحالية: ${equipmentStatusMeta(eq.status).label}`, 'warning');
+      renderEquipmentPage();
+      return;
+    }
+    showDispatchModal(eqId);
     return;
   }
   if (eq.status === 'dispatched') {
@@ -31507,7 +32111,7 @@ function updateEquipmentStatusInline(eqId, status) {
     renderEquipmentPage();
     return;
   }
-  quickAuditItem(eqId, status);
+  quickAuditItem(eqId, nextStatus);
 }
 
 function normalizeEquipmentScanCode(code) {
@@ -31635,6 +32239,7 @@ function commitEquipmentDispatchCart() {
   omni.equipmentDispatches = omni.equipmentDispatches || [];
   tools.forEach(eq => {
     eq.status = 'dispatched';
+    syncEquipmentNumericQR(eq);
     omni.equipmentDispatches.push({
       id: makeId('disp'),
       equipmentId: eq.id,
@@ -31884,10 +32489,14 @@ function renderEquipmentPage() {
               return `
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s;" class="eq-table-row">
                   <td style="padding:10px 12px;">
-                    <div class="eq-numeric-qr" title="${escapeHtml(eq.barcode)}">
-                      ${(eq.numericQR || eq.barcode).split('-').map(g => `<span class="eq-numeric-qr-group">${g}</span>`).join('<span style="color:rgba(255,255,255,0.2);font-size:9px;">–</span>')}
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <div class="eq-numeric-qr" title="${escapeHtml(eq.barcode)}">
+                        ${(eq.barcode || '').split('-').map(g => `<span class="eq-numeric-qr-group">${g}</span>`).join('<span style="color:rgba(255,255,255,0.2);font-size:9px;">–</span>')}
+                      </div>
+                      <button type="button" class="eq-copy-barcode-btn" onclick="event.stopPropagation(); window.copyEquipmentBarcode('${eq.id}')" title="نسخ الباركود" aria-label="نسخ الباركود">
+                        <i class="fa-solid fa-copy"></i>
+                      </button>
                     </div>
-                    <div style="font-size:9px;color:var(--text-muted);margin-top:2px;">${escapeHtml(eq.barcode)}</div>
                   </td>
                   <td style="padding:10px 12px; font-weight:bold; color:var(--text-primary);">${escapeHtml(eq.name)}</td>
                   <td style="padding:10px 12px; color:var(--text-secondary);">${escapeHtml(eq.category)}</td>
@@ -32106,7 +32715,10 @@ function printHtmlDocument(html) {
     iframe.style.cssText = 'position:fixed; right:0; bottom:0; width:0; height:0; border:0; visibility:hidden;';
     document.body.appendChild(iframe);
     const cleanup = () => setTimeout(() => { try { document.body.removeChild(iframe); } catch (_) {} }, 1500);
-    iframe.onload = () => {
+    let didPrint = false;
+    const triggerPrint = () => {
+      if (didPrint) return;
+      didPrint = true;
       try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
       catch (e) {
         const w = window.open('', '_blank', 'width=430,height=460');
@@ -32114,8 +32726,10 @@ function printHtmlDocument(html) {
       }
       cleanup();
     };
+    iframe.onload = triggerPrint;
     const doc = iframe.contentWindow.document;
     doc.open(); doc.write(html); doc.close();
+    setTimeout(triggerPrint, 120);
   } catch (e) {
     const w = window.open('', '_blank', 'width=430,height=460');
     if (w) { w.document.open(); w.document.write(html); w.document.close(); }
@@ -32124,6 +32738,8 @@ function printHtmlDocument(html) {
 }
 
 function printEquipmentBarcodeNow(eqId) {
+  ensureOmni();
+  normalizeEquipment();
   const eq = (omni.equipment || []).find(e => e.id === eqId);
   if (!eq) return showToast('فشل: لم يتم العثور على المعدة', 'error');
   const barcodeSvg = generateSvgBarcode(eq.barcode);
@@ -32151,10 +32767,21 @@ function printEquipmentBarcodeNow(eqId) {
     </body>
     </html>`;
   printHtmlDocument(html);
+  showToast(`تم تجهيز طباعة باركود [${eq.name}]`, 'success');
 }
 
 function printEquipmentBarcode(eqId) {
-  const eq = omni.equipment.find(e => e.id === eqId);
+  ensureOmni();
+  normalizeEquipment();
+  const eq = (omni.equipment || []).find(e => e.id === eqId);
+  if (!eq) return showToast('فشل: لم يتم العثور على المعدة', 'error');
+  printEquipmentBarcodeNow(eqId);
+}
+
+function previewEquipmentBarcode(eqId) {
+  ensureOmni();
+  normalizeEquipment();
+  const eq = (omni.equipment || []).find(e => e.id === eqId);
   if (!eq) return showToast('فشل: لم يتم العثور على المعدة', 'error');
   
   const barcodeSvg = generateSvgBarcode(eq.barcode);
@@ -32183,7 +32810,7 @@ function printEquipmentBarcode(eqId) {
       </div>
       <div style="display:flex; gap:10px; justify-content:center; margin-top:14px; direction:rtl;">
         <button class="btn-primary" onclick="window.printEquipmentBarcodeNow('${eq.id}')"><i class="fa-solid fa-print"></i> طباعة الآن</button>
-        <button class="btn-secondary" onclick="navigator.clipboard?.writeText('${escapeHtml(eq.barcode)}'); showToast('تم نسخ الباركود', 'success')"><i class="fa-solid fa-copy"></i> نسخ الكود</button>
+        <button class="btn-secondary" onclick="navigator.clipboard?.writeText('${jsString(eq.barcode)}'); showToast('تم نسخ الباركود', 'success')"><i class="fa-solid fa-copy"></i> نسخ الكود</button>
       </div>
     </div>
   `, () => {
@@ -32196,15 +32823,53 @@ function printEquipmentBarcode(eqId) {
   }
 }
 
+function copyEquipmentBarcode(eqId) {
+  ensureOmni();
+  normalizeEquipment();
+  const eq = (omni.equipment || []).find(e => e.id === eqId);
+  if (!eq) return showToast('فشل: لم يتم العثور على المعدة', 'error');
+  const value = eq.barcode || '';
+  if (!value) return showToast('لا يوجد باركود للنسخ', 'warning');
+
+  const done = () => showToast(`تم نسخ الباركود: ${value}`, 'success');
+  const fallbackCopy = () => {
+    const input = document.createElement('input');
+    input.value = value;
+    input.setAttribute('readonly', 'readonly');
+    input.style.cssText = 'position:fixed; left:-9999px; top:0;';
+    document.body.appendChild(input);
+    input.select();
+    try {
+      document.execCommand('copy');
+      done();
+    } catch (e) {
+      showToast(value, 'info');
+    } finally {
+      try { document.body.removeChild(input); } catch (_) {}
+    }
+  };
+
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(value).then(done).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+
 function showDispatchModal(eqId = null) {
   ensureOmni();
   if (eqId && !equipmentDispatchCart.includes(eqId)) {
     const eq = (omni.equipment || []).find(item => item.id === eqId);
-    if (eq && eq.status === 'operational') equipmentDispatchCart.push(eqId);
+    if (eq && eq.status === 'operational') {
+      equipmentDispatchCart.push(eqId);
+    } else if (eq) {
+      showToast(`[${eq.name}] ليست جاهزة للإخراج. الحالة الحالية: ${equipmentStatusMeta(eq.status).label}`, 'warning');
+    }
   }
   equipmentActiveTab = 'active_dispatches';
   renderEquipmentPage();
   showToast('تم نقل العملية إلى تبويب العهد الخارجية حتى يتم المسح والحفظ من مكان واحد.', 'info');
+  setTimeout(focusEquipmentDispatchScanner, 0);
   return;
   
   const operationalTools = omni.equipment.filter(e => e.status === 'operational');
@@ -32272,6 +32937,7 @@ function showDispatchModal(eqId = null) {
     if (!eq) return;
     
     eq.status = 'dispatched';
+    syncEquipmentNumericQR(eq);
     
     omni.equipmentDispatches = omni.equipmentDispatches || [];
     omni.equipmentDispatches.push({
@@ -32336,6 +33002,7 @@ function returnEquipment(dispatchId) {
       eq.notes = notes || eq.notes;
       eq.lastAuditDate = new Date().toISOString().slice(0, 10);
       eq.lastAuditStatus = condition;
+      syncEquipmentNumericQR(eq);
     }
     
     omni.equipmentAuditLogs = omni.equipmentAuditLogs || [];
@@ -32343,7 +33010,7 @@ function returnEquipment(dispatchId) {
       date: new Date().toISOString().slice(0, 10),
       equipmentId: disp.equipmentId,
       equipmentName: disp.equipmentName,
-      inspector: root.PentagonAuth?.getCurrentUser()?.name || 'المشرف',
+      inspector: window.PentagonAuth?.getCurrentUser?.()?.name || 'المشرف',
       status: condition,
       notes: `إرجاع من ترحيل خارجي (${disp.employeeName}). ملاحظات: ${notes || 'لا يوجد'}`
     });
@@ -32384,13 +33051,14 @@ function showEquipmentAuditModal(eqId) {
     eq.lastAuditDate = new Date().toISOString().slice(0, 10);
     eq.lastAuditStatus = status;
     if (notes) eq.notes = notes;
+    syncEquipmentNumericQR(eq);
     
     omni.equipmentAuditLogs = omni.equipmentAuditLogs || [];
     omni.equipmentAuditLogs.push({
       date: new Date().toISOString().slice(0, 10),
       equipmentId: eq.id,
       equipmentName: eq.name,
-      inspector: root.PentagonAuth?.getCurrentUser()?.name || 'المشرف',
+      inspector: window.PentagonAuth?.getCurrentUser?.()?.name || 'المشرف',
       status: status,
       notes: notes
     });
@@ -32409,19 +33077,20 @@ function quickAuditItem(eqId, status) {
   eq.status = status;
   eq.lastAuditDate = new Date().toISOString().slice(0, 10);
   eq.lastAuditStatus = status;
+  syncEquipmentNumericQR(eq);
   
   omni.equipmentAuditLogs = omni.equipmentAuditLogs || [];
   omni.equipmentAuditLogs.push({
     date: new Date().toISOString().slice(0, 10),
     equipmentId: eq.id,
     equipmentName: eq.name,
-    inspector: root.PentagonAuth?.getCurrentUser()?.name || 'المشرف',
+    inspector: window.PentagonAuth?.getCurrentUser?.()?.name || 'المشرف',
     status: status,
-    notes: `تدقيق سريع فوري: الحالة صالحة (${status})`
+    notes: `تدقيق سريع فوري: ${equipmentStatusMeta(status).label}`
   });
   
   saveData();
-  showToast(`تم تدقيق [${eq.name}] كـ [${status === 'operational' ? 'صالحة' : 'عاطلة'}] بنجاح`, 'success');
+  showToast(`تم تحديث حالة [${eq.name}] إلى [${equipmentStatusMeta(status).label}] بنجاح`, 'success');
   renderEquipmentPage();
 }
 
@@ -32499,13 +33168,14 @@ function runMonthlyEquipmentAudit() {
     eq.status = status;
     eq.lastAuditDate = new Date().toISOString().slice(0, 10);
     eq.lastAuditStatus = status;
+    syncEquipmentNumericQR(eq);
     
     omni.equipmentAuditLogs = omni.equipmentAuditLogs || [];
     omni.equipmentAuditLogs.push({
       date: new Date().toISOString().slice(0, 10),
       equipmentId: eq.id,
       equipmentName: eq.name,
-      inspector: root.PentagonAuth?.getCurrentUser()?.name || 'المشرف',
+      inspector: window.PentagonAuth?.getCurrentUser?.()?.name || 'المشرف',
       status: status,
       notes: status === 'operational' ? 'فحص دوري شهري: صالحة' : `فحص دوري شهري: تم تحديث الحالة إلى ${status}`
     });
@@ -32534,12 +33204,13 @@ function runMonthlyEquipmentAudit() {
       eq.status = 'operational';
       eq.lastAuditDate = today.toISOString().slice(0, 10);
       eq.lastAuditStatus = 'operational';
+      syncEquipmentNumericQR(eq);
       
       omni.equipmentAuditLogs.push({
         date: today.toISOString().slice(0, 10),
         equipmentId: eq.id,
         equipmentName: eq.name,
-        inspector: root.PentagonAuth?.getCurrentUser()?.name || 'المشرف',
+        inspector: window.PentagonAuth?.getCurrentUser?.()?.name || 'المشرف',
         status: 'operational',
         notes: 'تدقيق سريع جماعي: صالحة للعمل'
       });
@@ -32730,6 +33401,7 @@ function showEditEquipmentModal(eqId) {
     eq.status = status;
     eq.quantity = 1;
     eq.notes = notes;
+    syncEquipmentNumericQR(eq);
     
     saveData();
     showToast(`تم تحديث بيانات المعدة [${name}] بنجاح`, 'success');
@@ -32762,7 +33434,9 @@ window.updateEquipmentStatusFilter = updateEquipmentStatusFilter;
 window.clearEquipmentFilters = clearEquipmentFilters;
 window.updateEquipmentStatusInline = updateEquipmentStatusInline;
 window.printEquipmentBarcode = printEquipmentBarcode;
+window.previewEquipmentBarcode = previewEquipmentBarcode;
 window.printEquipmentBarcodeNow = printEquipmentBarcodeNow;
+window.copyEquipmentBarcode = copyEquipmentBarcode;
 window.showDispatchModal = showDispatchModal;
 window.handleEquipmentDispatchScanKey = handleEquipmentDispatchScanKey;
 window.handleEquipmentDispatchScanInput = handleEquipmentDispatchScanInput;
@@ -32951,7 +33625,7 @@ window.syncLegacyTransactionToV6 = syncLegacyTransactionToV6;
 
 function ptxEventLabel(eventName) {
   const map = {
-    KANBAN_CARD_STUCK: 'بطاقة Kanban عالقة',
+    KANBAN_CARD_STUCK: 'بطاقة عالقة في اللوحة',
     MATERIAL_BELOW_MINIMUM: 'مادة أقل من الحد الأدنى',
     WHATSAPP_APPROVED: 'اعتماد اقتراح WhatsApp',
     QUOTE_CREATED: 'عرض سعر جديد',
@@ -33045,7 +33719,7 @@ function renderOpPacks() {
           ${steps.length > 4 ? `<span class="more">+${steps.length - 4}</span>` : ''}
         </div>
         <div class="op-card-meta">
-          <span><i class="fa-solid fa-table-columns"></i> ${trace.cards.length} Kanban</span>
+          <span><i class="fa-solid fa-table-columns"></i> ${trace.cards.length} بطاقة</span>
           <span><i class="fa-solid fa-list-check"></i> ${trace.tasks.length} مهام</span>
           <span><i class="fa-solid fa-flask-vial"></i> ${trace.qcRecords.length} QC</span>
         </div>
@@ -33070,7 +33744,7 @@ function renderOpPacks() {
           <ol>
             <li><b>صمّم الوصفة</b><span>خطوات، مواد، مكائن، QC.</span></li>
             <li><b>ضع سعر العميل</b><span>كلفة داخلية + لوجستيات + ربح.</span></li>
-            <li><b>شغّل لعميل</b><span>ينشئ Kanban/Tasks قابلة للتتبع.</span></li>
+            <li><b>شغّل لعميل</b><span>ينشئ مهام قابلة للتتبع.</span></li>
           </ol>
           <div class="op-guide-actions">
             <button class="btn-primary" onclick="addOpPack()"><i class="fa-solid fa-plus"></i> باقة جديدة</button>
@@ -33193,14 +33867,14 @@ function renderWhatsAppMetaApiPanel() {
         <strong>${readiness.percent}%</strong>
       </div>
       <div class="wa-api-grid">
-        <label>Meta App ID<input id="waMetaAppId" class="form-input" value="${escapeHtml(settings.appId)}" placeholder="مثال: 1234567890"></label>
-        <label>WhatsApp Business Account ID<input id="waMetaBusinessId" class="form-input" value="${escapeHtml(settings.businessAccountId)}" placeholder="WABA ID"></label>
-        <label>Phone Number ID<input id="waMetaPhoneNumberId" class="form-input" value="${escapeHtml(settings.phoneNumberId)}" placeholder="Phone Number ID"></label>
-        <label>رقم WhatsApp الظاهر<input id="waMetaDisplayPhone" class="form-input" value="${escapeHtml(settings.displayPhoneNumber)}" placeholder="+964..."></label>
-        <label>Graph API Version<input id="waMetaGraphVersion" class="form-input" value="${escapeHtml(settings.graphVersion)}" placeholder="v20.0"></label>
-        <label>Verify Token<input id="waMetaVerifyToken" class="form-input" value="${escapeHtml(settings.verifyToken)}" placeholder="نفسه يوضع في Meta Webhook Verify Token"></label>
-        <label>Access Token Env<input id="waMetaAccessTokenEnv" class="form-input" value="${escapeHtml(settings.accessTokenEnv)}" placeholder="WHATSAPP_ACCESS_TOKEN"></label>
-        <label>App Secret Env<input id="waMetaAppSecretEnv" class="form-input" value="${escapeHtml(settings.appSecretEnv)}" placeholder="WHATSAPP_APP_SECRET"></label>
+        <label>معرّف تطبيق Meta (App ID)<input id="waMetaAppId" class="form-input" value="${escapeHtml(settings.appId)}" placeholder="مثال: 1234567890"></label>
+        <label>معرّف حساب أعمال واتساب (WABA ID)<input id="waMetaBusinessId" class="form-input" value="${escapeHtml(settings.businessAccountId)}" placeholder="WABA ID"></label>
+        <label>معرّف رقم الهاتف (Phone Number ID)<input id="waMetaPhoneNumberId" class="form-input" value="${escapeHtml(settings.phoneNumberId)}" placeholder="Phone Number ID"></label>
+        <label>رقم واتساب الظاهر<input id="waMetaDisplayPhone" class="form-input" value="${escapeHtml(settings.displayPhoneNumber)}" placeholder="+964..."></label>
+        <label>إصدار واجهة Graph (API Version)<input id="waMetaGraphVersion" class="form-input" value="${escapeHtml(settings.graphVersion)}" placeholder="v20.0"></label>
+        <label>رمز التحقق (Verify Token)<input id="waMetaVerifyToken" class="form-input" value="${escapeHtml(settings.verifyToken)}" placeholder="نفسه يوضع في Meta Webhook Verify Token"></label>
+        <label>متغيّر بيئة رمز الوصول (Access Token)<input id="waMetaAccessTokenEnv" class="form-input" value="${escapeHtml(settings.accessTokenEnv)}" placeholder="WHATSAPP_ACCESS_TOKEN"></label>
+        <label>متغيّر بيئة سر التطبيق (App Secret)<input id="waMetaAppSecretEnv" class="form-input" value="${escapeHtml(settings.appSecretEnv)}" placeholder="WHATSAPP_APP_SECRET"></label>
       </div>
       <div class="wa-webhook-box">
         <label>Callback URL في Meta<input class="form-input" value="${escapeHtml(webhookUrl)}" readonly></label>
@@ -33352,13 +34026,29 @@ function renderAiSystemChatPanel() {
       <textarea id="aiSystemCommandInput" class="form-input" rows="5" placeholder="مثال: رتب طلبات العملاء المتأخرة، أو راجع نقص المواد، أو حضر مهمة متابعة لعرض سعر جديد..."></textarea>
       <div class="ai-command-actions">
         <button class="btn-primary" onclick="submitAiSystemCommand()"><i class="fa-solid fa-paper-plane"></i> إرسال لعقل النظام</button>
-        <button class="btn-secondary" onclick="createAiFollowupTasks()"><i class="fa-solid fa-list-check"></i> إغلاق فجوات AI</button>
+        <button class="btn-secondary" onclick="createAiFollowupTasks()"><i class="fa-solid fa-list-check"></i> إغلاق فجوات الذكاء</button>
       </div>
       <div class="ai-suggestion-chips">
         <button onclick="fillAiSystemCommand('افحص الطلبات المتأخرة وحضر مهام متابعة آمنة')">الطلبات المتأخرة</button>
         <button onclick="fillAiSystemCommand('راجع نقص المواد واقترح طلبات شراء للموافقة')">نقص المواد</button>
-        <button onclick="fillAiSystemCommand('لخص رسائل WhatsApp المعلقة وحول المهم إلى مركز القيادة')">WhatsApp</button>
+        <button onclick="fillAiSystemCommand('لخص رسائل العملاء المعلقة وحول المهم إلى مركز القيادة')">رسائل العملاء</button>
         <button onclick="fillAiSystemCommand('راجع الرواتب قراءة فقط وأنشئ طلب مراجعة بدون تعديل مباشر')">رواتب آمن</button>
+      </div>
+      <div class="automation-panel" style="margin-top:14px;">
+        <div class="automation-section-head"><h3>إصدار أمر أو مهمة بمساعدة AI</h3><span>الطلبات الحساسة تبقى للموافقة</span></div>
+        <div class="automation-form-grid">
+          <label>النوع<select id="aiOrderType" class="form-input"><option value="task">مهمة تنفيذية</option><option value="order">أمر إداري / طلب موافقة</option></select></label>
+          <label>الأولوية<select id="aiOrderPriority" class="form-input"><option value="normal">عادي</option><option value="high">عالي</option><option value="urgent">عاجل</option><option value="low">منخفض</option></select></label>
+          <label>المسؤول<input id="aiOrderOwner" class="form-input" placeholder="اسم الموظف أو القسم"></label>
+          <label>تاريخ الاستحقاق<input id="aiOrderDueDate" type="date" class="form-input"></label>
+          <label style="grid-column:1/-1;">العنوان<input id="aiOrderTitle" class="form-input" placeholder="مثال: تنظيف المكيفات وفحص المولد"></label>
+          <label style="grid-column:1/-1;">التفاصيل<textarea id="aiOrderDetails" class="form-input" rows="4" placeholder="اكتب المطلوب، وسيعيد AI صياغته كأمر واضح قابل للتنفيذ."></textarea></label>
+        </div>
+        <div class="ai-command-actions">
+          <button class="btn-secondary" onclick="draftAiOrderTask()"><i class="fa-solid fa-wand-magic-sparkles"></i> صياغة AI</button>
+          <button class="btn-primary" onclick="issueAiOrderTask()"><i class="fa-solid fa-circle-check"></i> إصدار</button>
+        </div>
+        <div id="aiOrderDraftPreview" class="ai-chat-history" style="margin-top:10px;"></div>
       </div>
       <div id="aiSystemChatResponse" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto;">
         ${chatLog.length ? chatLog.map(m => m.role === 'user'
@@ -33376,6 +34066,96 @@ function renderAiSystemChatPanel() {
 function fillAiSystemCommand(text) {
   const input = document.getElementById('aiSystemCommandInput');
   if (input) input.value = text;
+}
+
+function getAiOrderFormData() {
+  const val = id => (document.getElementById(id)?.value || '').trim();
+  return {
+    type: val('aiOrderType') || 'task',
+    priority: val('aiOrderPriority') || 'normal',
+    owner: val('aiOrderOwner'),
+    dueDate: val('aiOrderDueDate'),
+    title: val('aiOrderTitle'),
+    details: val('aiOrderDetails')
+  };
+}
+
+function renderAiOrderDraft(text, tone) {
+  const box = document.getElementById('aiOrderDraftPreview');
+  if (!box) return;
+  const color = tone === 'error' ? 'var(--danger,#ef4444)' : tone === 'success' ? 'var(--success,#10b981)' : 'var(--accent-blue,#2563eb)';
+  box.innerHTML = `<div><b style="color:${color}">مسودة الأمر</b><span style="white-space:pre-wrap;">${escapeHtml(text || '')}</span></div>`;
+}
+
+async function draftAiOrderTask() {
+  const data = getAiOrderFormData();
+  if (!data.title && !data.details) return showToast('اكتب عنواناً أو تفاصيل للأمر أولاً.', 'warning');
+  const fallback = [
+    `العنوان: ${data.title || 'مهمة تشغيلية'}`,
+    `الأولوية: ${data.priority}`,
+    data.owner ? `المسؤول: ${data.owner}` : '',
+    data.dueDate ? `الاستحقاق: ${data.dueDate}` : '',
+    '',
+    data.details || ''
+  ].filter(Boolean).join('\n');
+  renderAiOrderDraft('جاري صياغة الأمر...', 'info');
+  try {
+    const prompt = `حوّل النص التالي إلى أمر عمل أو مهمة واضحة باللغة العربية. اكتب عنواناً مختصراً، وصفاً تنفيذياً، وقائمة خطوات مرقمة. لا تنفذ أي إجراء ولا تقترح تعديلات مالية مباشرة.\n\n${fallback}`;
+    const answer = await (window.callOctagonAi || callOctagonAi)(prompt, buildOctagonAiContext(), { temperature: 0.15 });
+    const draft = answer || fallback;
+    const detailsEl = document.getElementById('aiOrderDetails');
+    if (detailsEl) detailsEl.value = draft;
+    renderAiOrderDraft(draft, 'success');
+  } catch (err) {
+    renderAiOrderDraft(fallback, 'success');
+    showToast('تعذر اتصال AI الآن؛ استخدمت المسودة اليدوية.', 'warning');
+  }
+}
+
+function issueAiOrderTask() {
+  const data = getAiOrderFormData();
+  const title = data.title || (data.details || '').split('\n').find(Boolean) || 'مهمة تشغيلية من AI';
+  if (!title.trim()) return showToast('اكتب عنوان الأمر أو المهمة أولاً.', 'warning');
+  const aiCtx = typeof getAiCurrentUserContext === 'function' ? getAiCurrentUserContext() : { id: 'system', name: 'system', role: 'system' };
+  if (data.type === 'order') {
+    if (typeof createOmniRequest === 'function') {
+      const req = createOmniRequest({
+        type: 'ai_order',
+        title,
+        description: data.details || title,
+        requesterName: aiCtx.name,
+        sourcePage: 'intelligence',
+        sourceType: 'ai_order_form',
+        status: 'pending',
+        priority: data.priority === 'urgent' ? 'urgent' : data.priority === 'high' ? 'high' : 'normal',
+        payload: { owner: data.owner, dueDate: data.dueDate, requestedById: aiCtx.id, requestedByRole: aiCtx.role }
+      });
+      saveData();
+      renderAiOrderDraft(`تم إصدار أمر إداري بانتظار المراجعة: ${req?.title || title}`, 'success');
+      showToast('تم إصدار الأمر إلى مركز القيادة / الموافقات.', 'success');
+      return req;
+    }
+    showToast('مركز الطلبات غير جاهز؛ سيتم إنشاء مهمة بدلاً من الأمر.', 'warning');
+  }
+  if (typeof createTaskInSelectedSpace !== 'function') return showToast('مدير المهام غير جاهز لإنشاء المهمة.', 'error');
+  const task = createTaskInSelectedSpace(title, {
+    priority: data.priority,
+    owner: data.owner,
+    assignedTo: data.owner,
+    dueDate: data.dueDate,
+    department: data.type === 'order' ? 'الإدارة' : 'عام',
+    description: data.details || title,
+    sourceType: 'ai_order_form',
+    sourceId: 'intelligence',
+    createdByAI: true,
+    requestedBy: aiCtx.name,
+    requestedById: aiCtx.id,
+    requestedByRole: aiCtx.role
+  });
+  saveData();
+  renderAiOrderDraft(`تم إنشاء المهمة: ${task?.title || title}`, 'success');
+  showToast('تم إنشاء المهمة في Task Manager.', 'success');
+  return task;
 }
 
 // === Octagon AI brain: one reusable, grounded call to the model ===
@@ -33458,6 +34238,7 @@ async function submitAiSystemCommand() {
   if (!text) return showToast('اكتب أمراً أو سؤالاً للذكاء الصناعي أولاً.', 'warning');
   const sensitive = /راتب|رواتب|قيد|مالية|فلوس|صلاحية|حذف|اعدادات|إعدادات|admin/i.test(text);
   const ai = getAiControl();
+  const aiCtx = getAiCurrentUserContext();
   if (!Array.isArray(ai.chatLog)) ai.chatLog = [];
 
   // --- Existing audit + safe-approval behavior (kept intact) ---
@@ -33478,6 +34259,10 @@ async function submitAiSystemCommand() {
     status: 'pending',
     summary: text,
     affectedRecords: 0,
+    requestedBy: aiCtx.name,
+    requestedById: aiCtx.id,
+    requestedByRole: aiCtx.role,
+    payload: { userId: aiCtx.id, userName: aiCtx.name, userRole: aiCtx.role, source: 'ai_system_chat', sensitive },
     createdAt: new Date().toISOString()
   });
 
@@ -33512,11 +34297,11 @@ function renderAiControlDashboard() {
   body.className = 'ai-workspace-shell';
   body.innerHTML = `
     <div class="ai-hero">
-      <div><h2>🧠 عقل Octagon ERP</h2><p>مركز قراءة النظام، المحادثة، القرارات، والصلاحيات. التنفيذ الحساس يبقى بموافقة واضحة.</p></div>
+      <div><h2>🧠 عقل النظام</h2><p>مركز قراءة النظام، المحادثة، القرارات، والصلاحيات. التنفيذ الحساس يبقى بموافقة واضحة.</p></div>
       <div class="ai-hero-actions">
         <button class="btn-primary" onclick="submitAiSystemCommand()"><i class="fa-solid fa-paper-plane"></i> إرسال الأمر</button>
         <button class="btn-secondary" onclick="switchPage('automation')"><i class="fa-solid fa-bolt"></i> الأتمتة</button>
-        <button class="btn-secondary" onclick="switchPage('whatsapp')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        <button class="btn-secondary" onclick="switchPage('whatsapp')"><i class="fa-brands fa-whatsapp"></i> رسائل العملاء</button>
       </div>
     </div>
     <div class="ai-kpi-row">
@@ -33537,11 +34322,11 @@ function renderAiControlDashboard() {
     ${renderHrPayrollAiReviewPanel()}
     <div class="automation-panel" style="margin-top:20px;">
       <div class="automation-section-head"><h3>الفجوات التي تمنع AI من التحكم بكل النظام</h3><span>تحويلها لمهام متابعة</span></div>
-      <div class="automation-rule-grid">${stats.gaps.map(gap => `<div class="automation-rule-card"><div class="automation-rule-head"><h3>${escapeHtml(gap.title)}</h3><span class="task-priority-chip" style="--chip-color:${gap.severity === 'critical' ? 'var(--danger)' : gap.severity === 'high' ? 'var(--warning)' : 'var(--accent-blue)'}">${escapeHtml(gap.severity)}</span></div><div class="automation-rule-foot"><button class="btn-secondary" onclick="switchPage('${gap.page}')"><i class="fa-solid fa-up-right-from-square"></i> فتح</button><button class="btn-primary" onclick="createAiFollowupTask('${jsString(gap.title)}','${gap.page}','${gap.severity}')"><i class="fa-solid fa-plus"></i> مهمة</button></div></div>`).join('')}</div>
+      <div class="automation-rule-grid">${stats.gaps.map(gap => `<div class="automation-rule-card"><div class="automation-rule-head"><h3>${escapeHtml(gap.title)}</h3><span class="task-priority-chip" style="--chip-color:${gap.severity === 'critical' ? 'var(--danger)' : gap.severity === 'high' ? 'var(--warning)' : 'var(--accent-blue)'}">${escapeHtml(translateAiRisk(gap.severity))}</span></div><div class="automation-rule-foot"><button class="btn-secondary" onclick="switchPage('${gap.page}')"><i class="fa-solid fa-up-right-from-square"></i> فتح</button><button class="btn-primary" onclick="createAiFollowupTask('${jsString(gap.title)}','${gap.page}','${gap.severity}')"><i class="fa-solid fa-plus"></i> مهمة</button></div></div>`).join('')}</div>
     </div>
     <div class="automation-layout" style="grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);margin-top:20px;">
       <div class="automation-panel">
-        <div class="automation-section-head"><h3>مصفوفة AI Input / Output</h3></div>
+        <div class="automation-section-head"><h3>مصفوفة مدخلات ومخرجات الذكاء</h3></div>
         <div class="analytics-table-wrap"><table class="analytics-mini-table">
           <thead><tr><th>المصدر</th><th>السجلات</th><th>قراءة AI</th><th>كتابة AI</th><th>ملاحظة تشغيلية</th></tr></thead>
           <tbody>${stats.inputSources.map(src => `<tr><td><b>${escapeHtml(src.label)}</b></td><td>${src.count}</td><td><span class="analytics-risk-badge" style="background:${src.read ? '#34d399' : '#f87171'}">${src.read ? 'جاهز' : 'غير جاهز'}</span></td><td><span class="analytics-risk-badge" style="background:${src.write === true ? '#34d399' : src.write ? '#fbbf24' : '#f87171'}">${src.write === true ? 'مباشر آمن' : src.write === 'limited' ? 'محدود' : src.write === 'review' ? 'بمراجعة' : 'مغلق'}</span></td><td>${escapeHtml(src.note)}</td></tr>`).join('')}</tbody>
@@ -33550,10 +34335,10 @@ function renderAiControlDashboard() {
       <div class="automation-panel">
         <div class="automation-section-head"><h3>حالة الطبقات الذكية</h3></div>
         <div class="automation-fire-list">
-          <div class="automation-fire-row"><div><b>Intelligence Findings</b><p>نتائج مفتوحة تحتاج قرار أو تحويل لمهام.</p></div><b>${stats.openFindings}</b></div>
-          <div class="automation-fire-row"><div><b>WhatsApp Queue</b><p>اقتراحات بانتظار مراجعة المستخدم.</p></div><b>${stats.pendingWhatsapp}</b></div>
-          <div class="automation-fire-row"><div><b>Automation Fire Log</b><p>سجل التنفيذ الفعلي للقواعد.</p></div><b>${stats.fireLog.length}</b></div>
-          <div class="automation-fire-row"><div><b>Task Manager</b><p>أفضل قناة آمنة لمخرجات AI حالياً.</p></div><b>${stats.tasks.length}</b></div>
+          <div class="automation-fire-row"><div><b>نتائج التحليل</b><p>نتائج مفتوحة تحتاج قرار أو تحويل لمهام.</p></div><b>${stats.openFindings}</b></div>
+          <div class="automation-fire-row"><div><b>طابور رسائل العملاء</b><p>اقتراحات بانتظار مراجعة المستخدم.</p></div><b>${stats.pendingWhatsapp}</b></div>
+          <div class="automation-fire-row"><div><b>سجل تنفيذ الأتمتة</b><p>سجل التنفيذ الفعلي للقواعد.</p></div><b>${stats.fireLog.length}</b></div>
+          <div class="automation-fire-row"><div><b>مدير المهام</b><p>أفضل قناة آمنة لمخرجات الذكاء حالياً.</p></div><b>${stats.tasks.length}</b></div>
         </div>
       </div>
     </div>
@@ -33626,9 +34411,9 @@ function renderAutomationEngine() {
         <div class="automation-section-head"><h3>القواعد الحالية</h3><span>${rules.length}</span></div>
         <div class="auto-toolbar">
           <input id="autoSearchInput" class="form-input" placeholder="بحث باسم القاعدة..." value="${escapeHtml(automationSearchQuery)}" oninput="handleAutomationSearchInput(this.value)">
-          <select class="form-input" onchange="handleAutomationEventFilter(this.value)">
+          <select class="form-input" onchange="handleAutomationEventFilterChange(this.value)">
             <option value="all" ${automationEventFilter === 'all' ? 'selected' : ''}>كل الأحداث</option>
-            <option value="KANBAN_CARD_STUCK" ${automationEventFilter === 'KANBAN_CARD_STUCK' ? 'selected' : ''}>بطاقة Kanban عالقة</option>
+            <option value="KANBAN_CARD_STUCK" ${automationEventFilter === 'KANBAN_CARD_STUCK' ? 'selected' : ''}>بطاقة عالقة في اللوحة</option>
             <option value="MATERIAL_BELOW_MINIMUM" ${automationEventFilter === 'MATERIAL_BELOW_MINIMUM' ? 'selected' : ''}>نقص مادة</option>
             <option value="WHATSAPP_APPROVED" ${automationEventFilter === 'WHATSAPP_APPROVED' ? 'selected' : ''}>WhatsApp معتمد</option>
             <option value="QUOTE_CREATED" ${automationEventFilter === 'QUOTE_CREATED' ? 'selected' : ''}>عرض سعر جديد</option>

@@ -388,7 +388,7 @@
     if (!el) return;
     if (!state.last) state.last = runReport(state.query);
     const range = rangeFromState();
-    const examples = ['ارباح هذا الشهر حسب نوع العمل', 'profit by product line this month', 'قيمة المخزون والمواد', 'VAT summary this month', 'ربحية العملاء', 'نواقص MRP والشراء المقترح'];
+    const examples = ['ارباح هذا الشهر حسب نوع العمل', 'الأرباح حسب خط المنتج هذا الشهر', 'قيمة المخزون والمواد', 'ملخص ضريبة القيمة المضافة هذا الشهر', 'ربحية العملاء', 'نواقص MRP والشراء المقترح'];
     el.innerHTML = `<div class="nlr-wrap">
       <div class="nlr-query">
         <div class="nlr-query-main">

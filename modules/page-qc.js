@@ -157,8 +157,8 @@ function getQcRecordsForCard(cardId) {
 function getCardQcStatus(card) {
   const recs = getQcRecordsForCard(card?.id);
   if (recs.some(q => q.status === 'closed')) return { key: 'closed', label: 'مغلق' };
-  if (recs.some(q => q.reworkStatus === 'in_progress')) return { key: 'rework_in_progress', label: 'Rework قيد التنفيذ' };
-  if (recs.some(q => q.reworkStatus === 'created' || q.status === 'rework_required')) return { key: 'rework_required', label: 'Rework مطلوب' };
+  if (recs.some(q => q.reworkStatus === 'in_progress')) return { key: 'rework_in_progress', label: 'إعادة عمل قيد التنفيذ' };
+  if (recs.some(q => q.reworkStatus === 'created' || q.status === 'rework_required')) return { key: 'rework_required', label: 'إعادة عمل مطلوبة' };
   if (recs.some(q => q.result === 'fail')) return { key: 'fail', label: 'فاشل' };
   if (recs.some(q => q.result === 'pass')) return { key: 'pass', label: 'ناجح' };
   if (recs.length) return { key: 'pending', label: 'قيد الفحص' };
@@ -365,7 +365,7 @@ async function markQcFail(qcRecordId, reason, severity) {
 
   showToast('تم تسجيل الفحص كفاشل', 'error');
   if ((omni.qcSettings || {}).autoCreateReworkOnFail) {
-    const ok = await showOmniModal('إنشاء إعادة عمل', '<p>الإعدادات تسمح بإنشاء Rework عند الفشل. هل تريد إنشاء بطاقة إعادة عمل الآن؟</p>', () => true);
+    const ok = await showOmniModal('إنشاء إعادة عمل', '<p>الإعدادات تسمح بإنشاء إعادة عمل عند الفشل. هل تريد إنشاء بطاقة إعادة عمل الآن؟</p>', () => true);
     if (ok) createReworkFromQc(qcRecordId);
   }
   renderQcCenter();
@@ -587,10 +587,10 @@ function getQcLinkContext(qc) {
 function getQcCommandCenterAlerts() {
   const a = calculateQcAnalytics();
   const alerts = [];
-  if (a.fail) alerts.push({ severity: 'danger', source: 'من مركز الجودة', title: `${a.fail} فحص جودة فاشل`, reason: 'تحتاج متابعة أو إنشاء Rework.', page: 'qc_center', action: 'فتح مركز الجودة' });
+  if (a.fail) alerts.push({ severity: 'danger', source: 'من مركز الجودة', title: `${a.fail} فحص جودة فاشل`, reason: 'تحتاج متابعة أو إنشاء إعادة عمل.', page: 'qc_center', action: 'فتح مركز الجودة' });
   if (a.pending) alerts.push({ severity: 'warning', source: 'من مركز الجودة', title: `${a.pending} فحص قيد الانتظار`, reason: 'افحص بوابات الجودة قبل التسليم.', page: 'qc_center', action: 'فتح مركز الجودة' });
-  if (a.rework) alerts.push({ severity: 'danger', source: 'من مركز الجودة', title: `${a.rework} حالة إعادة عمل`, reason: 'راجع حالات Rework المفتوحة.', page: 'qc_center', action: 'فتح مركز الجودة' });
-  a.problematicSops.slice(0, 2).forEach(p => alerts.push({ severity: 'warning', source: 'من مركز الجودة', title: `SOP يحتاج مراجعة: ${p.sop?.title || p.sopId}`, reason: `${p.failCount} حالات فشل مرتبطة.`, page: 'sop', action: 'فتح SOP' }));
+  if (a.rework) alerts.push({ severity: 'danger', source: 'من مركز الجودة', title: `${a.rework} حالة إعادة عمل`, reason: 'راجع حالات إعادة العمل المفتوحة.', page: 'qc_center', action: 'فتح مركز الجودة' });
+  a.problematicSops.slice(0, 2).forEach(p => alerts.push({ severity: 'warning', source: 'من مركز الجودة', title: `إجراء يحتاج مراجعة: ${p.sop?.title || p.sopId}`, reason: `${p.failCount} حالات فشل مرتبطة.`, page: 'sop', action: 'فتح الإجراءات' }));
   return alerts;
 }
 
@@ -618,13 +618,13 @@ function renderQcKpis() {
 }
 function qcStatusBadge(qc) { return `<span class="qc-status-badge qc-status-${qc.status || qc.result}">${qcStatusLabel(qc.status || qc.result)}</span>`; }
 function qcSeverityBadge(qc) { return `<span class="qc-severity-badge qc-severity-${qc.severity || 'medium'}">${qcSeverityLabel(qc.severity || 'medium')}</span>`; }
-function qcStatusLabel(s) { return ({ pending: 'قيد الفحص', pass: 'ناجح', fail: 'فاشل', rework_required: 'Rework مطلوب', reworked: 'تمت إعادة العمل', closed: 'مغلق' })[s] || s || 'غير محدد'; }
+function qcStatusLabel(s) { return ({ pending: 'قيد الفحص', pass: 'ناجح', fail: 'فاشل', rework_required: 'إعادة عمل مطلوبة', reworked: 'تمت إعادة العمل', closed: 'مغلق' })[s] || s || 'غير محدد'; }
 function qcSeverityLabel(s) { return ({ low: 'منخفض', medium: 'متوسط', high: 'عالي', critical: 'حرج' })[s] || s; }
 function renderQcRecordCard(qc) {
   const card = qc.cardId ? (omni.kanban.cards || []).find(c => c.id === qc.cardId) : null;
   return `<div class="qc-record-card" onclick="openQcInspector('${qc.id}',0)">
     <div><h4>${escapeHtml(qc.title || qc.type)}</h4><small>${escapeHtml(qc.department || 'غير مصنف')} · ${escapeHtml(qc.inspector || 'قسم الجودة')} · ${qc.createdAt ? new Date(qc.createdAt).toLocaleDateString() : '-'}</small></div>
-    <div class="qc-record-badges">${qcStatusBadge(qc)}${qcSeverityBadge(qc)}${card ? `<span class="qc-status-badge">Kanban</span>` : ''}</div>
+    <div class="qc-record-badges">${qcStatusBadge(qc)}${qcSeverityBadge(qc)}${card ? `<span class="qc-status-badge">اللوحة</span>` : ''}</div>
     <p>${escapeHtml(qc.failureReason || qc.notes || 'لا توجد ملاحظات')}</p>
     <div class="qc-record-links">${qc.batchNumber ? `<span class="qc-link-batch">📦 دفعة: ${escapeHtml(qc.batchNumber)}</span>` : ''}${qc.sopId ? `<span>SOP: ${escapeHtml(getSopById(qc.sopId)?.title || qc.sopId)}</span>` : ''}${qc.machineId ? `<span>ماكينة: ${escapeHtml(getMachineById(qc.machineId)?.name || qc.machineId)}</span>` : ''}${(qc.materialIds || []).length ? `<span>مواد: ${qc.materialIds.length}</span>` : ''}${getQcRecordReworkCost(qc) > 0 ? `<span class="qc-link-cost">كلفة: ${getQcRecordReworkCost(qc).toLocaleString()} ${escapeHtml(getQcCurrency())}</span>` : ''}</div>
   </div>`;
@@ -636,7 +636,7 @@ function renderQcRecordsTab() {
 }
 function renderQcReworkTab() {
   const records = (omni.qcRecords || []).filter(q => q.result === 'fail' || q.reworkStatus !== 'none' || q.status === 'rework_required');
-  return `<div class="qc-record-list">${records.map(qc => `<div class="qc-rework-card">${renderQcRecordCard(qc)}<div class="insp-actions">${qc.reworkCardId ? `<button class="btn-secondary" onclick="event.stopPropagation(); switchPage('kanban'); openKanbanCardInspector('${qc.reworkCardId}')">فتح بطاقة Rework</button>` : `<button class="btn-primary" onclick="event.stopPropagation(); createReworkFromQc('${qc.id}')">إنشاء إعادة عمل</button>`}<button class="btn-secondary" onclick="event.stopPropagation(); closeReworkForQc('${qc.id}')">إغلاق Rework</button></div></div>`).join('') || '<div class="qc-empty-state">لا توجد حالات إعادة عمل مفتوحة</div>'}</div>`;
+  return `<div class="qc-record-list">${records.map(qc => `<div class="qc-rework-card">${renderQcRecordCard(qc)}<div class="insp-actions">${qc.reworkCardId ? `<button class="btn-secondary" onclick="event.stopPropagation(); switchPage('kanban'); openKanbanCardInspector('${qc.reworkCardId}')">فتح بطاقة إعادة العمل</button>` : `<button class="btn-primary" onclick="event.stopPropagation(); createReworkFromQc('${qc.id}')">إنشاء إعادة عمل</button>`}<button class="btn-secondary" onclick="event.stopPropagation(); closeReworkForQc('${qc.id}')">إغلاق إعادة العمل</button></div></div>`).join('') || '<div class="qc-empty-state">لا توجد حالات إعادة عمل مفتوحة</div>'}</div>`;
 }
 function renderQcTemplatesTab() {
   ensureOmni();
@@ -768,7 +768,7 @@ function renderQcCenter() {
   const title = page?.querySelector('.page-title');
   const subtitle = page?.querySelector('.page-subtitle');
   if (title) title.innerHTML = '<span class="title-icon">🧪</span> مركز الجودة وإعادة العمل';
-  if (subtitle) subtitle.textContent = 'Quality Gate + Rework Control Center مرتبط باللوحة التنفيذية، Workflow، SOP، المكائن، المواد، Command Center، والتحليلات.';
+  if (subtitle) subtitle.textContent = 'بوابة الجودة ومركز إعادة العمل مرتبط باللوحة التنفيذية، مصمم العمليات، الإجراءات، المكائن، المواد، مركز القيادة، والتحليلات.';
   const tabs = [['dashboard','لوحة الجودة'],['records','الفحوصات'],['rework','إعادة العمل'],['templates','معايير فحص الـ SOP'],['sop','تحليل أخطاء الـ SOP'],['stats','الكلفة والإحصائيات'],['batches','الدفعات'],['settings','الإعدادات']];
   const content = qcCenterTab === 'records' ? renderQcRecordsTab()
     : qcCenterTab === 'batches' ? renderQcBatchesTab()
@@ -943,7 +943,7 @@ function renderQcInspectorBody(qc, tab) {
   if (tab === 4) {
     const m = ctx.machine;
     const statusColor = m && m.status === 'maintenance' ? '#f87171' : (m && m.status === 'busy' ? '#fbbf24' : '#34d399');
-    const link = m ? `<div class="qc-link-card"><h5>${escapeHtml(m.name)}</h5><small>الحالة: <b style="color:${statusColor}">${escapeHtml(m.status || '-')}</b> · الطابور الحالي: <b>${ctx.machineQueue}</b> · المشغل: <b>${escapeHtml(m.operator || m.defaultOperator || '-')}</b></small>${m.lastMaintenance ? `<p>آخر صيانة: ${new Date(m.lastMaintenance).toLocaleDateString()}</p>` : ''}<div class="insp-actions"><button class="btn-secondary" onclick="switchPage('machines'); setTimeout(()=>openMachineInspector&&openMachineInspector('${m.id}'),100)"><i class="fa-solid fa-up-right-from-square"></i> فتح الماكينة</button></div></div>` : '<p class="muted">لا توجد ماكينة مرتبطة بهذا الفحص. اربط الماكينة المسؤولة عن الإنتاج لمتابعة كلفة وقت الفشل.</p>';
+    const link = m ? `<div class="qc-link-card"><h5>${escapeHtml(m.name)}</h5><small>الحالة: <b style="color:${statusColor}">${escapeHtml(m.status || '-')}</b> · الطابور الحالي: <b>${ctx.machineQueue}</b> · المشغل: <b>${escapeHtml(m.operator || m.defaultOperator || '-')}</b></small>${m.lastMaintenance ? `<p>آخر صيانة: ${new Date(m.lastMaintenance).toLocaleDateString()}</p>` : ''}<div class="insp-actions"><button class="btn-secondary" onclick="switchPage('machines'); setTimeout(()=>(typeof openInspector==='function')&&openInspector('machine','${m.id}'),100)"><i class="fa-solid fa-up-right-from-square"></i> فتح الماكينة</button></div></div>` : '<p class="muted">لا توجد ماكينة مرتبطة بهذا الفحص. اربط الماكينة المسؤولة عن الإنتاج لمتابعة كلفة وقت الفشل.</p>';
     return `<div class="insp-section"><h4>ربط مع الماكينة</h4>${link}<div class="qc-link-row"><select id="qcMachineSelect" class="form-input"><option value="">— بدون ماكينة —</option>${(omni.machines||[]).map(mac => `<option value="${mac.id}" ${qc.machineId === mac.id ? 'selected' : ''}>${escapeHtml(mac.name)} (${escapeHtml(mac.status || '-')})</option>`).join('')}</select><button class="btn-secondary" onclick="updateQcRecord('${qc.id}',{machineId:document.getElementById('qcMachineSelect').value}); openQcInspector('${qc.id}',4)"><i class="fa-solid fa-link"></i> ربط الماكينة</button></div></div>`;
   }
   if (tab === 5) {

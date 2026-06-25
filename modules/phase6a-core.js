@@ -451,23 +451,23 @@
       <section class="p6a-panel">
         <div class="p6a-head">
           <div>
-            <h3><i class="fa-solid fa-scale-balanced"></i> المطابقة البنكية / Bank Reconciliation</h3>
+            <h3><i class="fa-solid fa-scale-balanced"></i> المطابقة البنكية</h3>
             <p>مطابقة محافظة: تحفظ سطور الكشف والروابط تحت <span class="p6a-code">omni.banking</span> ولا تغيّر معاملات finance أو تنشر قيوداً.</p>
           </div>
           <div class="p6a-chip-row">
-            <span class="p6a-chip ${summary.status === 'reconciled' ? 'ok' : summary.status === 'partial' ? 'warn' : ''}">${esc(summary.status)}</span>
-            <span class="p6a-chip">Statement ${fmt(summary.statementTotal)}</span>
-            <span class="p6a-chip">Matched ${fmt(summary.matchedTotal)}</span>
-            <span class="p6a-chip ${Math.abs(summary.difference) <= 0.01 ? 'ok' : 'bad'}">Diff ${fmt(summary.difference)}</span>
+            <span class="p6a-chip ${summary.status === 'reconciled' ? 'ok' : summary.status === 'partial' ? 'warn' : ''}">${esc({ reconciled: 'مطابَق', partial: 'مطابقة جزئية', draft: 'مسودة' }[summary.status] || summary.status)}</span>
+            <span class="p6a-chip">الكشف ${fmt(summary.statementTotal)}</span>
+            <span class="p6a-chip">المطابَق ${fmt(summary.matchedTotal)}</span>
+            <span class="p6a-chip ${Math.abs(summary.difference) <= 0.01 ? 'ok' : 'bad'}">الفرق ${fmt(summary.difference)}</span>
           </div>
         </div>
         <form id="p6aBankLineForm" class="p6a-form-grid" onsubmit="event.preventDefault(); p6aAddStatementLine();">
-          <label>الحساب البنكي<select name="accountId" class="p6a-input">${accountOptions || '<option value="">Main bank</option>'}</select></label>
+          <label>الحساب البنكي<select name="accountId" class="p6a-input">${accountOptions || '<option value="">البنك الرئيسي</option>'}</select></label>
           <label>التاريخ<input name="date" class="p6a-input" type="date" value="${today()}"></label>
-          <label>النوع<select name="direction" class="p6a-input"><option value="in">Credit / إيداع</option><option value="out">Debit / سحب</option></select></label>
+          <label>النوع<select name="direction" class="p6a-input"><option value="in">إيداع (دائن)</option><option value="out">سحب (مدين)</option></select></label>
           <label>المبلغ<input name="amount" class="p6a-input" type="number" step="0.01" min="0"></label>
-          <label>المرجع<input name="reference" class="p6a-input" placeholder="Statement ref"></label>
-          <label>الوصف<input name="description" class="p6a-input" placeholder="Bank line description"></label>
+          <label>المرجع<input name="reference" class="p6a-input" placeholder="مرجع الكشف"></label>
+          <label>الوصف<input name="description" class="p6a-input" placeholder="وصف سطر البنك"></label>
           <label>ملاحظات<input name="notes" class="p6a-input" placeholder="اختياري"></label>
           <button class="p6a-btn primary" type="submit"><i class="fa-solid fa-plus"></i> إضافة سطر</button>
         </form>
@@ -649,7 +649,7 @@
       const mat = materials().find(item => item.id === row.materialId) || {};
       const low = money(row.qty) <= money(mat.minimum);
       return `<tr>
-        <td><strong>${esc(materialName(row.materialId))}</strong><span class="p6a-muted">${row.virtual ? 'Virtual default from material total' : 'Location layer'}</span></td>
+        <td><strong>${esc(materialName(row.materialId))}</strong><span class="p6a-muted">${row.virtual ? 'إجمالي المواد' : 'طبقة المواقع'}</span></td>
         <td>${esc(locationName(row.locationId))}<br><span class="p6a-code">${esc(row.locationId)}</span></td>
         <td>${fmt(row.qty)} ${esc(row.unit || mat.unit || '')}</td>
         <td>${fmt(row.reservedQty || 0)}</td>
@@ -665,16 +665,16 @@
     </tr>`).join('');
     const locTree = omni.storageLocations.map(loc => `<div class="p6a-tree-row">
       <div><strong>${esc(loc.nameAr || loc.nameEn || loc.id)}</strong><br><span class="p6a-code">${esc(loc.code || loc.id)}</span> <span class="p6a-muted">${esc(loc.barcode || '')}</span></div>
-      <span class="p6a-chip">${esc(loc.type || 'stock')}</span>
+      <span class="p6a-chip">${esc(({stock:'مخزن',virtual:'افتراضي',input:'استلام',output:'صرف',transit:'عبور'})[loc.type] || loc.type || 'مخزن')}</span>
     </div>`).join('');
     body.insertAdjacentHTML('beforeend', `<div class="p6a-shell" id="p6aStorageLocations">
       <section class="p6a-panel">
         <div class="p6a-head">
           <div>
-            <h3><i class="fa-solid fa-warehouse"></i> مواقع التخزين / Storage Locations</h3>
-            <p>طبقة موقعية غير مدمرة تحت <span class="p6a-code">omni.warehouses</span> و<span class="p6a-code">omni.locationStock</span>. إجمالي المادة القديم يبقى مصدر الحقيقة حتى المصالحة الكاملة.</p>
+            <h3><i class="fa-solid fa-warehouse"></i> مواقع التخزين</h3>
+            <p>طبقة موقعية غير مدمرة. إجمالي المادة القديم يبقى مصدر الحقيقة حتى المصالحة الكاملة.</p>
           </div>
-          <div class="p6a-chip-row"><span class="p6a-chip ok">MAIN_WORKSHOP</span><span class="p6a-chip ok">MAIN_STOCK</span><span class="p6a-chip">${stockRows.length} أرصدة</span></div>
+          <div class="p6a-chip-row">${(omni.warehouses||[]).map(w=>`<span class="p6a-chip ok">${esc(w.nameAr||w.nameEn||w.id)}</span>`).join('')}<span class="p6a-chip">${stockRows.length} أرصدة</span></div>
         </div>
         <form id="p6aLocationMoveForm" class="p6a-form-grid" onsubmit="event.preventDefault(); p6aMoveLocationStock();">
           <label>الإجراء<select name="action" class="p6a-input"><option value="transfer">تحويل</option><option value="receive">استلام</option><option value="issue">صرف</option><option value="adjust">تسوية مراجعة</option></select></label>
@@ -776,14 +776,17 @@
     const accounts = financeAccounts().slice().sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''), undefined, { numeric: true }));
     const warnings = accountWarnings(accounts);
     const parentOptions = '<option value="">بدون أب</option>' + accounts.map(acc => `<option value="${esc(acc.id || acc.code)}">${esc(accountLabel(acc))}</option>`).join('');
+    const typeAr = {'asset':'أصول','liability':'التزامات','equity':'حقوق ملكية','income':'إيرادات','expense':'مصروفات'};
     const rows = accounts.map(acc => {
       const usage = accountUsage(acc);
       const locked = usage > 0;
+      const rawType = acc.type || acc.accountType || '';
+      const parentAcc = accounts.find(a => a.id === acc.parentId || a.code === acc.parentId);
       return `<tr>
-        <td><strong>${esc(acc.code || '')}</strong><span class="p6a-muted">${esc(acc.id || '')}</span></td>
+        <td><strong>${esc(acc.code || '')}</strong></td>
         <td><strong>${esc(acc.nameAr || acc.name || '')}</strong><span class="p6a-muted">${esc(acc.nameEn || acc.englishName || '')}</span></td>
-        <td>${esc(acc.type || acc.accountType || '-')}</td>
-        <td>${esc(acc.parentId || '-')}</td>
+        <td>${esc(typeAr[rawType] || rawType || '-')}</td>
+        <td>${parentAcc ? esc(parentAcc.nameAr || parentAcc.name || parentAcc.code || '-') : '-'}</td>
         <td>${usage}</td>
         <td>${fmt(acc.balancePreview || acc.balance || 0)}</td>
         <td>${locked ? '<span class="p6a-chip warn">مستخدم/محمي</span>' : '<span class="p6a-chip ok">آمن للإعداد</span>'}</td>
@@ -793,16 +796,16 @@
       <section class="p6a-panel">
         <div class="p6a-head">
           <div>
-            <h3><i class="fa-solid fa-sitemap"></i> شجرة الحسابات / Chart of Accounts</h3>
-            <p>واجهة إدارة آمنة داخل Admin Panel: تعرض وتحذر وتضيف حساباً جديداً فقط. لا تحذف ولا تغيّر قيوداً منشورة ولا تعدّل صفحة Finance.</p>
+            <h3><i class="fa-solid fa-sitemap"></i> شجرة الحسابات</h3>
+            <p>واجهة إدارة آمنة داخل لوحة الإعدادات: تعرض وتحذر وتضيف حساباً جديداً فقط. لا تحذف ولا تغيّر قيوداً منشورة ولا تعدّل صفحة المالية.</p>
           </div>
           <div class="p6a-chip-row"><span class="p6a-chip">${accounts.length} حساب</span><span class="p6a-chip ${warnings.length ? 'warn' : 'ok'}">${warnings.length} تحذير</span></div>
         </div>
         <form id="p6aAccountForm" class="p6a-form-grid" onsubmit="event.preventDefault(); p6aAddAccount();">
           <label>كود الحساب<input name="code" class="p6a-input" placeholder="مثال 10105"></label>
           <label>الاسم العربي<input name="nameAr" class="p6a-input" placeholder="اسم الحساب"></label>
-          <label>English name<input name="nameEn" class="p6a-input" placeholder="Optional"></label>
-          <label>النوع<select name="type" class="p6a-input"><option value="">اختر</option><option value="asset">asset</option><option value="liability">liability</option><option value="equity">equity</option><option value="income">income</option><option value="expense">expense</option></select></label>
+          <label>الاسم بالإنجليزية<input name="nameEn" class="p6a-input" placeholder="اختياري"></label>
+          <label>النوع<select name="type" class="p6a-input"><option value="">اختر</option><option value="asset">أصول</option><option value="liability">التزامات</option><option value="equity">حقوق ملكية</option><option value="income">إيرادات</option><option value="expense">مصروفات</option></select></label>
           <label>الحساب الأب<select name="parentId" class="p6a-input">${parentOptions}</select></label>
           <button class="p6a-btn primary" type="submit" ${canAdminAccounting() ? '' : 'disabled'}><i class="fa-solid fa-plus"></i> إضافة حساب آمن</button>
         </form>

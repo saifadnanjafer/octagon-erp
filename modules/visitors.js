@@ -84,7 +84,7 @@
 
     if (!v.visits.length && !v._seeded) {
       v._seeded = true;
-      v.visits.push(stamp({ id: uid('vis'), visitorName: 'مهندس شركة الرافدين', company: 'الرافدين للتكنولوجيا', contact: '0770xxxxxxx', host: 'مدير الصيانة', purpose: 'صيانة دورية', date: todayISO(), status: 'checked_in', badgeNo: 101, checkInAt: nowISO(), createdAt: nowISO(), createdBy: 'system' }));
+      v.visits.push(stamp({ id: uid('vis'), visitorName: 'مهندس شركة الرافدين', company: 'الرافدين للتكنولوجيا', contact: '07700000000', host: 'مدير الصيانة', purpose: 'صيانة دورية', date: todayISO(), status: 'checked_in', badgeNo: 101, checkInAt: nowISO(), createdAt: nowISO(), createdBy: 'system' }));
       v.visits.push(stamp({ id: uid('vis'), visitorName: 'مندوب توريد', company: 'مكتب بابل', contact: '', host: 'قسم المشتريات', purpose: 'تسليم عيّنات', date: todayISO(), status: 'expected', badgeNo: null, createdAt: nowISO(), createdBy: 'system' }));
       v.settings.nextBadge = 102;
     }

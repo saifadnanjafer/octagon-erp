@@ -111,52 +111,52 @@
   }
 
   const STATUS = [
-    ['open', 'Open'],
-    ['review', 'Review'],
-    ['approved', 'Approved'],
-    ['blocked', 'Blocked'],
-    ['done', 'Done']
+    ['open', 'مفتوح'],
+    ['review', 'قيد المراجعة'],
+    ['approved', 'معتمد'],
+    ['blocked', 'متوقف'],
+    ['done', 'منجز']
   ];
   const STATUS_LABEL = Object.fromEntries(STATUS);
   const STATUS_CLASS = { open: 'warn', review: 'warn', approved: 'ok', blocked: 'bad', done: 'ok' };
 
   const PAGES = {
     banking: {
-      title: 'Banking / Treasury',
+      title: 'الخزينة والبنوك',
       body: 'bankingBody',
       pageId: 'pageBanking',
       navId: 'navBanking',
       icon: 'fa-building-columns',
-      subject: 'bank account or reconciliation item',
+      subject: 'حساب بنكي أو بند مطابقة',
       fields: [
-        ['name', 'Account / item', 'text'],
-        ['party', 'Bank / owner', 'text'],
-        ['amount', 'Balance / exposure', 'number'],
-        ['date', 'Statement date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Control note', 'text']
+        ['name', 'الحساب / البند', 'text'],
+        ['party', 'البنك / المالك', 'text'],
+        ['amount', 'الرصيد / الانكشاف', 'number'],
+        ['date', 'تاريخ الكشف', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'ملاحظة الضبط', 'text']
       ],
       kpis: bankingKpis,
       recommendations: bankingRecommendations,
       demo: [
-        { name: 'Main cash bank', party: 'Local bank', amount: 1250000, date: todayISO(), status: 'open', note: 'Needs first statement import' },
-        { name: 'June reconciliation', party: 'Treasury', amount: 0, date: todayISO(), status: 'review', note: 'Match cashbox and bank lines' }
+        { name: 'الحساب البنكي الرئيسي', party: 'بنك محلي', amount: 1250000, date: todayISO(), status: 'open', note: 'يحتاج استيراد أول كشف حساب' },
+        { name: 'مطابقة شهر حزيران', party: 'الخزينة', amount: 0, date: todayISO(), status: 'review', note: 'مطابقة قيود الصندوق والبنك' }
       ]
     },
     ar_ap: {
-      title: 'AR / AP Workbench',
+      title: 'الذمم المدينة والدائنة',
       body: 'arApBody',
       pageId: 'pageArAp',
       navId: 'navArAp',
       icon: 'fa-file-invoice-dollar',
-      subject: 'receivable or payable action',
+      subject: 'إجراء تحصيل أو سداد',
       fields: [
-        ['name', 'Invoice / promise', 'text'],
-        ['party', 'Customer / supplier', 'text'],
-        ['amount', 'Amount', 'number'],
-        ['date', 'Due date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Next collection/payment action', 'text']
+        ['name', 'الفاتورة / التعهد', 'text'],
+        ['party', 'العميل / المورد', 'text'],
+        ['amount', 'المبلغ', 'number'],
+        ['date', 'تاريخ الاستحقاق', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'إجراء التحصيل/السداد التالي', 'text']
       ],
       kpis: arApKpis,
       recommendations: arApRecommendations,
@@ -167,40 +167,40 @@
       ]
     },
     contracts: {
-      title: 'Contracts / Legal',
+      title: 'العقود والشؤون القانونية',
       body: 'contractsBody',
       pageId: 'pageContracts',
       navId: 'navContracts',
       icon: 'fa-file-signature',
-      subject: 'contract',
+      subject: 'عقد',
       fields: [
-        ['name', 'Contract title', 'text'],
-        ['party', 'Counterparty', 'text'],
-        ['amount', 'Value', 'number'],
-        ['date', 'Renewal / expiry', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Obligation / clause note', 'text']
+        ['name', 'عنوان العقد', 'text'],
+        ['party', 'الطرف المقابل', 'text'],
+        ['amount', 'القيمة', 'number'],
+        ['date', 'التجديد / الانتهاء', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'ملاحظة الالتزام / البند', 'text']
       ],
       kpis: contractsKpis,
       recommendations: contractsRecommendations,
       demo: [
-        { name: 'Annual maintenance contract', party: 'Key customer', amount: 1200000, date: todayISO(), status: 'review', note: 'Add SLA and renewal reminder' }
+        { name: 'عقد صيانة سنوي', party: 'عميل رئيسي', amount: 1200000, date: todayISO(), status: 'review', note: 'إضافة اتفاقية مستوى الخدمة وتذكير التجديد' }
       ]
     },
     logistics: {
-      title: 'Logistics / Delivery',
+      title: 'الخدمات اللوجستية والتوصيل',
       body: 'logisticsBody',
       pageId: 'pageLogistics',
       navId: 'navLogistics',
       icon: 'fa-truck-fast',
-      subject: 'delivery',
+      subject: 'عملية توصيل',
       fields: [
-        ['name', 'Delivery / shipment ref', 'text'],
-        ['party', 'Customer / destination', 'text'],
-        ['amount', 'COD / fee', 'number'],
-        ['date', 'Delivery date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Driver / proof / exception', 'text']
+        ['name', 'مرجع التوصيل / الشحنة', 'text'],
+        ['party', 'العميل / الوجهة', 'text'],
+        ['amount', 'الدفع عند الاستلام / الرسوم', 'number'],
+        ['date', 'تاريخ التوصيل', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'السائق / الإثبات / الاستثناء', 'text']
       ],
       kpis: logisticsKpis,
       recommendations: logisticsRecommendations,
@@ -210,153 +210,153 @@
       ]
     },
     supplier_portal: {
-      title: 'Supplier Portal',
+      title: 'بوابة الموردين',
       body: 'supplierPortalBody',
       pageId: 'pageSupplierPortal',
       navId: 'navSupplierPortal',
       icon: 'fa-handshake-angle',
-      subject: 'supplier packet',
+      subject: 'حزمة مورد',
       fields: [
-        ['name', 'RFQ / supplier packet', 'text'],
-        ['party', 'Supplier', 'text'],
-        ['amount', 'Quoted amount', 'number'],
-        ['date', 'Promise date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Comparison / SLA note', 'text']
+        ['name', 'طلب عرض سعر / حزمة مورد', 'text'],
+        ['party', 'المورد', 'text'],
+        ['amount', 'المبلغ المُسعّر', 'number'],
+        ['date', 'تاريخ الوعد', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'ملاحظة المقارنة / مستوى الخدمة', 'text']
       ],
       kpis: supplierKpis,
       recommendations: supplierRecommendations,
       demo: [
-        { name: 'Low-stock RFQ packet', party: 'Supplier shortlist', amount: 0, date: todayISO(), status: 'open', note: 'Send quantities and required delivery date' }
+        { name: 'حزمة طلب عرض سعر للأصناف الناقصة', party: 'قائمة موردين مختصرة', amount: 0, date: todayISO(), status: 'open', note: 'إرسال الكميات وتاريخ التسليم المطلوب' }
       ]
     },
     integration_hub: {
-      title: 'Integration Hub',
+      title: 'مركز التكاملات',
       body: 'integrationHubBody',
       pageId: 'pageIntegrationHub',
       navId: 'navIntegrationHub',
       icon: 'fa-plug-circle-bolt',
-      subject: 'integration',
+      subject: 'تكامل',
       fields: [
-        ['name', 'Connector', 'text'],
-        ['party', 'Provider / channel', 'text'],
-        ['amount', 'Pending / errors', 'number'],
-        ['date', 'Last checked', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Endpoint / retry note', 'text']
+        ['name', 'الموصل', 'text'],
+        ['party', 'المزود / القناة', 'text'],
+        ['amount', 'المعلّق / الأخطاء', 'number'],
+        ['date', 'آخر فحص', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'ملاحظة نقطة النهاية / إعادة المحاولة', 'text']
       ],
       kpis: integrationKpis,
       recommendations: integrationRecommendations,
       demo: [
-        { name: 'WhatsApp Business API', party: 'Meta', amount: 0, date: todayISO(), status: 'review', note: 'Requires HTTPS and production tokens' },
-        { name: 'Email/SMS channel', party: 'Future connector', amount: 0, date: todayISO(), status: 'open', note: 'Add provider and retry queue' }
+        { name: 'WhatsApp Business API', party: 'Meta', amount: 0, date: todayISO(), status: 'review', note: 'يتطلب HTTPS ورموز إنتاج' },
+        { name: 'قناة البريد/الرسائل النصية', party: 'موصل مستقبلي', amount: 0, date: todayISO(), status: 'open', note: 'إضافة مزود وطابور إعادة المحاولة' }
       ]
     },
     security_center: {
-      title: 'Audit / Security Center',
+      title: 'مركز التدقيق والأمان',
       body: 'securityCenterBody',
       pageId: 'pageSecurityCenter',
       navId: 'navSecurityCenter',
       icon: 'fa-user-shield',
-      subject: 'security review item',
+      subject: 'بند مراجعة أمنية',
       fields: [
-        ['name', 'Control / risk', 'text'],
-        ['party', 'Owner', 'text'],
-        ['amount', 'Risk score', 'number'],
-        ['date', 'Review date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Evidence / mitigation', 'text']
+        ['name', 'الضابط / المخاطرة', 'text'],
+        ['party', 'المسؤول', 'text'],
+        ['amount', 'درجة المخاطرة', 'number'],
+        ['date', 'تاريخ المراجعة', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'الدليل / إجراء التخفيف', 'text']
       ],
       kpis: securityKpis,
       recommendations: securityRecommendations,
       demo: [
-        { name: 'Production auth boundary', party: 'System admin', amount: 90, date: todayISO(), status: 'blocked', note: 'Local-first server is not a production auth boundary' },
-        { name: 'High-risk AI tools', party: 'Manager', amount: 70, date: todayISO(), status: 'review', note: 'Keep critical tools disabled unless sandbox is ready' }
+        { name: 'حدود المصادقة الإنتاجية', party: 'مدير النظام', amount: 90, date: todayISO(), status: 'blocked', note: 'الخادم المحلي ليس حدوداً للمصادقة الإنتاجية' },
+        { name: 'أدوات الذكاء الاصطناعي عالية الخطورة', party: 'مدير', amount: 70, date: todayISO(), status: 'review', note: 'إبقاء الأدوات الحرجة معطّلة حتى تجهيز البيئة المعزولة' }
       ]
     },
     data_quality: {
-      title: 'Data Quality / Migration',
+      title: 'جودة البيانات والترحيل',
       body: 'dataQualityBody',
       pageId: 'pageDataQuality',
       navId: 'navDataQuality',
       icon: 'fa-database',
-      subject: 'data issue',
+      subject: 'مشكلة بيانات',
       fields: [
-        ['name', 'Issue / migration item', 'text'],
-        ['party', 'Collection', 'text'],
-        ['amount', 'Affected rows', 'number'],
-        ['date', 'Found date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Fix plan', 'text']
+        ['name', 'المشكلة / بند الترحيل', 'text'],
+        ['party', 'المجموعة', 'text'],
+        ['amount', 'الصفوف المتأثرة', 'number'],
+        ['date', 'تاريخ الاكتشاف', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'خطة الإصلاح', 'text']
       ],
       kpis: dataQualityKpis,
       recommendations: dataQualityRecommendations,
       demo: [],
-      extraActions: '<button class="ent-btn primary" onclick="entRunDataQualityScan()">Run live scan</button>'
+      extraActions: '<button class="ent-btn primary" onclick="entRunDataQualityScan()">تشغيل فحص حي</button>'
     },
     training_lms: {
-      title: 'Training / LMS',
+      title: 'التدريب ومنصة التعلّم',
       body: 'trainingLmsBody',
       pageId: 'pageTrainingLms',
       navId: 'navTrainingLms',
       icon: 'fa-graduation-cap',
-      subject: 'training course',
+      subject: 'دورة تدريبية',
       fields: [
-        ['name', 'Course / certificate', 'text'],
-        ['party', 'Audience / role', 'text'],
-        ['amount', 'Completion %', 'number'],
-        ['date', 'Due date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'SOP / machine authorization', 'text']
+        ['name', 'الدورة / الشهادة', 'text'],
+        ['party', 'الفئة المستهدفة / الدور', 'text'],
+        ['amount', 'نسبة الإكمال %', 'number'],
+        ['date', 'تاريخ الاستحقاق', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'إجراء التشغيل / تخويل تشغيل المكينة', 'text']
       ],
       kpis: trainingKpis,
       recommendations: trainingRecommendations,
       demo: [
-        { name: 'Machine safety onboarding', party: 'Workshop operators', amount: 0, date: todayISO(), status: 'open', note: 'Tie completion to machine authorization' }
+        { name: 'تأهيل سلامة المكائن', party: 'مشغّلو الورشة', amount: 0, date: todayISO(), status: 'open', note: 'ربط الإكمال بتخويل تشغيل المكينة' }
       ]
     },
     scenario_planner: {
-      title: 'AI Scenario Planner',
+      title: 'مخطط السيناريوهات الذكي',
       body: 'scenarioPlannerBody',
       pageId: 'pageScenarioPlanner',
       navId: 'navScenarioPlanner',
       icon: 'fa-chart-line',
-      subject: 'scenario',
+      subject: 'سيناريو',
       fields: [
-        ['name', 'Scenario name', 'text'],
-        ['party', 'Focus area', 'text'],
-        ['amount', 'Estimated impact', 'number'],
-        ['date', 'Horizon date', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'Assumption / action', 'text']
+        ['name', 'اسم السيناريو', 'text'],
+        ['party', 'مجال التركيز', 'text'],
+        ['amount', 'الأثر التقديري', 'number'],
+        ['date', 'تاريخ الأفق', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'الافتراض / الإجراء', 'text']
       ],
       kpis: scenarioKpis,
       recommendations: scenarioRecommendations,
       demo: [
-        { name: 'Cash runway if sales slow 20%', party: 'Finance', amount: -20, date: todayISO(), status: 'review', note: 'Compare AR aging and payroll run' },
-        { name: 'Material shortage pressure', party: 'Operations', amount: 0, date: todayISO(), status: 'open', note: 'Use low-stock and open jobs' }
+        { name: 'السيولة عند تباطؤ المبيعات 20%', party: 'المالية', amount: -20, date: todayISO(), status: 'review', note: 'مقارنة أعمار الذمم ودورة الرواتب' },
+        { name: 'ضغط نقص المواد', party: 'العمليات', amount: 0, date: todayISO(), status: 'open', note: 'استخدام الأصناف الناقصة والأعمال المفتوحة' }
       ]
     },
     device_center: {
-      title: 'Device / IoT Center',
+      title: 'مركز الأجهزة وإنترنت الأشياء',
       body: 'deviceCenterBody',
       pageId: 'pageDeviceCenter',
       navId: 'navDeviceCenter',
       icon: 'fa-mobile-screen-button',
-      subject: 'device',
+      subject: 'جهاز',
       fields: [
-        ['name', 'Device / endpoint', 'text'],
-        ['party', 'Location / owner', 'text'],
-        ['amount', 'Health %', 'number'],
-        ['date', 'Last test', 'date'],
-        ['status', 'Status', 'select'],
-        ['note', 'QR / printer / sensor note', 'text']
+        ['name', 'الجهاز / نقطة النهاية', 'text'],
+        ['party', 'الموقع / المالك', 'text'],
+        ['amount', 'نسبة السلامة %', 'number'],
+        ['date', 'آخر اختبار', 'date'],
+        ['status', 'الحالة', 'select'],
+        ['note', 'ملاحظة QR / الطابعة / المستشعر', 'text']
       ],
       kpis: deviceKpis,
       recommendations: deviceRecommendations,
       demo: [
-        { name: 'Workshop TV', party: 'Production floor', amount: 0, date: todayISO(), status: 'review', note: 'Run real-distance readability test' },
-        { name: 'QR camera scanner', party: 'Mobile workers', amount: 0, date: todayISO(), status: 'open', note: 'Replace paste fallback with real scanner' }
+        { name: 'شاشة عرض الورشة', party: 'أرضية الإنتاج', amount: 0, date: todayISO(), status: 'review', note: 'شغّل اختبار وضوح القراءة من مسافة حقيقية' },
+        { name: 'ماسح QR بالكاميرا', party: 'العمال المتنقلون', amount: 0, date: todayISO(), status: 'open', note: 'استبدل اللصق اليدوي بماسح حقيقي' }
       ]
     }
   };
@@ -443,10 +443,10 @@
   function genericKpis(page) {
     const s = recStats(page);
     return [
-      ['Records', s.total, s.open + ' open', ''],
-      ['Open value', fmt(s.amount), 'manual register', ''],
-      ['Blocked', s.blocked, 'needs manager', s.blocked ? 'bad' : ''],
-      ['Company', activeProfile().companyName || 'Default', activeProfile().currency || 'IQD', '']
+      ['السجلات', s.total, s.open + ' مفتوح', ''],
+      ['القيمة المفتوحة', fmt(s.amount), 'سجل يدوي', ''],
+      ['متوقف', s.blocked, 'يحتاج مديراً', s.blocked ? 'bad' : ''],
+      ['الشركة', activeProfile().companyName || 'افتراضي', activeProfile().currency || 'IQD', '']
     ];
   }
   function bankingKpis() {
@@ -454,102 +454,102 @@
     const income = txs().filter(t => t.direction === 'in').reduce((sum, t) => sum + money(t.amount), 0);
     const out = txs().filter(t => t.direction === 'out').reduce((sum, t) => sum + money(t.amount), 0);
     return [
-      ['Treasury items', s.total, s.open + ' open', ''],
-      ['Cash movement net', fmt(income - out), 'from finance transactions', income - out < 0 ? 'bad' : ''],
-      ['Bank accounts', records('banking').filter(r => /bank|cash/i.test(r.name || '')).length, 'registered here', ''],
-      ['Reconciliation', records('banking').some(r => /recon/i.test(r.name || '')) ? 'Started' : 'Missing', 'statement workflow', records('banking').some(r => /recon/i.test(r.name || '')) ? 'ok' : 'warn']
+      ['بنود الخزينة', s.total, s.open + ' مفتوح', ''],
+      ['صافي الحركة النقدية', fmt(income - out), 'من المعاملات المالية', income - out < 0 ? 'bad' : ''],
+      ['الحسابات البنكية', records('banking').filter(r => /bank|cash|بنك|نقد/i.test(r.name || '')).length, 'مسجّلة هنا', ''],
+      ['المطابقة', records('banking').some(r => /recon|مطابق/i.test(r.name || '')) ? 'بدأت' : 'مفقودة', 'تدفق كشف الحساب', records('banking').some(r => /recon|مطابق/i.test(r.name || '')) ? 'ok' : 'warn']
     ];
   }
   function arApKpis() {
     const receivable = txs().filter(t => t.type === 'customer_charge').reduce((sum, t) => sum + money(t.amount), 0);
     const payments = txs().filter(t => t.type === 'income' || t.type === 'sales_receipt').reduce((sum, t) => sum + money(t.amount), 0);
     return [
-      ['AR exposure', fmt(Math.max(0, receivable - payments)), 'rough live balance', receivable > payments ? 'warn' : 'ok'],
-      ['Customers', customers().length, 'finance registry', ''],
-      ['Workbench rows', recStats('ar_ap').total, recStats('ar_ap').open + ' open', ''],
-      ['Payment runs', records('ar_ap').filter(r => /payment|vendor|payable/i.test((r.name || '') + (r.note || ''))).length, 'manual queue', '']
+      ['انكشاف الذمم المدينة', fmt(Math.max(0, receivable - payments)), 'رصيد حي تقريبي', receivable > payments ? 'warn' : 'ok'],
+      ['العملاء', customers().length, 'سجل المالية', ''],
+      ['أسطر منضدة العمل', recStats('ar_ap').total, recStats('ar_ap').open + ' مفتوح', ''],
+      ['دورات السداد', records('ar_ap').filter(r => /payment|vendor|payable|سداد|مورد|دائن/i.test((r.name || '') + (r.note || ''))).length, 'طابور يدوي', '']
     ];
   }
   function contractsKpis() {
     const expiring = records('contracts').filter(r => r.date && r.date <= plusDays(30)).length;
     const linked = records('contracts').filter(r => r.linkedDocId).length;
     return [
-      ['Contracts', recStats('contracts').total, recStats('contracts').open + ' active/review', ''],
-      ['Expiring 30d', expiring, 'renewal risk', expiring ? 'warn' : 'ok'],
-      ['Linked docs', linked, 'linked with DMS', linked === recStats('contracts').total ? 'ok' : 'warn'],
-      ['Value tracked', fmt(recStats('contracts').amount), 'manual contract value', '']
+      ['العقود', recStats('contracts').total, recStats('contracts').open + ' نشط/مراجعة', ''],
+      ['تنتهي خلال 30 يوم', expiring, 'خطر التجديد', expiring ? 'warn' : 'ok'],
+      ['وثائق مرتبطة', linked, 'مرتبطة بنظام DMS', linked === recStats('contracts').total ? 'ok' : 'warn'],
+      ['القيمة المتتبَّعة', fmt(recStats('contracts').amount), 'قيمة عقد يدوية', '']
     ];
   }
   function logisticsKpis() {
     const delivered = (O().jobOrders || []).filter(w => ['delivered', 'closed'].includes(w.state)).length;
     return [
-      ['Shipments', recStats('logistics').total, recStats('logistics').open + ' open', ''],
-      ['Delivered jobs', delivered, 'workshop source', ''],
-      ['Field visits', (O().fieldService?.visits || []).length, 'field-service source', ''],
-      ['COD tracked', fmt(recStats('logistics').amount), 'manual COD/fees', '']
+      ['الشحنات', recStats('logistics').total, recStats('logistics').open + ' مفتوح', ''],
+      ['أعمال مسلّمة', delivered, 'مصدر الورشة', ''],
+      ['زيارات ميدانية', (O().fieldService?.visits || []).length, 'مصدر الخدمة الميدانية', ''],
+      ['الدفع عند الاستلام', fmt(recStats('logistics').amount), 'مبالغ/رسوم يدوية', '']
     ];
   }
   function supplierKpis() {
     return [
-      ['Suppliers', (O().suppliers || []).length, 'live supplier registry', ''],
-      ['Open POs', (O().purchaseOrders || []).filter(p => !['cancelled', 'received', 'done'].includes(p.status)).length, 'procurement source', ''],
-      ['Portal packets', recStats('supplier_portal').total, recStats('supplier_portal').open + ' open', ''],
-      ['Low stock', lowStock().length, 'RFQ trigger candidates', lowStock().length ? 'warn' : 'ok']
+      ['الموردون', (O().suppliers || []).length, 'سجل الموردين الحي', ''],
+      ['أوامر شراء مفتوحة', (O().purchaseOrders || []).filter(p => !['cancelled', 'received', 'done'].includes(p.status)).length, 'مصدر المشتريات', ''],
+      ['حزم البوابة', recStats('supplier_portal').total, recStats('supplier_portal').open + ' مفتوح', ''],
+      ['أصناف ناقصة', lowStock().length, 'مرشّحات طلب عرض السعر', lowStock().length ? 'warn' : 'ok']
     ];
   }
   function integrationKpis() {
     const ai = O().aiProviders || [];
     const wa = (O().whatsappSuggestions || []).filter(x => x.status === 'pending_review').length;
     return [
-      ['Connectors', recStats('integration_hub').total, 'manual registry', ''],
-      ['WhatsApp pending', wa, 'inbound suggestions', wa ? 'warn' : 'ok'],
-      ['AI providers', Array.isArray(ai) ? ai.length : 0, 'provider descriptors', ''],
-      ['Webhook secret', 'Env', 'WHATSAPP_APP_SECRET required', 'warn']
+      ['الموصلات', recStats('integration_hub').total, 'سجل يدوي', ''],
+      ['واتساب معلّق', wa, 'اقتراحات واردة', wa ? 'warn' : 'ok'],
+      ['مزودو الذكاء', Array.isArray(ai) ? ai.length : 0, 'واصفات المزودين', ''],
+      ['سر الـ Webhook', 'متغيّر بيئة', 'مطلوب WHATSAPP_APP_SECRET', 'warn']
     ];
   }
   function securityKpis() {
     const tools = O().aiToolRegistry || [];
     const criticalEnabled = tools.filter(t => t.enabled && ['high', 'critical'].includes(t.riskLevel)).length;
     return [
-      ['Audit events', (O().aiAuditLog || []).length + (O().historyLedger || []).length, 'AI + history ledger', ''],
-      ['Critical AI enabled', criticalEnabled, 'should stay low', criticalEnabled ? 'bad' : 'ok'],
-      ['Users', (O().users || []).length, 'admin panel', ''],
-      ['Open controls', recStats('security_center').open, 'security register', recStats('security_center').open ? 'warn' : 'ok']
+      ['أحداث التدقيق', (O().aiAuditLog || []).length + (O().historyLedger || []).length, 'سجل الذكاء + سجل التاريخ', ''],
+      ['ذكاء حرج مفعّل', criticalEnabled, 'يُفضّل أن يبقى منخفضاً', criticalEnabled ? 'bad' : 'ok'],
+      ['المستخدمون', (O().users || []).length, 'لوحة الأدمن', ''],
+      ['ضوابط مفتوحة', recStats('security_center').open, 'سجل الأمان', recStats('security_center').open ? 'warn' : 'ok']
     ];
   }
   function dataQualityKpis() {
     const scan = scanDataQuality();
     return [
-      ['Live issues', scan.length, 'current scan', scan.length ? 'warn' : 'ok'],
-      ['Saved issues', recStats('data_quality').total, recStats('data_quality').open + ' open', ''],
-      ['Missing companyId', scan.filter(x => /companyId/.test(x.name)).reduce((s, x) => s + x.amount, 0), 'tenant collections', 'warn'],
-      ['Route health', routeHealthSummary()?.bad || 0, 'diagnostic failures', routeHealthSummary()?.bad ? 'bad' : 'ok']
+      ['مشاكل حية', scan.length, 'الفحص الحالي', scan.length ? 'warn' : 'ok'],
+      ['مشاكل محفوظة', recStats('data_quality').total, recStats('data_quality').open + ' مفتوح', ''],
+      ['معرّف شركة مفقود', scan.filter(x => /companyId/.test(x.name)).reduce((s, x) => s + x.amount, 0), 'مجموعات المستأجرين', 'warn'],
+      ['صحة المسار', routeHealthSummary()?.bad || 0, 'إخفاقات تشخيصية', routeHealthSummary()?.bad ? 'bad' : 'ok']
     ];
   }
   function trainingKpis() {
     const totalEmployees = Array.isArray(window.employees) ? window.employees.length : (topDb().employees || []).length;
     return [
-      ['Courses', recStats('training_lms').total, recStats('training_lms').open + ' open', ''],
-      ['Employees', totalEmployees, 'training audience', ''],
-      ['SOPs', (O().sops || []).length, 'training source', ''],
-      ['Avg completion', average(records('training_lms').map(r => money(r.amount))) + '%', 'manual courses', '']
+      ['الدورات', recStats('training_lms').total, recStats('training_lms').open + ' مفتوح', ''],
+      ['الموظفون', totalEmployees, 'جمهور التدريب', ''],
+      ['الإجراءات', (O().sops || []).length, 'مصدر التدريب', ''],
+      ['متوسط الإكمال', average(records('training_lms').map(r => money(r.amount))) + '%', 'دورات يدوية', '']
     ];
   }
   function scenarioKpis() {
     const openJobs = (O().jobOrders || []).filter(w => !['closed', 'delivered', 'cancelled'].includes(w.state)).length;
     return [
-      ['Scenarios', recStats('scenario_planner').total, recStats('scenario_planner').open + ' active', ''],
-      ['Open jobs', openJobs, 'capacity driver', openJobs > 5 ? 'warn' : ''],
-      ['Low stock', lowStock().length, 'material risk', lowStock().length ? 'warn' : 'ok'],
-      ['Cash net', fmt(txs().reduce((s, t) => s + (t.direction === 'in' ? money(t.amount) : t.direction === 'out' ? -money(t.amount) : 0), 0)), 'rough runway input', '']
+      ['السيناريوهات', recStats('scenario_planner').total, recStats('scenario_planner').open + ' نشط', ''],
+      ['أعمال مفتوحة', openJobs, 'محرّك الطاقة', openJobs > 5 ? 'warn' : ''],
+      ['أصناف ناقصة', lowStock().length, 'خطر المواد', lowStock().length ? 'warn' : 'ok'],
+      ['صافي النقد', fmt(txs().reduce((s, t) => s + (t.direction === 'in' ? money(t.amount) : t.direction === 'out' ? -money(t.amount) : 0), 0)), 'مدخل سيولة تقريبي', '']
     ];
   }
   function deviceKpis() {
     return [
-      ['Devices', recStats('device_center').total, recStats('device_center').open + ' open', ''],
-      ['Mobile mode', document.getElementById('pageEmployeeMobile') ? 'Ready' : 'Missing', 'employee mobile page', document.getElementById('pageEmployeeMobile') ? 'ok' : 'bad'],
-      ['TV mode', document.getElementById('pageWorkshopTv') ? 'Ready' : 'Missing', 'workshop TV page', document.getElementById('pageWorkshopTv') ? 'ok' : 'bad'],
-      ['Real QR camera', 'Pending', 'paste fallback still exists', 'warn']
+      ['الأجهزة', recStats('device_center').total, recStats('device_center').open + ' مفتوح', ''],
+      ['وضع الموبايل', document.getElementById('pageEmployeeMobile') ? 'جاهز' : 'مفقود', 'صفحة موبايل الموظف', document.getElementById('pageEmployeeMobile') ? 'ok' : 'bad'],
+      ['وضع الشاشة', document.getElementById('pageWorkshopTv') ? 'جاهز' : 'مفقود', 'صفحة شاشة الورشة', document.getElementById('pageWorkshopTv') ? 'ok' : 'bad'],
+      ['كاميرا QR حقيقية', 'قيد الانتظار', 'لا يزال اللصق اليدوي موجوداً', 'warn']
     ];
   }
   function average(values) {
@@ -570,92 +570,92 @@
     const cfg = PAGES[page];
     const s = recStats(page);
     const arr = [];
-    if (!s.total) arr.push(reco('warn', 'Create the first ' + cfg.subject, 'This tab is wired and ready; start by registering the control item that used to live outside the ERP.'));
-    if (s.blocked) arr.push(reco('bad', 'Resolve blocked items', s.blocked + ' blocked rows need manager attention.'));
-    arr.push(reco('ok', 'Use this as the control front door', 'Every row saved here is durable under omni.enterpriseSuite.' + page + '.records.'));
+    if (!s.total) arr.push(reco('warn', 'أنشئ أول ' + cfg.subject, 'هذا القسم جاهز وموصول؛ ابدأ بتسجيل بند المتابعة الذي كان يُدار خارج النظام.'));
+    if (s.blocked) arr.push(reco('bad', 'عالج البنود المتوقفة', s.blocked + ' بند متوقف يحتاج انتباه المدير.'));
+    arr.push(reco('ok', 'اجعل هذا القسم بوابة الضبط الرئيسية', 'كل سطر يُحفظ هنا دائم ضمن omni.enterpriseSuite.' + page + '.records.'));
     return arr;
   }
   function bankingRecommendations() {
     const arr = genericRecommendations('banking');
-    if (!records('banking').some(r => /recon/i.test((r.name || '') + (r.note || '')))) arr.unshift(reco('warn', 'Add monthly reconciliation', 'Banking needs statement import and match workflow before online launch.'));
+    if (!records('banking').some(r => /recon/i.test((r.name || '') + (r.note || '')))) arr.unshift(reco('warn', 'أضف مطابقة شهرية', 'تحتاج البنوك إلى استيراد كشف الحساب وتدفق المطابقة قبل الإطلاق على الإنترنت.'));
     return arr;
   }
   function arApRecommendations() {
     const arr = genericRecommendations('ar_ap');
-    if (customers().length && !records('ar_ap').length) arr.unshift(reco('warn', 'Build collection queue', 'Customer balances exist; create promises, aging follow-ups, and payment runs here.'));
+    if (customers().length && !records('ar_ap').length) arr.unshift(reco('warn', 'ابنِ طابور التحصيل', 'توجد أرصدة للعملاء؛ أنشئ تعهدات الدفع ومتابعات الأعمار ودورات السداد هنا.'));
     return arr;
   }
   function contractsRecommendations() {
     const arr = genericRecommendations('contracts');
-    arr.unshift(reco('warn', 'Connect DMS to contracts', 'Use Documents for attachments, then track renewal and obligation owners here.'));
+    arr.unshift(reco('warn', 'اربط نظام الوثائق بالعقود', 'استخدم الوثائق للمرفقات، ثم تابع التجديد ومسؤولي الالتزامات هنا.'));
     return arr;
   }
   function logisticsRecommendations() {
     const arr = genericRecommendations('logistics');
-    arr.unshift(reco('warn', 'Add proof-of-delivery gate', 'Delivered workshop jobs should create delivery rows with driver, timestamp, and recipient proof.'));
+    arr.unshift(reco('warn', 'أضف بوابة إثبات التسليم', 'الأعمال المسلّمة يجب أن تنشئ سطور توصيل مع السائق ووقت التسليم وإثبات المستلم.'));
     return arr;
   }
   function supplierRecommendations() {
     const arr = genericRecommendations('supplier_portal');
-    if (lowStock().length) arr.unshift(reco('bad', 'Send low-stock RFQs', lowStock().length + ' materials are at or below minimum stock.'));
+    if (lowStock().length) arr.unshift(reco('bad', 'أرسل طلبات أسعار للأصناف الناقصة', lowStock().length + ' مادة عند الحد الأدنى للمخزون أو تحته.'));
     return arr;
   }
   function integrationRecommendations() {
     return [
-      reco('warn', 'Production HTTPS required', 'WhatsApp live webhooks need HTTPS termination and real Meta tokens.'),
-      reco('warn', 'Keep send actions approval-gated', 'Outbound WhatsApp/email/SMS should stay draft or approval queued until operator confirms.'),
+      reco('warn', 'مطلوب HTTPS للإنتاج', 'تحتاج روابط واتساب الحية إلى إنهاء HTTPS ورموز Meta حقيقية.'),
+      reco('warn', 'أبقِ إجراءات الإرسال بحاجة موافقة', 'يجب أن تبقى رسائل واتساب/البريد/SMS الصادرة كمسودة أو في طابور الموافقة حتى يؤكّدها المشغّل.'),
       ...genericRecommendations('integration_hub')
     ];
   }
   function securityRecommendations() {
     return [
-      reco('bad', 'Local-first is not production auth', 'Do not expose the raw local server to the internet without a proper auth/TLS boundary.'),
-      reco('warn', 'Run permission simulation before launch', 'Review finance/payroll/admin access with manager and employee roles.'),
+      reco('bad', 'الخادم المحلي ليس مصادقة إنتاج', 'لا تعرّض الخادم المحلي الخام للإنترنت دون حدود مصادقة/TLS سليمة.'),
+      reco('warn', 'شغّل محاكاة الصلاحيات قبل الإطلاق', 'راجع وصول المالية/الرواتب/الإدارة بأدوار المدير والموظف.'),
       ...genericRecommendations('security_center')
     ];
   }
   function dataQualityRecommendations() {
     const scan = scanDataQuality();
-    return scan.length ? scan.slice(0, 6).map(x => reco(x.status === 'blocked' ? 'bad' : 'warn', x.name, x.note)) : [reco('ok', 'No live scan issues found', 'The current quick scan did not find obvious duplicates, missing company IDs, or route-health failures.')];
+    return scan.length ? scan.slice(0, 6).map(x => reco(x.status === 'blocked' ? 'bad' : 'warn', x.name, x.note)) : [reco('ok', 'لا توجد مشاكل في الفحص الحي', 'الفحص السريع الحالي لم يجد تكرارات واضحة أو معرّفات شركة مفقودة أو إخفاقات في صحة المسار.')];
   }
   function trainingRecommendations() {
     return [
-      reco('warn', 'Tie SOPs to training', 'Every critical SOP should have a quiz and certificate before a worker can run a machine.'),
-      reco('warn', 'Add machine authorization', 'Use course completion to decide who can operate each machine.'),
+      reco('warn', 'اربط الإجراءات بالتدريب', 'كل إجراء تشغيل حرج يجب أن يكون له اختبار وشهادة قبل أن يشغّل العامل مكينة.'),
+      reco('warn', 'أضف تخويل تشغيل المكائن', 'استخدم إكمال الدورة لتحديد من يحق له تشغيل كل مكينة.'),
       ...genericRecommendations('training_lms')
     ];
   }
   function scenarioRecommendations() {
     return [
-      reco('warn', 'Run cash + stock scenario weekly', 'Use AR/AP, payroll, low-stock, and open jobs as scenario drivers.'),
-      reco('ok', 'Keep AI propose-only', 'Scenario planner should recommend actions, then route sensitive actions to approvals.'),
+      reco('warn', 'شغّل سيناريو النقد والمخزون أسبوعياً', 'استخدم الذمم المدينة/الدائنة والرواتب والأصناف الناقصة والأعمال المفتوحة كمحرّكات للسيناريو.'),
+      reco('ok', 'أبقِ الذكاء الاصطناعي يقترح فقط', 'يجب أن يوصي مخطط السيناريوهات بالإجراءات، ثم يوجّه الإجراءات الحساسة إلى الموافقات.'),
       ...genericRecommendations('scenario_planner')
     ];
   }
   function deviceRecommendations() {
     return [
-      reco('warn', 'Replace QR paste fallback', 'Add real camera scanning for worker mobile flows.'),
-      reco('warn', 'Run physical device QA', 'Test iPhone, Android, TV, kiosk, barcode scanner, and receipt printer on the workshop network.'),
+      reco('warn', 'استبدل لصق رمز QR اليدوي', 'أضف مسحاً حقيقياً بالكاميرا لتدفقات موبايل العمال.'),
+      reco('warn', 'شغّل فحص الأجهزة الفعلي', 'اختبر iPhone وAndroid والشاشة والكشك وماسح الباركود وطابعة الإيصالات على شبكة الورشة.'),
       ...genericRecommendations('device_center')
     ];
   }
 
   const DEPARTMENT_META = {
-    banking: { owner: 'Finance / Treasury', sourcePage: 'finance', sourceLabel: 'Finance ledger', taskDepartment: 'Finance' },
-    ar_ap: { owner: 'Finance / Collections', sourcePage: 'customers', sourceLabel: 'Customer balances', taskDepartment: 'Finance' },
-    contracts: { owner: 'Legal / Admin', sourcePage: 'documents', sourceLabel: 'Documents and DMS', taskDepartment: 'Legal' },
-    logistics: { owner: 'Dispatch / Operations', sourcePage: 'work_orders', sourceLabel: 'Work orders and field visits', taskDepartment: 'Logistics' },
-    supplier_portal: { owner: 'Procurement', sourcePage: 'procurement', sourceLabel: 'Procurement and inventory', taskDepartment: 'Procurement' },
-    integration_hub: { owner: 'IT / Integrations', sourcePage: 'whatsapp', sourceLabel: 'Connectors and channels', taskDepartment: 'IT' },
-    security_center: { owner: 'Admin / Security', sourcePage: 'admin_panel', sourceLabel: 'Permissions and audit', taskDepartment: 'Security' },
-    data_quality: { owner: 'Data / Tenant Admin', sourcePage: 'multi_entity', sourceLabel: 'Tenant isolation and route health', taskDepartment: 'Data Quality' },
-    training_lms: { owner: 'HR / Operations', sourcePage: 'sop', sourceLabel: 'SOP and people operations', taskDepartment: 'Training' },
-    scenario_planner: { owner: 'Executive Planning', sourcePage: 'analytics', sourceLabel: 'Analytics and constraints', taskDepartment: 'Planning' },
-    device_center: { owner: 'IT / Frontline Operations', sourcePage: 'deploy_ready', sourceLabel: 'Launch readiness and frontline devices', taskDepartment: 'IT' }
+    banking: { owner: 'المالية / الخزينة', sourcePage: 'finance', sourceLabel: 'دفتر الأستاذ المالي', taskDepartment: 'المالية' },
+    ar_ap: { owner: 'المالية / التحصيل', sourcePage: 'customers', sourceLabel: 'أرصدة العملاء', taskDepartment: 'المالية' },
+    contracts: { owner: 'القانونية / الإدارة', sourcePage: 'documents', sourceLabel: 'الوثائق ونظام DMS', taskDepartment: 'القانونية' },
+    logistics: { owner: 'الإرسال / العمليات', sourcePage: 'work_orders', sourceLabel: 'أوامر العمل والزيارات الميدانية', taskDepartment: 'اللوجستيات' },
+    supplier_portal: { owner: 'المشتريات', sourcePage: 'procurement', sourceLabel: 'المشتريات والمخزون', taskDepartment: 'المشتريات' },
+    integration_hub: { owner: 'تقنية المعلومات / التكاملات', sourcePage: 'whatsapp', sourceLabel: 'الموصلات والقنوات', taskDepartment: 'تقنية المعلومات' },
+    security_center: { owner: 'الإدارة / الأمن', sourcePage: 'admin_panel', sourceLabel: 'الصلاحيات والتدقيق', taskDepartment: 'الأمن' },
+    data_quality: { owner: 'البيانات / إدارة المستأجرين', sourcePage: 'multi_entity', sourceLabel: 'عزل المستأجرين وصحة المسار', taskDepartment: 'جودة البيانات' },
+    training_lms: { owner: 'الموارد البشرية / العمليات', sourcePage: 'sop', sourceLabel: 'الإجراءات وعمليات الأفراد', taskDepartment: 'التدريب' },
+    scenario_planner: { owner: 'التخطيط التنفيذي', sourcePage: 'analytics', sourceLabel: 'التحليلات والقيود', taskDepartment: 'التخطيط' },
+    device_center: { owner: 'تقنية المعلومات / العمليات الميدانية', sourcePage: 'deploy_ready', sourceLabel: 'جاهزية الإطلاق وأجهزة الميدان', taskDepartment: 'تقنية المعلومات' }
   };
 
   function departmentMeta(page) {
-    return DEPARTMENT_META[page] || { owner: 'Management', sourcePage: page, sourceLabel: 'Live ERP data', taskDepartment: 'Management' };
+    return DEPARTMENT_META[page] || { owner: 'الإدارة', sourcePage: page, sourceLabel: 'بيانات النظام الحية', taskDepartment: 'الإدارة' };
   }
   function sourceKey(row, fallback) {
     return row.sourceKey || row.id || fallback || (row.name + ':' + row.party);
@@ -676,7 +676,7 @@
   }
   function pushSignal(out, row) {
     out.push({
-      name: row.name || 'Department signal',
+      name: row.name || 'إشارة قسم',
       party: row.party || '',
       amount: money(row.amount),
       date: row.date || todayISO(),
@@ -691,67 +691,67 @@
     if (page === 'banking') {
       const rows = txs();
       const cashNet = rows.reduce((sum, tx) => sum + (tx.direction === 'in' ? money(tx.amount) : tx.direction === 'out' ? -money(tx.amount) : 0), 0);
-      pushSignal(out, { sourceKey: 'banking:cash-movement', name: 'Monthly cash movement reconciliation', party: 'Finance ledger', amount: Math.abs(cashNet), status: rows.length ? 'review' : 'open', note: rows.length + ' finance movements need statement matching and bank proof.' });
+      pushSignal(out, { sourceKey: 'banking:cash-movement', name: 'مطابقة الحركة النقدية الشهرية', party: 'دفتر الأستاذ المالي', amount: Math.abs(cashNet), status: rows.length ? 'review' : 'open', note: rows.length + ' حركة مالية تحتاج مطابقة كشف الحساب وإثبات البنك.' });
       if (!records('banking').some(r => /statement|bank import/i.test((r.name || '') + (r.note || '')))) {
-        pushSignal(out, { sourceKey: 'banking:statement-import', name: 'Bank statement import template', party: 'Treasury', amount: 0, status: 'open', note: 'Define CSV columns, opening balance, and unmatched-line review before online launch.' });
+        pushSignal(out, { sourceKey: 'banking:statement-import', name: 'قالب استيراد كشف الحساب البنكي', party: 'الخزينة', amount: 0, status: 'open', note: 'حدّد أعمدة CSV والرصيد الافتتاحي ومراجعة الأسطر غير المطابقة قبل الإطلاق.' });
       }
     } else if (page === 'ar_ap') {
       customers().map(c => ({ c, balance: customerBalance(c) })).filter(x => x.balance > 0).sort((a, b) => b.balance - a.balance).slice(0, 8).forEach(x => {
-        pushSignal(out, { sourceKey: 'ar:' + x.c.id, name: 'Collect customer balance', party: x.c.name || x.c.companyName || 'Customer', amount: x.balance, status: 'open', note: 'Create call promise, payment date, or escalation from live customer balance.' });
+        pushSignal(out, { sourceKey: 'ar:' + x.c.id, name: 'تحصيل رصيد العميل', party: x.c.name || x.c.companyName || 'عميل', amount: x.balance, status: 'open', note: 'أنشئ تعهد اتصال أو تاريخ دفع أو تصعيداً من رصيد العميل الحي.' });
       });
       const payables = txs().filter(tx => /vendor|supplier|payable|purchase/i.test((tx.type || '') + ' ' + (tx.description || '')) && tx.direction !== 'in');
-      if (payables.length) pushSignal(out, { sourceKey: 'ap:payment-run', name: 'Supplier payment run review', party: 'Accounts payable', amount: payables.reduce((s, tx) => s + money(tx.amount), 0), status: 'review', note: payables.length + ' payable-like movements need payment-run review.' });
+      if (payables.length) pushSignal(out, { sourceKey: 'ap:payment-run', name: 'مراجعة دورة سداد الموردين', party: 'الذمم الدائنة', amount: payables.reduce((s, tx) => s + money(tx.amount), 0), status: 'review', note: payables.length + ' حركة شبيهة بالدائنة تحتاج مراجعة دورة السداد.' });
     } else if (page === 'contracts') {
       (O().documents?.docs || []).filter(d => /contract|license|agreement|عقد|رخص/i.test((d.type || '') + ' ' + (d.name || '') + ' ' + (d.title || ''))).slice(0, 8).forEach(d => {
-        pushSignal(out, { sourceKey: 'doc:' + (d.id || d.name), name: d.title || d.name || 'Document contract', party: d.owner || d.party || 'DMS', amount: money(d.value || d.amount), date: d.expiryDate || d.validTo || d.date || todayISO(), status: 'review', note: 'Confirm renewal owner, obligation checklist, and attachment completeness.' });
+        pushSignal(out, { sourceKey: 'doc:' + (d.id || d.name), name: d.title || d.name || 'عقد وثيقة', party: d.owner || d.party || 'DMS', amount: money(d.value || d.amount), date: d.expiryDate || d.validTo || d.date || todayISO(), status: 'review', note: 'تأكّد من مسؤول التجديد وقائمة الالتزامات واكتمال المرفقات.' });
       });
-      if (!out.length) pushSignal(out, { sourceKey: 'contracts:dms-link', name: 'Contract attachment policy', party: 'Legal / DMS', amount: 0, status: 'open', note: 'Every contract should have document attachment, renewal date, owner, and obligation checklist.' });
+      if (!out.length) pushSignal(out, { sourceKey: 'contracts:dms-link', name: 'سياسة مرفقات العقود', party: 'القانونية / DMS', amount: 0, status: 'open', note: 'كل عقد يجب أن يكون له مرفق وثيقة وتاريخ تجديد ومسؤول وقائمة التزامات.' });
     } else if (page === 'logistics') {
       activeJobOrders().filter(w => ['ready_for_delivery', 'delivery_ready', 'qc_passed', 'done', 'delivered'].includes(String(w.state || w.status || '').toLowerCase())).slice(0, 8).forEach(w => {
-        pushSignal(out, { sourceKey: 'wo-delivery:' + w.id, name: 'Proof-of-delivery for ' + (w.ref || w.reference || w.title || w.id), party: w.customerSnapshot?.name || w.customerName || 'Customer', amount: money(w.price || w.total || w.amount), date: w.dueDate || todayISO(), status: String(w.state || '').toLowerCase() === 'delivered' ? 'review' : 'open', note: 'Assign driver, capture recipient proof, delivery timestamp, and COD status.' });
+        pushSignal(out, { sourceKey: 'wo-delivery:' + w.id, name: 'إثبات تسليم لـ ' + (w.ref || w.reference || w.title || w.id), party: w.customerSnapshot?.name || w.customerName || 'عميل', amount: money(w.price || w.total || w.amount), date: w.dueDate || todayISO(), status: String(w.state || '').toLowerCase() === 'delivered' ? 'review' : 'open', note: 'عيّن السائق، والتقط إثبات المستلم، ووقت التسليم، وحالة الدفع عند الاستلام.' });
       });
       (O().fieldService?.visits || []).filter(v => !['done', 'completed', 'cancelled'].includes(String(v.status || '').toLowerCase())).slice(0, 4).forEach(v => {
-        pushSignal(out, { sourceKey: 'field-visit:' + v.id, name: 'Field visit dispatch', party: v.customerName || v.customer || 'Field service', amount: money(v.amount || v.fee), date: v.date || v.scheduledDate || todayISO(), status: 'open', note: 'Coordinate technician, route, parts, and customer confirmation.' });
+        pushSignal(out, { sourceKey: 'field-visit:' + v.id, name: 'إرسال زيارة ميدانية', party: v.customerName || v.customer || 'الخدمة الميدانية', amount: money(v.amount || v.fee), date: v.date || v.scheduledDate || todayISO(), status: 'open', note: 'نسّق الفني والمسار وقطع الغيار وتأكيد العميل.' });
       });
     } else if (page === 'supplier_portal') {
       lowStock().slice(0, 10).forEach(m => {
         const min = money(m.minStock || m.minimumStock || m.minimum || 0);
         const stock = money(m.stock || m.qty || m.quantity || 0);
-        pushSignal(out, { sourceKey: 'low-stock:' + (m.id || m.name), name: 'RFQ for ' + (m.name || m.material || 'material'), party: m.preferredSupplier || 'Supplier shortlist', amount: Math.max(0, min - stock), status: 'open', note: 'Current stock ' + stock + ', minimum ' + min + '. Request quote, lead time, and substitution options.' });
+        pushSignal(out, { sourceKey: 'low-stock:' + (m.id || m.name), name: 'طلب عرض سعر لـ ' + (m.name || m.material || 'مادة'), party: m.preferredSupplier || 'قائمة موردين مختصرة', amount: Math.max(0, min - stock), status: 'open', note: 'المخزون الحالي ' + stock + '، الحد الأدنى ' + min + '. اطلب عرض السعر ومدة التوريد وخيارات البديل.' });
       });
       (O().purchaseOrders || []).filter(po => !['received', 'done', 'cancelled'].includes(String(po.status || '').toLowerCase())).slice(0, 5).forEach(po => {
-        pushSignal(out, { sourceKey: 'po-followup:' + po.id, name: 'PO supplier follow-up', party: po.supplierName || po.supplier || 'Supplier', amount: money(po.total || po.amount), date: po.expectedDate || po.date || todayISO(), status: 'review', note: 'Confirm delivery promise, partial receipt, and invoice matching.' });
+        pushSignal(out, { sourceKey: 'po-followup:' + po.id, name: 'متابعة أمر شراء مع المورد', party: po.supplierName || po.supplier || 'مورد', amount: money(po.total || po.amount), date: po.expectedDate || po.date || todayISO(), status: 'review', note: 'تأكّد من وعد التسليم والاستلام الجزئي ومطابقة الفاتورة.' });
       });
     } else if (page === 'integration_hub') {
       [
-        ['integration:whatsapp', 'WhatsApp Business production webhook', 'Meta / HTTPS', 'review', 'Needs HTTPS endpoint, app secret, production token, media download policy.'],
-        ['integration:email-sms', 'Email/SMS notification connector', 'Messaging provider', 'open', 'Define provider, retry queue, unsubscribe rules, and approval gate for outbound messages.'],
-        ['integration:backup', 'Backup/export monitor', 'Local server', 'review', 'Verify scheduled backup, restore drill, and off-device copy before launch.']
+        ['integration:whatsapp', 'webhook إنتاج واتساب للأعمال', 'Meta / HTTPS', 'review', 'يحتاج نقطة نهاية HTTPS وسر التطبيق ورمز الإنتاج وسياسة تنزيل الوسائط.'],
+        ['integration:email-sms', 'موصل إشعارات البريد/SMS', 'مزوّد المراسلة', 'open', 'حدّد المزوّد وطابور إعادة المحاولة وقواعد إلغاء الاشتراك وبوابة موافقة للرسائل الصادرة.'],
+        ['integration:backup', 'مراقب النسخ الاحتياطي/التصدير', 'الخادم المحلي', 'review', 'تحقّق من النسخ المجدول وتمرين الاستعادة والنسخة خارج الجهاز قبل الإطلاق.']
       ].forEach(([key, name, party, status, note]) => pushSignal(out, { sourceKey: key, name, party, status, note }));
     } else if (page === 'security_center') {
       const rh = routeHealthSummary();
-      if (rh && rh.bad) pushSignal(out, { sourceKey: 'security:route-health', name: 'Route Health failures', party: 'System integrity', amount: rh.bad, status: 'blocked', note: 'Fix broken nav/page/function/collection checks before readiness.' });
+      if (rh && rh.bad) pushSignal(out, { sourceKey: 'security:route-health', name: 'إخفاقات صحة المسار', party: 'سلامة النظام', amount: rh.bad, status: 'blocked', note: 'أصلح فحوصات التنقل/الصفحات/الدوال/المجموعات المعطّلة قبل الجاهزية.' });
       const critical = (O().aiToolRegistry || []).filter(t => t.enabled && ['high', 'critical'].includes(t.riskLevel));
-      if (critical.length) pushSignal(out, { sourceKey: 'security:critical-ai-tools', name: 'Critical AI tools enabled', party: 'AI Governance', amount: critical.length, status: 'blocked', note: 'Disable or approval-gate critical tools until sandbox architecture is ready.' });
-      pushSignal(out, { sourceKey: 'security:production-boundary', name: 'Production auth/TLS boundary', party: 'Admin / IT', amount: 90, status: 'blocked', note: 'Do not expose the local Node server directly; place it behind real auth, TLS, logs, and backups.' });
+      if (critical.length) pushSignal(out, { sourceKey: 'security:critical-ai-tools', name: 'أدوات ذكاء اصطناعي حرجة مفعّلة', party: 'حوكمة الذكاء الاصطناعي', amount: critical.length, status: 'blocked', note: 'عطّل الأدوات الحرجة أو اجعلها بحاجة موافقة حتى تجهيز معمارية البيئة المعزولة.' });
+      pushSignal(out, { sourceKey: 'security:production-boundary', name: 'حدود المصادقة/TLS الإنتاجية', party: 'الإدارة / تقنية المعلومات', amount: 90, status: 'blocked', note: 'لا تعرّض خادم Node المحلي مباشرة؛ ضعه خلف مصادقة وTLS وسجلات ونسخ احتياطية حقيقية.' });
     } else if (page === 'data_quality') {
       scanDataQuality().forEach(row => pushSignal(out, { ...row, sourceKey: 'dq:' + row.name + ':' + row.party }));
     } else if (page === 'training_lms') {
-      (O().sops || []).slice(0, 6).forEach(s => pushSignal(out, { sourceKey: 'sop-training:' + (s.id || s.title), name: 'Training for SOP: ' + (s.title || s.name || 'SOP'), party: s.department || 'Operations', amount: 0, status: 'open', note: 'Create course, quiz, sign-off, and retraining interval for this SOP.' }));
-      (O().machines || []).filter(m => m.status === 'active' || m.is_active !== false).slice(0, 4).forEach(m => pushSignal(out, { sourceKey: 'machine-auth:' + (m.id || m.name), name: 'Machine authorization: ' + (m.name || 'machine'), party: 'Workshop operators', amount: 0, status: 'review', note: 'Require training completion before operating this machine.' }));
+      (O().sops || []).slice(0, 6).forEach(s => pushSignal(out, { sourceKey: 'sop-training:' + (s.id || s.title), name: 'تدريب على الإجراء: ' + (s.title || s.name || 'إجراء'), party: s.department || 'العمليات', amount: 0, status: 'open', note: 'أنشئ دورة واختباراً واعتماداً وفترة إعادة تدريب لهذا الإجراء.' }));
+      (O().machines || []).filter(m => m.status === 'active' || m.is_active !== false).slice(0, 4).forEach(m => pushSignal(out, { sourceKey: 'machine-auth:' + (m.id || m.name), name: 'تخويل تشغيل المكينة: ' + (m.name || 'مكينة'), party: 'مشغّلو الورشة', amount: 0, status: 'review', note: 'اشترط إكمال التدريب قبل تشغيل هذه المكينة.' }));
     } else if (page === 'scenario_planner') {
       const openJobs = activeJobOrders().filter(w => !['closed', 'delivered', 'cancelled'].includes(String(w.state || w.status || '').toLowerCase())).length;
       const netCash = txs().reduce((s, t) => s + (t.direction === 'in' ? money(t.amount) : t.direction === 'out' ? -money(t.amount) : 0), 0);
-      pushSignal(out, { sourceKey: 'scenario:cash-runway', name: 'Cash runway under slower collections', party: 'Finance', amount: netCash, status: 'review', note: 'Model payroll, AR collection delay, and supplier payments for the next 30 days.' });
-      pushSignal(out, { sourceKey: 'scenario:materials', name: 'Material shortage pressure', party: 'Operations', amount: lowStock().length, status: lowStock().length ? 'review' : 'open', note: 'Simulate open jobs if low-stock items are not replenished.' });
-      pushSignal(out, { sourceKey: 'scenario:capacity', name: 'Workshop capacity and delivery pressure', party: 'Operations', amount: openJobs, status: openJobs > 5 ? 'review' : 'open', note: 'Use open jobs, machine load, and logistics queue to estimate bottlenecks.' });
+      pushSignal(out, { sourceKey: 'scenario:cash-runway', name: 'السيولة عند تباطؤ التحصيل', party: 'المالية', amount: netCash, status: 'review', note: 'نمذج الرواتب وتأخر تحصيل الذمم ومدفوعات الموردين لمدة 30 يوماً القادمة.' });
+      pushSignal(out, { sourceKey: 'scenario:materials', name: 'ضغط نقص المواد', party: 'العمليات', amount: lowStock().length, status: lowStock().length ? 'review' : 'open', note: 'حاكِ الأعمال المفتوحة إذا لم تُعوَّض الأصناف الناقصة.' });
+      pushSignal(out, { sourceKey: 'scenario:capacity', name: 'ضغط طاقة الورشة والتسليم', party: 'العمليات', amount: openJobs, status: openJobs > 5 ? 'review' : 'open', note: 'استخدم الأعمال المفتوحة وحمل المكائن وطابور اللوجستيات لتقدير الاختناقات.' });
     } else if (page === 'device_center') {
       [
-        ['device:mobile', 'Employee mobile workflow', 'Workers', document.getElementById('pageEmployeeMobile') ? 'review' : 'blocked', 'Test on real Android/iPhone with role permissions and problem button.'],
-        ['device:tv', 'Workshop TV display', 'Production floor', document.getElementById('pageWorkshopTv') ? 'review' : 'blocked', 'Test readability from workshop distance and refresh stability.'],
-        ['device:kiosk', 'Kiosk / voice station', 'Front desk', document.getElementById('pageKiosk') ? 'review' : 'blocked', 'Test microphone, language switch, and fallback commands.'],
-        ['device:printer', 'Receipt / traveller card printer', 'Admin office', 'open', 'Run physical print test for receipts, delivery notes, and traveller card.'],
-        ['device:scanner', 'Barcode / QR camera scanner', 'Inventory / mobile', 'open', 'Replace paste fallback with camera or hardware scanner test.']
+        ['device:mobile', 'تدفق عمل موبايل الموظف', 'العمال', document.getElementById('pageEmployeeMobile') ? 'review' : 'blocked', 'اختبر على Android/iPhone حقيقي مع صلاحيات الدور وزر الإبلاغ عن مشكلة.'],
+        ['device:tv', 'شاشة عرض الورشة', 'أرضية الإنتاج', document.getElementById('pageWorkshopTv') ? 'review' : 'blocked', 'اختبر وضوح القراءة من مسافة الورشة واستقرار التحديث.'],
+        ['device:kiosk', 'الكشك / محطة الصوت', 'الاستقبال', document.getElementById('pageKiosk') ? 'review' : 'blocked', 'اختبر الميكروفون وتبديل اللغة والأوامر الاحتياطية.'],
+        ['device:printer', 'طابعة الإيصالات / بطاقة المسار', 'المكتب الإداري', 'open', 'شغّل اختبار طباعة فعلي للإيصالات وإشعارات التسليم وبطاقة المسار.'],
+        ['device:scanner', 'ماسح الباركود / QR بالكاميرا', 'المخزون / الموبايل', 'open', 'استبدل اللصق اليدوي باختبار كاميرا أو ماسح أجهزة.']
       ].forEach(([key, name, party, status, note]) => pushSignal(out, { sourceKey: key, name, party, status, note }));
     }
     return out;
@@ -763,12 +763,12 @@
     const existing = new Set(records(page, true).map(r => r.sourceKey).filter(Boolean));
     const newCount = signals.filter(s => !existing.has(s.sourceKey)).length;
     const preview = signals.slice(0, 4).map(s => '<div class="ent-signal-card"><b>' + esc(s.name) + '</b><span>' + esc(s.party || meta.owner) + '</span><em>' + esc(s.note || '') + '</em></div>').join('');
-    return '<section class="ent-panel ent-dept-panel"><div class="ent-panel-head"><div><h3>Department Operating Bridge</h3><p>' + esc(meta.owner) + ' · source: ' + esc(meta.sourceLabel) + '</p></div><div class="ent-actions">'
-      + '<button class="ent-btn primary" onclick="entImportDepartmentSignals(\'' + esc(page) + '\')">Pull live signals</button>'
-      + '<button class="ent-btn" onclick="entOpenDepartmentSource(\'' + esc(page) + '\')">Open source</button>'
-      + '<button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">Create follow-up</button>'
-      + '</div></div><div class="ent-signal-strip"><span class="ent-chip ' + (newCount ? 'warn' : 'ok') + '">' + newCount + ' new signal(s)</span><span class="ent-chip">' + signals.length + ' live candidate(s)</span></div>'
-      + '<div class="ent-signal-grid">' + (preview || '<div class="ent-empty">No live signals found for this department right now.</div>') + '</div></section>';
+    return '<section class="ent-panel ent-dept-panel"><div class="ent-panel-head"><div><h3>جسر تشغيل القسم</h3><p>' + esc(meta.owner) + ' · المصدر: ' + esc(meta.sourceLabel) + '</p></div><div class="ent-actions">'
+      + '<button class="ent-btn primary" onclick="entImportDepartmentSignals(\'' + esc(page) + '\')">سحب الإشارات الحية</button>'
+      + '<button class="ent-btn" onclick="entOpenDepartmentSource(\'' + esc(page) + '\')">فتح المصدر</button>'
+      + '<button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">إنشاء متابعة</button>'
+      + '</div></div><div class="ent-signal-strip"><span class="ent-chip ' + (newCount ? 'warn' : 'ok') + '">' + newCount + ' إشارة جديدة</span><span class="ent-chip">' + signals.length + ' إشارة مرشّحة</span></div>'
+      + '<div class="ent-signal-grid">' + (preview || '<div class="ent-empty">لا توجد إشارات حية لهذا القسم حالياً.</div>') + '</div></section>';
   }
 
   function importDepartmentSignals(page) {
@@ -797,16 +797,16 @@
     const issues = [];
     const tenantPaths = ['materials', 'suppliers', 'purchaseOrders', 'jobOrders', 'approvalHub.requests', 'helpdesk.tickets', 'fieldService.visits', 'projectHub.projects', 'assetRegister.assets', 'subscriptionHub.subscriptions', 'rentalHub.agreements', 'fleet.vehicles', 'documents.docs', 'marketing.campaigns', 'budgeting.lines', 'warrantyHub.warranties'];
     const missingCompany = countMissingCompanyId(tenantPaths);
-    if (missingCompany) issues.push({ name: 'Missing companyId on legacy records', party: 'tenant collections', amount: missingCompany, status: 'review', note: 'Use Multi-Entity isolation tab or deliberate backfill before strict tenant launch.' });
+    if (missingCompany) issues.push({ name: 'سجلات قديمة بلا معرّف شركة (companyId)', party: 'مجموعات المستأجرين', amount: missingCompany, status: 'review', note: 'استخدم تبويب عزل الفروع أو التعبئة المتعمّدة قبل الإطلاق الصارم للمستأجرين.' });
     const names = customers().map(c => String(c.name || '').trim().toLowerCase()).filter(Boolean);
     const dupCustomers = names.filter((n, i) => names.indexOf(n) !== i).length;
-    if (dupCustomers) issues.push({ name: 'Duplicate customer names', party: 'finance.customers', amount: dupCustomers, status: 'review', note: 'Merge or mark canonical customer records before customer portal expansion.' });
+    if (dupCustomers) issues.push({ name: 'أسماء عملاء مكرّرة', party: 'finance.customers', amount: dupCustomers, status: 'review', note: 'ادمج أو حدّد سجلات العملاء المعتمدة قبل توسيع بوابة العملاء.' });
     const low = lowStock().length;
-    if (low) issues.push({ name: 'Low-stock master data needs replenishment', party: 'materials', amount: low, status: 'open', note: 'Route low-stock rows to Supplier Portal / Procurement.' });
+    if (low) issues.push({ name: 'بيانات أساسية لأصناف ناقصة تحتاج تعويضاً', party: 'المواد', amount: low, status: 'open', note: 'وجّه أسطر النقص إلى بوابة الموردين / المشتريات.' });
     const rh = routeHealthSummary();
-    if (rh && rh.bad) issues.push({ name: 'Route Health failures', party: 'route_health', amount: rh.bad, status: 'blocked', note: 'Run Route Health and fix broken nav/page/function checks.' });
+    if (rh && rh.bad) issues.push({ name: 'إخفاقات صحة المسار', party: 'route_health', amount: rh.bad, status: 'blocked', note: 'شغّل فحص صحة النظام وأصلح فحوصات التنقل/الصفحات/الدوال المعطّلة.' });
     const pendingAi = (O().aiControl?.actionQueue || []).filter(a => a.status === 'pending' || a.status === 'proposed').length;
-    if (pendingAi) issues.push({ name: 'Pending AI approvals', party: 'ai_queue', amount: pendingAi, status: 'review', note: 'Approve or reject before operational close.' });
+    if (pendingAi) issues.push({ name: 'موافقات ذكاء اصطناعي معلّقة', party: 'ai_queue', amount: pendingAi, status: 'review', note: 'اعتمدها أو ارفضها قبل الإغلاق التشغيلي.' });
     return issues;
   }
 
@@ -822,11 +822,11 @@
   }
   function renderTable(page) {
     const list = records(page).slice().sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    if (!list.length) return '<div class="ent-empty">No records yet. Use the form on the right to create the first control row.</div>';
-    
-    let headerHtml = '<th>Name</th><th>Party</th><th>Amount</th><th>Date</th><th>Status</th><th>Note</th>';
+    if (!list.length) return '<div class="ent-empty">لا توجد سجلات بعد. استخدم النموذج على اليسار لإنشاء أول سطر متابعة.</div>';
+
+    let headerHtml = '<th>الاسم</th><th>الجهة</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th><th>ملاحظة</th>';
     if (page === 'contracts') {
-      headerHtml = '<th>Name</th><th>Party</th><th>Value</th><th>Renewal Date</th><th>Attachment</th><th>Status</th><th>Note</th>';
+      headerHtml = '<th>الاسم</th><th>الجهة</th><th>القيمة</th><th>تاريخ التجديد</th><th>المرفق</th><th>الحالة</th><th>ملاحظة</th>';
     }
     
     return '<table class="ent-table"><thead><tr>' + headerHtml + '<th></th></tr></thead><tbody>' + list.map(r => {
@@ -849,7 +849,7 @@
         + (page === 'contracts' ? attachmentHtml : '')
         + '<td><select class="ent-input" onchange="entSetStatus(\'' + esc(page) + '\',\'' + esc(r.id) + '\',this.value)">' + STATUS.map(([k, label]) => '<option value="' + k + '" ' + (r.status === k ? 'selected' : '') + '>' + label + '</option>').join('') + '</select></td>'
         + '<td class="ent-muted">' + esc(r.note || '-') + '</td>'
-        + '<td><button class="ent-btn danger" onclick="entArchiveRecord(\'' + esc(page) + '\',\'' + esc(r.id) + '\')">Archive</button></td>';
+        + '<td><button class="ent-btn danger" onclick="entArchiveRecord(\'' + esc(page) + '\',\'' + esc(r.id) + '\')">أرشفة</button></td>';
         
       return '<tr>' + rowHtml + '</tr>';
     }).join('') + '</tbody></table>';
@@ -863,7 +863,7 @@
       }
       return '<label class="' + (name === 'note' ? 'ent-form-full' : '') + '">' + esc(label) + '<input id="' + esc(id) + '" class="ent-input" type="' + esc(type) + '" value="' + (type === 'date' ? todayISO() : '') + '"></label>';
     }).join('') + '</div>'
-      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">Save row</button><button class="ent-btn" onclick="entLoadDemo(\'' + esc(page) + '\')">Load demo</button>' + (cfg.extraActions || '') + '</div>';
+      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">حفظ السطر</button><button class="ent-btn" onclick="entLoadDemo(\'' + esc(page) + '\')">تحميل بيانات تجريبية</button>' + (cfg.extraActions || '') + '</div>';
   }
   function renderPage(page) {
     ensureData();
@@ -938,22 +938,22 @@
 
     if (page === 'banking' && bankingActiveTab === 'reconciliation') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>This tab turns a known ERP gap into a working department surface with durable rows, live context, audit events, and cross-module handoffs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>يحوّل هذا القسم فجوة معروفة في أنظمة تخطيط الموارد إلى واجهة تشغيل فعلية بسجلات دائمة وسياق حي وأحداث تدقيق وتسليمات بين الوحدات.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderReconciliationWorkspace()
         + '</div>';
     } else if (page === 'contracts' && contractsActiveTab === 'dms_links') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Link digital documents from the DMS to contracts in the Control Register, or drag and drop new PDF contracts to register and auto-link them.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>اربط الوثائق الرقمية من نظام إدارة الوثائق بالعقود في سجل المتابعة، أو اسحب وأفلِت عقود PDF جديدة لتسجيلها وربطها تلقائياً.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderDmsWorkspace()
         + '</div>';
     } else if (page === 'device_center' && deviceActiveTab === 'scanner') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Scan traveller cards, machines, and employee badges to instantly display execution sheets, update machine states, or verify check-in status.</p></div>'
-        + '<div class="ent-status"><span id="scanner_kpi_chip" class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>امسح بطاقات التتبّع والمكائن وبطاقات الموظفين لعرض أوراق التنفيذ فوراً، أو تحديث حالة المكائن، أو التحقق من حالة الحضور.</p></div>'
+        + '<div class="ent-status"><span id="scanner_kpi_chip" class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderDeviceScannerWorkspace()
         + '</div>';
@@ -961,15 +961,15 @@
       setTimeout(entStartCameraStream, 50);
     } else if (page === 'ar_ap' && (arApActiveTab === 'ar_collections' || arApActiveTab === 'ap_payments')) {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Process customer collections, promises to pay, and vendor bills runs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>عالج تحصيلات العملاء وتعهّدات الدفع ودورات فواتير الموردين.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderArApWorkspace()
         + '</div>';
     } else if (page === 'logistics' && (logisticsActiveTab === 'dispatch_board' || logisticsActiveTab === 'driver_pod')) {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Dispatch shipments, assign drivers, track routes, and capture signature proof-of-delivery (POD).</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>أرسِل الشحنات، وعيّن السائقين، وتتبّع المسارات، والتقط إثبات التسليم بالتوقيع (POD).</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderLogisticsWorkspace()
         + '</div>';
@@ -980,14 +980,14 @@
       }
 
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>This tab turns a known ERP gap into a working department surface with durable rows, live context, audit events, and cross-module handoffs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>يحوّل هذا القسم فجوة معروفة في أنظمة تخطيط الموارد إلى واجهة تشغيل فعلية بسجلات دائمة وسياق حي وأحداث تدقيق وتسليمات بين الوحدات.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + alertBannerHtml
         + renderKpis(page)
         + renderDepartmentOps(page)
-        + '<section class="ent-main-grid"><div class="ent-panel"><div class="ent-panel-head"><h3>Control Register</h3><div class="ent-actions"><button class="ent-btn" onclick="entRefresh(\'' + esc(page) + '\')">Refresh</button><button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">Create task</button></div></div>' + renderTable(page) + '</div>'
-        + '<aside class="ent-panel"><div class="ent-panel-head"><h3>Smart Next Actions</h3></div>' + renderRecommendations(page) + '<div class="ent-panel-head" style="margin-top:16px;"><h3>Quick Add</h3></div>' + renderForm(page) + '</aside></section>'
+        + '<section class="ent-main-grid"><div class="ent-panel"><div class="ent-panel-head"><h3>سجل المتابعة</h3><div class="ent-actions"><button class="ent-btn" onclick="entRefresh(\'' + esc(page) + '\')">تحديث</button><button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">إنشاء مهمة</button></div></div>' + renderTable(page) + '</div>'
+        + '<aside class="ent-panel"><div class="ent-panel-head"><h3>الإجراءات الذكية التالية</h3></div>' + renderRecommendations(page) + '<div class="ent-panel-head" style="margin-top:16px;"><h3>إضافة سريعة</h3></div>' + renderForm(page) + '</aside></section>'
         + '</div>';
     }
   }
@@ -3349,23 +3349,23 @@
       <div class="rfq-summary-bar">
         <div class="rfq-summary-card urgent">
           <div class="rfq-summary-value">${criticalItems.length}</div>
-          <div class="rfq-summary-label">Critical Stock</div>
-          <div class="rfq-summary-sub">Zero or near-zero</div>
+          <div class="rfq-summary-label">مخزون حرِج</div>
+          <div class="rfq-summary-sub">صفر أو شبه صفر</div>
         </div>
         <div class="rfq-summary-card warn">
           <div class="rfq-summary-value">${lowStockItems.length}</div>
-          <div class="rfq-summary-label">Low Stock Items</div>
-          <div class="rfq-summary-sub">Below minimum</div>
+          <div class="rfq-summary-label">أصناف منخفضة المخزون</div>
+          <div class="rfq-summary-sub">تحت الحد الأدنى</div>
         </div>
         <div class="rfq-summary-card info">
           <div class="rfq-summary-value">${openPOs.length}</div>
-          <div class="rfq-summary-label">Open POs</div>
-          <div class="rfq-summary-sub">Pending delivery</div>
+          <div class="rfq-summary-label">أوامر شراء مفتوحة</div>
+          <div class="rfq-summary-sub">بانتظار التسليم</div>
         </div>
         <div class="rfq-summary-card ok">
           <div class="rfq-summary-value">${suppliers.length}</div>
-          <div class="rfq-summary-label">Suppliers</div>
-          <div class="rfq-summary-sub">In registry</div>
+          <div class="rfq-summary-label">الموردون</div>
+          <div class="rfq-summary-sub">في السجل</div>
         </div>
       </div>
     `;
@@ -3528,8 +3528,8 @@
         metrics: { messages: wa, errors: 0, uptime: 'N/A', latency: 'N/A' },
         metricLabels: { messages: 'في الانتظار', errors: 'أخطاء', uptime: 'وقت التشغيل', latency: 'زمن الاستجابة' },
         log: [
-          { sev: 'warn', time: 'اليوم', text: 'HTTPS endpoint required for production webhook' },
-          { sev: 'warn', time: 'اليوم', text: 'Missing: WHATSAPP_APP_SECRET environment variable' }
+          { sev: 'warn', time: 'اليوم', text: 'مطلوب نطاق HTTPS لاستقبال webhook الإنتاج' },
+          { sev: 'warn', time: 'اليوم', text: 'مفقود: متغيّر البيئة WHATSAPP_APP_SECRET' }
         ],
         note: 'يتطلب نطاق HTTPS ورمز إنتاج وحدود إرسال للعمليات الحية'
       },
@@ -3697,7 +3697,7 @@
         type: 'ai',
         sev: e.outcome === 'blocked' ? 'bad' : e.outcome === 'approved' ? 'ok' : 'warn',
         icon: '🤖',
-        title: (e.action || 'AI Action') + (e.toolName ? ': ' + e.toolName : ''),
+        title: (e.action || 'إجراء ذكاء اصطناعي') + (e.toolName ? ': ' + e.toolName : ''),
         meta: (e.requestedBy || 'system') + ' · ' + (e.at || e.timestamp || '').slice(0, 16),
         at: e.at || e.timestamp || ''
       })),
@@ -3746,7 +3746,7 @@
 
     const riskRows = [
       { label: 'حد المصادقة', val: authRisk },
-      { label: 'Route Health', val: routeRisk },
+      { label: 'صحة المسار', val: routeRisk },
       { label: 'أدوات AI عالية الخطورة', val: aiRisk },
       { label: 'عزل البيانات', val: dataRisk },
       { label: 'صلاحيات المستخدمين', val: userRisk }
@@ -4090,7 +4090,7 @@
     if (phase7WorkspaceHtml !== null) {
       root.innerHTML = '<div class="ent-shell">'
         + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>' + esc(cfg.title) + ' — لوحة التحكم التشغيلية الكاملة مع بيانات حية من النظام.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + renderKpis(page)
         + phase7WorkspaceHtml
         + '</div>';
@@ -4164,37 +4164,37 @@
 
     if (page === 'banking' && bankingActiveTab === 'reconciliation') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>This tab turns a known ERP gap into a working department surface with durable rows, live context, audit events, and cross-module handoffs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>يحوّل هذا القسم فجوة معروفة في أنظمة تخطيط الموارد إلى واجهة تشغيل فعلية بسجلات دائمة وسياق حي وأحداث تدقيق وتسليمات بين الوحدات.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderReconciliationWorkspace()
         + '</div>';
     } else if (page === 'contracts' && contractsActiveTab === 'dms_links') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Link digital documents from the DMS to contracts in the Control Register, or drag and drop new PDF contracts to register and auto-link them.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>اربط الوثائق الرقمية من نظام إدارة الوثائق بالعقود في سجل المتابعة، أو اسحب وأفلِت عقود PDF جديدة لتسجيلها وربطها تلقائياً.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderDmsWorkspace()
         + '</div>';
     } else if (page === 'device_center' && deviceActiveTab === 'scanner') {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Scan traveller cards, machines, and employee badges to instantly display execution sheets, update machine states, or verify check-in status.</p></div>'
-        + '<div class="ent-status"><span id="scanner_kpi_chip" class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>امسح بطاقات التتبّع والمكائن وبطاقات الموظفين لعرض أوراق التنفيذ فوراً، أو تحديث حالة المكائن، أو التحقق من حالة الحضور.</p></div>'
+        + '<div class="ent-status"><span id="scanner_kpi_chip" class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderDeviceScannerWorkspace()
         + '</div>';
       setTimeout(entStartCameraStream, 50);
     } else if (page === 'ar_ap' && (arApActiveTab === 'ar_collections' || arApActiveTab === 'ap_payments')) {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Process customer collections, promises to pay, and vendor bills runs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>عالج تحصيلات العملاء وتعهّدات الدفع ودورات فواتير الموردين.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderArApWorkspace()
         + '</div>';
     } else if (page === 'logistics' && (logisticsActiveTab === 'dispatch_board' || logisticsActiveTab === 'driver_pod')) {
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>Dispatch shipments, assign drivers, track routes, and capture signature proof-of-delivery (POD).</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>أرسِل الشحنات، وعيّن السائقين، وتتبّع المسارات، والتقط إثبات التسليم بالتوقيع (POD).</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + renderLogisticsWorkspace()
         + '</div>';
@@ -4205,14 +4205,14 @@
       }
 
       root.innerHTML = '<div class="ent-shell">'
-        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>This tab turns a known ERP gap into a working department surface with durable rows, live context, audit events, and cross-module handoffs.</p></div>'
-        + '<div class="ent-status"><span class="ent-chip ok">wired</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">Route ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
+        + '<section class="ent-hero"><div><h2><i class="fa-solid ' + esc(cfg.icon) + '"></i> ' + esc(cfg.title) + '</h2><p>يحوّل هذا القسم فجوة معروفة في أنظمة تخطيط الموارد إلى واجهة تشغيل فعلية بسجلات دائمة وسياق حي وأحداث تدقيق وتسليمات بين الوحدات.</p></div>'
+        + '<div class="ent-status"><span class="ent-chip ok">مفعّل</span><span class="ent-chip">omni.enterpriseSuite.' + esc(page) + '</span>' + (rh ? '<span class="ent-chip ' + (rh.bad ? 'bad' : 'ok') + '">المسار ' + esc(rh.nav + '/' + rh.pages) + '</span>' : '') + '</div></section>'
         + subTabsHtml
         + alertBannerHtml
         + renderKpis(page)
         + renderDepartmentOps(page)
-        + '<section class="ent-main-grid"><div class="ent-panel"><div class="ent-panel-head"><h3>Control Register</h3><div class="ent-actions"><button class="ent-btn" onclick="entRefresh(\'' + esc(page) + '\')">Refresh</button><button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">Create task</button></div></div>' + renderTable(page) + '</div>'
-        + '<aside class="ent-panel"><div class="ent-panel-head"><h3>Smart Next Actions</h3></div>' + renderRecommendations(page) + '<div class="ent-panel-head" style="margin-top:16px;"><h3>Quick Add</h3></div>' + renderForm(page) + '</aside></section>'
+        + '<section class="ent-main-grid"><div class="ent-panel"><div class="ent-panel-head"><h3>سجل المتابعة</h3><div class="ent-actions"><button class="ent-btn" onclick="entRefresh(\'' + esc(page) + '\')">تحديث</button><button class="ent-btn" onclick="entCreateTask(\'' + esc(page) + '\')">إنشاء مهمة</button></div></div>' + renderTable(page) + '</div>'
+        + '<aside class="ent-panel"><div class="ent-panel-head"><h3>الإجراءات الذكية التالية</h3></div>' + renderRecommendations(page) + '<div class="ent-panel-head" style="margin-top:16px;"><h3>إضافة سريعة</h3></div>' + renderForm(page) + '</aside></section>'
         + '</div>';
     }
   }

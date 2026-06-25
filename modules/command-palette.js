@@ -141,11 +141,11 @@
       <div class="ptxcmd-box" role="dialog" aria-label="لوحة الأوامر">
         <div class="ptxcmd-input-wrap">
           <span class="ptxcmd-input-ic">⌘</span>
-          <input id="ptxCmdInput" type="text" placeholder="اقفز إلى صفحة أو اسأل الذكاء... (Ctrl+K)" autocomplete="off" />
-          <kbd>Esc</kbd>
+          <input id="ptxCmdInput" type="text" placeholder="اقفز إلى صفحة أو اسأل الذكاء الاصطناعي..." autocomplete="off" />
+          <kbd>⎋</kbd>
         </div>
         <div id="ptxCmdList" class="ptxcmd-list"></div>
-        <div class="ptxcmd-foot"><span>↑↓ تنقّل</span><span>Enter فتح</span><span>Esc إغلاق</span></div>
+        <div class="ptxcmd-foot"><span>↑↓ تنقّل</span><span>↵ فتح</span><span>⎋ إغلاق</span></div>
       </div>`;
     document.body.appendChild(ov);
 

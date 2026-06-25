@@ -17,41 +17,41 @@
 // --- moved from app.js: page route registry (lazy typeof checks, pure to define) ---
 function getOctagonPageTruthRegistry() {
   return [
-    { page: 'calculator', label: 'Smart Calculator', navId: 'navCalculator', pageId: 'pageCalculator', section: 'Payroll', renderOk: () => typeof refreshCalcEmpDropdown === 'function' },
-    { page: 'timesheet', label: 'Smart Timesheet', navId: 'navTimesheet', pageId: 'pageTimesheet', section: 'Payroll', renderOk: () => typeof renderTimesheet === 'function' },
-    { page: 'calendar', label: 'Attendance Calendar', navId: 'navCalendar', pageId: 'pageCalendar', section: 'Payroll', renderOk: () => typeof renderAttendanceCalendar === 'function' },
-    { page: 'import', label: 'Data Import', navId: 'navImport', pageId: 'pageImport', section: 'Payroll', staticPage: true },
-    { page: 'employees', label: 'Employees', navId: 'navEmployees', pageId: 'pageEmployees', section: 'Payroll', renderOk: () => typeof renderEmployeesTable === 'function' },
-    { page: 'finance', label: 'Finance Dashboard', navId: 'navFinance', pageId: 'pageFinance', section: 'Finance', renderOk: () => typeof renderFinanceDashboard === 'function' },
-    { page: 'cashbox', label: 'Workshop Cashbox', navId: 'navCashbox', pageId: 'pageCashbox', section: 'Finance', renderOk: () => typeof renderCashbox === 'function' },
-    { page: 'expenses', label: 'Expenses', navId: 'navExpenses', pageId: 'pageExpenses', section: 'Finance', renderOk: () => typeof renderExpensesPage === 'function' },
-    { page: 'income', label: 'Income', navId: 'navIncome', pageId: 'pageIncome', section: 'Finance', renderOk: () => typeof renderIncomePage === 'function' },
-    { page: 'customers', label: 'Customer Balances', navId: 'navCustomers', pageId: 'pageCustomers', section: 'Finance', renderOk: () => typeof renderCustomersPage === 'function' },
-    { page: 'receipt', label: 'Receipt Builder', navId: 'navReceipt', pageId: 'pageReceipt', section: 'Finance', renderOk: () => typeof renderReceiptPage === 'function' },
-    { page: 'report', label: 'Final Report', navId: 'navReport', pageId: 'pageReport', section: 'Payroll', renderOk: () => typeof renderReport === 'function' },
-    { page: 'command_center', label: 'Command Center', navId: 'navCommandCenter', pageId: 'pageCommandCenter', section: 'OMNISYSTEM', renderOk: () => typeof renderCommandCenter === 'function' },
-    { page: 'kanban', label: 'Executive Kanban', navId: 'navKanban', pageId: 'pageKanban', section: 'OMNISYSTEM', renderOk: () => typeof renderKanbanBoard === 'function' },
-    { page: 'workflow', label: 'Workflow Designer', navId: 'navWorkflow', pageId: 'pageWorkflow', section: 'OMNISYSTEM', renderOk: () => typeof renderWorkflowStudio === 'function' },
-    { page: 'op_packs', label: 'Operation Packs', navId: 'navOpPacks', pageId: 'pageOpPacks', section: 'OMNISYSTEM', renderOk: () => typeof renderOpPacks === 'function' },
-    { page: 'task_manager', label: 'Task Manager', navId: 'navTaskManager', pageId: 'pageTaskManager', section: 'OMNISYSTEM', renderOk: () => typeof renderTaskManager === 'function' },
-    { page: 'sop', label: 'SOP Library', navId: 'navSop', pageId: 'pageSop', section: 'OMNISYSTEM', renderOk: () => typeof renderSopHub === 'function' },
-    { page: 'machines', label: 'Machine Control', navId: 'navMachines', pageId: 'pageMachines', section: 'OMNISYSTEM', renderOk: () => typeof renderMachinesPage === 'function' },
-    { page: 'inventory', label: 'Inventory', navId: 'navInventory', pageId: 'pageInventory', section: 'OMNISYSTEM', renderOk: () => typeof renderInventoryPage === 'function' },
-    { page: 'equipment', label: 'Equipment', navId: 'navEquipment', pageId: 'pageEquipment', section: 'OMNISYSTEM', renderOk: () => typeof renderEquipmentPage === 'function' },
-    { page: 'qc_center', label: 'QC Center', navId: 'navQcCenter', pageId: 'pageQcCenter', section: 'OMNISYSTEM', renderOk: () => typeof renderQcCenter === 'function' },
-    { page: 'analytics', label: 'Analytics / BI', navId: 'navAnalytics', pageId: 'pageAnalytics', section: 'OMNISYSTEM', renderOk: () => typeof renderAnalytics === 'function' },
-    { page: 'nl_reports', label: 'Natural-language Reports', navId: 'navNlReports', pageId: 'pageNlReports', section: 'OMNISYSTEM', renderOk: () => !!(window.OctagonNLReports || window.PentagonNLReports) },
-    { page: 'intelligence', label: 'AI Control Dashboard', navId: 'navIntelligence', pageId: 'pageIntelligence', section: 'OMNISYSTEM', renderOk: () => typeof renderAiControlDashboard === 'function' },
-    { page: 'automation', label: 'Automation Engine', navId: 'navAutomation', pageId: 'pageAutomation', section: 'OMNISYSTEM', renderOk: () => typeof renderAutomationEngine === 'function' },
-    { page: 'whatsapp', label: 'WhatsApp Operational Inbox', navId: 'navWhatsapp', pageId: 'pageWhatsapp', section: 'OMNISYSTEM', renderOk: () => typeof renderWhatsAppIntegrationPage === 'function' },
-    { page: 'sales', label: 'Sales / CRM', navId: 'navSales', pageId: 'pageSales', section: 'OMNISYSTEM', renderOk: () => typeof renderSalesCrmPage === 'function' },
-    { page: 'mrp', label: 'Manufacturing MRP II', navId: 'navMrp', pageId: 'pageMrp', section: 'OMNISYSTEM', renderOk: () => !!(window.OctagonMRP || window.PentagonMRP) },
-    { page: 'multi_entity', label: 'Multi-Entity Control', navId: 'navMultiEntity', pageId: 'pageMultiEntity', section: 'OMNISYSTEM', renderOk: () => !!(window.OctagonMultiEntity || window.PentagonMultiEntity) },
-    { page: 'tax_compliance', label: 'Tax / E-Invoicing Compliance', navId: 'navTaxCompliance', pageId: 'pageTaxCompliance', section: 'OMNISYSTEM', renderOk: () => !!(window.OctagonTaxCompliance || window.PentagonTaxCompliance) },
-    { page: 'employee_ui', label: 'Employee UI', navId: 'navEmployeeUI', pageId: 'pageEmployee_ui', section: 'OMNISYSTEM', renderOk: () => typeof renderEmployeePortal === 'function' },
-    { page: 'customer_portal', label: 'Customer Portal', navId: 'navCustomerPortal', pageId: 'pageCustomerPortal', section: 'OMNISYSTEM', renderOk: () => typeof renderCustomerPortal === 'function' },
-    { page: 'admin_panel', label: 'Admin Panel', navId: 'navAdminPanel', pageId: 'pageAdminPanel', section: 'OMNISYSTEM', renderOk: () => typeof renderAdminPanel === 'function' },
-    { page: 'help_manual', label: 'Help Manual', navId: 'navHelpManual', pageId: 'pageHelpManual', section: 'OMNISYSTEM', renderOk: () => typeof renderHelpManualPage === 'function' }
+    { page: 'calculator', label: 'الحاسبة الذكية', navId: 'navCalculator', pageId: 'pageCalculator', section: 'الرواتب', renderOk: () => typeof refreshCalcEmpDropdown === 'function' },
+    { page: 'timesheet', label: 'جدول الدوام الذكي', navId: 'navTimesheet', pageId: 'pageTimesheet', section: 'الرواتب', renderOk: () => typeof renderTimesheet === 'function' },
+    { page: 'calendar', label: 'تقويم الحضور', navId: 'navCalendar', pageId: 'pageCalendar', section: 'الرواتب', renderOk: () => typeof renderAttendanceCalendar === 'function' },
+    { page: 'import', label: 'استيراد البيانات', navId: 'navImport', pageId: 'pageImport', section: 'الرواتب', staticPage: true },
+    { page: 'employees', label: 'الموظفون', navId: 'navEmployees', pageId: 'pageEmployees', section: 'الرواتب', renderOk: () => typeof renderEmployeesTable === 'function' },
+    { page: 'finance', label: 'لوحة المالية', navId: 'navFinance', pageId: 'pageFinance', section: 'المالية', renderOk: () => typeof renderFinanceDashboard === 'function' },
+    { page: 'cashbox', label: 'صندوق الورشة', navId: 'navCashbox', pageId: 'pageCashbox', section: 'المالية', renderOk: () => typeof renderCashbox === 'function' },
+    { page: 'expenses', label: 'المصاريف', navId: 'navExpenses', pageId: 'pageExpenses', section: 'المالية', renderOk: () => typeof renderExpensesPage === 'function' },
+    { page: 'income', label: 'الإيرادات', navId: 'navIncome', pageId: 'pageIncome', section: 'المالية', renderOk: () => typeof renderIncomePage === 'function' },
+    { page: 'customers', label: 'أرصدة العملاء', navId: 'navCustomers', pageId: 'pageCustomers', section: 'المالية', renderOk: () => typeof renderCustomersPage === 'function' },
+    { page: 'receipt', label: 'منشئ الفواتير', navId: 'navReceipt', pageId: 'pageReceipt', section: 'المالية', renderOk: () => typeof renderReceiptPage === 'function' },
+    { page: 'report', label: 'التقرير الختامي', navId: 'navReport', pageId: 'pageReport', section: 'الرواتب', renderOk: () => typeof renderReport === 'function' },
+    { page: 'command_center', label: 'مركز القيادة', navId: 'navCommandCenter', pageId: 'pageCommandCenter', section: 'النظام', renderOk: () => typeof renderCommandCenter === 'function' },
+    { page: 'kanban', label: 'اللوحة التنفيذية', navId: 'navKanban', pageId: 'pageKanban', section: 'النظام', renderOk: () => typeof renderKanbanBoard === 'function' },
+    { page: 'workflow', label: 'مصمم العمليات', navId: 'navWorkflow', pageId: 'pageWorkflow', section: 'النظام', renderOk: () => typeof renderWorkflowStudio === 'function' },
+    { page: 'op_packs', label: 'باقات العمليات', navId: 'navOpPacks', pageId: 'pageOpPacks', section: 'النظام', renderOk: () => typeof renderOpPacks === 'function' },
+    { page: 'task_manager', label: 'مدير المهام', navId: 'navTaskManager', pageId: 'pageTaskManager', section: 'النظام', renderOk: () => typeof renderTaskManager === 'function' },
+    { page: 'sop', label: 'مكتبة الإجراءات', navId: 'navSop', pageId: 'pageSop', section: 'النظام', renderOk: () => typeof renderSopHub === 'function' },
+    { page: 'machines', label: 'التحكم بالمكائن', navId: 'navMachines', pageId: 'pageMachines', section: 'النظام', renderOk: () => typeof renderMachinesPage === 'function' },
+    { page: 'inventory', label: 'المخزون', navId: 'navInventory', pageId: 'pageInventory', section: 'النظام', renderOk: () => typeof renderInventoryPage === 'function' },
+    { page: 'equipment', label: 'المعدات', navId: 'navEquipment', pageId: 'pageEquipment', section: 'النظام', renderOk: () => typeof renderEquipmentPage === 'function' },
+    { page: 'qc_center', label: 'مركز الجودة', navId: 'navQcCenter', pageId: 'pageQcCenter', section: 'النظام', renderOk: () => typeof renderQcCenter === 'function' },
+    { page: 'analytics', label: 'التحليلات والذكاء', navId: 'navAnalytics', pageId: 'pageAnalytics', section: 'النظام', renderOk: () => typeof renderAnalytics === 'function' },
+    { page: 'nl_reports', label: 'تقارير اللغة الطبيعية', navId: 'navNlReports', pageId: 'pageNlReports', section: 'النظام', renderOk: () => !!(window.OctagonNLReports || window.PentagonNLReports) },
+    { page: 'intelligence', label: 'لوحة تحكم الذكاء', navId: 'navIntelligence', pageId: 'pageIntelligence', section: 'النظام', renderOk: () => typeof renderAiControlDashboard === 'function' },
+    { page: 'automation', label: 'محرك الأتمتة', navId: 'navAutomation', pageId: 'pageAutomation', section: 'النظام', renderOk: () => typeof renderAutomationEngine === 'function' },
+    { page: 'whatsapp', label: 'صندوق رسائل العملاء', navId: 'navWhatsapp', pageId: 'pageWhatsapp', section: 'النظام', renderOk: () => typeof renderWhatsAppIntegrationPage === 'function' },
+    { page: 'sales', label: 'المبيعات وعلاقات العملاء', navId: 'navSales', pageId: 'pageSales', section: 'النظام', renderOk: () => typeof renderSalesCrmPage === 'function' },
+    { page: 'mrp', label: 'التصنيع والتخطيط', navId: 'navMrp', pageId: 'pageMrp', section: 'النظام', renderOk: () => !!(window.OctagonMRP || window.PentagonMRP) },
+    { page: 'multi_entity', label: 'إدارة الفروع', navId: 'navMultiEntity', pageId: 'pageMultiEntity', section: 'النظام', renderOk: () => !!(window.OctagonMultiEntity || window.PentagonMultiEntity) },
+    { page: 'tax_compliance', label: 'الامتثال الضريبي', navId: 'navTaxCompliance', pageId: 'pageTaxCompliance', section: 'النظام', renderOk: () => !!(window.OctagonTaxCompliance || window.PentagonTaxCompliance) },
+    { page: 'employee_ui', label: 'بوابة الموظف', navId: 'navEmployeeUI', pageId: 'pageEmployee_ui', section: 'النظام', renderOk: () => typeof renderEmployeePortal === 'function' },
+    { page: 'customer_portal', label: 'بوابة العملاء', navId: 'navCustomerPortal', pageId: 'pageCustomerPortal', section: 'النظام', renderOk: () => typeof renderCustomerPortal === 'function' },
+    { page: 'admin_panel', label: 'لوحة الإدارة', navId: 'navAdminPanel', pageId: 'pageAdminPanel', section: 'النظام', renderOk: () => typeof renderAdminPanel === 'function' },
+    { page: 'help_manual', label: 'دليل المساعدة', navId: 'navHelpManual', pageId: 'pageHelpManual', section: 'النظام', renderOk: () => typeof renderHelpManualPage === 'function' }
   ];
 }
 
@@ -60,19 +60,19 @@ const getPentagonPageTruthRegistry = getOctagonPageTruthRegistry;
 // --- moved from app.js: Odoo-parity gap registry (pure literals) ---
 function getOdooPlusGapRegistry() {
   return [
-    { area: 'Accounting', odoo: 'account, payment, tax, l10n_iq', current: 'Finance V6 engine and locked finance pages', percent: 60, gap: 'Partner ledger, tax, bank reconciliation, statements, invoice/bill lifecycle depth', page: 'finance', priority: 'High' },
-    { area: 'Sales / CRM', odoo: 'sale, sale_management, crm, contacts', current: 'Customers, receipts, Operation Pack pricing, WhatsApp leads foundation', percent: 35, gap: 'Quote pipeline, lead stages, quote approval, order conversion, customer portal', page: 'whatsapp', priority: 'High' },
-    { area: 'Purchase', odoo: 'purchase, purchase_stock, requisition', current: 'Suppliers, purchase analytics, material requests, PO receiving', percent: 55, gap: 'RFQ lifecycle, price history, procurement approvals, supplier scorecards', page: 'inventory', priority: 'High' },
-    { area: 'Inventory / Stock', odoo: 'stock, barcodes, locations, valuation', current: 'Materials, reservations, movement audit, CSV, supplier links', percent: 75, gap: 'Locations, batch/serial, transfers, barcode workflow, valuation depth', page: 'inventory', priority: 'Medium' },
-    { area: 'Manufacturing / MRP', odoo: 'mrp, repair, subcontracting', current: 'Operation Packs, Kanban, Machines, QC, work order data exists', percent: 70, gap: 'Formal work orders, actual machine hours, scrap/rework costing, scheduling engine', page: 'op_packs', priority: 'High' },
-    { area: 'Project / Tasks', odoo: 'project, timesheet, project_stock', current: 'Task Manager V2, Kanban, Workflow links', percent: 82, gap: 'Portfolio reporting, dependency health, time/cost capture, customer delivery milestones', page: 'task_manager', priority: 'Medium' },
-    { area: 'HR / Payroll', odoo: 'hr, attendance, holidays, timesheet', current: 'Payroll locked, attendance, employee portal, requests, AI read-only review cards', percent: 92, gap: 'Approval execution still routes to review/task only; no direct payroll corrections by design', page: 'intelligence', priority: 'Medium' },
-    { area: 'Maintenance', odoo: 'maintenance, equipment', current: 'Machine maintenance by hours/days, risk panel, requests', percent: 80, gap: 'Maintenance work order lifecycle, parts consumption, downtime analytics', page: 'machines', priority: 'Medium' },
-    { area: 'Communication', odoo: 'mail, livechat, sms', current: 'Notifications, WhatsApp paste/review inbox', percent: 45, gap: 'WhatsApp API, attachments/audio, threaded records, outbound templates', page: 'whatsapp', priority: 'Critical' },
-    { area: 'AI / Automation', odoo: 'base_automation plus no equivalent AI control', current: 'Automation engine and AI readiness dashboard', percent: 50, gap: 'Provider settings, action queue, policy gates, explainable AI, approved writes', page: 'intelligence', priority: 'Critical' },
-    { area: 'Admin / Settings', odoo: 'base_setup, users, companies', current: 'Admin Panel with multi-company hierarchy and logs', percent: 65, gap: 'Wire settings across modules, roles, active company, currency, backups/buttons', page: 'admin_panel', priority: 'High' },
-    { area: 'Analytics / BI', odoo: 'spreadsheet dashboards', current: 'Operational analytics and completion snapshot', percent: 62, gap: 'Date filters, export, profitability, delay prediction, SOP problem detection', page: 'analytics', priority: 'High' },
-    { area: 'Customer Portal', odoo: 'website, portal, website_sale', current: 'Not built as a portal', percent: 10, gap: 'Customer order tracking, quote approval, receipt/payment summary', page: 'customers', priority: 'Medium' }
+    { area: 'المحاسبة', odoo: 'محاسبة، مدفوعات، ضرائب، المحاسبة العراقية', current: 'محرك المالية V6 وصفحات المالية المحمية', percent: 60, gap: 'دفتر الشركاء، الضرائب، تسوية البنك، الكشوفات، دورة حياة الفاتورة بعمق', page: 'finance', priority: 'High' },
+    { area: 'المبيعات', odoo: 'مبيعات، إدارة المبيعات، علاقات العملاء، جهات الاتصال', current: 'العملاء، الفواتير، تسعير الباقات، أساس إدارة العملاء المحتملين', percent: 35, gap: 'خط عروض الأسعار، مراحل العملاء المحتملين، اعتماد العرض، تحويل الطلب، بوابة العملاء', page: 'whatsapp', priority: 'High' },
+    { area: 'المشتريات', odoo: 'مشتريات، مشتريات المخزون، طلبات الشراء', current: 'الموردون، تحليلات الشراء، طلبات المواد، استلام أوامر الشراء', percent: 55, gap: 'دورة حياة طلب العرض، تاريخ الأسعار، اعتمادات الشراء، تقييم الموردين', page: 'inventory', priority: 'High' },
+    { area: 'المخزون', odoo: 'المخزون، الباركود، مواقع التخزين، التقييم', current: 'المواد، الحجوزات، تدقيق الحركة، تصدير البيانات، روابط الموردين', percent: 75, gap: 'المواقع، الدُفعات والتسلسلية، نقل المخزون، سير عمل الباركود، عمق التقييم', page: 'inventory', priority: 'Medium' },
+    { area: 'التصنيع', odoo: 'تخطيط الإنتاج، الإصلاح، المقاولة من الباطن', current: 'باقات العمليات، اللوحة التنفيذية، المكائن، الجودة، بيانات أوامر العمل', percent: 70, gap: 'أوامر عمل رسمية، ساعات ماكينة فعلية، تكلفة الهالك وإعادة العمل، محرك الجدولة', page: 'op_packs', priority: 'High' },
+    { area: 'المشاريع والمهام', odoo: 'المشاريع، سجل الدوام، مخزون المشاريع', current: 'مدير المهام، اللوحة التنفيذية، روابط العمليات', percent: 82, gap: 'تقارير المحفظة، صحة الاعتماديات، رصد الوقت والتكلفة، معالم تسليم العملاء', page: 'task_manager', priority: 'Medium' },
+    { area: 'الموارد البشرية', odoo: 'الموارد البشرية، الحضور، الإجازات، سجل الدوام', current: 'الرواتب محمية، الحضور، بوابة الموظف، الطلبات، بطاقات مراجعة الذكاء (قراءة فقط)', percent: 92, gap: 'التنفيذ يُحوَّل دائماً للمراجعة/المهمة فقط؛ لا تعديل مباشر على الراتب بالتصميم', page: 'intelligence', priority: 'Medium' },
+    { area: 'الصيانة', odoo: 'الصيانة، المعدات', current: 'صيانة المكائن بالساعات/الأيام، لوحة المخاطر، الطلبات', percent: 80, gap: 'دورة حياة أمر الصيانة، استهلاك القطع، تحليلات التوقف', page: 'machines', priority: 'Medium' },
+    { area: 'التواصل', odoo: 'البريد، الدردشة المباشرة، الرسائل القصيرة', current: 'الإشعارات، صندوق مراجعة رسائل العملاء', percent: 45, gap: 'واجهة برمجة تطبيقات المراسلة، المرفقات والصوت، السجلات المترابطة، قوالب الإرسال', page: 'whatsapp', priority: 'Critical' },
+    { area: 'الذكاء والأتمتة', odoo: 'الأتمتة الأساسية (لا يوجد ما يعادل تحكم الذكاء)', current: 'محرك الأتمتة ولوحة جاهزية الذكاء', percent: 50, gap: 'إعدادات المزود، طابور الإجراءات، بوابات السياسة، الذكاء القابل للشرح، الكتابة المعتمدة', page: 'intelligence', priority: 'Critical' },
+    { area: 'الإدارة والإعدادات', odoo: 'الإعداد الأساسي، المستخدمون، الشركات', current: 'لوحة الإدارة مع هرمية متعددة الشركات والسجلات', percent: 65, gap: 'ربط الإعدادات بين الوحدات، الأدوار، الشركة النشطة، العملة، النسخ الاحتياطي', page: 'admin_panel', priority: 'High' },
+    { area: 'التحليلات', odoo: 'لوحات بيانات جداول البيانات', current: 'التحليلات التشغيلية ولقطة الإنجاز', percent: 62, gap: 'فلاتر التاريخ، التصدير، الربحية، توقع التأخير، كشف مشاكل الإجراءات', page: 'analytics', priority: 'High' },
+    { area: 'بوابة العملاء', odoo: 'الموقع، البوابة الإلكترونية، المتجر الإلكتروني', current: 'غير مبني كبوابة بعد', percent: 10, gap: 'تتبع طلبات العملاء، اعتماد العرض، ملخص الفاتورة والدفع', page: 'customers', priority: 'Medium' }
   ];
 }
 
@@ -111,16 +111,16 @@ function getWorkflowTemplates() {
     { id: 'laser_order', name: 'طلب ليزر → تجهيز ملف → قص → فحص → تغليف', nodes: [['trigger', 'طلب ليزر'], ['human_task', 'تجهيز ملف'], ['machine', 'قص ليزر'], ['qc', 'فحص'], ['archive', 'تغليف وتسليم']] },
     { id: 'router_order', name: 'طلب راوتر → تصميم → تثبيت خامة → تشغيل → تنظيف → QC', nodes: [['trigger', 'طلب راوتر'], ['human_task', 'تصميم'], ['operation', 'تثبيت خامة'], ['machine', 'تشغيل راوتر'], ['action', 'تنظيف'], ['qc', 'فحص جودة']] },
     { id: 'printing_3d', name: 'طباعة 3D → تجهيز ملف → طباعة → تنظيف → QC', nodes: [['trigger', 'طلب طباعة 3D'], ['human_task', 'تجهيز ملف'], ['machine', 'طباعة'], ['action', 'تنظيف'], ['qc', 'فحص جودة']] },
-    { id: 'rework', name: 'Rework → فحص فاشل → إعادة عمل → فحص ثاني → تسليم', nodes: [['qc', 'فحص فاشل'], ['rework', 'إعادة عمل'], ['qc', 'فحص ثاني'], ['archive', 'تسليم']] }
+    { id: 'rework', name: 'فحص فاشل → إعادة عمل → فحص ثاني → تسليم', nodes: [['qc', 'فحص فاشل'], ['rework', 'إعادة عمل'], ['qc', 'فحص ثاني'], ['archive', 'تسليم']] }
   ];
 }
 
 // --- moved from app.js: workshop automation templates (pure literals) ---
 function ptxAutomationTemplates() {
   return [
-    { key: 'stuck_kanban', icon: '📋', title: 'تصعيد البطاقة العالقة', note: 'إذا بقيت بطاقة Kanban عالقة، يصعدها ويضيف تنبيه.', event: 'KANBAN_CARD_STUCK', action: 'flag_anomaly' },
+    { key: 'stuck_kanban', icon: '📋', title: 'تصعيد البطاقة العالقة', note: 'إذا بقيت بطاقة عالقة في اللوحة، يصعدها ويضيف تنبيه.', event: 'KANBAN_CARD_STUCK', action: 'flag_anomaly' },
     { key: 'low_stock', icon: '📦', title: 'نقص مادة مهمّة', note: 'إذا نزل المخزون تحت الحد الأدنى، ينشئ مقترح شراء للموافقة.', event: 'MATERIAL_BELOW_MINIMUM', action: 'propose_purchase' },
-    { key: 'whatsapp_to_task', icon: '💬', title: 'WhatsApp إلى متابعة', note: 'بعد اعتماد رسالة WhatsApp، ينشئ مهمة أو طلب مراجعة واضح.', event: 'WHATSAPP_APPROVED', action: 'create_task' },
+    { key: 'whatsapp_to_task', icon: '💬', title: 'رسالة العميل إلى متابعة', note: 'بعد اعتماد رسالة العميل، ينشئ مهمة أو طلب مراجعة واضح.', event: 'WHATSAPP_APPROVED', action: 'create_task' },
     { key: 'quote_followup', icon: '🧾', title: 'متابعة عرض السعر', note: 'كل عرض سعر جديد يولد مهمة تدقيق ومتابعة.', event: 'QUOTE_CREATED', action: 'create_task' },
     { key: 'machine_load', icon: '⚙️', title: 'ضغط الماكينة', note: 'إذا زاد حمل الماكينة، ينبه المشرف لإعادة التوزيع.', event: 'MACHINE_OVERLOADED', action: 'notify_supervisor' },
     { key: 'qc_after_done', icon: '🧪', title: 'فحص جودة تلقائي', note: 'عند اكتمال عمل حساس، يفتح فحص جودة بدل التسليم العشوائي.', event: 'KANBAN_CARD_STUCK', action: 'schedule_inspection' }
@@ -226,13 +226,13 @@ function getDefaultAdminSettings() {
 // --- moved from app.js (Phase 2): default machines seed (pure literals) ---
 function defaultMachines() {
   return [
-    { id: 'mach_laser_120', name: 'Laser 120×90', type: 'laser', status: 'operational', operator: 'أحمد', queue: 3, lastMaintenance: '2026-04-20', hoursTotal: 1840, downtime: 12, sopId: 'sop_safety', jobsToday: 4 },
-    { id: 'mach_laser_100', name: 'Laser 100×80', type: 'laser', status: 'operational', operator: 'علي', queue: 1, lastMaintenance: '2026-05-01', hoursTotal: 920, downtime: 5, sopId: '', jobsToday: 2 },
-    { id: 'mach_laser_125', name: 'Laser 125×250', type: 'laser', status: 'maintenance', operator: '-', queue: 0, lastMaintenance: '2026-05-08', hoursTotal: 2100, downtime: 28, sopId: '', jobsToday: 0 },
-    { id: 'mach_cnc', name: 'CNC Router 125×250', type: 'cnc', status: 'operational', operator: 'يوسف', queue: 2, lastMaintenance: '2026-04-15', hoursTotal: 1560, downtime: 18, sopId: '', jobsToday: 3 },
-    { id: 'mach_fiber', name: 'Fiber Galvo Marker', type: 'fiber', status: 'idle', operator: 'سيف', queue: 0, lastMaintenance: '2026-05-05', hoursTotal: 480, downtime: 2, sopId: '', jobsToday: 0 },
-    { id: 'mach_3dprint', name: '3D Printer', type: '3d', status: 'operational', operator: 'أشرف', queue: 1, lastMaintenance: '2026-04-28', hoursTotal: 620, downtime: 8, sopId: '', jobsToday: 1 },
-    { id: 'mach_printer', name: 'Large Format Printer', type: 'print', status: 'operational', operator: 'علي', queue: 2, lastMaintenance: '2026-05-03', hoursTotal: 1100, downtime: 6, sopId: '', jobsToday: 2 }
+    { id: 'mach_laser_120', name: 'ليزر 120×90', type: 'laser', status: 'operational', operator: 'أحمد', queue: 3, lastMaintenance: '2026-04-20', hoursTotal: 1840, downtime: 12, sopId: 'sop_safety', jobsToday: 4 },
+    { id: 'mach_laser_100', name: 'ليزر 100×80', type: 'laser', status: 'operational', operator: 'علي', queue: 1, lastMaintenance: '2026-05-01', hoursTotal: 920, downtime: 5, sopId: '', jobsToday: 2 },
+    { id: 'mach_laser_125', name: 'ليزر 125×250', type: 'laser', status: 'maintenance', operator: '-', queue: 0, lastMaintenance: '2026-05-08', hoursTotal: 2100, downtime: 28, sopId: '', jobsToday: 0 },
+    { id: 'mach_cnc', name: 'راوتر CNC 125×250', type: 'cnc', status: 'operational', operator: 'يوسف', queue: 2, lastMaintenance: '2026-04-15', hoursTotal: 1560, downtime: 18, sopId: '', jobsToday: 3 },
+    { id: 'mach_fiber', name: 'ماركر ألياف ضوئية', type: 'fiber', status: 'idle', operator: 'سيف', queue: 0, lastMaintenance: '2026-05-05', hoursTotal: 480, downtime: 2, sopId: '', jobsToday: 0 },
+    { id: 'mach_3dprint', name: 'طابعة ثلاثية الأبعاد', type: '3d', status: 'operational', operator: 'أشرف', queue: 1, lastMaintenance: '2026-04-28', hoursTotal: 620, downtime: 8, sopId: '', jobsToday: 1 },
+    { id: 'mach_printer', name: 'طابعة عريضة', type: 'print', status: 'operational', operator: 'علي', queue: 2, lastMaintenance: '2026-05-03', hoursTotal: 1100, downtime: 6, sopId: '', jobsToday: 2 }
   ];
 }
 
@@ -296,7 +296,7 @@ function defaultEquipment() {
 function defaultOpPacks() {
   return [
     {
-      id: 'pack_acrylic_sign', name: 'Acrylic LED Sign Production', icon: '💡',
+      id: 'pack_acrylic_sign', name: 'إنتاج لافتة أكريليك مضيئة', icon: '💡',
       description: 'باقة إنتاج لوحة أكريلك مضيئة من الطلب حتى التسليم',
       steps: [
         { title: 'استلام الطلب وفتح ملف', sopRef: 'استلام الطلب', type: 'task' },
@@ -311,19 +311,19 @@ function defaultOpPacks() {
         { title: 'تحديث الكلفة والربح', sopRef: '', type: 'finance' }
       ],
       materials: ['أكريلك', 'LED', 'محول كهرباء', 'لاصق'],
-      machines: ['Laser 120×90'],
+      machines: ['ليزر 120×90'],
       estimatedTime: '4-6 ساعات', estimatedCost: 45000,
       qcGates: ['فحص الحواف', 'فحص الإضاءة', 'فحص الأبعاد'],
       failPoints: ['تشقق الأكريلك', 'عدم تطابق الألوان', 'مشكلة كهربائية']
     },
     {
-      id: 'pack_mdf_router', name: 'MDF Router Decoration', icon: '🪵',
-      description: 'باقة تشغيل CNC Router لقطع وتشكيل MDF',
+      id: 'pack_mdf_router', name: 'ديكور راوتر على MDF', icon: '🪵',
+      description: 'باقة تشغيل راوتر CNC لقطع وتشكيل MDF',
       steps: [
         { title: 'مراجعة التصميم', sopRef: '', type: 'design' },
         { title: 'تأكيد سمك المادة', sopRef: '', type: 'material' },
-        { title: 'تحضير Toolpath', sopRef: '', type: 'task' },
-        { title: 'حجز CNC Router', sopRef: '', type: 'machine', machineRef: 'mach_cnc' },
+        { title: 'تحضير مسار الأداة', sopRef: '', type: 'task' },
+        { title: 'حجز راوتر CNC', sopRef: '', type: 'machine', machineRef: 'mach_cnc' },
         { title: 'اختيار بت القص', sopRef: '', type: 'task' },
         { title: 'تنفيذ القص', sopRef: '', type: 'machine', machineRef: 'mach_cnc' },
         { title: 'صنفرة', sopRef: '', type: 'task' },
@@ -339,11 +339,11 @@ function defaultOpPacks() {
       failPoints: ['كسر القطعة', 'عدم دقة القص', 'تقشر الدهان']
     },
     {
-      id: 'pack_3dprint', name: '3D Print Job', icon: '🖨️',
+      id: 'pack_3dprint', name: 'طباعة ثلاثية الأبعاد', icon: '🖨️',
       description: 'باقة طباعة ثلاثية الأبعاد كاملة',
       steps: [
         { title: 'مراجعة ملف STL', sopRef: '', type: 'design' },
-        { title: 'تحضير Slice', sopRef: '', type: 'task' },
+        { title: 'تحضير التقطيع', sopRef: '', type: 'task' },
         { title: 'حجز الطابعة', sopRef: '', type: 'machine', machineRef: 'mach_3dprint' },
         { title: 'طباعة', sopRef: '', type: 'machine', machineRef: 'mach_3dprint' },
         { title: 'إزالة السبورت', sopRef: '', type: 'task' },
@@ -358,12 +358,12 @@ function defaultOpPacks() {
       failPoints: ['فشل الطبقات', 'انحراف الطباعة']
     },
     {
-      id: 'pack_fiber', name: 'Fiber Marking Job', icon: '⚡',
-      description: 'باقة نقش بالفايبر على المعادن',
+      id: 'pack_fiber', name: 'نقش ليزر ألياف ضوئية', icon: '⚡',
+      description: 'باقة نقش بالليزر على المعادن',
       steps: [
         { title: 'تحضير الملف', sopRef: '', type: 'design' },
         { title: 'إعداد المعلمات', sopRef: '', type: 'task' },
-        { title: 'حجز Fiber Galvo', sopRef: '', type: 'machine', machineRef: 'mach_fiber' },
+        { title: 'حجز ماركر الألياف', sopRef: '', type: 'machine', machineRef: 'mach_fiber' },
         { title: 'تنفيذ النقش', sopRef: '', type: 'machine', machineRef: 'mach_fiber' },
         { title: 'فحص جودة', sopRef: '', type: 'qc' },
         { title: 'تسليم', sopRef: '', type: 'delivery' }
@@ -375,7 +375,7 @@ function defaultOpPacks() {
       failPoints: ['نقش باهت', 'إعدادات خاطئة']
     },
     {
-      id: 'pack_print', name: 'Large Format Printing', icon: '🎨',
+      id: 'pack_print', name: 'طباعة عريضة', icon: '🎨',
       description: 'باقة طباعة عريضة على فينايل أو بانر',
       steps: [
         { title: 'تحضير ملف الطباعة', sopRef: '', type: 'design' },
@@ -393,7 +393,7 @@ function defaultOpPacks() {
       failPoints: ['انسداد الرأس', 'ألوان باهتة']
     },
     {
-      id: 'pack_maintenance', name: 'Maintenance Pack', icon: '🔧',
+      id: 'pack_maintenance', name: 'باقة الصيانة الدورية', icon: '🔧',
       description: 'باقة صيانة دورية للمكائن',
       steps: [
         { title: 'فحص أولي', sopRef: '', type: 'task' },
@@ -446,7 +446,7 @@ function defaultQcRecords() {
       cardId: 'card_2',
       taskRef: 'card_2',
       sopId: 'sop_safety',
-      machineId: 'm_laser_1',
+      machineId: 'mach_laser_120',
       department: 'قسم جودة المعادن',
       inspector: 'المهندس علي سلمان (رئيس وحدة الجودة)',
       inspectedAt: todayISO(),
@@ -480,7 +480,7 @@ function defaultQcRecords() {
       cardId: 'card_3',
       taskRef: 'card_3',
       sopId: 'sop_qc',
-      machineId: 'm_oven_1',
+      machineId: '',
       department: 'قسم التشطيب والطلاء',
       inspector: 'الأستاذ عمر الفاروق (مفتش التشطيب النهائي)',
       inspectedAt: todayISO(),

@@ -140,6 +140,15 @@
       try {
         if (window.ptxAIAssistant && typeof window.ptxAIAssistant.jarvis === 'function') {
           window.ptxAIAssistant.jarvis();
+        } else if (typeof window.loadOctagonAIAssistant === 'function') {
+          window.loadOctagonAIAssistant().then(function (assistant) {
+            if (assistant && typeof assistant.jarvis === 'function') assistant.jarvis();
+            else if (assistant && typeof assistant.open === 'function') assistant.open();
+          }).catch(function () {
+            if (typeof window.toggleAIChat === 'function') window.toggleAIChat();
+          });
+        } else if (typeof window.toggleAIChat === 'function') {
+          window.toggleAIChat();
         }
       } catch (_) {}
     });

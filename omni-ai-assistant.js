@@ -1948,11 +1948,28 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
   function attentionTotal() {
     return localAttention().reduce((sum, item) => sum + (item.count || 0), 0);
   }
+  function unreadNotificationTotal() {
+    try {
+      if (Number.isFinite(window.__octagonUnreadNotificationCount)) return window.__octagonUnreadNotificationCount;
+    } catch (_) {}
+    try {
+      if (typeof window.getOctagonUnreadNotificationCount === 'function') return window.getOctagonUnreadNotificationCount();
+    } catch (_) {}
+    try {
+      if (typeof window.getUnreadNotifications === 'function') return window.getUnreadNotifications().length;
+    } catch (_) {}
+    try {
+      const list = window.omni && Array.isArray(window.omni.notifications) ? window.omni.notifications : [];
+      return list.filter(n => n && n.status === 'unread').length;
+    } catch (_) {
+      return 0;
+    }
+  }
   function updateAttentionBadge() {
     const button = document.getElementById('ptxAIButton');
     if (!button) return;
     let badge = document.getElementById('ptxAIBadge');
-    const total = loggedOut() ? 0 : attentionTotal();
+    const total = loggedOut() ? 0 : unreadNotificationTotal();
     if (total > 0) {
       if (!badge) {
         badge = document.createElement('span');
@@ -1961,9 +1978,11 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       }
       badge.textContent = total > 99 ? '99+' : String(total);
       badge.style.display = '';
-      button.title = t(`لديك ${total} أمور تحتاج انتباهك`, `${total} items need your attention`);
+      button.dataset.notificationCount = String(total);
+      button.title = t(`لديك ${total} إشعارات غير مقروءة`, `${total} unread notifications`);
     } else if (badge) {
       badge.style.display = 'none';
+      button.dataset.notificationCount = '0';
     }
   }
   function showAttention() {
@@ -2318,6 +2337,9 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       if (typeof getAiControl !== 'function' || typeof saveData !== 'function' || typeof makeId !== 'function') throw new Error('AI core not ready');
       const sensitive = SENSITIVE_RE.test(text);
       const ai = getAiControl();
+      const user = (function () { try { return window.PentagonAuth?.getCurrentUser?.() || {}; } catch (_) { return {}; } })();
+      const groups = (function () { try { return window.PermissionService?.resolveGroups?.(user) || user.groups || []; } catch (_) { return user.groups || []; } })();
+      const role = Array.isArray(groups) && groups.length ? groups.join(',') : (user.role || user.roleId || 'unmapped');
       if (!Array.isArray(ai.actionQueue)) ai.actionQueue = [];
       ai.actionQueue.unshift({
         id: makeId('aiprop'),
@@ -2329,6 +2351,10 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
         status: 'pending',
         summary: text,
         affectedRecords: 0,
+        requestedBy: user.name || user.displayName || user.id || 'system',
+        requestedById: user.id || 'system',
+        requestedByRole: role,
+        payload: { userId: user.id || 'system', userName: user.name || user.displayName || user.id || 'system', userRole: role, source: 'omni_ai_assistant', page: currentKey(), sensitive },
         createdAt: new Date().toISOString()
       });
       if (typeof addAiRunHistory === 'function') {
@@ -2370,8 +2396,10 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     const button = document.getElementById('ptxAIButton');
     if (!button) return;
     const stored = readJson(BUTTON_LAYOUT_KEY, {});
-    const left = clamp(Number(stored.left) || 24, 8, Math.max(8, window.innerWidth - 64));
-    const top = clamp(Number(stored.top) || Math.max(8, window.innerHeight - 80), 8, Math.max(8, window.innerHeight - 64));
+    const buttonWidth = button.offsetWidth || 72;
+    const buttonHeight = button.offsetHeight || 72;
+    const left = clamp(Number(stored.left) || 24, 8, Math.max(8, window.innerWidth - buttonWidth - 8));
+    const top = clamp(Number(stored.top) || Math.max(8, window.innerHeight - buttonHeight - 16), 8, Math.max(8, window.innerHeight - buttonHeight - 8));
     button.style.left = `${left}px`;
     button.style.top = `${top}px`;
   }
@@ -2459,7 +2487,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     let drag = null;
     const start = event => {
       const rect = button.getBoundingClientRect();
-      drag = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
+      const actionTarget = event.target.closest?.('[data-agent-action]');
+      drag = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false, action: actionTarget?.dataset?.agentAction || 'agent' };
       event.preventDefault();
       event.stopPropagation();
     };
@@ -2468,18 +2497,30 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       const dx = event.clientX - drag.x;
       const dy = event.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
-      button.style.left = `${clamp(drag.left + dx, 8, Math.max(8, window.innerWidth - 64))}px`;
-      button.style.top = `${clamp(drag.top + dy, 8, Math.max(8, window.innerHeight - 64))}px`;
+      const width = button.offsetWidth || 72;
+      const height = button.offsetHeight || 72;
+      button.style.left = `${clamp(drag.left + dx, 8, Math.max(8, window.innerWidth - width - 8))}px`;
+      button.style.top = `${clamp(drag.top + dy, 8, Math.max(8, window.innerHeight - height - 8))}px`;
     };
     const stop = event => {
       if (!drag) return;
       const shouldToggle = !drag.moved;
+      const action = drag.action;
       drag = null;
       if (event && event.pointerId !== undefined) {
         try { button.releasePointerCapture(event.pointerId); } catch (_) {}
       }
       persistButtonLayout();
-      if (shouldToggle) toggle();
+      if (shouldToggle) {
+        if (action === 'jarvis') {
+          toggleJarvis();
+        } else if (action === 'attention') {
+          toggle(true);
+          showAttention();
+        } else {
+          toggle();
+        }
+      }
     };
     button.addEventListener('pointerdown', event => {
       button.setPointerCapture(event.pointerId);
@@ -2620,7 +2661,23 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     button.id = 'ptxAIButton';
     button.type = 'button';
     button.title = t('عميل الذكاء الصناعي - اسحب لتحريكه', 'AI Agent - drag to move');
-    button.innerHTML = '<i class="fa-solid fa-robot"></i>';
+    button.innerHTML = `
+      <span class="ptxai-fab-bridge"></span>
+      <span class="ptxai-fab-ring ptxai-fab-ring-1"></span>
+      <span class="ptxai-fab-ring ptxai-fab-ring-2"></span>
+      <span class="ptxai-fab-core" data-agent-action="agent" title="${t('فتح عميل الذكاء', 'Open AI agent')}">
+        <span class="ptxai-fab-sheen"></span>
+        <i class="fa-solid fa-robot"></i>
+      </span>
+      <span class="ptxai-fab-lobe ptxai-fab-mic" data-agent-action="jarvis" title="${t('تشغيل جارفيس الصوتي', 'Start Jarvis voice')}">
+        <i class="fa-solid fa-microphone-lines"></i>
+      </span>
+      <span class="ptxai-fab-lobe ptxai-fab-alerts" data-agent-action="attention" title="${t('عرض التنبيهات', 'Show alerts')}">
+        <i class="fa-solid fa-bell"></i>
+      </span>
+      <span class="ptxai-fab-pulse"></span>
+    `;
+    document.body.classList.add('ai-cluster-enabled');
 
     const panel = document.createElement('div');
     panel.id = 'ptxAIPanel';
@@ -2863,6 +2920,7 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       state.reviewPointer = event.detail || null;
       render();
     });
+    window.addEventListener('octagon:notifications-updated', updateAttentionBadge);
     window.addEventListener('resize', () => {
       applyButtonLayout();
       applyPanelLayout();
@@ -2919,7 +2977,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     processJarvisTranscript,
     speakJarvis,
     pauseJarvisListening,
-    resumeJarvisListening: () => scheduleJarvisListening(0)
+    resumeJarvisListening: () => scheduleJarvisListening(0),
+    refreshBadge: updateAttentionBadge
   };
   window.octagonAIAssistant = api;
   window.ptxAIAssistant = api;

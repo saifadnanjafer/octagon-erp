@@ -102,7 +102,7 @@
     }
     if (!e.requests.length && !e._seeded) {
       e._seeded = true;
-      const r1 = stamp({ id: uid('esn'), title: 'اتفاقية صيانة - شركة الرافدين', docType: 'contract', docRef: '', signerName: 'مدير شركة الرافدين', signerContact: '0770xxxxxxx', status: 'sent', dueDate: addDaysISO(todayISO(), 14), fields: '', createdAt: new Date().toISOString(), sentAt: new Date().toISOString(), createdBy: 'system', auditTrail: [{ event: 'created', at: new Date().toISOString(), by: 'system' }, { event: 'sent', at: new Date().toISOString(), by: 'system' }] });
+      const r1 = stamp({ id: uid('esn'), title: 'اتفاقية صيانة - شركة الرافدين', docType: 'contract', docRef: '', signerName: 'مدير شركة الرافدين', signerContact: '07700000000', status: 'sent', dueDate: addDaysISO(todayISO(), 14), fields: '', createdAt: new Date().toISOString(), sentAt: new Date().toISOString(), createdBy: 'system', auditTrail: [{ event: 'created', at: new Date().toISOString(), by: 'system' }, { event: 'sent', at: new Date().toISOString(), by: 'system' }] });
       const r2 = stamp({ id: uid('esn'), title: 'إقرار استلام عُهدة - موظف جديد', docType: 'hr', docRef: '', signerName: 'علي حسن', signerContact: '', status: 'draft', dueDate: addDaysISO(todayISO(), 7), fields: '', createdAt: new Date().toISOString(), createdBy: 'system', auditTrail: [{ event: 'created', at: new Date().toISOString(), by: 'system' }] });
       e.requests.push(r1, r2);
     }

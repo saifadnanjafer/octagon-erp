@@ -590,6 +590,15 @@
       if (typeof window.getAiControl !== 'function') throw new Error('AI control not ready');
       const ai = window.getAiControl();
       if (!Array.isArray(ai.actionQueue)) ai.actionQueue = [];
+      const user = (function () { try { return window.PentagonAuth && PentagonAuth.getCurrentUser && PentagonAuth.getCurrentUser(); } catch (_) { return null; } })() || {};
+      const groups = (function () { try { return window.PermissionService && PermissionService.resolveGroups ? PermissionService.resolveGroups(user) : (user.groups || []); } catch (_) { return user.groups || []; } })();
+      const explained = (function () {
+        try {
+          return window.PermissionService && PermissionService.explainAction
+            ? PermissionService.explainAction('ai.high_risk_write', { page: 'intelligence', module: 'jarvis', riskLevel: risk || 'medium', source: 'jarvis_brain', dryRun: true }, user)
+            : null;
+        } catch (_) { return null; }
+      })();
       ai.actionQueue.unshift({
         id: makeId('aiprop'),
         actionId: actionId || 'jarvis_proposal',
@@ -603,13 +612,15 @@
         summary: summary || '',
         reason: summary || '',
         affectedRecords: 0,
-        payload: payload || null,
+        payload: { ...(payload || {}), userId: user.id || 'system', userName: user.name || user.displayName || user.id || 'system', userRole: groups.join(',') || user.role || user.roleId || 'unmapped', source: 'jarvis_brain', permissionReason: explained?.reason || '' },
         createdByAI: true,
-        requestedBy: (function () { try { const u = window.PentagonAuth && PentagonAuth.getCurrentUser && PentagonAuth.getCurrentUser(); return (u && (u.name || u.id)) || 'system'; } catch (_) { return 'system'; } })(),
+        requestedBy: user.name || user.displayName || user.id || 'system',
+        requestedById: user.id || 'system',
+        requestedByRole: groups.join(',') || user.role || user.roleId || 'unmapped',
         createdAt: new Date().toISOString(),
         source: 'jarvis_brain'
       });
-      audit('ai.action.proposed', { title: title || '', risk: risk || 'medium', actionType: actionType || actionId || 'jarvis_proposal' });
+      audit('ai.action.proposed', { title: title || '', risk: risk || 'medium', actionType: actionType || actionId || 'jarvis_proposal', userId: user.id || 'system', role: groups.join(',') || user.role || user.roleId || 'unmapped', reason: explained?.reason || '' });
       if (typeof window.addAiRunHistory === 'function') {
         window.addAiRunHistory({ actionId: 'system_chat', title: title || 'Jarvis', status: 'queued', note: summary || '', outputType: 'ai_console' });
       }

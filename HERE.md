@@ -116,3 +116,83 @@ Governance notes:
 - Sensitive action mappings are explicit and the new high-risk action metadata prevents unmapped high/critical writes from becoming silent allows.
 - Jarvis/AI direct-write paths were inspected only for safety confirmation; existing high-risk/sensitive AI tools remain approval-gated through the AI governance/approval queue rather than direct writes.
 - Before live deployment: decide the final login/current-user model, map all sensitive pages/actions, convert high-risk execution to deny-by-default everywhere, and test system admin, manager, operator, finance user, and ordinary user roles.
+
+## Phase 6D Real Users, Role Matrix, and Stable Baseline (2026-06-23)
+
+Baseline:
+- Project was not a Git repository at the start of this pass. Baseline validation passed, a local marker was added at `db-backups/phase6d-baseline-marker-20260623.md`, and a local-only Git repo was initialized with baseline commit `ae8e614 stable-86-route-health-phase6c`.
+- No remote was configured and nothing was pushed.
+- `database.json` was inspected only and was not reset or overwritten. Before Phase 6D runtime migration it had `omni.users: []`, `omni.roles: 3`, and no `omni.userRoles`.
+
+Built without adding sidebar pages:
+- `app.js`: `normalizeOmniUsersRolesPermissions()` now seeds a non-destructive local real-user foundation when no live users exist. Seeded users are `system_admin`, `finance_manager`, `workshop_manager`, `operator_user`, `employee_user`, and `viewer_user`. Seeded roles carry `groups` for `PermissionService`; users carry `displayName`, `role`, `roleId`, `status`, `is_active`, tenant/company fields when available, `createdAt`, `source: phase6d_seed`, and no password fields.
+- `services/auditService.js`: `PentagonAuth` / `OctagonAuth` now resolves the legacy `system` fallback to the seeded `system_admin` when available and enriches current users from `omni.roles`.
+- `app.js`: `authUserSwitcher` now populates from `omni.users` and shows display name + role, while preserving fallback behavior if users are missing or corrupted.
+- `services/permissionService.js`: role resolution now accepts `groups`, `roleId`, or `role`, and consults `omni.roles[].groups`. Phase 6D added HR/payroll/security high-risk action metadata for salary change, locked-period attendance edit, deduction/fine, advance/loan, termination/deactivation, role/permission change, payroll-affecting leave approval, and employee deletion.
+- `modules/phase6c-security-matrix.js`: the existing `security_center` matrix now tests the current selected user, real `omni.users`, and fallback profiles. It also renders a documentation-only 86-page permission sensitivity audit with explicit-mapping status and future policy recommendation.
+- AI/Jarvis queues now stamp current user id/name/role/source on high-risk or approval-routed proposals in `modules/jarvis-brain.js`, `app.js`, and `omni-ai-assistant.js`. Sensitive AI tools still route to approval queue and do not directly post finance/stock/COA/payroll writes.
+
+## Phase 6E Controlled Page Hardening (2026-06-24)
+
+Built after confirming the loader fix works on `http://127.0.0.1:8080/`:
+- `services/permissionService.js`: added `PAGE_METADATA` and `PermissionService.explainPage(page, userOrRole)` so page access is explainable like sensitive actions.
+- First explicit page-policy batch now covers finance (`ar_ap`, `budgeting`, `banking`, `tax_compliance`), HR/payroll (`import`, `timesheet`, `calendar`, `people_ops`), AI/system (`ai_queue`, `ai_factory`, `ai_tools`, `ai_status`, `deploy_ready`), admin/security/data (`multi_entity`, `integration_hub`, `security_center`, `data_quality`, `route_health`, `device_center`), and procurement/approval pages.
+- Self-service pages `employee_ui` and `employee_mobile` are explicitly public/self-service instead of accidentally default-allowed.
+- `modules/phase6c-security-matrix.js`: Security Center now shows a Phase 6E page-policy audit with mapped/default status, sensitivity, current-user access, and phase. The action matrix remains dry-run only.
+- `modules/route-health.js`: Route Health now hydrates all lazy view templates only when the diagnostic runs, so boot stays fast and Route Health still proves the full 86/86 baseline.
+
+Validation:
+- `node --check app.js`
+- `node --check services/permissionService.js modules/phase6c-security-matrix.js modules/route-health.js`
+- `JSON.parse(database.json)`
+- Browser smoke on `8080`: loading overlay hidden by `init-finally`, current user `system_admin`, Security Center Phase 6E audit visible (`53 mapped`), and Route Health green at 86/86 nav, 86/86 pages, 8/8 globals, 14/14 functions, 13/13 collections, 1/1 work-order links.
+
+Policy status:
+- Highest-risk page default-allow surface is reduced, but normal business/vertical pages that are not yet deployment-critical can still default-allow for local/dev.
+- High-risk action dry-runs return allowed, blocked, or approval_required based on explicit action policy and risk metadata.
+- Real users are a local role/user identity foundation, not production password authentication.
+
+Remaining before production:
+- Build real authentication/session handling with hashed credentials or external identity.
+- Convert sensitive page access from local default-allow to explicit policy in controlled batches.
+- Decide tenant/company assignment rules for real production users.
+- Review AI approval execution paths end-to-end before enabling any high-risk executor.
+
+## Phase 6F Seeded Role Regression Harness (2026-06-24)
+
+Built:
+- `scripts/permission-regression.mjs` is now the automated read-only role regression harness for the Phase 6D/6E security baseline.
+- It loads `services/permissionService.js` in a browser-like VM, seeds the six development roles in memory only, and verifies role inheritance, mapped page policy outcomes, sensitive action outcomes, unmapped local/dev page behavior, and high-risk approval routing.
+- It also guards the current audit denominator: 86 unique sidebar pages and 53 mapped sidebar pages.
+
+Validation:
+- `node scripts/permission-regression.mjs` PASS: 35/35.
+- `node --check scripts/permission-regression.mjs` PASS.
+- `JSON.parse(database.json)` and `JSON.parse(claude-status.json)` PASS.
+- Live browser audit on `http://127.0.0.1:8080/` PASS: Route Health 86/86 nav, 86/86 pages, 8/8 globals, 14/14 functions, 13/13 collections, 1/1 work-order links; Workshop Stabilization 12/12 PASS; Security Center matrix and Phase 6E page-policy audit visible with `53 mapped`; console clean.
+- `index.html`: added an inline favicon data URI so the browser no longer logs a default `/favicon.ico` 404 during audit runs.
+
+Remaining before production:
+- Build real authentication/session handling with hashed credentials or external identity.
+- Continue converting sensitive/default-allowed pages into explicit policy batches.
+- Decide tenant/company assignment rules for real production users.
+- Review AI approval execution paths end-to-end before enabling any high-risk executor.
+
+Recommended next Phase 6G:
+- Continue the launch audit/performance/release-readiness pass.
+- Decide final production authentication/session handling and tenant assignment rules.
+
+## Phase 6G Legal / AI Orders / Maintenance Coverage (2026-06-25)
+
+Built:
+- `modules/documents.js`: Documents now has a legal print kit tab for employee contracts and company rules. It prints A4 Arabic-ready employee contract drafts, company internal rules, and individual DMS document metadata sheets. Existing document rows now include a print action.
+- `app.js`: Intelligence / AI Control now includes a structured "issue order or task" form. It can ask AI to draft the wording, then issue either a Task Manager task or an approval/order request through Command Center while stamping the current user context.
+
+Coverage confirmed:
+- Legal documents are now printable from the existing `documents` page, while contract DMS linkage and renewal tasks remain on `contracts`.
+- Workshop maintenance is covered by existing machine maintenance intervals (`maintenanceIntervalHours`, `maintenanceIntervalDays`), machine maintenance requests into Task Manager, fixed-asset preventive maintenance schedules in `modules/asset-maintenance.js`, and equipment monthly audit/check status in the `equipment` page.
+- This pass did not add sidebar pages and did not reset or overwrite `database.json`.
+
+Remaining:
+- The legal templates are operational drafts; final local-law wording still needs owner/legal review before official adoption.
+- Next hardening should connect due asset/equipment maintenance into automatic recurring Task Manager generation, not only visible due alerts/manual request buttons.

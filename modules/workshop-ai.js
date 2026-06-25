@@ -471,7 +471,41 @@
   window.waiKioskSend = function () { const inp = document.getElementById('waiKioskInput'); if (!inp) return; const v = inp.value; inp.value = ''; kioskRespond(v); };
   window.waiKioskKey = function (ev) { if (ev && ev.key === 'Enter') { ev.preventDefault(); window.waiKioskSend(); } };
   window.waiKioskQuick = function (q) { kioskRespond(q); };
-  window.waiMicPlaceholder = function () { toast('🎤 الإدخال الصوتي قيد التجهيز — اكتب سؤالك الآن', 'info'); };
+  // Real voice dictation into the kiosk input (speech-to-text).
+  let waiRecog = null, waiListening = false;
+  window.waiKioskMic = function (btn) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const inp = document.getElementById('waiKioskInput');
+    if (!SR) { toast('🎤 المتصفح لا يدعم الإدخال الصوتي — اكتب سؤالك', 'warning'); return; }
+    if (!inp) return;
+    btn = btn || document.querySelector('.wai-mic');
+    // toggle off if already listening
+    if (waiListening && waiRecog) { try { waiRecog.stop(); } catch (_) {} return; }
+    try { waiRecog = new SR(); } catch (_) { toast('تعذّر بدء الإدخال الصوتي', 'warning'); return; }
+    const lang = (document.documentElement.getAttribute('lang') === 'en') ? 'en-US' : 'ar-SA';
+    waiRecog.lang = lang;
+    waiRecog.interimResults = true;
+    waiRecog.continuous = false;
+    waiRecog.onstart = function () { waiListening = true; if (btn) btn.classList.add('listening'); toast('🎤 أستمع... تكلّم الآن', 'info'); };
+    waiRecog.onresult = function (e) {
+      let txt = '';
+      for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      inp.value = txt;
+    };
+    waiRecog.onerror = function (e) {
+      waiListening = false; if (btn) btn.classList.remove('listening');
+      if (e && e.error === 'not-allowed') toast('🚫 صلاحية الميكروفون مرفوضة — فعّلها من المتصفح', 'warning');
+      else if (e && e.error !== 'aborted') toast('تعذّر الإدخال الصوتي', 'warning');
+    };
+    waiRecog.onend = function () {
+      waiListening = false; if (btn) btn.classList.remove('listening');
+      // auto-send if we captured something
+      if (inp.value.trim()) { setTimeout(() => { if (typeof window.waiKioskSend === 'function') window.waiKioskSend(); }, 150); }
+    };
+    try { waiRecog.start(); } catch (_) {}
+  };
+  // keep old name working (now wired to real dictation)
+  window.waiMicPlaceholder = function () { window.waiKioskMic(); };
 
   /* ════════════════ render ════════════════ */
   let kioskTab = 'chat';
@@ -518,7 +552,7 @@
       + '<div class="wai-quick">'
       + ['شنو وضعي اليوم؟', 'شنو ناقص؟', 'أي مكينة مضغوطة؟', 'شنو المشاكل المفتوحة؟', 'شنو الجاهز للتسليم؟'].map(q => '<button onclick="waiKioskQuick(\'' + q + '\')">' + q + '</button>').join('')
       + '</div>'
-      + '<div class="wai-chat-input-row"><button class="wai-mic" onclick="waiMicPlaceholder()" title="إدخال صوتي (قريباً)">🎤</button>'
+      + '<div class="wai-chat-input-row"><button class="wai-mic" onclick="waiKioskMic(this)" title="إدخال صوتي">🎤</button>'
       + '<input class="wai-chat-input" id="waiKioskInput" placeholder="اكتب سؤالك للنظام..." onkeydown="waiKioskKey(event)" autofocus>'
       + '<button class="wai-btn primary" onclick="waiKioskSend()">إرسال</button></div></div>';
   }

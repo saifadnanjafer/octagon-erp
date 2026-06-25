@@ -346,7 +346,7 @@
             <span class="mrp-bom-name">${esc(b.productName)}</span>
             <span class="mrp-badge ver">v${b.version}</span>
             ${b.active ? '<span class="mrp-badge ok">فعّال</span>' : '<span class="mrp-badge">قديم</span>'}
-            <span class="mrp-muted">· ${esc(b.productSku || '')}</span>
+            <code class="mrp-muted">· ${esc(b.productSku || '')}</code>
           </div>
           <div class="mrp-muted">${(b.components || []).length} مكوّن · ${(b.operations || []).length} عملية ${open ? '▲' : '▼'}</div>
         </div>

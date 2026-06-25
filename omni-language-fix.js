@@ -167,23 +167,23 @@
   ];
 
   const pageLabels = {
-    calculator: { ar: 'الحاسبة الذكية', en: 'Smart Calculator', icon: '📊' },
+    calculator: { ar: 'الحاسبة الذكية', en: 'Smart Calculator', icon: '🧮' },
     timesheet: { ar: 'التايم شيت الذكي', en: 'Smart Timesheet', icon: '📅' },
     calendar: { ar: 'تقويم الدوام', en: 'Attendance Calendar', icon: '🗓️' },
-    import: { ar: 'استيراد البيانات', en: 'Data Import', icon: '📥' },
+    import: { ar: 'استيراد البيانات', en: 'Data Import', icon: '📂' },
     employees: { ar: 'الموظفون والأرصدة', en: 'Employees and Balances', icon: '👥' },
     finance: { ar: 'الداشبورد المالي', en: 'Finance Dashboard', icon: '💹' },
     cashbox: { ar: 'قاصة الورشة', en: 'Workshop Cashbox', icon: '🏦' },
-    expenses: { ar: 'المصروفات', en: 'Expenses', icon: '📤' },
+    expenses: { ar: 'المصروفات', en: 'Expenses', icon: '💸' },
     income: { ar: 'الواردات', en: 'Income', icon: '📥' },
     customers: { ar: 'أرصدة العملاء', en: 'Customer Balances', icon: '🧾' },
     receipt: { ar: 'إنشاء وصل', en: 'Create Receipt', icon: '🖨️' },
-    report: { ar: 'التقرير النهائي', en: 'Final Report', icon: '📊' },
+    report: { ar: 'التقرير النهائي', en: 'Final Report', icon: '📋' },
     command_center: { ar: 'مركز القيادة', en: 'Command Center', icon: '🎯' },
     kanban: { ar: 'اللوحة التنفيذية', en: 'Execution Board', icon: '📋' },
     workflow: { ar: 'مصمم العمليات', en: 'Workflow Designer', icon: '🔀' },
     op_packs: { ar: 'باقات العمليات', en: 'Operation Packs', icon: '📦' },
-    mrp: { ar: 'تخطيط الإنتاج MRP', en: 'MRP Production Planning', icon: '🏭' },
+    mrp: { ar: 'تخطيط موارد التصنيع', en: 'Production Resource Planning', icon: '🏭' },
     task_manager: { ar: 'إدارة المهام', en: 'Task Manager', icon: '✅' },
     sop: { ar: 'مكتبة إجراءات التشغيل', en: 'SOP Library', icon: '📚' },
     machines: { ar: 'المكائن', en: 'Machines', icon: '⚙️' },
@@ -199,7 +199,7 @@
     multi_entity: { ar: 'الفروع والعملات', en: 'Branches and Currencies', icon: '🌐' },
     tax_compliance: { ar: 'الضرائب والفوترة', en: 'Tax and E-Invoicing', icon: '🧾' },
     employee_ui: { ar: 'لوحة الموظف', en: 'Employee Portal', icon: '🧑‍🔧' },
-    customer_portal: { ar: 'بوابة العميل', en: 'Customer Portal', icon: '👥' },
+    customer_portal: { ar: 'بوابة العميل', en: 'Customer Portal', icon: '🏢' },
     admin_panel: { ar: 'لوحة الإدارة', en: 'Admin Panel', icon: '🛠️' },
     help_manual: { ar: 'الدليل والمساعدة', en: 'Help and Manual', icon: '❔' }
   };
@@ -324,8 +324,8 @@
   function applyKnownSurfaces() {
     const current = getLanguage();
     document.querySelectorAll('.logo-main').forEach(el => { el.textContent = current === 'en' ? 'Operations System' : 'نظام التشغيل'; });
-    document.querySelectorAll('.logo-sub').forEach(el => { el.textContent = current === 'en' ? 'OCTAGON ERP' : 'أوكتاغون ERP'; });
-    document.querySelectorAll('.sidebar-version').forEach(el => { el.textContent = current === 'en' ? 'OCTAGON ERP v5.0' : 'أوكتاغون ERP v5.0'; });
+    document.querySelectorAll('.logo-sub').forEach(el => { el.textContent = current === 'en' ? 'OCTAGON ERP' : 'نظام إدارة الأعمال'; });
+    document.querySelectorAll('.sidebar-version').forEach(el => { el.textContent = current === 'en' ? 'Octagon ERP v5.0' : 'أوكتاغون — الإصدار 5.0'; });
     document.querySelectorAll('.nav-group-toggle span').forEach(el => {
       const raw = repairMojibake(el.textContent || '').toLowerCase();
       if (raw.includes('octagon') || raw.includes('pentagon') || raw.includes('أوكتاغون')) el.textContent = current === 'en' ? 'Octagon System V1' : 'نظام أوكتاغون V1';

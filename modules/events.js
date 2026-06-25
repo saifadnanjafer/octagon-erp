@@ -90,7 +90,7 @@
       const ev1 = stamp({ id: uid('evt'), name: 'يوم مفتوح للعملاء', type: 'open_day', startDate: addDaysISO(todayISO(), 7), endDate: addDaysISO(todayISO(), 7), venue: 'المقر الرئيسي', capacity: 100, ticketPrice: 0, status: 'published', description: 'فعالية تعريفية بالخدمات الجديدة.', createdAt: new Date().toISOString(), createdBy: 'system' });
       const ev2 = stamp({ id: uid('evt'), name: 'ورشة تدريبية - السلامة المهنية', type: 'training', startDate: addDaysISO(todayISO(), 14), endDate: addDaysISO(todayISO(), 14), venue: 'قاعة التدريب', capacity: 30, ticketPrice: 25000, status: 'published', description: 'دورة سلامة معتمدة للموظفين والعملاء.', createdAt: new Date().toISOString(), createdBy: 'system' });
       e.events.push(ev1, ev2);
-      e.registrations.push(stamp({ id: uid('reg'), eventId: ev1.id, attendeeName: 'سارة محمد', contact: '0770xxxxxxx', ticketType: 'عام', status: 'confirmed', registeredAt: new Date().toISOString() }));
+      e.registrations.push(stamp({ id: uid('reg'), eventId: ev1.id, attendeeName: 'سارة محمد', contact: '07700000000', ticketType: 'عام', status: 'confirmed', registeredAt: new Date().toISOString() }));
       e.registrations.push(stamp({ id: uid('reg'), eventId: ev1.id, attendeeName: 'أحمد العبيدي', contact: '', ticketType: 'عام', status: 'registered', registeredAt: new Date().toISOString() }));
       e.registrations.push(stamp({ id: uid('reg'), eventId: ev2.id, attendeeName: 'علي حسن', contact: '', ticketType: 'موظف', status: 'checked_in', registeredAt: new Date().toISOString() }));
     }
@@ -129,7 +129,7 @@
       + card('fa-calendar-day', '#818cf8', k.upcoming, 'فعاليات قادمة')
       + card('fa-layer-group', '#38bdf8', k.totalEvents, 'إجمالي الفعاليات')
       + card('fa-user-check', '#34d399', k.activeRegs, 'تسجيلات نشطة')
-      + card('fa-person-walking-arrow-right', '#a855f7', k.checkedIn, 'حضور (Check-in)')
+      + card('fa-person-walking-arrow-right', '#a855f7', k.checkedIn, 'تسجيل الحضور')
       + card('fa-gauge-high', '#fb923c', k.util + '%', 'نسبة الإشغال')
       + card('fa-coins', '#facc15', fmt(k.revenue) + ' ' + currency(), 'الإيراد')
       + '</div>';

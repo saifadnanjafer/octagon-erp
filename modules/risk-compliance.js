@@ -53,6 +53,8 @@
 
   const SEV = { low: ['منخفض', 'low', 1], medium: ['متوسط', 'medium', 2], high: ['عال', 'high', 3], critical: ['حرج', 'critical', 4] };
   const STATUS = { open: ['مفتوح', 'open'], review: ['قيد المراجعة', 'review'], mitigated: ['مخفف', 'ok'], closed: ['مغلق', 'closed'] };
+  const CAT = { operations: 'تشغيل', finance: 'مالي', security: 'أمن', legal: 'قانوني', hr: 'موارد بشرية' };
+  function catLabel(c) { return CAT[c] || c || ''; }
   const CTL = { ok: ['مطابق', 'ok'], review: ['مراجعة', 'review'], overdue: ['متأخر', 'overdue'] };
 
   function ensureData() {
@@ -64,10 +66,10 @@
     if (!Array.isArray(r.events)) r.events = [];
     if (!r._seeded && !r.risks.length && !r.controls.length) {
       r._seeded = true;
-      r.risks.push(stamp({ id: uid('risk'), title: 'غياب مراجعة دورية لصلاحيات الصفحات الحساسة', category: 'security', owner: 'الإدارة', severity: 'high', likelihood: 3, status: 'open', reviewDate: plusDays(7), mitigation: 'مراجعة المستخدمين والصلاحيات وربط أي صفحة مالية أو رواتب بصلاحية واضحة.', evidence: 'PermissionService + سجل الدخول', createdAt: new Date().toISOString(), createdBy: 'system' }));
-      r.risks.push(stamp({ id: uid('risk'), title: 'تأخر إغلاق إجراءات الجودة أو التسليم', category: 'operations', owner: 'مدير التشغيل', severity: 'medium', likelihood: 2, status: 'review', reviewDate: plusDays(14), mitigation: 'متابعة أوامر العمل المتأخرة وتحويل الانحرافات إلى مهام.', evidence: 'Route Health + أوامر العمل + QC', createdAt: new Date().toISOString(), createdBy: 'system' }));
+      r.risks.push(stamp({ id: uid('risk'), title: 'غياب مراجعة دورية لصلاحيات الصفحات الحساسة', category: 'security', owner: 'الإدارة', severity: 'high', likelihood: 3, status: 'open', reviewDate: plusDays(7), mitigation: 'مراجعة المستخدمين والصلاحيات وربط أي صفحة مالية أو رواتب بصلاحية واضحة.', evidence: 'خدمة الصلاحيات + سجل الدخول', createdAt: new Date().toISOString(), createdBy: 'system' }));
+      r.risks.push(stamp({ id: uid('risk'), title: 'تأخر إغلاق إجراءات الجودة أو التسليم', category: 'operations', owner: 'مدير التشغيل', severity: 'medium', likelihood: 2, status: 'review', reviewDate: plusDays(14), mitigation: 'متابعة أوامر العمل المتأخرة وتحويل الانحرافات إلى مهام.', evidence: 'فحص صحة النظام + أوامر العمل + الجودة', createdAt: new Date().toISOString(), createdBy: 'system' }));
       r.controls.push(stamp({ id: uid('ctl'), name: 'اعتماد العمليات الحساسة', domain: 'AI / Finance / Payroll', owner: 'المدير', frequency: 'مستمر', status: 'ok', nextReview: plusDays(30), evidence: 'AI queue approval gate', note: 'الأدوات الحساسة تبقى approval-gated.' }));
-      r.controls.push(stamp({ id: uid('ctl'), name: 'فحص صحة المسارات', domain: 'System integrity', owner: 'IT', frequency: 'بعد كل دفعة', status: 'review', nextReview: todayISO(), evidence: 'Route Health', note: 'تشغيل الفحص بعد أي إضافة صفحة.' }));
+      r.controls.push(stamp({ id: uid('ctl'), name: 'فحص صحة المسارات', domain: 'سلامة النظام', owner: 'تقنية المعلومات', frequency: 'بعد كل دفعة', status: 'review', nextReview: todayISO(), evidence: 'فحص صحة النظام', note: 'تشغيل الفحص بعد أي إضافة صفحة.' }));
     }
   }
   function R() { ensureData(); return O().riskCompliance; }
@@ -106,7 +108,7 @@
     rows.sort((a, b) => (SEV[b.severity]?.[2] || 0) - (SEV[a.severity]?.[2] || 0) || String(a.reviewDate).localeCompare(String(b.reviewDate)));
     const body = rows.map(x => {
       const sev = SEV[x.severity] || SEV.medium, st = STATUS[x.status] || STATUS.open, due = daysUntil(x.reviewDate);
-      return '<tr><td><span class="risk-title">' + esc(x.title) + '</span><span class="risk-sub">' + esc(x.mitigation || '') + '</span></td><td>' + esc(x.owner || '-') + '<span class="risk-sub">' + esc(x.category || '') + '</span></td><td>' + chip(sev[0], sev[1]) + '<span class="risk-sub">احتمال ' + esc(x.likelihood || 1) + '/5</span></td><td>' + chip(st[0], st[1]) + '<span class="risk-sub">' + esc(x.reviewDate || '-') + (due != null ? ' · ' + esc(due) + ' يوم' : '') + '</span></td><td><span class="risk-sub">' + esc(x.evidence || '-') + '</span></td><td><div class="risk-actions">' + (x.status !== 'mitigated' ? '<button class="risk-mini ok" onclick="riskSetStatus(\'' + x.id + '\',\'mitigated\')">تخفيف</button>' : '') + (x.status !== 'review' ? '<button class="risk-mini warn" onclick="riskSetStatus(\'' + x.id + '\',\'review\')">مراجعة</button>' : '') + (x.status !== 'closed' ? '<button class="risk-mini" onclick="riskSetStatus(\'' + x.id + '\',\'closed\')">إغلاق</button>' : '') + '</div></td></tr>';
+      return '<tr><td><span class="risk-title">' + esc(x.title) + '</span><span class="risk-sub">' + esc(x.mitigation || '') + '</span></td><td>' + esc(x.owner || '-') + '<span class="risk-sub">' + esc(catLabel(x.category)) + '</span></td><td>' + chip(sev[0], sev[1]) + '<span class="risk-sub">احتمال ' + esc(x.likelihood || 1) + '/5</span></td><td>' + chip(st[0], st[1]) + '<span class="risk-sub">' + esc(x.reviewDate || '-') + (due != null ? ' · ' + esc(due) + ' يوم' : '') + '</span></td><td><span class="risk-sub">' + esc(x.evidence || '-') + '</span></td><td><div class="risk-actions">' + (x.status !== 'mitigated' ? '<button class="risk-mini ok" onclick="riskSetStatus(\'' + x.id + '\',\'mitigated\')">تخفيف</button>' : '') + (x.status !== 'review' ? '<button class="risk-mini warn" onclick="riskSetStatus(\'' + x.id + '\',\'review\')">مراجعة</button>' : '') + (x.status !== 'closed' ? '<button class="risk-mini" onclick="riskSetStatus(\'' + x.id + '\',\'closed\')">إغلاق</button>' : '') + '</div></td></tr>';
     }).join('') || '<tr><td colspan="6" class="risk-sub">لا توجد مخاطر بهذا الفلتر.</td></tr>';
     return '<div class="risk-panel"><div class="risk-panel-head"><h3><i class="fa-solid fa-list"></i> سجل المخاطر</h3><select onchange="riskSetFilter(this.value)" class="form-input"><option value="all">كل السجل</option><option value="critical">حرج</option><option value="high">عال</option><option value="review">قيد المراجعة</option><option value="security">أمن</option><option value="finance">مالي</option><option value="operations">تشغيل</option></select></div><div class="risk-table-wrap"><table class="risk-table"><thead><tr><th>الخطر</th><th>المالك</th><th>الشدة</th><th>الحالة/المراجعة</th><th>الدليل</th><th>إجراء</th></tr></thead><tbody>' + body + '</tbody></table></div></div>';
   }

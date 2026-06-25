@@ -89,8 +89,8 @@
     }
     if (!l.members.length && !l._seeded) {
       l._seeded = true;
-      const m1 = stamp({ id: uid('mem'), name: 'سارة محمد', phone: '0770xxxxxxx', points: 0, totalEarned: 0, totalRedeemed: 0, joinedAt: todayISO(), createdAt: new Date().toISOString() });
-      const m2 = stamp({ id: uid('mem'), name: 'أحمد العبيدي', phone: '0780xxxxxxx', points: 0, totalEarned: 0, totalRedeemed: 0, joinedAt: todayISO(), createdAt: new Date().toISOString() });
+      const m1 = stamp({ id: uid('mem'), name: 'سارة محمد', phone: '07700000000', points: 0, totalEarned: 0, totalRedeemed: 0, joinedAt: todayISO(), createdAt: new Date().toISOString() });
+      const m2 = stamp({ id: uid('mem'), name: 'أحمد العبيدي', phone: '07800000000', points: 0, totalEarned: 0, totalRedeemed: 0, joinedAt: todayISO(), createdAt: new Date().toISOString() });
       l.members.push(m1, m2);
       earn(m1.id, 30, 'مشتريات افتتاحية', 'seed');
       earn(m2.id, 8, 'زيارة أولى', 'seed');

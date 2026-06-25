@@ -236,15 +236,30 @@
   }
 
   const Auth = root.OctagonAuth || root.PentagonAuth || {
-    _currentUserId: localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id') || 'system',
+    _currentUserId: (typeof localStorage !== 'undefined' && (localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id'))) || '',
     getCurrentUser() {
       const db = DB.getCached();
       if (!db) return { id: 'system', name: 'النظام', groups: ['system.admin'] };
+      
+      const devMode = (root.devModeAuthSwitcher) || (db.omni && db.omni.adminSettings && db.omni.adminSettings.devModeAuthSwitcher) || false;
+      const currentId = this._currentUserId || (devMode ? 'system' : '');
+
+      if (!currentId) {
+        return {
+          id: 'guest',
+          name: 'زائر',
+          displayName: 'زائر',
+          groups: [],
+          role: 'guest',
+          roleId: 'guest'
+        };
+      }
+
       const users = userListFromDb(db);
       const roles = Array.isArray(db.omni?.roles) ? db.omni.roles : [];
       const activeUsers = users.filter(u => u && u.is_active !== false && u.status !== 'inactive');
-      const requestedId = this._currentUserId === 'system' ? 'system_admin' : this._currentUserId;
-      const user = activeUsers.find(u => u.id === requestedId) || activeUsers.find(u => u.id === this._currentUserId);
+      const requestedId = currentId === 'system' ? 'system_admin' : currentId;
+      const user = activeUsers.find(u => u.id === requestedId) || activeUsers.find(u => u.id === currentId);
       const fallback = activeUsers.find(u => u.id === 'system_admin') || activeUsers.find(u => u.id === 'system');
       const resolved = user || fallback || {
         id: 'system',
@@ -259,10 +274,16 @@
       return resolved;
     },
     setCurrentUser(userId) {
-      this._currentUserId = userId;
-      localStorage.setItem('octagon_user_id', userId);
-      localStorage.removeItem('pentagon_user_id');
-      console.log(`Auth: User switched to ${userId}`);
+      this._currentUserId = userId || '';
+      if (typeof localStorage !== 'undefined') {
+        if (userId) {
+          localStorage.setItem('octagon_user_id', userId);
+        } else {
+          localStorage.removeItem('octagon_user_id');
+        }
+        localStorage.removeItem('pentagon_user_id');
+      }
+      console.log(`Auth: User switched to ${userId || 'guest'}`);
     }
   };
   root.OctagonAuth = Auth;

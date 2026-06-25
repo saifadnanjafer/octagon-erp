@@ -78,8 +78,8 @@ const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.has
 const CASES = [
   ['sidebar remains at the Phase 6 baseline',
     () => sidebarPages.size, 86],
-  ['mapped sidebar pages remain at the Phase 6E batch count',
-    () => mappedSidebarPages.length, 53],
+  ['mapped sidebar pages remain at the Phase 6H batch count',
+    () => mappedSidebarPages.length, 86],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',
@@ -123,7 +123,7 @@ const CASES = [
   ['viewer_user cannot access route health',
     () => PS.checkPage('route_health', SEEDED_USERS.viewer_user), false],
   ['unmapped normal pages still explain local/dev default allow',
-    () => outcomeForPage('calculator', SEEDED_USERS.viewer_user), 'default_allowed'],
+    () => outcomeForPage('some_random_page', SEEDED_USERS.viewer_user), 'default_allowed'],
 
   ['finance_manager can create bank reconciliation',
     () => outcomeForAction('banking.reconciliation.create', SEEDED_USERS.finance_manager), 'allowed'],

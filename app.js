@@ -1320,8 +1320,73 @@ function ensureNavGroupForPage(page) {
   setNavGroupOpen(group, true);
 }
 
-function switchAuthUser(userId) {
+// Phase 6H password crypto utilities
+async function hashPassword(password, salt) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + salt);
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function generateSalt() {
+  const array = new Uint8Array(16);
+  window.crypto.getRandomValues(array);
+  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function showPasswordPrompt(displayName) {
+  const html = `
+    <label style="font-size:14px; color:var(--text); display:block; margin-bottom:8px;">يرجى إدخال كلمة المرور للمستخدم: <strong>${escapeHtml(displayName)}</strong></label>
+    <input type="password" id="omniPromptPassword" class="form-input" style="width:100%;" autofocus placeholder="كلمة المرور">
+  `;
+  return showOmniModal("تسجيل الدخول", html, (bodyEl) => {
+    return bodyEl.querySelector('#omniPromptPassword').value;
+  });
+}
+
+function showFirstTimePasswordSetup(displayName) {
+  const html = `
+    <p style="font-size:13px; color:var(--text-muted); margin: 0 0 12px 0; line-height:1.5;">هذه هي المرة الأولى التي تقوم فيها بتسجيل الدخول كـ <strong>${escapeHtml(displayName)}</strong>. يرجى إعداد كلمة مرور جديدة لتأمين الحساب.</p>
+    <label style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">كلمة المرور الجديدة</label>
+    <input type="password" id="omniNewPassword" class="form-input" style="width:100%; margin-bottom: 12px;" placeholder="كلمة المرور الجديدة">
+    <label style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:4px;">تأكيد كلمة المرور</label>
+    <input type="password" id="omniConfirmPassword" class="form-input" style="width:100%;" placeholder="تأكيد كلمة المرور">
+  `;
+  return showOmniModal("إعداد كلمة المرور لأول مرة", html, (bodyEl) => {
+    const pass = bodyEl.querySelector('#omniNewPassword').value;
+    const conf = bodyEl.querySelector('#omniConfirmPassword').value;
+    if (!pass) {
+      showToast("كلمة المرور لا يمكن أن تكون فارغة.", "warning");
+      return false;
+    }
+    if (pass !== conf) {
+      showToast("كلمات المرور غير متطابقة.", "warning");
+      return false;
+    }
+    return pass;
+  });
+}
+
+async function switchAuthUser(userId) {
   if (!window.PentagonAuth) return;
+  const currentId = window.PentagonAuth._currentUserId;
+  if (userId === currentId) return;
+
+  // Dev Mode flag
+  const devMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
+  
+  // Current user admin check
+  const currentUser = window.PentagonAuth.getCurrentUser();
+  const isAdmin = currentUser && Array.isArray(currentUser.groups) && currentUser.groups.includes('system.admin');
+
+  if (!devMode && !isAdmin) {
+    showToast("تبديل المستخدمين متاح للمدير فقط.", "danger");
+    const sel = document.getElementById('authUserSwitcher');
+    if (sel) sel.value = currentId;
+    return;
+  }
+
   window.PentagonAuth.setCurrentUser(userId);
   showToast(`تم التبديل إلى: ${window.PentagonAuth.getCurrentUser()?.name || userId}`, 'success');
 
@@ -1370,8 +1435,19 @@ function refreshAuthUserSwitcher() {
   const fallback = sorted.find(u => u.id === 'system_admin')?.id || sorted.find(u => u.id === 'system')?.id || sorted[0]?.id || 'system';
   const nextId = sorted.some(u => u.id === currentId) ? currentId : fallback;
   sel.value = nextId;
+
+  // Disable switcher if current user is not admin and not devMode
+  const currentUser = window.PentagonAuth?.getCurrentUser();
+  const isAdmin = currentUser && Array.isArray(currentUser.groups) && currentUser.groups.includes('system.admin');
+  const devMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
+  sel.disabled = !isAdmin && !devMode;
+
   if (window.PentagonAuth && nextId && nextId !== window.PentagonAuth._currentUserId) {
-    window.PentagonAuth.setCurrentUser(nextId);
+    const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
+    const devMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
+    if (stored || devMode) {
+      window.PentagonAuth.setCurrentUser(nextId);
+    }
   }
 
   // 2. Login Overlay List
@@ -1397,8 +1473,7 @@ function checkLoginStatus() {
   const intro = document.getElementById('introScreen');
   if (!overlay) return;
   const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
-  const hasUser = !!window.PentagonAuth?.getCurrentUser?.();
-  if (!stored && !hasUser) {
+  if (!stored) {
     if (intro) {
       intro.style.display = 'flex';
       overlay.style.display = 'none';
@@ -1452,17 +1527,109 @@ async function ensureOctagonLibrary(key, globalName, errorMessage) {
   return lib;
 }
 
-function performLogin(userId) {
-  switchAuthUser(userId);
-  const overlay = document.getElementById('loginOverlay');
-  if (overlay) overlay.style.display = 'none';
-  const intro = document.getElementById('introScreen');
-  if (intro) intro.style.display = 'none';
+async function performLogin(userId) {
+  try {
+    if (!omni || !Array.isArray(omni.users)) {
+      normalizeOmniUsersRolesPermissions();
+    }
+    let userObj = omni.users.find(u => u.id === userId);
+    if (!userObj) {
+      userObj = { id: userId, displayName: userId, name: userId, role: userId };
+      omni.users.push(userObj);
+      saveData();
+    }
+    
+    if (!userObj.passwordHash) {
+      const password = await showFirstTimePasswordSetup(userObj.displayName || userObj.name || userId);
+      if (password === null) return; // User cancelled
+      const salt = generateSalt();
+      userObj.passwordSalt = salt;
+      userObj.passwordHash = await hashPassword(password, salt);
+      userObj.passwordAlgo = 'SHA-256';
+      userObj.passwordSetAt = new Date().toISOString();
+      userObj.mustChangePassword = false;
+      saveData();
+      
+      if (typeof recordOmniHistoryEvent === 'function') {
+        recordOmniHistoryEvent({
+          module: 'auth',
+          source: 'login',
+          action: 'password_setup',
+          title: 'إعداد كلمة المرور لأول مرة',
+          actorId: userObj.id,
+          actorName: userObj.displayName || userObj.name,
+          status: 'success',
+          payload: { userId: userObj.id }
+        });
+      }
+      showToast("تم إعداد كلمة المرور بنجاح وتسجيل الدخول", "success");
+    } else {
+      const password = await showPasswordPrompt(userObj.displayName || userObj.name || userId);
+      if (password === null) return; // User cancelled
+      const hashed = await hashPassword(password, userObj.passwordSalt);
+      if (hashed !== userObj.passwordHash) {
+        showToast("كلمة المرور غير صحيحة.", "danger");
+        if (typeof recordOmniHistoryEvent === 'function') {
+          recordOmniHistoryEvent({
+            module: 'auth',
+            source: 'login',
+            action: 'login_failed',
+            title: 'فشل تسجيل الدخول - كلمة مرور خاطئة',
+            actorId: userObj.id,
+            actorName: userObj.displayName || userObj.name,
+            status: 'failed',
+            payload: { userId: userObj.id }
+          });
+        }
+        return;
+      }
+      
+      if (typeof recordOmniHistoryEvent === 'function') {
+        recordOmniHistoryEvent({
+          module: 'auth',
+          source: 'login',
+          action: 'login_success',
+          title: 'تسجيل الدخول بنجاح',
+          actorId: userObj.id,
+          actorName: userObj.displayName || userObj.name,
+          status: 'success',
+          payload: { userId: userObj.id }
+        });
+      }
+    }
+    
+    showToast("تم تسجيل الدخول بنجاح.", "success");
+    userObj.sessionStartedAt = new Date().toISOString();
+    
+    switchAuthUser(userId);
+    const overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.style.display = 'none';
+    const intro = document.getElementById('introScreen');
+    if (intro) intro.style.display = 'none';
+  } catch (err) {
+    console.error("Login flow error:", err);
+    showToast("حدث خطأ أثناء تسجيل الدخول", "danger");
+  }
 }
 
 function performLogout() {
   if (window.PentagonAuth) {
-    window.PentagonAuth._currentUserId = 'system';
+    if (typeof recordOmniHistoryEvent === 'function') {
+      const user = window.PentagonAuth.getCurrentUser();
+      if (user && user.id !== 'guest') {
+        recordOmniHistoryEvent({
+          module: 'auth',
+          source: 'logout',
+          action: 'logout_success',
+          title: 'تسجيل الخروج',
+          actorId: user.id,
+          actorName: user.displayName || user.name,
+          status: 'success',
+          payload: { userId: user.id }
+        });
+      }
+    }
+    window.PentagonAuth._currentUserId = '';
     localStorage.removeItem('octagon_user_id');
     localStorage.removeItem('pentagon_user_id');
     localStorage.removeItem('omni_current_user_id');
@@ -1472,7 +1639,7 @@ function performLogout() {
   const intro = document.getElementById('introScreen');
   if (intro) intro.style.display = 'flex';
   document.body.classList.add('login-required');
-  showToast('تم تسجيل الخروج', 'info');
+  showToast('تم تسجيل الخروج.', 'info');
 }
 
 window.showLoginFromIntro = function () {
@@ -1541,6 +1708,24 @@ function enforceUIPermissions() {
 }
 
 function switchPage(page) {
+  const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
+  if (!stored) {
+    const isDevMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
+    if (!isDevMode) {
+      const allowedGroups = window.PermissionService?.pagePermissions[page] || [];
+      const mapped = window.PermissionService ? Object.prototype.hasOwnProperty.call(window.PermissionService.pagePermissions, page) : false;
+      if (mapped && allowedGroups.length > 0) {
+        showToast("يجب تسجيل الدخول أولاً.", "warning");
+        const overlay = document.getElementById('loginOverlay');
+        const intro = document.getElementById('introScreen');
+        if (intro) intro.style.display = 'none';
+        if (overlay) overlay.style.display = 'flex';
+        document.body.classList.add('login-required');
+        return;
+      }
+    }
+  }
+
   const allowed = !window.PermissionService || window.PermissionService.checkPage(page);
   console.debug(`switchPage: "${page}" allowed=${allowed}`);
   if (!allowed) {
@@ -20296,6 +20481,10 @@ async function editAdminUser(userId) {
           ${permissionsCheckboxes}
         </div>
       </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <input type="checkbox" id="adminUserResetPassword" style="cursor:pointer;">
+        <label for="adminUserResetPassword" style="font-size:13px; color:var(--text); cursor:pointer;">إعادة تعيين كلمة المرور (إجبار المستخدم على تعيينها عند الدخول القادم)</label>
+      </div>
     </div>
   `;
   
@@ -20305,12 +20494,13 @@ async function editAdminUser(userId) {
     const status = body.querySelector('#adminUserEditStatus').value;
     const checkedCheckboxes = body.querySelectorAll('input[name="adminUserPerm"]:checked');
     const userPerms = Array.from(checkedCheckboxes).map(cb => cb.value);
+    const resetPassword = body.querySelector('#adminUserResetPassword').checked;
     
     if (!name) {
       showToast('يرجى إدخال اسم المستخدم', 'error');
       return false;
     }
-    return { name, roleId, status, permissions: userPerms };
+    return { name, roleId, status, permissions: userPerms, resetPassword };
   });
   
   if (!result) return;
@@ -20319,6 +20509,13 @@ async function editAdminUser(userId) {
   user.roleId = result.roleId;
   user.status = result.status;
   user.permissions = result.permissions;
+  
+  if (result.resetPassword) {
+    delete user.passwordHash;
+    delete user.passwordSalt;
+    user.mustChangePassword = true;
+    showToast('تمت إعادة تعيين كلمة مرور المستخدم. سيُطلب منه تعيين كلمة مرور جديدة عند تسجيل الدخول القادم.', 'info');
+  }
   
   addSystemLog('system', `تم تعديل مستخدم: ${user.name} بدور: ${user.roleId}`, 'info', 'admin_panel', user.id);
   saveData();

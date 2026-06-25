@@ -196,3 +196,16 @@ Coverage confirmed:
 Remaining:
 - The legal templates are operational drafts; final local-law wording still needs owner/legal review before official adoption.
 - Next hardening should connect due asset/equipment maintenance into automatic recurring Task Manager generation, not only visible due alerts/manual request buttons.
+
+## Phase 6H Authentication Hardening and Page Mapping (2026-06-25)
+
+Built:
+- **Client-Side SHA-256 Auth**: Implemented client-side salting and SHA-256 password hashing in `app.js` using browser-native Web Crypto API. Password hashes are stored under `passwordHash` and `passwordSalt` inside `database.json`.
+- **First-Time Password Setup & Prompts**: Users are forced to set up a new password on their first login or switch. Login prompts now request password validation.
+- **Guest State Enforced**: Introduced a proper `guest` user role (`groups: []`) when no user is logged in (`localStorage.getItem('octagon_user_id')` is empty), blocking access to all non-public pages with the message: `"يجب تسجيل الدخول أولاً."`.
+- **Switcher Gating**: Restricted the `#authUserSwitcher` dropdown. In non-admin, non-devMode environments, switching is blocked with `"تبديل المستخدمين متاح للمدير فقط."`.
+- **Admin Password Reset**: Added a password reset option in the admin panel user edit dialog that clears the password hash, forcing a new setup on the next login.
+- **Page Hardening batch 2**: Mapped all remaining 33 previously unmapped pages in `services/permissionService.js` (Smart Calculator, MRP, Point of Sale, industry verticals, kiosk, workshop TV, help manuals, etc.). Mapped sidebar pages count is now 86/86.
+- **Toasts**: Integrated Arabic-first feedback for login success (`"تم تسجيل الدخول بنجاح."`), logout (`"تم تسجيل الخروج."`), incorrect passwords, and switcher restrictions.
+- **Regression suite**: Updated the 35-test regression suite to expect `86` mapped pages and verified all checks pass successfully.
+- **Verification**: Verified via `node --check` syntax checks, regression harness tests (35/35), and browser smoke checks.

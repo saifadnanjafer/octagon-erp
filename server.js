@@ -23,6 +23,9 @@ const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per
 let lastAutoBackupMs = 0;
 const BACKUP_TAG_RE = /[^a-z0-9_]/gi;
 const BACKUP_DIR = process.env.OCTAGON_BACKUP_DIR ? path.resolve(process.env.OCTAGON_BACKUP_DIR) : __dirname;
+const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+const authSessions = new Map();
+const authFailures = new Map();
 const V5_PRESERVED_TOP_LEVEL_KEYS = [
   '_schema_version',
   '_migrated_at',
@@ -146,6 +149,33 @@ function sendJson(res, status, payload) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.writeHead(status);
   res.end(JSON.stringify(payload));
+}
+
+function parseCookies(req) {
+  const out = {};
+  String(req.headers.cookie || '').split(';').forEach(part => {
+    const idx = part.indexOf('=');
+    if (idx === -1) return;
+    const key = part.slice(0, idx).trim();
+    const val = part.slice(idx + 1).trim();
+    if (key) out[key] = decodeURIComponent(val);
+  });
+  return out;
+}
+
+function setAuthCookie(res, token, maxAgeSeconds) {
+  const cookie = `octagon_session=${encodeURIComponent(token || '')}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.max(0, Number(maxAgeSeconds) || 0)}`;
+  res.setHeader('Set-Cookie', cookie);
+}
+
+function sanitizeAuthUser(user) {
+  if (!user || typeof user !== 'object') return null;
+  const copy = { ...user };
+  delete copy.passwordHash;
+  delete copy.passwordSalt;
+  delete copy.passwordAlgo;
+  delete copy.passwordSetAt;
+  return copy;
 }
 
 function readRequestBody(req, limit = WHATSAPP_BODY_LIMIT) {
@@ -831,9 +861,10 @@ function topLevelCollections(db) {
 }
 
 function verifyBackupAgainstLive(backupPath) {
-  const live = readJsonFile(DB_FILE);
+  const live = dbSync ? loadDbFromSqlite(dbSync) : readJsonFile(DB_FILE);
   const backup = readJsonFile(backupPath);
   const errors = [];
+  const appendOnlyCollections = new Set(['audit_log']);
   if (backup._schema_version !== live._schema_version) {
     errors.push(`schema mismatch: backup=${backup._schema_version} live=${live._schema_version}`);
   }
@@ -842,8 +873,13 @@ function verifyBackupAgainstLive(backupPath) {
   liveCollections.forEach(collection => {
     if (!backupCollections.includes(collection)) {
       errors.push(`backup missing collection: ${collection}`);
-    } else if ((backup[collection] || []).length !== (live[collection] || []).length) {
-      errors.push(`count mismatch on ${collection}: backup=${(backup[collection] || []).length} live=${(live[collection] || []).length}`);
+    } else {
+      const backupCount = (backup[collection] || []).length;
+      const liveCount = (live[collection] || []).length;
+      if (appendOnlyCollections.has(collection) && liveCount >= backupCount) return;
+      if (backupCount !== liveCount) {
+        errors.push(`count mismatch on ${collection}: backup=${backupCount} live=${liveCount}`);
+      }
     }
   });
   return errors;
@@ -875,8 +911,249 @@ function createDatabaseBackup(tag = 'manual') {
   };
 }
 
+function userListFromDb(db) {
+  const topUsers = Array.isArray(db.users) ? db.users : [];
+  const omniUsers = db.omni && Array.isArray(db.omni.users) ? db.omni.users : [];
+  const seen = new Set();
+  return [...topUsers, ...omniUsers].filter(user => {
+    if (!user || !user.id || seen.has(user.id)) return false;
+    seen.add(user.id);
+    return user.is_active !== false && user.status !== 'inactive';
+  });
+}
+
+function roleListFromDb(db) {
+  return db.omni && Array.isArray(db.omni.roles) ? db.omni.roles : [];
+}
+
+function enrichAuthUser(db, user) {
+  if (!user) return null;
+  const roles = roleListFromDb(db);
+  const role = roles.find(item => item && (item.id === user.roleId || item.id === user.role));
+  const groups = Array.from(new Set([...(role?.groups || []), ...(user.groups || [])]));
+  return sanitizeAuthUser({
+    ...user,
+    groups,
+    roleId: user.roleId || role?.id || user.role || '',
+    role: user.role || role?.id || user.roleId || '',
+    name: user.displayName || user.name || user.id,
+  });
+}
+
+function appendServerAudit(db, event = {}) {
+  ensureDbShape(db);
+  if (!Array.isArray(db.audit_log)) db.audit_log = [];
+  if (!Array.isArray(db.omni.historyLedger)) db.omni.historyLedger = [];
+  const now = new Date().toISOString();
+  const base = {
+    id: makeId('audit'),
+    timestamp: now,
+    date: now,
+    module: event.module || 'auth',
+    source: event.source || 'server',
+    action: event.action || 'server_event',
+    title: event.title || event.action || 'Server event',
+    status: event.status || 'logged',
+    result: event.result || event.status || 'logged',
+    risk: event.risk || 'medium',
+    actorId: event.actorId || event.userId || 'unknown',
+    actorName: event.actorName || event.userName || event.actorId || 'unknown',
+    user_id: event.actorId || event.userId || 'unknown',
+    user_name: event.actorName || event.userName || event.actorId || 'unknown',
+    payload: sanitizeLedgerPayload(event.payload || {}),
+  };
+  db.audit_log.unshift({ ...base, event_type: base.action, record_id: base.payload?.userId || '' });
+  db.omni.historyLedger.unshift({ ...base, entityType: 'auth_session', entityId: base.payload?.userId || '' });
+  if (db.audit_log.length > 5000) db.audit_log.length = 5000;
+  if (db.omni.historyLedger.length > 5000) db.omni.historyLedger.length = 5000;
+}
+
+function authSessionFromRequest(req) {
+  const token = parseCookies(req).octagon_session;
+  if (!token) return null;
+  const session = authSessions.get(token);
+  if (!session) return null;
+  if (Date.now() > session.expiresAt) {
+    authSessions.delete(token);
+    return null;
+  }
+  return { token, session };
+}
+
+function hashClientPassword(password, salt) {
+  return crypto.createHash('sha256').update(String(password || '') + String(salt || '')).digest('hex');
+}
+
+function gitSnapshot() {
+  const cp = require('child_process');
+  const run = args => {
+    try { return cp.execFileSync('git', args, { cwd: __dirname, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
+    catch (_) { return ''; }
+  };
+  return {
+    branch: run(['branch', '--show-current']),
+    head: run(['rev-parse', '--short', 'HEAD']),
+    latest: run(['log', '--oneline', '--decorate', '--max-count=1']),
+    statusShort: run(['status', '--short']),
+    remote: run(['remote', '-v']),
+  };
+}
+
+function routeStaticSnapshot() {
+  const htmlPath = path.join(__dirname, 'index.html');
+  const viewsDir = path.join(__dirname, 'views');
+  const html = fs.existsSync(htmlPath) ? fs.readFileSync(htmlPath, 'utf8') : '';
+  const nav = [...html.matchAll(/data-page="([^"]+)"/g)].map(match => match[1]);
+  const markers = [...html.matchAll(/<!--\s*view:([^\s]+)\s*-->/g)].map(match => match[1]);
+  const viewFiles = fs.existsSync(viewsDir) ? fs.readdirSync(viewsDir).filter(file => file.endsWith('.html')).map(file => file.replace(/\.html$/, '')) : [];
+  const duplicateDataPages = [...new Set(nav.filter((item, idx) => nav.indexOf(item) !== idx))];
+  const missingViewFiles = [...new Set(nav)].filter(page => !viewFiles.includes(page));
+  const missingMarkers = [...new Set(nav)].filter(page => !markers.includes(page));
+  return {
+    navCount: new Set(nav).size,
+    navTotal: nav.length,
+    viewMarkerCount: new Set(markers).size,
+    viewMarkerTotal: markers.length,
+    viewFiles: viewFiles.length,
+    duplicateDataPages,
+    missingViewFiles,
+    missingMarkers,
+  };
+}
+
+function backupStatusSnapshot() {
+  const backups = [];
+  try {
+    fs.readdirSync(BACKUP_DIR).forEach(file => {
+      if (!/^database\.backup\..+\.json$/.test(file)) return;
+      const full = path.join(BACKUP_DIR, file);
+      const stat = fs.statSync(full);
+      backups.push({ file, bytes: stat.size, mtimeMs: stat.mtimeMs, mtime: stat.mtime.toISOString() });
+    });
+  } catch (_) {}
+  backups.sort((a, b) => b.mtimeMs - a.mtimeMs);
+  let databaseParse = { ok: false, error: 'database.json not found' };
+  try {
+    JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    databaseParse = { ok: true };
+  } catch (error) {
+    databaseParse = { ok: false, error: error.message };
+  }
+  return {
+    backupDir: BACKUP_DIR,
+    count: backups.length,
+    latest: backups[0] || null,
+    databaseParse,
+  };
+}
+
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+
+  if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
+    const active = authSessionFromRequest(req);
+    if (!active) return sendJson(res, 200, { authenticated: false, user: null });
+    try {
+      const db = loadDbForMutation();
+      const user = userListFromDb(db).find(item => item.id === active.session.userId);
+      return sendJson(res, 200, {
+        authenticated: !!user,
+        user: enrichAuthUser(db, user),
+        expiresAt: new Date(active.session.expiresAt).toISOString(),
+      });
+    } catch (error) {
+      return sendJson(res, 500, { authenticated: false, error: error.message || 'Session check failed' });
+    }
+  }
+
+  if (requestUrl.pathname === '/api/auth/login' && req.method === 'POST') {
+    readRequestBody(req).then(body => {
+      let parsed = {};
+      try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+      const userId = String(parsed.userId || '').trim();
+      const password = String(parsed.password || '');
+      const db = loadDbForMutation();
+      const user = userListFromDb(db).find(item => item.id === userId);
+      const failure = authFailures.get(userId) || { count: 0, lockedUntil: 0 };
+      if (failure.lockedUntil && Date.now() < failure.lockedUntil) {
+        appendServerAudit(db, { action: 'login_locked', status: 'blocked', actorId: userId || 'unknown', actorName: user?.displayName || user?.name || userId || 'unknown', payload: { userId, lockedUntil: new Date(failure.lockedUntil).toISOString() } });
+        saveDb(db);
+        return sendJson(res, 423, { success: false, locked: true, error: 'Account temporarily locked after failed logins' });
+      }
+      if (!user) {
+        appendServerAudit(db, { action: 'login_failed', status: 'failed', actorId: userId || 'unknown', actorName: userId || 'unknown', payload: { userId, reason: 'user_not_found' } });
+        saveDb(db);
+        return sendJson(res, 401, { success: false, error: 'Invalid credentials' });
+      }
+      if (!user.passwordHash || !user.passwordSalt) {
+        appendServerAudit(db, { action: 'login_setup_required', status: 'blocked', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id } });
+        saveDb(db);
+        return sendJson(res, 409, { success: false, setupRequired: true, error: 'Password setup required in local client flow' });
+      }
+      const expected = String(user.passwordHash || '');
+      const actual = hashClientPassword(password, user.passwordSalt);
+      if (actual !== expected) {
+        failure.count += 1;
+        if (failure.count >= 5) failure.lockedUntil = Date.now() + (15 * 60 * 1000);
+        authFailures.set(user.id, failure);
+        appendServerAudit(db, { action: 'login_failed', status: 'failed', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id, failedCount: failure.count } });
+        saveDb(db);
+        return sendJson(res, 401, { success: false, error: 'Invalid credentials', failedCount: failure.count, locked: !!failure.lockedUntil });
+      }
+      authFailures.delete(user.id);
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = Date.now() + AUTH_SESSION_TTL_MS;
+      authSessions.set(token, { userId: user.id, createdAt: Date.now(), expiresAt });
+      user.lastServerLoginAt = new Date().toISOString();
+      appendServerAudit(db, { action: 'login_success', status: 'success', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id, expiresAt: new Date(expiresAt).toISOString() } });
+      saveDb(db);
+      setAuthCookie(res, token, Math.floor(AUTH_SESSION_TTL_MS / 1000));
+      return sendJson(res, 200, { success: true, authenticated: true, user: enrichAuthUser(db, user), expiresAt: new Date(expiresAt).toISOString() });
+    }).catch(error => sendJson(res, 500, { success: false, error: error.message || 'Login failed' }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/auth/logout' && req.method === 'POST') {
+    const active = authSessionFromRequest(req);
+    if (active) authSessions.delete(active.token);
+    try {
+      const db = loadDbForMutation();
+      appendServerAudit(db, { action: 'logout_success', status: 'success', actorId: active?.session?.userId || 'unknown', actorName: active?.session?.userId || 'unknown', payload: { userId: active?.session?.userId || '' } });
+      saveDb(db);
+    } catch (_) {}
+    setAuthCookie(res, '', 0);
+    return sendJson(res, 200, { success: true });
+  }
+
+  if (requestUrl.pathname === '/api/release/status' && req.method === 'GET') {
+    return sendJson(res, 200, {
+      app: 'Octagon ERP',
+      phase: 'Phase 7A',
+      generatedAt: new Date().toISOString(),
+      git: gitSnapshot(),
+      route: routeStaticSnapshot(),
+      backup: backupStatusSnapshot(),
+      auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: authSessions.size },
+    });
+  }
+
+  if (requestUrl.pathname === '/api/backup/verify' && req.method === 'GET') {
+    try {
+      const requested = requestUrl.searchParams.get('file') || '';
+      const status = backupStatusSnapshot();
+      const file = requested || status.latest?.file || '';
+      if (!file) return sendJson(res, 404, { success: false, error: 'No backup file available to verify' });
+      if (file.includes('..') || file.includes('/') || file.includes('\\') || path.basename(file) !== file) {
+        return sendJson(res, 403, { success: false, error: 'Invalid backup filename' });
+      }
+      const target = path.join(BACKUP_DIR, file);
+      if (!fs.existsSync(target)) return sendJson(res, 404, { success: false, error: 'Backup file not found' });
+      const errors = verifyBackupAgainstLive(target);
+      return sendJson(res, 200, { success: errors.length === 0, file, errors });
+    } catch (error) {
+      return sendJson(res, 500, { success: false, error: error.message || 'Backup verification failed' });
+    }
+  }
 
   if (requestUrl.pathname === '/api/whatsapp/webhook' && req.method === 'GET') {
     const mode = requestUrl.searchParams.get('hub.mode');

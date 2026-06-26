@@ -209,3 +209,27 @@ Built:
 - **Toasts**: Integrated Arabic-first feedback for login success (`"تم تسجيل الدخول بنجاح."`), logout (`"تم تسجيل الخروج."`), incorrect passwords, and switcher restrictions.
 - **Regression suite**: Updated the 35-test regression suite to expect `86` mapped pages and verified all checks pass successfully.
 - **Verification**: Verified via `node --check` syntax checks, regression harness tests (35/35), and browser smoke checks.
+
+## Phase 7A Stabilization Foundation (2026-06-26)
+
+Stage 1 pending closure:
+- Committed the master completion roadmap as `13c0df8 add master erp completion roadmap`.
+- Committed the previously pending `app.js` maintenance auto-task delta as `6d9fb61 preserve pending app js maintenance task delta`.
+- No remote Git is configured. A local runtime backup was created and verified through the existing backup API after fixing SQLite/source verification.
+
+Built without adding sidebar pages:
+- `server.js`: added a minimal server-side auth/session bridge (`/api/auth/login`, `/api/auth/session`, `/api/auth/logout`) using existing password hash/salt data and HttpOnly session cookie storage. Also added `/api/release/status` and read-only `/api/backup/verify`.
+- `app.js`: existing login/logout flow now establishes/clears the server session when credentials are available while preserving the local-first fallback and first-time password setup.
+- `modules/phase7a-stabilization.js`: injects Phase 7A panels into existing Security Center, Deploy Ready, Data Quality, and Finance surfaces. It adds audit review, backup verification, release readiness, deployment-blocker checks, and a period-lock foundation.
+- `.gitignore`: ignores local `database.backup.*.json` snapshots and temporary `.phase7a-server.pid`.
+
+Governance:
+- AI/Jarvis remains approval-gated for high-risk finance, payroll, stock, legal, security, and QC actions.
+- Period locks are not auto-created. Finance manager/system admin can lock/unlock periods manually; new `addFinanceTransaction()` calls are blocked when dated inside a locked period unless an explicit internal override is passed.
+- Backup restore remains manual/destructive; Phase 7A added dry-run verification only.
+
+Validation checkpoint:
+- Static route baseline remains 86 sidebar pages, 86 view markers, and 86 view files.
+- Permission regression remains 35/35.
+- `database.json` parse passed.
+- Temporary validation server used port `8091`; the existing `8080` process was stale and returned 404 for the new endpoint.

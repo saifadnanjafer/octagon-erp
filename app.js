@@ -1498,6 +1498,26 @@ function checkLoginStatus() {
   }
 }
 
+async function syncServerAuthSession(userId, password) {
+  if (!userId || !password) return null;
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, password })
+    });
+    const payload = await res.json().catch(() => ({}));
+    window.__octagonServerSession = payload;
+    if (!res.ok && !payload.setupRequired) {
+      console.warn('Server auth session bridge failed:', payload.error || res.status);
+    }
+    return payload;
+  } catch (err) {
+    console.warn('Server auth session bridge unavailable:', err.message || err);
+    return null;
+  }
+}
+
 function hideLoadingOverlay(reason = 'ready') {
   if (typeof window.hideOctagonLoadingOverlay === 'function') {
     window.hideOctagonLoadingOverlay(reason);
@@ -1549,6 +1569,7 @@ async function performLogin(userId) {
       userObj.passwordSetAt = new Date().toISOString();
       userObj.mustChangePassword = false;
       saveData();
+      await syncServerAuthSession(userId, password);
       
       if (typeof recordOmniHistoryEvent === 'function') {
         recordOmniHistoryEvent({
@@ -1583,6 +1604,7 @@ async function performLogin(userId) {
         }
         return;
       }
+      await syncServerAuthSession(userId, password);
       
       if (typeof recordOmniHistoryEvent === 'function') {
         recordOmniHistoryEvent({
@@ -1613,6 +1635,9 @@ async function performLogin(userId) {
 }
 
 function performLogout() {
+  try {
+    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  } catch (_) {}
   if (window.PentagonAuth) {
     if (typeof recordOmniHistoryEvent === 'function') {
       const user = window.PentagonAuth.getCurrentUser();

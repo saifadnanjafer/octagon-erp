@@ -8,6 +8,8 @@ node_modules/
 *.sqlite3
 *.bak
 *.prev
+database.backup.*.json
+.phase7a-server.pid
 db-backups/*.db
 db-backups/*.json
 db-backups/*.bak

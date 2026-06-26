@@ -218,7 +218,7 @@ Do not build:
 Status: DONE
 Priority: P1
 Blocked by: None
-Commit: `6a260fd`
+Commit: `6499528`
 
 Goal:
 Build the first commercial ERP feature expansion after safety closure.

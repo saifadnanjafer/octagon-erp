@@ -1099,6 +1099,8 @@ function gitSnapshot() {
   };
 }
 
+const INTERNAL_ROUTELESS_VIEWS = ['manager_approvals', 'mobile_inventory_count'];
+
 function routeStaticSnapshot() {
   const htmlPath = path.join(__dirname, 'index.html');
   const viewsDir = path.join(__dirname, 'views');
@@ -1106,6 +1108,7 @@ function routeStaticSnapshot() {
   const nav = [...html.matchAll(/data-page="([^"]+)"/g)].map(match => match[1]);
   const markers = [...html.matchAll(/<!--\s*view:([^\s]+)\s*-->/g)].map(match => match[1]);
   const viewFiles = fs.existsSync(viewsDir) ? fs.readdirSync(viewsDir).filter(file => file.endsWith('.html')).map(file => file.replace(/\.html$/, '')) : [];
+  const viewFilesCounted = viewFiles.filter(name => !INTERNAL_ROUTELESS_VIEWS.includes(name)).length;
   const duplicateDataPages = [...new Set(nav.filter((item, idx) => nav.indexOf(item) !== idx))];
   const missingViewFiles = [...new Set(nav)].filter(page => !viewFiles.includes(page));
   const missingMarkers = [...new Set(nav)].filter(page => !markers.includes(page));
@@ -1114,12 +1117,16 @@ function routeStaticSnapshot() {
     navTotal: nav.length,
     viewMarkerCount: new Set(markers).size,
     viewMarkerTotal: markers.length,
-    viewFiles: viewFiles.length,
+    viewFiles: viewFilesCounted,
+    viewFilesTotal: viewFiles.length,
+    viewFilesCounted: viewFilesCounted,
+    internalViewFiles: INTERNAL_ROUTELESS_VIEWS,
     duplicateDataPages,
     missingViewFiles,
     missingMarkers,
   };
 }
+
 
 function backupStatusSnapshot() {
   const backups = [];

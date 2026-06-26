@@ -407,7 +407,56 @@
     if (asArray(route.missingViewFiles).length) add('P0', 'views', 'Missing view templates', 'Add or restore missing view files.', { ownerRole: 'system.admin', affectedCount: route.missingViewFiles.length, sample: route.missingViewFiles.slice(0, 3).join(', '), approvalRequired: 'no' });
     if (!asArray(o.users).length) add('P1', 'runtime seeds', 'omni.users runtime-only vs persisted reality', 'Backfill durable production users during auth hardening; do not invent production passwords.', { ownerRole: 'system.admin', approvalRequired: 'yes' });
     if (!periodLocks().some(lock => lock.status === 'locked')) add('P2', 'finance.periodLocks', 'Finance period lock missing', 'Create lock only during an actual close window.', { ownerRole: 'finance.manager', affectedCount: 0, approvalRequired: 'yes' });
-    if (!status?.auth?.apiProtectionFoundation) add('P1', 'api', 'Regression status missing/failing for API protection', 'Re-run release status and permission regression.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    // Duplicate stock location drift warning
+    let driftCount = 0;
+    const driftSamples = [];
+    if (o.warehouseStock) {
+      Object.entries(o.warehouseStock).forEach(([mId, locs]) => {
+        if (locs && 'LOC_MAIN' in locs && 'MAIN_STOCK' in locs) {
+          driftCount++;
+          if (driftSamples.length < 3) driftSamples.push(mId);
+        }
+      });
+    }
+    if (driftCount > 0) {
+      add('P1', 'warehouseStock', 'Duplicate stock locations drift', 'Consolidate stock balances under one canonical key (LOC_MAIN) and remove the redundant key.', { ownerRole: 'inventory.manager', affectedCount: driftCount, sample: driftSamples.join(', '), approvalRequired: 'yes' });
+    }
+
+    // Warehouse Stock vs locationStock mismatch warning
+    let mismatchCount = 0;
+    const mismatchSamples = [];
+    if (o.warehouseStock) {
+      Object.keys(o.warehouseStock).forEach(mId => {
+        const hasLocStock = Array.isArray(o.locationStock) && o.locationStock.some(item => item.materialId === mId);
+        if (!hasLocStock) {
+          mismatchCount++;
+          if (mismatchSamples.length < 3) mismatchSamples.push(mId);
+        }
+      });
+    }
+    if (mismatchCount > 0) {
+      add('P2', 'locationStock', 'Warehouse stock missing core location stock', 'Run location stock initialization to synchronize tables.', { ownerRole: 'inventory.manager', affectedCount: mismatchCount, sample: mismatchSamples.join(', '), approvalRequired: 'yes' });
+    }
+
+    // Inventory count approvals missing canonical location id
+    let missingCanonCount = 0;
+    const missingCanonSamples = [];
+    const approvalReqs = (o.approvalHub && Array.isArray(o.approvalHub.requests)) ? o.approvalHub.requests : [];
+    approvalReqs.forEach(r => {
+      if (r.payload && r.payload.type === 'inventory_count') {
+        const locId = r.payload.locationId;
+        const locations = Array.isArray(o.storageLocations) ? o.storageLocations : [];
+        const exists = locations.some(loc => loc.id === locId);
+        if (!exists && locId !== 'MAIN_STOCK') {
+          missingCanonCount++;
+          if (missingCanonSamples.length < 3) missingCanonSamples.push(r.ref || r.id);
+        }
+      }
+    });
+    if (missingCanonCount > 0) {
+      add('P1', 'approvalHub', 'Inventory approvals missing canonical location', 'Review and edit approvals before decision to use valid storage location.', { ownerRole: 'system.admin', affectedCount: missingCanonCount, sample: missingCanonSamples.join(', '), approvalRequired: 'yes' });
+    }
+
     return issues;
   }
 

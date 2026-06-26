@@ -33,6 +33,16 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
+  const isLocalhost = 
+    self.location.hostname === 'localhost' || 
+    self.location.hostname === '127.0.0.1' || 
+    self.location.hostname === '[::1]';
+
+  // Defensive bypass for local development to prevent trapping in cache
+  if (isLocalhost) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   // Skip caching for API calls (sensitive reads and writes must be live)
   if (requestUrl.pathname.startsWith('/api/')) {

@@ -119,39 +119,143 @@
     save(); editing = null; render();
   };
 
+  function isApproverAi() {
+    try {
+      const u = window.PentagonAuth && window.PentagonAuth.getCurrentUser && window.PentagonAuth.getCurrentUser();
+      if (u) {
+        const name = (u.displayName || u.name || u.id || '').toLowerCase();
+        return name.includes('jarvis') || name.includes('ai') || name.includes('assistant') || name.includes('bot');
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function resolveInventoryCountLocation(requestedLocationId) {
+    const omni = O();
+    const locations = Array.isArray(omni.storageLocations) ? omni.storageLocations : [];
+    
+    // 1. If requestedLocationId exists in storageLocations, it is canonical
+    const exists = locations.some(loc => loc.id === requestedLocationId);
+    if (exists) return requestedLocationId;
+
+    // 2. Normalize MAIN_STOCK to LOC_MAIN if LOC_MAIN exists
+    if (requestedLocationId === 'MAIN_STOCK') {
+      const hasLocMain = locations.some(loc => loc.id === 'LOC_MAIN');
+      if (hasLocMain) return 'LOC_MAIN';
+      
+      const hasLocMainInStock = omni.warehouseStock && Object.values(omni.warehouseStock).some(s => s && 'LOC_MAIN' in s);
+      if (hasLocMainInStock) return 'LOC_MAIN';
+    }
+
+    return requestedLocationId;
+  }
+
+  function syncWarehouseStockAndLocationStock(materialId, locationId, qty) {
+    const omni = O();
+    if (!omni) return;
+
+    // Update warehouseStock
+    if (!omni.warehouseStock) omni.warehouseStock = {};
+    if (!omni.warehouseStock[materialId]) omni.warehouseStock[materialId] = {};
+    omni.warehouseStock[materialId][locationId] = qty;
+
+    // Update locationStock (Core Array)
+    if (!Array.isArray(omni.locationStock)) omni.locationStock = [];
+    let row = omni.locationStock.find(item => item.materialId === materialId && item.locationId === locationId);
+    if (row) {
+      row.qty = qty;
+    } else {
+      omni.locationStock.push({
+        id: uid('lstock'),
+        materialId: materialId,
+        locationId: locationId,
+        qty: qty,
+        reservedQty: 0,
+        unit: (omni.materials && omni.materials.find(m => m.id === materialId)?.unit) || '',
+        companyId: omni.locationStock[0]?.companyId || '',
+        createdAt: new Date().toISOString()
+      });
+    }
+  }
+
+  function recalculateMaterialStockFromLocations(materialId) {
+    const omni = O();
+    if (!omni) return;
+    const m = omni.materials && omni.materials.find(x => x.id === materialId);
+    if (!m) return;
+
+    let sum = 0;
+    if (omni.warehouseStock && omni.warehouseStock[materialId]) {
+      const locs = omni.warehouseStock[materialId];
+      Object.keys(locs).forEach(k => {
+        // Prevent double counting if both LOC_MAIN and MAIN_STOCK are present
+        if (k === 'MAIN_STOCK' && 'LOC_MAIN' in locs) {
+          return;
+        }
+        sum += Number(locs[k]) || 0;
+      });
+    }
+    m.stock = sum;
+  }
+
   async function decide(id, status) {
     const r = reqById(id); if (!r || r.status !== 'pending') return;
     if (!isManager()) { toast('الموافقة/الرفض للمدير فقط', 'error'); return; }
+    if (isApproverAi()) { toast('الذكاء الاصطناعي لا يملك صلاحية الاعتماد', 'error'); return; }
     let note = '';
     if (status === 'rejected') { const answer = await omniPrompt('سبب الرفض (اختياري):', ''); note = answer == null ? '' : answer; }
     r.status = status; r.decidedAt = new Date().toISOString(); r.decidedBy = userName(); r.decisionNote = note;
     tenantStamp(r);
+    
     if (status === 'approved' && r.payload && r.payload.type === 'inventory_count') {
       try {
         const matId = r.payload.materialId;
-        const locId = r.payload.locationId;
+        const requestedLocId = r.payload.locationId;
         const qty = Number(r.payload.actualQty);
         const omni = O();
-        if (omni && omni.warehouseStock && omni.warehouseStock[matId]) {
-          omni.warehouseStock[matId][locId] = qty;
-          const mats = omni.materials || [];
-          const m = mats.find(x => x.id === matId);
-          if (m) {
-            let sum = 0;
-            Object.keys(omni.warehouseStock[matId]).forEach(k => { sum += Number(omni.warehouseStock[matId][k]) || 0; });
-            m.stock = sum;
+        
+        if (omni && isFinite(qty) && qty >= 0) {
+          const canonicalLocId = resolveInventoryCountLocation(requestedLocId);
+          
+          // Get current stock at canonical location to compute variance
+          let oldQty = 0;
+          if (omni.warehouseStock && omni.warehouseStock[matId] && omni.warehouseStock[matId][canonicalLocId] !== undefined) {
+            oldQty = Number(omni.warehouseStock[matId][canonicalLocId]) || 0;
+          } else if (Array.isArray(omni.locationStock)) {
+            const row = omni.locationStock.find(item => item.materialId === matId && item.locationId === canonicalLocId);
+            if (row) oldQty = Number(row.qty) || 0;
+          }
+          
+          const variance = qty - oldQty;
+          
+          // Sync warehouseStock and core locationStock
+          syncWarehouseStockAndLocationStock(matId, canonicalLocId, qty);
+          
+          // Recalculate totals
+          recalculateMaterialStockFromLocations(matId);
+          
+          // Write movement record if variance is nonzero
+          if (Math.abs(variance) > 0.0001) {
+            const m = omni.materials && omni.materials.find(x => x.id === matId);
             if (!Array.isArray(omni.locationMovements)) omni.locationMovements = [];
             omni.locationMovements.push({
               id: uid('mv'),
               materialId: matId,
-              materialName: m.name,
+              materialName: m ? m.name : matId,
               fromLocation: 'SYSTEM_ADJUST',
-              toLocation: locId,
-              qty: r.payload.varianceQty,
+              toLocation: canonicalLocId,
+              qty: variance,
               type: 'adjustment',
               createdAt: new Date().toISOString(),
               createdBy: userName(),
-              notes: `تسوية جرد معتمد: ${r.ref || ''}. ملاحظة: ${note}`
+              notes: `تسوية جرد معتمد: ${r.ref || ''}. ملاحظة: ${note}`,
+              oldQty: oldQty,
+              countedQty: qty,
+              variance: variance,
+              approvalId: id,
+              approvedBy: userName(),
+              approvedAt: new Date().toISOString(),
+              source: 'mobile_inventory_count'
             });
           }
         }

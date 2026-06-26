@@ -801,11 +801,24 @@
     `).join('');
   }
 
+  function wflResolveLocId(locId) {
+    ensureOmni();
+    const omni = O();
+    const locations = Array.isArray(omni.storageLocations) ? omni.storageLocations : [];
+    if (locId === 'MAIN_STOCK' && !locations.some(loc => loc.id === 'MAIN_STOCK')) {
+      const hasLocMain = locations.some(loc => loc.id === 'LOC_MAIN') || (omni.warehouseStock && Object.values(omni.warehouseStock).some(s => s && 'LOC_MAIN' in s));
+      if (hasLocMain) return 'LOC_MAIN';
+    }
+    return locId;
+  }
+
   window.wflOnCountMaterialChange = function () {
     ensureOmni();
     const matId = document.getElementById('wflCountMatId')?.value;
-    const locId = document.getElementById('wflCountLocId')?.value;
+    let locId = document.getElementById('wflCountLocId')?.value;
     if (!matId || !locId) return;
+
+    locId = wflResolveLocId(locId);
 
     const mats = O()?.materials || [];
     const stock = (O()?.warehouseStock && O()?.warehouseStock[matId] && O()?.warehouseStock[matId][locId] !== undefined) 

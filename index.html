@@ -2045,13 +2045,47 @@
     })();
   </script>
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(reg => console.log('ServiceWorker registered:', reg.scope))
-          .catch(err => console.error('ServiceWorker registration failed:', err));
-      });
-    }
+    (function() {
+      const isLocalhost = Boolean(
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname === '[::1]'
+      );
+      const urlParams = new URLSearchParams(window.location.search);
+      const forcePwa = urlParams.get('pwa') === '1' || localStorage.octagonEnablePwa === '1';
+
+      if ('serviceWorker' in navigator) {
+        if (isLocalhost && !forcePwa) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let registration of registrations) {
+              registration.unregister().then(success => {
+                if (success) {
+                  console.log('[Octagon SW] Unregistered existing service worker for local development.');
+                }
+              });
+            }
+          });
+          if ('caches' in window) {
+            caches.keys().then(keys => {
+              keys.forEach(key => {
+                if (key.startsWith('octagon-')) {
+                  caches.delete(key).then(() => {
+                    console.log(`[Octagon SW] Deleted local development cache: ${key}`);
+                  });
+                }
+              });
+            });
+          }
+        } else {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(reg => console.log('ServiceWorker registered:', reg.scope))
+              .catch(err => console.error('ServiceWorker registration failed:', err));
+          });
+        }
+      }
+    })();
   </script>
+
 </body>
 </html>

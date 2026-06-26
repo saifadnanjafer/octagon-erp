@@ -8,6 +8,14 @@
 
 ---
 
+## 2026-06-26 Status Addendum
+
+Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
+
+Current next queue item after Phase 7D is Phase 7E SaaS Productization Foundation.
+
+---
+
 ## 1. Executive Summary
 
 Octagon ERP is already a large Arabic-first, AI-first, local-first ERP with a real operating base: payroll, finance, cashbox, banking, inventory, workshop operations, MRP, QC, documents, legal print drafts, AI/Jarvis, role permissions, industry shells, and diagnostics. Static inspection and safe validation on 2026-06-26 found 86 sidebar pages, 86 view templates, 86 `views/*.html` files, 86/86 page permission coverage in the regression harness, and a 35/35 permission regression pass.

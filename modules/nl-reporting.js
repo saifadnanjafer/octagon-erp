@@ -16,6 +16,9 @@
     range: 'month',
     from: '',
     to: '',
+    activeDefinitionId: '',
+    viewMode: 'designer',
+    smartView: '',
     last: null
   };
 
@@ -72,11 +75,51 @@
   function ensureData() {
     const omni = O();
     if (!omni.nlReports || typeof omni.nlReports !== 'object') {
-      omni.nlReports = { saved: [], settings: { defaultRange: 'month' } };
+      omni.nlReports = { saved: [], definitions: [], schedules: [], settings: { defaultRange: 'month' } };
     }
     if (!Array.isArray(omni.nlReports.saved)) omni.nlReports.saved = [];
+    if (!Array.isArray(omni.nlReports.definitions)) omni.nlReports.definitions = [];
+    if (!Array.isArray(omni.nlReports.schedules)) omni.nlReports.schedules = [];
     if (!omni.nlReports.settings || typeof omni.nlReports.settings !== 'object') omni.nlReports.settings = {};
     return omni;
+  }
+
+  function currentUser() {
+    try { return window.PentagonAuth?.getCurrentUser?.() || window.OctagonAuth?.getCurrentUser?.() || {}; } catch (_) { return {}; }
+  }
+  function currentGroups() {
+    try {
+      if (window.PermissionService && typeof window.PermissionService.resolveGroups === 'function') {
+        return window.PermissionService.resolveGroups(currentUser());
+      }
+    } catch (_) {}
+    const role = currentUser().role || currentUser().roleId || '';
+    return role ? [role] : [];
+  }
+  function canUseDefinition(def) {
+    const groups = currentGroups();
+    const access = Array.isArray(def?.accessGroups) ? def.accessGroups.filter(Boolean) : [];
+    if (!access.length || access.includes('all')) return true;
+    return access.some(g => groups.includes(g));
+  }
+  function definitionAccessLabel(def) {
+    const access = Array.isArray(def?.accessGroups) ? def.accessGroups.filter(Boolean) : [];
+    if (!access.length || access.includes('all')) return 'كل المستخدمين';
+    return access.join(', ');
+  }
+  function selectedAccessGroups() {
+    return Array.from(document.querySelectorAll('.nlr-access-check:checked')).map(el => el.value).filter(Boolean);
+  }
+  function selectedColumns() {
+    return Array.from(document.querySelectorAll('.nlr-col-check:checked')).map(el => el.value).filter(Boolean);
+  }
+  function activeSmartView() {
+    const value = (document.getElementById('nlrSmartView') || {}).value || state.smartView || '';
+    if (!value) return {};
+    const parts = value.split(':');
+    if (parts[0] === 'intent') return { intentType: parts[1] };
+    if (parts[0] === 'minRows') return { minRows: Number(parts[1]) || 0 };
+    return {};
   }
 
   function rangeFromState() {
@@ -320,7 +363,102 @@
     result.range = range;
     result.notes = result.notes || [];
     if (!result.rows.length) result.notes.push('لا توجد بيانات كافية ضمن النطاق الحالي. غيّر النطاق أو أضف بيانات تشغيلية.');
+    applySmartView(result);
     return result;
+  }
+
+  function applySmartView(result) {
+    const view = activeSmartView();
+    if (!view || !result) return result;
+    if (view.intentType && result.type !== view.intentType) {
+      result.notes = result.notes || [];
+      result.notes.push('Smart View: هذا التقرير لا يطابق نوع العرض المحفوظ، لذلك بقيت البيانات كما هي.');
+      return result;
+    }
+    if (view.minRows && Array.isArray(result.rows)) {
+      result.rows = result.rows.slice(0, view.minRows);
+      result.notes = result.notes || [];
+      result.notes.push('Smart View: تم عرض أول ' + view.minRows + ' صف فقط.');
+    }
+    return result;
+  }
+
+  function activeDefinition() {
+    const id = state.activeDefinitionId || (document.getElementById('nlrDefinition') || {}).value || '';
+    return (ensureData().nlReports.definitions || []).find(def => def.id === id) || null;
+  }
+
+  function definitionFromForm(existing) {
+    const result = state.last || runReport(state.query);
+    return {
+      id: existing?.id || uid('rdef'),
+      title: ((document.getElementById('nlrDefinitionTitle') || {}).value || result.title || 'Report').trim(),
+      query: ((document.getElementById('nlrQuery') || {}).value || state.query || '').trim(),
+      range: (document.getElementById('nlrRange') || {}).value || state.range || 'month',
+      from: (document.getElementById('nlrFrom') || {}).value || '',
+      to: (document.getElementById('nlrTo') || {}).value || '',
+      reportType: result.type || 'pnl',
+      columns: selectedColumns(),
+      accessGroups: selectedAccessGroups(),
+      smartView: activeSmartView(),
+      schedule: {
+        enabled: false,
+        cadence: (document.getElementById('nlrScheduleCadence') || {}).value || 'manual',
+        note: 'placeholder_only_no_background_jobs'
+      },
+      updatedAt: new Date().toISOString(),
+      createdAt: existing?.createdAt || new Date().toISOString(),
+      ownerId: currentUser().id || currentUser().username || 'local'
+    };
+  }
+
+  function applyDefinition(def) {
+    if (!def) return;
+    if (!canUseDefinition(def)) {
+      toast('لا تملك صلاحية تشغيل هذا التقرير المحفوظ', 'warning');
+      return;
+    }
+    state.activeDefinitionId = def.id;
+    state.query = def.query || state.query;
+    state.range = def.range || state.range;
+    state.from = def.from || '';
+    state.to = def.to || '';
+    state.smartView = def.smartView?.intentType ? 'intent:' + def.smartView.intentType : def.smartView?.minRows ? 'minRows:' + def.smartView.minRows : '';
+    state.last = runReport(state.query);
+    state.last.definitionId = def.id;
+    state.last.definitionTitle = def.title;
+  }
+
+  function reportColumns(result) {
+    const def = activeDefinition();
+    const rows = result?.rows || [];
+    const available = rows.length ? Object.keys(rows[0]).filter(k => !['source'].includes(k)) : ['label'];
+    const chosen = def && Array.isArray(def.columns) ? def.columns.filter(k => available.includes(k)) : [];
+    return (chosen.length ? chosen : available).slice(0, 8);
+  }
+
+  function excelHtml(result) {
+    const keys = reportColumns(result);
+    const rows = result?.rows || [];
+    return '<html><head><meta charset="utf-8"></head><body dir="rtl"><table><thead><tr>'
+      + keys.map(k => '<th>' + esc(labelFor(k)) + '</th>').join('')
+      + '</tr></thead><tbody>'
+      + rows.map(row => '<tr>' + keys.map(k => '<td>' + esc(row[k]) + '</td>').join('') + '</tr>').join('')
+      + '</tbody></table></body></html>';
+  }
+
+  function printHtml(result) {
+    const keys = reportColumns(result);
+    const rows = result?.rows || [];
+    return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>'
+      + esc(result?.title || 'Octagon report')
+      + '</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin:0 0 6px}p{color:#555}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{border:1px solid #bbb;padding:8px;text-align:right;font-size:12px}th{background:#eee}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}.kpis div{border:1px solid #ccc;padding:10px}.kpis b{display:block;font-size:16px}</style></head><body><h1>'
+      + esc(result?.title || '')
+      + '</h1><p>' + esc(result?.range?.label || '') + ' | ' + esc(result?.range?.start || '') + ' - ' + esc(result?.range?.end || '') + '</p><section class="kpis">'
+      + (result?.kpis || []).map(k => '<div><b>' + esc(k[1]) + '</b><span>' + esc(k[0]) + '</span></div>').join('')
+      + '</section><table><thead><tr>' + keys.map(k => '<th>' + esc(labelFor(k)) + '</th>').join('') + '</tr></thead><tbody>'
+      + rows.map(row => '<tr>' + keys.map(k => '<td>' + rowValue(row[k]) + '</td>').join('') + '</tr>').join('')
+      + '</tbody></table><script>window.onload=function(){window.print()}<\/script></body></html>';
   }
 
   function host() { return document.getElementById('nlReportsBody'); }
@@ -343,7 +481,7 @@
   }
   function renderTable(result) {
     const rows = (result.rows || []).slice(0, 60);
-    const keys = rows.length ? Object.keys(rows[0]).filter(k => !['source'].includes(k)).slice(0, 7) : ['label'];
+    const keys = reportColumns(result);
     return `<div class="nlr-table-wrap"><table class="nlr-table"><thead><tr>${keys.map(k => `<th>${esc(labelFor(k))}</th>`).join('')}</tr></thead><tbody>${
       rows.map(r => `<tr>${keys.map(k => `<td>${rowValue(r[k])}</td>`).join('')}</tr>`).join('') || '<tr><td>لا توجد صفوف</td></tr>'
     }</tbody></table></div>`;
@@ -364,7 +502,9 @@
         <div><h3>${esc(result.title)}</h3><p>${esc(result.intent.label)} · ${esc(result.range.label)} · ${esc(result.range.start)} إلى ${esc(result.range.end)}</p></div>
         <div class="nlr-actions">
           <button class="nlr-btn ghost" onclick="nlrExport('csv')"><i class="fa-solid fa-file-csv"></i> CSV</button>
+          <button class="nlr-btn ghost" onclick="nlrExport('xls')"><i class="fa-solid fa-file-excel"></i> Excel</button>
           <button class="nlr-btn ghost" onclick="nlrExport('json')"><i class="fa-solid fa-code"></i> JSON</button>
+          <button class="nlr-btn ghost" onclick="nlrPrint()"><i class="fa-solid fa-print"></i> طباعة</button>
           <button class="nlr-btn" onclick="nlrSaveSnapshot()"><i class="fa-solid fa-bookmark"></i> حفظ</button>
         </div>
       </div>
@@ -374,6 +514,69 @@
         <div class="nlr-card"><h4><i class="fa-solid fa-database"></i> خطة التقرير</h4><pre>${esc(result.plan || '')}</pre>${(result.notes || []).map(n => `<p class="nlr-note">${esc(n)}</p>`).join('')}</div>
       </div>
       ${renderTable(result)}
+    </section>`;
+  }
+  function renderDesigner(result) {
+    const data = ensureData().nlReports;
+    const defs = data.definitions || [];
+    const def = activeDefinition();
+    const keys = result?.rows?.length ? Object.keys(result.rows[0]).filter(k => !['source'].includes(k)) : ['label', 'amount', 'count', 'date'];
+    const selected = def?.columns?.length ? def.columns : keys.slice(0, 7);
+    const access = def?.accessGroups?.length ? def.accessGroups : ['all'];
+    const accessOptions = [
+      ['all', 'الكل'],
+      ['system.admin', 'مدير النظام'],
+      ['finance.manager', 'مدير مالي'],
+      ['finance.user', 'مالية'],
+      ['workshop.manager', 'مدير ورشة'],
+      ['workshop.user', 'تشغيل']
+    ];
+    return `<section class="nlr-designer">
+      <div class="nlr-card">
+        <h4><i class="fa-solid fa-sliders"></i> Report Designer</h4>
+        <label>التقرير المحفوظ
+          <select id="nlrDefinition" onchange="nlrLoadDefinition(this.value)">
+            <option value="">تقرير جديد / بدون تعريف</option>
+            ${defs.map(d => `<option value="${attr(d.id)}" ${state.activeDefinitionId === d.id ? 'selected' : ''} ${canUseDefinition(d) ? '' : 'disabled'}>${esc(d.title)} - ${esc(definitionAccessLabel(d))}</option>`).join('')}
+          </select>
+        </label>
+        <label>اسم التعريف<input id="nlrDefinitionTitle" value="${attr(def?.title || result?.title || '')}" placeholder="مثال: ربحية العملاء الشهرية"></label>
+        <div class="nlr-checks">
+          <span>الأعمدة</span>
+          ${keys.map(k => `<label><input class="nlr-col-check" type="checkbox" value="${attr(k)}" ${selected.includes(k) ? 'checked' : ''}> ${esc(labelFor(k))}</label>`).join('')}
+        </div>
+        <div class="nlr-checks">
+          <span>صلاحية التشغيل</span>
+          ${accessOptions.map(([value, label]) => `<label><input class="nlr-access-check" type="checkbox" value="${attr(value)}" ${access.includes(value) ? 'checked' : ''}> ${esc(label)}</label>`).join('')}
+        </div>
+        <div class="nlr-designer-actions">
+          <button class="nlr-btn" onclick="nlrSaveDefinition()"><i class="fa-solid fa-floppy-disk"></i> حفظ التعريف</button>
+          <button class="nlr-btn ghost" onclick="nlrDraftDefinition()"><i class="fa-solid fa-wand-magic-sparkles"></i> مسودة AI</button>
+          <button class="nlr-btn ghost" onclick="nlrDeleteDefinition()"><i class="fa-solid fa-trash"></i> أرشفة</button>
+        </div>
+      </div>
+      <div class="nlr-card">
+        <h4><i class="fa-solid fa-table-list"></i> Smart Views</h4>
+        <label>عرض ذكي
+          <select id="nlrSmartView" onchange="nlrRun()">
+            <option value="" ${state.smartView === '' ? 'selected' : ''}>بدون فلتر إضافي</option>
+            <option value="intent:pnl" ${state.smartView === 'intent:pnl' ? 'selected' : ''}>P&L فقط</option>
+            <option value="intent:inventory" ${state.smartView === 'intent:inventory' ? 'selected' : ''}>المخزون فقط</option>
+            <option value="intent:customers" ${state.smartView === 'intent:customers' ? 'selected' : ''}>العملاء فقط</option>
+            <option value="minRows:10" ${state.smartView === 'minRows:10' ? 'selected' : ''}>أول 10 صفوف</option>
+            <option value="minRows:25" ${state.smartView === 'minRows:25' ? 'selected' : ''}>أول 25 صف</option>
+          </select>
+        </label>
+        <label>جدولة مستقبلية
+          <select id="nlrScheduleCadence">
+            <option value="manual">يدوي فقط</option>
+            <option value="weekly">أسبوعي - placeholder</option>
+            <option value="monthly">شهري - placeholder</option>
+          </select>
+        </label>
+        <p class="nlr-note">الجدولة هنا تعريف آمن فقط ولا تنشئ مهام خلفية أو ترسل تقارير تلقائياً.</p>
+        <div class="nlr-policy"><b>AI policy</b><span>AI يقترح صياغة التقرير فقط. لا يغيّر بيانات مالية أو مخزون أو رواتب.</span></div>
+      </div>
     </section>`;
   }
   function renderSaved() {
@@ -408,6 +611,7 @@
           <button class="nlr-btn ghost" onclick="switchPage('tax_compliance')"><i class="fa-solid fa-file-invoice"></i> الضرائب</button>
         </div>
       </div>
+      ${renderDesigner(state.last)}
       ${renderResult(state.last)}
       ${renderSaved()}
     </div>`;
@@ -418,7 +622,7 @@
 
   function csvFor(result) {
     const rows = result.rows || [];
-    const keys = rows.length ? Object.keys(rows[0]) : ['label'];
+    const keys = reportColumns(result);
     const lines = [keys.join(',')];
     rows.forEach(row => lines.push(keys.map(k => '"' + String(row[k] == null ? '' : row[k]).replace(/"/g, '""') + '"').join(',')));
     return lines.join('\n');
@@ -436,6 +640,7 @@
     state.range = (document.getElementById('nlrRange') || {}).value || state.range;
     state.from = (document.getElementById('nlrFrom') || {}).value || '';
     state.to = (document.getElementById('nlrTo') || {}).value || '';
+    state.smartView = (document.getElementById('nlrSmartView') || {}).value || '';
     state.last = runReport(state.query);
     render();
   };
@@ -445,7 +650,16 @@
     if (!state.last) return;
     const stamp = new Date().toISOString().slice(0, 10);
     if (fmt === 'json') download('octagon-report-' + stamp + '.json', JSON.stringify(state.last, null, 2), 'application/json;charset=utf-8');
+    else if (fmt === 'xls') download('octagon-report-' + stamp + '.xls', excelHtml(state.last), 'application/vnd.ms-excel;charset=utf-8');
     else download('octagon-report-' + stamp + '.csv', csvFor(state.last), 'text/csv;charset=utf-8');
+  };
+  window.nlrPrint = function () {
+    if (!state.last) return;
+    const w = window.open('', '_blank');
+    if (!w) return toast('تعذر فتح نافذة الطباعة', 'warning');
+    w.document.open();
+    w.document.write(printHtml(state.last));
+    w.document.close();
   };
   window.nlrSaveSnapshot = function () {
     if (!state.last) return;
@@ -462,6 +676,53 @@
   window.nlrLoadSaved = function (id) {
     const hit = (ensureData().nlReports.saved || []).find(s => s.id === id);
     if (hit) { state.last = hit; state.query = hit.query || state.query; render(); }
+  };
+  window.nlrSaveDefinition = function () {
+    const data = ensureData().nlReports;
+    const existing = activeDefinition();
+    const def = definitionFromForm(existing);
+    if (!def.title || !def.query) return toast('أدخل اسم التقرير والسؤال أولاً', 'warning');
+    if (existing) {
+      const idx = data.definitions.findIndex(item => item.id === existing.id);
+      if (idx >= 0) data.definitions[idx] = def;
+    } else {
+      data.definitions.unshift(def);
+    }
+    state.activeDefinitionId = def.id;
+    if (!data.schedules.some(item => item.definitionId === def.id)) {
+      data.schedules.unshift({ id: uid('rsch'), definitionId: def.id, cadence: def.schedule.cadence, enabled: false, status: 'placeholder', createdAt: new Date().toISOString() });
+    }
+    if (typeof window.recordOmniHistoryEvent === 'function') {
+      try { window.recordOmniHistoryEvent({ module: 'nl_reports', source: 'phase7d_report_designer', action: 'definition_saved', title: def.title, payload: { type: def.reportType, accessGroups: def.accessGroups, schedule: def.schedule } }); } catch (_) {}
+    }
+    save();
+    render();
+    toast('تم حفظ تعريف التقرير', 'success');
+  };
+  window.nlrLoadDefinition = function (id) {
+    state.activeDefinitionId = id || '';
+    const def = activeDefinition();
+    if (def) applyDefinition(def);
+    render();
+  };
+  window.nlrDeleteDefinition = function () {
+    const data = ensureData().nlReports;
+    const def = activeDefinition();
+    if (!def) return toast('لا يوجد تعريف محدد', 'warning');
+    def.archivedAt = new Date().toISOString();
+    def.is_active = false;
+    data.definitions = data.definitions.filter(item => item.id !== def.id);
+    state.activeDefinitionId = '';
+    save();
+    render();
+    toast('تمت أرشفة تعريف التقرير', 'success');
+  };
+  window.nlrDraftDefinition = function () {
+    const result = state.last || runReport(state.query);
+    const title = (result.intent?.label || result.title || 'Report') + ' - ' + rangeFromState().label;
+    const titleInput = document.getElementById('nlrDefinitionTitle');
+    if (titleInput) titleInput.value = title;
+    toast('تم توليد مسودة تعريف آمنة من السؤال الحالي', 'success');
   };
 
   function activatePage() {

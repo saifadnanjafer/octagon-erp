@@ -252,3 +252,20 @@ Remaining risks:
 - No remote Git is configured; manual next commands remain `git remote add origin <REMOTE_URL>` and `git push -u origin master` after Saif creates a remote repository.
 - Server sessions are now enforced for sensitive APIs outside local/dev, but this is still not a full external identity provider.
 - Browser admin-panel smoke may still require an existing known test login; do not create real passwords only for smoke.
+
+## Phase 7D Report Designer and Smart Views (2026-06-26)
+
+Built without adding sidebar pages or resetting `database.json`:
+- `modules/nl-reporting.js`: the existing Smart Reports page now includes a Report Designer with saved report definitions, selected columns, role-group access metadata, smart-view filters, client-side CSV/JSON/Excel export, Arabic print layout, and a safe disabled scheduler placeholder under `omni.nlReports`.
+- AI drafting remains read-only: the "مسودة AI" control only drafts a report definition title from the current report intent and does not mutate finance, payroll, stock, or source report data.
+- `modules/nl-reporting.css`: added responsive designer, access chips, and safety-policy styling.
+- `index.html`: bumped `nl-reporting` CSS/JS cache tokens.
+
+Validation checkpoint:
+- Static route baseline remains 86 sidebar pages, 86 view markers, and 86 counted view files.
+- Permission regression remains 35/35.
+- `database.json` parse passed and the live database diff was restored to clean after a validation server normalized it.
+- In-app Browser smoke was attempted; hardened login/first-time password setup prevented completing authenticated navigation without mutating a database. A temporary server on port `8093` used a copied DB for smoke isolation, but the final acceptance relies on static syntax/regression/route checks until a known test login is available.
+
+Next automatic phase:
+- Phase 7E SaaS Productization Foundation.

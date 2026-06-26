@@ -215,9 +215,10 @@ Do not build:
 
 ### Phase 7D — Report Designer and Smart Views
 
-Status: PENDING
+Status: DONE
 Priority: P1
 Blocked by: None
+Commit: `6a260fd`
 
 Goal:
 Build the first commercial ERP feature expansion after safety closure.
@@ -236,10 +237,11 @@ Implementation rule:
 Use existing `nl_reports`, analytics, and reporting surfaces where possible. Do not add duplicate reporting pages unless justified.
 
 Acceptance:
-* no route baseline break
-* report definitions are saved safely
-* AI only drafts/explains reports
-* exports are safe and audited if needed
+* no route baseline break: PASS, release route status remains 86 public nav / 86 markers / 86 counted view files / 88 total view files.
+* report definitions are saved safely: PASS, definitions persist only under `omni.nlReports.definitions`, with role groups, selected columns, smart-view metadata, and disabled scheduler metadata.
+* AI only drafts/explains reports: PASS, "مسودة AI" only drafts a definition title from the current report intent; it does not mutate finance, payroll, stock, or report data.
+* exports are safe and audited if needed: PASS, CSV/JSON/Excel/print are client-side exports; saved definitions/snapshots record history events when history is available.
+* browser smoke: LIMITED, static checks passed and a temporary smoke server was launched on port 8093 with a copied DB; the in-app browser could not complete authenticated navigation without first-time password setup, so live interaction was not used to mutate the real database.
 
 Commit:
 `phase7d report designer and smart views`
@@ -461,9 +463,9 @@ Commit:
 
 The next action is:
 
-`Phase 7D — Report Designer and Smart Views`
+`Phase 7E — SaaS Productization Foundation`
 
-Do not execute any other phase before Phase 7D unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7E unless Saif explicitly changes priority.
 
 ---
 

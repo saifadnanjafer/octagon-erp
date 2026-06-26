@@ -248,11 +248,53 @@ Commit:
 
 ---
 
+### Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation
+
+Status: PENDING
+Priority: P0-CUSTOMER-DEMO
+Blocked by:
+* completion of the currently active phase
+* no destructive data migration
+* no route baseline break
+
+Automatic rule:
+After the current active phase completes, this Fleet Demo phase may be executed before broad later expansion, because it is a real customer demo opportunity.
+
+Goal:
+Create a strong ERP demo/presentation foundation for controlling a fleet, tracking fuel usage, detecting possible diesel/kaz theft, applying speed limits by geographic zones, and showing all vehicles/equipment under control from one dashboard.
+
+Scope:
+* Fleet Command Map using a local mock map/grid if no map SDK exists.
+* Vehicle / Equipment Register with fuel, driver/operator, device, sensor, department, project, and site placeholders.
+* Geographic Zones / Geofences for workshop, project site, city road, highway, restricted area, fuel station, and depot rules.
+* Speed Limit Policies By Geographic Zone, deterministic first, with AI explanation only.
+* Fuel Ledger for refill, consumption, suspicious drop, correction, sensor, and dispensing events.
+* Fuel Theft / Anomaly Detection Center for diesel/kaz loss, refill mismatch, geofence/time violations, sensor disconnects, GPS blackout, high consumption, and repeated patterns.
+* Fleet/Fuel Control Dashboard for fleet counts, device status, suspicious loss, risk rankings, speed violations, idle cost, and open investigations.
+* Investigation / Approval Flow for refill confirmation, fuel corrections, anomaly dismissal, theft suspicion marking, task assignment, and audited notes.
+* Customer Demo Reports for consumption, variance, suspected theft, speed violations, idle waste, efficiency, and monthly reconciliation.
+* AI / Jarvis boundaries: AI may explain, summarize, rank, draft notes, recommend checks, prepare reports, and compare actual vs expected behavior; AI cannot approve, dismiss, mutate ledgers, edit capacities, modify sensor readings, delete evidence, or approve its own recommendation.
+
+Out of scope now:
+* hardware integration
+* vendor-specific promises
+* new sidebar pages
+* route count changes
+* `database.json` mutation
+
+Planning spec:
+`docs/FLEET_FUEL_GUARD_VERTICAL.md`
+
+Commit:
+`queue fleet fuel guard customer demo vertical`
+
+---
+
 ### Phase 7E — SaaS Productization Foundation
 
 Status: PENDING
 Priority: P1
-Blocked by: Phase 7D unless Saif changes priority
+Blocked by: Phase 7D-FleetDemo unless Saif changes priority
 
 Goal:
 Prepare Octagon as a sellable product.

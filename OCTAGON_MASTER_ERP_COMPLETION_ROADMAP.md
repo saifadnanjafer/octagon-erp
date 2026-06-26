@@ -12,7 +12,7 @@
 
 Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
 
-Current next queue item after Phase 7D is Phase 7E SaaS Productization Foundation.
+Current next queue item after Phase 7D is Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation, then Phase 7E SaaS Productization Foundation. Fleet/Fuel Guard is a customer-demo planning vertical only at this stage: no hardware integration, no sidebar pages, no route baseline changes, and no `database.json` mutation.
 
 ---
 
@@ -1786,7 +1786,7 @@ Do not add duplicate vertical pages. Deepen the existing pages with data templat
 | O5 Restaurant | Vertical page exists | tables, kitchen display, menu/modifiers, recipes, stock deduction, delivery, cashier close | Existing restaurant/POS/inventory |
 | O6 Hotel | Vertical page exists | rooms, reservations, check-in/out, housekeeping, invoices, occupancy, seasonal pricing | Existing hotel/appointments/sales |
 | O7 Real Estate | Vertical page exists | properties, units, leases, tenants, rent schedules, maintenance, collections | Existing real-estate/contracts/finance |
-| O8 Fleet/Logistics | Existing fleet/logistics pages | vehicles, drivers, trips, fuel, delivery costs, maintenance | Existing fleet/logistics/assets |
+| O8 Fleet/Logistics | Existing fleet/logistics pages | vehicles, drivers, trips, fuel, delivery costs, maintenance, Fleet Fuel Guard demo planning for diesel/kaz monitoring, geofence speed rules, anomaly scoring, and audited investigations | Existing fleet/logistics/assets/reports |
 | O9 Field Service | Existing field_service page | dispatch, checklist, materials, signature, invoice request | Existing field_service/PWA |
 
 For each vertical, acceptance requires sample data, core workflow, printable forms, role permissions, reports, and at least one dashboard tied to real records.
@@ -1956,6 +1956,14 @@ Features: Manager approvals PWA, employee self-service, mobile inventory count s
 Acceptance: Mobile viewports pass layout QA; approval and employee data isolation work.  
 Do not include: native mobile apps.  
 Risks: offline caching must not leak sensitive data.
+
+## Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation
+
+Goal: Build a customer-demo foundation for controlling more than 100 vehicles/equipment units, tracking diesel/kaz fuel behavior, detecting possible theft, applying geofence speed limits, and presenting the control model clearly.  
+Features: Fleet command map mock/grid, vehicle/equipment register, geofences, zone speed policies, fuel ledger, anomaly center, dashboard, investigation/approval flow, customer demo reports, and AI explanation boundaries.  
+Acceptance: Demo scope is documented and later implemented without adding sidebar pages by default, without route baseline break, without destructive data migration, and without claiming hardware integration.  
+Do not include: live GPS/OBD/CAN/J1939/tank-sensor integrations, vendor-specific promises, direct AI approvals, fuel-ledger mutation by AI, or `database.json` migration during planning.  
+Risks: Demo claims must stay clear about mock/manual data until hardware and ingestion contracts are implemented.
 
 ## Phase 7D - Agent Catalog
 

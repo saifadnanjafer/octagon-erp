@@ -69,12 +69,27 @@
     if (!Array.isArray(h.leaveRequests)) h.leaveRequests = [];
     if (!Array.isArray(h.expenseClaims)) h.expenseClaims = [];
     if (!Array.isArray(h.appraisals)) h.appraisals = [];
+    if (!h.hrms || typeof h.hrms !== 'object' || Array.isArray(h.hrms)) h.hrms = {};
+    const m = h.hrms;
+    if (!Array.isArray(m.contracts)) m.contracts = [];
+    if (!Array.isArray(m.onboardingCases)) m.onboardingCases = [];
+    if (!Array.isArray(m.offboardingCases)) m.offboardingCases = [];
+    if (!Array.isArray(m.custodyRecords)) m.custodyRecords = [];
+    if (!Array.isArray(m.disciplinaryActions)) m.disciplinaryActions = [];
+    if (!Array.isArray(m.performanceReviews)) m.performanceReviews = [];
+    if (!Array.isArray(m.workforcePlan)) m.workforcePlan = [];
+    if (!Array.isArray(m.skillsMatrix)) m.skillsMatrix = [];
+    if (!Array.isArray(m.finalSettlements)) m.finalSettlements = [];
+    m.policyVersion = m.policyVersion || 'phase7g-hrms-foundation-v1';
+    m.payrollMutationMode = 'preview_only';
+    m.updated_at = m.updated_at || new Date().toISOString();
     return h;
   }
   function H() { return ensureData(); }
   function getOpenings(all) { return (H()?.openings || []).filter(o => all || o.is_active !== false); }
   function getCandidates(all) { return (H()?.candidates || []).filter(c => all || c.is_active !== false); }
   function getLeave() { return (H()?.leaveRequests || []); }
+  function HRMS() { const h = H(); return h ? h.hrms : null; }
 
   function leaveBalance(employeeName) {
     const year = todayISO().slice(0, 4);
@@ -114,6 +129,47 @@
   const APPRAISAL_CRITERIA = [['quality', 'الجودة'], ['speed', 'السرعة'], ['teamwork', 'العمل الجماعي'], ['discipline', 'الانضباط']];
   function getExpenseClaims() { return (H()?.expenseClaims || []); }
   function getAppraisals() { return (H()?.appraisals || []); }
+  function getHrmsSignals() {
+    const m = HRMS() || {};
+    const emps = getEmployees();
+    const openOnboarding = (m.onboardingCases || []).filter(x => !['done', 'cancelled'].includes(x.status)).length;
+    const openOffboarding = (m.offboardingCases || []).filter(x => !['done', 'cancelled'].includes(x.status)).length;
+    const custodyOpen = (m.custodyRecords || []).filter(x => x.status !== 'returned').length;
+    const openDiscipline = (m.disciplinaryActions || []).filter(x => !['closed', 'void'].includes(x.status)).length;
+    const pendingSettlements = (m.finalSettlements || []).filter(x => !['paid', 'closed', 'cancelled'].includes(x.status)).length;
+    const leaveImpact = getLeave().filter(l => ['pending', 'approved'].includes(l.status)).reduce((acc, l) => {
+      acc.days += Number(l.days || 0);
+      if (l.type === 'unpaid') acc.unpaidDays += Number(l.days || 0);
+      if (l.status === 'pending') acc.pending += 1;
+      return acc;
+    }, { days: 0, unpaidDays: 0, pending: 0 });
+    const missingManagers = emps.filter(e => !e.manager && !e.managerName && !e.supervisor).length;
+    const contractMissing = Math.max(0, emps.length - (m.contracts || []).filter(c => c.status !== 'cancelled').length);
+    const expiringContracts = (m.contracts || []).filter(c => c.endDate && daysFromToday(c.endDate) >= 0 && daysFromToday(c.endDate) <= 60).length;
+    const skillRows = (m.skillsMatrix || []);
+    const skillGaps = skillRows.filter(s => Number(s.requiredLevel || 0) > Number(s.currentLevel || 0)).length;
+    return {
+      employees: emps.length,
+      openOnboarding,
+      openOffboarding,
+      custodyOpen,
+      openDiscipline,
+      pendingSettlements,
+      leaveImpact,
+      missingManagers,
+      contractMissing,
+      expiringContracts,
+      workforceGaps: (m.workforcePlan || []).filter(x => Number(x.required || 0) > Number(x.current || 0)).length,
+      skillGaps,
+      appraisals: getAppraisals().length + (m.performanceReviews || []).length
+    };
+  }
+  function hrmsStatusPill(ok, readyText, gapText) {
+    return `<span class="po-badge ${ok ? 'po-st-hired' : 'po-st-screening'}">${ok ? readyText : gapText}</span>`;
+  }
+  function hrmsMiniList(items, empty) {
+    return (items || []).map(x => `<li>${esc(x)}</li>`).join('') || `<li class="po-muted">${esc(empty || 'No records yet')}</li>`;
+  }
 
   /* ───────────────────────── state ───────────────────────── */
   let activeTab = 'dashboard';
@@ -495,22 +551,75 @@
       <div class="po-form-actions"><button class="btn-primary" onclick="poSaveAppraisal()">حفظ التقييم</button><button class="po-mini-btn" onclick="poCancelAppraisalForm()">إلغاء</button></div></div>`;
   }
 
+  function renderHrms() {
+    const el = document.getElementById('poHrmsBody'); if (!el) return;
+    const m = HRMS() || {};
+    const s = getHrmsSignals();
+    const employees = getEmployees();
+    const contractRows = (m.contracts || []).slice(0, 8).map(c => `<tr><td>${esc(c.employeeName || c.employeeId || '—')}</td><td>${esc(c.contractType || 'employment')}</td><td>${esc(c.status || 'draft')}</td><td>${esc(c.startDate || '—')}</td><td>${esc(c.endDate || '—')}</td><td>${esc(c.documentId || '—')}</td></tr>`).join('');
+    const orgRows = employees.slice(0, 12).map(e => `<tr><td><strong>${esc(e.name || '—')}</strong></td><td>${esc(e.department || e.dept || '—')}</td><td>${esc(e.jobTitle || e.position || e.role || '—')}</td><td>${esc(e.managerName || e.manager || e.supervisor || '—')}</td></tr>`).join('');
+    const lifecycleRows = [
+      ['Contracts lifecycle', hrmsStatusPill(s.contractMissing === 0 && s.expiringContracts === 0, 'ready', `${s.contractMissing} missing / ${s.expiringContracts} expiring`), '`omni.peopleOps.hrms.contracts` links employee contracts to documents and renewal dates.'],
+      ['Org chart', hrmsStatusPill(s.missingManagers === 0 && s.employees > 0, 'mapped', `${s.missingManagers} missing managers`), 'Uses employee department, title, manager/supervisor fields to expose reporting gaps.'],
+      ['Onboarding', hrmsStatusPill(s.openOnboarding === 0, 'clear', `${s.openOnboarding} open`), 'Checklist root: required documents, trainer, custody, access, payroll setup, probation review.'],
+      ['Offboarding', hrmsStatusPill(s.openOffboarding === 0, 'clear', `${s.openOffboarding} open`), 'Exit path: approvals, custody return, access removal, final settlement, archive, exit interview.'],
+      ['Leave impact', hrmsStatusPill(s.leaveImpact.pending === 0, 'reviewed', `${s.leaveImpact.pending} pending`), `${s.leaveImpact.days} tracked days, ${s.leaveImpact.unpaidDays} unpaid days. Preview only; no payroll or attendance mutation.`],
+      ['Custody/assets', hrmsStatusPill(s.custodyOpen === 0, 'clear', `${s.custodyOpen} open`), 'Tracks employee custody and blocks offboarding readiness until return evidence exists.'],
+      ['Disciplinary actions', hrmsStatusPill(s.openDiscipline === 0, 'clear', `${s.openDiscipline} open`), 'Incident, action, evidence, approval, payroll-impact warning; no automatic deductions.'],
+      ['Performance reviews', hrmsStatusPill(s.appraisals > 0, `${s.appraisals} records`, 'no reviews'), 'Combines existing appraisal records with HRMS review root for lifecycle history.'],
+      ['Workforce planning', hrmsStatusPill(s.workforceGaps === 0, 'balanced', `${s.workforceGaps} gaps`), 'Planned vs current headcount by role, department, branch, and skill demand.'],
+      ['Skills matrix', hrmsStatusPill(s.skillGaps === 0, 'covered', `${s.skillGaps} gaps`), 'Required/current skill level, certification, expiry, and training action tracking.'],
+      ['Final settlement', hrmsStatusPill(s.pendingSettlements === 0, 'clear', `${s.pendingSettlements} pending`), 'Dues, deductions, custody, leave balance, approval, and payment status.']
+    ];
+    el.innerHTML = `
+      <div class="po-kpi-grid">
+        ${kpiCard('Employees', s.employees, 'HRMS scope baseline', '')}
+        ${kpiCard('Contract gaps', s.contractMissing, `${s.expiringContracts} expiring in 60 days`, s.contractMissing || s.expiringContracts ? 'po-kpi-warn' : '')}
+        ${kpiCard('Lifecycle cases', s.openOnboarding + s.openOffboarding, 'onboarding + offboarding open', s.openOnboarding || s.openOffboarding ? 'po-kpi-warn' : '')}
+        ${kpiCard('Custody open', s.custodyOpen, 'assets/tools not returned', s.custodyOpen ? 'po-kpi-warn' : '')}
+        ${kpiCard('Leave impact', s.leaveImpact.days, `${s.leaveImpact.pending} pending requests`, s.leaveImpact.pending ? 'po-kpi-warn' : '')}
+      </div>
+      <div class="po-panel">
+        <div class="po-panel-head"><h3>HRMS Lifecycle Foundation</h3><span class="po-muted">Policy: preview-only payroll impact, approval-gated HR changes</span></div>
+        <div class="po-table-wrap"><table class="po-table"><thead><tr><th>Area</th><th>Status</th><th>What is wired</th></tr></thead>
+        <tbody>${lifecycleRows.map(r => `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td class="po-muted">${r[2]}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+      <div class="po-grid-2">
+        <div class="po-panel">
+          <div class="po-panel-head"><h3>Org Chart Snapshot</h3></div>
+          <div class="po-table-wrap"><table class="po-table"><thead><tr><th>Employee</th><th>Department</th><th>Title</th><th>Manager</th></tr></thead><tbody>${orgRows || '<tr><td colspan="4" class="po-empty">No employees loaded</td></tr>'}</tbody></table></div>
+        </div>
+        <div class="po-panel">
+          <div class="po-panel-head"><h3>Data Roots</h3></div>
+          <ul class="po-compact-list">
+            ${hrmsMiniList(['contracts', 'onboardingCases', 'offboardingCases', 'custodyRecords', 'disciplinaryActions', 'performanceReviews', 'workforcePlan', 'skillsMatrix', 'finalSettlements'].map(k => 'omni.peopleOps.hrms.' + k))}
+          </ul>
+        </div>
+      </div>
+      <div class="po-panel">
+        <div class="po-panel-head"><h3>Contract Lifecycle Records</h3><span class="po-muted">Linked document IDs are placeholders until document/contracts workflow creates them.</span></div>
+        <div class="po-table-wrap"><table class="po-table"><thead><tr><th>Employee</th><th>Type</th><th>Status</th><th>Start</th><th>End</th><th>Document</th></tr></thead>
+        <tbody>${contractRows || '<tr><td colspan="6" class="po-empty">No contract lifecycle records yet</td></tr>'}</tbody></table></div>
+      </div>`;
+  }
+
   function renderTabContent() {
-    const map = { poDashBody: 'dashboard', poRecBody: 'recruitment', poLeaveBody: 'leave', poExpBody: 'expenses', poAprBody: 'appraisal' };
+    const map = { poDashBody: 'dashboard', poRecBody: 'recruitment', poLeaveBody: 'leave', poExpBody: 'expenses', poAprBody: 'appraisal', poHrmsBody: 'hrms' };
     Object.keys(map).forEach(id => { const e = document.getElementById(id); if (e) e.style.display = map[id] === activeTab ? '' : 'none'; });
     if (activeTab === 'dashboard') renderDashboard();
     else if (activeTab === 'recruitment') renderRecruitment();
     else if (activeTab === 'leave') renderLeave();
     else if (activeTab === 'expenses') renderExpenses();
     else if (activeTab === 'appraisal') renderAppraisal();
+    else if (activeTab === 'hrms') renderHrms();
   }
 
   function renderPeople() {
     const body = document.getElementById('peopleOpsBody'); if (!body) return;
     ensureData();
-    const tabs = [['dashboard', '📊 اللوحة'], ['recruitment', '🧑‍💼 التوظيف'], ['leave', '🌴 الإجازات'], ['expenses', '🧾 المصاريف'], ['appraisal', '⭐ التقييم']];
+    const tabs = [['dashboard', '📊 اللوحة'], ['recruitment', '🧑‍💼 التوظيف'], ['leave', '🌴 الإجازات'], ['expenses', '🧾 المصاريف'], ['appraisal', '⭐ التقييم'], ['hrms', 'HRMS Lifecycle']];
     body.innerHTML = `<div class="po-tabs">${tabs.map(([k, l]) => `<button class="po-tab-btn ${activeTab === k ? 'active' : ''}" onclick="poOpenTab('${k}')">${l}</button>`).join('')}</div>
-      <div id="poDashBody"></div><div id="poRecBody"></div><div id="poLeaveBody"></div><div id="poExpBody"></div><div id="poAprBody"></div>`;
+      <div id="poDashBody"></div><div id="poRecBody"></div><div id="poLeaveBody"></div><div id="poExpBody"></div><div id="poAprBody"></div><div id="poHrmsBody"></div>`;
     renderTabContent();
   }
   window.renderPeopleOps = renderPeople;
@@ -538,13 +647,24 @@
       if (window.JarvisBrain && JarvisBrain.tools) {
         JarvisBrain.tools['report_hr_today'] = function () {
           const p = portfolio();
+          const h = getHrmsSignals();
           return {
             openPositions: p.openPositions, candidatesInPipeline: p.pipeline, hired: p.hired,
             interviewsThisWeek: p.interviewsThisWeek, pendingLeaveRequests: p.pendingLeave,
             onLeaveToday: p.onLeaveList.map(l => ({ employee: l.employeeName, type: l.type, until: l.endDate })),
             pendingExpenseClaims: getExpenseClaims().filter(c => c.status === 'pending').length,
             pendingExpenseAmount: getExpenseClaims().filter(c => c.status === 'pending').reduce((s, c) => s + money(c.amount), 0),
-            appraisalsRecorded: getAppraisals().length
+            appraisalsRecorded: getAppraisals().length,
+            hrms: {
+              employees: h.employees,
+              contractMissing: h.contractMissing,
+              expiringContracts: h.expiringContracts,
+              openOnboarding: h.openOnboarding,
+              openOffboarding: h.openOffboarding,
+              custodyOpen: h.custodyOpen,
+              pendingSettlements: h.pendingSettlements,
+              payrollMutationMode: 'preview_only'
+            }
           };
         };
         if (JarvisBrain.PAGES) JarvisBrain.PAGES['people_ops'] = '#pagePeopleOps';
@@ -554,5 +674,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerJarvis);
   else setTimeout(registerJarvis, 600);
 
-  window.OctagonPeopleOps = { render: renderPeople, ensureData, portfolio, leaveBalance };
+  window.OctagonPeopleOps = { render: renderPeople, ensureData, portfolio, leaveBalance, HRMS, getHrmsSignals, renderHrms };
 })();

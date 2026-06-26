@@ -385,7 +385,7 @@ Commit:
 
 ### Phase 7G — HRMS Completion
 
-Status: PENDING
+Status: DONE
 Priority: P1/P2
 
 Goal:
@@ -402,6 +402,16 @@ Scope:
 * workforce planning
 * skills matrix
 * final settlement
+
+Implementation result:
+* added HRMS Lifecycle tab inside existing `people_ops`
+* added `omni.peopleOps.hrms` roots for contracts, onboarding, offboarding, custody, discipline, performance, workforce planning, skills, and final settlement
+* added org chart snapshot from existing employee department/title/manager fields
+* added leave-impact preview counters without payroll or attendance mutation
+* added lifecycle readiness matrix and contract lifecycle table
+* extended `report_hr_today` Jarvis report with HRMS counters
+* no new sidebar page added
+* no direct payroll, attendance, deduction, hiring, or legal approval execution added
 
 Commit:
 `phase7g hrms completion foundation`
@@ -542,9 +552,9 @@ Commit:
 
 The next action is:
 
-`Phase 7G — HRMS Completion`
+`Phase 7H — Finance Close and Planning`
 
-Do not execute any other phase before Phase 7G unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7H unless Saif explicitly changes priority.
 
 ---
 

@@ -12,7 +12,7 @@
 
 Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
 
-Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. Phase 7E SaaS Productization Foundation is implemented inside the existing `admin_panel` page with plan/tier placeholders, feature flags, demo company mode, setup/onboarding checklists, and local license/activation placeholders. Phase 7F Agent Catalog Foundation is implemented inside the existing `ai_status` / AI Governance surface with 8 governed business agents, explicit allowed/blocked tools, dry-run preview, simulation/approval logs, and approval-queue routing for high-risk proposals. There is still no hardware integration, no payment gateway, no sidebar page addition, no route baseline change, and no `database.json` migration. Current next queue item is Phase 7G HRMS Completion.
+Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. Phase 7E SaaS Productization Foundation is implemented inside the existing `admin_panel` page with plan/tier placeholders, feature flags, demo company mode, setup/onboarding checklists, and local license/activation placeholders. Phase 7F Agent Catalog Foundation is implemented inside the existing `ai_status` / AI Governance surface with 8 governed business agents, explicit allowed/blocked tools, dry-run preview, simulation/approval logs, and approval-queue routing for high-risk proposals. Phase 7G HRMS Completion Foundation is implemented inside the existing `people_ops` page with HRMS lifecycle data roots, org chart snapshot, leave-impact preview, lifecycle readiness, and HRMS Jarvis counters. There is still no hardware integration, no payment gateway, no sidebar page addition, no route baseline change, and no `database.json` migration. Current next queue item is Phase 7H Finance Close and Planning.
 
 ---
 
@@ -1980,6 +1980,14 @@ Features: `omni.aiAgents.catalog`, 8 initial business agents, allowed tools, blo
 Acceptance: Implemented inside existing AI Governance surfaces, with no direct high-risk execution. Finance, payroll, stock, security, legal, and QC-sensitive proposals route to the AI approval queue.
 Do not include: direct finance/payroll/stock posting, AI self-approval, permission bypass, external sends, or a new sidebar page.
 Risks: downstream Jarvis planners must be taught to use these policies before autonomous agent flows are expanded.
+
+## Phase 7G-Queue - HRMS Completion Foundation
+
+Goal: Upgrade HR from payroll/attendance plus recruiting into an HRMS lifecycle surface.
+Features: HRMS Lifecycle tab in `people_ops`, `omni.peopleOps.hrms` roots, contracts lifecycle, org chart snapshot, onboarding/offboarding readiness, leave impact preview, custody/assets, discipline, performance, workforce planning, skills matrix, and final settlement readiness.
+Acceptance: Implemented inside the existing `people_ops` page, with preview-only payroll impact and approval-gated HR changes. No payroll, attendance, deduction, hiring, or legal approval execution is automatic.
+Do not include: automatic employee creation, salary mutation, attendance mutation, direct deductions, or contract approval by AI.
+Risks: contract/documents integration and final settlement posting still need deeper downstream workflow wiring.
 
 ## Phase 7D - Agent Catalog
 

@@ -409,13 +409,13 @@
 
   /* ════════════════ 15: role-based home ════════════════ */
   const HOME_TILES = {
-    'system.admin': [{ p: 'command_center', i: '🎯', l: 'مركز القيادة' }, { p: 'route_health', i: '🩺', l: 'فحص النظام' }, { p: 'ai_queue', i: '⚙️', l: 'طابور الذكاء' }, { p: 'ai_factory', i: '🏗️', l: 'مصنع التطوير' }, { p: 'ai_tools', i: '🧰', l: 'سجل الأدوات' }, { p: 'admin_panel', i: '🛡️', l: 'الإدارة' }, { p: 'deploy_ready', i: '🚀', l: 'جاهزية التشغيل' }, { p: 'workshop_tv', i: '📺', l: 'شاشة الورشة' }],
-    'workshop.manager': [{ p: 'command_center', i: '🎯', l: 'مركز القيادة' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'ai_queue', i: '⚙️', l: 'الموافقات' }, { p: 'workshop_tv', i: '📺', l: 'شاشة الورشة' }, { p: 'finance', i: '💰', l: 'المالية' }, { p: 'ai_factory', i: '🏗️', l: 'مصنع التطوير' }],
-    'workshop.supervisor': [{ p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'kanban', i: '📋', l: 'كانبان' }, { p: 'machines', i: '🏭', l: 'المكائن' }, { p: 'inventory', i: '📦', l: 'المخزون' }, { p: 'qc_center', i: '🧪', l: 'الجودة' }, { p: 'task_manager', i: '✅', l: 'المهام' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }],
-    'workshop.operator': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'sop', i: '📚', l: 'الإجراءات' }],
-    'employee': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'sop', i: '📚', l: 'الإجراءات' }],
-    'designer': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }],
-    'accountant': [{ p: 'finance', i: '💰', l: 'المالية' }, { p: 'customers', i: '👥', l: 'العملاء' }, { p: 'cashbox', i: '💵', l: 'القاصة' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }],
+    'system.admin': [{ p: 'command_center', i: '🎯', l: 'مركز القيادة' }, { p: 'manager_approvals', i: '👑', l: 'موافقات الهاتف' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'route_health', i: '🩺', l: 'فحص النظام' }, { p: 'ai_queue', i: '⚙️', l: 'طابور الذكاء' }, { p: 'ai_factory', i: '🏗️', l: 'مصنع التطوير' }, { p: 'ai_tools', i: '🧰', l: 'سجل الأدوات' }, { p: 'admin_panel', i: '🛡️', l: 'الإدارة' }, { p: 'deploy_ready', i: '🚀', l: 'جاهزية التشغيل' }, { p: 'workshop_tv', i: '📺', l: 'شاشة الورشة' }],
+    'workshop.manager': [{ p: 'command_center', i: '🎯', l: 'مركز القيادة' }, { p: 'manager_approvals', i: '👑', l: 'موافقات الهاتف' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'ai_queue', i: '⚙️', l: 'الموافقات' }, { p: 'workshop_tv', i: '📺', l: 'شاشة الورشة' }, { p: 'finance', i: '💰', l: 'المالية' }, { p: 'ai_factory', i: '🏗️', l: 'مصنع التطوير' }],
+    'workshop.supervisor': [{ p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'kanban', i: '📋', l: 'كانبان' }, { p: 'machines', i: '🏭', l: 'المكائن' }, { p: 'inventory', i: '📦', l: 'المخزون' }, { p: 'qc_center', i: '🧪', l: 'الجودة' }, { p: 'task_manager', i: '✅', l: 'المهام' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }],
+    'workshop.operator': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'sop', i: '📚', l: 'الإجراءات' }],
+    'employee': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }, { p: 'sop', i: '📚', l: 'الإجراءات' }],
+    'designer': [{ p: 'employee_mobile', i: '📱', l: 'مهامي اليوم' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }, { p: 'kiosk', i: '🤖', l: 'روح النظام' }],
+    'accountant': [{ p: 'finance', i: '💰', l: 'المالية' }, { p: 'mobile_inventory_count', i: '📦', l: 'جرد الموبايل' }, { p: 'customers', i: '👥', l: 'العملاء' }, { p: 'cashbox', i: '💵', l: 'القاصة' }, { p: 'work_orders', i: '🛠️', l: 'أوامر العمل' }],
     'customer': [{ p: 'customer_portal', i: '👤', l: 'بوابة العميل' }]
   };
   function homeHtml() {
@@ -538,8 +538,385 @@
     { key: 'employee_mobile', cap: 'EmployeeMobile', body: 'employeeMobileBody', render: function () { return mobileHtml(); }, after: renderMobile },
     { key: 'workshop_tv', cap: 'WorkshopTv', body: 'workshopTvBody', render: function () { return tvHtml(); }, after: function () { renderTv(); tvSchedule(); } },
     { key: 'wfl_home', cap: 'WflHome', body: 'wflHomeBody', render: function () { return homeHtml(); }, after: renderHome },
-    { key: 'deploy_ready', cap: 'DeployReady', body: 'deployReadyBody', render: function () { return deployHtml(); }, after: renderDeploy }
+    { key: 'deploy_ready', cap: 'DeployReady', body: 'deployReadyBody', render: function () { return deployHtml(); }, after: renderDeploy },
+    { key: 'manager_approvals', cap: 'ManagerApprovals', body: 'managerApprovalsBody', render: function () { return managerApprovalsHtml(); }, after: renderManagerApprovals },
+    { key: 'mobile_inventory_count', cap: 'MobileInventoryCount', body: 'mobileInventoryCountBody', render: function () { return mobileInventoryCountHtml(); }, after: renderMobileInventoryCount }
   ];
+
+  /* ════════════════ 17: PWA Manager approvals ════════════════ */
+  function managerApprovalsHtml() {
+    ensureOmni();
+    const approvalHub = omni.approvalHub || {};
+    const requestsList = approvalHub.requests || [];
+    const pendingHuman = requestsList.filter(r => r.status === 'pending');
+    const pendingCc = (omni.requests || []).filter(r => r.status === 'pending');
+    const totalPending = pendingHuman.length + pendingCc.length;
+    
+    let totalAmt = 0;
+    pendingHuman.forEach(r => { totalAmt += Number(r.amount || 0); });
+    pendingCc.forEach(r => { totalAmt += Number(r.payload?.amount || 0); });
+    
+    const fmtMoney = (n) => Math.round(n).toLocaleString() + ' د.ع';
+
+    let html = `
+      <div class="wfl-mobile">
+        <div class="wfl-mob-head" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(59, 130, 246, 0.12)); border-color: rgba(34, 197, 94, 0.3);">
+          <div class="wfl-mob-hi">موافقات المسؤول 👑</div>
+          <div class="wfl-mob-sub">اعتماد وإدارة الطلبات والعهد والعمليات ميدانياً</div>
+          <div class="wfl-mob-kpis">
+            <div class="wfl-mob-kpi" style="border-right: 3px solid var(--accent-green);"><b>${totalPending}</b><span>طلبات معلقة</span></div>
+            <div class="wfl-mob-kpi" style="border-right: 3px solid var(--accent-yellow);"><b>${fmtMoney(totalAmt)}</b><span>قيمة معلّقة</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="wfl-btn active" id="btnFilterAllApprovals" onclick="wflFilterApprovals('all')" style="flex:1; font-size:13px; padding:8px;">الكل (${totalPending})</button>
+          <button class="wfl-btn" id="btnFilterHumanApprovals" onclick="wflFilterApprovals('human')" style="flex:1; font-size:13px; padding:8px;">الموظفون (${pendingHuman.length})</button>
+          <button class="wfl-btn" id="btnFilterCcApprovals" onclick="wflFilterApprovals('cc')" style="flex:1; font-size:13px; padding:8px;">النظام (${pendingCc.length})</button>
+        </div>
+
+        <div class="wfl-approvals-list" id="wflApprovalsListContainer">
+    `;
+
+    if (totalPending === 0) {
+      html += `
+        <div class="wfl-empty">
+          <i class="fa-solid fa-square-check" style="font-size: 40px; color: var(--accent-green); margin-bottom: 12px; display: block;"></i>
+          كل شيء مراجَع! لا توجد طلبات معلّقة حالياً. 🎉
+        </div>
+      `;
+    } else {
+      pendingHuman.forEach(r => {
+        const catLabel = { purchase: '🛒 شراء', payment: '💵 سلفة/صرفية', travel: '✈️ سفر/مهمة', equipment: '🛠️ معدات/أدوات', leave_extra: '🏖️ إجازة استثنائية', contract: '📝 عقد/اتفاقية', general: '📋 عام' }[r.category] || r.category;
+        html += `
+          <div class="wfl-task-card wfl-approval-card-item" data-type="human" style="border-right: 4px solid var(--accent-yellow); margin-bottom: 10px;">
+            <div class="wfl-task-top">
+              <span class="wfl-task-title" style="font-size: 14.5px;">${esc(r.title)}</span>
+              <span class="wfl-pill info">${catLabel}</span>
+            </div>
+            <div class="wfl-task-meta" style="margin-top: 6px;">
+              <span>الطالب: <b>${esc(r.requester)}</b></span>
+              ${r.amount ? `<span>المبلغ: <strong style="color: var(--accent-green);">${fmtMoney(r.amount)}</strong></span>` : ''}
+              <span>التاريخ: ${r.createdAt ? r.createdAt.slice(0, 10) : '—'}</span>
+            </div>
+            ${r.description ? `<p style="font-size:12px; color:var(--text-muted); margin-top:8px; line-height:1.4;">${esc(r.description)}</p>` : ''}
+            <div class="wfl-task-actions" style="margin-top: 10px;">
+              <button class="wfl-btn finish" onclick="wflApproveHuman('${r.id}')">✓ موافقة</button>
+              <button class="wfl-btn problem" onclick="wflRejectHuman('${r.id}')">✗ رفض</button>
+            </div>
+          </div>
+        `;
+      });
+
+      pendingCc.forEach(r => {
+        const typeLabel = { purchase: '🛒 شراء', leave: '🏖️ إجازات وسلف', attendance_correction: '⏱️ تصحيح بصمة', qc_rework: '🧪 جودة', sop_approval: '📚 SOP', ai_proposal: '🤖 مقترح ذكي', finance: '💰 طلب مالي', general: '📋 عام' }[r.type] || r.type;
+        const reqAmt = r.payload?.amount || 0;
+        html += `
+          <div class="wfl-task-card wfl-approval-card-item" data-type="cc" style="border-right: 4px solid var(--accent-blue); margin-bottom: 10px;">
+            <div class="wfl-task-top">
+              <span class="wfl-task-title" style="font-size: 14.5px;">${esc(r.title)}</span>
+              <span class="wfl-pill info">${typeLabel}</span>
+            </div>
+            <div class="wfl-task-meta" style="margin-top: 6px;">
+              <span>الطالب: <b>${esc(r.requesterName || 'النظام')}</b></span>
+              ${reqAmt ? `<span>المبلغ: <strong style="color: var(--accent-green);">${fmtMoney(reqAmt)}</strong></span>` : ''}
+              <span>التاريخ: ${r.createdAt ? r.createdAt.slice(0, 10) : '—'}</span>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px; line-height:1.4;">${esc(r.description || '')}</p>
+            <div class="wfl-task-actions" style="margin-top: 10px;">
+              <button class="wfl-btn finish" onclick="wflApproveCc('${r.id}')">✓ موافقة</button>
+              <button class="wfl-btn problem" onclick="wflRejectCc('${r.id}')">✗ رفض</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    html += `
+        </div>
+      </div>
+    `;
+    return html;
+  }
+
+  function renderManagerApprovals() {
+    const el = document.getElementById('managerApprovalsBody');
+    if (el) el.innerHTML = managerApprovalsHtml();
+  }
+
+  window.wflFilterApprovals = function (filter) {
+    document.querySelectorAll('#btnFilterAllApprovals, #btnFilterHumanApprovals, #btnFilterCcApprovals').forEach(b => b.classList.remove('active'));
+    if (filter === 'all') {
+      document.getElementById('btnFilterAllApprovals').classList.add('active');
+      document.querySelectorAll('.wfl-approval-card-item').forEach(el => el.style.display = '');
+    } else if (filter === 'human') {
+      document.getElementById('btnFilterHumanApprovals').classList.add('active');
+      document.querySelectorAll('.wfl-approval-card-item[data-type="human"]').forEach(el => el.style.display = '');
+      document.querySelectorAll('.wfl-approval-card-item[data-type="cc"]').forEach(el => el.style.display = 'none');
+    } else if (filter === 'cc') {
+      document.getElementById('btnFilterCcApprovals').classList.add('active');
+      document.querySelectorAll('.wfl-approval-card-item[data-type="cc"]').forEach(el => el.style.display = '');
+      document.querySelectorAll('.wfl-approval-card-item[data-type="human"]').forEach(el => el.style.display = 'none');
+    }
+  };
+
+  window.wflApproveHuman = function (id) {
+    if (typeof window.apApprove === 'function') {
+      window.apApprove(id);
+      setTimeout(renderManagerApprovals, 200);
+    } else {
+      toast('وحدة الموافقات غير متوفرة', 'error');
+    }
+  };
+  window.wflRejectHuman = function (id) {
+    if (typeof window.apReject === 'function') {
+      window.apReject(id);
+      setTimeout(renderManagerApprovals, 200);
+    } else {
+      toast('وحدة الموافقات غير متوفرة', 'error');
+    }
+  };
+  window.wflApproveCc = function (id) {
+    if (typeof window.approveOmniRequest === 'function') {
+      window.approveOmniRequest(id).then(() => {
+        setTimeout(renderManagerApprovals, 200);
+      });
+    } else {
+      toast('أداة اعتماد النظام غير متوفرة', 'error');
+    }
+  };
+  window.wflRejectCc = function (id) {
+    if (typeof window.rejectOmniRequest === 'function') {
+      window.rejectOmniRequest(id).then(() => {
+        setTimeout(renderManagerApprovals, 200);
+      });
+    } else {
+      toast('أداة اعتماد النظام غير متوفرة', 'error');
+    }
+  };
+
+  /* ════════════════ 18: PWA Mobile Inventory Count ════════════════ */
+  function mobileInventoryCountHtml() {
+    ensureOmni();
+    const mats = materials();
+    const locationsList = (omni.storageLocations && omni.storageLocations.length) ? omni.storageLocations : [
+      { id: 'MAIN_STOCK', nameAr: 'المخزن الرئيسي' },
+      { id: 'LOC_WIP', nameAr: 'ورشة التنفيذ' }
+    ];
+
+    let matOptions = mats.map(m => `<option value="${m.id}">${esc(m.name)} (${esc(m.unit || 'لوح')})</option>`).join('');
+    let locOptions = locationsList.map(l => `<option value="${l.id}">${esc(l.nameAr || l.name)}</option>`).join('');
+
+    return `
+      <div class="wfl-mobile">
+        <div class="wfl-mob-head" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(244, 63, 94, 0.12)); border-color: rgba(99, 102, 241, 0.3);">
+          <div class="wfl-mob-hi">جرد المخازن 📦</div>
+          <div class="wfl-mob-sub">جرد كميات المواد ومطابقتها مع مخزون النظام ميدانياً</div>
+        </div>
+
+        <div class="wfl-task-card">
+          <div class="wfl-field">
+            <label>اختر المادة المراد جردها</label>
+            <select id="wflCountMatId" onchange="wflOnCountMaterialChange()">${matOptions}</select>
+          </div>
+
+          <div class="wfl-field">
+            <label>الموقع / المخزن</label>
+            <select id="wflCountLocId" onchange="wflOnCountMaterialChange()">${locOptions}</select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <div class="wfl-field">
+              <label>مخزون النظام الحالي</label>
+              <input id="wflCountSystemStock" type="number" readonly style="background: rgba(255,255,255,0.03); color: var(--text-muted);" value="0">
+            </div>
+            <div class="wfl-field">
+              <label>الكمية الفعلية المجرودة *</label>
+              <input id="wflCountActualQty" type="number" oninput="wflOnCountQtyInput()" placeholder="أدخل الكمية">
+            </div>
+          </div>
+
+          <div class="wfl-field">
+            <label>الفارق (تلقائي)</label>
+            <input id="wflCountVariance" type="text" readonly style="background: rgba(255,255,255,0.03); font-weight: bold; border:none; text-align:right;" value="0">
+          </div>
+
+          <div class="wfl-field">
+            <label>ملاحظات الجرد (اختياري)</label>
+            <textarea id="wflCountNotes" rows="2" placeholder="مثال: تلف، رطوبة، زيادة غير مسجلة..."></textarea>
+          </div>
+
+          <div style="margin-top: 15px;">
+            <button class="wfl-btn primary full" onclick="wflSubmitInventoryCount()">إرسال الجرد للموافقة والاعتماد</button>
+          </div>
+        </div>
+
+        <div class="wfl-task-card" style="margin-top: 14px;">
+          <div class="wfl-task-top">
+            <span class="wfl-task-title" style="font-size: 14px;">آخر عمليات الجرد الميدانية</span>
+          </div>
+          <div id="wflRecentCountsList" style="margin-top: 8px;"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderMobileInventoryCount() {
+    const el = document.getElementById('mobileInventoryCountBody');
+    if (el) {
+      el.innerHTML = mobileInventoryCountHtml();
+      window.wflOnCountMaterialChange();
+      wflRenderRecentCounts();
+    }
+  }
+
+  function wflRenderRecentCounts() {
+    const el = document.getElementById('wflRecentCountsList');
+    if (!el) return;
+    ensureOmni();
+    const approvalHub = omni.approvalHub || {};
+    const requestsList = approvalHub.requests || [];
+    const counts = requestsList.filter(r => r.payload && r.payload.type === 'inventory_count');
+    
+    if (counts.length === 0) {
+      el.innerHTML = '<p class="muted" style="text-align:center;font-size:12px;padding:10px 0;">لا توجد عمليات جرد سابقة.</p>';
+      return;
+    }
+
+    const statusAr = { pending: 'بانتظار الموافقة', approved: 'تم الاعتماد', rejected: 'مرفوض', cancelled: 'ملغي' };
+    const statusClass = { pending: 'warn', approved: 'ok', rejected: 'bad', cancelled: 'muted' };
+
+    el.innerHTML = counts.slice(0, 5).map(c => `
+      <div style="background: rgba(15,23,42,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12.5px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <strong>${esc(c.title.replace('مطابقة جرد مخزني: ', ''))}</strong>
+          <span class="wfl-pill ${statusClass[c.status] || 'muted'}">${statusAr[c.status] || c.status}</span>
+        </div>
+        <div class="muted" style="font-size: 11px;">
+          <span>الكمية: ${c.payload.actualQty} (فارق: ${c.payload.varianceQty > 0 ? '+' : ''}${c.payload.varianceQty})</span> · 
+          <span>التاريخ: ${c.createdAt ? c.createdAt.slice(0,10) : '—'}</span>
+        </div>
+        ${c.decisionNote ? `<div style="font-style:italic; font-size:11px; margin-top:4px; color: var(--accent-yellow);">ملاحظة القرار: ${esc(c.decisionNote)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  window.wflOnCountMaterialChange = function () {
+    ensureOmni();
+    const matId = document.getElementById('wflCountMatId')?.value;
+    const locId = document.getElementById('wflCountLocId')?.value;
+    if (!matId || !locId) return;
+
+    const mats = O()?.materials || [];
+    const stock = (O()?.warehouseStock && O()?.warehouseStock[matId] && O()?.warehouseStock[matId][locId] !== undefined) 
+      ? O().warehouseStock[matId][locId] 
+      : (mats.find(m => m.id === matId)?.stock || 0);
+
+    const sysStockEl = document.getElementById('wflCountSystemStock');
+    if (sysStockEl) sysStockEl.value = stock;
+
+    window.wflOnCountQtyInput();
+  };
+
+  window.wflOnCountQtyInput = function () {
+    const system = Number(document.getElementById('wflCountSystemStock')?.value) || 0;
+    const actualInput = document.getElementById('wflCountActualQty');
+    const actualVal = actualInput ? actualInput.value : '';
+    const varianceEl = document.getElementById('wflCountVariance');
+    if (!varianceEl) return;
+
+    if (actualVal === '') {
+      varianceEl.value = 'أدخل الكمية الفعلية للحساب';
+      varianceEl.style.color = '#94a3b8';
+      return;
+    }
+
+    const actual = Number(actualVal) || 0;
+    const diff = actual - system;
+    if (diff > 0) {
+      varianceEl.value = '+' + diff + ' (زيادة)';
+      varianceEl.style.color = '#22c55e'; // green
+    } else if (diff < 0) {
+      varianceEl.value = diff + ' (عجز)';
+      varianceEl.style.color = '#ef4444'; // red
+    } else {
+      varianceEl.value = '0 (مطابق)';
+      varianceEl.style.color = '#cbd5e1'; // normal
+    }
+  };
+
+  window.wflSubmitInventoryCount = function () {
+    ensureOmni();
+    const matId = document.getElementById('wflCountMatId')?.value;
+    const locId = document.getElementById('wflCountLocId')?.value;
+    const system = Number(document.getElementById('wflCountSystemStock')?.value) || 0;
+    const actualInput = document.getElementById('wflCountActualQty');
+    const actualVal = actualInput ? actualInput.value : '';
+    const notes = document.getElementById('wflCountNotes')?.value || '';
+
+    if (actualVal === '') {
+      toast('الرجاء إدخال الكمية الفعلية المجرودة', 'error');
+      return;
+    }
+
+    const actual = Number(actualVal);
+    if (isNaN(actual) || actual < 0) {
+      toast('الرجاء إدخال كمية صحيحة وغير سالبة', 'error');
+      return;
+    }
+
+    const diff = actual - system;
+    const mats = O()?.materials || [];
+    const matName = mats.find(m => m.id === matId)?.name || matId;
+    
+    const locationsList = (omni.storageLocations && omni.storageLocations.length) ? omni.storageLocations : [
+      { id: 'MAIN_STOCK', nameAr: 'المخزن الرئيسي' },
+      { id: 'LOC_WIP', nameAr: 'ورشة التنفيذ' }
+    ];
+    const locName = locationsList.find(l => l.id === locId)?.nameAr || locId;
+
+    const approvalHub = omni.approvalHub || {};
+    if (!Array.isArray(approvalHub.requests)) approvalHub.requests = [];
+    
+    const reqId = uid('apr');
+    const ref = 'AP-INV-' + todayIso().replace(/-/g, '').slice(2) + '-' + String((approvalHub.requests.length + 1)).padStart(3, '0');
+    
+    approvalHub.requests.unshift({
+      id: reqId,
+      ref: ref,
+      category: 'general',
+      title: `مطابقة جرد مخزني: ${matName} في ${locName}`,
+      amount: 0,
+      priority: Math.abs(diff) > 20 ? 'high' : 'normal',
+      neededBy: todayIso(),
+      description: `الكمية الحالية في النظام: ${system} · الكمية المجرودة: ${actual} · الفارق: ${diff > 0 ? '+' : ''}${diff}. ملاحظات: ${notes}`,
+      status: 'pending',
+      requester: userName(),
+      is_active: true,
+      createdAt: new Date().toISOString(),
+      decidedAt: '',
+      decidedBy: '',
+      decisionNote: '',
+      payload: {
+        type: 'inventory_count',
+        materialId: matId,
+        locationId: locId,
+        systemQty: system,
+        actualQty: actual,
+        varianceQty: diff
+      }
+    });
+
+    save();
+    toast('تم إرسال فارق الجرد للموافقة بنجاح', 'success');
+
+    if (actualInput) actualInput.value = '';
+    const notesEl = document.getElementById('wflCountNotes');
+    if (notesEl) notesEl.value = '';
+
+    window.wflOnCountMaterialChange();
+    wflRenderRecentCounts();
+  };
   function activate(p) {
     document.querySelectorAll('.page').forEach(pg => pg.classList.remove('page-active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));

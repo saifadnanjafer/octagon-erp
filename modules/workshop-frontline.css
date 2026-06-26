@@ -89,3 +89,46 @@
 
 /* ---------- traveller card print (screen preview) ---------- */
 .wfl-card { background:rgba(15,23,42,0.5); border:1px solid rgba(148,163,184,0.2); border-radius:14px; padding:16px; }
+
+/* ─── PWA / Mobile Approvals & Inventory Count Styling ─── */
+.wfl-approvals-list {
+  margin-top: 10px;
+}
+.wfl-approval-card-item {
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+.wfl-approval-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+}
+.wfl-btn.active {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: #fff !important;
+  border-color: #4f46e5 !important;
+  font-weight: bold;
+}
+.wfl-field {
+  margin-bottom: 12px;
+}
+.wfl-field select, .wfl-field input, .wfl-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 768px) {
+  .wfl-btn {
+    min-height: 48px;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wfl-task-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wfl-field select, .wfl-field input, .wfl-field textarea {
+    min-height: 48px;
+    font-size: 15px;
+  }
+}
+

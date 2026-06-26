@@ -5,6 +5,7 @@
   <!-- IMPORTANT: Save this file as UTF-8. Arabic UI depends on UTF-8 encoding. -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <title>Octagon ERP | نظام إدارة الورشة والمخزون والرواتب</title>
   <meta name="description" content="Octagon ERP نظام عربي لإدارة الورشة، المخزون، العهد، أوامر العمل، الجودة، الرواتب، التقارير، ولوحة تحكم الإدارة.">
   <meta name="robots" content="noindex,nofollow">
@@ -2042,6 +2043,15 @@
         }
       };
     })();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('ServiceWorker registered:', reg.scope))
+          .catch(err => console.error('ServiceWorker registration failed:', err));
+      });
+    }
   </script>
 </body>
 </html>

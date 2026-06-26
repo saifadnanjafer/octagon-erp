@@ -126,6 +126,39 @@
     if (status === 'rejected') { const answer = await omniPrompt('سبب الرفض (اختياري):', ''); note = answer == null ? '' : answer; }
     r.status = status; r.decidedAt = new Date().toISOString(); r.decidedBy = userName(); r.decisionNote = note;
     tenantStamp(r);
+    if (status === 'approved' && r.payload && r.payload.type === 'inventory_count') {
+      try {
+        const matId = r.payload.materialId;
+        const locId = r.payload.locationId;
+        const qty = Number(r.payload.actualQty);
+        const omni = O();
+        if (omni && omni.warehouseStock && omni.warehouseStock[matId]) {
+          omni.warehouseStock[matId][locId] = qty;
+          const mats = omni.materials || [];
+          const m = mats.find(x => x.id === matId);
+          if (m) {
+            let sum = 0;
+            Object.keys(omni.warehouseStock[matId]).forEach(k => { sum += Number(omni.warehouseStock[matId][k]) || 0; });
+            m.stock = sum;
+            if (!Array.isArray(omni.locationMovements)) omni.locationMovements = [];
+            omni.locationMovements.push({
+              id: uid('mv'),
+              materialId: matId,
+              materialName: m.name,
+              fromLocation: 'SYSTEM_ADJUST',
+              toLocation: locId,
+              qty: r.payload.varianceQty,
+              type: 'adjustment',
+              createdAt: new Date().toISOString(),
+              createdBy: userName(),
+              notes: `تسوية جرد معتمد: ${r.ref || ''}. ملاحظة: ${note}`
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error applying inventory count adjustment:', err);
+      }
+    }
     audit('request_' + status, `${r.ref || r.title} → ${STATUS_LABEL[status]}`);
     save();
     if (status === 'approved' && r.category === 'purchase') toast('تمت الموافقة — أنشئ أمر الشراء من صفحة المشتريات', 'info');

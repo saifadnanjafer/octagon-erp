@@ -34863,7 +34863,9 @@ window.ensurePageTemplateLoaded = async function (page) {
     ai_factory: 'pageAiFactory',
     ai_tools: 'pageAiTools',
     ai_status: 'pageAiStatus',
-    deploy_ready: 'pageDeployReady'
+    deploy_ready:'pageDeployReady',
+    manager_approvals:'pageManagerApprovals',
+    mobile_inventory_count:'pageMobileInventoryCount'
   };
 
   const id = pageMap[page] || page;

@@ -20,8 +20,10 @@
     const m = String(now.getMonth() + 1).padStart(2, '0');
     return { key: `${y}-${m}`, start: `${y}-${m}-01`, end: new Date(y, now.getMonth() + 1, 0).toISOString().slice(0, 10) };
   };
-  function O() { try { if (typeof root.ensureOmni === 'function') root.ensureOmni(); return root.omni || null; } catch (_) { return null; } }
-  function F() { try { if (typeof root.ensureFinance === 'function') root.ensureFinance(); return root.finance || null; } catch (_) { return null; } }
+  // `omni` and `finance` are lexical globals in this app (NOT window.omni/window.finance),
+  // so sibling <script> modules must reference the bare globals (cf. modules/route-health.js).
+  function O() { try { if (typeof ensureOmni === 'function') ensureOmni(); return (typeof omni !== 'undefined' && omni) ? omni : null; } catch (_) { return null; } }
+  function F() { try { if (typeof ensureFinance === 'function') ensureFinance(); return (typeof finance !== 'undefined' && finance) ? finance : null; } catch (_) { return null; } }
   function txns() { try { return typeof root.getFinanceTransactions === 'function' ? (root.getFinanceTransactions() || []) : ((F() && F().transactions) || []); } catch (_) { return []; } }
   function currency() { const o = O(); return o?.adminSettings?.organization?.currencySymbol || 'د.ع'; }
   function ensureCloseState() {

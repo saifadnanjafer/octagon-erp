@@ -11635,6 +11635,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   refreshAuthUserSwitcher();
   checkLoginStatus();
   enforceUIPermissions();
+  try { autoGenerateMaintenanceTasks(); } catch (_) {}
 
   // 3. UI Setup
   const cfg = getConfig();
@@ -14873,6 +14874,84 @@ function normalizeTaskManagerV2() {
     });
   });
   if (!omni.migrationsApplied.includes('task_manager_v2')) omni.migrationsApplied.push('task_manager_v2');
+}
+function autoGenerateMaintenanceTasks() {
+  ensureOmni();
+  
+  if (window.__inMaintenanceGeneration) return;
+  window.__inMaintenanceGeneration = true;
+  
+  try {
+    const allTasks = getAllTaskManagerTasks(true).map(x => x.task);
+    let generatedCount = 0;
+    const today = todayISO();
+    
+    const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+    const addDays = (iso, n) => {
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      d.setDate(d.getDate() + n);
+      return d.toISOString().slice(0, 10);
+    };
+
+    // 1. Fixed Assets Maintenance Tasks
+    if (omni.assetRegister && Array.isArray(omni.assetRegister.assets)) {
+      omni.assetRegister.assets.forEach(a => {
+        if (a.is_active === false) return;
+        const interval = Math.round(Number(a.maintenanceIntervalDays) || 0);
+        if (!interval) return;
+        
+        const base = a.lastMaintenanceDate || a.acquisitionDate || today;
+        const nextDate = addDays(base, interval);
+        const days = daysBetween(today, nextDate);
+        const isDueOrOverdue = days <= 7;
+        
+        if (isDueOrOverdue) {
+          const exists = allTasks.some(t => t.linkedAssetId === a.id && t.dueDate === nextDate);
+          if (!exists) {
+            const patch = {
+              linkedAssetId: a.id,
+              machineIds: a.category === 'machine' ? [a.id] : [],
+              priority: 'high',
+              dueDate: nextDate,
+              description: `صيانة دورية مجدولة تلقائياً للأصل: ${a.name}\nالرقم التسلسلي: ${a.serialNumber || '—'}\nالموقع: ${a.location || '—'}\nآخر صيانة: ${a.lastMaintenanceDate || '—'}\nدورة الصيانة: كل ${a.maintenanceIntervalDays} يوم`
+            };
+            createTaskInSelectedSpace(`صيانة وقائية: ${a.name}`, patch);
+            generatedCount++;
+          }
+        }
+      });
+    }
+    
+    // 2. Equipment Maintenance / Repair Tasks
+    if (Array.isArray(omni.equipment)) {
+      omni.equipment.forEach(eq => {
+        const needsMaint = ['maintenance', 'broken'].includes(eq.status);
+        if (needsMaint) {
+          const exists = allTasks.some(t => t.linkedEquipmentId === eq.id && t.status !== 'done');
+          if (!exists) {
+            const patch = {
+              linkedEquipmentId: eq.id,
+              priority: 'high',
+              dueDate: today,
+              description: `صيانة مطلوبة للمعدة: ${eq.name}\nالباركود: ${eq.barcode || '—'}\nالموقع: ${eq.location || '—'}\nالحالة الحالية: ${eq.status === 'maintenance' ? 'تحت الصيانة' : 'عاطلة / تالفة'}\nملاحظات: ${eq.notes || '—'}`
+            };
+            createTaskInSelectedSpace(`صيانة معدات: ${eq.name}`, patch);
+            generatedCount++;
+          }
+        }
+      });
+    }
+    
+    if (generatedCount > 0) {
+      saveData();
+      console.log(`Auto-generated ${generatedCount} maintenance tasks in Task Manager.`);
+    }
+  } catch (err) {
+    console.error("autoGenerateMaintenanceTasks error:", err);
+  } finally {
+    window.__inMaintenanceGeneration = false;
+  }
 }
 function setTaskManagerViewMode(mode) { taskManagerViewMode = mode || 'list'; localStorage.setItem('task_manager_view_v2', taskManagerViewMode); renderTaskManager(); }
 function getTaskManagerViewMode() { return taskManagerViewMode || 'list'; }
@@ -33287,6 +33366,7 @@ function quickAuditItem(eqId, status) {
   });
   
   saveData();
+  try { autoGenerateMaintenanceTasks(); } catch (_) {}
   showToast(`تم تحديث حالة [${eq.name}] إلى [${equipmentStatusMeta(status).label}] بنجاح`, 'success');
   renderEquipmentPage();
 }

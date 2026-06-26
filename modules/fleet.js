@@ -81,6 +81,33 @@
   window.flOpenForm = function (id) { editing = id || 'new'; activeTab = 'vehicles'; render(); };
   window.flCancelForm = function () { editing = null; render(); };
 
+  let guardFilter = 'all';
+  let guardProject = '';
+  let guardDriver = '';
+  let guardType = '';
+  let guardSelectedVehicle = null;
+
+  window.flSetGuardFilter = function (filter) { guardFilter = filter; renderFleetGuard(); };
+  window.flSetGuardProject = function (value) { guardProject = value; renderFleetGuard(); };
+  window.flSetGuardDriver = function (value) { guardDriver = value; renderFleetGuard(); };
+  window.flSetGuardType = function (value) { guardType = value; renderFleetGuard(); };
+  window.flSelectGuardVehicle = function (id) { guardSelectedVehicle = id; renderFleetGuard(); };
+  window.flGuardAction = function (label) { toast(label + ' (عرض تجريبي)', 'info'); };
+
+  function filterGuardVehicles(vehicles) {
+    return vehicles.filter(v => {
+      if (guardFilter !== 'all' && v.markerStatus !== guardFilter) return false;
+      if (guardProject && v.project !== guardProject) return false;
+      if (guardDriver && v.driver !== guardDriver) return false;
+      if (guardType && v.type !== guardType) return false;
+      return true;
+    });
+  }
+
+  function uniqueOptions(list, key) {
+    return Array.from(new Set(list.map(item => item[key]).filter(Boolean))).sort();
+  }
+
   window.flSaveVehicle = function () {
     const f = F(); if (!f) return;
     const plate = val('flPlate');
@@ -153,21 +180,29 @@
       { id: 'demo-truck-01', plate: 'D-1045', name: 'شاحنة ديزل كبيرة', type: 'truck', driver: 'سعد', odometer: 84200, fuelType: 'diesel/kaz', status: 'active', project: 'مشروع الكرادة', site: 'موقع A', tankCapacity: 220, hourMeter: 4180 },
       { id: 'demo-loader-02', plate: 'EQ-77', name: 'لودر موقع', type: 'loader', driver: 'حيدر', odometer: 12800, fuelType: 'diesel/kaz', status: 'active', project: 'مشروع بسماية', site: 'موقع B', tankCapacity: 310, hourMeter: 6030 },
       { id: 'demo-gen-03', plate: 'GEN-19', name: 'مولدة ديزل', type: 'generator', driver: 'فريق الكهرباء', odometer: 0, fuelType: 'diesel/kaz', status: 'idle', project: 'المخزن المركزي', site: 'Depot', tankCapacity: 500, hourMeter: 2280 },
-      { id: 'demo-pickup-04', plate: 'P-5521', name: 'بيك أب متابعة', type: 'car', driver: 'كرار', odometer: 51240, fuelType: 'gasoline', status: 'active', project: 'الإدارة', site: 'المدينة', tankCapacity: 75, hourMeter: 0 }
+      { id: 'demo-pickup-04', plate: 'P-5521', name: 'بيك أب متابعة', type: 'car', driver: 'كرار', odometer: 51240, fuelType: 'gasoline', status: 'active', project: 'الإدارة', site: 'المدينة', tankCapacity: 75, hourMeter: 0 },
+      { id: 'demo-excavator-05', plate: 'EX-05', name: 'حفارة', type: 'excavator', driver: 'ناجي', odometer: 26900, fuelType: 'diesel/kaz', status: 'active', project: 'مشروع الكرادة', site: 'موقع A', tankCapacity: 380, hourMeter: 7210 },
+      { id: 'demo-crane-06', plate: 'CR-06', name: 'رافعة برجية', type: 'crane', driver: 'فارس', odometer: 15800, fuelType: 'diesel/kaz', status: 'maintenance', project: 'مشروع بسماية', site: 'موقع B', tankCapacity: 260, hourMeter: 1200 },
+      { id: 'demo-small-07', plate: 'SV-07', name: 'مركبة صغيرة', type: 'car', driver: 'ريان', odometer: 32540, fuelType: 'gasoline', status: 'active', project: 'الإدارة', site: 'المدينة', tankCapacity: 60, hourMeter: 0 },
+      { id: 'demo-tanker-08', plate: 'TK-08', name: 'ناقلة وقود', type: 'truck', driver: 'ماجد', odometer: 94000, fuelType: 'diesel/kaz', status: 'active', project: 'المخزن المركزي', site: 'محطة الوقود', tankCapacity: 420, hourMeter: 11020 }
     ];
   }
   function sourceVehicles() {
     const actual = getVehicles().filter(v => v.status !== 'retired');
-    return (actual.length ? actual : demoVehicleRows()).map((v, idx) => {
+    const demo = demoVehicleRows();
+    const vehicles = actual.length ? actual : demo;
+    const statusOverride = actual.length ? [] : ['normal', 'speeding', 'fuel_anomaly', 'offline', 'outside_zone', 'idle', 'normal', 'speeding'];
+    const positions = [{x:12,y:18},{x:24,y:12},{x:38,y:26},{x:56,y:16},{x:70,y:40},{x:22,y:54},{x:48,y:60},{x:68,y:64}];
+    return vehicles.map((v, idx) => {
       const z = GUARD_ZONES[idx % GUARD_ZONES.length];
       const limit = zoneLimit(v, z);
-      const speedSeed = [8, 27, 0, 72, 96, 14][idx % 6];
+      const speedSeed = [8, 27, 0, 72, 96, 14, 35, 82][idx % 8];
       const speed = Number(v.currentSpeed != null ? v.currentSpeed : speedSeed);
       const tank = Math.max(40, Number(v.tankCapacity || (isHeavyVehicle(v) ? 240 : 75)));
-      const fuelPercent = Number(v.fuelPercent != null ? v.fuelPercent : Math.max(18, 78 - idx * 13));
+      const fuelPercent = Number(v.fuelPercent != null ? v.fuelPercent : Math.max(18, 78 - idx * 9));
       const fuelLiters = Math.round(tank * fuelPercent / 100);
-      const anomaly = idx === 1 || (speed > limit && idx % 2 === 0);
-      const markerStatus = v.status === 'maintenance' ? 'offline' : anomaly ? 'fuel_anomaly' : speed > limit ? 'speeding' : v.status === 'idle' ? 'idle' : 'normal';
+      const fixedStatus = statusOverride[idx];
+      const markerStatus = v.status === 'maintenance' ? 'offline' : fixedStatus || (v.status === 'idle' ? 'idle' : speed > limit ? 'speeding' : idx === 1 ? 'fuel_anomaly' : 'normal');
       return {
         ...v,
         project: v.project || v.department || ['مشروع الكرادة', 'مشروع بسماية', 'الإدارة', 'المخزن المركزي'][idx % 4],
@@ -181,7 +216,9 @@
         hourMeter: Number(v.hourMeter || (isHeavyVehicle(v) ? 1800 + idx * 920 : 0)),
         engineState: v.status === 'idle' ? 'idle' : v.status === 'maintenance' ? 'off' : 'on',
         markerStatus,
-        lastUpdate: idx === 0 ? 'قبل 4 دقائق' : idx === 1 ? 'قبل 11 دقيقة' : idx === 2 ? 'قبل 28 دقيقة' : 'قبل 7 دقائق'
+        lastUpdate: idx === 0 ? 'قبل 4 دقائق' : idx === 1 ? 'قبل 11 دقيقة' : idx === 2 ? 'قبل 28 دقيقة' : idx === 3 ? 'قبل 7 دقائق' : idx === 4 ? 'قبل 16 دقيقة' : idx === 5 ? 'قبل 9 دقائق' : 'قبل 5 دقائق',
+        mapX: positions[idx]?.x || 52,
+        mapY: positions[idx]?.y || 48
       };
     });
   }
@@ -254,21 +291,54 @@
   function renderFleetGuard() {
     const el = document.getElementById('flGuardBody'); if (!el) return;
     const g = buildGuardSnapshot();
-    const active = g.vehicles.filter(v => v.status === 'active').length;
-    const offline = g.vehicles.filter(v => v.markerStatus === 'offline').length;
+    const vehicles = filterGuardVehicles(g.vehicles);
+    const active = vehicles.filter(v => v.status === 'active').length;
+    const offline = vehicles.filter(v => v.markerStatus === 'offline').length;
     const serviceDue = g.service.filter(s => s.service !== 'ضمن الجدول').length;
     const fuelCost = g.fuels.reduce((s, f) => s + money(f.cost), 0);
-    const markerCards = g.vehicles.map(v => `<article class="fl-map-marker fl-${guardStatusClass(v.markerStatus)}">
+    const zoneOptions = uniqueOptions(g.vehicles, 'project').map(p => `<option value="${esc(p)}" ${guardProject === p ? 'selected' : ''}>${esc(p)}</option>`).join('');
+    const driverOptions = uniqueOptions(g.vehicles, 'driver').map(d => `<option value="${esc(d)}" ${guardDriver === d ? 'selected' : ''}>${esc(d)}</option>`).join('');
+    const typeOptions = uniqueOptions(g.vehicles, 'type').map(t => `<option value="${esc(t)}" ${guardType === t ? 'selected' : ''}>${esc(TYPE_LABEL[t] || t)}</option>`).join('');
+    const zones = g.zones.map(z => `<div class="fl-zone-card fl-zone-${z.color}"><b>${esc(z.name)}</b><span>${fmt(z.limit)} كم/س · ثقيل ${fmt(z.heavyLimit)}</span></div>`).join('');
+    const mapCanvas = `<div class="fl-map-canvas">
+      <div class="fl-map-zone fl-map-zone-workshop"><strong>الورشة</strong><span>10 كم/س</span></div>
+      <div class="fl-map-zone fl-map-zone-site"><strong>موقع المشروع</strong><span>20 كم/س</span></div>
+      <div class="fl-map-zone fl-map-zone-city"><strong>طريق المدينة</strong><span>60 كم/س</span></div>
+      <div class="fl-map-zone fl-map-zone-highway"><strong>الطريق السريع</strong><span>90 كم/س</span></div>
+      <div class="fl-map-zone fl-map-zone-fuel"><strong>محطة الوقود</strong><span>15 كم/س</span></div>
+      <div class="fl-map-zone fl-map-zone-restricted"><strong>منطقة ممنوعة</strong><span>5 كم/س</span></div>
+      ${vehicles.map(v => `<button class="fl-map-pin fl-${guardStatusClass(v.markerStatus)}${guardSelectedVehicle === v.id ? ' fl-selected-marker' : ''}" style="left:${v.mapX}%;top:${v.mapY}%" onclick="flSelectGuardVehicle('${v.id}')" title="${esc(v.plate)} - ${esc(v.driver)}"><span>${esc(v.plate)}</span><b>${guardStatusLabel(v.markerStatus)}</b></button>`).join('')}
+    </div>`;
+    const markerCards = vehicles.map(v => {
+      const selected = guardSelectedVehicle === v.id ? ' fl-selected-marker' : '';
+      return `<article class="fl-map-marker fl-${guardStatusClass(v.markerStatus)}${selected}" onclick="flSelectGuardVehicle('${v.id}')">
       <div class="fl-marker-head"><strong>${esc(v.plate || v.name)}</strong><span>${guardStatusLabel(v.markerStatus)}</span></div>
       <div class="fl-marker-meta">${esc(v.name || '')} · ${esc(v.driver || 'بدون سائق')}</div>
       <div class="fl-marker-grid"><span>المنطقة</span><b>${esc(v.zone.name)}</b><span>السرعة</span><b>${fmt(v.currentSpeed)} / ${fmt(v.speedLimit)} كم/س</b><span>الوقود</span><b>${fmt(v.fuelLiters)} لتر (${fmt(v.fuelPercent)}%)</b><span>آخر تحديث</span><b>${esc(v.lastUpdate)}</b></div>
-    </article>`).join('');
-    const zones = g.zones.map(z => `<div class="fl-zone-card fl-zone-${z.color}"><b>${esc(z.name)}</b><span>${fmt(z.limit)} كم/س · ثقيل ${fmt(z.heavyLimit)}</span></div>`).join('');
+    </article>`;
+    }).join('');
     const speedRows = g.zones.map(z => `<tr><td>${esc(z.name)}</td><td>${fmt(z.limit)} كم/س</td><td>${fmt(z.heavyLimit)} كم/س</td><td>تنبيه بعد 60 ثانية · AI يشرح فقط</td></tr>`).join('');
     const anomalyRows = g.anomalies.map(a => `<tr class="${a.severity === 'critical' ? 'fl-row-danger' : a.severity === 'high' ? 'fl-row-warn' : ''}"><td><span class="fl-sev fl-sev-${a.severity}">${a.severity}</span></td><td>${esc(a.vehicle?.plate || '')}</td><td>${esc(a.type)}</td><td>${esc(a.detail)}</td><td>${esc(a.action)}</td></tr>`).join('');
     const fuelRows = g.fuels.map(f => `<tr class="${Math.abs(f.variance) >= 10 ? 'fl-row-danger' : Math.abs(f.variance) ? 'fl-row-warn' : ''}"><td>${esc(f.date)}</td><td>${esc(f.vehicle?.plate || f.plate || '')}</td><td>${esc(f.station)}</td><td>${fmt(f.before)} → ${fmt(f.after)} لتر</td><td>${fmt(f.dispensed)}</td><td>${fmt(f.measured)}</td><td>${fmt(f.variance)}</td><td>${esc(f.confidence)}</td></tr>`).join('');
     const tripRows = g.trips.map(t => `<tr><td>${esc(t.date)}</td><td>${esc(t.vehicle?.plate || t.plate || '')}</td><td>${esc(t.from || '?')} → ${esc(t.to || '?')}</td><td>${fmt(t.planned)} / ${fmt(t.actual)} كم</td><td>${fmt(t.startOdo)} → ${fmt(t.endOdo)}</td><td>${fmt(t.fuelStart)}% → ${fmt(t.fuelEnd)}%</td><td>${fmt(t.maxSpeed)} كم/س</td><td>${fmt(t.idleMinutes)} د</td></tr>`).join('');
     const serviceRows = g.service.map(s => `<tr class="${s.service === 'عاجل' ? 'fl-row-danger' : s.service === 'قريب' ? 'fl-row-warn' : ''}"><td>${esc(s.vehicle.plate || s.vehicle.name)}</td><td>${esc(s.lastOil)}</td><td>${esc(s.nextOilDate)}</td><td>${fmt(s.oilDueKm)} كم${s.oilDueHours ? ' · ' + fmt(s.oilDueHours) + ' ساعة' : ''}</td><td>${esc(s.filters)}</td><td>${esc(s.inspectionState)}</td></tr>`).join('');
+    const selected = g.vehicles.find(v => v.id === guardSelectedVehicle) || vehicles[0] || null;
+    const selectedHtml = selected ? `<section class="fl-panel fl-selected-panel"><div class="fl-panel-head"><h3>تفاصيل الآلية المحددة</h3></div>
+        <div class="fl-detail-grid"><div><strong>${esc(selected.name || selected.plate)}</strong><span>${esc(selected.plate)}</span></div>
+        <div><span>السائق / المشغل</span><b>${esc(selected.driver || 'غير محدد')}</b></div>
+        <div><span>الحالة</span><b>${guardStatusLabel(selected.markerStatus)}</b></div>
+        <div><span>المنطقة الحالية</span><b>${esc(selected.zone.name)}</b></div>
+        <div><span>السرعة الحالية</span><b>${fmt(selected.currentSpeed)} كم/س</b></div>
+        <div><span>حد السرعة</span><b>${fmt(selected.speedLimit)} كم/س</b></div>
+        <div><span>مستوى الوقود</span><b>${fmt(selected.fuelPercent)}% (${fmt(selected.fuelLiters)} لتر)</b></div>
+        <div><span>استهلاك متوقع</span><b>${fmt(Math.max(3, Math.round(selected.currentSpeed * 0.28)))} لتر/ساعة</b></div>
+        <div><span>سبب الشذوذ</span><b>${selected.markerStatus === 'fuel_anomaly' ? 'نقص وقود غير مفسر' : selected.markerStatus === 'speeding' ? 'تجاوز السرعة داخل النطاق' : selected.markerStatus === 'offline' ? 'جهاز غير متصل' : selected.markerStatus === 'idle' ? 'توقف طويل' : 'طبيعي'}</b></div>
+        <div><span>آخر تحديث</span><b>${esc(selected.lastUpdate)}</b></div>
+        <div><span>الإجراء الموصى به</span><b>${selected.markerStatus === 'fuel_anomaly' ? 'فتح تحقيق ومراجعة السائق' : selected.markerStatus === 'speeding' ? 'مراجعة السرعة وجدولة تدريب' : selected.markerStatus === 'offline' ? 'التحقق من الجهاز والمودم' : 'مراقبة الحالة'}</b></div>
+        </div>
+        <div class="fl-panel-actions"><button class="btn-primary" onclick="flGuardAction('فتح ملف الآلية')">فتح ملف الآلية</button><button class="fl-mini-btn" onclick="flGuardAction('عرض سجل الوقود')">عرض سجل الوقود</button><button class="fl-mini-btn" onclick="flGuardAction('فتح تحقيق')">فتح تحقيق</button><button class="fl-mini-btn" onclick="flGuardAction('إنشاء تقرير')">إنشاء تقرير</button></div>
+      </section>` : '<div class="fl-empty">اختر مركبة من الخريطة لرؤية التفاصيل</div>';
+    const aiCard = `<section class="fl-panel fl-ai-panel"><div class="fl-panel-head"><h3>تحليل جارفيس</h3></div><p>هذه الآلية سجلت نقص وقود غير مفسر داخل منطقة غير مصرح بها مع انقطاع إشارة لمدة 12 دقيقة. يوصى بفتح تحقيق وربط الحدث بالسائق والموقع.</p></section>`;
     const historyRows = g.vehicles.map(v => {
       const vf = g.fuels.find(f => f.vehicle?.id === v.id || f.vehicle?.plate === v.plate);
       const vt = g.trips.find(t => t.vehicle?.id === v.id || t.vehicle?.plate === v.plate);
@@ -277,6 +347,10 @@
     }).join('');
     el.innerHTML = `
       <div class="fl-guard-note">مرحلة عرض داخلية: بيانات demo/manual فقط، لا يوجد ربط GPS/OBD/CAN/J1939/حساسات حقيقي الآن.</div>
+      <div class="fl-guard-filter-bar"><div class="fl-filter-group"><label>عرض حسب</label><div class="fl-filter-buttons">${['all','normal','fuel_anomaly','speeding','offline','outside_zone','idle'].map(f => `<button class="fl-filter-btn ${guardFilter===f?'active':''}" onclick="flSetGuardFilter('${f}')">${{all:'الكل',normal:'طبيعي',fuel_anomaly:'نقص وقود',speeding:'تجاوز سرعة',offline:'غير متصل',outside_zone:'خارج النطاق',idle:'توقف طويل'}[f]}</button>`).join('')}</div></div>
+      <div class="fl-filter-group"><label>المشروع</label><select class="fl-input" onchange="flSetGuardProject(this.value)"><option value="">الكل</option>${zoneOptions}</select></div>
+      <div class="fl-filter-group"><label>السائق</label><select class="fl-input" onchange="flSetGuardDriver(this.value)"><option value="">الكل</option>${driverOptions}</select></div>
+      <div class="fl-filter-group"><label>نوع الآلية</label><select class="fl-input" onchange="flSetGuardType(this.value)"><option value="">الكل</option>${typeOptions}</select></div></div>
       <div class="fl-kpi-grid">
         ${kpi('إجمالي الأسطول', g.vehicles.length, `${active} فعالة · ${offline} غير متصلة`, 'fl-kpi-accent')}
         ${kpi('تنبيهات الوقود', g.anomalies.length, `${fmt(g.suspiciousLiters)} لتر مشتبه`, g.anomalies.length ? 'fl-kpi-warn' : '')}
@@ -284,9 +358,12 @@
         ${kpi('صيانة/فحص قريب', serviceDue, 'زيت · فلاتر · فحص تشغيل', serviceDue ? 'fl-kpi-warn' : '')}
         ${kpi('كلفة تعبئة العرض', fmt(fuelCost) + ' ' + curSym(), 'من سجل التعبئة والقياس', '')}
       </div>
-      <div class="fl-guard-grid">
-        <section class="fl-panel fl-guard-map-panel"><div class="fl-panel-head"><h3>خريطة التحكم بالأسطول</h3></div><div class="fl-zone-strip">${zones}</div><div class="fl-map-grid">${markerCards}</div></section>
+        <div class="fl-guard-grid">
+        <section class="fl-panel fl-guard-map-panel"><div class="fl-panel-head"><h3>خريطة التحكم بالأسطول</h3></div><div class="fl-zone-strip">${zones}</div><div class="fl-map-grid">${mapCanvas}<div class="fl-map-pin-list">${markerCards}</div></div></section>
         <section class="fl-panel"><div class="fl-panel-head"><h3>محددات السرعة حسب المنطقة</h3></div><table class="fl-table"><thead><tr><th>المنطقة</th><th>مركبات خفيفة</th><th>معدات ثقيلة</th><th>قاعدة التنبيه</th></tr></thead><tbody>${speedRows}</tbody></table></section>
+      </div>
+      <div class="fl-guard-grid">
+        <section><div class="fl-panel-head"><h3>تفاصيل المختار</h3></div>${selectedHtml}${aiCard}</section>
       </div>
       <div class="fl-panel"><div class="fl-panel-head"><h3>مركز الشذوذ والتحقيق</h3></div><table class="fl-table"><thead><tr><th>خطورة</th><th>المركبة</th><th>النوع</th><th>التفاصيل</th><th>الإجراء</th></tr></thead><tbody>${anomalyRows || '<tr><td colspan="5" class="fl-empty">لا توجد شذوذات في العرض الحالي</td></tr>'}</tbody></table></div>
       <div class="fl-panel"><div class="fl-panel-head"><h3>تعبئة وقياس الوقود</h3></div><table class="fl-table"><thead><tr><th>التاريخ</th><th>المركبة</th><th>المصدر</th><th>الخزان قبل/بعد</th><th>مصروف</th><th>مقاس</th><th>فرق</th><th>ثقة</th></tr></thead><tbody>${fuelRows}</tbody></table></div>
@@ -395,7 +472,7 @@
   function render() {
     const body = document.getElementById('fleetBody'); if (!body) return;
     ensureData();
-    const tabs = [['dashboard', '📊 اللوحة'], ['vehicles', '🚚 المركبات'], ['logs', '⛽ الوقود والرحلات'], ['guard', 'Fleet/Fuel Guard']];
+    const tabs = [['dashboard', '📊 اللوحة'], ['vehicles', '🚚 المركبات'], ['logs', '⛽ الوقود والرحلات'], ['guard', 'خريطة المتابعة']];
     body.innerHTML = `<div class="fl-tabs">${tabs.map(([k, l]) => `<button class="fl-tab-btn ${activeTab === k ? 'active' : ''}" onclick="flOpenTab('${k}')">${l}</button>`).join('')}</div>
       <div id="flDashBody"></div><div id="flVehBody"></div><div id="flLogsBody"></div><div id="flGuardBody"></div>`;
     renderTabContent();

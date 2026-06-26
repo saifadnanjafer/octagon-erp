@@ -2089,6 +2089,10 @@ The prompt should explicitly say: do not add new sidebar pages, do not reset `da
 
 Phase 7A execution has started after Stage 1 stabilization. The roadmap baseline was committed separately from the pending `app.js` maintenance delta. The first Phase 7A slice adds a minimal server auth/session bridge, audit review panel, backup verification/status foundation, release readiness panel, period-lock helper, and deployment-blocker checks inside existing pages only. This is not Phase 7B reporting work and does not add sidebar pages.
 
+### Phase 7B Production Safety Note - 2026-06-26
+
+Phase 7B closes production-safety gaps before feature expansion: server/port diagnostics, `/api/server/status`, sensitive API session/role gates, restore dry-run comparison, typed-confirmation restore protection, richer production blocker dashboard, auth session-mode indicator, and remote Git status guidance. It still does not add sidebar pages, does not reset `database.json`, and does not push to any remote.
+
 ---
 
 # Final Short Summary for Saif

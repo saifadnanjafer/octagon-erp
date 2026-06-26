@@ -81,7 +81,7 @@
     if (o) {
       if (!o.phase7a || typeof o.phase7a !== 'object') o.phase7a = {};
       o.phase7a.startedAt = o.phase7a.startedAt || nowIso();
-      o.phase7a.phase = 'Phase 7A';
+      o.phase7a.phase = 'Phase 7B';
       o.phase7a.serverSessionBridge = true;
       o.phase7a.auditCenter = true;
       o.phase7a.backupVerification = true;
@@ -289,9 +289,12 @@
       ['Database parses', backup.databaseParse?.ok === true],
       ['Backup exists', Number(backup.count || 0) > 0],
       ['Server session foundation', status.auth?.serverSessionFoundation === true],
+      ['API protection foundation', status.auth?.apiProtectionFoundation === true],
+      ['Port diagnostics available', !!status.server?.currentPort],
       ['Git worktree clean', !dirty],
       ['Remote configured', !!String(git.remote || '').trim()]
     ];
+    const server = status.server || {};
     return `
       <section class="admin-card admin-card-wide" id="phase7aReleasePanel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
@@ -305,7 +308,11 @@
           <div class="admin-health-tile"><span>Routes</span><b>${esc(route.navCount || '?')}/${esc(route.viewFiles || '?')}</b></div>
           <div class="admin-health-tile"><span>Backups</span><b>${esc(backup.count || 0)}</b></div>
           <div class="admin-health-tile"><span>Remote</span><b>${String(git.remote || '').trim() ? 'configured' : 'missing'}</b></div>
+          <div class="admin-health-tile"><span>Server port</span><b>${esc(server.currentPort || '?')}</b></div>
+          <div class="admin-health-tile"><span>Port fallback</span><b>${server.fallbackPortUsed ? 'used' : 'no'}</b></div>
         </div>
+        <p class="admin-note">${server.warning ? esc(server.warning) : 'Server startup did not report a fallback warning.'}</p>
+        ${String(git.remote || '').trim() ? '' : `<p class="admin-note">Remote Git backup is missing. Manual commands after creating a remote repository: <code>git remote add origin &lt;REMOTE_URL&gt;</code> then <code>git push -u origin master</code>.</p>`}
         <div class="analytics-table-wrap">
           <table class="analytics-mini-table">
             <thead><tr><th>Checklist item</th><th>Status</th><th>Evidence</th></tr></thead>
@@ -324,17 +331,22 @@
     status = status || releaseStatusCache || {};
     const backup = status.backup || {};
     const latest = backup.latest || {};
+    const ageHours = latest.mtimeMs ? Math.round((Date.now() - latest.mtimeMs) / 3600000) : null;
     return `
       <section class="admin-card admin-card-wide" id="phase7aBackupPanel">
-        <h3><i class="fa-solid fa-shield"></i> Phase 7A backup verification</h3>
+        <h3><i class="fa-solid fa-shield"></i> Phase 7B backup verification and restore dry-run</h3>
         <div class="admin-health-grid">
           <div class="admin-health-tile"><span>Database parse</span><b>${backup.databaseParse?.ok ? 'PASS' : 'FAIL'}</b></div>
           <div class="admin-health-tile"><span>Backup folder</span><b>${esc(backup.backupDir || '-')}</b></div>
           <div class="admin-health-tile"><span>Backup count</span><b>${esc(backup.count || 0)}</b></div>
           <div class="admin-health-tile"><span>Latest backup</span><b>${esc(latest.file || 'none')}</b></div>
+          <div class="admin-health-tile"><span>Backup age</span><b>${ageHours == null ? 'unknown' : `${ageHours}h`}</b></div>
         </div>
-        <p class="admin-note">Restore remains manual and destructive; this panel performs dry-run verification only.</p>
-        <button class="btn-secondary" onclick="OctagonPhase7A.verifyLatestBackup()">Verify latest backup</button>
+        <p class="admin-note">Restore remains blocked unless an admin uses the server endpoint with typed confirmation. This panel performs verification and dry-run comparison only.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="OctagonPhase7A.verifyLatestBackup()">Verify latest backup</button>
+          <button class="btn-secondary" onclick="OctagonPhase7A.restoreDryRun()">Restore dry-run</button>
+        </div>
         <pre id="phase7aBackupVerifyResult" style="white-space:pre-wrap;margin-top:10px;color:var(--text-muted)"></pre>
       </section>
     `;
@@ -347,25 +359,55 @@
     const git = status?.git || {};
     const backup = status?.backup || {};
     const issues = [];
-    const add = (severity, source, issue, recommendation) => issues.push({ severity, source, issue, recommendation });
-    asArray(o.users).forEach(u => { if (!u.role && !u.roleId) add('P0', 'users', `User ${u.id || u.name} has no role`, 'Assign an explicit role before deployment.'); });
-    asArray(o.roles).forEach(r => { if (!asArray(r.groups).length && !asArray(r.permissions).length) add('P1', 'roles', `Role ${r.id || r.name} has no groups/permissions`, 'Review role template.'); });
-    asArray(root.employees || []).forEach(emp => { if (!emp.status && emp.is_active === undefined) add('P2', 'employees', `Employee ${emp.name || emp.id} has no active status`, 'Set active/inactive status.'); });
-    asArray(f.accounts).forEach(acc => { if (!acc.type) add('P1', 'finance.accounts', `Account ${acc.code || acc.id} missing type`, 'Assign account type before financial statements.'); });
-    asArray(root.journals || []).forEach(j => { if (j.account_id && !asArray(f.accounts).some(a => a.id === j.account_id || a.code === j.account_id)) add('P1', 'journals', `Journal ${j.id || j.name} references missing account`, 'Map journal to existing account.'); });
-    asArray(o.materials).forEach(m => { if (money(m.cost || m.unitCost || m.avgCost) <= 0) add('P1', 'materials', `Material ${m.name || m.id} has no cost`, 'Add costing before job margin reports.'); if (money(m.qty || m.quantity || m.stock) < 0) add('P0', 'materials', `Material ${m.name || m.id} has negative stock`, 'Reconcile stock immediately.'); });
-    asArray(o.locationStock).forEach(s => { if (money(s.qty) < 0) add('P0', 'locationStock', `Negative location stock for ${s.materialId || s.id}`, 'Investigate location movements.'); });
-    asArray(f.customers || o.customers).forEach(c => { if (!c.name || !c.phone) add('P2', 'customers', `Customer ${c.id || c.name || 'unknown'} missing name/phone`, 'Complete customer contact fields.'); });
-    asArray(o.suppliers).forEach(s => { if (!s.name || !s.phone) add('P2', 'suppliers', `Supplier ${s.id || s.name || 'unknown'} missing name/phone`, 'Complete supplier contact fields.'); });
-    asArray(o.requests).forEach(req => { if ((req.status || '').includes('pending') && req.createdAt && ((Date.now() - new Date(req.createdAt).getTime()) / 86400000) > 7) add('P1', 'approvals', `Pending approval older than 7 days: ${req.id}`, 'Escalate or close old request.'); });
-    asArray(o.aiApprovalQueue || o.aiQueue || []).forEach(item => { if (!item.requestedBy && !item.requestedById) add('P0', 'ai', `AI request ${item.id || item.action || 'unknown'} has no user stamp`, 'Reject or enrich before execution.'); });
-    if (!backup.databaseParse?.ok) add('P0', 'database', 'database.json parse failed or status unavailable', 'Run parse check before deployment.');
-    if (!backup.count) add('P0', 'backup', 'No server backup detected', 'Create and verify a local backup.');
-    if (!String(git.remote || '').trim()) add('P1', 'git', 'No remote Git configured', 'Configure remote backup before heavy Phase 7 work.');
-    if (String(git.statusShort || '').trim()) add('P1', 'git', 'Uncommitted files exist', 'Review and commit or park changes before release.');
-    if (route.navCount !== 86 || route.viewMarkerCount !== 86 || route.viewFiles !== 86) add('P0', 'routes', 'Route/view count mismatch', 'Restore 86/86 baseline before feature work.');
-    if (asArray(route.missingViewFiles).length) add('P0', 'views', 'Missing view templates', 'Add or restore missing view files.');
-    if (!asArray(o.users).length) add('P1', 'runtime seeds', 'omni.users is empty in file and runtime-seeded', 'Backfill durable production users during auth hardening.');
+    const server = status?.server || {};
+    const add = (severity, source, issue, recommendation, extra = {}) => issues.push({
+      severity,
+      source,
+      issue,
+      recommendation,
+      ownerRole: extra.ownerRole || 'system.admin',
+      affectedCount: extra.affectedCount == null ? 1 : extra.affectedCount,
+      sample: extra.sample || '',
+      canAutoFix: extra.canAutoFix || 'no',
+      approvalRequired: extra.approvalRequired || 'yes'
+    });
+    const usersWithoutRole = asArray(o.users).filter(u => !u.role && !u.roleId);
+    if (usersWithoutRole.length) add('P0', 'users', 'Users without roles', 'Assign explicit roles before deployment.', { ownerRole: 'system.admin', affectedCount: usersWithoutRole.length, sample: usersWithoutRole.slice(0, 3).map(u => u.id || u.name).join(', ') });
+    const rolesWithoutPermissions = asArray(o.roles).filter(r => !asArray(r.groups).length && !asArray(r.permissions).length);
+    if (rolesWithoutPermissions.length) add('P1', 'roles', 'Roles without permission mapping', 'Review role templates and group inheritance.', { affectedCount: rolesWithoutPermissions.length, sample: rolesWithoutPermissions.slice(0, 3).map(r => r.id || r.name).join(', ') });
+    const employeesNoStatus = asArray(root.employees || []).filter(emp => !emp.status && emp.is_active === undefined);
+    if (employeesNoStatus.length) add('P2', 'employees', 'Employees missing active status', 'Set active/inactive status.', { ownerRole: 'hr.manager', affectedCount: employeesNoStatus.length, sample: employeesNoStatus.slice(0, 3).map(e => e.name || e.id).join(', ') });
+    const accountsNoType = asArray(f.accounts).filter(acc => !acc.type);
+    if (accountsNoType.length) add('P1', 'finance.accounts', 'Finance accounts missing type', 'Assign account types before financial statements.', { ownerRole: 'finance.manager', affectedCount: accountsNoType.length, sample: accountsNoType.slice(0, 3).map(a => a.code || a.id).join(', ') });
+    const journalMismatch = asArray(root.journals || []).filter(j => j.account_id && !asArray(f.accounts).some(a => a.id === j.account_id || a.code === j.account_id));
+    if (journalMismatch.length) add('P1', 'journals', 'Journal/account mismatch', 'Map journals to existing accounts.', { ownerRole: 'finance.manager', affectedCount: journalMismatch.length, sample: journalMismatch.slice(0, 3).map(j => j.id || j.name).join(', ') });
+    const materialsNoCost = asArray(o.materials).filter(m => money(m.cost || m.unitCost || m.avgCost) <= 0);
+    if (materialsNoCost.length) add('P1', 'materials', 'Materials without cost', 'Add costing before job margin reports.', { ownerRole: 'inventory.manager', affectedCount: materialsNoCost.length, sample: materialsNoCost.slice(0, 3).map(m => m.name || m.id).join(', ') });
+    const negativeMaterials = asArray(o.materials).filter(m => money(m.qty || m.quantity || m.stock) < 0);
+    if (negativeMaterials.length) add('P0', 'materials', 'Negative stock', 'Reconcile stock immediately.', { ownerRole: 'inventory.manager', affectedCount: negativeMaterials.length, sample: negativeMaterials.slice(0, 3).map(m => m.name || m.id).join(', ') });
+    const negativeLocationStock = asArray(o.locationStock).filter(s => money(s.qty) < 0);
+    if (negativeLocationStock.length) add('P0', 'locationStock', 'Negative location stock', 'Investigate location movements.', { ownerRole: 'inventory.manager', affectedCount: negativeLocationStock.length, sample: negativeLocationStock.slice(0, 3).map(s => s.materialId || s.id).join(', ') });
+    const badCustomers = asArray(f.customers || o.customers).filter(c => !c.name || !c.phone);
+    if (badCustomers.length) add('P2', 'customers', 'Customers missing name/phone', 'Complete customer contact fields.', { ownerRole: 'sales.manager', affectedCount: badCustomers.length, sample: badCustomers.slice(0, 3).map(c => c.id || c.name || 'unknown').join(', ') });
+    const badSuppliers = asArray(o.suppliers).filter(s => !s.name || !s.phone);
+    if (badSuppliers.length) add('P2', 'suppliers', 'Suppliers missing name/phone', 'Complete supplier contact fields.', { ownerRole: 'procurement.manager', affectedCount: badSuppliers.length, sample: badSuppliers.slice(0, 3).map(s => s.id || s.name || 'unknown').join(', ') });
+    const staleApprovals = asArray(o.requests).filter(req => (req.status || '').includes('pending') && req.createdAt && ((Date.now() - new Date(req.createdAt).getTime()) / 86400000) > 7);
+    if (staleApprovals.length) add('P1', 'approvals', 'Pending approvals older than threshold', 'Escalate or close old requests.', { ownerRole: 'system.admin', affectedCount: staleApprovals.length, sample: staleApprovals.slice(0, 3).map(r => r.id).join(', ') });
+    const unstampedAi = asArray(o.aiApprovalQueue || o.aiQueue || []).filter(item => !item.requestedBy && !item.requestedById);
+    if (unstampedAi.length) add('P0', 'ai', 'AI high-risk request without user stamp', 'Reject or enrich before execution.', { ownerRole: 'system.admin', affectedCount: unstampedAi.length, sample: unstampedAi.slice(0, 3).map(i => i.id || i.action || 'unknown').join(', ') });
+    if (!backup.databaseParse?.ok) add('P0', 'database', 'database.json parse failed or status unavailable', 'Run parse check before deployment.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    if (!backup.count) add('P0', 'backup', 'No server backup detected', 'Create and verify a local backup.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    const latestAgeHours = backup.latest?.mtimeMs ? ((Date.now() - backup.latest.mtimeMs) / 3600000) : null;
+    if (latestAgeHours == null || latestAgeHours > 24) add('P1', 'backup', 'Database backup age warning', 'Create a fresh verified backup before release.', { ownerRole: 'system.admin', sample: latestAgeHours == null ? 'no latest backup' : `${Math.round(latestAgeHours)}h old`, approvalRequired: 'no' });
+    if (!String(git.remote || '').trim()) add('P1', 'git', 'No remote Git configured', 'After creating a remote repo, run: git remote add origin <REMOTE_URL>; git push -u origin master.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    if (String(git.statusShort || '').trim()) add('P1', 'git', 'Uncommitted files exist', 'Review and commit or park changes before release.', { ownerRole: 'system.admin', sample: String(git.statusShort).split('\n').slice(0, 3).join(' | '), approvalRequired: 'no' });
+    if (server.fallbackPortUsed) add('P1', 'server', 'Fallback port in use', 'Use the reported current port or free 8080 manually; no process was killed automatically.', { ownerRole: 'system.admin', sample: `port ${server.currentPort}`, approvalRequired: 'no' });
+    if (server.defaultPortProbe?.occupied) add('P1', 'server', 'Default port occupied/stale warning', 'Inspect the process using 8080 before production launch.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    if (route.navCount !== 86 || route.viewMarkerCount !== 86 || route.viewFiles !== 86) add('P0', 'routes', 'Route/view count mismatch', 'Restore 86/86 baseline before feature work.', { ownerRole: 'system.admin', approvalRequired: 'no' });
+    if (asArray(route.missingViewFiles).length) add('P0', 'views', 'Missing view templates', 'Add or restore missing view files.', { ownerRole: 'system.admin', affectedCount: route.missingViewFiles.length, sample: route.missingViewFiles.slice(0, 3).join(', '), approvalRequired: 'no' });
+    if (!asArray(o.users).length) add('P1', 'runtime seeds', 'omni.users runtime-only vs persisted reality', 'Backfill durable production users during auth hardening; do not invent production passwords.', { ownerRole: 'system.admin', approvalRequired: 'yes' });
+    if (!periodLocks().some(lock => lock.status === 'locked')) add('P2', 'finance.periodLocks', 'Finance period lock missing', 'Create lock only during an actual close window.', { ownerRole: 'finance.manager', affectedCount: 0, approvalRequired: 'yes' });
+    if (!status?.auth?.apiProtectionFoundation) add('P1', 'api', 'Regression status missing/failing for API protection', 'Re-run release status and permission regression.', { ownerRole: 'system.admin', approvalRequired: 'no' });
     return issues;
   }
 
@@ -383,13 +425,16 @@
         </div>
         <div class="analytics-table-wrap">
           <table class="analytics-mini-table">
-            <thead><tr><th>Severity</th><th>Source</th><th>Issue</th><th>Recommendation</th></tr></thead>
+            <thead><tr><th>Severity</th><th>Source</th><th>Issue</th><th>Count/sample</th><th>Owner</th><th>Fix policy</th><th>Recommendation</th></tr></thead>
             <tbody>${issues.slice(0, 120).map(i => `<tr>
               <td><span class="analytics-risk-badge" style="background:${i.severity === 'P0' ? '#ef4444' : i.severity === 'P1' ? '#f59e0b' : '#64748b'}">${esc(i.severity)}</span></td>
               <td>${esc(i.source)}</td>
               <td>${esc(i.issue)}</td>
+              <td>${esc(i.affectedCount)}<small style="display:block;color:var(--text-muted)">${esc(i.sample || '')}</small></td>
+              <td>${esc(i.ownerRole)}</td>
+              <td>auto-fix: ${esc(i.canAutoFix)}<small style="display:block;color:var(--text-muted)">approval: ${esc(i.approvalRequired)}</small></td>
               <td>${esc(i.recommendation)}</td>
-            </tr>`).join('') || '<tr><td colspan="4">No deployment blockers detected by Phase 7A checks.</td></tr>'}</tbody>
+            </tr>`).join('') || '<tr><td colspan="7">No deployment blockers detected by Phase 7B checks.</td></tr>'}</tbody>
           </table>
         </div>
       </section>
@@ -399,16 +444,20 @@
   function authStatusPanel() {
     const session = root.__octagonServerSession || {};
     const u = user();
+    const role = u.roleId || u.role || asArray(u.groups)[0] || 'not resolved';
+    const mode = session.authenticated ? 'server' : 'local-dev fallback';
     return `
       <section class="admin-card admin-card-wide" id="phase7aAuthPanel">
-        <h3><i class="fa-solid fa-key"></i> Phase 7A server session bridge</h3>
+        <h3><i class="fa-solid fa-key"></i> Phase 7B auth and session status</h3>
         <div class="admin-health-grid">
           <div class="admin-health-tile"><span>Current client user</span><b>${esc(u.displayName || u.name || u.id || 'guest')}</b></div>
+          <div class="admin-health-tile"><span>Role</span><b>${esc(role)}</b></div>
+          <div class="admin-health-tile"><span>Session mode</span><b>${esc(mode)}</b></div>
           <div class="admin-health-tile"><span>Server session</span><b>${session.authenticated ? 'active' : 'not established'}</b></div>
           <div class="admin-health-tile"><span>Switcher policy</span><b>admin/dev only</b></div>
           <div class="admin-health-tile"><span>Password storage</span><b>hash + salt</b></div>
         </div>
-        <p class="admin-note">This is a minimal bridge: the server can issue an HttpOnly session after credential validation, while the local-first client fallback remains available for development.</p>
+        <p class="admin-note">Server sessions use an HttpOnly cookie after credential validation. Local-dev fallback remains available only for local development; production API writes are session/role gated.</p>
       </section>
     `;
   }
@@ -463,6 +512,20 @@
     }
   }
 
+  async function restoreDryRun() {
+    const target = document.getElementById('phase7aBackupVerifyResult');
+    if (target) target.textContent = 'Running restore dry-run...';
+    try {
+      const res = await fetch('/api/restore/dry-run');
+      const payload = await res.json();
+      if (target) target.textContent = JSON.stringify(payload, null, 2);
+      toast(payload.success ? 'Restore dry-run completed without mutation.' : 'Restore dry-run needs review.', payload.success ? 'success' : 'warning');
+    } catch (error) {
+      if (target) target.textContent = error.message || String(error);
+      toast('Restore dry-run failed.', 'danger');
+    }
+  }
+
   function wrapFinanceWrites() {
     if (root.__phase7aFinanceWrapped || typeof root.addFinanceTransaction !== 'function') return;
     const original = root.addFinanceTransaction;
@@ -510,6 +573,7 @@
   root.OctagonPhase7A = {
     refreshReleaseStatus,
     verifyLatestBackup,
+    restoreDryRun,
     dataQualityChecks: () => dataQualityChecks(releaseStatusCache || {}),
     auditEvents: collectAuditEvents,
     injectAll

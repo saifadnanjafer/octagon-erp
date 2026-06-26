@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const net = require('net');
 
 let DatabaseSync;
 try {
@@ -10,7 +11,17 @@ try {
   console.warn('node:sqlite not supported in this Node.js version, SQLite mode disabled.');
 }
 
-const PORT = process.env.PORT || 8080;
+const DEFAULT_PORT = Number(process.env.OCTAGON_DEFAULT_PORT || 8080);
+const REQUESTED_PORT = Number(process.env.PORT || DEFAULT_PORT);
+const FALLBACK_PORTS = String(process.env.OCTAGON_FALLBACK_PORTS || '8091,8092,8093,8094,8095')
+  .split(',')
+  .map(value => Number(value.trim()))
+  .filter(value => Number.isInteger(value) && value > 0 && value !== REQUESTED_PORT);
+let ACTIVE_PORT = REQUESTED_PORT;
+let PORT = REQUESTED_PORT;
+let FALLBACK_PORT_USED = false;
+let PORT_WARNING = '';
+let DEFAULT_PORT_PROBE = { checkedAt: '', occupied: null, error: '' };
 const DB_FILE = process.env.OCTAGON_DB_FILE ? path.resolve(process.env.OCTAGON_DB_FILE) : path.join(__dirname, 'database.json');
 const DB_PREV_FILE = DB_FILE + '.prev';
 const SQLITE_DB_FILE = process.env.OCTAGON_SQLITE_DB_FILE ? path.resolve(process.env.OCTAGON_SQLITE_DB_FILE) : path.join(__dirname, 'database.db');
@@ -975,6 +986,11 @@ function authSessionFromRequest(req) {
   if (!session) return null;
   if (Date.now() > session.expiresAt) {
     authSessions.delete(token);
+    try {
+      const db = loadDbForMutation();
+      appendServerAudit(db, { action: 'session_expired', status: 'expired', actorId: session.userId || 'unknown', actorName: session.userId || 'unknown', payload: { userId: session.userId || '', expiredAt: new Date().toISOString() } });
+      saveDb(db);
+    } catch (_) {}
     return null;
   }
   return { token, session };
@@ -982,6 +998,90 @@ function authSessionFromRequest(req) {
 
 function hashClientPassword(password, salt) {
   return crypto.createHash('sha256').update(String(password || '') + String(salt || '')).digest('hex');
+}
+
+function isLocalRequest(req) {
+  const addr = String(req.socket?.remoteAddress || '');
+  const host = String(req.headers.host || '').split(':')[0].toLowerCase();
+  return ['127.0.0.1', '::1', '::ffff:127.0.0.1', 'localhost'].includes(addr) ||
+    ['127.0.0.1', 'localhost', '[::1]', '::1'].includes(host);
+}
+
+function isDevMode() {
+  return process.env.NODE_ENV !== 'production' && process.env.OCTAGON_PRODUCTION !== 'true';
+}
+
+function safeSessionInfo(req) {
+  const active = authSessionFromRequest(req);
+  if (!active) return null;
+  return {
+    userId: active.session.userId,
+    createdAt: new Date(active.session.createdAt).toISOString(),
+    expiresAt: new Date(active.session.expiresAt).toISOString(),
+  };
+}
+
+function sessionGroupsForUser(db, userId) {
+  const user = userListFromDb(db).find(item => item.id === userId);
+  const enriched = enrichAuthUser(db, user);
+  return Array.isArray(enriched?.groups) ? enriched.groups : [];
+}
+
+function requireSession(req, res, options = {}) {
+  const allowLocalDev = options.allowLocalDev !== false;
+  if (allowLocalDev && isDevMode() && isLocalRequest(req)) {
+    return { ok: true, mode: 'local-dev', userId: 'local-dev', groups: ['system.admin', 'finance.manager'], user: null };
+  }
+  const active = authSessionFromRequest(req);
+  if (!active) {
+    sendJson(res, 401, { success: false, error: 'Login session required' });
+    return { ok: false };
+  }
+  try {
+    const db = loadDbForMutation();
+    const user = userListFromDb(db).find(item => item.id === active.session.userId);
+    if (!user) {
+      authSessions.delete(active.token);
+      sendJson(res, 401, { success: false, error: 'Session user no longer exists' });
+      return { ok: false };
+    }
+    const enriched = enrichAuthUser(db, user);
+    return { ok: true, mode: 'server', userId: user.id, groups: enriched.groups || [], user: enriched };
+  } catch (error) {
+    sendJson(res, 500, { success: false, error: error.message || 'Session check failed' });
+    return { ok: false };
+  }
+}
+
+function requireRoleSession(req, res, groups, options = {}) {
+  const session = requireSession(req, res, options);
+  if (!session.ok) return session;
+  const required = Array.isArray(groups) ? groups : [groups];
+  if (session.mode === 'local-dev') return session;
+  if (!required.some(group => session.groups.includes(group))) {
+    sendJson(res, 403, { success: false, error: 'Insufficient role for this API endpoint', required });
+    return { ok: false };
+  }
+  return session;
+}
+
+function requireAdminSession(req, res, options = {}) {
+  return requireRoleSession(req, res, ['system.admin'], options);
+}
+
+function probeDefaultPort() {
+  const socket = net.createConnection({ host: '127.0.0.1', port: DEFAULT_PORT });
+  let done = false;
+  const finish = (occupied, error = '') => {
+    if (done) return;
+    done = true;
+    DEFAULT_PORT_PROBE = { checkedAt: new Date().toISOString(), occupied, error };
+    socket.destroy();
+  };
+  socket.setTimeout(300);
+  socket.once('connect', () => finish(true));
+  socket.once('timeout', () => finish(false, 'timeout'));
+  socket.once('error', error => finish(false, error.code || error.message || 'connection failed'));
 }
 
 function gitSnapshot() {
@@ -1045,6 +1145,97 @@ function backupStatusSnapshot() {
     latest: backups[0] || null,
     databaseParse,
   };
+}
+
+function serverStatusSnapshot() {
+  return {
+    currentPort: ACTIVE_PORT,
+    requestedPort: REQUESTED_PORT,
+    defaultPort: DEFAULT_PORT,
+    fallbackPortUsed: FALLBACK_PORT_USED,
+    warning: PORT_WARNING,
+    defaultPortProbe: DEFAULT_PORT_PROBE,
+    appRoot: __dirname,
+    databasePath: DB_FILE,
+    sqlitePath: SQLITE_DB_FILE,
+    sqliteActive: !!dbSync,
+    backupDir: BACKUP_DIR,
+    uptimeSeconds: Math.round(process.uptime()),
+    nodeVersion: process.version,
+    environmentMode: process.env.NODE_ENV || (isDevMode() ? 'local-dev' : 'production'),
+  };
+}
+
+function safeBackupFileName(file) {
+  const name = String(file || '');
+  if (!name || name.includes('..') || name.includes('/') || name.includes('\\') || path.basename(name) !== name) return '';
+  return /^database\.backup\..+\.json$/.test(name) ? name : '';
+}
+
+function collectionCounts(db) {
+  const counts = {};
+  Object.keys(db || {}).sort().forEach(key => {
+    if (Array.isArray(db[key])) counts[key] = db[key].length;
+  });
+  return counts;
+}
+
+function restoreDryRunSnapshot(file) {
+  const safeFile = safeBackupFileName(file);
+  if (!safeFile) {
+    const latest = backupStatusSnapshot().latest?.file || '';
+    if (!latest) throw new Error('No backup file available for dry-run');
+    return restoreDryRunSnapshot(latest);
+  }
+  const backupPath = path.join(BACKUP_DIR, safeFile);
+  if (!fs.existsSync(backupPath)) throw new Error('Backup file not found');
+  const backup = readJsonFile(backupPath);
+  const live = dbSync ? loadDbFromSqlite(dbSync) : readJsonFile(DB_FILE);
+  const liveKeys = Object.keys(live || {}).sort();
+  const backupKeys = Object.keys(backup || {}).sort();
+  const liveCounts = collectionCounts(live);
+  const backupCounts = collectionCounts(backup);
+  const keysOnlyInLive = liveKeys.filter(key => !backupKeys.includes(key));
+  const keysOnlyInBackup = backupKeys.filter(key => !liveKeys.includes(key));
+  const countDiffs = [...new Set([...Object.keys(liveCounts), ...Object.keys(backupCounts)])]
+    .sort()
+    .map(key => ({ key, live: liveCounts[key] || 0, backup: backupCounts[key] || 0 }))
+    .filter(row => row.live !== row.backup);
+  return {
+    success: true,
+    dryRunOnly: true,
+    file: safeFile,
+    comparedAt: new Date().toISOString(),
+    schema: { live: live._schema_version || null, backup: backup._schema_version || null },
+    topLevelKeys: { live: liveKeys.length, backup: backupKeys.length, onlyInLive: keysOnlyInLive, onlyInBackup: keysOnlyInBackup },
+    recordCounts: { live: liveCounts, backup: backupCounts, differences: countDiffs },
+    warnings: [
+      ...(keysOnlyInLive.length ? ['Backup is missing top-level keys present in live database'] : []),
+      ...(keysOnlyInBackup.length ? ['Backup has top-level keys not present in live database'] : []),
+      ...(countDiffs.length ? ['Some top-level collection counts differ'] : []),
+    ],
+  };
+}
+
+function apiProtectionMatrix() {
+  return [
+    { endpoint: 'GET /api/auth/session', classification: 'public-safe-session-info', protection: 'public sanitized current session only' },
+    { endpoint: 'POST /api/auth/login', classification: 'public-auth-entry', protection: 'public with password hash validation and failure lock' },
+    { endpoint: 'POST /api/auth/logout', classification: 'session-clear', protection: 'safe clear, works with or without active session' },
+    { endpoint: 'GET /api/server/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
+    { endpoint: 'GET /api/release/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
+    { endpoint: 'GET /api/db', classification: 'public/dev-safe read', protection: 'local/dev readable; not production-safe' },
+    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'admin session or local-dev only' },
+    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'login session or local-dev only' },
+    { endpoint: 'POST /api/record', classification: 'data write', protection: 'login session or local-dev only' },
+    { endpoint: 'POST /api/upload', classification: 'file write', protection: 'login session or local-dev only' },
+    { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'system admin/finance manager or local-dev only' },
+    { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'system admin/finance manager or local-dev only' },
+    { endpoint: 'GET /api/backup/verify', classification: 'backup dry verification', protection: 'system admin/finance manager or local-dev only' },
+    { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'system admin/finance manager or local-dev only' },
+    { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'system admin plus typed confirmation and pre-restore backup' },
+    { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'verify token/signature/rate limit preserved' },
+  ];
 }
 
 const server = http.createServer((req, res) => {
@@ -1125,19 +1316,32 @@ const server = http.createServer((req, res) => {
     return sendJson(res, 200, { success: true });
   }
 
+  if (requestUrl.pathname === '/api/server/status' && req.method === 'GET') {
+    return sendJson(res, 200, {
+      success: true,
+      generatedAt: new Date().toISOString(),
+      server: serverStatusSnapshot(),
+      apiProtection: apiProtectionMatrix(),
+    });
+  }
+
   if (requestUrl.pathname === '/api/release/status' && req.method === 'GET') {
     return sendJson(res, 200, {
       app: 'Octagon ERP',
-      phase: 'Phase 7A',
+      phase: 'Phase 7B',
       generatedAt: new Date().toISOString(),
       git: gitSnapshot(),
       route: routeStaticSnapshot(),
       backup: backupStatusSnapshot(),
-      auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: authSessions.size },
+      server: serverStatusSnapshot(),
+      auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: authSessions.size, apiProtectionFoundation: true },
+      apiProtection: apiProtectionMatrix(),
     });
   }
 
   if (requestUrl.pathname === '/api/backup/verify' && req.method === 'GET') {
+    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    if (!guard.ok) return;
     try {
       const requested = requestUrl.searchParams.get('file') || '';
       const status = backupStatusSnapshot();
@@ -1153,6 +1357,24 @@ const server = http.createServer((req, res) => {
     } catch (error) {
       return sendJson(res, 500, { success: false, error: error.message || 'Backup verification failed' });
     }
+  }
+
+  if (requestUrl.pathname === '/api/restore/dry-run' && (req.method === 'GET' || req.method === 'POST')) {
+    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    if (!guard.ok) return;
+    const run = body => {
+      try {
+        let parsed = {};
+        if (body) parsed = JSON.parse(body);
+        const file = parsed.file || requestUrl.searchParams.get('file') || '';
+        return sendJson(res, 200, restoreDryRunSnapshot(file));
+      } catch (error) {
+        return sendJson(res, 400, { success: false, dryRunOnly: true, error: error.message || 'Restore dry-run failed' });
+      }
+    };
+    if (req.method === 'POST') readRequestBody(req).then(run).catch(error => sendJson(res, 500, { success: false, error: error.message || 'Failed to read request body' }));
+    else run('');
+    return;
   }
 
   if (requestUrl.pathname === '/api/whatsapp/webhook' && req.method === 'GET') {
@@ -1203,7 +1425,7 @@ const server = http.createServer((req, res) => {
   }
 
   // API Routes
-  if (req.url === '/api/db' && req.method === 'GET') {
+  if (requestUrl.pathname === '/api/db' && req.method === 'GET') {
     if (dbSync) {
       try {
         const db = loadDbFromSqlite(dbSync);
@@ -1225,7 +1447,9 @@ const server = http.createServer((req, res) => {
     return res.end(data);
   }
 
-  if (req.url === '/api/db' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/db' && req.method === 'POST') {
+    const guard = requireAdminSession(req, res);
+    if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
@@ -1285,7 +1509,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/collection' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/collection' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
     readRequestBody(req).then(body => {
       try {
         const { collection, data } = JSON.parse(body);
@@ -1307,7 +1533,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/record' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/record' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
     readRequestBody(req).then(body => {
       try {
         const { collection, id, data } = JSON.parse(body);
@@ -1339,7 +1567,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/upload' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/upload' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
@@ -1390,7 +1620,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/backup' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/backup' && req.method === 'POST') {
+    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
@@ -1409,7 +1641,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/backups' && req.method === 'GET') {
+  if (requestUrl.pathname === '/api/backups' && req.method === 'GET') {
+    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    if (!guard.ok) return;
     try {
       const files = fs.readdirSync(BACKUP_DIR);
       const backupRegex = /^database\.backup\.(.+)\.json$/;
@@ -1446,13 +1680,26 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/api/restore' && req.method === 'POST') {
+  if (requestUrl.pathname === '/api/restore' && req.method === 'POST') {
+    const guard = requireAdminSession(req, res);
+    if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
       try {
         const parsed = body ? JSON.parse(body) : {};
         const file = parsed.file;
+        const expectedConfirmation = file ? `RESTORE ${file}` : '';
+        if (!parsed.confirmation || parsed.confirmation !== expectedConfirmation) {
+          res.setHeader("Content-Type", "application/json; charset=utf-8");
+          res.writeHead(423);
+          return res.end(JSON.stringify({
+            success: false,
+            blocked: true,
+            dryRunAvailable: '/api/restore/dry-run',
+            error: `Restore is blocked without typed confirmation: ${expectedConfirmation}`
+          }));
+        }
         
         if (!file) {
           res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -1576,7 +1823,26 @@ function initializeDatabase() {
 
 initializeDatabase();
 
-server.listen(PORT, () => {
+probeDefaultPort();
+
+let fallbackListenIndex = 0;
+server.on('error', error => {
+  if (error.code === 'EADDRINUSE' && fallbackListenIndex < FALLBACK_PORTS.length) {
+    const blockedPort = PORT;
+    const nextPort = FALLBACK_PORTS[fallbackListenIndex++];
+    FALLBACK_PORT_USED = true;
+    ACTIVE_PORT = nextPort;
+    PORT = nextPort;
+    PORT_WARNING = `Port ${blockedPort} is already in use. No process was killed; trying fallback port ${nextPort}.`;
+    console.warn(PORT_WARNING);
+    server.listen(nextPort);
+    return;
+  }
+  console.error(`Server failed to start on port ${PORT}:`, error.message || error);
+  process.exitCode = 1;
+});
+
+server.listen(REQUESTED_PORT, () => {
   console.log(`\n  ⬡ OCTAGON ERP`);
   console.log(`  ──────────────────────────`);
   console.log(`  ✅ Server running: http://localhost:${PORT}`);

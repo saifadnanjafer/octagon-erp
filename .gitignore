@@ -10,6 +10,7 @@ node_modules/
 *.prev
 database.backup.*.json
 .phase7a-server.pid
+.phase7b-server.pid
 db-backups/*.db
 db-backups/*.json
 db-backups/*.bak

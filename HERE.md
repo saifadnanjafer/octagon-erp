@@ -233,3 +233,22 @@ Validation checkpoint:
 - Permission regression remains 35/35.
 - `database.json` parse passed.
 - Temporary validation server used port `8091`; the existing `8080` process was stale and returned 404 for the new endpoint.
+
+## Phase 7B Production Safety Closure (2026-06-26)
+
+Built without adding sidebar pages or resetting `database.json`:
+- `server.js`: added server/port diagnostics, `/api/server/status`, sanitized Phase 7B release status, API protection metadata, local/dev-aware session gates, and role/admin guards for sensitive API write, backup, upload, and restore routes.
+- Restore safety: `/api/restore/dry-run` compares selected/latest backup top-level keys and collection counts without mutation. Destructive `/api/restore` now requires admin context plus typed confirmation and still creates a pre-restore backup.
+- `app.js`: top-bar auth indicator now shows resolved role plus `server` or `local-dev` mode. Admin/dev switcher use is audited.
+- `modules/phase7a-stabilization.js`: existing Security Center, Deploy Ready, Data Quality, and Finance injections now show Phase 7B port status, API protection status, backup age, restore dry-run, remote Git guidance, and richer production blocker rows with severity, owner, sample, auto-fix policy, and approval requirement.
+- `.gitignore`: ignores temporary `.phase7b-server.pid`.
+
+API protection status:
+- Public/safe: auth login/session/logout, release/server diagnostics, WhatsApp webhook verification/signature flow.
+- Local/dev readable: `GET /api/db` remains documented as not production-safe.
+- Session/admin gated: database writes, collection/record writes, uploads, backup list/create/verify, restore dry-run, and destructive restore.
+
+Remaining risks:
+- No remote Git is configured; manual next commands remain `git remote add origin <REMOTE_URL>` and `git push -u origin master` after Saif creates a remote repository.
+- Server sessions are now enforced for sensitive APIs outside local/dev, but this is still not a full external identity provider.
+- Browser admin-panel smoke may still require an existing known test login; do not create real passwords only for smoke.

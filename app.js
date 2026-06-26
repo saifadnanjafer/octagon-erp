@@ -1388,10 +1388,24 @@ async function switchAuthUser(userId) {
   }
 
   window.PentagonAuth.setCurrentUser(userId);
+  if (typeof recordOmniHistoryEvent === 'function') {
+    recordOmniHistoryEvent({
+      module: 'auth',
+      source: 'admin_switcher',
+      action: 'admin_switcher_user_changed',
+      title: 'Admin/dev user switcher used',
+      actorId: currentUser?.id || 'unknown',
+      actorName: currentUser?.displayName || currentUser?.name || currentUser?.id || 'unknown',
+      status: 'success',
+      risk: 'high',
+      payload: { fromUserId: currentId, toUserId: userId, devMode: !!devMode }
+    });
+  }
   showToast(`تم التبديل إلى: ${window.PentagonAuth.getCurrentUser()?.name || userId}`, 'success');
 
   checkLoginStatus();
   enforceUIPermissions();
+  updateAuthSessionModeBadge();
 
   const devBtn = document.getElementById('btnDevClearCache');
   if (devBtn) devBtn.style.display = userId === 'system' ? 'block' : 'none';
@@ -1449,6 +1463,7 @@ function refreshAuthUserSwitcher() {
       window.PentagonAuth.setCurrentUser(nextId);
     }
   }
+  updateAuthSessionModeBadge();
 
   // 2. Login Overlay List
   const loginList = document.getElementById('loginUserList');
@@ -1498,6 +1513,25 @@ function checkLoginStatus() {
   }
 }
 
+function updateAuthSessionModeBadge() {
+  const group = document.querySelector('.meta-auth-group');
+  if (!group) return;
+  let badge = document.getElementById('authSessionModeBadge');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.id = 'authSessionModeBadge';
+    badge.title = 'Auth session mode';
+    badge.style.cssText = 'font-size:11px;color:var(--text-muted);border-inline-start:1px solid rgba(255,255,255,0.12);padding-inline-start:8px;white-space:nowrap;';
+    const logoutButton = group.querySelector('button[onclick*="performLogout"]');
+    group.insertBefore(badge, logoutButton || null);
+  }
+  const session = window.__octagonServerSession || {};
+  const current = window.PentagonAuth?.getCurrentUser?.() || {};
+  const role = current.roleId || current.role || (Array.isArray(current.groups) ? current.groups[0] : '') || 'role';
+  const mode = session.authenticated ? 'server' : 'local-dev';
+  badge.textContent = `${role} | ${mode}`;
+}
+
 async function syncServerAuthSession(userId, password) {
   if (!userId || !password) return null;
   try {
@@ -1508,12 +1542,15 @@ async function syncServerAuthSession(userId, password) {
     });
     const payload = await res.json().catch(() => ({}));
     window.__octagonServerSession = payload;
+    updateAuthSessionModeBadge();
     if (!res.ok && !payload.setupRequired) {
       console.warn('Server auth session bridge failed:', payload.error || res.status);
     }
     return payload;
   } catch (err) {
     console.warn('Server auth session bridge unavailable:', err.message || err);
+    window.__octagonServerSession = { authenticated: false, mode: 'local-dev-fallback', error: err.message || String(err) };
+    updateAuthSessionModeBadge();
     return null;
   }
 }
@@ -1638,6 +1675,7 @@ function performLogout() {
   try {
     fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
   } catch (_) {}
+  window.__octagonServerSession = { authenticated: false, mode: 'logged-out' };
   if (window.PentagonAuth) {
     if (typeof recordOmniHistoryEvent === 'function') {
       const user = window.PentagonAuth.getCurrentUser();
@@ -1664,6 +1702,7 @@ function performLogout() {
   const intro = document.getElementById('introScreen');
   if (intro) intro.style.display = 'flex';
   document.body.classList.add('login-required');
+  updateAuthSessionModeBadge();
   showToast('تم تسجيل الخروج.', 'info');
 }
 

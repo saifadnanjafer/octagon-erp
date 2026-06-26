@@ -24,16 +24,16 @@ This system is built as a single-page application (SPA) with a modular architect
 - `financeService.js`, `stockService.js`, `recordService.js`, `tenantService.js`: State managers handling the ERP database.
 
 ## Page / Route Registry (reconciled 2026-06-23)
-A page is "fully wired" when it appears consistently in **six** places. As of this pass all **87** sidebar pages agree (79 after the 2026-06-22 reconciliation; +`appointments` +`loyalty` 06-22; +`esign` +`events` +`knowledge` +`surveys` +`visitors` +`risk_compliance` 06-23; +`telegram` 06-26, live feature request explicitly approved by Saif):
+A page is "fully wired" when it appears consistently in **six** places. As of this pass all **93** sidebar pages agree (79 after the 2026-06-22 reconciliation; +`appointments` +`loyalty` 06-22; +`esign` +`events` +`knowledge` +`surveys` +`visitors` +`risk_compliance` 06-23; +`telegram` 06-26 approved by Saif; +Phase 7J/7L `sales_commission` `sales_contracts` `sales_price_lists` `finance_installments` `pos_deepening` `omni_communications` `integration_hub` 06-26):
 
 | Registry | Where | Count | Role |
 | --- | --- | --- | --- |
-| Sidebar buttons | `index.html` `.nav-btn[data-page]` | 87 | what the user can click |
-| View markers `<!-- view:key -->` | `index.html` | 87 | **documentary manifest only** — NOT parsed at runtime (only the build-time `scratch/extract_views.js` reads them) |
-| Page templates | `views/<key>.html` | 87 | the actual `<section class="page">`, fetched on demand |
-| Dynamic loader map | `app.js` → `ensurePageTemplateLoaded()` `pageMap` + `prefetchAllViews()` | 87 | appends each template into `#mainContent` and warms them on boot |
-| Renderer | core `app.js` (`switchPage` inline `pageMap`, 31 core pages) **or** a module that wraps `window.switchPage` (enterprise-suite, route-health, appointments…) | 87 | hydrates the page body |
-| Route Health | `modules/route-health.js` (runtime) | 87/87 | audits nav↔section↔renderer live |
+| Sidebar buttons | `index.html` `.nav-btn[data-page]` | 93 | what the user can click |
+| View markers `<!-- view:key -->` | `index.html` | 93 | **documentary manifest only** — NOT parsed at runtime (only the build-time `scratch/extract_views.js` reads them) |
+| Page templates | `views/<key>.html` | 93 | the actual `<section class="page">`, fetched on demand. **Filename must equal the page key** (underscores, e.g. `sales_commission.html`) or the loader 404s → blank page |
+| Dynamic loader map | `app.js` → `ensurePageTemplateLoaded()` `pageMap` + `prefetchAllViews()` | 93 | appends each template into `#mainContent` and warms them on boot |
+| Renderer | core `app.js` (`switchPage` inline `pageMap`, 31 core pages) **or** a module that wraps `window.switchPage` (enterprise-suite, route-health, appointments…) | 93 | hydrates the page body |
+| Route Health | `modules/route-health.js` (runtime) | 93/93 | audits nav↔section↔renderer live |
 
 > Total `views/*.html` files = **89** (87 routed/counted + 2 internal route-less: `manager_approvals`, `mobile_inventory_count`). Previous baseline was 86 routed / 88 total before the Telegram page.
 

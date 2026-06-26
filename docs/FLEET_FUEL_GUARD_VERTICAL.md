@@ -22,6 +22,13 @@ The target customer has more than 100 vehicles and equipment units, large and sm
 
 The first implementation phase should be presentation/demo first. It should use mock/manual data or CSV/API placeholders when the phase starts, not live hardware integration.
 
+Current Octagon baseline review:
+
+* `modules/fleet.js` already has a basic fleet page for vehicle records, fuel logs, trip logs, odometer updates, fuel cost posting, and license/insurance alerts.
+* `modules/asset-maintenance.js` already has generic fixed-asset preventive maintenance by day interval and maintenance logs.
+* The Fleet Fuel Guard demo must go beyond the current basic fleet page by adding a map-style command view, zone speed policies, full vehicle/equipment history, detailed trip timelines, detailed fueling and fuel-measurement records, oil-change service tracking, and inspection checklists.
+* These additions should be planned for the existing fleet/assets/reporting surfaces first. Do not add sidebar pages by default.
+
 Planned demo modules:
 
 1. Fleet Command Map
@@ -34,6 +41,9 @@ Planned demo modules:
 8. Investigation / Approval Flow
 9. Customer Demo Reports
 10. AI / Jarvis explanation and investigation support
+11. Vehicle / Equipment Full History File
+12. Trip Operations History
+13. Oil Change, Service, and Inspection Tracking
 
 ## Out-Of-Scope Hardware Integration
 
@@ -71,6 +81,18 @@ Marker statuses:
 * idle too long
 * outside allowed zone
 
+Each marker card should show:
+
+* vehicle/equipment asset number and plate number
+* assigned driver/operator
+* current or last known zone
+* current speed and zone speed limit
+* fuel level or last fuel reading
+* odometer/hour-meter
+* engine state when available: on/off/idle
+* last update time
+* active anomaly badges
+
 Filters:
 
 * project
@@ -79,11 +101,36 @@ Filters:
 * vehicle type
 * status
 
+Map overlays:
+
+* allowed zone boundaries
+* restricted zones
+* fuel stations and depots
+* route trail for a selected vehicle/equipment item
+* planned route vs actual route for trip review
+* speed-violation heat spots
+* fuel-anomaly locations
+
 ### 2. Vehicle / Equipment Register
 
 Track asset number, plate number, type, fuel type, tank capacity, expected consumption per hour/km, assigned driver/operator, department/project/site, GPS placeholder, OBD/CAN/J1939 placeholder, tank sensor placeholder, and active/inactive status.
 
 Vehicle/equipment types include car, truck, crane, loader, generator, excavator, heavy equipment, and small equipment. Fuel types include diesel/kaz and gasoline.
+
+Additional register fields:
+
+* VIN/chassis number
+* engine number
+* model, manufacturer, and year
+* ownership/lease status
+* current odometer
+* current hour-meter for equipment and generators
+* last known location
+* current project/site assignment
+* tank count if the unit has more than one tank
+* default fuel station/depot if assigned
+* license, registration, insurance, and inspection expiry dates
+* linked fixed-asset record if the vehicle/equipment is also managed under Assets
 
 ### 3. Geographic Zones / Geofences
 
@@ -103,11 +150,42 @@ Example policy values:
 * highway: 90 km/h
 * heavy equipment: custom limits
 
-Alerts include speeding inside zone, repeated speeding by driver, overspeed while loaded, and overspeed near restricted/sensitive areas. Detection must be deterministic first. AI may explain risk but cannot override policy.
+Policy details:
+
+* zone
+* vehicle/equipment type
+* loaded/unloaded state when known
+* allowed speed
+* warning threshold
+* critical threshold
+* minimum duration before alert
+* active days and working hours
+* exception approval reference if a temporary override is allowed by management
+
+Alerts include speeding inside zone, repeated speeding by driver, overspeed while loaded, overspeed near restricted/sensitive areas, speed spike after GPS blackout, and repeated violations by vehicle/equipment. Detection must be deterministic first. AI may explain risk but cannot override policy.
 
 ### 5. Fuel Ledger
 
 Ledger event types include refill events, consumption events, suspicious drop events, manual corrections, sensor reading events, and fuel dispensing events. Each ledger event should carry approval status, driver/operator stamp, vehicle/equipment stamp, and site/project stamp.
+
+Refill and fuel-measurement details:
+
+* station/depot name
+* pump number or tank source
+* nozzle/operator if known
+* liters requested
+* liters dispensed
+* tank level before refill
+* tank level after refill
+* measured increase in liters
+* variance between dispensed and measured liters
+* unit price and total cost
+* odometer or hour-meter at refill
+* engine state at reading time
+* measurement method: sensor, manual dipstick, driver entry, pump receipt, CSV/API import, or estimated
+* reading confidence: high/medium/low
+* receipt/photo/document placeholder
+* approval status and correction reason
 
 ### 6. Fuel Theft / Anomaly Detection Center
 
@@ -124,6 +202,100 @@ Manual corrections or dismissed anomalies must go through approval. Controlled a
 ### 9. Customer Demo Reports
 
 Demo reports include fuel consumption per vehicle, fuel consumption per project/site, fuel consumption per driver/operator, fuel variance report, suspected theft report, speed violation report, idle fuel waste report, vehicle efficiency report, and monthly fuel reconciliation.
+
+### 10. Vehicle / Equipment Full History File
+
+Each vehicle/equipment item should have one complete timeline. The history file must bring together:
+
+* creation and master-data changes
+* driver/operator assignment changes
+* project/site/department assignment changes
+* trips
+* geofence entry/exit events
+* speed violations
+* idle events
+* refill events
+* fuel readings and measurement changes
+* fuel anomalies and investigations
+* oil changes
+* service and repair events
+* periodic inspection checklists
+* license, registration, insurance, and safety certificate renewals
+* accidents/damage notes if added later
+* attachments such as receipts, photos, documents, and inspection sheets
+* approvals, dismissals, and manual corrections
+
+The full-history view must support filtering by date range, event type, driver/operator, project/site, severity, and approval status.
+
+### 11. Trip Operations History
+
+Trip records should capture:
+
+* trip number/reference
+* vehicle/equipment
+* driver/operator
+* project/site and department
+* planned start/end
+* actual start/end
+* origin, destination, and waypoints
+* planned route vs actual route
+* distance planned vs actual distance
+* odometer/hour-meter start and end
+* fuel level start and end
+* idle minutes
+* max speed and average speed
+* zones entered/exited
+* speed violations during the trip
+* fuel anomalies during or immediately after the trip
+* trip purpose and cargo/load status
+* supervisor approval if required
+
+Trips should roll up into vehicle history, driver/operator history, project/site cost, and customer demo reports.
+
+### 12. Oil Change, Service, and Inspection Tracking
+
+The demo foundation must include service tracking for vehicles and heavy equipment, not only fuel theft.
+
+Oil-change fields:
+
+* oil type/grade
+* oil quantity
+* oil filter changed yes/no
+* air/fuel/hydraulic filter changes
+* odometer or hour-meter at service
+* next oil change by date
+* next oil change by km
+* next oil change by operating hours
+* workshop/vendor
+* cost
+* technician
+* receipt/photo placeholder
+* approval/audit stamp
+
+Inspection checklist examples:
+
+* daily pre-use inspection
+* weekly/monthly safety inspection
+* tires/tracks
+* brakes
+* lights and reverse alarm
+* engine leaks
+* hydraulic leaks
+* battery
+* fire extinguisher
+* GPS/tank sensor connected
+* documents valid
+* crane/loader/heavy-equipment safety checks
+
+Inspection outcomes:
+
+* pass
+* pass with notes
+* failed and blocked from operation
+* requires maintenance task
+* requires manager approval to continue
+
+Failed inspections should create a visible risk item and should not be auto-dismissed by AI.
 
 ## Geofence Speed Limit Logic
 
@@ -150,6 +322,14 @@ The fuel logic must compare actual readings/events against expected behavior:
 
 AI can explain why an anomaly looks risky, but cannot mutate ledger records or evidence.
 
+Fuel measurement logic must also handle normal operational variance:
+
+* compare sensor reading, manual measurement, and pump receipt when more than one source exists
+* flag impossible readings such as negative fuel, over-capacity, or sudden jumps without refill
+* allow low-confidence readings to be reviewed without automatically accusing a driver/operator
+* keep original readings immutable and store corrections as separate approved correction records
+* separate fuel theft suspicion from maintenance causes such as tank leak, sensor fault, or calibration error
+
 ## AI Boundaries
 
 AI can explain anomalies, summarize suspected theft patterns, rank risky vehicles/drivers/sites, draft investigation notes, recommend checks, prepare customer-facing report text, and compare actual vs expected fuel behavior.
@@ -175,6 +355,12 @@ omni.fleet = {
   fuelLedger: [],
   fuelAnomalies: [],
   fuelInvestigations: [],
+  tripEvents: [],
+  serviceLogs: [],
+  oilChanges: [],
+  inspectionChecklists: [],
+  inspectionResults: [],
+  vehicleHistory: [],
   deviceBindings: [],
   demoMode: true
 }

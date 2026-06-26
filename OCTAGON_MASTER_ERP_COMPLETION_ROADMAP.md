@@ -1960,7 +1960,7 @@ Risks: offline caching must not leak sensitive data.
 ## Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation
 
 Goal: Build a customer-demo foundation for controlling more than 100 vehicles/equipment units, tracking diesel/kaz fuel behavior, detecting possible theft, applying geofence speed limits, and presenting the control model clearly.  
-Features: Fleet command map mock/grid, vehicle/equipment register, geofences, zone speed policies, fuel ledger, anomaly center, dashboard, investigation/approval flow, customer demo reports, and AI explanation boundaries.  
+Features: Fleet command map mock/grid, vehicle/equipment register, geofences, zone speed policies, full vehicle/equipment history, trip history, detailed fuel refill/measurement ledger, oil-change/service/inspection tracking, anomaly center, dashboard, investigation/approval flow, customer demo reports, and AI explanation boundaries.  
 Acceptance: Demo scope is documented and later implemented without adding sidebar pages by default, without route baseline break, without destructive data migration, and without claiming hardware integration.  
 Do not include: live GPS/OBD/CAN/J1939/tank-sensor integrations, vendor-specific promises, direct AI approvals, fuel-ledger mutation by AI, or `database.json` migration during planning.  
 Risks: Demo claims must stay clear about mock/manual data until hardware and ingestion contracts are implemented.

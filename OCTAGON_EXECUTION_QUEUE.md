@@ -271,6 +271,10 @@ Scope:
 * Fuel Ledger for refill, consumption, suspicious drop, correction, sensor, and dispensing events.
 * Fuel Theft / Anomaly Detection Center for diesel/kaz loss, refill mismatch, geofence/time violations, sensor disconnects, GPS blackout, high consumption, and repeated patterns.
 * Fleet/Fuel Control Dashboard for fleet counts, device status, suspicious loss, risk rankings, speed violations, idle cost, and open investigations.
+* Full vehicle/equipment history file covering trips, assignments, geofence events, speed events, fuel readings, refill records, anomalies, investigations, oil changes, service logs, inspections, approvals, and attachments.
+* Detailed trip operations history with planned vs actual route, odometer/hour-meter start/end, fuel start/end, idle time, max/average speed, zones crossed, and trip-level anomalies.
+* Detailed fueling and fuel-measurement records with tank before/after, dispensed liters, measured increase, variance, unit price, odometer/hour-meter, reading confidence, and receipt/photo placeholders.
+* Oil-change, service, and inspection tracking for vehicles and heavy equipment, including next service by date/km/hour and failed-inspection escalation.
 * Investigation / Approval Flow for refill confirmation, fuel corrections, anomaly dismissal, theft suspicion marking, task assignment, and audited notes.
 * Customer Demo Reports for consumption, variance, suspected theft, speed violations, idle waste, efficiency, and monthly reconciliation.
 * AI / Jarvis boundaries: AI may explain, summarize, rank, draft notes, recommend checks, prepare reports, and compare actual vs expected behavior; AI cannot approve, dismiss, mutate ledgers, edit capacities, modify sensor readings, delete evidence, or approve its own recommendation.
@@ -505,9 +509,9 @@ Commit:
 
 The next action is:
 
-`Phase 7E — SaaS Productization Foundation`
+`Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation`
 
-Do not execute any other phase before Phase 7E unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7D-FleetDemo unless Saif explicitly changes priority.
 
 ---
 

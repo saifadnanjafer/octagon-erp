@@ -12,7 +12,7 @@
 
 Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
 
-Current next queue item after Phase 7D is Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation, then Phase 7E SaaS Productization Foundation. Fleet/Fuel Guard is a customer-demo planning vertical only at this stage: no hardware integration, no sidebar pages, no route baseline changes, and no `database.json` mutation.
+Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. It adds a local mock command map/grid, zone speed policies, anomaly center, fuel measurement ledger, trip history, oil/service/inspection tracking, and full vehicle/equipment history cards. It still has no hardware integration, no sidebar pages, no route baseline changes, and no `database.json` migration. Current next queue item is Phase 7E SaaS Productization Foundation.
 
 ---
 
@@ -1961,7 +1961,7 @@ Risks: offline caching must not leak sensitive data.
 
 Goal: Build a customer-demo foundation for controlling more than 100 vehicles/equipment units, tracking diesel/kaz fuel behavior, detecting possible theft, applying geofence speed limits, and presenting the control model clearly.  
 Features: Fleet command map mock/grid, vehicle/equipment register, geofences, zone speed policies, full vehicle/equipment history, trip history, detailed fuel refill/measurement ledger, oil-change/service/inspection tracking, anomaly center, dashboard, investigation/approval flow, customer demo reports, and AI explanation boundaries.  
-Acceptance: Demo scope is documented and later implemented without adding sidebar pages by default, without route baseline break, without destructive data migration, and without claiming hardware integration.  
+Acceptance: Implemented inside the existing `fleet` page as a presentation/demo foundation without adding sidebar pages, without route baseline break, without destructive data migration, and without claiming hardware integration.  
 Do not include: live GPS/OBD/CAN/J1939/tank-sensor integrations, vendor-specific promises, direct AI approvals, fuel-ledger mutation by AI, or `database.json` migration during planning.  
 Risks: Demo claims must stay clear about mock/manual data until hardware and ingestion contracts are implemented.
 

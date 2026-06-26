@@ -12,6 +12,8 @@
  *    expense post via the proven bridge). Trips: date, driver, from→to, distance, purpose.
  *  - Dashboard: active vehicles, license/insurance expiring (≤30d) or expired, fuel-cost-this-month,
  *    total distance + alert table.
+ *  - Fleet/Fuel Guard demo: local mock command map, zone speed limits, fuel anomaly center,
+ *    vehicle history, trip history, oil/service/inspection tracking. No hardware integration.
  *  - Jarvis tool: report_fleet_today. Every mutation writes an audit event. Archive, never delete.
  *
  * Data namespace: omni.fleet = { vehicles:[], fuelLogs:[], trips:[] }
@@ -133,6 +135,165 @@
   };
 
   function kpi(label, value, sub, cls) { return `<div class="fl-kpi ${cls || ''}"><div class="fl-kpi-val">${value}</div><div class="fl-kpi-label">${label}</div>${sub ? `<div class="fl-kpi-sub">${sub}</div>` : ''}</div>`; }
+  function dateShift(days) { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().slice(0, 10); }
+
+  const GUARD_ZONES = [
+    { id: 'workshop', name: 'الورشة', type: 'workshop', limit: 10, heavyLimit: 8, color: 'teal' },
+    { id: 'site', name: 'موقع المشروع', type: 'project_site', limit: 20, heavyLimit: 15, color: 'blue' },
+    { id: 'city', name: 'طريق المدينة', type: 'city_road', limit: 60, heavyLimit: 45, color: 'slate' },
+    { id: 'highway', name: 'الطريق السريع', type: 'highway', limit: 90, heavyLimit: 70, color: 'indigo' },
+    { id: 'fuel_station', name: 'محطة الوقود', type: 'fuel_station', limit: 15, heavyLimit: 10, color: 'amber' },
+    { id: 'restricted', name: 'منطقة حساسة', type: 'restricted', limit: 5, heavyLimit: 5, color: 'red' }
+  ];
+
+  function isHeavyVehicle(v) { return ['truck', 'forklift', 'loader', 'crane', 'excavator', 'heavy', 'generator'].includes(String(v.type || '').toLowerCase()); }
+  function zoneLimit(v, z) { return isHeavyVehicle(v) ? z.heavyLimit : z.limit; }
+  function demoVehicleRows() {
+    return [
+      { id: 'demo-truck-01', plate: 'D-1045', name: 'شاحنة ديزل كبيرة', type: 'truck', driver: 'سعد', odometer: 84200, fuelType: 'diesel/kaz', status: 'active', project: 'مشروع الكرادة', site: 'موقع A', tankCapacity: 220, hourMeter: 4180 },
+      { id: 'demo-loader-02', plate: 'EQ-77', name: 'لودر موقع', type: 'loader', driver: 'حيدر', odometer: 12800, fuelType: 'diesel/kaz', status: 'active', project: 'مشروع بسماية', site: 'موقع B', tankCapacity: 310, hourMeter: 6030 },
+      { id: 'demo-gen-03', plate: 'GEN-19', name: 'مولدة ديزل', type: 'generator', driver: 'فريق الكهرباء', odometer: 0, fuelType: 'diesel/kaz', status: 'idle', project: 'المخزن المركزي', site: 'Depot', tankCapacity: 500, hourMeter: 2280 },
+      { id: 'demo-pickup-04', plate: 'P-5521', name: 'بيك أب متابعة', type: 'car', driver: 'كرار', odometer: 51240, fuelType: 'gasoline', status: 'active', project: 'الإدارة', site: 'المدينة', tankCapacity: 75, hourMeter: 0 }
+    ];
+  }
+  function sourceVehicles() {
+    const actual = getVehicles().filter(v => v.status !== 'retired');
+    return (actual.length ? actual : demoVehicleRows()).map((v, idx) => {
+      const z = GUARD_ZONES[idx % GUARD_ZONES.length];
+      const limit = zoneLimit(v, z);
+      const speedSeed = [8, 27, 0, 72, 96, 14][idx % 6];
+      const speed = Number(v.currentSpeed != null ? v.currentSpeed : speedSeed);
+      const tank = Math.max(40, Number(v.tankCapacity || (isHeavyVehicle(v) ? 240 : 75)));
+      const fuelPercent = Number(v.fuelPercent != null ? v.fuelPercent : Math.max(18, 78 - idx * 13));
+      const fuelLiters = Math.round(tank * fuelPercent / 100);
+      const anomaly = idx === 1 || (speed > limit && idx % 2 === 0);
+      const markerStatus = v.status === 'maintenance' ? 'offline' : anomaly ? 'fuel_anomaly' : speed > limit ? 'speeding' : v.status === 'idle' ? 'idle' : 'normal';
+      return {
+        ...v,
+        project: v.project || v.department || ['مشروع الكرادة', 'مشروع بسماية', 'الإدارة', 'المخزن المركزي'][idx % 4],
+        site: v.site || ['موقع A', 'موقع B', 'المدينة', 'Depot'][idx % 4],
+        zone: z,
+        currentSpeed: speed,
+        speedLimit: limit,
+        tankCapacity: tank,
+        fuelPercent,
+        fuelLiters,
+        hourMeter: Number(v.hourMeter || (isHeavyVehicle(v) ? 1800 + idx * 920 : 0)),
+        engineState: v.status === 'idle' ? 'idle' : v.status === 'maintenance' ? 'off' : 'on',
+        markerStatus,
+        lastUpdate: idx === 0 ? 'قبل 4 دقائق' : idx === 1 ? 'قبل 11 دقيقة' : idx === 2 ? 'قبل 28 دقيقة' : 'قبل 7 دقائق'
+      };
+    });
+  }
+  function guardStatusLabel(s) {
+    return ({ normal: 'طبيعي', speeding: 'سرعة عالية', fuel_anomaly: 'شبهة وقود', offline: 'غير متصل', idle: 'توقف طويل', outside_zone: 'خارج النطاق' })[s] || s;
+  }
+  function guardStatusClass(s) {
+    return ({ normal: 'ok', speeding: 'warn', fuel_anomaly: 'bad', offline: 'muted', idle: 'idle', outside_zone: 'bad' })[s] || 'muted';
+  }
+  function guardFuelRows(vehicles) {
+    const f = F() || {};
+    const logs = Array.isArray(f.fuelLogs) && f.fuelLogs.length ? f.fuelLogs.slice(0, 8) : vehicles.slice(0, 4).map((v, idx) => ({
+      id: 'demo-fuel-' + idx, vehicleId: v.id, plate: v.plate, date: dateShift(-idx * 2), liters: [100, 85, 160, 45][idx % 4], cost: [150000, 127000, 240000, 69000][idx % 4], odometer: Number(v.odometer || 0), by: 'عرض تجريبي'
+    }));
+    return logs.map((l, idx) => {
+      const v = vehicles.find(x => x.id === l.vehicleId || x.plate === l.plate) || vehicles[idx % vehicles.length] || {};
+      const tank = Number(v.tankCapacity || 120);
+      const dispensed = Number(l.liters || 0);
+      const variance = idx === 1 ? -18 : idx === 3 ? -7 : 0;
+      const measured = Math.max(0, dispensed + variance);
+      const before = Math.max(0, Math.round(Number(v.fuelLiters || tank * 0.35) - measured));
+      const after = Math.min(tank, before + measured);
+      return { ...l, vehicle: v, tank, before, after, dispensed, measured, variance, method: idx % 2 ? 'يدوي + وصل مضخة' : 'حساس خزان تجريبي', confidence: Math.abs(variance) > 10 ? 'منخفضة' : 'عالية', station: idx % 2 ? 'محطة خارجية' : 'Depot' };
+    });
+  }
+  function guardTripRows(vehicles) {
+    const f = F() || {};
+    const rows = Array.isArray(f.trips) && f.trips.length ? f.trips.slice(0, 8) : vehicles.slice(0, 4).map((v, idx) => ({
+      id: 'demo-trip-' + idx, vehicleId: v.id, plate: v.plate, date: dateShift(-idx), driver: v.driver, from: ['Depot', 'الورشة', 'موقع A', 'المدينة'][idx % 4], to: ['موقع A', 'محطة الوقود', 'موقع B', 'Depot'][idx % 4], distance: [42, 18, 64, 27][idx % 4], purpose: ['تسليم مواد', 'تعبئة وقود', 'نقل معدات', 'زيارة إشراف'][idx % 4]
+    }));
+    return rows.map((t, idx) => {
+      const v = vehicles.find(x => x.id === t.vehicleId || x.plate === t.plate) || vehicles[idx % vehicles.length] || {};
+      const startOdo = Math.max(0, Number(t.odometerStart || v.odometer || 0) - Number(t.distance || 0));
+      const endOdo = Number(t.odometerEnd || v.odometer || startOdo + Number(t.distance || 0));
+      const maxSpeed = idx === 2 ? 96 : Math.max(22, Number(v.currentSpeed || 0) + 8);
+      return { ...t, vehicle: v, planned: Number(t.distance || 0), actual: Number(t.distance || 0) + (idx === 2 ? 11 : 0), startOdo, endOdo, fuelStart: Math.min(100, Number(v.fuelPercent || 50) + 8), fuelEnd: Math.max(0, Number(v.fuelPercent || 50) - 9), idleMinutes: [12, 4, 38, 8][idx % 4], maxSpeed, avgSpeed: Math.max(10, Math.round(maxSpeed * 0.62)), zones: [v.zone?.name || 'غير محدد', idx === 1 ? 'محطة الوقود' : 'طريق المدينة'] };
+    });
+  }
+  function guardServiceRows(vehicles) {
+    return vehicles.map((v, idx) => {
+      const km = Number(v.odometer || 0);
+      const hours = Number(v.hourMeter || 0);
+      const oilDueKm = isHeavyVehicle(v) ? km + (idx === 1 ? 350 : 1200) : km + (idx === 3 ? 800 : 5000);
+      const oilDueHours = hours ? hours + (idx === 1 ? 22 : 120) : 0;
+      const inspectionState = idx === 1 ? 'فشل فحص هيدروليك' : idx === 2 ? 'مطلوب فحص تشغيل' : 'ناجح';
+      return { vehicle: v, lastOil: dateShift(-45 - idx * 11), nextOilDate: dateShift(idx === 1 ? 5 : 28 + idx * 8), oilDueKm, oilDueHours, inspectionState, service: idx === 1 ? 'عاجل' : idx === 2 ? 'قريب' : 'ضمن الجدول', filters: idx % 2 ? 'زيت + هيدروليك' : 'زيت + هواء' };
+    });
+  }
+  function guardAnomalyRows(vehicles, fuels, trips) {
+    const rows = [];
+    vehicles.forEach(v => {
+      if (v.currentSpeed > v.speedLimit) rows.push({ severity: 'high', vehicle: v, type: 'تجاوز سرعة', detail: `${v.currentSpeed} / ${v.speedLimit} كم/س داخل ${v.zone.name}`, action: 'تثبيت مخالفة سرعة ومراجعة السائق' });
+      if (v.markerStatus === 'fuel_anomaly') rows.push({ severity: 'critical', vehicle: v, type: 'شبهة وقود', detail: 'هبوط وقود بعد خروج من الموقع أو قراءة منخفضة الثقة', action: 'فتح تحقيق قبل أي تصحيح' });
+    });
+    fuels.filter(f => Math.abs(f.variance) >= 7).forEach(f => rows.push({ severity: Math.abs(f.variance) > 12 ? 'critical' : 'medium', vehicle: f.vehicle, type: 'فرق تعبئة', detail: `المضخة ${fmt(f.dispensed)} لتر، الزيادة المقاسة ${fmt(f.measured)} لتر`, action: 'مطابقة وصل التعبئة وقراءة الخزان' }));
+    trips.filter(t => t.idleMinutes > 30).forEach(t => rows.push({ severity: 'medium', vehicle: t.vehicle, type: 'توقف طويل', detail: `${t.idleMinutes} دقيقة توقف خلال رحلة ${t.from || '?'} - ${t.to || '?'}`, action: 'مراجعة سبب التوقف واستهلاك الوقود' }));
+    return rows.slice(0, 8);
+  }
+  function buildGuardSnapshot() {
+    const vehicles = sourceVehicles();
+    const fuels = guardFuelRows(vehicles);
+    const trips = guardTripRows(vehicles);
+    const service = guardServiceRows(vehicles);
+    const anomalies = guardAnomalyRows(vehicles, fuels, trips);
+    const speedViolations = vehicles.filter(v => v.currentSpeed > v.speedLimit).length;
+    const suspiciousLiters = fuels.reduce((s, f) => s + (f.variance < 0 ? Math.abs(f.variance) : 0), 0);
+    return { vehicles, fuels, trips, service, anomalies, speedViolations, suspiciousLiters, zones: GUARD_ZONES };
+  }
+
+  function renderFleetGuard() {
+    const el = document.getElementById('flGuardBody'); if (!el) return;
+    const g = buildGuardSnapshot();
+    const active = g.vehicles.filter(v => v.status === 'active').length;
+    const offline = g.vehicles.filter(v => v.markerStatus === 'offline').length;
+    const serviceDue = g.service.filter(s => s.service !== 'ضمن الجدول').length;
+    const fuelCost = g.fuels.reduce((s, f) => s + money(f.cost), 0);
+    const markerCards = g.vehicles.map(v => `<article class="fl-map-marker fl-${guardStatusClass(v.markerStatus)}">
+      <div class="fl-marker-head"><strong>${esc(v.plate || v.name)}</strong><span>${guardStatusLabel(v.markerStatus)}</span></div>
+      <div class="fl-marker-meta">${esc(v.name || '')} · ${esc(v.driver || 'بدون سائق')}</div>
+      <div class="fl-marker-grid"><span>المنطقة</span><b>${esc(v.zone.name)}</b><span>السرعة</span><b>${fmt(v.currentSpeed)} / ${fmt(v.speedLimit)} كم/س</b><span>الوقود</span><b>${fmt(v.fuelLiters)} لتر (${fmt(v.fuelPercent)}%)</b><span>آخر تحديث</span><b>${esc(v.lastUpdate)}</b></div>
+    </article>`).join('');
+    const zones = g.zones.map(z => `<div class="fl-zone-card fl-zone-${z.color}"><b>${esc(z.name)}</b><span>${fmt(z.limit)} كم/س · ثقيل ${fmt(z.heavyLimit)}</span></div>`).join('');
+    const speedRows = g.zones.map(z => `<tr><td>${esc(z.name)}</td><td>${fmt(z.limit)} كم/س</td><td>${fmt(z.heavyLimit)} كم/س</td><td>تنبيه بعد 60 ثانية · AI يشرح فقط</td></tr>`).join('');
+    const anomalyRows = g.anomalies.map(a => `<tr class="${a.severity === 'critical' ? 'fl-row-danger' : a.severity === 'high' ? 'fl-row-warn' : ''}"><td><span class="fl-sev fl-sev-${a.severity}">${a.severity}</span></td><td>${esc(a.vehicle?.plate || '')}</td><td>${esc(a.type)}</td><td>${esc(a.detail)}</td><td>${esc(a.action)}</td></tr>`).join('');
+    const fuelRows = g.fuels.map(f => `<tr class="${Math.abs(f.variance) >= 10 ? 'fl-row-danger' : Math.abs(f.variance) ? 'fl-row-warn' : ''}"><td>${esc(f.date)}</td><td>${esc(f.vehicle?.plate || f.plate || '')}</td><td>${esc(f.station)}</td><td>${fmt(f.before)} → ${fmt(f.after)} لتر</td><td>${fmt(f.dispensed)}</td><td>${fmt(f.measured)}</td><td>${fmt(f.variance)}</td><td>${esc(f.confidence)}</td></tr>`).join('');
+    const tripRows = g.trips.map(t => `<tr><td>${esc(t.date)}</td><td>${esc(t.vehicle?.plate || t.plate || '')}</td><td>${esc(t.from || '?')} → ${esc(t.to || '?')}</td><td>${fmt(t.planned)} / ${fmt(t.actual)} كم</td><td>${fmt(t.startOdo)} → ${fmt(t.endOdo)}</td><td>${fmt(t.fuelStart)}% → ${fmt(t.fuelEnd)}%</td><td>${fmt(t.maxSpeed)} كم/س</td><td>${fmt(t.idleMinutes)} د</td></tr>`).join('');
+    const serviceRows = g.service.map(s => `<tr class="${s.service === 'عاجل' ? 'fl-row-danger' : s.service === 'قريب' ? 'fl-row-warn' : ''}"><td>${esc(s.vehicle.plate || s.vehicle.name)}</td><td>${esc(s.lastOil)}</td><td>${esc(s.nextOilDate)}</td><td>${fmt(s.oilDueKm)} كم${s.oilDueHours ? ' · ' + fmt(s.oilDueHours) + ' ساعة' : ''}</td><td>${esc(s.filters)}</td><td>${esc(s.inspectionState)}</td></tr>`).join('');
+    const historyRows = g.vehicles.map(v => {
+      const vf = g.fuels.find(f => f.vehicle?.id === v.id || f.vehicle?.plate === v.plate);
+      const vt = g.trips.find(t => t.vehicle?.id === v.id || t.vehicle?.plate === v.plate);
+      const vs = g.service.find(s => s.vehicle.id === v.id);
+      return `<article class="fl-history-card"><div><strong>${esc(v.plate || v.name)}</strong><span>${esc(v.name || '')}</span></div><ul><li>سائق/مشغل: ${esc(v.driver || '-')} · مشروع: ${esc(v.project || '-')}</li><li>آخر رحلة: ${vt ? esc((vt.from || '?') + ' → ' + (vt.to || '?')) : 'لا توجد'} · ${vt ? fmt(vt.actual) + ' كم' : ''}</li><li>آخر تعبئة/قياس: ${vf ? fmt(vf.dispensed) + ' لتر، فرق ' + fmt(vf.variance) : 'لا توجد'}</li><li>زيت وفحص: ${vs ? esc(vs.nextOilDate) + ' · ' + esc(vs.inspectionState) : 'غير مجدول'}</li><li>حالة الخطر: ${guardStatusLabel(v.markerStatus)}</li></ul></article>`;
+    }).join('');
+    el.innerHTML = `
+      <div class="fl-guard-note">مرحلة عرض داخلية: بيانات demo/manual فقط، لا يوجد ربط GPS/OBD/CAN/J1939/حساسات حقيقي الآن.</div>
+      <div class="fl-kpi-grid">
+        ${kpi('إجمالي الأسطول', g.vehicles.length, `${active} فعالة · ${offline} غير متصلة`, 'fl-kpi-accent')}
+        ${kpi('تنبيهات الوقود', g.anomalies.length, `${fmt(g.suspiciousLiters)} لتر مشتبه`, g.anomalies.length ? 'fl-kpi-warn' : '')}
+        ${kpi('مخالفات السرعة', g.speedViolations, 'حسب المنطقة ونوع المركبة', g.speedViolations ? 'fl-kpi-warn' : '')}
+        ${kpi('صيانة/فحص قريب', serviceDue, 'زيت · فلاتر · فحص تشغيل', serviceDue ? 'fl-kpi-warn' : '')}
+        ${kpi('كلفة تعبئة العرض', fmt(fuelCost) + ' ' + curSym(), 'من سجل التعبئة والقياس', '')}
+      </div>
+      <div class="fl-guard-grid">
+        <section class="fl-panel fl-guard-map-panel"><div class="fl-panel-head"><h3>خريطة التحكم بالأسطول</h3></div><div class="fl-zone-strip">${zones}</div><div class="fl-map-grid">${markerCards}</div></section>
+        <section class="fl-panel"><div class="fl-panel-head"><h3>محددات السرعة حسب المنطقة</h3></div><table class="fl-table"><thead><tr><th>المنطقة</th><th>مركبات خفيفة</th><th>معدات ثقيلة</th><th>قاعدة التنبيه</th></tr></thead><tbody>${speedRows}</tbody></table></section>
+      </div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>مركز الشذوذ والتحقيق</h3></div><table class="fl-table"><thead><tr><th>خطورة</th><th>المركبة</th><th>النوع</th><th>التفاصيل</th><th>الإجراء</th></tr></thead><tbody>${anomalyRows || '<tr><td colspan="5" class="fl-empty">لا توجد شذوذات في العرض الحالي</td></tr>'}</tbody></table></div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>تعبئة وقياس الوقود</h3></div><table class="fl-table"><thead><tr><th>التاريخ</th><th>المركبة</th><th>المصدر</th><th>الخزان قبل/بعد</th><th>مصروف</th><th>مقاس</th><th>فرق</th><th>ثقة</th></tr></thead><tbody>${fuelRows}</tbody></table></div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>تاريخ الرحلات</h3></div><table class="fl-table"><thead><tr><th>التاريخ</th><th>المركبة</th><th>المسار</th><th>مخطط/فعلي</th><th>العداد</th><th>الوقود</th><th>أقصى سرعة</th><th>توقف</th></tr></thead><tbody>${tripRows}</tbody></table></div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>تبديل الزيت والفحوصات</h3></div><table class="fl-table"><thead><tr><th>المركبة</th><th>آخر زيت</th><th>القادم</th><th>العداد/الساعات</th><th>الفلاتر</th><th>نتيجة الفحص</th></tr></thead><tbody>${serviceRows}</tbody></table></div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>ملف تاريخ كامل لكل مركبة/معدة</h3></div><div class="fl-history-grid">${historyRows}</div></div>`;
+  }
 
   function renderDashboard() {
     const el = document.getElementById('flDashBody'); if (!el) return;
@@ -227,16 +388,16 @@
   }
 
   function renderTabContent() {
-    const map = { flDashBody: 'dashboard', flVehBody: 'vehicles', flLogsBody: 'logs' };
+    const map = { flDashBody: 'dashboard', flVehBody: 'vehicles', flLogsBody: 'logs', flGuardBody: 'guard' };
     Object.keys(map).forEach(id => { const e = document.getElementById(id); if (e) e.style.display = map[id] === activeTab ? '' : 'none'; });
-    if (activeTab === 'dashboard') renderDashboard(); else if (activeTab === 'vehicles') renderVehicles(); else renderLogs();
+    if (activeTab === 'dashboard') renderDashboard(); else if (activeTab === 'vehicles') renderVehicles(); else if (activeTab === 'guard') renderFleetGuard(); else renderLogs();
   }
   function render() {
     const body = document.getElementById('fleetBody'); if (!body) return;
     ensureData();
-    const tabs = [['dashboard', '📊 اللوحة'], ['vehicles', '🚚 المركبات'], ['logs', '⛽ الوقود والرحلات']];
+    const tabs = [['dashboard', '📊 اللوحة'], ['vehicles', '🚚 المركبات'], ['logs', '⛽ الوقود والرحلات'], ['guard', 'Fleet/Fuel Guard']];
     body.innerHTML = `<div class="fl-tabs">${tabs.map(([k, l]) => `<button class="fl-tab-btn ${activeTab === k ? 'active' : ''}" onclick="flOpenTab('${k}')">${l}</button>`).join('')}</div>
-      <div id="flDashBody"></div><div id="flVehBody"></div><div id="flLogsBody"></div>`;
+      <div id="flDashBody"></div><div id="flVehBody"></div><div id="flLogsBody"></div><div id="flGuardBody"></div>`;
     renderTabContent();
   }
   window.renderFleet = render;

@@ -250,12 +250,9 @@ Commit:
 
 ### Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation
 
-Status: PENDING
+Status: DONE
 Priority: P0-CUSTOMER-DEMO
-Blocked by:
-* completion of the currently active phase
-* no destructive data migration
-* no route baseline break
+Blocked by: None
 
 Automatic rule:
 After the current active phase completes, this Fleet Demo phase may be executed before broad later expansion, because it is a real customer demo opportunity.
@@ -279,6 +276,18 @@ Scope:
 * Customer Demo Reports for consumption, variance, suspected theft, speed violations, idle waste, efficiency, and monthly reconciliation.
 * AI / Jarvis boundaries: AI may explain, summarize, rank, draft notes, recommend checks, prepare reports, and compare actual vs expected behavior; AI cannot approve, dismiss, mutate ledgers, edit capacities, modify sensor readings, delete evidence, or approve its own recommendation.
 
+Implementation result:
+* implemented inside the existing `fleet` page only
+* added a Fleet/Fuel Guard tab with local mock command map/grid
+* added zone speed-limit policy table and deterministic anomaly explanations
+* added fuel measurement ledger with before/after tank, dispensed liters, measured liters, variance, confidence, and station/source
+* added trip history with planned/actual distance, odometer start/end, fuel start/end, idle minutes, and max speed
+* added oil-change, service, and inspection tracking presentation rows
+* added full vehicle/equipment history cards combining driver/project, trip, fuel, service, and risk status
+* no sidebar page added
+* no route baseline change
+* no `database.json` migration or hardware integration
+
 Out of scope now:
 * hardware integration
 * vendor-specific promises
@@ -290,7 +299,7 @@ Planning spec:
 `docs/FLEET_FUEL_GUARD_VERTICAL.md`
 
 Commit:
-`queue fleet fuel guard customer demo vertical`
+`phase7d fleet fuel guard presentation foundation`
 
 ---
 
@@ -509,9 +518,9 @@ Commit:
 
 The next action is:
 
-`Phase 7D-FleetDemo - Fleet Fuel Guard Presentation Foundation`
+`Phase 7E — SaaS Productization Foundation`
 
-Do not execute any other phase before Phase 7D-FleetDemo unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7E unless Saif explicitly changes priority.
 
 ---
 

@@ -66,6 +66,12 @@
   <link rel="stylesheet" href="modules/enterprise-suite.css?v=20260619-departments-v2">
   <link rel="stylesheet" href="modules/appointments.css?v=20260622-appt-v1">
   <link rel="stylesheet" href="modules/loyalty.css?v=20260622-loy-v1">
+  <link rel="stylesheet" href="modules/finance-installments.css?v=20260626-fi-v1">
+  <link rel="stylesheet" href="modules/sales-commission.css?v=20260626-sc-v1">
+  <link rel="stylesheet" href="modules/sales-contracts.css?v=20260626-sct-v1">
+  <link rel="stylesheet" href="modules/sales-price-lists.css?v=20260626-spl-v1">
+  <link rel="stylesheet" href="modules/pos-deepening.css?v=20260626-posd-v1">
+  <link rel="stylesheet" href="modules/omni-communications.css?v=20260626-comm-v1">
   <link rel="stylesheet" href="modules/esign.css?v=20260623-esign-v1">
   <link rel="stylesheet" href="modules/events.css?v=20260623-events-v1">
   <link rel="stylesheet" href="modules/knowledge.css?v=20260623-kb-v1">
@@ -1339,6 +1345,11 @@
               <span class="nav-label">الأصول والصيانة</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="sales_price_lists" id="navSalesPriceLists" onclick="switchPage('sales_price_lists')">
+              <span class="nav-icon">🏷️</span>
+              <span class="nav-label">قوائم الأسعار</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="subscriptions" id="navSubscriptions" onclick="switchPage('subscriptions')">
               <span class="nav-icon">🔁</span>
               <span class="nav-label">الاشتراكات</span>
@@ -1349,14 +1360,39 @@
               <span class="nav-label">المواعيد والحجوزات</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="finance_installments" id="navFinanceInstallments" onclick="switchPage('finance_installments')">
+              <span class="nav-icon">📅</span>
+              <span class="nav-label">خطط التقسيط</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="loyalty" id="navLoyalty" onclick="switchPage('loyalty')">
               <span class="nav-icon">🏆</span>
               <span class="nav-label">برنامج الولاء والمكافآت</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="sales_commission" id="navSalesCommission" onclick="switchPage('sales_commission')">
+              <span class="nav-icon">💰</span>
+              <span class="nav-label">العمولات</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="events" id="navEvents" onclick="switchPage('events')">
               <span class="nav-icon">🎉</span>
               <span class="nav-label">الفعاليات</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="sales_contracts" id="navSalesContracts" onclick="switchPage('sales_contracts')">
+              <span class="nav-icon">📝</span>
+              <span class="nav-label">العقود والموافقات</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="pos_deepening" id="navPOSDeepening" onclick="switchPage('pos_deepening')">
+              <span class="nav-icon">🪙</span>
+              <span class="nav-label">إدارة نقطة البيع</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="omni_communications" id="navOmniCommunications" onclick="switchPage('omni_communications')">
+              <span class="nav-icon">📤</span>
+              <span class="nav-label">مشاركة وإرسال</span>
               <span class="nav-indicator"></span>
             </button>
             <button class="nav-btn" data-page="people_ops" id="navPeopleOps" onclick="switchPage('people_ops')">
@@ -1719,9 +1755,15 @@
   <!-- view:real-estate -->
   <!-- view:hotel -->
   <!-- view:assets -->
+  <!-- view:sales_price_lists -->
   <!-- view:subscriptions -->
   <!-- view:appointments -->
   <!-- view:loyalty -->
+  <!-- view:finance_installments -->
+  <!-- view:sales_commission -->
+  <!-- view:sales_contracts -->
+  <!-- view:pos_deepening -->
+  <!-- view:omni_communications -->
   <!-- view:people_ops -->
   <!-- view:helpdesk -->
   <!-- view:fleet -->
@@ -2008,6 +2050,12 @@
   <script src="modules/enterprise-suite.js?v=20260624-arabic-v4"></script>
   <script src="modules/appointments.js?v=20260622-appt-v1"></script>
   <script src="modules/loyalty.js?v=20260622-loy-v1"></script>
+  <script src="modules/finance-installments.js?v=20260626-fi-v1"></script>
+  <script src="modules/sales-commission.js?v=20260626-sc-v1"></script>
+  <script src="modules/sales-contracts.js?v=20260626-sct-v1"></script>
+  <script src="modules/sales-price-lists.js?v=20260626-spl-v1"></script>
+  <script src="modules/pos-deepening.js?v=20260626-posd-v1"></script>
+  <script src="modules/omni-communications.js?v=20260626-comm-v1"></script>
   <script src="modules/esign.js?v=20260623-esign-v1"></script>
   <script src="modules/events.js?v=20260623-events-v1"></script>
   <script src="modules/knowledge.js?v=20260623-kb-v1"></script>

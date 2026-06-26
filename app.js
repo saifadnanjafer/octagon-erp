@@ -35292,6 +35292,12 @@ window.ensurePageTemplateLoaded = async function (page) {
     device_center: 'pageDeviceCenter',
     appointments: 'pageAppointments',
     loyalty: 'pageLoyalty',
+    finance_installments: 'pageFinanceInstallments',
+    sales_commission: 'pageSalesCommission',
+    sales_contracts: 'pageSalesContracts',
+    sales_price_lists: 'pageSalesPriceLists',
+    pos_deepening: 'pagePOSDeepening',
+    omni_communications: 'pageOmniCommunications',
     esign: 'pageEsign',
     events: 'pageEvents',
     knowledge: 'pageKnowledge',
@@ -35363,7 +35369,7 @@ window.prefetchAllViews = function () {
     'approvals', 'field_service', 'rental', 'warranty', 'banking', 'ar_ap',
     'contracts', 'logistics', 'supplier_portal', 'integration_hub',
     'security_center', 'data_quality', 'training_lms', 'scenario_planner',
-    'device_center', 'appointments', 'loyalty', 'esign', 'events', 'knowledge', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
+    'device_center', 'appointments',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready'
   ];

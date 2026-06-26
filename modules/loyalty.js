@@ -68,6 +68,7 @@
     if (!Array.isArray(l.tiers)) l.tiers = [];
     if (!Array.isArray(l.rewards)) l.rewards = [];
     if (!Array.isArray(l.transactions)) l.transactions = [];
+    if (!Array.isArray(l.vouchers)) l.vouchers = [];
     if (!l.settings || typeof l.settings !== 'object') l.settings = {};
     // earn rate mirrors the retail default so the program is consistent: 1 pt / 1000 spent.
     if (l.settings.earnPer == null) l.settings.earnPer = 1000;
@@ -188,6 +189,7 @@
       + tab('rewards', 'fa-gift', 'المكافآت')
       + tab('tiers', 'fa-layer-group', 'الفئات')
       + tab('ledger', 'fa-list', 'سجل النقاط')
+      + tab('vouchers', 'fa-ticket', 'الكوبونات')
       + '</div>';
   }
 
@@ -332,6 +334,37 @@
       + '<button class="loy-btn ghost" onclick="loyCloseRedeem()">إلغاء</button></div>';
   }
 
+  function vouchersView() {
+    const l = L();
+    let html = '<div class="loy-add" style="margin-bottom:1rem"><h3>إنشاء كوبون خصم</h3><div class="loy-form-grid">'
+      + '<label>رمز الكوبون<input id="loyV_code" placeholder="مثال: WELCOME10"></label>'
+      + '<label>نوع الخصم<select id="loyV_type"><option value="percent">نسبة مئوية</option><option value="fixed">مبلغ ثابت</option></select></label>'
+      + '<label>القيمة<input id="loyV_value" type="number" placeholder="10" step="0.1"></label>'
+      + '<label>الحد الأدنى للطلب<input id="loyV_min" type="number" placeholder="0"></label>'
+      + '<label>أقصى استخدام<input id="loyV_maxUse" type="number" placeholder="0" value="100"></label>'
+      + '<label>تاريخ الانتهاء<input id="loyV_expiry" type="date" value="' + todayISO() + '"></label>'
+      + '</div>'
+      + '<button class="loy-btn primary" onclick="loyCreateVoucher()">إنشاء كوبون</button></div>';
+
+    if (!l.vouchers.length) return html + '<div class="loy-empty">لا توجد كوبونات خصم.</div>';
+    html += '<table class="loy-table"><thead><tr><th>الكود</th><th>النوع</th><th>القيمة</th><th>الحد الأدنى</th><th>استخدام</th><th>تاريخ الانتهاء</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>';
+    l.vouchers.forEach(function (v) {
+      const expired = v.expiryDate && v.expiryDate < todayISO();
+      const maxed = v.maxUses > 0 && v.useCount >= v.maxUses;
+      const isActive = v.active !== false && !expired && !maxed;
+      html += '<tr><td><strong>' + esc(v.code) + '</strong></td>'
+        + '<td>' + (v.type === 'percent' ? '%' : 'ثابت') + '</td>'
+        + '<td>' + (v.type === 'percent' ? num(v.value) + '%' : fmt(num(v.value))) + '</td>'
+        + '<td>' + fmt(num(v.minOrder)) + '</td>'
+        + '<td>' + (v.useCount || 0) + '/' + (v.maxUses || '∞') + '</td>'
+        + '<td>' + (v.expiryDate || '') + '</td>'
+        + '<td><span class="loy-badge" style="background:' + (isActive ? '#166534' : '#7f1d1d') + ';color:' + (isActive ? '#86efac' : '#fca5a5') + '">' + (isActive ? 'نشط' : 'منتهي') + '</span></td>'
+        + '<td><button class="loy-btn sm ghost" onclick="loyToggleVoucher(\'' + v.id + '\')">' + (v.active !== false ? 'إيقاف' : 'تفعيل') + '</button></td></tr>';
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
   function render() {
     ensureData();
     const body = document.getElementById('loyaltyBody');
@@ -341,6 +374,7 @@
     else if (activeView === 'rewards') content = rewardsView();
     else if (activeView === 'tiers') content = tiersView();
     else if (activeView === 'ledger') content = ledgerView();
+    else if (activeView === 'vouchers') content = vouchersView();
     else content = overviewView();
     body.innerHTML = kpiStrip() + toolbar() + '<div class="loy-content">' + redeemPanel() + content + '</div>';
   }
@@ -432,6 +466,37 @@
     if (!r) return;
     r.active = r.active === false;
     save(); render();
+  };
+
+  window.loyCreateVoucher = function () {
+    const code = val('loyV_code');
+    if (!code) { toast('أدخل رمز الكوبون', 'warning'); return; }
+    const l = L();
+    if (l.vouchers.some(function (v) { return v.code === code; })) { toast('الكود موجود مسبقاً', 'error'); return; }
+    const type = document.getElementById('loyV_type');
+    const value = document.getElementById('loyV_value');
+    const min = document.getElementById('loyV_min');
+    const maxUse = document.getElementById('loyV_maxUse');
+    const expiry = document.getElementById('loyV_expiry');
+    l.vouchers.push(stamp({
+      id: uid('vch'),
+      code: code,
+      type: type ? type.value : 'percent',
+      value: Number(value ? value.value : 10),
+      minOrder: Number(min ? min.value : 0),
+      maxUses: Number(maxUse ? maxUse.value : 100),
+      expiryDate: expiry ? expiry.value : '',
+      useCount: 0,
+      active: true,
+      createdAt: new Date().toISOString()
+    }));
+    save(); toast('تم إنشاء الكوبون'); render();
+  };
+
+  window.loyToggleVoucher = function (id) {
+    const l = L();
+    const v = l.vouchers.find(function (x) { return x.id === id; });
+    if (v) { v.active = !(v.active !== false); save(); render(); }
   };
 
   window.loyCreateTier = function () {

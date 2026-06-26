@@ -1837,6 +1837,7 @@ function switchPage(page) {
     admin_panel: 'pageAdminPanel',
     automation: 'pageAutomation',
     whatsapp: 'pageWhatsapp',
+    telegram: 'pageTelegram',
     sales: 'pageSales',
     help_manual: 'pageHelpManual',
     customer_portal: 'pageCustomerPortal',
@@ -1870,6 +1871,7 @@ function switchPage(page) {
     admin_panel: 'navAdminPanel',
     automation: 'navAutomation',
     whatsapp: 'navWhatsapp',
+    telegram: 'navTelegram',
     sales: 'navSales',
     help_manual: 'navHelpManual',
     customer_portal: 'navCustomerPortal',
@@ -1908,6 +1910,7 @@ function switchPage(page) {
   if (page === 'admin_panel') renderAdminPanel();
   if (page === 'automation') renderAutomationEngine();
   if (page === 'whatsapp') renderWhatsAppIntegrationPage();
+  if (page === 'telegram') renderTelegramIntegrationPage();
   if (page === 'help_manual') renderHelpManualPage();
   if (page === 'sales') renderSalesCrmPage();
   if (page === 'customer_portal') renderCustomerPortal();
@@ -27617,6 +27620,335 @@ function filterWaGroup(groupId) {
   renderWhatsAppIntegrationPage();
 }
 
+// ───────── Telegram Connector — safe foundation (no token, draft/approval-only) ─────────
+// Non-destructive defaults only. No real bot token is ever stored client-side or in
+// database.json. Real sending requires a future server-side TELEGRAM_BOT_TOKEN plus
+// explicit human approval. Jarvis may create drafts only; it cannot send.
+function normalizeTelegramData() {
+  ensureOmni();
+  if (!omni.telegram || typeof omni.telegram !== 'object') omni.telegram = {};
+  const tg = omni.telegram;
+  const now = Date.now();
+  const defaultConfig = {
+    enabled: false,
+    mode: 'demo',
+    botUsername: '',
+    tokenConfigured: false,
+    webhookUrl: 'https://your-server.example.com/api/telegram/webhook',
+    allowedChatIds: [],
+    adminChatId: '',
+    managerGroupId: '',
+    employeeGroupId: '',
+    projectGroupMap: {}
+  };
+  tg.config = { ...defaultConfig, ...(tg.config || {}) };
+  // SAFETY: a real token must never live in the client data model.
+  delete tg.config.botToken;
+  delete tg.config.token;
+  delete tg.config.apiKey;
+  if (!Array.isArray(tg.chats) || !tg.chats.length) tg.chats = [
+    { id: 'tg_chat_admin', title: 'Octagon Admin', type: 'private', linked: true, demo: true },
+    { id: 'tg_chat_mgr', title: 'Managers Group', type: 'group', linked: true, demo: true },
+    { id: 'tg_chat_ops', title: 'Operations Floor', type: 'group', linked: false, demo: true }
+  ];
+  if (!Array.isArray(tg.inbox) || !tg.inbox.length) tg.inbox = [
+    { id: 'tg_in_1', sender: 'Ahmed — Workshop', chat: 'Operations Floor', text: 'الماكينة CNC-2 توقفت، نحتاج صيانة عاجلة', receivedAt: new Date(now - 1000 * 60 * 12).toISOString(), attachment: false, linkedType: 'fleet_fuel_anomaly', status: 'new' },
+    { id: 'tg_in_2', sender: 'Sara — Reception', chat: 'Managers Group', text: 'العميل يطلب تأكيد حالة الطلب #1043', receivedAt: new Date(now - 1000 * 60 * 47).toISOString(), attachment: false, linkedType: 'order', status: 'new' },
+    { id: 'tg_in_3', sender: 'Driver 7', chat: 'Operations Floor', text: 'صورة عداد الوقود بعد التعبئة', receivedAt: new Date(now - 1000 * 60 * 90).toISOString(), attachment: true, linkedType: 'fleet_fuel_anomaly', status: 'needs_approval' }
+  ];
+  if (!Array.isArray(tg.outboundQueue) || !tg.outboundQueue.length) tg.outboundQueue = [
+    { id: 'tg_out_1', destination: 'Managers Group', preview: 'ملخص اليوم: 12 مهمة مكتملة، 3 موافقات معلقة، 1 تنبيه وقود', createdBy: 'jarvis', reason: 'daily_manager_summary', status: 'pending_approval', createdAt: new Date(now - 1000 * 60 * 5).toISOString() },
+    { id: 'tg_out_2', destination: 'Ahmed — Workshop', preview: 'تم تعيين مهمة جديدة لك: فحص الماكينة CNC-2', createdBy: 'system', reason: 'task_assignment', status: 'draft', createdAt: new Date(now - 1000 * 60 * 20).toISOString() }
+  ];
+  if (!Array.isArray(tg.messageLinks)) tg.messageLinks = [];
+  if (!Array.isArray(tg.automationRules) || !tg.automationRules.length) tg.automationRules = [
+    { id: 'tg_rule_summary', icon: '🧾', title: 'ملخص يومي للمدير', desc: 'إرسال ملخص الأداء للمدير', wired: false },
+    { id: 'tg_rule_task', icon: '✅', title: 'إشعار موظف بمهمة', desc: 'تنبيه الموظف عند إسناد مهمة', wired: false },
+    { id: 'tg_rule_approval', icon: '🔐', title: 'طلب موافقة للمدير', desc: 'إرسال طلب موافقة لمدير', wired: false },
+    { id: 'tg_rule_fuel', icon: '⛽', title: 'تنبيه وقود/مخزون', desc: 'تنبيه شذوذ الوقود أو نقص المخزون', wired: false },
+    { id: 'tg_rule_fleet', icon: '🚚', title: 'تنبيه سرعة/جيوفنس', desc: 'تنبيه تجاوز السرعة أو الحدود الجغرافية', wired: false },
+    { id: 'tg_rule_qc', icon: '🧪', title: 'تنبيه فشل جودة', desc: 'إشعار عند فشل فحص الجودة', wired: false },
+    { id: 'tg_rule_order', icon: '📦', title: 'حالة طلب داخلياً', desc: 'مشاركة حالة الطلب داخلياً', wired: false },
+    { id: 'tg_rule_to_task', icon: '🔁', title: 'تحويل رسالة إلى مهمة', desc: 'تحويل رسالة تلغرام إلى مهمة', wired: false },
+    { id: 'tg_rule_attach', icon: '📎', title: 'تحويل ملف إلى مرفق', desc: 'حفظ صورة/ملف كمرفق (مبدئي)', wired: false }
+  ];
+  if (!Array.isArray(tg.activityLog)) tg.activityLog = [];
+  if (!tg.status || typeof tg.status !== 'object') tg.status = {};
+  tg.status.bot = tg.config.tokenConfigured ? (tg.config.enabled ? 'connected' : 'configured') : 'not_configured';
+  if (!tg.status.lastSync) tg.status.lastSync = null;
+  if (!tg.status.lastInbound) tg.status.lastInbound = tg.inbox[0] ? tg.inbox[0].receivedAt : null;
+  if (!tg.status.lastOutbound) tg.status.lastOutbound = null;
+  if (Array.isArray(omni.migrationsApplied) && !omni.migrationsApplied.includes('telegram_connector_defaults_v1')) {
+    omni.migrationsApplied.push('telegram_connector_defaults_v1');
+  }
+  return tg;
+}
+
+function telegramCanApprove() {
+  try {
+    const user = (typeof PentagonAuth !== 'undefined' && PentagonAuth.getCurrentUser) ? PentagonAuth.getCurrentUser() : null;
+    if (typeof PermissionService !== 'undefined' && PermissionService.checkPage) {
+      return !!PermissionService.checkPage('telegram', user);
+    }
+  } catch (_) {}
+  return true; // local/dev default-allow
+}
+
+function telegramTimeAgo(iso) {
+  if (!iso) return '—';
+  const ms = Date.now() - new Date(iso).getTime();
+  if (isNaN(ms)) return '—';
+  const m = Math.round(ms / 60000);
+  if (m < 1) return 'الآن';
+  if (m < 60) return `قبل ${m} دقيقة`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `قبل ${h} ساعة`;
+  return new Date(iso).toLocaleDateString('ar');
+}
+
+function telegramConvertToTask(id) {
+  normalizeTelegramData();
+  const msg = (omni.telegram.inbox || []).find(m => m.id === id);
+  if (!msg) return;
+  msg.status = 'converted_to_task';
+  omni.telegram.messageLinks.push({ id: makeId('tglink'), messageId: id, linkedType: 'task', draft: true, createdAt: new Date().toISOString() });
+  omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'draft_task_from_message', messageId: id, actor: 'user' });
+  saveData();
+  showToast('تم إنشاء مسودة مهمة من الرسالة (بدون إرسال أي رد).', 'success');
+  renderTelegramIntegrationPage();
+}
+
+function telegramMarkReviewed(id) {
+  normalizeTelegramData();
+  const msg = (omni.telegram.inbox || []).find(m => m.id === id);
+  if (!msg) return;
+  msg.status = 'linked';
+  omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'mark_reviewed', messageId: id, actor: 'user' });
+  saveData();
+  showToast('تمت مراجعة الرسالة.', 'success');
+  renderTelegramIntegrationPage();
+}
+
+function telegramIgnoreMessage(id) {
+  normalizeTelegramData();
+  const msg = (omni.telegram.inbox || []).find(m => m.id === id);
+  if (!msg) return;
+  msg.status = 'ignored';
+  omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'ignore_message', messageId: id, actor: 'user' });
+  saveData();
+  showToast('تم تجاهل الرسالة.', 'info');
+  renderTelegramIntegrationPage();
+}
+
+function telegramApproveOutbound(id) {
+  if (!telegramCanApprove()) return showToast('ليس لديك صلاحية الموافقة على رسائل تلغرام.', 'warning');
+  normalizeTelegramData();
+  const out = (omni.telegram.outboundQueue || []).find(o => o.id === id);
+  if (!out) return;
+  // Approve only — NEVER auto-send. Sending requires a configured server-side connector.
+  out.status = 'approved';
+  out.approvedAt = new Date().toISOString();
+  omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'approve_outbound', outboundId: id, actor: 'user' });
+  saveData();
+  showToast('تمت الموافقة على المسودة. لن تُرسل تلقائياً (لا يوجد توكن/إرسال مُفعّل).', 'success');
+  renderTelegramIntegrationPage();
+}
+
+function telegramJarvisDraft() {
+  normalizeTelegramData();
+  omni.telegram.outboundQueue.unshift({
+    id: makeId('tgout'), destination: 'Managers Group',
+    preview: 'مسودة من Jarvis: ملخص تنبيهات اليوم (بانتظار موافقة بشرية).',
+    createdBy: 'jarvis', reason: 'jarvis_draft', status: 'pending_approval', createdAt: new Date().toISOString()
+  });
+  omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'jarvis_create_draft', actor: 'jarvis' });
+  saveData();
+  showToast('أنشأ Jarvis مسودة فقط. تحتاج موافقة بشرية قبل الإرسال.', 'info');
+  renderTelegramIntegrationPage();
+}
+
+function renderTelegramIntegrationPage() {
+  normalizeAiIntegrationData();
+  const tg = normalizeTelegramData();
+  const orgProfile = getActiveOrgProfile();
+  const body = document.getElementById('telegramBody');
+  if (!body) return;
+
+  const cfg = tg.config;
+  const botLabel = { not_configured: 'غير مهيأ', configured: 'مهيأ', connected: 'متصل', error: 'خطأ' }[tg.status.bot] || 'غير مهيأ';
+  const modeLabel = { demo: 'تجريبي / يدوي', polling: 'Polling (مبدئي)', webhook: 'Webhook (مبدئي)' }[cfg.mode] || 'تجريبي / يدوي';
+  const linkedChats = (tg.chats || []).filter(c => c.linked).length;
+  const pendingApprovals = (tg.outboundQueue || []).filter(o => o.status === 'pending_approval').length;
+  const failedMessages = (tg.outboundQueue || []).filter(o => o.status === 'failed').length;
+  const lastInbound = (tg.inbox || [])[0];
+
+  const linkedTypeLabel = { task: 'مهمة', customer: 'عميل', order: 'طلب', approval: 'موافقة', fleet_fuel_anomaly: 'شذوذ أسطول/وقود', none: '—' };
+  const inboxStatusLabel = { new: 'جديدة', linked: 'مرتبطة', converted_to_task: 'حوّلت لمهمة', ignored: 'تجاهل', needs_approval: 'تحتاج موافقة' };
+  const inboxStatusColor = { new: 'var(--accent-blue)', linked: 'var(--success)', converted_to_task: 'var(--success)', ignored: 'var(--text-muted)', needs_approval: 'var(--warning)' };
+  const createdByLabel = { user: 'مستخدم', jarvis: 'Jarvis', system: 'تنبيه نظام' };
+  const outStatusLabel = { draft: 'مسودة', pending_approval: 'بانتظار موافقة', approved: 'تمت الموافقة', sent: 'أُرسلت', failed: 'فشل' };
+  const outStatusColor = { draft: 'var(--text-muted)', pending_approval: 'var(--warning)', approved: 'var(--success)', sent: '#0088cc', failed: 'var(--danger, #e5484d)' };
+
+  const statusCard = (label, value, color) => `
+    <div style="background:var(--surface-2,rgba(255,255,255,.03));border:1px solid var(--border);border-radius:12px;padding:12px 14px;border-inline-start:4px solid ${color};">
+      <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(label)}</div>
+      <div style="font-weight:700;margin-top:4px;">${value}</div>
+    </div>`;
+
+  const inboxRows = (tg.inbox || []).map(m => `
+    <tr>
+      <td>${escapeHtml(m.sender)}</td>
+      <td>${escapeHtml(m.chat)}</td>
+      <td style="max-width:260px;">${escapeHtml(m.text)} ${m.attachment ? '<i class="fa-solid fa-paperclip" title="مرفق" style="color:var(--text-muted);"></i>' : ''}</td>
+      <td style="white-space:nowrap;">${telegramTimeAgo(m.receivedAt)}</td>
+      <td>${escapeHtml(linkedTypeLabel[m.linkedType] || '—')}</td>
+      <td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${inboxStatusColor[m.status] || 'var(--text-muted)'};color:#fff;">${escapeHtml(inboxStatusLabel[m.status] || m.status)}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-mini" onclick="telegramConvertToTask('${m.id}')" title="إنشاء مسودة مهمة">↳ مهمة</button>
+        <button class="btn-mini" onclick="telegramMarkReviewed('${m.id}')" title="وضع علامة مراجعة">مراجعة</button>
+        <button class="btn-mini" onclick="telegramIgnoreMessage('${m.id}')" title="تجاهل">تجاهل</button>
+      </td>
+    </tr>`).join('');
+
+  const outboundRows = (tg.outboundQueue || []).map(o => {
+    const canApprove = telegramCanApprove() && (o.status === 'draft' || o.status === 'pending_approval');
+    return `
+    <tr>
+      <td>${escapeHtml(o.destination)}</td>
+      <td style="max-width:280px;">${escapeHtml(o.preview)}</td>
+      <td>${escapeHtml(createdByLabel[o.createdBy] || o.createdBy)}</td>
+      <td>${escapeHtml(o.reason || '—')}</td>
+      <td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${outStatusColor[o.status] || 'var(--text-muted)'};color:#fff;">${escapeHtml(outStatusLabel[o.status] || o.status)}</span></td>
+      <td>${canApprove ? `<button class="btn-mini" onclick="telegramApproveOutbound('${o.id}')" title="موافقة (بدون إرسال تلقائي)">موافقة</button>` : '<span style="color:var(--text-muted);font-size:11px;">—</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  const automationTiles = (tg.automationRules || []).map(r => `
+    <div style="background:var(--surface-2,rgba(255,255,255,.03));border:1px solid var(--border);border-radius:12px;padding:14px;">
+      <div style="font-size:22px;">${r.icon}</div>
+      <div style="font-weight:700;margin-top:6px;">${escapeHtml(r.title)}</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${escapeHtml(r.desc)}</div>
+      <div style="margin-top:8px;"><span class="analytics-risk-badge" style="background:var(--text-muted);font-size:10px;">${r.wired ? 'مُفعّل' : 'تخطيط فقط'}</span></div>
+    </div>`).join('');
+
+  const jarvisCan = ['قراءة ملخصات صندوق تلغرام', 'تصنيف الرسائل الواردة', 'صياغة ردود كمسودة', 'صياغة إنشاء مهمة', 'صياغة إشعارات موافقة', 'تلخيص مجموعات تلغرام', 'كشف الرسائل العاجلة', 'شرح تنبيهات شذوذ الأسطول/الوقود', 'تجهيز موجز للمدير'];
+  const jarvisCannot = ['إرسال رسائل تلغرام مباشرة', 'الموافقة على مسوداته الخاصة', 'حذف أدلة تلغرام', 'تعديل سجلات تلغرام', 'تجاوز الموافقة', 'كشف توكن البوت', 'مراسلة العملاء أو الموظفين بدون موافقة'];
+
+  body.className = 'automation-shell';
+  body.innerHTML = `
+    <div class="automation-hero">
+      <div>
+        <h2><i class="fa-brands fa-telegram text-accent-blue"></i> Telegram Connector — تلغرام</h2>
+        <p style="direction:rtl;">موصل بوت تلغرام للعمليات الداخلية: تنبيهات المدراء، إشعارات الموظفين، الموافقات، تحديثات المهام، وتنبيهات شذوذ الأسطول/الوقود — تحت إشراف Jarvis.</p>
+      </div>
+      <div class="automation-hero-actions">
+        <button class="btn-secondary" onclick="switchPage('command_center')">مركز القيادة</button>
+        <button class="btn-secondary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Jarvis</button>
+      </div>
+    </div>
+
+    <div class="admin-active-company-strip telegram-company-context">
+      <div class="admin-active-company-logo">${escapeHtml(orgProfile.logoEmoji || '✈️')}</div>
+      <div><b>${escapeHtml(orgProfile.companyName || 'Octagon')}</b><small>${escapeHtml(orgProfile.phone || '')} — ${escapeHtml(orgProfile.address || '')}</small></div>
+      <span style="margin-inline-start:auto;display:flex;align-items:center;gap:8px;">
+        <i class="fa-brands fa-telegram" style="color:#0088cc;font-size:18px;"></i>
+        <span style="font-size:11px;color:var(--text-muted);">واجهة Telegram — أساس آمن</span>
+      </span>
+    </div>
+
+    <div class="analytics-risk-badge" style="background:var(--warning);color:#000;display:block;direction:rtl;text-align:right;padding:10px 14px;border-radius:10px;margin-bottom:14px;">
+      ⚠️ لا تضع التوكن داخل المتصفح أو database.json. يجب أن يبقى Server-side فقط (مثل <code>TELEGRAM_BOT_TOKEN</code>).
+    </div>
+
+    <!-- 1. Connector Status -->
+    <div class="automation-panel">
+      <div class="automation-section-head"><h3>حالة موصل تلغرام</h3></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+        ${statusCard('حالة البوت', escapeHtml(botLabel), '#0088cc')}
+        ${statusCard('الوضع', escapeHtml(modeLabel), 'var(--accent-blue)')}
+        ${statusCard('آخر مزامنة', escapeHtml(telegramTimeAgo(tg.status.lastSync)), 'var(--text-muted)')}
+        ${statusCard('آخر رسالة واردة', lastInbound ? escapeHtml(telegramTimeAgo(lastInbound.receivedAt)) : '—', 'var(--success)')}
+        ${statusCard('آخر رسالة صادرة', escapeHtml(telegramTimeAgo(tg.status.lastOutbound)), '#0088cc')}
+        ${statusCard('موافقات معلقة', `<span style="color:var(--warning);">${pendingApprovals}</span>`, 'var(--warning)')}
+        ${statusCard('رسائل فاشلة', String(failedMessages), 'var(--danger,#e5484d)')}
+        ${statusCard('محادثات/مجموعات مرتبطة', String(linkedChats), 'var(--success)')}
+      </div>
+    </div>
+
+    <div class="automation-layout" style="grid-template-columns:minmax(0,1.25fr) minmax(300px,0.75fr);">
+      <div>
+        <!-- 2. Bot Setup Panel -->
+        <div class="automation-panel">
+          <div class="automation-section-head"><h3>إعداد البوت</h3></div>
+          <p style="direction:rtl;color:var(--text-muted);">لا يُعرض التوكن أبداً. يُخزَّن فقط ميتاداتا آمنة. التوكن الحقيقي مستقبلاً Server-side عبر <code>TELEGRAM_BOT_TOKEN</code>.</p>
+          <div style="display:grid;gap:10px;margin-top:12px;">
+            <div class="field"><label>حالة التوكن</label><input value="${cfg.tokenConfigured ? 'مهيأ ✓' : 'غير مهيأ (لا يوجد توكن)'}" readonly></div>
+            <div class="field"><label>اسم مستخدم البوت</label><input value="${escapeHtml(cfg.botUsername || '—')}" readonly></div>
+            <div class="field"><label>معاينة Webhook URL</label><input value="${escapeHtml(cfg.webhookUrl)}" readonly></div>
+            <div class="field"><label>وضع Polling (مبدئي)</label><input value="${cfg.mode === 'polling' ? 'مفعّل (placeholder)' : 'غير مفعّل'}" readonly></div>
+            <div class="field"><label>Allowed Chat IDs</label><input value="${escapeHtml((cfg.allowedChatIds || []).join(', ') || '—')}" readonly></div>
+            <div class="field"><label>Admin Chat ID</label><input value="${escapeHtml(cfg.adminChatId || '—')}" readonly></div>
+            <div class="field"><label>Manager Group ID</label><input value="${escapeHtml(cfg.managerGroupId || '—')}" readonly></div>
+            <div class="field"><label>Employee Group ID</label><input value="${escapeHtml(cfg.employeeGroupId || '—')}" readonly></div>
+            <div class="field"><label>Project Group Mapping</label><input value="placeholder — يُضبط لاحقاً Server-side" readonly></div>
+          </div>
+        </div>
+
+        <!-- 3. Message Inbox -->
+        <div class="automation-panel">
+          <div class="automation-section-head"><h3>صندوق الرسائل (عرض آمن)</h3></div>
+          <p style="direction:rtl;color:var(--text-muted);font-size:12px;">عرض تجريبي آمن. لا تُرسل أي ردود حقيقية ما لم يُهيّأ الموصل لاحقاً صراحةً.</p>
+          <div style="overflow:auto;">
+            <table class="data-table" style="width:100%;font-size:13px;">
+              <thead><tr><th>المرسل</th><th>المحادثة</th><th>النص</th><th>وقت الاستلام</th><th>الكيان المرتبط</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <tbody>${inboxRows || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">لا رسائل</td></tr>'}</tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Outbound Queue -->
+        <div class="automation-panel">
+          <div class="automation-section-head"><h3>قائمة الإرسال (بانتظار موافقة بشرية)</h3>
+            <button class="btn-secondary btn-mini" onclick="telegramJarvisDraft()" title="Jarvis ينشئ مسودة فقط"><i class="fa-solid fa-robot"></i> مسودة Jarvis</button>
+          </div>
+          <p style="direction:rtl;color:var(--text-muted);font-size:12px;">Jarvis ينشئ مسودات فقط. الموافقة لا تُرسل تلقائياً — الإرسال الفعلي يحتاج موصل Server-side مُهيّأ.</p>
+          <div style="overflow:auto;">
+            <table class="data-table" style="width:100%;font-size:13px;">
+              <thead><tr><th>الوجهة</th><th>معاينة الرسالة</th><th>أنشأها</th><th>السبب</th><th>الحالة</th><th>إجراء</th></tr></thead>
+              <tbody>${outboundRows || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">لا مسودات</td></tr>'}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <!-- 6. Jarvis + Telegram -->
+        <div class="automation-panel">
+          <div class="automation-section-head"><h3>جارفيس + تلغرام</h3></div>
+          <div class="analytics-risk-badge" style="background:var(--warning);color:#000;display:block;direction:rtl;text-align:right;padding:8px 12px;border-radius:8px;margin-bottom:10px;">
+            🤖 جارفيس يجهز ويقترح فقط. الإرسال يحتاج موافقة بشرية.
+          </div>
+          <div style="direction:rtl;text-align:right;font-size:13px;">
+            <b style="color:var(--success);">يستطيع Jarvis:</b>
+            <ul style="line-height:1.7;margin:6px 0 12px;">${jarvisCan.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+            <b style="color:var(--danger,#e5484d);">لا يستطيع Jarvis:</b>
+            <ul style="line-height:1.7;margin:6px 0;">${jarvisCannot.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
+          </div>
+          <div class="insp-actions" style="justify-content:flex-start;gap:10px;margin-top:10px;">
+            <button class="btn-primary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Jarvis</button>
+          </div>
+        </div>
+
+        <!-- 5. Alerts / Automation Use Cases -->
+        <div class="automation-panel">
+          <div class="automation-section-head"><h3>حالات الأتمتة والتنبيهات</h3></div>
+          <p style="direction:rtl;color:var(--text-muted);font-size:12px;">إجراءات تخطيط/واجهة فقط ما لم تُربط بأمان لاحقاً.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">${automationTiles}</div>
+        </div>
+      </aside>
+    </div>
+  `;
+}
 
 
 // getOctagonPageTruthRegistry() moved to modules/data-providers.js (GO 16 de-monolith Phase 1)
@@ -34917,6 +35249,7 @@ window.ensurePageTemplateLoaded = async function (page) {
     admin_panel: 'pageAdminPanel',
     automation: 'pageAutomation',
     whatsapp: 'pageWhatsapp',
+    telegram: 'pageTelegram',
     sales: 'pageSales',
     help_manual: 'pageHelpManual',
     customer_portal: 'pageCustomerPortal',
@@ -35022,7 +35355,7 @@ window.prefetchAllViews = function () {
     'finance', 'cashbox', 'expenses', 'income', 'customers', 'receipt',
     'employee_ui', 'workflow', 'kanban', 'task_manager', 'sop', 'command_center',
     'op_packs', 'machines', 'inventory', 'equipment', 'qc_center', 'analytics',
-    'automation', 'intelligence', 'whatsapp', 'admin_panel', 'sales',
+    'automation', 'intelligence', 'whatsapp', 'telegram', 'admin_panel', 'sales',
     'help_manual', 'customer_portal', 'mrp', 'nl_reports', 'multi_entity',
     'tax_compliance', 'pos', 'pharmacy', 'retail', 'clinic', 'restaurant',
     'real-estate', 'hotel', 'assets', 'subscriptions', 'people_ops', 'helpdesk',

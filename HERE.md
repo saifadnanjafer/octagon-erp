@@ -20,7 +20,7 @@ Welcome to Octagon ERP V4.0 / V6. This sprint focuses on upgrading the AI Assist
 
 ## Governance Freeze Baseline (2026-06-23)
 
-Route/page reconciliation is frozen at **86/86 sidebar nav** and **86/86 page templates**. `appointments` is active and renders. `risk_compliance` is active and counted in Route Health.
+Route/page reconciliation is at **87/87 sidebar nav** and **87/87 page templates** (was 86/86; +`telegram` on 2026-06-26 as a live feature request explicitly approved by Saif — the first page added since the freeze). `appointments` is active and renders. `risk_compliance` is active and counted in Route Health. The new `telegram` page is a safe foundation: no bot token client-side, Jarvis drafts only (never sends), outbound is approval-gated.
 
 Current canonical handover protocol:
 - `MASTER_ROADMAP.md` remains the single source of truth for long-range roadmap and build rules.

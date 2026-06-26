@@ -44,6 +44,7 @@ function getOctagonPageTruthRegistry() {
     { page: 'intelligence', label: 'لوحة تحكم الذكاء', navId: 'navIntelligence', pageId: 'pageIntelligence', section: 'النظام', renderOk: () => typeof renderAiControlDashboard === 'function' },
     { page: 'automation', label: 'محرك الأتمتة', navId: 'navAutomation', pageId: 'pageAutomation', section: 'النظام', renderOk: () => typeof renderAutomationEngine === 'function' },
     { page: 'whatsapp', label: 'صندوق رسائل العملاء', navId: 'navWhatsapp', pageId: 'pageWhatsapp', section: 'النظام', renderOk: () => typeof renderWhatsAppIntegrationPage === 'function' },
+    { page: 'telegram', label: 'بوابة Telegram العامة', navId: 'navTelegram', pageId: 'pageTelegram', section: 'النظام', renderOk: () => typeof renderTelegramIntegrationPage === 'function' },
     { page: 'sales', label: 'المبيعات وعلاقات العملاء', navId: 'navSales', pageId: 'pageSales', section: 'النظام', renderOk: () => typeof renderSalesCrmPage === 'function' },
     { page: 'mrp', label: 'التصنيع والتخطيط', navId: 'navMrp', pageId: 'pageMrp', section: 'النظام', renderOk: () => !!(window.OctagonMRP || window.PentagonMRP) },
     { page: 'multi_entity', label: 'إدارة الفروع', navId: 'navMultiEntity', pageId: 'pageMultiEntity', section: 'النظام', renderOk: () => !!(window.OctagonMultiEntity || window.PentagonMultiEntity) },

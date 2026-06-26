@@ -43,6 +43,7 @@
     intelligence: { ar: 'عقل النظام', en: 'System Brain' },
     automation: { ar: 'محرك الأتمتة', en: 'Automation Engine' },
     whatsapp: { ar: 'واتساب', en: 'WhatsApp' },
+    telegram: { ar: 'تلغرام', en: 'Telegram Connector' },
     sales: { ar: 'المبيعات والعملاء', en: 'Sales and Customers' },
     multi_entity: { ar: 'الفروع والعملات', en: 'Branches and Currencies' },
     tax_compliance: { ar: 'الضرائب والفوترة', en: 'Tax and E-Invoicing' },
@@ -158,6 +159,7 @@
     kanban: ['كانبان', 'لوحة', 'kanban', 'board', 'execution board', 'افتح اللوحة', 'افتح كانبان', 'اللوحة التنفيذية'],
     machines: ['مكائن', 'المكائن', 'ماكينة', 'machines', 'machine', 'افتح المكائن', 'افتح مكائن', 'المكائن والصيانة', 'machines maintenance'],
     whatsapp: ['واتساب', 'whatsapp', 'رسائل', 'افتح واتساب', 'الرسائل', 'messages'],
+    telegram: ['تلغرام', 'تليجرام', 'telegram', 'بوت', 'bot', 'افتح تلغرام', 'موصل تلغرام', 'telegram connector'],
     command_center: ['مركز القيادة', 'command center', 'dashboard', 'افتح مركز القيادة', 'لوحة التحكم', 'control panel'],
     intelligence: ['ذكاء', 'الذكاء', 'ai', 'intelligence', 'system brain', 'افتح الذكاء', 'افتح عقل النظام', 'عقل النظام'],
     analytics: ['تحليلات', 'التحليلات', 'analytics', 'افتح التحليلات', 'التحليلات والذكاء'],
@@ -257,6 +259,7 @@
       machines: ['أي مكينة تحتاج صيانة؟', 'وزع الأحمال على المكائن'],
       task_manager: ['ما المهام المتأخرة؟', 'رتب مهام اليوم حسب الأولوية'],
       whatsapp: ['لخص رسائل واتساب المعلقة'],
+      telegram: ['لخص رسائل تلغرام الجديدة', 'جهز تنبيه للمدير عن طلبات الموافقة', 'حول آخر رسالة إلى مهمة', 'اشرح حالة ربط بوت تلغرام', 'جهز تقرير تنبيهات اليوم'],
       finance: ['لخص الوضع المالي قراءة فقط'],
       kanban: ['أي بطاقات عالقة تحتاج تحريك؟'],
       intelligence: ['ما الذي يحتاج موافقتي الآن؟'],
@@ -269,6 +272,7 @@
       machines: ['Which machine needs maintenance?', 'Balance load across machines'],
       task_manager: ['Which tasks are overdue?', 'Prioritize today\'s tasks'],
       whatsapp: ['Summarize pending WhatsApp messages'],
+      telegram: ['Summarize new Telegram messages', 'Draft a manager alert about pending approvals', 'Convert the last message into a task', 'Explain Telegram bot connection status', 'Prepare today\'s alerts report'],
       finance: ['Summarize finance as read-only'],
       kanban: ['Which cards are stuck?'],
       intelligence: ['What needs my approval now?'],
@@ -1888,6 +1892,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
                   'This is machines section. Contains machine information, maintenance schedule, and operational status. Available actions: report issue, update maintenance status.'),
       whatsapp: t('هذا قسم واتساب. يحتوي على المجموعات، الرسائل، والتكامل. الإجراءات المتاحة: إرسال رسائل، مراجعة المحادثات، تلخيص الرسائل المعلقة.',
                   'This is WhatsApp section. Contains groups, messages, and integration. Available actions: send messages, review conversations, summarize pending messages.'),
+      telegram: t('هذا موصل تلغرام (Telegram Connector). يحتوي على حالة البوت، صندوق الرسائل، قائمة الإرسال بانتظار الموافقة، وحالات الأتمتة. جارفيس يجهز ويقترح مسودات فقط ولا يرسل بدون موافقة بشرية. لا يُعرض أو يُخزّن أي توكن في المتصفح؛ التوكن Server-side فقط.',
+                   'This is the Telegram Connector. Contains bot status, message inbox, an approval-gated outbound queue, and automation use-cases. Jarvis only drafts and suggests; it never sends without human approval. No bot token is shown or stored in the browser — the token stays server-side only.'),
       command_center: t('مركز القيادة. يعرض نظرة عامة على النظام، التنبيهات، والقرارات المعلقة. الإجراءات المتاحة: الموافقة على الطلبات، مراجعة التنبيهات.',
                         'Command center. Shows system overview, alerts, and pending decisions. Available actions: approve requests, review alerts.'),
       intelligence: t('عقل النظام. يوفر تحليلات ذكية، توصيات، و رؤى. الإجراءات المتاحة: تشغيل تحليل، مراجعة التوصيات، إنشاء تقارير ذكية.',
@@ -1932,6 +1938,11 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       const whatsApp = (typeof omni !== 'undefined' && Array.isArray(omni.whatsappSuggestions)) ? omni.whatsappSuggestions : [];
       const count = whatsApp.filter(item => item.status === 'pending').length;
       if (count) out.push({ label: t('رسائل واتساب بانتظار المراجعة', 'WhatsApp messages pending review'), count, page: 'whatsapp', short: 'WhatsApp' });
+    } catch (_) {}
+    try {
+      const tgQueue = (typeof omni !== 'undefined' && omni.telegram && Array.isArray(omni.telegram.outboundQueue)) ? omni.telegram.outboundQueue : [];
+      const count = tgQueue.filter(item => item.status === 'pending_approval').length;
+      if (count) out.push({ label: t('مسودات تلغرام بانتظار موافقتك', 'Telegram drafts awaiting your approval'), count, page: 'telegram', short: 'Telegram' });
     } catch (_) {}
     try {
       if (typeof getAllTaskManagerTasks === 'function') {

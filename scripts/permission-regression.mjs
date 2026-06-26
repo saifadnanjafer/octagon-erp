@@ -76,10 +76,10 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  ['sidebar remains at the Phase 6 baseline',
-    () => sidebarPages.size, 86],
-  ['mapped sidebar pages remain at the Phase 6H batch count',
-    () => mappedSidebarPages.length, 86],
+  ['sidebar baseline reflects the approved Telegram connector page',
+    () => sidebarPages.size, 87],
+  ['mapped sidebar pages stay fully mapped including Telegram',
+    () => mappedSidebarPages.length, 87],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

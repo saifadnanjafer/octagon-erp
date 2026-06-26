@@ -151,12 +151,8 @@ Notes:
 
 ### Phase 7B — Production Safety Closure
 
-Status: PENDING
-Priority: P0
-Next phase to execute: YES
-
-Goal:
-Finish production-safety foundations that were skipped before feature expansion.
+Status: DONE
+Commit: `d5cf44c`
 
 Scope:
 1. Remote Git readiness/status
@@ -221,7 +217,7 @@ Do not build:
 
 Status: PENDING
 Priority: P1
-Blocked by: Phase 7B
+Blocked by: None
 
 Goal:
 Build the first commercial ERP feature expansion after safety closure.
@@ -277,7 +273,7 @@ Commit:
 
 Status: PENDING
 Priority: P2
-Blocked by: Phase 7B and basic reporting/productization foundations
+Blocked by: Phase 7D and basic reporting/productization foundations
 
 Goal:
 Turn Jarvis from general assistant into governed business agents.
@@ -465,9 +461,9 @@ Commit:
 
 The next action is:
 
-`Phase 7B — Production Safety Closure`
+`Phase 7D — Report Designer and Smart Views`
 
-Do not execute any other phase before Phase 7B unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7D unless Saif explicitly changes priority.
 
 ---
 

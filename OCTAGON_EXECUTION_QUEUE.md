@@ -569,7 +569,7 @@ Validation:
 
 ### Phase 7M — E-Commerce and External Connectors
 
-Status: PENDING
+Status: DONE
 Priority: P3/P4
 Blocked by: Phase 7L
 
@@ -580,6 +580,15 @@ Scope:
 * payment gateway status integration
 * WhatsApp integration expansion
 
+Implementation result:
+* added `modules/ecommerce-connectors.js` + `.css` (add-only) injecting a connectors workspace into the existing `integration_hub` page (`integrationHubBody`), alongside the Phase 7L marketplace registry
+* WooCommerce / Shopify / Salla / Zid connector cards with staged status, scope, and last-sync
+* payment-gateway status panel (MyFatoorah/PayTabs/Stripe/ZainCash) — status only, no capture/transfer
+* WhatsApp expansion panel (planned features) — does not change existing WhatsApp logic; sending stays approval-routed
+* staged sync-jobs table with rollback; `omni.ecommerceConnectors` roots seeded non-destructively (correct bare-`omni` access)
+* every action is STAGED, LOGGED, and ROLLBACK-AWARE — no real external API call, order import, or payment capture; no token shown/stored client-side; database.json not mutated directly
+* no new sidebar page added
+
 Commit:
 `phase7m ecommerce connectors`
 
@@ -589,9 +598,9 @@ Commit:
 
 The next action is:
 
-`Phase 7M — E-Commerce and External Connectors`
+`Phase 7 roadmap complete (7A–7M all DONE) — awaiting Saif's next directive`
 
-Phase 7M can start now. Platform/API/webhook foundation is present, and implementation-methodology foundation is committed. External connector writes must remain staged, logged, and rollback-aware.
+All Phase 7 slices (7A through 7M) are implemented as add-only foundations. No further phase is queued. Before any production go-live, the standing hardening gates still apply: real authentication/sessions, server-side credentials for external connectors, and converting the staged connector/payment paths to live only behind explicit approval. Do not start new scope without Saif's instruction.
 
 ---
 

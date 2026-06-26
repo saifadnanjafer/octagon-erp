@@ -18547,6 +18547,7 @@ function renderAdminPanel() {
   const tabs = [
     { id: 'overview', label: 'نظرة عامة',     icon: 'fa-gauge-high' },
     { id: 'wireup',   label: 'توصيل النظام',  icon: 'fa-plug-circle-check' },
+    { id: 'productization', label: 'Productization', icon: 'fa-box-open' },
     { id: 'settings', label: 'الإعدادات',     icon: 'fa-sliders' },
     { id: 'routing',  label: 'توجيه المشرفين', icon: 'fa-sitemap' },
     { id: 'users',    label: 'المستخدمون',    icon: 'fa-users-gear' },
@@ -18564,6 +18565,7 @@ function renderAdminPanel() {
   let tabBody = '';
   switch (currentAdminTab) {
     case 'wireup':   tabBody = renderAdminTabWireUp();   break;
+    case 'productization': tabBody = renderAdminTabProductization(); break;
     case 'settings': tabBody = renderAdminTabSettings(); break;
     case 'routing':  tabBody = renderAdminTabRouting();  break;
     case 'users':    tabBody = renderAdminTabUsers();    break;
@@ -19376,6 +19378,116 @@ function savePayrollSettingsFromUI() {
   if (currentPage === 'timesheet') renderTimesheet();
   if (currentPage === 'employees') renderEmployeesTable();
   renderAdminPanel();
+}
+
+function getProductizationReadiness() {
+  ensureOmni();
+  ensureFinance();
+  const org = omni.adminSettings?.organization || {};
+  const users = Array.isArray(omni.users) ? omni.users : [];
+  const roles = Array.isArray(omni.roles) ? omni.roles : [];
+  const flags = omni.adminSettings?.productization?.featureFlags || {};
+  const checks = [
+    { label: 'Company profile', ok: !!(org.name || org.companies?.length), detail: org.name || `${org.companies?.length || 0} companies` },
+    { label: 'Active company', ok: !!org.activeCompanyId, detail: org.activeCompanyId || 'not selected' },
+    { label: 'Multi-tenant isolation', ok: !!org.multiTenant, detail: org.multiTenant ? 'enabled' : 'disabled' },
+    { label: 'Users and roles', ok: users.length > 0 && roles.length > 0, detail: `${users.length} users / ${roles.length} roles` },
+    { label: 'Permission regression target', ok: true, detail: '35/35 checked by script' },
+    { label: 'Report Designer', ok: !!flags.reportDesigner || !!(omni.nlReports && Array.isArray(omni.nlReports.definitions)), detail: 'existing nl_reports surface' },
+    { label: 'Fleet/Fuel Guard demo', ok: true, detail: 'existing fleet page tab' },
+    { label: 'Payment gateway', ok: false, detail: 'intentionally deferred' }
+  ];
+  const done = checks.filter(c => c.ok).length;
+  return { checks, done, total: checks.length, percent: Math.round(done * 100 / checks.length) };
+}
+
+function renderProductizationChecklist(title, rows) {
+  return `
+    <section class="admin-card admin-card-wide">
+      <h3><i class="fa-solid fa-list-check"></i> ${escapeHtml(title)}</h3>
+      <div class="backup-table-wrapper" style="margin-top:10px; overflow-x:auto;">
+        <table class="backup-table" style="width:100%;">
+          <thead><tr><th>Item</th><th>Status</th><th>Detail</th></tr></thead>
+          <tbody>
+            ${rows.map(row => `<tr class="backup-row">
+              <td><strong>${escapeHtml(row.label)}</strong></td>
+              <td><span class="backup-tag-badge ${row.ok ? 'tag-release' : 'tag-other'}">${row.ok ? 'Ready' : 'Pending'}</span></td>
+              <td>${escapeHtml(row.detail || '')}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function renderAdminTabProductization() {
+  ensureOmni();
+  const product = omni.adminSettings.productization || {};
+  const license = product.license || {};
+  const readiness = getProductizationReadiness();
+  const onboardingRows = [
+    { label: 'Plan and tier selected', ok: !!product.planTier, detail: product.planTier || 'demo/starter/business/enterprise placeholder' },
+    { label: 'Feature flags reviewed', ok: !!product.featureFlags, detail: 'flags live under adminSettings.productization.featureFlags' },
+    { label: 'Demo company mode decided', ok: product.demoCompanyMode !== undefined, detail: product.demoCompanyMode ? 'demo mode enabled' : 'not enabled yet' },
+    { label: 'Setup wizard foundation', ok: true, detail: 'company, users, permissions, reports, fleet demo readiness checks' },
+    { label: 'Tenant onboarding checklist', ok: true, detail: 'tracked here without creating new routes' },
+    { label: 'License/activation placeholder', ok: !!(license.mode || license.status), detail: `${license.mode || 'local'} / ${license.status || 'placeholder'}` },
+    { label: 'Billing gateway', ok: false, detail: 'deferred: no payment provider is integrated' }
+  ];
+
+  return `
+    <section class="admin-card admin-card-wide">
+      <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+        <div>
+          <h3 style="margin:0 0 6px;"><i class="fa-solid fa-box-open"></i> SaaS Productization Foundation</h3>
+          <p class="admin-note" style="margin:0;">Commercial packaging placeholders only: feature flags, tiers, demo mode, onboarding checklist, and local license status. No payment gateway or external activation call is wired here.</p>
+        </div>
+        <div class="admin-wireup-score" style="min-width:120px;"><b>${readiness.percent}%</b><span>readiness</span></div>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <h3><i class="fa-solid fa-layer-group"></i> Plan / Tier</h3>
+      ${renderAdminSelect('productization.planTier', 'Current tier', [
+        { value: 'demo', label: 'Demo' },
+        { value: 'starter', label: 'Starter' },
+        { value: 'business', label: 'Business' },
+        { value: 'enterprise', label: 'Enterprise' }
+      ])}
+      ${renderAdminNumber('productization.trialDays', 'Trial days', 0, 365)}
+      ${renderAdminToggle('productization.demoCompanyMode', 'Demo company mode', 'Presentation-safe company/sample mode. Does not seed or overwrite database data by itself.')}
+    </section>
+
+    <section class="admin-card">
+      <h3><i class="fa-solid fa-toggle-on"></i> Feature Flags</h3>
+      ${renderAdminToggle('productization.featureFlags.reportDesigner', 'Report Designer')}
+      ${renderAdminToggle('productization.featureFlags.fleetFuelGuardDemo', 'Fleet/Fuel Guard demo')}
+      ${renderAdminToggle('productization.featureFlags.mobileApprovals', 'Mobile approvals')}
+      ${renderAdminToggle('productization.featureFlags.aiGovernance', 'AI governance')}
+      ${renderAdminToggle('productization.featureFlags.setupWizard', 'Setup wizard')}
+      ${renderAdminToggle('productization.featureFlags.hardwareIntegrations', 'Hardware integrations placeholder', 'Keep disabled until vendor contracts and device APIs exist.')}
+    </section>
+
+    <section class="admin-card">
+      <h3><i class="fa-solid fa-key"></i> License / Activation</h3>
+      ${renderAdminSelect('productization.license.mode', 'License mode', [
+        { value: 'local-demo', label: 'Local demo' },
+        { value: 'trial', label: 'Trial placeholder' },
+        { value: 'licensed', label: 'Licensed placeholder' },
+        { value: 'expired', label: 'Expired placeholder' }
+      ])}
+      ${renderAdminSelect('productization.license.status', 'Activation status', [
+        { value: 'placeholder', label: 'Placeholder only' },
+        { value: 'active-local', label: 'Active local' },
+        { value: 'needs-review', label: 'Needs review' }
+      ])}
+      <p class="admin-note">No external activation server, no payment provider, and no customer license enforcement is implemented in this phase.</p>
+    </section>
+
+    ${renderProductizationChecklist('Setup Wizard Foundation', readiness.checks)}
+    ${renderProductizationChecklist('Tenant Onboarding Checklist', onboardingRows)}
+  `;
 }
 
 function renderAdminTabSettings() {

@@ -12,7 +12,7 @@
 
 Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
 
-Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. It adds a local mock command map/grid, zone speed policies, anomaly center, fuel measurement ledger, trip history, oil/service/inspection tracking, and full vehicle/equipment history cards. It still has no hardware integration, no sidebar pages, no route baseline changes, and no `database.json` migration. Current next queue item is Phase 7E SaaS Productization Foundation.
+Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. Phase 7E SaaS Productization Foundation is implemented inside the existing `admin_panel` page with plan/tier placeholders, feature flags, demo company mode, setup/onboarding checklists, and local license/activation placeholders. There is still no hardware integration, no payment gateway, no sidebar page addition, no route baseline change, and no `database.json` migration. Current next queue item is Phase 7F Agent Catalog Foundation.
 
 ---
 
@@ -1964,6 +1964,14 @@ Features: Fleet command map mock/grid, vehicle/equipment register, geofences, zo
 Acceptance: Implemented inside the existing `fleet` page as a presentation/demo foundation without adding sidebar pages, without route baseline break, without destructive data migration, and without claiming hardware integration.  
 Do not include: live GPS/OBD/CAN/J1939/tank-sensor integrations, vendor-specific promises, direct AI approvals, fuel-ledger mutation by AI, or `database.json` migration during planning.  
 Risks: Demo claims must stay clear about mock/manual data until hardware and ingestion contracts are implemented.
+
+## Phase 7E-Queue - SaaS Productization Foundation
+
+Goal: Prepare Octagon as a sellable product without adding new pages or payment-provider commitments.
+Features: Admin Panel Productization tab, plan/tier placeholders, feature flags, demo company mode, setup wizard readiness checklist, tenant onboarding checklist, and local license/activation placeholders.
+Acceptance: Implemented inside the existing `admin_panel` page, with no payment gateway, no external activation call, no sidebar page addition, no route baseline change, and no `database.json` migration.
+Do not include: real billing provider, external license server, destructive tenant migration, or automatic demo-data seeding.
+Risks: Feature flags are placeholders until downstream modules read them directly.
 
 ## Phase 7D - Agent Catalog
 

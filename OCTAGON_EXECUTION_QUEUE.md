@@ -341,7 +341,7 @@ Commit:
 
 ### Phase 7F — Agent Catalog Foundation
 
-Status: PENDING
+Status: DONE
 Priority: P2
 Blocked by: None
 
@@ -366,6 +366,17 @@ Initial agents:
 * QC/Rework Agent
 * Contract Drafting Agent
 * HR Leave Agent
+
+Implementation result:
+* added `omni.aiAgents.catalog` foundation inside AI Governance
+* seeded 8 governed business agents from the phase scope
+* each agent has purpose, domain, risk, allowed tools, blocked tools, approval triggers, data sources, and output format
+* added dry-run preview API and simulation log under `omni.aiAgents.simulations`
+* added agent approval mirror under `omni.aiAgents.approvals`
+* high-risk agent proposals route to the existing AI approval queue instead of direct execution
+* added Agent Catalog Foundation panel inside the existing `ai_status` page
+* no new sidebar page added
+* no direct finance/payroll/stock/security/legal/QC execution added
 
 Commit:
 `phase7f agent catalog foundation`
@@ -531,9 +542,9 @@ Commit:
 
 The next action is:
 
-`Phase 7F — Agent Catalog Foundation`
+`Phase 7G — HRMS Completion`
 
-Do not execute any other phase before Phase 7F unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7G unless Saif explicitly changes priority.
 
 ---
 

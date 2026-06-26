@@ -12,7 +12,7 @@
 
 Phase 7D Report Designer and Smart Views is now implemented inside the existing `nl_reports` page, without adding sidebar pages. The slice adds saved report definitions, smart-view column filters, role-group access metadata, Arabic print layout, CSV/JSON/Excel client exports, and a disabled scheduler placeholder under `omni.nlReports`. AI drafting remains read-only and only proposes report-definition wording.
 
-Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. Phase 7E SaaS Productization Foundation is implemented inside the existing `admin_panel` page with plan/tier placeholders, feature flags, demo company mode, setup/onboarding checklists, and local license/activation placeholders. There is still no hardware integration, no payment gateway, no sidebar page addition, no route baseline change, and no `database.json` migration. Current next queue item is Phase 7F Agent Catalog Foundation.
+Phase 7D-FleetDemo Fleet Fuel Guard Presentation Foundation is implemented inside the existing `fleet` page. Phase 7E SaaS Productization Foundation is implemented inside the existing `admin_panel` page with plan/tier placeholders, feature flags, demo company mode, setup/onboarding checklists, and local license/activation placeholders. Phase 7F Agent Catalog Foundation is implemented inside the existing `ai_status` / AI Governance surface with 8 governed business agents, explicit allowed/blocked tools, dry-run preview, simulation/approval logs, and approval-queue routing for high-risk proposals. There is still no hardware integration, no payment gateway, no sidebar page addition, no route baseline change, and no `database.json` migration. Current next queue item is Phase 7G HRMS Completion.
 
 ---
 
@@ -1972,6 +1972,14 @@ Features: Admin Panel Productization tab, plan/tier placeholders, feature flags,
 Acceptance: Implemented inside the existing `admin_panel` page, with no payment gateway, no external activation call, no sidebar page addition, no route baseline change, and no `database.json` migration.
 Do not include: real billing provider, external license server, destructive tenant migration, or automatic demo-data seeding.
 Risks: Feature flags are placeholders until downstream modules read them directly.
+
+## Phase 7F-Queue - Agent Catalog Foundation
+
+Goal: Turn Jarvis from a general assistant into governed business agents.
+Features: `omni.aiAgents.catalog`, 8 initial business agents, allowed tools, blocked tools, approval triggers, data sources, output formats, dry-run preview API, simulation log, approval mirror, and Agent Catalog Foundation panel in `ai_status`.
+Acceptance: Implemented inside existing AI Governance surfaces, with no direct high-risk execution. Finance, payroll, stock, security, legal, and QC-sensitive proposals route to the AI approval queue.
+Do not include: direct finance/payroll/stock posting, AI self-approval, permission bypass, external sends, or a new sidebar page.
+Risks: downstream Jarvis planners must be taught to use these policies before autonomous agent flows are expanded.
 
 ## Phase 7D - Agent Catalog
 

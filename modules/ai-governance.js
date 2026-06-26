@@ -340,6 +340,190 @@
     return 'warning';
   }
 
+  /* Agent Catalog Foundation (Phase 7F): policy-first, dry-run only by default. */
+  const AGENT_CATALOG_SEED = [
+    {
+      id: 'report_builder', name: 'Report Builder Agent', domain: 'reporting', riskLevel: 'medium',
+      purpose: 'Build natural-language report drafts from approved ERP data sources.',
+      allowedTools: ['report_workshop_today', 'report_missing_materials', 'report_overdue_tasks'],
+      blockedTools: ['create_journal_entry', 'post_finance', 'modify_employee', 'delete_record', 'send_file_to_customer'],
+      approvalTriggers: ['external_share', 'new_formula_write', 'customer_delivery'],
+      dataSources: ['nl_reports', 'finance summaries', 'inventory summaries', 'workshop summaries'],
+      outputFormat: 'report_draft_with_sources'
+    },
+    {
+      id: 'executive_briefing', name: 'Executive Briefing Agent', domain: 'management', riskLevel: 'low',
+      purpose: 'Summarize operational signals for managers without changing records.',
+      allowedTools: ['report_workshop_today', 'report_manager_attention', 'report_overdue_tasks'],
+      blockedTools: ['post_finance', 'modify_material', 'modify_employee', 'waive_qc'],
+      approvalTriggers: ['send_to_external_channel'],
+      dataSources: ['command_center', 'work_orders', 'approvals', 'ai_audit_log'],
+      outputFormat: 'briefing_bullets'
+    },
+    {
+      id: 'inventory_reorder', name: 'Inventory Reorder Agent', domain: 'inventory', riskLevel: 'medium',
+      purpose: 'Suggest reorder needs and draft purchase requests.',
+      allowedTools: ['report_missing_materials', 'list_material_shortages', 'propose_purchase_request'],
+      blockedTools: ['modify_material', 'consume_material', 'post_finance', 'create_journal_entry'],
+      approvalTriggers: ['purchase_request_create', 'supplier_message', 'stock_adjustment'],
+      dataSources: ['inventory', 'warehouse_stock', 'procurement'],
+      outputFormat: 'reorder_recommendation'
+    },
+    {
+      id: 'bank_reconciliation', name: 'Bank Reconciliation Agent', domain: 'finance', riskLevel: 'high',
+      purpose: 'Suggest bank matching and variance explanations; never posts journals directly.',
+      allowedTools: ['request_finance_review'],
+      blockedTools: ['create_journal_entry', 'post_finance', 'add_customer_debt', 'archive_record'],
+      approvalTriggers: ['journal_entry_needed', 'bank_match_finalize', 'cash_movement'],
+      dataSources: ['banking', 'cashbox', 'journal_preview'],
+      outputFormat: 'reconciliation_suggestion'
+    },
+    {
+      id: 'workshop_scheduling', name: 'Workshop Scheduling Agent', domain: 'workshop', riskLevel: 'medium',
+      purpose: 'Recommend scheduling changes from jobs, machines, people, and blockers.',
+      allowedTools: ['report_workshop_today', 'list_machine_conflicts', 'create_task'],
+      blockedTools: ['close_work_order', 'waive_qc', 'consume_material'],
+      approvalTriggers: ['locked_job_change', 'capacity_override', 'customer_commitment'],
+      dataSources: ['work_orders', 'machines', 'tasks', 'attendance'],
+      outputFormat: 'schedule_recommendation'
+    },
+    {
+      id: 'qc_rework', name: 'QC/Rework Agent', domain: 'quality', riskLevel: 'medium',
+      purpose: 'Explain QC failures and draft rework actions without passing or waiving QC.',
+      allowedTools: ['summarize_work_order', 'explain_work_order_blocker', 'propose_rework_action'],
+      blockedTools: ['waive_qc', 'close_work_order', 'modify_material'],
+      approvalTriggers: ['qc_status_change', 'rework_cost', 'customer_acceptance'],
+      dataSources: ['qc', 'rework', 'work_orders', 'attachments'],
+      outputFormat: 'qc_rework_plan'
+    },
+    {
+      id: 'contract_drafting', name: 'Contract Drafting Agent', domain: 'legal', riskLevel: 'high',
+      purpose: 'Draft contract text and obligations for human legal review.',
+      allowedTools: ['draft_sop', 'draft_customer_message'],
+      blockedTools: ['send_file_to_customer', 'archive_record', 'post_finance', 'modify_employee'],
+      approvalTriggers: ['final_issue', 'external_send', 'legal_approval'],
+      dataSources: ['documents', 'customers', 'projects', 'contracts'],
+      outputFormat: 'contract_draft_for_review'
+    },
+    {
+      id: 'hr_leave', name: 'HR Leave Agent', domain: 'hr', riskLevel: 'medium',
+      purpose: 'Check leave context and prepare manager-review recommendations.',
+      allowedTools: ['request_payroll_review', 'create_task'],
+      blockedTools: ['modify_employee', 'post_finance', 'create_journal_entry'],
+      approvalTriggers: ['leave_approval', 'payroll_impact', 'attendance_correction'],
+      dataSources: ['employees', 'attendance', 'timesheets', 'payroll_preview'],
+      outputFormat: 'leave_review_packet'
+    }
+  ];
+
+  function normalizeAiAgentsCatalog() {
+    const o = O(); if (!o) return null;
+    if (!o.aiAgents || typeof o.aiAgents !== 'object' || Array.isArray(o.aiAgents)) o.aiAgents = {};
+    const root = o.aiAgents;
+    if (!Array.isArray(root.catalog)) root.catalog = [];
+    if (!Array.isArray(root.runs)) root.runs = [];
+    if (!Array.isArray(root.approvals)) root.approvals = [];
+    if (!Array.isArray(root.simulations)) root.simulations = [];
+    root.policyVersion = root.policyVersion || 'phase7f-agent-catalog-v1';
+    root.directHighRiskExecution = false;
+    root.updated_at = nowIso();
+    AGENT_CATALOG_SEED.forEach(seed => {
+      let agent = root.catalog.find(a => a.id === seed.id);
+      if (!agent) {
+        agent = Object.assign({
+          enabled: true,
+          dryRunMode: true,
+          simulationMode: true,
+          humanReviewMode: true,
+          auditRequired: true,
+          currentUserEnforced: true,
+          created_at: nowIso(),
+          is_active: true
+        }, seed);
+        root.catalog.push(agent);
+      } else {
+        Object.keys(seed).forEach(k => { if (agent[k] === undefined) agent[k] = seed[k]; });
+        if (agent.enabled === undefined) agent.enabled = true;
+        if (agent.dryRunMode === undefined) agent.dryRunMode = true;
+        if (agent.simulationMode === undefined) agent.simulationMode = true;
+        if (agent.humanReviewMode === undefined) agent.humanReviewMode = true;
+        if (agent.auditRequired === undefined) agent.auditRequired = true;
+        if (agent.currentUserEnforced === undefined) agent.currentUserEnforced = true;
+        if (agent.is_active === undefined) agent.is_active = true;
+      }
+      agent.updated_at = nowIso();
+    });
+    return root;
+  }
+  function listAiAgents() {
+    const root = normalizeAiAgentsCatalog();
+    return root ? root.catalog.filter(a => a.is_active !== false) : [];
+  }
+  function getAiAgentPolicy(agentId) {
+    return listAiAgents().find(a => a.id === agentId) || null;
+  }
+  function buildAiAgentDryRun(agentId, context) {
+    const agent = getAiAgentPolicy(agentId);
+    if (!agent) return { ok: false, error: 'agent_not_found', agentId: agentId };
+    const ctx = context || {};
+    const highRiskBlocked = (agent.blockedTools || []).filter(tool => getToolRisk(tool) === 'high' || getToolRisk(tool) === 'critical');
+    return {
+      ok: true,
+      mode: 'dry_run',
+      canExecuteDirectly: false,
+      agentId: agent.id,
+      agentName: agent.name,
+      currentUser: userName(),
+      currentRole: role(),
+      sourcePage: ctx.sourcePage || window.currentPage || '',
+      allowedTools: (agent.allowedTools || []).slice(),
+      blockedTools: (agent.blockedTools || []).slice(),
+      approvalTriggers: (agent.approvalTriggers || []).slice(),
+      dataSources: (agent.dataSources || []).slice(),
+      outputFormat: agent.outputFormat || 'review_packet',
+      highRiskBlockedTools: highRiskBlocked,
+      reviewPath: 'dry-run -> human review -> approval queue when needed',
+      result: 'No ERP data is mutated by this preview.'
+    };
+  }
+  function recordAiAgentDryRun(agentId, context) {
+    const root = normalizeAiAgentsCatalog();
+    const preview = buildAiAgentDryRun(agentId, context);
+    if (root && preview.ok) {
+      root.simulations.unshift({ id: uid('aisim'), at: nowIso(), by: userName(), agentId: agentId, sourcePage: preview.sourcePage, preview: preview });
+      if (root.simulations.length > 300) root.simulations = root.simulations.slice(0, 300);
+      audit('ai.agent.dry_run_preview', { agentId: agentId, sourcePage: preview.sourcePage, blockedTools: preview.blockedTools });
+      save();
+    }
+    return preview;
+  }
+  function proposeAiAgentAction(agentId, action) {
+    const agent = getAiAgentPolicy(agentId);
+    if (!agent) return { ok: false, error: 'agent_not_found' };
+    const tool = (action && (action.toolName || action.actionType || action.tool)) || 'agent_action';
+    const risk = getToolRisk(tool, action && action.riskLevel);
+    const blocked = (agent.blockedTools || []).includes(tool) || risk === 'high' || risk === 'critical';
+    const proposal = proposeAiAction(Object.assign({}, action || {}, {
+      toolName: tool,
+      actionType: tool,
+      title: (agent.name || agent.id) + ': ' + (action && action.title ? action.title : tool),
+      riskLevel: risk,
+      requestedBy: 'agent:' + agent.id,
+      requestedByRole: role(),
+      sourcePage: (action && action.sourcePage) || window.currentPage || '',
+      createdByAI: true,
+      payload: Object.assign({}, (action && action.payload) || {}, { agentId: agent.id, blockedByAgentPolicy: blocked })
+    }));
+    const root = normalizeAiAgentsCatalog();
+    if (root) {
+      root.approvals.unshift({ id: uid('aiappr'), at: nowIso(), agentId: agent.id, toolName: tool, riskLevel: risk, queueId: proposal.id, blockedByAgentPolicy: blocked });
+      if (root.approvals.length > 300) root.approvals = root.approvals.slice(0, 300);
+    }
+    audit('ai.agent.action_proposed', { agentId: agent.id, toolName: tool, riskLevel: risk, queueId: proposal.id, blockedByAgentPolicy: blocked });
+    save();
+    return { ok: true, queued: true, queueId: proposal.id, blockedByAgentPolicy: blocked, message: 'Agent action routed to approval queue; no direct execution.' };
+  }
+
   /* ════════════════ ACTION QUEUE HARDENING (sprint section 8) ════════════════ */
   function queue() {
     try {
@@ -519,6 +703,7 @@
     const reg = normalizeAiToolsRegistry() || [];
     const pend = listPendingAiActions();
     const log = normalizeAiAuditLog() || [];
+    const agents = listAiAgents();
     const brainTools = (window.JarvisBrain && window.JarvisBrain.tools) ? Object.keys(window.JarvisBrain.tools).length : 0;
     const warnings = reg.filter(t2 => t2.is_active !== false && toolExecutorState(t2) === 'warning' && t2.category !== 'computer_control_future');
     const health = {
@@ -534,6 +719,8 @@
       brainVersion: (window.JarvisBrain && window.JarvisBrain.version) || '—',
       brainToolsCount: brainTools,
       registryToolsCount: reg.filter(t2 => t2.is_active !== false).length,
+      agentCatalogCount: agents.length,
+      dryRunAgents: agents.filter(a => a.dryRunMode !== false).length,
       registryWarnings: warnings.map(w => w.name),
       pendingActions: pend.length,
       failedProviderCalls: (provider && provider.failCount) || 0,
@@ -555,8 +742,18 @@
     const providers = normalizeAiProviders() || [];
     let pstat = null; try { pstat = window.OctagonAI && window.OctagonAI.status && window.OctagonAI.status(); } catch (_) {}
     const reg = normalizeAiToolsRegistry() || [];
+    const agents = listAiAgents();
     const log = (normalizeAiAuditLog() || []).slice(-15).reverse();
     const row = (l, v) => '<div class="aigov-row"><span>' + l + '</span><span>' + v + '</span></div>';
+    const agentTools = (items) => '<div class="aigov-chip-list">' + (items || []).slice(0, 4).map(x => '<code>' + esc(x) + '</code>').join('') + ((items || []).length > 4 ? '<span class="aigov-muted">+' + ((items || []).length - 4) + '</span>' : '') + '</div>';
+    const agentRows = agents.map(a => '<tr>'
+      + '<td><strong>' + esc(a.name) + '</strong><div class="aigov-muted">' + esc(a.purpose || '') + '</div></td>'
+      + '<td>' + esc(a.domain || '') + '</td>'
+      + '<td>' + riskPill(a.riskLevel || 'medium') + '</td>'
+      + '<td>' + ((a.dryRunMode !== false && a.humanReviewMode !== false) ? pill('dry-run + review', 'ok') : pill('needs review', 'warn')) + '</td>'
+      + '<td>' + agentTools(a.allowedTools) + '</td>'
+      + '<td>' + agentTools(a.blockedTools) + '</td>'
+      + '</tr>').join('');
     const byRisk = { low: 0, medium: 0, high: 0, critical: 0 };
     reg.forEach(t2 => { if (t2.is_active !== false) byRisk[t2.riskLevel] = (byRisk[t2.riskLevel] || 0) + 1; });
     return ''
@@ -600,6 +797,14 @@
       + '</div>'
       + '<div class="aigov-hint">⚠️ أدوات التحكم بالحاسوب محضّرة للمستقبل ومطفأة حالياً لحماية النظام.</div>'
       + '</div>'
+      + '</div>'
+      // agent catalog
+      + '<div class="aigov-card aigov-wide"><div class="aigov-title">Agent Catalog Foundation</div>'
+      + '<div class="aigov-hint">Governed business agents are registered with explicit allowed tools, blocked tools, dry-run preview, human review checkpoints, audit requirements, and no direct high-risk execution.</div>'
+      + '<div class="aigov-table-wrap"><table class="aigov-table aigov-agent-table"><thead><tr><th>Agent</th><th>Domain</th><th>Risk</th><th>Mode</th><th>Allowed tools</th><th>Blocked tools</th></tr></thead><tbody>'
+      + agentRows
+      + '</tbody></table></div>'
+      + '<div class="aigov-hint">Policy store: <code>omni.aiAgents.catalog</code>, simulations: <code>omni.aiAgents.simulations</code>, approvals mirror: <code>omni.aiAgents.approvals</code>. High-risk proposals route to the approval queue.</div>'
       + '</div>'
       // recent audit log
       + '<div class="aigov-card"><div class="aigov-title">📜 آخر أحداث الذكاء الصناعي</div>'
@@ -649,7 +854,7 @@
   /* ════════════════ init ════════════════ */
   function normalizeAll() {
     try {
-      normalizeAiSystem(); normalizeAiProviders(); normalizeAiToolsRegistry();
+      normalizeAiSystem(); normalizeAiProviders(); normalizeAiToolsRegistry(); normalizeAiAgentsCatalog();
       normalizeAiActionQueue(); normalizeAiAuditLog(); normalizeWorkshopMemory(); normalizeAiDevelopmentFactory();
     } catch (_) {}
   }
@@ -662,7 +867,7 @@
       const wired = wireSwitch() & wireQueueExecution() & wireJarvisAliases();
       let dataReady = false;
       // omni loads async from the server — keep retrying until the registry is actually seeded
-      try { normalizeAll(); dataReady = !!(O() && Array.isArray(O().aiToolRegistry) && O().aiToolRegistry.length); } catch (_) {}
+      try { normalizeAll(); dataReady = !!(O() && Array.isArray(O().aiToolRegistry) && O().aiToolRegistry.length && O().aiAgents && Array.isArray(O().aiAgents.catalog) && O().aiAgents.catalog.length); } catch (_) {}
       if (dataReady && !announced) {
         announced = true;
         audit('ai.context.built', { note: 'governance core initialized', manifestVersion: (getAiSystemManifest() || {}).version });
@@ -693,17 +898,28 @@
     normalizeAiSystem: normalizeAiSystem,
     normalizeAiProviders: normalizeAiProviders,
     normalizeAiToolsRegistry: normalizeAiToolsRegistry,
+    normalizeAiAgentsCatalog: normalizeAiAgentsCatalog,
+    listAiAgents: listAiAgents,
+    getAiAgentPolicy: getAiAgentPolicy,
+    buildAiAgentDryRun: buildAiAgentDryRun,
+    recordAiAgentDryRun: recordAiAgentDryRun,
+    proposeAiAgentAction: proposeAiAgentAction,
     normalizeAiActionQueue: normalizeAiActionQueue,
     normalizeAiAuditLog: normalizeAiAuditLog,
     normalizeWorkshopMemory: normalizeWorkshopMemory,
     normalizeAiDevelopmentFactory: normalizeAiDevelopmentFactory,
-    version: '1.0'
+    version: '1.1'
   };
   // spec-named globals
   window.getAiSystemManifest = getAiSystemManifest;
   window.updateAiSystemManifest = updateAiSystemManifest;
   window.getAiSystemHealth = getAiSystemHealth;
   window.renderAiSystemStatus = renderAiSystemStatus;
+  window.listAiAgents = listAiAgents;
+  window.getAiAgentPolicy = getAiAgentPolicy;
+  window.buildAiAgentDryRun = buildAiAgentDryRun;
+  window.recordAiAgentDryRun = recordAiAgentDryRun;
+  window.proposeAiAgentAction = proposeAiAgentAction;
   window.proposeAiAction = proposeAiAction;
   window.approveAiAction = approveAiAction;
   window.rejectAiAction = rejectAiAction;

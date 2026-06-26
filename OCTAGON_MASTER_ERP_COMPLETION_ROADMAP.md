@@ -2037,6 +2037,8 @@ Acceptance: A new tenant can be configured using a template and signed off.
 Do not include: app marketplace.  
 Risks: templates need feature flags and permissions alignment.
 
+Status note 2026-06-26: Phase 7K/7I implementation-methodology foundation is implemented without adding sidebar pages. It adds `omni.implementationMethodology`, setup checklist, industry template plan records, import validation batches, opening-balance proof review, go-live P0 checklist, and role training checklist through existing Admin Productization, Import, and Deploy Ready surfaces. It does not post opening balances, write stock, or seed destructive demo data automatically.
+
 ## Phase 7J - Platform / Marketplace
 
 Goal: Build extension foundation after core product is stable.  
@@ -2044,6 +2046,8 @@ Features: Plugin registry, developer API, webhooks, Integration Hub maturity. Ma
 Acceptance: Scoped API token and webhook cannot access outside tenant/scope.  
 Do not include: public marketplace monetization.  
 Risks: secrets and tenant isolation must be production-grade.
+
+Status note 2026-06-26: Platform / Marketplace foundation is implemented in commit `573e8d7` through `omni.platformMarketplace`, Integration Hub injection, Admin module catalog, scoped API key foundation, webhook registry, local tier gates, and staged marketplace records.
 
 ## Phase 7K - E-Commerce and External Connectors
 

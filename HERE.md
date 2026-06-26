@@ -269,3 +269,22 @@ Validation checkpoint:
 
 Next automatic phase:
 - Phase 7E SaaS Productization Foundation.
+
+## Phase 7K Implementation Methodology Foundation (2026-06-26)
+
+Built without adding sidebar pages or resetting `database.json`:
+- Added `modules/implementation-methodology.js` and `.css`, linked from `index.html`.
+- New root: `omni.implementationMethodology` with setup steps, industry templates, import specs/batches, opening-balance proof records, go-live checklist, training checklist, and signoffs.
+- Admin Productization now receives a company setup wizard foundation, industry template plan cards, and opening-balance proof review. Template application is plan-only and non-destructive.
+- Existing `import` page now receives a Data Import Center foundation with required column specs and validation-batch logging. Invalid-row behavior is modeled as rejected-before-write.
+- Existing `deploy_ready` page now receives go-live P0 and role training checklists.
+- No opening balance journals, stock moves, asset values, or destructive demo data are posted automatically.
+
+Validation checkpoint:
+- Commit: `0bbe4da phase7k implementation methodology foundation`.
+- `node --check` passed for `modules/implementation-methodology.js`, `modules/platform-marketplace.js`, `modules/sales-commercial-pack.js`, `app.js`, and `server.js`.
+- VM smoke seeded the implementation-methodology root without touching `database.json`.
+- `8080` served the new `implementation-methodology` JS/CSS cache tokens.
+
+Next automatic phase:
+- Phase 7M E-Commerce and External Connectors.

@@ -485,7 +485,7 @@ Commit:
 
 ### Phase 7J — Sales Commercial Pack
 
-Status: PENDING
+Status: DONE
 Priority: P2
 
 Goal:
@@ -502,13 +502,17 @@ Scope:
 * WhatsApp/email sharing
 
 Commit:
-`phase7j sales commercial pack`
+`e8c649c phase7j sales commercial pack`
+
+Validation:
+* committed locally
+* final link cleanup included in `573e8d7`
 
 ---
 
 ### Phase 7K — Implementation Methodology and Industry Templates
 
-Status: PENDING
+Status: DONE
 Priority: P2/P3
 
 Goal:
@@ -523,13 +527,25 @@ Scope:
 * training checklist
 
 Commit:
-`phase7k implementation methodology`
+`0bbe4da phase7k implementation methodology foundation`
+
+Implementation:
+* added `modules/implementation-methodology.js` + `.css`
+* injected company setup wizard foundation into Admin Productization
+* injected data import center foundation into existing `import`
+* injected go-live and role training checklists into existing `deploy_ready`
+* added industry template plan records and opening-balance proof review without automatic posting
+
+Validation:
+* `node --check modules\implementation-methodology.js`
+* VM smoke seeded 8 setup steps, 6 templates, 6 import specs, 6 go-live items, and 5 training roles
+* `8080` served the new JS/CSS cache tokens
 
 ---
 
 ### Phase 7L — Platform / Marketplace / Developer Ecosystem
 
-Status: PENDING
+Status: DONE
 Priority: P3
 
 Goal:
@@ -544,7 +560,10 @@ Scope:
 * developer docs
 
 Commit:
-`phase7l platform marketplace foundation`
+`573e8d7 phase7k platform marketplace foundation`
+
+Validation:
+* plugin registry, scoped API key foundation, webhook registry, module catalog, and staged marketplace foundation committed locally
 
 ---
 
@@ -570,9 +589,9 @@ Commit:
 
 The next action is:
 
-`Phase 7J — Sales Commercial Pack`
+`Phase 7M — E-Commerce and External Connectors`
 
-Do not execute any other phase before Phase 7J unless Saif explicitly changes priority.
+Phase 7M can start now. Platform/API/webhook foundation is present, and implementation-methodology foundation is committed. External connector writes must remain staged, logged, and rollback-aware.
 
 ---
 

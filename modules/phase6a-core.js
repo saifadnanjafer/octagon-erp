@@ -231,6 +231,34 @@
         createdAt: now()
       });
     }
+    if (!omni.storageLocations.some(row => row.id === 'LOC_WIP')) {
+      omni.storageLocations.push({
+        id: 'LOC_WIP',
+        code: 'LOC_WIP',
+        nameAr: 'ورشة التنفيذ',
+        nameEn: 'Execution Workshop',
+        warehouseId: 'MAIN_WORKSHOP',
+        type: 'internal',
+        parentId: '',
+        barcode: 'LOC-WIP',
+        companyId,
+        createdAt: now()
+      });
+    }
+    if (!omni.storageLocations.some(row => row.id === 'LOC_MAIN')) {
+      omni.storageLocations.push({
+        id: 'LOC_MAIN',
+        code: 'LOC_MAIN',
+        nameAr: 'المخزن الرئيسي (Entity)',
+        nameEn: 'Main Stock (Entity)',
+        warehouseId: 'MAIN_WORKSHOP',
+        type: 'stock',
+        parentId: '',
+        barcode: 'LOC-MAIN',
+        companyId,
+        createdAt: now()
+      });
+    }
     return omni;
   }
 

@@ -453,7 +453,7 @@ Commit:
 
 ### Phase 7I — Advanced Inventory and Supply Chain
 
-Status: PENDING
+Status: DONE
 Priority: P1/P2
 
 Goal:
@@ -469,6 +469,14 @@ Scope:
 * landed cost
 * barcode/QR labels
 * supplier performance
+
+Implementation result:
+* added `modules/advanced-inventory.js` + `.css` (add-only) injecting a Phase 7I foundation panel into the existing `inventory` page via wrapped `renderInventoryPage`/`switchPage`
+* added `omni.advInventory` roots (serialLots, expiryItems, reorderRules, countSessions, stockRequests, landedCosts, labels, supplierScores) seeded non-destructively
+* derived read-only evidence from `omni.materials` for all 9 scope items (serial/lot tracking, expiry metadata, at/below-minimum reorder, reserved vs available, count sessions, stock requests, landed cost, barcode/QR labels, supplier scoring)
+* added a read-only "reorder suggestions" preview (no purchase order or stock movement created)
+* no sidebar page added; route/page registry stays 87/87
+* no stock total, reservation, cost, or posted movement is changed; AVCO/costing untouched
 
 Commit:
 `phase7i advanced inventory and supply chain`
@@ -562,9 +570,9 @@ Commit:
 
 The next action is:
 
-`Phase 7I — Advanced Inventory and Supply Chain`
+`Phase 7J — Sales Commercial Pack`
 
-Do not execute any other phase before Phase 7I unless Saif explicitly changes priority.
+Do not execute any other phase before Phase 7J unless Saif explicitly changes priority.
 
 ---
 

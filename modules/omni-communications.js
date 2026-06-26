@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function O() { return window.omni || (window.omni = {}); }
+  function O() { try { if (typeof omni !== 'undefined' && omni && typeof omni === 'object') return omni; } catch (_) {} if (!window.omni) window.omni = {}; return window.omni; }
   function save() { if (window.saveData) window.saveData(); }
   function toast(m, k) { if (window.showToast) window.showToast(m, k || 'info'); }
   function uid(p) { return (p || 'comm') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6); }

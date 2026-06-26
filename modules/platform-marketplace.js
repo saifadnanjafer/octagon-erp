@@ -4,6 +4,7 @@
   const VERSION = 'phase7k-platform-marketplace-v1';
 
   function O() {
+    try { if (typeof omni !== 'undefined' && omni && typeof omni === 'object') return omni; } catch (_) {}
     if (!window.omni) window.omni = {};
     return window.omni;
   }

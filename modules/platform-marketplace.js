@@ -375,8 +375,13 @@
     renderAdminCatalog();
   }
 
+  // Debounced single render — rebuilding the heavy integration_hub DOM four times
+  // per navigation (compounded with the ecommerce-connectors module) made the page
+  // janky/unresponsive. One delayed pass is enough once the template is mounted.
+  let _renderTimer = null;
   function scheduleRender() {
-    [0, 250, 900, 1800].forEach(delay => setTimeout(renderAll, delay));
+    clearTimeout(_renderTimer);
+    _renderTimer = setTimeout(renderAll, 350);
   }
 
   function installHooks() {

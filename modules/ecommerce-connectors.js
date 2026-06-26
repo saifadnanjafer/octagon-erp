@@ -140,7 +140,10 @@
     host.appendChild(section);
   }
 
-  function scheduleRender() { [0, 250, 900, 1800].forEach(d => setTimeout(renderHub, d)); }
+  // Debounced single render — avoid stacking rebuilds of the shared integrationHubBody
+  // (the marketplace module also re-renders this container).
+  let _renderTimer = null;
+  function scheduleRender() { clearTimeout(_renderTimer); _renderTimer = setTimeout(renderHub, 350); }
 
   function installHooks() {
     const original = window.switchPage;

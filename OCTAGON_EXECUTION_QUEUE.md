@@ -594,13 +594,52 @@ Commit:
 
 ---
 
+---
+### Phase 8B-Fleet — Fleet Fuel Guard Demo Repair
+
+Status: DONE
+Priority: P0-CUSTOMER-DEMO
+
+Goal:
+Repair the existing fleet/fuel page into a demo-ready command center with 7 internal sections, in-memory demo data, SVG command map, fuel risk layer, speed/geofence logic, investigation management, and read-only Jarvis panel — without hardware integration or external APIs.
+
+Scope:
+* 12 in-memory demo vehicles (truck, loader, generator, pickup, excavator, crane, car, tanker, roller, van, bulldozer) with drivers, projects, zones, fuel anomalies, and speed violations
+* 7-section internal tab structure (لوحة السيطرة, خريطة المتابعة, المركبات والمعدات, الوقود والمخاطر, الرحلات والمناطق, التقارير والتحقيقات, إعدادات الربط التجريبي)
+* SVG/HTML command map with 6 color-coded zones and vehicle pins
+* Fuel risk / anti-theft detection (variance analysis, low confidence, suspicious drops)
+* Speed/geofence violation detection (zone-specific limits, light vs heavy vehicle)
+* Investigation management (case listing by severity, placeholder actions)
+* Read-only Jarvis AI panel (dynamic content based on top anomaly)
+* Demo data badge (بيانات تجريبية للعرض) on all sections when no real data
+* CSS overhaul (dark-mode ready, responsive, professional command-center look)
+
+Implementation result:
+* `modules/fleet.js` rewritten (~530 lines, 7 sections, 12 demo vehicles, guard map, fuel risk, investigations, Jarvis panel)
+* `modules/fleet.css` rewritten (~140 lines, RTL, dark-mode ready, responsive grids)
+* `views/fleet.html` updated (title/subtitle)
+* `docs/FLEET_MODULE_REVIEW.md` created
+* No new pages added (93/93 route count maintained)
+* No database.json mutations (demo data in-memory only)
+* No real GPS/OBD/tank sensor integration
+* No external map API used
+
+Commit:
+`phase8b fleet fuel guard demo repair`
+
+---
+
 ## Current Next Action
 
 The next action is:
 
-`Phase 7 roadmap complete (7A–7M all DONE) — awaiting Saif's next directive`
+`Phase 8B complete — awaiting Saif's next directive`
 
-All Phase 7 slices (7A through 7M) are implemented as add-only foundations. No further phase is queued. Before any production go-live, the standing hardening gates still apply: real authentication/sessions, server-side credentials for external connectors, and converting the staged connector/payment paths to live only behind explicit approval. Do not start new scope without Saif's instruction.
+After Phase 8B, remaining roadmap includes:
+* Phase 7K (already DONE) — Implementation Methodology and Industry Templates
+* Phase 7L (already DONE) — Platform/Marketplace
+* Phase 7M (already DONE) — E-Commerce Connectors
+* Next phases to be determined by Saif based on customer priorities.
 
 ---
 

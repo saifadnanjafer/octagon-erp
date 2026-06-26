@@ -8,6 +8,8 @@
 
 Last consolidated: 2026-06-07.
 
+> **Status (2026-06-26):** Phase 7A–7M + Phase 8B (Fleet) DONE. **Phase 8A — Release Candidate & Pilot Readiness Audit: DONE / PASS** — route baseline 93/93/93, PAGE_METADATA + permissions both 93/93, 0 dead handlers, 0 boot console errors, Jarvis boundaries verified. Result: **ready for demo / internal pilot**. Open P1: `database.json` git fallback is a thin mirror — full v6 data is in SQLite `database.db`. Detail: `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md` and Phase 8A entry in `OCTAGON_EXECUTION_QUEUE.md`. Do not auto-start a new feature phase after 8A.
+
 ---
 
 ## 0. THE VISION (North Star)

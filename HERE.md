@@ -18,6 +18,18 @@ Welcome to Octagon ERP V4.0 / V6. This sprint focuses on upgrading the AI Assist
 - **Database validity**: `database.json` validated.
 - **Diagnostics matrix**: Programmatic 53-item test matrix run completed. Total tests: 53. PASS: 42. FAIL: 6. WARN: 0. MANUAL REQUIRED: 5. Results exported to `jarvis-test-report.json`.
 
+## Phase 8A — Release Candidate & Pilot Readiness (2026-06-26)
+
+Phase 7A–7M feature roadmap + Phase 8B (Fleet) are complete. Phase 8A is a hardening/audit pass (no new pages). Result: **READY FOR DEMO / INTERNAL PILOT**.
+- Route baseline **93/93/93** clean (0 duplicate/missing/orphan); total view files 95, internal route-less 2.
+- Permission mapping **93/93**; PAGE_METADATA brought to **93/93** (added 10 workshop/core pages in `permissionService.js`).
+- Broken-button audit: **0 dead handlers** across 96 HTML files / 3747 callables.
+- Boot smoke: **0 console errors**; sampled pages render non-empty. `integration_hub` renders in the real app but wedges headless automation (heavy aggregate; already debounced; future lazy/tabbed render).
+- Security/Jarvis: no frontend secrets; `POST /api/db` admin-gated; destructive restore needs typed confirm + pre-restore backup; AI `directHighRiskExecution=false`; connectors staged; Jarvis draft/approve-only.
+- Backup: create a FRESH `/api/backup` (SQLite-sourced) before relying on verify — stale legacy `database.backup.auto.*.json` mirrors fail verify by design.
+- Top risk (P1): `database.json` (git-tracked) is a thin 8-collection fallback; full v6 data lives in SQLite `database.db` (gitignored) — package SQLite/full backup on deploy.
+- Full checklist: `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md`.
+
 ## Governance Freeze Baseline (2026-06-23)
 
 Route/page reconciliation is at **93/93 sidebar nav** and **93/93 page templates** (was 86/86; +`telegram` 2026-06-26 approved by Saif; +Phase 7J/7L pages `sales_commission`, `sales_contracts`, `sales_price_lists`, `finance_installments`, `pos_deepening`, `omni_communications`, `integration_hub`). All 93 pages are mapped in `permissionService.js` (100% coverage) and the regression baseline expects 93/93. The 7J view files were renamed hyphen→underscore so the loader finds them (filename must equal the page key). The new `telegram` page is a safe foundation: no bot token client-side, Jarvis drafts only (never sends), outbound is approval-gated.

@@ -2,14 +2,14 @@
 
 ## Current Baseline
 
-Last verified commit:
-`44f93f5 phase7c cleanup route pwa cache and inventory count safety`
+Last verified commit (pre-8A):
+`2547a0b complete 7j/7l page registration: PAGE_METADATA + doc baseline 87->93`
 
 Current protected route baseline:
-- public nav pages: 86
-- public view markers: 86
-- counted routed view files: 86
-- total view files: 88
+- public nav pages: 93
+- public view markers: 93
+- counted routed view files: 93
+- total view files: 95
 - internal route-less views:
   - manager_approvals
   - mobile_inventory_count
@@ -17,8 +17,10 @@ Current protected route baseline:
 Current validation baseline:
 - permission regression: 35/35
 - database parse: PASS
-- route health: PASS
-- backup verify: PASS
+- route health: PASS (live `/api/release/status` route = 93/93/93, 0 duplicates/missing/orphans)
+- PAGE_METADATA coverage: 93/93 (closed the last 10 gaps in Phase 8A)
+- PAGE_PERMISSIONS coverage: 93/93
+- backup verify: PASS only against a FRESH `/api/backup` (SQLite-sourced); stale legacy `database.backup.auto.*.json` mirrors fail verify by design
 - git status: clean at last report
 
 Important:
@@ -629,17 +631,61 @@ Commit:
 
 ---
 
+### Phase 8A — Release Candidate & Pilot Readiness Audit
+
+Status: DONE
+Priority: P0
+Reason: Phase 7A–7M feature roadmap is complete. Before any new feature work, Octagon must pass a release-candidate audit.
+
+Scope:
+* full route/page audit
+* full page smoke audit
+* empty page / broken button audit
+* route health and PAGE_METADATA audit
+* permission/audit/security audit
+* Jarvis boundary audit
+* performance audit for heavy pages
+* demo/pilot readiness checklist
+* documentation baseline update
+
+Findings / result:
+* Route baseline confirmed clean at **93/93/93** (nav / markers / counted routed views), total view files 95, internal route-less 2. Live `/api/release/status` route block: 0 duplicate page keys, 0 missing views, 0 missing markers, 0 orphan routed views.
+* Permission mapping: **93/93** nav pages covered (0 missing).
+* PAGE_METADATA: was 83/93 — **fixed** by adding the 10 missing workshop/core pages (`kanban`, `workflow`, `op_packs`, `task_manager`, `sop`, `machines`, `inventory`, `equipment`, `qc_center`, `sales`). Now **93/93**.
+* Broken-button / handler-wiring audit: scanned 96 HTML files vs 3747 defined callables → **0 dead handlers** (only false positive was a native `HTMLElement.click()`).
+* Page smoke (real browser): 0 console errors at boot; sampled pages render non-empty with header + buttons. `integration_hub` renders in the real app but wedges the headless automation renderer (heavy aggregate of 4 modules; already debounced 4x→1x; recommend future lazy/tabbed render).
+* Security/Jarvis: no real secrets in frontend or `database.json`; `POST /api/db` admin/local-dev gated; destructive restore needs typed confirm + pre-restore backup; AI Governance `directHighRiskExecution = false`; Telegram/WhatsApp/ecommerce/marketplace all staged + approval-routed; Jarvis cannot approve/send/mutate high-risk directly.
+* Backup: stale legacy `database.backup.auto.*.json` are a reduced 8-collection mirror and FAIL `/api/backup/verify` against the v6 SQLite schema. A FRESH `/api/backup` (SQLite-sourced) self-verifies and PASSES. Created `database.backup.phase8a_audit.*.json` (1.4MB) → `/api/backup/verify` PASS.
+
+Production blockers (by severity):
+* P1 — `database.json` (git-tracked fallback) is a thin 8-collection mirror; full v6 data (account_moves/users/departments/journal_entries/locations) lives only in SQLite `database.db` (gitignored). Package SQLite or a fresh full backup on deploy.
+* P2 — `integration_hub` heavy single render (real app OK; optimize later).
+* P3 — local-dev default-allow must be disabled for a real customer pilot (real auth/sessions).
+
+Files changed:
+* `services/permissionService.js` — added 10 PAGE_METADATA entries (add-only).
+* `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md` — new.
+* `OCTAGON_EXECUTION_QUEUE.md`, `HERE.md`, `STRUCTURE.md`, `MASTER_ROADMAP.md` — concise status notes.
+
+Validation:
+* `node --check` on app/server/permission/audit/state/tenant/route-health/phase7a-stabilization → all OK
+* permission regression → 35/35
+* `database.json` parse → PASS
+* `/api/release/status` route → 93/93/93
+* `/api/backup/verify` (fresh) → success:true
+
+Commit:
+`phase8a release candidate pilot readiness audit`
+
+---
+
 ## Current Next Action
 
 The next action is:
 
-`Phase 8B complete — awaiting Saif's next directive`
+`Phase 8A complete — release-candidate audit PASS. Awaiting Saif's decision: (A) start workshop pilot, (B) build Fleet/Fuel customer demo, (C) wire Telegram server-side connector, (D) fix release blockers, (E) package commercial demo.`
 
-After Phase 8B, remaining roadmap includes:
-* Phase 7K (already DONE) — Implementation Methodology and Industry Templates
-* Phase 7L (already DONE) — Platform/Marketplace
-* Phase 7M (already DONE) — E-Commerce Connectors
-* Next phases to be determined by Saif based on customer priorities.
+Do not auto-start a new feature phase after Phase 8A. Phase 7A–7M + Phase 8B (Fleet) are DONE; Phase 8A hardening is DONE. Next direction is Saif's call.
 
 ---
 

@@ -23,6 +23,8 @@ This system is built as a single-page application (SPA) with a modular architect
 ## Services Directory (`services/`)
 - `financeService.js`, `stockService.js`, `recordService.js`, `tenantService.js`: State managers handling the ERP database.
 
+> **Phase 8A (2026-06-26) — Release Candidate audit:** route baseline confirmed clean at **93/93/93** (nav / view markers / counted routed view files), total view files **95**, internal route-less **2** (`manager_approvals`, `mobile_inventory_count`). PAGE_METADATA and PAGE_PERMISSIONS both now cover **93/93** nav pages (Phase 8A added 10 workshop/core pages to PAGE_METADATA in `services/permissionService.js`). See `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md`.
+
 ## Page / Route Registry (reconciled 2026-06-23)
 A page is "fully wired" when it appears consistently in **six** places. As of this pass all **93** sidebar pages agree (79 after the 2026-06-22 reconciliation; +`appointments` +`loyalty` 06-22; +`esign` +`events` +`knowledge` +`surveys` +`visitors` +`risk_compliance` 06-23; +`telegram` 06-26 approved by Saif; +Phase 7J/7L `sales_commission` `sales_contracts` `sales_price_lists` `finance_installments` `pos_deepening` `omni_communications` `integration_hub` 06-26):
 

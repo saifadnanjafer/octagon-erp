@@ -25,12 +25,13 @@
   <link rel="stylesheet" href="omni-ux-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-admin-crud-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-language-fix.css?v=20260609-octagon-recover-v1">
-  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260625-agent-orb-v1">
+  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260703-omni-v1">
   <link rel="stylesheet" href="jarvis-visual-overlay.css">
   <link rel="stylesheet" href="modules/jarvis-orb.css?v=20260625-agent-cluster-v1">
+  <link rel="stylesheet" href="modules/pilot-review-session.css?v=20260703-pilot-review-v7">
   <!-- GO 16+ module stylesheets (were never linked — modules rendered unstyled; fixed 2026-06-10) -->
   <link rel="stylesheet" href="modules/command-palette.css?v=20260610-css-wire-v1">
-  <link rel="stylesheet" href="modules/jarvis-brain.css?v=20260610-css-wire-v1">
+  <link rel="stylesheet" href="modules/jarvis-brain.css?v=20260702-audit-v1">
   <link rel="stylesheet" href="modules/nl-reporting.css?v=20260626-phase7d-v1">
   <link rel="stylesheet" href="modules/mrp.css?v=20260610-css-wire-v1">
   <link rel="stylesheet" href="modules/multi-entity.css?v=20260613-tenant-v1">
@@ -65,6 +66,7 @@
   <link rel="stylesheet" href="modules/rental.css?v=20260613-rn-v1">
   <link rel="stylesheet" href="modules/enterprise-suite.css?v=20260619-departments-v2">
   <link rel="stylesheet" href="modules/appointments.css?v=20260622-appt-v1">
+  <link rel="stylesheet" href="modules/workshop-ledger.css?v=20260629-wsl-v1">
   <link rel="stylesheet" href="modules/loyalty.css?v=20260622-loy-v1">
   <link rel="stylesheet" href="modules/finance-installments.css?v=20260626-fi-v1">
   <link rel="stylesheet" href="modules/sales-commission.css?v=20260626-sc-v1">
@@ -79,6 +81,7 @@
   <link rel="stylesheet" href="modules/esign.css?v=20260623-esign-v1">
   <link rel="stylesheet" href="modules/events.css?v=20260623-events-v1">
   <link rel="stylesheet" href="modules/knowledge.css?v=20260623-kb-v1">
+  <link rel="stylesheet" href="modules/knowledge-base.css?v=20260703-kb-v4">
   <link rel="stylesheet" href="modules/surveys.css?v=20260623-svy-v1">
   <link rel="stylesheet" href="modules/visitors.css?v=20260623-vis-v1">
   <link rel="stylesheet" href="modules/risk-compliance.css?v=20260623-risk-v2">
@@ -1129,6 +1132,12 @@
           <span class="nav-label">قاصة الورشة</span>
           <span class="nav-indicator"></span>
         </button>
+        <button class="nav-btn" data-page="workshop_ledger" id="navWorkshopLedger" onclick="switchPage('workshop_ledger')">
+          <span class="nav-icon">📒</span>
+          <span class="nav-label">محاسبة ودوام الورشة</span>
+          <span class="status-dot blue" title="استيراد رسمي"></span>
+          <span class="nav-indicator"></span>
+        </button>
         <button class="nav-btn" data-page="expenses" id="navExpenses" onclick="switchPage('expenses')">
           <span class="nav-icon">💸</span>
           <span class="nav-label">المصروفات</span>
@@ -1427,6 +1436,11 @@
             <button class="nav-btn" data-page="knowledge" id="navKnowledge" onclick="switchPage('knowledge')">
               <span class="nav-icon">📖</span>
               <span class="nav-label">قاعدة المعرفة</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="knowledge_base" id="navKnowledgeBase" onclick="switchPage('knowledge_base')">
+              <span class="nav-icon">📚</span>
+              <span class="nav-label">قاعدة المعرفة (الفنية)</span>
               <span class="nav-indicator"></span>
             </button>
             <button class="nav-btn" data-page="surveys" id="navSurveys" onclick="switchPage('surveys')">
@@ -1775,6 +1789,7 @@
   <!-- view:esign -->
   <!-- view:events -->
   <!-- view:knowledge -->
+  <!-- view:knowledge_base -->
   <!-- view:surveys -->
   <!-- view:visitors -->
   <!-- view:risk_compliance -->
@@ -1868,6 +1883,9 @@
   <script src="services/stockService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/financeService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/index.js?v=20260614-tenant-service-v1"></script>
+  <!-- Custom API Integration for ContactBox Tools -->
+  <script src="custom-api-integration.js"></script>
+  <script src="custom-api-examples.js"></script>
   <!-- GO 16 de-monolith: static data providers MUST load before app.js (defines getDefaultAdminSettings, getOctagonPageTruthRegistry, etc.) -->
   <script src="modules/data-providers.js?v=20260608-modules-wire-v1"></script>
   <script src="app.js?v=20260626-saveguard-v1"></script>
@@ -1879,7 +1897,7 @@
       if (window.__octagonAIAssistantPromise) return window.__octagonAIAssistantPromise;
       window.__octagonAIAssistantPromise = new Promise(function (resolve, reject) {
         var script = document.createElement('script');
-        script.src = 'omni-ai-assistant.js?v=20260625-agent-orb-v1';
+        script.src = 'omni-ai-assistant.js?v=20260703-omni-v2';
         script.async = true;
         script.onload = function () { resolve(window.octagonAIAssistant || null); };
         script.onerror = function () { reject(new Error('AI assistant failed to load')); };
@@ -1915,7 +1933,7 @@
   </script>
 
   <!-- OMNI MODAL CONTAINER -->
-  <div id="omniModalOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:10000; display:none; align-items:center; justify-content:center;">
+  <div id="omniModalOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:30000; display:none; align-items:center; justify-content:center;">
     <div id="omniModalBox" class="glass-card" style="width:400px; max-width:90vw; padding:25px; border-radius:15px; display:flex; flex-direction:column; gap:15px; box-shadow:0 15px 50px rgba(0,0,0,0.5);">
       <h3 id="omniModalTitle" style="margin:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; font-size:18px;"></h3>
       <div id="omniModalBody" style="display:flex; flex-direction:column; gap:12px;"></div>
@@ -1992,14 +2010,17 @@
   <script src="modules/page-help-manual.js?v=20260624-arabic-v2"></script>
   <script src="modules/page-sop.js?v=20260608-modules-wire-v1"></script>
   <script src="modules/page-qc.js?v=20260625-wire-fix-v1"></script>
-  <script src="modules/ai-providers.js?v=20260617-qwen-flash-v1"></script>
-  <script src="jarvis-voice-runtime.js?v=20260617-v2"></script>
+  <script src="modules/ai-providers.js?v=20260703-omni-v1"></script>
+  <script src="modules/pilot-review-registry.js?v=20260702-pilot-review-v1"></script>
+  <script src="modules/pilot-review-session.js?v=20260703-pilot-review-v7"></script>
+  <script src="jarvis-voice-runtime.js?v=20260703-omni-v2"></script>
   <script src="modules/jarvis-system-map.js?v=20260617-v2"></script>
-  <script src="modules/jarvis-action-agent.js?v=20260617-v2"></script>
+  <script src="modules/jarvis-action-agent.js?v=20260703-omni-v1"></script>
   <!-- AI assistant is loaded on demand by toggleAIChat(); keep it out of the parser boot path. -->
-  <script src="modules/jarvis-test-harness.js?v=20260618-test-v1"></script>
-  <script src="modules/jarvis-brain.js?v=20260623-phase6d-v1"></script>
-  <script src="modules/jarvis-orb.js?v=20260625-agent-cluster-v1"></script>
+  <script src="modules/jarvis-test-harness.js?v=20260703-omni-v1"></script>
+  <script src="modules/jarvis-brain.js?v=20260703-omni-v1"></script>
+  <script src="modules/jarvis-audit.js?v=20260703-omni-v1"></script>
+  <script src="modules/jarvis-orb.js?v=20260703-omni-v1"></script>
   <script src="modules/command-palette.js?v=20260608-modules-wire-v1"></script>
   <script src="modules/nl-reporting.js?v=20260626-phase7d-v1"></script>
   <script src="modules/mrp.js?v=20260608-modules-wire-v1"></script>
@@ -2017,14 +2038,14 @@
   <script src="modules/work-orders.js?v=20260614-route-hydrate-v1"></script>
   <script src="modules/route-health.js?v=20260625-rh-parallel-v3"></script>
   <!-- Workshop AI Operating Layer (load AFTER work-orders + route-health) -->
-  <script src="modules/workshop-ai.js?v=20260625-mic-v1"></script>
+  <script src="modules/workshop-ai.js?v=20260703-omni-v1"></script>
   <script src="modules/workshop-frontline.js?v=20260611-ai-layer-v1"></script>
   <!-- AI Governance core: manifest, tool registry v2, approval gates, injection guard,
        AI audit log + ai_status page. Loads AFTER the brain/providers/workshop-ai it governs. -->
-  <script src="modules/ai-governance.js?v=20260626-agent-catalog-v1"></script>
+  <script src="modules/ai-governance.js?v=20260703-omni-v1"></script>
   <!-- Workshop-First stabilization self-test: read-only launch-readiness checks injected
        into deploy_ready. Loads AFTER everything it inspects (route-health, governance, frontline). -->
-  <script src="modules/workshop-stabilization.js?v=20260612-stab-v1"></script>
+  <script src="modules/workshop-stabilization.js?v=20260703-omni-v1"></script>
   <!-- Fixed Assets & Preventive Maintenance: asset register, straight-line depreciation,
        warranty + maintenance scheduling, non-cash GL posting. Add-only universal ERP pillar. -->
   <script src="modules/asset-maintenance.js?v=20260612-assets-v1"></script>
@@ -2037,7 +2058,7 @@
   <!-- Helpdesk / Support Tickets, Fleet Management, Document Management — three standalone ERP
        pillars. Add-only; self-contained in omni.helpdesk / omni.fleet / omni.documents. -->
   <script src="modules/helpdesk.js?v=20260613-hd-v2"></script>
-  <script src="modules/fleet.js?v=20260612-fleet-v1"></script>
+  <script src="modules/fleet.js?v=20260703-omni-v1"></script>
   <script src="modules/documents.js?v=20260612-dms-v1"></script>
   <!-- Marketing/Campaigns (ROI/CPL) + Budgeting (budget-vs-actual, reads finance read-only).
        Add-only; self-contained in omni.marketing / omni.budgeting. -->
@@ -2053,6 +2074,8 @@
   <script src="modules/warranty-rma.js?v=20260619-major-erp-v1"></script>
   <script src="modules/enterprise-suite.js?v=20260624-arabic-v4"></script>
   <script src="modules/appointments.js?v=20260622-appt-v1"></script>
+  <script src="modules/workshop-ledger.js?v=20260701-wsl-v2"></script>
+  <script src="modules/ws-timesheet-bridge.js?v=20260701-wstb-v1"></script>
   <script src="modules/loyalty.js?v=20260622-loy-v1"></script>
   <script src="modules/finance-installments.js?v=20260626-fi-v1"></script>
   <script src="modules/sales-commission.js?v=20260626-sc-v1"></script>
@@ -2067,6 +2090,7 @@
   <script src="modules/esign.js?v=20260623-esign-v1"></script>
   <script src="modules/events.js?v=20260623-events-v1"></script>
   <script src="modules/knowledge.js?v=20260623-kb-v1"></script>
+  <script src="modules/knowledge-base.js?v=20260703-kb-v4"></script>
   <script src="modules/surveys.js?v=20260623-svy-v1"></script>
   <script src="modules/visitors.js?v=20260623-vis-v1"></script>
   <script src="modules/risk-compliance.js?v=20260624-arabic-v3"></script>

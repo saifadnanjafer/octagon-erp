@@ -679,13 +679,32 @@ Commit:
 
 ---
 
+### Phase 8D — Knowledge Base & FAQ Foundation
+
+Status: DONE
+Priority: P0
+
+Goal:
+Build a real, in-app Knowledge Base & FAQ module inside Octagon ERP with a dedicated page (`knowledge_base`), bilingual UI, in-memory data seeding, local search/filters, details viewer, safe draft proposing editor, and read-only Jarvis integration.
+
+Scope:
+* dedicated page `views/knowledge_base.html`, `modules/knowledge-base.js` and `modules/knowledge-base.css`
+* bilingual Arabic/English support with LTR/RTL auto-layouts
+* 12 FAQs and 6 guides/articles in-memory seed content
+* local search, category filters, type filters, and visibility checks
+* Jarvis read-only registry tools
+* `PermissionService` page metadata and coverage count updated to 95/95
+
+Commit:
+`phase8d add knowledge base faq foundation`
+
+---
+
 ## Current Next Action
 
 The next action is:
 
-`Phase 8A complete — release-candidate audit PASS. Awaiting Saif's decision: (A) start workshop pilot, (B) build Fleet/Fuel customer demo, (C) wire Telegram server-side connector, (D) fix release blockers, (E) package commercial demo.`
-
-Do not auto-start a new feature phase after Phase 8A. Phase 7A–7M + Phase 8B (Fleet) are DONE; Phase 8A hardening is DONE. Next direction is Saif's call.
+`Phase 8D complete — Knowledge Base & FAQ Foundation is fully implemented in-app and verified. Awaiting review.`
 
 ---
 

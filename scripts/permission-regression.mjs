@@ -76,10 +76,10 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector',
-    () => sidebarPages.size, 93],
+  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector + workshop ledger',
+    () => sidebarPages.size, 95],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 93],
+    () => mappedSidebarPages.length, 95],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

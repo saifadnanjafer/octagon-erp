@@ -1,10 +1,10 @@
 /**
  * OCTAGON OMNISYSTEM - modules/jarvis-brain.js
  *
- * The Jarvis Brain: an LLM-as-controller layer that lets the whole ERP be driven
+ * The Omni Brain: an LLM-as-controller layer that lets the whole ERP be driven
  * by natural language (Arabic + English), by voice or by text.
  *
- * Pattern (same idea as HuggingGPT / JARVIS, but native JS for this web ERP):
+ * Pattern (same idea as HuggingGPT / OMNI, but native JS for this web ERP):
  *   user words  ->  PLANNER (Gemini reads a live snapshot + a tool catalog)
  *               ->  strict JSON plan { speak, actions[] }
  *               ->  EXECUTOR (safe actions run for real; sensitive ones go to the
@@ -20,7 +20,7 @@
   // ---- tiny utils -----------------------------------------------------------
   function lang() {
     try {
-      // Jarvis voice sets the CONVERSATION language (the AR/EN orb chip). When set,
+      // Omni voice sets the CONVERSATION language (the AR/EN orb chip). When set,
       // it wins over the UI language so English speech -> English thinking + reply,
       // and Arabic speech -> Arabic, end to end.
       if (window.__jarvisReplyLang === 'en' || window.__jarvisReplyLang === 'ar') return window.__jarvisReplyLang;
@@ -115,9 +115,10 @@
     approvals: ['موافقات', 'الموافقات', 'اعتمادات', 'approvals'],
     field_service: ['خدمة ميدانية', 'الخدمة الميدانية', 'field service'],
     rental: ['إيجار', 'الإيجارات', 'تأجير', 'rental', 'rent'],
-    ai_status: ['حالة الذكاء', 'صحة الذكاء', 'ai status']
+    ai_status: ['حالة الذكاء', 'صحة الذكاء', 'ai status'],
+    knowledge_base: ['قاعدة المعرفة الفنية', 'الأسئلة الشائعة الفنية', 'knowledge base', 'kb', 'faq']
   };
-  // Human, localized label for a page key — so Jarvis says "فتحت المخزون" instead of
+  // Human, localized label for a page key — so Omni says "فتحت المخزون" instead of
   // the raw "inventory". The sidebar button text is the always-present, in-sync source;
   // fall back to the system-map metadata, then the key itself.
   function pageLabel(key) {
@@ -523,7 +524,7 @@
 
     const list = employeeList();
     if (!list.length) {
-      return { ok: false, message: t('سجل الموظفين غير متاح لجارفس الآن.', 'The employee registry is not available to Jarvis right now.') };
+      return { ok: false, message: t('سجل الموظفين غير متاح لأومني الآن.', 'The employee registry is not available to Omni right now.') };
     }
 
     const match = findEmployeeByName(requestedName);
@@ -603,7 +604,7 @@
         id: makeId('aiprop'),
         actionId: actionId || 'jarvis_proposal',
         actionType: actionType || actionId || 'jarvis_proposal',
-        title: title || t('طلب من جارفيس', 'Jarvis request'),
+        title: title || t('طلب من أومني', 'Omni request'),
         target: target || 'protected_system',
         mode: 'approval_required',
         risk: risk || 'medium',
@@ -622,7 +623,7 @@
       });
       audit('ai.action.proposed', { title: title || '', risk: risk || 'medium', actionType: actionType || actionId || 'jarvis_proposal', userId: user.id || 'system', role: groups.join(',') || user.role || user.roleId || 'unmapped', reason: explained?.reason || '' });
       if (typeof window.addAiRunHistory === 'function') {
-        window.addAiRunHistory({ actionId: 'system_chat', title: title || 'Jarvis', status: 'queued', note: summary || '', outputType: 'ai_console' });
+        window.addAiRunHistory({ actionId: 'system_chat', title: title || 'Omni', status: 'queued', note: summary || '', outputType: 'ai_console' });
       }
       save();
       try { if (pageKey() === 'intelligence' && typeof window.renderAiControlDashboard === 'function') window.renderAiControlDashboard(); } catch (_) {}
@@ -633,7 +634,7 @@
   }
 
   // ==========================================================================
-  // ACTION REGISTRY — the real, executable tools Jarvis can use.
+  // ACTION REGISTRY — the real, executable tools Omni can use.
   // risk: 'safe' runs immediately; 'sensitive' is routed to the approval queue.
   // run(args) -> { ok, message }
   // ==========================================================================
@@ -647,8 +648,8 @@
         const page = resolvePage(args && (args.page || args.target || args.section));
         if (!page) return { ok: false, message: t('لم أتعرف على القسم المطلوب.', 'I could not recognize that section.') };
         const label = pageLabel(page);
-        // JARVIS Runtime V2: show, don't just tell — pulse the sidebar target so the
-        // user SEES where Jarvis is taking them (the visual-overlay layer the agent owns).
+        // OMNI Runtime V2: show, don't just tell — pulse the sidebar target so the
+        // user SEES where Omni is taking them (the visual-overlay layer the agent owns).
         try {
           if (window.JarvisActionAgent && typeof window.JarvisActionAgent.highlightJarvisTarget === 'function') {
             window.JarvisActionAgent.highlightJarvisTarget('.nav-btn[data-page="' + page + '"]', t('جاري فتح ' + label, 'Opening ' + label));
@@ -857,7 +858,7 @@
               name: name.trim(),
               phone: '',
               openingBalance: 0,
-              notes: t('تم إنشاؤه بواسطة جارفيس', 'Created by Jarvis')
+              notes: t('تم إنشاؤه بواسطة أومني', 'Created by Omni')
             };
             finance.customers.push(customer);
             isNew = true;
@@ -876,7 +877,7 @@
             categoryId: type === 'charge' ? '' : 'income_sales',
             departmentId: 'dept_workshop',
             accountId: type === 'charge' ? 'receivables_customers' : 'cash_workshop',
-            description: args.description || (type === 'charge' ? t('دين مسجل بواسطة جارفيس', 'Debt registered by Jarvis') : t('دفعة مسجلة بواسطة جارفيس', 'Payment registered by Jarvis')),
+            description: args.description || (type === 'charge' ? t('دين مسجل بواسطة أومني', 'Debt registered by Omni') : t('دفعة مسجلة بواسطة أومني', 'Payment registered by Omni')),
             partyName: name.trim(),
             paidByName: type === 'charge' ? '' : name.trim(),
             customerId: customer.id,
@@ -943,7 +944,7 @@
           let customer = finance.customers.find(c => c.name && c.name.trim() === name.trim());
           let isNew = false;
           if (!customer) {
-            customer = { id: makeId('cust'), name: name.trim(), phone: '', openingBalance: 0, notes: t('تم إنشاؤه بواسطة جارفيس', 'Created by Jarvis') };
+            customer = { id: makeId('cust'), name: name.trim(), phone: '', openingBalance: 0, notes: t('تم إنشاؤه بواسطة أومني', 'Created by Omni') };
             finance.customers.push(customer);
             isNew = true;
           }
@@ -960,7 +961,7 @@
             receiptNo,
             sourceType: 'sales_receipt',
             sourceId: receiptNo,
-            description: args.description || t('وصل مبيعات بواسطة جارفيس', 'Sales receipt by Jarvis'),
+            description: args.description || t('وصل مبيعات بواسطة أومني', 'Sales receipt by Omni'),
             paymentMethod: paid ? 'cash' : '',
             companyId
           };
@@ -1013,7 +1014,7 @@
             id: makeId('tx'), date: args.date || todayISO(), createdAt: new Date().toISOString(),
             type: 'income', direction: 'in', sourceType: 'cashbox', amount,
             categoryId: 'income_sales', departmentId: 'dept_workshop', accountId: 'cash_workshop',
-            description: args.description || t('دفعة من عميل بواسطة جارفيس', 'Customer payment by Jarvis'),
+            description: args.description || t('دفعة من عميل بواسطة أومني', 'Customer payment by Omni'),
             partyName: name.trim(), paidByName: name.trim(), customerId: customer.id, paymentMethod: 'cash', companyId
           };
           if (!window.addFinanceTransaction(tx)) return { ok: false, message: t('فشل تسجيل الدفعة.', 'Failed to record payment.') };
@@ -1077,7 +1078,7 @@
           const finance = window.ensureFinance();
           if (!finance || !Array.isArray(finance.customers)) return { ok: false, message: t('سجل العملاء غير متاح.', 'Customer registry is not available.') };
           if (finance.customers.find(c => c.name && c.name.trim() === name.trim())) return { ok: false, message: t(`العميل "${name}" موجود مسبقاً.`, `Customer "${name}" already exists.`) };
-          finance.customers.push({ id: makeId('cust'), name: name.trim(), phone: args.phone || '', openingBalance: 0, notes: t('تم إنشاؤه بواسطة جارفيس', 'Created by Jarvis') });
+          finance.customers.push({ id: makeId('cust'), name: name.trim(), phone: args.phone || '', openingBalance: 0, notes: t('تم إنشاؤه بواسطة أومني', 'Created by Omni') });
           save();
           try { if (pageKey() === 'customers' && window.renderCustomersPage) window.renderCustomersPage(); } catch (_) {}
           return { ok: true, message: t(`تم إنشاء العميل "${name}".`, `Created customer "${name}".`) };
@@ -1290,8 +1291,8 @@
     const catalog = JSON.stringify(toolCatalog());
     const snap = JSON.stringify(snapshot());
     const persona = isEn
-      ? `You are "Jarvis", the AI operator of Octagon ERP — an Arabic-first workshop/manufacturing system. You understand the manager's intent and either answer, or drive the ERP by choosing tools.`
-      : `أنت "جارفيس"، المشغّل الذكي لنظام Octagon ERP — نظام ورشة/تصنيع عربي. تفهم نية المدير، فإمّا تجيبه وإمّا تشغّل النظام عبر اختيار الأدوات.`;
+      ? `You are "Omni", the AI operator of Octagon ERP — an Arabic-first workshop/manufacturing system. You understand the manager's intent and either answer, or drive the ERP by choosing tools.`
+      : `أنت "أومني"، المشغّل الذكي لنظام Octagon ERP — نظام ورشة/تصنيع عربي. تفهم نية المدير، فإمّا تجيبه وإمّا تشغّل النظام عبر اختيار الأدوات.`;
 
     const rules = isEn ? `
 RULES:
@@ -1359,7 +1360,9 @@ ${snap}`;
   async function plan(userText) {
     const caller = aiCaller();
     if (!caller) throw new Error('AI core not loaded');
-    const raw = await caller(String(userText || ''), buildPlannerPrompt(), { temperature: 0.2 });
+    // task:'tools' lets the provider router pick the best structured-output model
+    // for strict-JSON tool planning; a user-pinned model still wins.
+    const raw = await caller(String(userText || ''), buildPlannerPrompt(), { temperature: 0.2, task: 'tools' });
     const parsed = extractJson(raw);
     if (parsed && typeof parsed === 'object') {
       audit('ai.plan.created', { actions: (Array.isArray(parsed.actions) ? parsed.actions : []).map(a => a && a.tool).filter(Boolean) });
@@ -1376,7 +1379,7 @@ ${snap}`;
   }
 
   // ==========================================================================
-  // LOCAL FALLBACK — keeps Jarvis useful if the model/network is unavailable.
+  // LOCAL FALLBACK — keeps Omni useful if the model/network is unavailable.
   // ==========================================================================
   // Extract a money amount from speech: digits or words like "50 ألف" / "50k" / "2 million".
   function parseAmount(raw) {
@@ -1410,7 +1413,7 @@ ${snap}`;
   }
 
   // DETERMINISTIC planner — understands the core commands with NO cloud LLM, so
-  // Jarvis stays fully usable when the model is rate-limited or offline. Financial
+  // Omni stays fully usable when the model is rate-limited or offline. Financial
   // tools it emits are still approval-gated, so a mis-parse is reviewed, never auto-posted.
   function localPlan(userText) {
     const raw = String(userText || '');
@@ -1616,6 +1619,21 @@ ${snap}`;
     overdueTasks,
     maintenanceMachines,
     pendingApprovals,
-    version: '2.2' // + deterministic employee payroll lookup from live timesheet records
+    // Read-only payroll/identity helpers shared with modules/jarvis-audit.js so the
+    // audit layer explains salaries through the SAME engine path as the calculator.
+    employeeList,
+    findEmployeeByName,
+    findEmployeeMention,
+    normalizePersonName,
+    resolvePayrollPeriod,
+    recordsForEmployeeMonth,
+    calculateEmployeePayrollReadOnly,
+    formatJarvisNumber,
+    monthLabel,
+    version: '2.4' // Omni rebrand: user-facing name is Omni; internals stay Jarvis
   };
+  // Compatibility alias: the user-facing assistant is named "Omni".
+  // window.OmniBrain and window.JarvisBrain are the SAME object — tools
+  // registered on either name are visible to both.
+  window.OmniBrain = window.JarvisBrain;
 })();

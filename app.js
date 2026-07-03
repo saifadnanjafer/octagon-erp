@@ -564,14 +564,20 @@ function getFinanceTransactions() {
   return finance.transactions.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 }
 
+function getCashboxSignedAmount(tx) {
+  const effect = Number(tx?.cashboxEffect);
+  if (Number.isFinite(effect) && effect !== 0) return Math.round(effect);
+  const amount = asMoney(tx?.amount);
+  if (tx?.direction === 'in') return amount;
+  if (tx?.direction === 'out') return -amount;
+  return 0;
+}
+
 function getCashBalance() {
   ensureFinance();
   return finance.transactions.reduce((sum, tx) => {
     if (tx.sourceType !== 'cashbox') return sum;
-    const amount = asMoney(tx.amount);
-    if (tx.direction === 'in') return sum + amount;
-    if (tx.direction === 'out') return sum - amount;
-    return sum;
+    return sum + getCashboxSignedAmount(tx);
   }, asMoney(finance.cashOpening));
 }
 
@@ -579,24 +585,40 @@ function getCashSummaryForDate(date) {
   ensureFinance();
   return finance.transactions.reduce((acc, tx) => {
     if (tx.sourceType !== 'cashbox' || tx.date !== date) return acc;
-    if (tx.direction === 'in') acc.in += asMoney(tx.amount);
-    if (tx.direction === 'out') acc.out += asMoney(tx.amount);
+    const signed = getCashboxSignedAmount(tx);
+    if (signed > 0) acc.in += signed;
+    if (signed < 0) acc.out += Math.abs(signed);
+    return acc;
+  }, { in: 0, out: 0 });
+}
+
+function getCashboxTotals() {
+  ensureFinance();
+  return finance.transactions.reduce((acc, tx) => {
+    if (tx.sourceType !== 'cashbox') return acc;
+    const signed = getCashboxSignedAmount(tx);
+    if (signed > 0) acc.in += signed;
+    if (signed < 0) acc.out += Math.abs(signed);
     return acc;
   }, { in: 0, out: 0 });
 }
 
 function getExpenseTotal() {
   ensureFinance();
-  return finance.transactions
-    .filter(tx => tx.type === 'expense' || tx.type === 'salary_payment')
+  const cashboxOut = getCashboxTotals().out;
+  const otherExpenses = finance.transactions
+    .filter(tx => tx.sourceType !== 'cashbox' && (tx.type === 'expense' || tx.type === 'salary_payment'))
     .reduce((sum, tx) => sum + asMoney(tx.amount), 0);
+  return cashboxOut + otherExpenses;
 }
 
 function getIncomeTotal() {
   ensureFinance();
-  return finance.transactions
-    .filter(tx => tx.type === 'income' || tx.type === 'sales_receipt')
+  const cashboxIn = getCashboxTotals().in;
+  const otherIncome = finance.transactions
+    .filter(tx => tx.sourceType !== 'cashbox' && (tx.type === 'income' || tx.type === 'sales_receipt'))
     .reduce((sum, tx) => sum + asMoney(tx.amount), 0);
+  return cashboxIn + otherIncome;
 }
 
 function getPersonBalance(name) {
@@ -1173,7 +1195,7 @@ const navGroupPages = {
   ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
   ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
   ops_frontline: ['workshop_tv', 'kiosk'],
-  finance_accounts: ['finance', 'cashbox', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
+  finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
   commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty'],
   commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service'],
   resources_org: ['people_ops', 'fleet', 'assets', 'documents', 'esign', 'knowledge', 'surveys', 'visitors'],
@@ -1368,7 +1390,7 @@ function showFirstTimePasswordSetup(displayName) {
   });
 }
 
-async function switchAuthUser(userId) {
+async function switchAuthUser(userId, force) {
   if (!window.PentagonAuth) return;
   const currentId = window.PentagonAuth._currentUserId;
   if (userId === currentId) return;
@@ -1380,7 +1402,7 @@ async function switchAuthUser(userId) {
   const currentUser = window.PentagonAuth.getCurrentUser();
   const isAdmin = currentUser && Array.isArray(currentUser.groups) && currentUser.groups.includes('system.admin');
 
-  if (!devMode && !isAdmin) {
+  if (!force && !devMode && !isAdmin) {
     showToast("تبديل المستخدمين متاح للمدير فقط.", "danger");
     const sel = document.getElementById('authUserSwitcher');
     if (sel) sel.value = currentId;
@@ -1483,11 +1505,52 @@ function refreshAuthUserSwitcher() {
   }
 }
 
+function getOctagonAutoLoginUserId() {
+  try {
+    // Opt-in only: auto-login must be explicitly enabled by a developer on their own
+    // machine. Never on by default — a silent default-on admin session is a security hole.
+    const optedIn = window.OCTAGON_AUTO_LOGIN === true || localStorage.getItem('octagon_auto_login_enabled') === '1';
+    if (!optedIn) return '';
+    const host = window.location?.hostname || '';
+    const localHost = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+    if (!localHost) return '';
+    return localStorage.getItem('octagon_auto_login_user_id') || '';
+  } catch (_) {
+    return '';
+  }
+}
+
+function applyOctagonAutoLogin() {
+  const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
+  if (stored) return stored;
+  const autoUserId = getOctagonAutoLoginUserId();
+  if (!autoUserId) return '';
+  try {
+    if (typeof ensureOmni === 'function') ensureOmni();
+    if (!omni || !Array.isArray(omni.users)) normalizeOmniUsersRolesPermissions();
+    const users = Array.isArray(omni?.users) ? omni.users : [];
+    // Only the explicitly configured user — no silent fallback to system_admin or
+    // "first active user". If that user doesn't exist/isn't active, auto-login fails closed.
+    const user = users.find(u => u && u.id === autoUserId && u.is_active !== false && u.status !== 'inactive');
+    if (!user?.id) return '';
+    const userId = user.id;
+    localStorage.setItem('octagon_user_id', userId);
+    localStorage.setItem('pentagon_user_id', userId);
+    localStorage.setItem('omni_current_user_id', userId);
+    if (window.PentagonAuth?.setCurrentUser) window.PentagonAuth.setCurrentUser(userId);
+    window.__octagonServerSession = window.__octagonServerSession || { authenticated: false, mode: 'local-dev-auto-login' };
+    return userId;
+  } catch (err) {
+    console.warn('Octagon auto-login skipped:', err.message || err);
+    return '';
+  }
+}
+
 function checkLoginStatus() {
   const overlay = document.getElementById('loginOverlay');
   const intro = document.getElementById('introScreen');
   if (!overlay) return;
-  const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
+  const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id') || applyOctagonAutoLogin();
   if (!stored) {
     if (intro) {
       intro.style.display = 'flex';
@@ -1660,7 +1723,7 @@ async function performLogin(userId) {
     showToast("تم تسجيل الدخول بنجاح.", "success");
     userObj.sessionStartedAt = new Date().toISOString();
     
-    switchAuthUser(userId);
+    switchAuthUser(userId, true);
     const overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.style.display = 'none';
     const intro = document.getElementById('introScreen');
@@ -2911,15 +2974,22 @@ function renderCashbox() {
   const tbody = document.getElementById('cashboxBody');
   if (!tbody) return;
   const rows = getFinanceTransactions().filter(tx => tx.sourceType === 'cashbox' && tx.date === date);
-  tbody.innerHTML = rows.length ? rows.map(tx => `
+  tbody.innerHTML = rows.length ? rows.map(tx => {
+    // Use the same sign-authoritative helper the totals above are built from,
+    // so a row with a cashboxEffect override (e.g. a cash-count adjustment)
+    // shows the same direction here as it does in the daily/overall totals.
+    const signed = getCashboxSignedAmount(tx);
+    const isIn = signed > 0;
+    return `
     <tr>
       <td>${tx.date}</td>
-      <td>${tx.direction === 'in' ? 'داخل' : 'خارج'}</td>
+      <td>${isIn ? 'داخل' : 'خارج'}</td>
       <td>${tx.description || '-'}</td>
       <td>${tx.partyName || tx.paidByName || '-'}</td>
-      <td class="${tx.direction === 'in' ? 'finance-in' : 'finance-out'}">${formatNum(tx.amount)}</td>
+      <td class="${isIn ? 'finance-in' : 'finance-out'}">${formatNum(Math.abs(signed))}</td>
     </tr>
-  `).join('') : '<tr><td colspan="5" class="empty-cell">لا توجد حركة قاصة بهذا التاريخ</td></tr>';
+  `;
+  }).join('') : '<tr><td colspan="5" class="empty-cell">لا توجد حركة قاصة بهذا التاريخ</td></tr>';
 }
 
 function setCashboxDateValue(dateValue) {
@@ -9024,7 +9094,7 @@ function applyTimesheetStatCards(result) {
   }
   const empStatPenaltiesEl = document.getElementById('empStatPenalties');
   if (empStatPenaltiesEl) {
-    const totalPenaltiesVal = result.latenessDeduction + result.earlyDeduction + result.penalty + result.damage;
+    const totalPenaltiesVal = (result.automaticPenalties || 0) + (result.penalty || 0) + (result.damage || 0);
     empStatPenaltiesEl.textContent = formatMoneyReadable(totalPenaltiesVal);
   }
   setText('empStatFridays', formatMoneyReadable(result.fridayCompensation));
@@ -9244,6 +9314,7 @@ function renderTimesheet() {
           <th>دخول</th>
           <th>خروج</th>
           <th>الحالة</th>
+          <th>ملاحظات</th>
           <th>البدلات</th>
           <th>الإضافي</th>
           <th>تأخير</th>
@@ -9309,24 +9380,27 @@ function renderTimesheet() {
         ${aiFieldIcon(rec, 'status')}
         ${rec.managerApprovalKind === 'leave' ? renderTimesheetManagerMarker(rec) : ''}
       </td>
+      <td class="timesheet-cell-marked">
+        <input class="cell-input notes-input" value="${escapeHtml(rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '')}" placeholder="ملاحظة..." oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'notes', this.value)">
+      </td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow" value="${rec.allowanceOverride ?? ''}" placeholder="${Math.round(defaultCalc.allowance)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'allowanceOverride', this.value)"></td>
       <td class="timesheet-cell-marked">
-        <div style="display:flex; align-items:center; gap:4px; justify-content:center;">
-          <input type="number" step="0.1" class="cell-input narrow" style="width:45px;" value="${rec.otHoursOverride ?? ''}" placeholder="${Math.round(defaultCalc.otHours * 60)} د" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'otHoursOverride', this.value)">
-          <span data-ts-otinfo style="font-size:11px; opacity:0.8;">${formatHoursAsMinutesLabel(calc.otHours, { withHours: false })} (${formatMoneyReadable(calc.otValue)})</span>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; justify-content:center;">
+          <input type="number" step="0.1" class="cell-input narrow" style="width:45px; text-align:center; height:22px; padding:2px; margin:0;" value="${rec.otHoursOverride ?? ''}" placeholder="${Math.round(defaultCalc.otHours * 60)}د" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'otHoursOverride', this.value)">
+          <span data-ts-otinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${formatHoursAsMinutesLabel(calc.otHours, { withHours: false })} (${formatMoneyReadable(calc.otValue)})</span>
         </div>
       </td>
       <td class="timesheet-cell-marked">
-        <div style="display:flex; align-items:center; gap:4px; justify-content:center;">
-          <input type="number" class="cell-input narrow" value="${rec.lateOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.late)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'lateOverride', this.value)">
-          <span data-ts-lateinfo style="font-size:11px; opacity:0.8;">${Math.round(calc.lateMinutes || 0)} دقائق (${formatMoneyReadable(calc.late)})</span>
-          <span data-ts-gracemark title="تم استعمال سماحية التأخير الشهرية هنا" style="font-size:11px; color:#a3e635; ${graceByDay[rec.day] > 0 ? '' : 'display:none;'}">⏱️ سماحية ${Math.round(graceByDay[rec.day] || 0)}د</span>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; justify-content:center;">
+          <input type="number" class="cell-input narrow" style="width:45px; text-align:center; height:22px; padding:2px; margin:0;" value="${rec.lateOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.late)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'lateOverride', this.value)">
+          <span data-ts-lateinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.lateMinutes || 0)}د (${formatMoneyReadable(calc.late)})</span>
+          <span data-ts-gracemark title="تم استعمال سماحية التأخير الشهرية هنا" style="font-size:9px; color:#a3e635; margin-top:-1px; ${graceByDay[rec.day] > 0 ? '' : 'display:none;'}">⏱️ ${Math.round(graceByDay[rec.day] || 0)}د</span>
         </div>
       </td>
       <td class="timesheet-cell-marked">
-        <div style="display:flex; align-items:center; gap:4px; justify-content:center;">
-          <input type="number" class="cell-input narrow" value="${rec.earlyDeductionOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.earlyDeduction)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'earlyDeductionOverride', this.value)">
-          <span data-ts-earlyinfo style="font-size:11px; opacity:0.8;">${Math.round(calc.earlyMinutes || 0)} دقائق (${formatMoneyReadable(calc.earlyDeduction)})</span>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; justify-content:center;">
+          <input type="number" class="cell-input narrow" style="width:45px; text-align:center; height:22px; padding:2px; margin:0;" value="${rec.earlyDeductionOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.earlyDeduction)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'earlyDeductionOverride', this.value)">
+          <span data-ts-earlyinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.earlyMinutes || 0)}د (${formatMoneyReadable(calc.earlyDeduction)})</span>
         </div>
       </td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'advance')}" value="${rec.advance || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'advance', this.value)">${aiFieldIcon(rec, 'advance')}</td>
@@ -9755,7 +9829,8 @@ function printTimesheetForSelectedMonth() {
   // Per-day values come from the SAME engine the timesheet uses (getDailyCalc) → print matches screen.
   const rows = recs.map(rec => {
     const c = getDailyCalc(rec, selectedEmp);
-    return `<tr><td>${rec.day}/${cfg.month}</td><td>${statusLabel(rec.status)}</td><td>${rec.checkIn || '-'}</td><td>${rec.checkOut || '-'}</td><td>${money(c.dayPay)}</td><td>${money(c.allowance)}</td><td>${money(c.otValue)}</td><td>${money(c.penaltyTotal)}</td><td>${money(c.total)}</td></tr>`;
+    const noteText = rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '';
+    return `<tr><td>${rec.day}/${cfg.month}</td><td>${statusLabel(rec.status)}</td><td>${rec.checkIn || '-'}</td><td>${rec.checkOut || '-'}</td><td>${money(c.dayPay)}</td><td>${money(c.allowance)}</td><td>${money(c.otValue)}</td><td>${money(c.penaltyTotal)}</td><td>${money(c.total)}</td><td>${escapeHtml(noteText)}</td></tr>`;
   }).join('');
   const res = calculateSalaryForEmployee(selectedEmp, { ...cfg, nominalSalary: getEmployeeNominalSalary(selectedEmp, cfg.nominalSalary) });
   w.document.open();
@@ -9766,8 +9841,8 @@ function printTimesheetForSelectedMonth() {
       <h2>التايم شيت الشهري</h2>
       <p>${selectedEmp.name || '-'} | ${cfg.month} / ${cfg.year} | الشفت: ${shift.label} (${fmtMin(shift.startMin)}–${fmtMin(shift.endMin)} · ${shift.hours} ساعات)</p>
       <table>
-        <thead><tr><th>التاريخ</th><th>الحالة</th><th>دخول</th><th>خروج</th><th>أجر اليوم</th><th>البدل</th><th>الإضافي</th><th>إجمالي الغرامات</th><th>الصافي</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="9">لا توجد بيانات</td></tr>'}</tbody>
+        <thead><tr><th>التاريخ</th><th>الحالة</th><th>دخول</th><th>خروج</th><th>أجر اليوم</th><th>البدل</th><th>الإضافي</th><th>إجمالي الغرامات</th><th>الصافي</th><th>ملاحظات</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="10">لا توجد بيانات</td></tr>'}</tbody>
         <tfoot>
           <tr><td colspan="7" style="text-align:left">الأساس ${money(res.baseSalary)} + بدلات ${money(res.allowances)} + إضافي ${money(res.totalOvertimeValue)} + حافز جمعة ${money(res.fridayCompensation)}</td><td>الغرامات التلقائية</td><td>${money(res.automaticPenalties)}</td></tr>
           <tr><td colspan="8" style="text-align:left">صافي الراتب</td><td>${money(res.finalSalary)}</td></tr>
@@ -10456,6 +10531,7 @@ async function uploadTimesheet() {
 }
 
 async function processExcelWorkbook(workbook) {
+  if (isMasterWorkbook(workbook)) return processMasterWorkbook(workbook);
   try {
     const dataRows = [];
     let totalAdvance = 0, totalPenalty = 0;
@@ -10544,6 +10620,296 @@ async function processExcelWorkbook(workbook) {
     }
   } catch (err) { console.error('Excel Process Error:', err); }
 }
+
+// ─── Master Reference Database Importer (قاعدة_موحدة.xlsx) ──────────────────
+
+function isMasterWorkbook(workbook) {
+  return workbook.SheetNames.some(n => n.includes('الموظفين') || n.includes('الحضور'));
+}
+
+async function processMasterWorkbook(workbook) {
+  const cfg = getConfig();
+  ensureFinance();
+
+  function getSheet(keyword) {
+    const name = workbook.SheetNames.find(n => n.includes(keyword));
+    if (!name) return null;
+    return XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1, defval: '' });
+  }
+
+  function excelDate(v) {
+    if (!v && v !== 0) return null;
+    if (v instanceof Date) return v;
+    if (typeof v === 'number') return new Date(new Date(1899, 11, 30).getTime() + v * 86400000);
+    const s = String(v).trim();
+    let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+    m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+    if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+    return null;
+  }
+
+  function fmtDate(v) {
+    const d = excelDate(v);
+    if (!d || isNaN(d)) return '';
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  }
+
+  function isoDate(v) {
+    const d = excelDate(v);
+    if (!d || isNaN(d)) return '';
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function fmtTime(v) {
+    if (!v && v !== 0) return '';
+    if (typeof v === 'number' && v <= 1) {
+      const m = Math.round(v * 1440);
+      return `${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+    }
+    const match = String(v).match(/(\d{1,2}):(\d{2})/);
+    return match ? `${match[1].padStart(2,'0')}:${match[2]}` : '';
+  }
+
+  function sheetRows(data) {
+    if (!data || data.length < 2) return [];
+    const headers = data[0].map(h => String(h).trim());
+    return data.slice(1)
+      .filter(r => r.some(c => c !== ''))
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = r[i] ?? ''; });
+        return obj;
+      });
+  }
+
+  function findEmp(name) {
+    const n = String(name || '').trim();
+    if (!n) return null;
+    const exact = employees.find(e => e.name === n);
+    if (exact) return exact;
+    return employees.find(e =>
+      e.aliases && e.aliases.split(/[،,|\/]/).map(a => a.trim()).includes(n)
+    );
+  }
+
+  const stats = { employees: 0, attendance: 0, advances: 0, fines: 0, transactions: 0, debts: 0 };
+
+  // 1. Employees
+  const empData = getSheet('الموظفين');
+  if (empData) {
+    sheetRows(empData).forEach(r => {
+      const name = String(r['الاسم المعتمد'] || '').trim();
+      if (!name) return;
+      let emp = employees.find(e => e.name === name);
+      if (!emp) { emp = { id: makeId('emp'), name, salary: 0, prevAdvance: 0, records: [] }; employees.push(emp); }
+      if (!emp.id) emp.id = makeId('emp');
+      const sal = asMoney(r['الراتب الاسمي (بدون أكل/نقل)'] || r['الراتب الاسمي'] || 0);
+      if (sal > 0) emp.salary = sal;
+      const prev = parseFloat(r['الرصيد/الدين السابق'] || r['الرصيد'] || 0) || 0;
+      if (prev) emp.prevAdvance = prev;
+      if (r['رقم الموظف']) emp.empNumber = String(r['رقم الموظف']).trim();
+      if (r['الأسماء البديلة']) emp.aliases = String(r['الأسماء البديلة']).trim();
+      if (r['ملاحظة التغيير']) emp.changeNote = String(r['ملاحظة التغيير']).trim();
+      stats.employees++;
+    });
+  }
+
+  // 2. Attendance
+  const attData = getSheet('الحضور');
+  if (attData) {
+    sheetRows(attData).forEach(r => {
+      const empName = String(r['الموظف'] || '').trim();
+      if (!empName) return; // no name to match or create against — skip rather than persist a blank-name employee
+      let emp = findEmp(empName);
+      if (!emp) { emp = { id: makeId('emp'), name: empName, salary: cfg.nominalSalary || 0, prevAdvance: 0, records: [] }; employees.push(emp); }
+      const d = excelDate(r['التاريخ']);
+      if (!d || isNaN(d)) return;
+      const day = d.getDate(), month = d.getMonth() + 1, year = d.getFullYear();
+      let rec = emp.records.find(x => x.day === day && x.month === month && x.year === year);
+      if (!rec) { rec = { day, month, year, date: fmtDate(r['التاريخ']), bonus: 0, damage: 0, advance: 0, penalty: 0 }; emp.records.push(rec); }
+      const ci = fmtTime(r['دخول']), co = fmtTime(r['خروج']);
+      if (ci) { rec.checkIn = ci; rec.checkInMin = parseTime(ci); }
+      if (co) { rec.checkOut = co; rec.checkOutMin = parseTime(co); }
+      if (r['غرامة يدوية']) rec.penalty = asMoney(r['غرامة يدوية']);
+      if (r['سلفة يدوية']) rec.advance = asMoney(r['سلفة يدوية']);
+      const st = String(r['الحالة'] || '').trim();
+      if (st) rec.status = st;
+      else if (!rec.status) rec.status = isFriday(year, month, day) ? (rec.checkInMin ? 'friday_work' : 'friday') : (rec.checkInMin ? 'normal' : 'absent');
+      stats.attendance++;
+    });
+  }
+
+  // 3. Advances
+  const advData = getSheet('السلف');
+  if (advData) {
+    const advRows = sheetRows(advData);
+    const monthsToReset = new Set();
+    advRows.forEach(r => {
+      const amount = asMoney(r['المبلغ']);
+      if (!amount) return;
+      const dateStr = isoDate(r['التاريخ']);
+      const empName = String(r['الموظف'] || '').trim();
+      const emp = findEmp(empName);
+      if (emp && dateStr) {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          monthsToReset.add(`${emp.name}_${parts[0]}_${parseInt(parts[1])}`);
+        }
+      }
+    });
+
+    monthsToReset.forEach(key => {
+      const parts = key.split('_');
+      const empName = parts[0], yearStr = parts[1], monthStr = parts[2];
+      const emp = findEmp(empName);
+      if (emp) {
+        const y = parseInt(yearStr), m = parseInt(monthStr);
+        emp.records.forEach(rec => {
+          if (rec.year === y && rec.month === m) {
+            rec.advance = 0;
+          }
+        });
+      }
+    });
+
+    advRows.forEach(r => {
+      const amount = asMoney(r['المبلغ']);
+      if (!amount) return;
+      const dateStr = isoDate(r['التاريخ']);
+      const empName = String(r['الموظف'] || '').trim();
+      addFinanceTransaction({
+        type: 'advance', direction: 'out', date: dateStr, amount,
+        partyName: empName,
+        description: String(r['البيان'] || 'سلفة موظف').trim(),
+        sourceType: 'master_import',
+        sourceId: `master_adv_${dateStr}_${empName}_${amount}`,
+        departmentId: 'dept_payroll'
+      }, { skipSave: true });
+      stats.advances++;
+
+      // Also write to employee daily records for timesheet/salary calculation
+      const emp = findEmp(empName);
+      if (emp) {
+        const dateParts = dateStr.split('-');
+        if (dateParts.length === 3) {
+          const year = parseInt(dateParts[0]), month = parseInt(dateParts[1]), day = parseInt(dateParts[2]);
+          let rec = emp.records.find(x => x.day === day && x.month === month && x.year === year);
+          if (!rec) {
+            rec = { 
+              day, month, year, 
+              date: fmtDate(r['التاريخ']) || `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`, 
+              bonus: 0, damage: 0, advance: 0, penalty: 0,
+              status: isFriday(year, month, day) ? 'friday' : 'absent'
+            }; 
+            emp.records.push(rec); 
+          }
+          rec.advance = (rec.advance || 0) + amount;
+        }
+      }
+    });
+  }
+
+  // 4. Fines
+  const fineData = getSheet('الغرامات');
+  if (fineData) {
+    sheetRows(fineData).forEach(r => {
+      const empName = String(r['الموظف'] || '').trim();
+      const dateStr = isoDate(r['التاريخ']);
+      const note = String(r['الملاحظة'] || r['نوع الملاحظة'] || 'غرامة').trim();
+      const sid = `master_fine_${dateStr}_${empName}_${note}`;
+      if (!finance.transactions.some(tx => tx.sourceId === sid)) {
+        finance.transactions.push({
+          id: makeId('tx'), date: dateStr, createdAt: new Date().toISOString(),
+          type: 'penalty', direction: 'out', sourceType: 'master_import', sourceId: sid,
+          amount: 0, partyName: empName,
+          description: `${note}${r['الخطورة'] ? ' — ' + String(r['الخطورة']).trim() : ''}`,
+          departmentId: 'dept_payroll',
+          categoryId: '', accountId: '', customerId: '', receiptNo: '', paidByName: '', paymentMethod: '', companyId: ''
+        });
+        stats.fines++;
+      }
+    });
+  }
+
+  // 5. Incoming/Outgoing transactions
+  const txData = getSheet('الوارد والصادر');
+  if (txData) {
+    sheetRows(txData).forEach(r => {
+      const amount = asMoney(r['مبلغ القاصة'] || r['مبلغ'] || 0);
+      if (!amount) return;
+      const dateStr = isoDate(r['التاريخ']);
+      const dirRaw = String(r['الاتجاه'] || '');
+      const dir = dirRaw.includes('وارد') || dirRaw.toLowerCase().includes('in') ? 'in' : 'out';
+      const sid = String(r['ID'] || `master_tx_${dateStr}_${amount}_${dir}_${String(r['الجهة']||'')}`).trim();
+      addFinanceTransaction({
+        type: dir === 'in' ? 'income' : 'expense', direction: dir,
+        date: dateStr, amount,
+        partyName: String(r['الجهة'] || '').trim(),
+        description: String(r['البيان الموحد'] || r['البيان'] || '').trim(),
+        // 'مبلغ القاصة' = physical cashbox amount: must be sourceType 'cashbox'
+        // so it's counted in getCashBalance()/getCashboxTotals() — otherwise it
+        // moves the P&L totals but never shows up on the القاصة page, and the
+        // till count silently stops matching the dashboard after every import.
+        sourceType: 'cashbox', sourceId: sid,
+        departmentId: 'dept_workshop'
+      }, { skipSave: true });
+      stats.transactions++;
+    });
+  }
+
+  // 6. Debts → finance.parties
+  const debtData = getSheet('الديون');
+  if (debtData) {
+    sheetRows(debtData).forEach(r => {
+      const name = String(r['الاسم'] || '').trim();
+      if (!name) return;
+      const amount = asMoney(r['المبلغ'] || 0);
+      const paid = asMoney(r['المسدد'] || 0);
+      let party = finance.parties.find(p => p.name === name);
+      if (!party) { party = { id: makeId('party'), type: 'person', name }; finance.parties.push(party); }
+      party.debtType = String(r['نوع الدين'] || '').trim();
+      party.debtAmount = amount;
+      party.debtPaid = paid;
+      party.debtRemaining = asMoney(r['المتبقي'] || (amount - paid));
+      party.debtDirection = String(r['الاتجاه'] || '').trim();
+      stats.debts++;
+    });
+  }
+
+  // 7. Food → finance.transactions
+  const foodData = getSheet('الطعام');
+  if (foodData) {
+    sheetRows(foodData).forEach(r => {
+      const amount = asMoney(r['المبلغ'] || r['قيمة الطعام'] || r['الكلفة'] || 0);
+      if (!amount) return;
+      const dateStr = isoDate(r['التاريخ']);
+      const empName = String(r['الموظف'] || r['الاسم'] || '').trim();
+      addFinanceTransaction({
+        type: 'expense', direction: 'out', date: dateStr, amount,
+        partyName: empName,
+        description: String(r['البيان'] || 'وجبة موظف').trim(),
+        sourceType: 'master_import',
+        sourceId: `master_food_${dateStr}_${empName}_${amount}`,
+        categoryId: 'food', departmentId: 'dept_payroll'
+      }, { skipSave: true });
+    });
+  }
+
+  saveData();
+
+  const parts = [
+    stats.employees    && `${stats.employees} موظف`,
+    stats.attendance   && `${stats.attendance} سجل حضور`,
+    stats.advances     && `${stats.advances} سلفة`,
+    stats.fines        && `${stats.fines} غرامة`,
+    stats.transactions && `${stats.transactions} حركة مالية`,
+    stats.debts        && `${stats.debts} دين`,
+  ].filter(Boolean);
+  showToast(`✅ القاعدة الموحدة: ${parts.join(' — ')}`, 'success');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 async function smartMapImportFields() {
   const workbook = window.uploadedWorkbook;
@@ -22793,6 +23159,7 @@ const CMD_PALETTE_COMMANDS = [
   { label: 'فتح لوحة AI', action: () => switchPage('intelligence'), keywords: 'ai intelligence ذكاء dashboard' },
   { label: 'فتح WhatsApp', action: () => switchPage('whatsapp'), keywords: 'whatsapp واتساب رسائل' },
   { label: 'فتح دليل الاستخدام', action: () => switchPage('help_manual'), keywords: 'help manual دليل مساعدة' },
+  { label: 'فتح قاعدة المعرفة الفنية', action: () => switchPage('knowledge_base'), keywords: 'knowledge base kb faq قاعدة المعرفة الأسئلة الشائعة' },
   { label: 'فتح محرك الأتمتة', action: () => switchPage('automation'), keywords: 'automation اتمتة rules' },
   { label: 'فتح لوحة تحكم الأدمن', action: () => switchPage('admin_panel'), keywords: 'admin settings control panel اعدادات ادمن' },
   { label: 'إضافة بطاقة كانبان', action: () => { switchPage('kanban'); setTimeout(()=>addKanbanCard(), 100); }, keywords: 'add card بطاقة' },
@@ -27623,7 +27990,7 @@ function filterWaGroup(groupId) {
 // ───────── Telegram Connector — safe foundation (no token, draft/approval-only) ─────────
 // Non-destructive defaults only. No real bot token is ever stored client-side or in
 // database.json. Real sending requires a future server-side TELEGRAM_BOT_TOKEN plus
-// explicit human approval. Jarvis may create drafts only; it cannot send.
+// explicit human approval. Omni may create drafts only; it cannot send.
 function normalizeTelegramData() {
   ensureOmni();
   if (!omni.telegram || typeof omni.telegram !== 'object') omni.telegram = {};
@@ -27758,12 +28125,12 @@ function telegramJarvisDraft() {
   normalizeTelegramData();
   omni.telegram.outboundQueue.unshift({
     id: makeId('tgout'), destination: 'Managers Group',
-    preview: 'مسودة من Jarvis: ملخص تنبيهات اليوم (بانتظار موافقة بشرية).',
+    preview: 'مسودة من Omni: ملخص تنبيهات اليوم (بانتظار موافقة بشرية).',
     createdBy: 'jarvis', reason: 'jarvis_draft', status: 'pending_approval', createdAt: new Date().toISOString()
   });
   omni.telegram.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'jarvis_create_draft', actor: 'jarvis' });
   saveData();
-  showToast('أنشأ Jarvis مسودة فقط. تحتاج موافقة بشرية قبل الإرسال.', 'info');
+  showToast('أنشأ Omni مسودة فقط. تحتاج موافقة بشرية قبل الإرسال.', 'info');
   renderTelegramIntegrationPage();
 }
 
@@ -27785,7 +28152,7 @@ function renderTelegramIntegrationPage() {
   const linkedTypeLabel = { task: 'مهمة', customer: 'عميل', order: 'طلب', approval: 'موافقة', fleet_fuel_anomaly: 'شذوذ أسطول/وقود', none: '—' };
   const inboxStatusLabel = { new: 'جديدة', linked: 'مرتبطة', converted_to_task: 'حوّلت لمهمة', ignored: 'تجاهل', needs_approval: 'تحتاج موافقة' };
   const inboxStatusColor = { new: 'var(--accent-blue)', linked: 'var(--success)', converted_to_task: 'var(--success)', ignored: 'var(--text-muted)', needs_approval: 'var(--warning)' };
-  const createdByLabel = { user: 'مستخدم', jarvis: 'Jarvis', system: 'تنبيه نظام' };
+  const createdByLabel = { user: 'مستخدم', jarvis: 'Omni', system: 'تنبيه نظام' };
   const outStatusLabel = { draft: 'مسودة', pending_approval: 'بانتظار موافقة', approved: 'تمت الموافقة', sent: 'أُرسلت', failed: 'فشل' };
   const outStatusColor = { draft: 'var(--text-muted)', pending_approval: 'var(--warning)', approved: 'var(--success)', sent: '#0088cc', failed: 'var(--danger, #e5484d)' };
 
@@ -27839,11 +28206,11 @@ function renderTelegramIntegrationPage() {
     <div class="automation-hero">
       <div>
         <h2><i class="fa-brands fa-telegram text-accent-blue"></i> Telegram Connector — تلغرام</h2>
-        <p style="direction:rtl;">موصل بوت تلغرام للعمليات الداخلية: تنبيهات المدراء، إشعارات الموظفين، الموافقات، تحديثات المهام، وتنبيهات شذوذ الأسطول/الوقود — تحت إشراف Jarvis.</p>
+        <p style="direction:rtl;">موصل بوت تلغرام للعمليات الداخلية: تنبيهات المدراء، إشعارات الموظفين، الموافقات، تحديثات المهام، وتنبيهات شذوذ الأسطول/الوقود — تحت إشراف Omni.</p>
       </div>
       <div class="automation-hero-actions">
         <button class="btn-secondary" onclick="switchPage('command_center')">مركز القيادة</button>
-        <button class="btn-secondary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Jarvis</button>
+        <button class="btn-secondary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Omni</button>
       </div>
     </div>
 
@@ -27909,9 +28276,9 @@ function renderTelegramIntegrationPage() {
         <!-- 4. Outbound Queue -->
         <div class="automation-panel">
           <div class="automation-section-head"><h3>قائمة الإرسال (بانتظار موافقة بشرية)</h3>
-            <button class="btn-secondary btn-mini" onclick="telegramJarvisDraft()" title="Jarvis ينشئ مسودة فقط"><i class="fa-solid fa-robot"></i> مسودة Jarvis</button>
+            <button class="btn-secondary btn-mini" onclick="telegramJarvisDraft()" title="Omni ينشئ مسودة فقط"><i class="fa-solid fa-robot"></i> مسودة Omni</button>
           </div>
-          <p style="direction:rtl;color:var(--text-muted);font-size:12px;">Jarvis ينشئ مسودات فقط. الموافقة لا تُرسل تلقائياً — الإرسال الفعلي يحتاج موصل Server-side مُهيّأ.</p>
+          <p style="direction:rtl;color:var(--text-muted);font-size:12px;">Omni ينشئ مسودات فقط. الموافقة لا تُرسل تلقائياً — الإرسال الفعلي يحتاج موصل Server-side مُهيّأ.</p>
           <div style="overflow:auto;">
             <table class="data-table" style="width:100%;font-size:13px;">
               <thead><tr><th>الوجهة</th><th>معاينة الرسالة</th><th>أنشأها</th><th>السبب</th><th>الحالة</th><th>إجراء</th></tr></thead>
@@ -27922,20 +28289,20 @@ function renderTelegramIntegrationPage() {
       </div>
 
       <aside>
-        <!-- 6. Jarvis + Telegram -->
+        <!-- 6. Omni + Telegram -->
         <div class="automation-panel">
-          <div class="automation-section-head"><h3>جارفيس + تلغرام</h3></div>
+          <div class="automation-section-head"><h3>أومني + تلغرام</h3></div>
           <div class="analytics-risk-badge" style="background:var(--warning);color:#000;display:block;direction:rtl;text-align:right;padding:8px 12px;border-radius:8px;margin-bottom:10px;">
-            🤖 جارفيس يجهز ويقترح فقط. الإرسال يحتاج موافقة بشرية.
+            🤖 أومني يجهز ويقترح فقط. الإرسال يحتاج موافقة بشرية.
           </div>
           <div style="direction:rtl;text-align:right;font-size:13px;">
-            <b style="color:var(--success);">يستطيع Jarvis:</b>
+            <b style="color:var(--success);">يستطيع Omni:</b>
             <ul style="line-height:1.7;margin:6px 0 12px;">${jarvisCan.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
-            <b style="color:var(--danger,#e5484d);">لا يستطيع Jarvis:</b>
+            <b style="color:var(--danger,#e5484d);">لا يستطيع Omni:</b>
             <ul style="line-height:1.7;margin:6px 0;">${jarvisCannot.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>
           </div>
           <div class="insp-actions" style="justify-content:flex-start;gap:10px;margin-top:10px;">
-            <button class="btn-primary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Jarvis</button>
+            <button class="btn-primary" onclick="toggleAIChat()"><i class="fa-solid fa-robot"></i> افتح Omni</button>
           </div>
         </div>
 
@@ -35291,6 +35658,7 @@ window.ensurePageTemplateLoaded = async function (page) {
     scenario_planner: 'pageScenarioPlanner',
     device_center: 'pageDeviceCenter',
     appointments: 'pageAppointments',
+    workshop_ledger: 'pageWorkshopLedger',
     loyalty: 'pageLoyalty',
     finance_installments: 'pageFinanceInstallments',
     sales_commission: 'pageSalesCommission',
@@ -35301,6 +35669,7 @@ window.ensurePageTemplateLoaded = async function (page) {
     esign: 'pageEsign',
     events: 'pageEvents',
     knowledge: 'pageKnowledge',
+    knowledge_base: 'pageKnowledgeBase',
     surveys: 'pageSurveys',
     visitors: 'pageVisitors',
     risk_compliance: 'pageRiskCompliance',
@@ -35369,7 +35738,7 @@ window.prefetchAllViews = function () {
     'approvals', 'field_service', 'rental', 'warranty', 'banking', 'ar_ap',
     'contracts', 'logistics', 'supplier_portal', 'integration_hub',
     'security_center', 'data_quality', 'training_lms', 'scenario_planner',
-    'device_center', 'appointments',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
+    'device_center', 'appointments', 'workshop_ledger',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'knowledge_base', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready'
   ];

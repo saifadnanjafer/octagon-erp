@@ -30,6 +30,16 @@ Phase 7A–7M feature roadmap + Phase 8B (Fleet) are complete. Phase 8A is a har
 - Top risk (P1): `database.json` (git-tracked) is a thin 8-collection fallback; full v6 data lives in SQLite `database.db` (gitignored) — package SQLite/full backup on deploy.
 - Full checklist: `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md`.
 
+## Phase 8D — Knowledge Base & FAQ Foundation (2026-07-03)
+
+In-app Knowledge Base & FAQ feature fully implemented:
+- Added dedicated page: `views/knowledge_base.html`, `modules/knowledge-base.js`, and `modules/knowledge-base.css`.
+- Registered `knowledge_base` key in `app.js` pageMap, view prefetch, and command palette.
+- Added `knowledge_base` permissions to `PAGE_METADATA` and `PAGE_PERMISSIONS` in `permissionService.js`.
+- Extended `permission-regression.mjs` expected page baseline from 94 to 95.
+- Seeded database dynamically with 12 FAQs and 6 guides/articles in Arabic/English.
+- Configured Jarvis read-only tools and safety governance guidelines.
+
 ## Governance Freeze Baseline (2026-06-23)
 
 Route/page reconciliation is at **93/93 sidebar nav** and **93/93 page templates** (was 86/86; +`telegram` 2026-06-26 approved by Saif; +Phase 7J/7L pages `sales_commission`, `sales_contracts`, `sales_price_lists`, `finance_installments`, `pos_deepening`, `omni_communications`, `integration_hub`). All 93 pages are mapped in `permissionService.js` (100% coverage) and the regression baseline expects 93/93. The 7J view files were renamed hyphen→underscore so the loader finds them (filename must equal the page key). The new `telegram` page is a safe foundation: no bot token client-side, Jarvis drafts only (never sends), outbound is approval-gated.

@@ -221,6 +221,7 @@
     documents: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Document Library' },
     esign: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'E-Signatures' },
     knowledge: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase6h', label: 'Knowledge Base' },
+    knowledge_base: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase8d', label: 'Knowledge Base & FAQ' },
     surveys: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase6h', label: 'Surveys' },
     visitors: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase6h', label: 'Visitor Logs' },
     marketing: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Marketing' },
@@ -228,6 +229,7 @@
     field_service: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Field Service' },
     rental: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Rental Hub' },
     warranty: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Warranty & RMA' },
+    workshop_ledger: { sensitivity: 'finance/workshop', riskLevel: 'high', phase: 'phase6h', label: 'Workshop ledger' },
     contracts: { sensitivity: 'finance/compliance', riskLevel: 'high', phase: 'phase6h', label: 'Contracts Hub' },
     logistics: { sensitivity: 'workshop/logistics', riskLevel: 'medium', phase: 'phase6h', label: 'Logistics cargo' },
     help_manual: { sensitivity: 'employee_self_service', riskLevel: 'low', phase: 'phase6h', label: 'Help manual' }
@@ -318,6 +320,7 @@
     documents: ['workshop.user'],
     esign: ['workshop.user'],
     knowledge: ['workshop.user'],
+    knowledge_base: [], // public/internal (available for all authenticated roles)
     surveys: ['workshop.user'],
     visitors: ['workshop.user'],
     marketing: ['workshop.user'],
@@ -325,6 +328,7 @@
     field_service: ['workshop.user'],
     rental: ['workshop.user'],
     warranty: ['workshop.user'],
+    workshop_ledger: ['workshop.manager', 'finance.user'],
     contracts: ['workshop.manager', 'finance.manager'],
     logistics: ['workshop.user'],
     help_manual: [],

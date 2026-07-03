@@ -40,6 +40,15 @@ In-app Knowledge Base & FAQ feature fully implemented:
 - Seeded database dynamically with 12 FAQs and 6 guides/articles in Arabic/English.
 - Configured Jarvis read-only tools and safety governance guidelines.
 
+## Phase 8E — Fleet Fuel Guard Demo Enrichment & Translation Sync (2026-07-03)
+
+Bilingual translations and demo data enrichment for the Fleet Fuel Guard page completed:
+- Integrated language hooks `getLang()` and translation wrapper `tx()` inside `modules/fleet.js`.
+- Localized all UI labels (tabs, columns, KPIs, geofence zones, engine states, and alert statuses).
+- Updated mock vehicles and logs variables to carry bilingual descriptions.
+- Added event listener on `'octagon:language-applied'` to dynamically re-render view on user language changes.
+- Updated `views/fleet.html` page headers with `data-i18n-ar` and `data-i18n-en` attributes.
+
 ## Governance Freeze Baseline (2026-06-23)
 
 Route/page reconciliation is at **93/93 sidebar nav** and **93/93 page templates** (was 86/86; +`telegram` 2026-06-26 approved by Saif; +Phase 7J/7L pages `sales_commission`, `sales_contracts`, `sales_price_lists`, `finance_installments`, `pos_deepening`, `omni_communications`, `integration_hub`). All 93 pages are mapped in `permissionService.js` (100% coverage) and the regression baseline expects 93/93. The 7J view files were renamed hyphen→underscore so the loader finds them (filename must equal the page key). The new `telegram` page is a safe foundation: no bot token client-side, Jarvis drafts only (never sends), outbound is approval-gated.

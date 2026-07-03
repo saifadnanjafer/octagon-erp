@@ -700,11 +700,28 @@ Commit:
 
 ---
 
+### Phase 8E — Fleet Fuel Guard Demo Enrichment & Bilingual Translation Sync
+
+Status: DONE
+Priority: P0
+
+Goal:
+Add full bilingual translation support (Arabic/English) to the existing Fleet Fuel Guard module and enrich the presentation views with clean, responsive, localized labels and mock data variables.
+
+Scope:
+* `modules/fleet.js`: implemented language hooks `getLang()`, translation dictionary wrapper `tx()`, localized demo vehicles/labels, and an event listener for `'octagon:language-applied'` to dynamically re-render views on language changes.
+* `views/fleet.html`: updated page headers with `data-i18n-ar` and `data-i18n-en` attributes.
+
+Commit:
+`phase8e fleet fuel guard demo bilingualization`
+
+---
+
 ## Current Next Action
 
 The next action is:
 
-`Phase 8D complete — Knowledge Base & FAQ Foundation is fully implemented in-app and verified. Awaiting review.`
+`Phase 8E complete — Fleet Fuel Guard Demo is fully bilingualized and verified. Awaiting review.`
 
 ---
 

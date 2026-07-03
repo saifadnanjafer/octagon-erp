@@ -67,275 +67,50 @@
     if (!Array.isArray(k.drafts)) k.drafts = [];
     if (!Array.isArray(k.activityLog)) k.activityLog = [];
 
-    // Seed Categories
-    if (!k.categories.length) {
-      [
-        { id: 'general', ar: 'عام', en: 'General', icon: 'fa-cubes', color: '#818cf8' },
-        { id: 'hr', ar: 'الموارد البشرية والرواتب', en: 'HR & Payroll', icon: 'fa-user-tie', color: '#10b981' },
-        { id: 'workshop', ar: 'الورشة والإنتاج', en: 'Workshop & MRP', icon: 'fa-screwdriver-wrench', color: '#f59e0b' },
-        { id: 'whatsapp', ar: 'الاتصالات والربط', en: 'Comms & WhatsApp', icon: 'fa-comments', color: '#10b981' },
-        { id: 'jarvis', ar: 'ذكاء جارفيس', en: 'Jarvis & AI', icon: 'fa-brain', color: '#8b5cf6' },
-        { id: 'troubleshoot', ar: 'الدعم والمشاكل', en: 'Troubleshooting', icon: 'fa-bug', color: '#ef4444' }
-      ].forEach(c => k.categories.push({ id: c.id, name: { ar: c.ar, en: c.en }, icon: c.icon, color: c.color }));
-    }
-
-    // Seed Articles & Guides (6 items)
-    if (!k.articles.length && !k._seeded) {
-      k.articles.push({
-        id: 'art_001',
-        type: 'Guide',
-        status: 'published',
-        categoryId: 'workshop',
-        tags: ['mrp', 'accounting', 'ledger'],
-        visibility: 'internal',
-        jarvisReadable: true,
-        title: {
-          ar: 'احتساب أرباح الديكور (اتفاقية مشتاق)',
-          en: 'Decoration Line Profit-Sharing (Mushtaq Agreement)'
-        },
-        summary: {
-          ar: 'شرح فني دقيق لكيفية ترحيل وتوزيع أرباح مشاريع الديكور بناءً على القيد المزدوج.',
-          en: 'Detailed calculations for splitting decoration revenue after subtracting materials/labor.'
-        },
-        content: {
-          ar: 'بناءً على اتفاقية مشتاق المحاسبية، يتم احتساب الأرباح تلقائياً في نهاية كل مشروع كالتالي:\n1. يتم خصم إجمالي الفواتير المباشرة للمواد من المبيعات.\n2. يتم خصم أجور عمال مقاولي الباطن ومصاريف النقل واللوجستيات.\n3. يتم ترحيل المبلغ المتبقي (صافي الربح) إلى حساب الشريك المعتمد بالدائنية ويقيد في الجانب المدين لحساب إيرادات المشروع كقيد مزدوج (account.move.line) لضمان عدم تسرب أي فروقات مالية.',
-          en: 'In accordance with Mushtaq\'s agreement, project net profits are calculated dynamically:\n1. Direct raw material costs are deducted from invoice sales.\n2. Subcontractor labor fees and logistics expenses are subtracted.\n3. The remaining margin is posted to the partner liability accounts and debited to project revenue via standard double-entry journal entries (account.move.line) to prevent any balance leaks.'
-        },
-        source: 'seed',
-        updatedAt: '2026-07-02',
-        updatedBy: 'system'
-      });
-
-      k.articles.push({
-        id: 'art_002',
-        type: 'SOP',
-        status: 'published',
-        categoryId: 'hr',
-        tags: ['timesheet', 'excel', 'payroll'],
-        visibility: 'internal',
-        jarvisReadable: true,
-        title: {
-          ar: 'إجراءات فحص وتدقيق جداول الحضور المرفوعة عبر إكسل',
-          en: 'Excel Attendance Timesheet Import Validation SOP'
-        },
-        summary: {
-          ar: 'خطوات تشغيل وفحص جداول الحضور لمنع الازدواجية واحتساب الإضافي بدقة.',
-          en: 'Standard procedure for validating monthly employee timesheet Excel uploads.'
-        },
-        content: {
-          ar: 'عند استيراد ملف إكسل الشهري عبر محرك استيراد الحضور، يجب اتباع الآتي:\n1. يقوم النظام بمطابقة عمود معرف الموظف مع معرف أودو (hr.employee).\n2. يتم التحقق من عدم وجود تسجيل مكرر أو تداخل في ساعات الدخول والخروج (Overlapping).\n3. يقوم السكربت باحتساب ساعات الإضافي اليومية (الافتراضي 1.5x للأيام العادية و 2.0x لعطل نهاية الأسبوع والأعياد) وحفظها في جدول (hr.attendance).',
-          en: 'When importing monthly attendance files, follow these steps:\n1. The parser matches the employee ID column with Odoo records (hr.employee).\n2. Checks for double-booking or overlapping timesheet timestamps.\n3. Daily overtime hours are calculated (1.5x on weekdays, 2.0x on weekends/holidays) and written to the database (hr.attendance).'
-        },
-        source: 'seed',
-        updatedAt: '2026-07-01',
-        updatedBy: 'system'
-      });
-
-      k.articles.push({
-        id: 'art_003',
+    if (!k._expanded && window.OctagonKnowledgeSeed) {
+      k.categories = window.OctagonKnowledgeSeed.categories || [];
+      k.faqs = window.OctagonKnowledgeSeed.faqs || [];
+      
+      const pageGuides = (window.OctagonKnowledgeSeed.pageGuides || []).map(pg => ({
+        ...pg,
+        status: 'published'
+      }));
+      const troubleshoot = (window.OctagonKnowledgeSeed.troubleshooting || []).map(trb => ({
+        ...trb,
         type: 'Troubleshooting',
         status: 'published',
-        categoryId: 'troubleshoot',
-        tags: ['backup', 'postgres', 'database'],
-        visibility: 'technical',
+        visibility: 'internal',
         jarvisReadable: true,
-        title: {
-          ar: 'إصلاح أعطال قاعدة البيانات ودليل النسخ الاحتياطي والاستعادة السريع',
-          en: 'PostgreSQL Database Backup, Restore & Recovery Runbook'
-        },
         summary: {
-          ar: 'الخطوات الفنية لإعادة تشغيل قاعدة PostgreSQL واستيراد الدامب الآمن.',
-          en: 'Technical execution script to dump, compress, and restore database file safely.'
+          ar: trb.title.ar,
+          en: trb.title.en
         },
         content: {
-          ar: 'لأخذ نسخة احتياطية آمنة ومضغوطة للـ PostgreSQL:\n`pg_dump -U odoo -d odoo_db -F c -b -v -f /var/lib/odoo/backups/backup_$(date +%F).dump`\nولاستعادتها في حالة الطوارئ، أوقف خادم الويب أولاً ثم شغّل:\n`pg_restore -U odoo -d odoo_db -c -v /var/lib/odoo/backups/target_backup.dump`\nتأكد من عدم وجود اتصال نشط بقاعدة البيانات قبل البدء لتفادي تلف البيانات.',
-          en: 'To take a safe compressed backup of PostgreSQL database, execute:\n`pg_dump -U odoo -d odoo_db -F c -b -v -f /var/lib/odoo/backups/backup_$(date +%F).dump`\nTo restore a backup, stop the web server first, then execute:\n`pg_restore -U odoo -d odoo_db -c -v /var/lib/odoo/backups/target_backup.dump`\nEnsure no active connections exist to avoid schema block errors.'
-        },
-        source: 'seed',
-        updatedAt: '2026-07-02',
-        updatedBy: 'system'
-      });
-
-      k.articles.push({
-        id: 'art_004',
-        type: 'Module Guide',
-        status: 'published',
-        categoryId: 'whatsapp',
-        tags: ['whatsapp', 'api', 'nodejs'],
-        visibility: 'technical',
-        jarvisReadable: true,
-        title: {
-          ar: 'دليل ربط بوابة واتساب البرمجية (WhatsApp API Gateway)',
-          en: 'WhatsApp Business API Gateway Connection Manual'
-        },
-        summary: {
-          ar: 'المواصفات الفنية ومنافذ الربط الخاصة ببوابة الـ Node.js المخصصة للرسائل.',
-          en: 'Technical spec for Node.js gateway endpoints enabling WhatsApp messaging.'
-        },
-        content: {
-          ar: 'تتصل بوابة واتساب بنظام Octagon عبر خادم Node.js آمن. أهم مسارات الـ API المتاحة هي:\n- `POST /api/whatsapp/send-slip`: إرسال كشوف الرواتب بصيغة PDF للموظفين.\n- `POST /api/whatsapp/send-invoice`: إرسال فواتير المبيعات للزبائن.\n- `POST /api/whatsapp/receive-audio`: استقبال الملاحظات الصوتية لمعالجتها بالذكاء الاصطناعي.\nمفاتيح التوثيق (API Keys) يجب تحميلها من ملفات التكوين البيئية ولا تكتب صلبة في الكود.',
-          en: 'The WhatsApp gateway connects to Octagon using Node.js. Main API endpoints include:\n- `POST /api/whatsapp/send-slip`: Sends PDF salary slips to employees.\n- `POST /api/whatsapp/send-invoice`: Sends invoice links to clients.\n- `POST /api/whatsapp/receive-audio`: Receives audio voice notes from workshop managers.\nAPI keys must be securely loaded from environment variables.'
-        },
-        source: 'seed',
-        updatedAt: '2026-06-28',
-        updatedBy: 'system'
-      });
-
-      k.articles.push({
-        id: 'art_005',
-        type: 'Guide',
-        status: 'published',
-        categoryId: 'jarvis',
-        tags: ['whisper', 'gpt4', 'transcribe'],
-        visibility: 'technical',
-        jarvisReadable: true,
-        title: {
-          ar: 'آلية تفريغ الملاحظات الصوتية (Whisper) واستخراج كيانات الـ JSON',
-          en: 'WhatsApp Voice Notes Whisper Transcription & Parsing Specs'
-        },
-        summary: {
-          ar: 'طريقة عمل المساعد الصوتي لمدير الورشة وكيفية تصحيح أخطاء التفريغ.',
-          en: 'How the system transcribes audio notes and extracts timesheet and material JSON.'
-        },
-        content: {
-          ar: 'عند استقبال تسجيل صوتي من مدير الورشة:\n1. يقوم محرك جارفيس باستدعاء OpenAI Whisper لتحويل الملاحظة لنص.\n2. يتم إرسال النص لـ GPT-4 لاستخراج الكيانات وتنسيقها بصيغة JSON (العامل، الساعات، المواد، المشروع).\n3. يقوم محرك الأتمتة بتأكيد البيانات وإنشاء قيد الحضور أو صرف المخزن تلقائياً دون تدخل يدوي.',
-          en: 'When a voice note is received from a manager:\n1. Jarvis sends the audio to OpenAI Whisper API for transcription.\n2. The transcribed text is sent to GPT-4 to parse entities and format them as JSON (employee, hours, material, project).\n3. The automation engine runs checks and creates records in Octagon ERP automatically.'
-        },
-        source: 'seed',
-        updatedAt: '2026-07-02',
-        updatedBy: 'system'
-      });
-
-      k.articles.push({
-        id: 'art_006',
-        type: 'Policy',
-        status: 'published',
-        categoryId: 'general',
-        tags: ['security', 'permissions', 'roles'],
-        visibility: 'management',
-        jarvisReadable: true,
-        title: {
-          ar: 'سياسة الصلاحيات والـ Record Rules في قاعدة البيانات',
-          en: 'PostgreSQL & ERP Record Rules Access Control Policy'
-        },
-        summary: {
-          ar: 'ضوابط توزيع الصلاحيات وعزل بيانات خطوط الإنتاج والورشة والحسابات.',
-          en: 'Rules governing access control for workshop managers, employees, and accountants.'
-        },
-        content: {
-          ar: 'لضمان أعلى معايير الحماية، يطبق نظام أوكتاغون سياسة حماية السجلات (Record Rules):\n- لا يمكن لعمال ورشة النجارة أو الإعلانات رؤية أوامر تصنيع خاصة بخطوط إنتاج أخرى.\n- يملك المحاسب صلاحيات القراءة على جداول الحضور المرفوعة لتأكيد الرواتب، ولكنه يمنع من تعديل التواريخ أو ساعات الدخول يدويًا دون موافقة معتمدة من مدير الورشة في طابور الموافقات.',
-          en: 'To ensure data security, Octagon ERP enforces strict record rules:\n- Workshop operators are restricted to viewing tasks and workorders assigned to their line.\n- Accountants can read attendance tables to verify payroll, but cannot modify raw check-in/out logs directly without manager approval in the queue.'
-        },
-        source: 'seed',
-        updatedAt: '2026-07-02',
-        updatedBy: 'system'
-      });
+          ar: trb.content.ar,
+          en: trb.content.en
+        }
+      }));
+      const articles = (window.OctagonKnowledgeSeed.articles || []).map(art => ({
+        ...art,
+        status: 'published'
+      }));
+      
+      k.articles = articles.concat(pageGuides).concat(troubleshoot);
+      k._expanded = true;
+      k._seeded = true;
+      k._seeded_faqs = true;
+      save();
     }
 
-    // Seed FAQs (12 items)
-    if (!k.faqs.length && !k._seeded_faqs) {
-      k._seeded_faqs = true;
-      
-      const seedFaqs = [
-        {
-          categoryId: 'general',
-          q_ar: 'ما هو نظام Octagon ERP (OMNISYSTEM)؟',
-          q_en: 'What is Octagon ERP (OMNISYSTEM)?',
-          a_ar: 'هو نظام مخصص بالكامل لإدارة الورش والمعامل الثقيلة، مبني فوق أودو 19 CE ومدمج مع جارفيس.',
-          a_en: 'It is a custom-designed ERP environment built specifically for workshops, built on Odoo 19 CE and integrated with Jarvis.'
-        },
-        {
-          categoryId: 'hr',
-          q_ar: 'كيف تحسب حاسبة الرواتب صافي الراتب الشهري؟',
-          q_en: 'How does the payroll calculator compute net salaries?',
-          a_ar: 'المعادلة: الراتب الأساسي + (ساعات العمل الإضافي × سعر الساعة × معامل الضرب) - الخصومات والغياب.',
-          a_en: 'Formula: Base Salary + (Overtime Hours * Hourly Rate * Multiplier) - Deductions - Absence Penalties.'
-        },
-        {
-          categoryId: 'hr',
-          q_ar: 'ما هي معاملات ساعات العمل الإضافي المعتمدة؟',
-          q_en: 'What are the approved overtime multipliers?',
-          a_ar: 'الأيام العادية: معامل الضرب 1.5x. عطل نهاية الأسبوع والأعياد: معامل الضرب 2.0x.',
-          a_en: 'Weekday overtime multiplier is 1.5x. Weekend and official holiday multiplier is 2.0x.'
-        },
-        {
-          categoryId: 'hr',
-          q_ar: 'كيف يتصرف محلل الإكسل عند تداخل ساعات الحضور للموظف؟',
-          q_en: 'How does the Excel parser handle overlapping timesheet records?',
-          a_ar: 'يقوم النظام برفض السطر المتداخل تلقائياً، ويسجل تحذيراً لمدير الموارد البشرية لمراجعته يدوياً.',
-          a_en: 'The parser rejects the overlapping row, logging a conflict alert for manual review to prevent duplicate payouts.'
-        },
-        {
-          categoryId: 'workshop',
-          q_ar: 'ما هي خطوط الإنتاج النشطة في الورشة؟',
-          q_en: 'What are the active workshop production lines?',
-          a_ar: 'خط النجارة (أعمال الخشب والـ CNC)، خط الإعلانات (طباعة اللوحات المضيئة)، وخط الديكور (التشطيبات الفاخرة).',
-          a_en: 'Carpentry Line (custom wood/CNC), Ads Line (lightbox printing), and Decoration Line (high-end interiors).'
-        },
-        {
-          categoryId: 'workshop',
-          q_ar: 'كيف تتم حماية أرصدة الشركاء في مشاريع الديكور؟',
-          q_en: 'How are partner balances protected for decoration projects?',
-          a_ar: 'يتم احتساب صافي الأرباح ديناميكياً وترحيلها محاسبياً بقيد مزدوج متوازن يمنع تسرب الفروقات المالية.',
-          a_en: 'Net profits are computed dynamically and posted using balanced double-entry accounting to prevent data leaks.'
-        },
-        {
-          categoryId: 'whatsapp',
-          q_ar: 'هل يمكن إرسال كشوفات الرواتب مباشرة للموظفين؟',
-          q_en: 'Can salary slips be sent directly to employees?',
-          a_ar: 'نعم، يقوم النظام بإرسال كشوف الرواتب الشهرية بصيغة PDF تلقائياً للموظفين عبر بوابة واتساب المعتمدة.',
-          a_en: 'Yes, the system automatically sends monthly PDF salary slips directly to employees via the WhatsApp gateway.'
-        },
-        {
-          categoryId: 'whatsapp',
-          q_ar: 'هل تستقبل بوابة واتساب ملفات الصوت لتفريغها؟',
-          q_en: 'Does the WhatsApp gateway receive audio files for transcription?',
-          a_ar: 'نعم، وتمرر مباشرة لـ Whisper API لتفريغها نصياً واستخراج كيانات الـ JSON لتحديث الفواتير واليوميات.',
-          a_en: 'Yes, it forwards audio notes to Whisper API for transcription, extracting JSON to populate timesheets and invoices.'
-        },
-        {
-          categoryId: 'jarvis',
-          q_ar: 'ما هو دور جارفيس في إدارة قاعدة المعرفة والـ ERP؟',
-          q_en: 'What is Jarvis\'s role in managing the Knowledge Base and ERP?',
-          a_ar: 'دور جارفيس للقراءة والبحث وصياغة المسودات فقط. يمنع جارفيس منعاً باتاً من النشر أو التعديل المباشر.',
-          a_en: 'Jarvis has read-only access for search and drafting. Direct editing or publishing without human approval is blocked.'
-        },
-        {
-          categoryId: 'jarvis',
-          q_ar: 'كيف يتجنب جارفيس اتخاذ قرارات برمجية خاطئة بالسيستم؟',
-          q_en: 'How does Jarvis prevent wrong coding operations in the system?',
-          a_ar: 'يتعلم جارفيس ذاتياً عبر تحليل سجلات PostgreSQL وسجلات الأخطاء، ويقوم بإصلاح الأكواد الطفيفة تلقائياً.',
-          a_en: 'Jarvis monitors PostgreSQL logs, automatically generates index recommendations, and patches syntax bugs.'
-        },
-        {
-          categoryId: 'troubleshoot',
-          q_ar: 'ماذا أفعل إذا توقف خادم الويب عن استدعاء قاعدة البيانات؟',
-          q_en: 'What should I do if the web server stops calling the database?',
-          a_ar: 'تحقق أولاً من ملف الدياجنوستك الموحد، ثم أعد تشغيل خادم أودو و PostgreSQL بعد التأكد من سلامة كابل الاتصال.',
-          a_en: 'Check the route health diagnostics, verify PostgreSQL service is running, and restart the Odoo service.'
-        },
-        {
-          categoryId: 'troubleshoot',
-          q_ar: 'أين يتم الاحتفاظ بنسخ قاعدة البيانات الاحتياطية؟',
-          q_en: 'Where are database backups stored?',
-          a_ar: 'يتم حفظها في مجلد backups المخصص على الخادم كملفات `.dump` مضغوطة وتحمل تاريخ اليوم.',
-          a_en: 'They are saved in the dedicated backups directory on the server as compressed `.dump` files stamped with dates.'
-        }
-      ];
-
-      seedFaqs.forEach((f, idx) => {
-        k.faqs.push({
-          id: 'faq_' + String(idx + 1).padStart(3, '0'),
-          categoryId: f.categoryId,
-          question: { ar: f.q_ar, en: f.q_en },
-          answer: { ar: f.a_ar, en: f.a_en },
-          tags: ['seed', f.categoryId],
-          visibility: 'internal',
-          jarvisReadable: true,
-          source: 'seed',
-          updatedAt: todayISO()
-        });
-      });
+    if (!k.categories.length) {
+      [
+        { id: 'general', name: { ar: 'عام', en: 'General' }, icon: 'fa-cubes', color: '#818cf8' },
+        { id: 'hr', name: { ar: 'الموارد البشرية والرواتب', en: 'HR & Payroll' }, icon: 'fa-user-tie', color: '#10b981' },
+        { id: 'workshop', name: { ar: 'الورشة والإنتاج', en: 'Workshop & MRP' }, icon: 'fa-screwdriver-wrench', color: '#f59e0b' },
+        { id: 'whatsapp', name: { ar: 'الاتصالات والربط', en: 'Comms & WhatsApp' }, icon: 'fa-comments', color: '#10b981' },
+        { id: 'jarvis', name: { ar: 'ذكاء جارفيس', en: 'Jarvis & AI' }, icon: 'fa-brain', color: '#8b5cf6' },
+        { id: 'troubleshoot', name: { ar: 'الدعم والمشاكل', en: 'Troubleshooting' }, icon: 'fa-bug', color: '#ef4444' }
+      ].forEach(c => k.categories.push(c));
     }
   }
 
@@ -415,22 +190,70 @@
     `;
   }
 
+  function getCoverageStats() {
+    const k = K();
+    const totalPagesCount = 95;
+    const coveredPages = new Set();
+    k.articles.forEach(a => {
+      if (a.type === 'Page Guide' && a.pageKey) {
+        coveredPages.add(a.pageKey);
+      }
+    });
+    const coveredPagesCount = coveredPages.size;
+    const missingPagesCount = totalPagesCount - coveredPagesCount;
+    const categoriesCount = k.categories.length;
+    const pct = Math.round((coveredPagesCount / totalPagesCount) * 100);
+    return { totalPagesCount, coveredPagesCount, missingPagesCount, categoriesCount, pct };
+  }
+
   function sidebarFilters() {
     const k = K();
+    const stats = getCoverageStats();
+    
+    const categoryCounts = {};
+    const typeCounts = {};
+    const allPublished = k.faqs.map(f => ({ ...f, type: 'FAQ' }))
+      .concat(k.articles.filter(a => a.status === 'published'));
+      
+    allPublished.forEach(item => {
+      categoryCounts[item.categoryId] = (categoryCounts[item.categoryId] || 0) + 1;
+      typeCounts[item.type] = (typeCounts[item.type] || 0) + 1;
+    });
+
     const categoriesHtml = k.categories.map(c => {
       const isSelected = categoryFilter === c.id ? 'selected' : '';
+      const count = categoryCounts[c.id] || 0;
       return `
         <li class="kb-cat-item ${isSelected}" onclick="kbSetCategoryFilter('${c.id}')">
           <span class="kb-cat-lbl"><i class="fa-solid ${c.icon}" style="color:${c.color}"></i> ${t(c.name.ar, c.name.en)}</span>
+          <span class="kb-cat-count">${count}</span>
         </li>
       `;
     }).join('');
 
-    const types = ['FAQ', 'Guide', 'SOP', 'Policy', 'Troubleshooting', 'Module Guide'];
-    const typeOptions = types.map(ty => `<option value="${ty}" ${typeFilter === ty ? 'selected' : ''}>${ty}</option>`).join('');
+    const types = ['FAQ', 'Guide', 'SOP', 'Policy', 'Troubleshooting', 'Module Guide', 'Page Guide'];
+    const typeOptions = types.map(ty => {
+      const count = typeCounts[ty] || 0;
+      return `<option value="${ty}" ${typeFilter === ty ? 'selected' : ''}>${ty} (${count})</option>`;
+    }).join('');
+
+    const coverageWidget = `
+      <div class="kb-sb-group kb-coverage-widget glass">
+        <h3 style="margin-top:0">${t('تغطية الصفحات والمسارات', 'System Coverage Matrix')}</h3>
+        <div class="kb-progress-bar">
+          <div class="kb-progress-fill" style="width: ${stats.pct}%"></div>
+        </div>
+        <div class="kb-stats-grid">
+          <div class="kb-stat-box"><strong>${stats.pct}%</strong><span>${t('تغطية', 'Coverage')}</span></div>
+          <div class="kb-stat-box"><strong>${stats.coveredPagesCount}</strong><span>${t('مغطى', 'Covered')}</span></div>
+          <div class="kb-stat-box"><strong>${stats.missingPagesCount}</strong><span>${t('متبقي', 'Missing')}</span></div>
+        </div>
+      </div>
+    `;
 
     return `
       <div class="kb-sidebar glass">
+        ${coverageWidget}
         <div class="kb-sb-group">
           <h3>${t('البحث الذكي', 'Search')}</h3>
           <input type="text" id="kbSearchInp" class="kb-input" placeholder="${t('ابحث هنا...', 'Search text...')}" value="${esc(searchTerm)}" oninput="kbSetSearch(this.value)">
@@ -441,6 +264,7 @@
           <ul class="kb-cat-list">
             <li class="kb-cat-item ${categoryFilter === 'all' ? 'selected' : ''}" onclick="kbSetCategoryFilter('all')">
               <span class="kb-cat-lbl"><i class="fa-solid fa-border-all"></i> ${t('كل الأقسام', 'All Categories')}</span>
+              <span class="kb-cat-count">${allPublished.length}</span>
             </li>
             ${categoriesHtml}
           </ul>
@@ -554,6 +378,11 @@
       const jarvisIcon = item.jarvisReadable ? '<span class="jarvis-badge" title="Jarvis Readable"><i class="fa-solid fa-brain"></i> AI</span>' : '';
       const visBadge = `<span class="vis-badge ${item.visibility}">${item.visibility}</span>`;
       const typeBadge = `<span class="type-badge">${item.type || 'FAQ'}</span>`;
+      
+      const isDemoOnly = ['fleet_fuel', 'messaging_connect', 'saas_marketplace'].includes(item.categoryId) || (item.tags && item.tags.includes('demo'));
+      const statusBadge = isDemoOnly 
+        ? `<span class="status-badge demo" title="Demo / Future Feature">${t('تجريبي / مستقبل', 'Demo / Future')}</span>`
+        : `<span class="status-badge prod" title="Live Production Feature">${t('إنتاجي حقيقي', 'Production')}</span>`;
 
       return `
         <div class="kb-item-card glass" onclick="kbOpenItem('${item.id}', '${item.type === 'FAQ' ? 'faq' : 'article'}')">
@@ -561,6 +390,7 @@
             <span class="kb-ic-cat"><i class="fa-solid fa-folder"></i> ${getCategoryName(item.categoryId)}</span>
             <div class="kb-ic-badges">
               ${jarvisIcon}
+              ${statusBadge}
               ${visBadge}
               ${typeBadge}
             </div>
@@ -627,6 +457,19 @@
       </div>
     ` : '';
 
+    let stepsHtml = '';
+    const stepsList = item.steps ? t(item.steps.ar, item.steps.en) : null;
+    if (Array.isArray(stepsList) && stepsList.length) {
+      stepsHtml = `
+        <div class="kb-detail-steps">
+          <h3>${t('خطوات العمل القياسية:', 'Standard Execution Steps:')}</h3>
+          <ol class="kb-steps-list">
+            ${stepsList.map(st => `<li>${esc(st)}</li>`).join('')}
+          </ol>
+        </div>
+      `;
+    }
+
     return `
       <div class="kb-detail-view glass">
         <div class="kb-detail-header">
@@ -651,6 +494,8 @@
         <div class="kb-detail-content">
           ${bodyText.replace(/\n/g, '<br>')}
         </div>
+
+        ${stepsHtml}
 
         <div class="kb-detail-tags">
           ${(item.tags || []).map(tg => `<span class="kb-tag">#${esc(tg)}</span>`).join(' ')}
@@ -1042,23 +887,71 @@
     window.__knowledgeBaseWrapped = true;
   }
 
+  function searchPublished(query) {
+    const k = K();
+    const q = String(query || '').toLowerCase();
+    
+    const faqs = k.faqs.filter(f => f.jarvisReadable).map(f => ({
+      id: f.id,
+      type: 'FAQ',
+      categoryId: f.categoryId,
+      title: f.question,
+      summary: f.answer,
+      content: f.answer,
+      source: f.source || 'seed'
+    }));
+    
+    const articles = k.articles.filter(a => a.status === 'published' && a.jarvisReadable).map(a => ({
+      id: a.id,
+      type: a.type || 'Guide',
+      categoryId: a.categoryId,
+      title: a.title,
+      summary: a.summary || a.content,
+      content: a.content,
+      source: a.source || 'seed'
+    }));
+    
+    const all = faqs.concat(articles);
+    if (!q) return all.slice(0, 10);
+    
+    return all.filter(item => {
+      const arTitle = (item.title.ar || '').toLowerCase();
+      const enTitle = (item.title.en || '').toLowerCase();
+      const arContent = (item.content.ar || '').toLowerCase();
+      const enContent = (item.content.en || '').toLowerCase();
+      return arTitle.includes(q) || enTitle.includes(q) || arContent.includes(q) || enContent.includes(q);
+    }).slice(0, 15);
+  }
+
   function registerJarvis() {
     try {
-      if (!window.JarvisBrain || !JarvisBrain.tools || JarvisBrain.tools.report_knowledge_base) return;
-      JarvisBrain.tools.report_knowledge_base = {
-        desc_en: 'Knowledge base details: FAQs, guides, and drafts counts for Octagon ERP systems.',
-        risk: 'safe',
-        params: {},
-        run: function () {
-          const k = K();
-          return {
-            faqsCount: k.faqs.length,
-            articlesCount: k.articles.length,
-            draftsCount: k.drafts.length,
-            categories: k.categories.map(c => t(c.name.ar, c.name.en))
-          };
-        }
-      };
+      if (!window.JarvisBrain || !JarvisBrain.tools) return;
+      if (!JarvisBrain.tools.report_knowledge_base) {
+        JarvisBrain.tools.report_knowledge_base = {
+          desc_en: 'Knowledge base details: FAQs, guides, and drafts counts for Octagon ERP systems.',
+          risk: 'safe',
+          params: {},
+          run: function () {
+            const k = K();
+            return {
+              faqsCount: k.faqs.length,
+              articlesCount: k.articles.length,
+              draftsCount: k.drafts.length,
+              categories: k.categories.map(c => t(c.name.ar, c.name.en))
+            };
+          }
+        };
+      }
+      if (!JarvisBrain.tools.search_knowledge_base) {
+        JarvisBrain.tools.search_knowledge_base = {
+          desc_en: 'Search published and Jarvis-readable knowledge base/FAQ entries by keywords.',
+          risk: 'safe',
+          params: { query: { type: 'string', required: true } },
+          run: function (args) {
+            return searchPublished(args.query);
+          }
+        };
+      }
     } catch (_) {}
   }
 
@@ -1088,6 +981,7 @@
   window.OctagonKnowledgeBase = {
     ensureData,
     render,
+    search: searchPublished,
     open: function () { try { window.switchPage('knowledge_base'); } catch (_) {} }
   };
 })();

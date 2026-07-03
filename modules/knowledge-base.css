@@ -705,3 +705,100 @@ html[lang="ar"] .kb-ic-link {
 html[lang="en"] .kb-ic-link {
   text-align: right;
 }
+
+/* Coverage Widget */
+.kb-coverage-widget {
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1.25rem;
+}
+.kb-progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  height: 8px;
+  width: 100%;
+  margin: 0.75rem 0;
+  overflow: hidden;
+}
+.kb-progress-fill {
+  background: linear-gradient(90deg, #10b981, #059669);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+.kb-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+.kb-stat-box {
+  display: flex;
+  flex-direction: column;
+}
+.kb-stat-box strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.kb-stat-box span {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Category count & badges */
+.kb-cat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.kb-cat-count {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.05rem 0.35rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Status Badges */
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+}
+.status-badge.demo {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.status-badge.prod {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Detail Steps */
+.kb-detail-steps {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.kb-detail-steps h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+.kb-steps-list {
+  padding-inline-start: 1.25rem;
+  margin: 0;
+  line-height: 1.6;
+}
+.kb-steps-list li {
+  margin-bottom: 0.35rem;
+  color: #e2e8f0;
+}
+

@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="omni-ux-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-admin-crud-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-language-fix.css?v=20260609-octagon-recover-v1">
-  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260703-omni-v1">
+  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260703-omni-v6">
   <link rel="stylesheet" href="jarvis-visual-overlay.css">
   <link rel="stylesheet" href="modules/jarvis-orb.css?v=20260625-agent-cluster-v1">
   <link rel="stylesheet" href="modules/pilot-review-session.css?v=20260703-pilot-review-v7">
@@ -1898,7 +1898,7 @@
       if (window.__octagonAIAssistantPromise) return window.__octagonAIAssistantPromise;
       window.__octagonAIAssistantPromise = new Promise(function (resolve, reject) {
         var script = document.createElement('script');
-        script.src = 'omni-ai-assistant.js?v=20260703-omni-v2';
+        script.src = 'omni-ai-assistant.js?v=20260703-omni-v6';
         script.async = true;
         script.onload = function () { resolve(window.octagonAIAssistant || null); };
         script.onerror = function () { reject(new Error('AI assistant failed to load')); };
@@ -2011,15 +2011,15 @@
   <script src="modules/page-help-manual.js?v=20260624-arabic-v2"></script>
   <script src="modules/page-sop.js?v=20260608-modules-wire-v1"></script>
   <script src="modules/page-qc.js?v=20260625-wire-fix-v1"></script>
-  <script src="modules/ai-providers.js?v=20260703-omni-v1"></script>
+  <script src="modules/ai-providers.js?v=20260703-omni-v6"></script>
   <script src="modules/pilot-review-registry.js?v=20260702-pilot-review-v1"></script>
   <script src="modules/pilot-review-session.js?v=20260703-pilot-review-v7"></script>
-  <script src="jarvis-voice-runtime.js?v=20260703-omni-v2"></script>
+  <script src="jarvis-voice-runtime.js?v=20260703-omni-v6"></script>
   <script src="modules/jarvis-system-map.js?v=20260617-v2"></script>
   <script src="modules/jarvis-action-agent.js?v=20260703-omni-v1"></script>
   <!-- AI assistant is loaded on demand by toggleAIChat(); keep it out of the parser boot path. -->
   <script src="modules/jarvis-test-harness.js?v=20260703-omni-v1"></script>
-  <script src="modules/jarvis-brain.js?v=20260703-omni-v1"></script>
+  <script src="modules/jarvis-brain.js?v=20260703-omni-v6"></script>
   <script src="modules/jarvis-audit.js?v=20260703-omni-v1"></script>
   <script src="modules/jarvis-orb.js?v=20260703-omni-v1"></script>
   <script src="modules/command-palette.js?v=20260608-modules-wire-v1"></script>
@@ -2091,6 +2091,7 @@
   <script src="modules/esign.js?v=20260623-esign-v1"></script>
   <script src="modules/events.js?v=20260623-events-v1"></script>
   <script src="modules/knowledge.js?v=20260623-kb-v1"></script>
+  <script src="modules/knowledge-base-seed.js?v=20260703-seed-v1"></script>
   <script src="modules/knowledge-base.js?v=20260703-kb-v4"></script>
   <script src="modules/surveys.js?v=20260623-svy-v1"></script>
   <script src="modules/visitors.js?v=20260623-vis-v1"></script>

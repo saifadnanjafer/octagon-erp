@@ -15,6 +15,7 @@ This is the technical documentation for the in-app **Knowledge Base & FAQ Module
 
 *   **View Template:** `views/knowledge_base.html` (Dynamic section container).
 *   **JavaScript Controller:** `modules/knowledge-base.js` (Handles search, filter, render, draft proposals, and data seeding).
+*   **JavaScript Seed Data:** `modules/knowledge-base-seed.js` (Bilingual categories, articles, FAQs, and troubleshooting seed arrays).
 *   **CSS Stylesheet:** `modules/knowledge-base.css` (Premium glassmorphism and bento layout).
 *   **Documentation:** `docs/KNOWLEDGE_BASE_MODULE.md` (This file).
 
@@ -92,7 +93,9 @@ omni.knowledgeBase = {
 
 *   **Jarvis Can:** Search the knowledge base metadata, summarize matched articles, explain timesheet rules or backup commands to the user, and draft new proposed FAQs.
 *   **Jarvis Cannot:** Publish any draft directly, edit or delete verified articles, bypass permission restrictions for sensitive visibility categories, or make raw Postgres writes.
-*   **Exposed AI Tools:** `report_knowledge_base` is registered within `JarvisBrain.tools` to provide safe summary metrics.
+*   **Exposed AI Tools:** 
+    - `report_knowledge_base`: registered within `JarvisBrain.tools` to provide safe summary metrics.
+    - `search_knowledge_base`: registered to query published and Jarvis-readable entries by keywords.
 
 ---
 

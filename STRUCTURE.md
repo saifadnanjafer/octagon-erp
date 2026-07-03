@@ -26,18 +26,18 @@ This system is built as a single-page application (SPA) with a modular architect
 > **Phase 8A (2026-06-26) — Release Candidate audit:** route baseline confirmed clean at **93/93/93** (nav / view markers / counted routed view files), total view files **95**, internal route-less **2** (`manager_approvals`, `mobile_inventory_count`). PAGE_METADATA and PAGE_PERMISSIONS both now cover **93/93** nav pages (Phase 8A added 10 workshop/core pages to PAGE_METADATA in `services/permissionService.js`). See `docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md`.
 
 ## Page / Route Registry (reconciled 2026-07-03)
-A page is "fully wired" when it appears consistently in **six** places. As of this pass all **94** sidebar pages agree (79 after the 2026-06-22 reconciliation; +`appointments` +`loyalty` 06-22; +`esign` +`events` +`knowledge` +`surveys` +`visitors` +`risk_compliance` 06-23; +`telegram` 06-26 approved by Saif; +Phase 7J/7L `sales_commission` `sales_contracts` `sales_price_lists` `finance_installments` `pos_deepening` `omni_communications` `integration_hub` 06-26; +Phase 8D `knowledge_base` 07-03):
+A page is "fully wired" when it appears consistently in **six** places. As of this pass all **95** sidebar pages agree (79 after the 2026-06-22 reconciliation; +`appointments` +`loyalty` 06-22; +`esign` +`events` +`knowledge` +`surveys` +`visitors` +`risk_compliance` 06-23; +`telegram` 06-26 approved by Saif; +Phase 7J/7L `sales_commission` `sales_contracts` `sales_price_lists` `finance_installments` `pos_deepening` `omni_communications` `integration_hub` 06-26; +Phase 8D `knowledge_base` 07-03):
 
 | Registry | Where | Count | Role |
 | --- | --- | --- | --- |
-| Sidebar buttons | `index.html` `.nav-btn[data-page]` | 94 | what the user can click |
-| View markers `<!-- view:key -->` | `index.html` | 94 | **documentary manifest only** — NOT parsed at runtime (only the build-time `scratch/extract_views.js` reads them) |
-| Page templates | `views/<key>.html` | 94 | the actual `<section class="page">`, fetched on demand. **Filename must equal the page key** (underscores, e.g. `sales_commission.html`) or the loader 404s → blank page |
-| Dynamic loader map | `app.js` → `ensurePageTemplateLoaded()` `pageMap` + `prefetchAllViews()` | 94 | appends each template into `#mainContent` and warms them on boot |
-| Renderer | core `app.js` (`switchPage` inline `pageMap`, 31 core pages) **or** a module that wraps `window.switchPage` (enterprise-suite, route-health, appointments…) | 94 | hydrates the page body |
-| Route Health | `modules/route-health.js` (runtime) | 94/94 | audits nav↔section↔renderer live |
+| Sidebar buttons | `index.html` `.nav-btn[data-page]` | 95 | what the user can click |
+| View markers `<!-- view:key -->` | `index.html` | 95 | **documentary manifest only** — NOT parsed at runtime (only the build-time `scratch/extract_views.js` reads them) |
+| Page templates | `views/<key>.html` | 95 | the actual `<section class="page">`, fetched on demand. **Filename must equal the page key** (underscores, e.g. `sales_commission.html`) or the loader 404s → blank page |
+| Dynamic loader map | `app.js` → `ensurePageTemplateLoaded()` `pageMap` + `prefetchAllViews()` | 95 | appends each template into `#mainContent` and warms them on boot |
+| Renderer | core `app.js` (`switchPage` inline `pageMap`, 31 core pages) **or** a module that wraps `window.switchPage` (enterprise-suite, route-health, appointments…) | 95 | hydrates the page body |
+| Route Health | `modules/route-health.js` (runtime) | 95/95 | audits nav↔section↔renderer live |
 
-> Total `views/*.html` files = **90** (88 routed/counted + 2 internal route-less: `manager_approvals`, `mobile_inventory_count`). Previous baseline was 89 total before the Knowledge Base page.
+> Total `views/*.html` files = **97** (95 routed/counted + 2 internal route-less: `manager_approvals`, `mobile_inventory_count`). Previous baseline was 89 total before the Knowledge Base page and route-reconciliations.
 
 Notes:
 - **Route Health is a dynamic metric**: it enumerates live `.nav-btn[data-page]` and checks each has a matching section + render hook. Its denominator therefore **equals the current sidebar size**. Older audits that said "66/66" were point-in-time snapshots taken before later pages (warranty, the 11 enterprise-suite tabs, appointments, …) were added — not a cap or a regression.

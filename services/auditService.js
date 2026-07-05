@@ -92,7 +92,8 @@
       
       const collectionsToTrack = [
         'employees', 'contacts', 'departments', 'users', 'locations', 'quants', 'stock_moves', 
-        'transfers', 'journals', 'journal_entries', 'account_moves', 'account_payments', 'account_partial_reconciles', 
+        'transfers', 'journals', 'journal_entries', 'account_moves', 'account_payments', 'account_partial_reconciles',
+        'employee_advances', 'payroll_periods', 'employee_payroll_closings', 'payroll_payments', 'payroll_adjustments',
         'payments', 'maintenance_requests', 'production_orders', 'work_orders', 'audit_log'
       ];
       

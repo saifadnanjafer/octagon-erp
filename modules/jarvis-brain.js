@@ -209,12 +209,59 @@
       .trim();
   }
 
+  function normalizeUiText(value) {
+    return String(value || '')
+      .normalize('NFKD')
+      .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+      .replace(/\u0629/g, '\u0647')
+      .replace(/\u0649/g, '\u064A')
+      .replace(/[\u200C\u200D]/g, '')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function compactUiText(value) {
+    return normalizeUiText(value).replace(/\s+/g, '');
+  }
+
+  function uiTextScore(label, wanted) {
+    const labelNorm = normalizeUiText(label);
+    const wantedNorm = normalizeUiText(wanted);
+    if (!labelNorm || !wantedNorm) return 0;
+    const labelCompact = labelNorm.replace(/\s+/g, '');
+    const wantedCompact = wantedNorm.replace(/\s+/g, '');
+    if (labelNorm === wantedNorm) return 100;
+    if (labelCompact === wantedCompact) return 98;
+    if (labelNorm.includes(wantedNorm) || wantedNorm.includes(labelNorm)) return 86;
+    if (labelCompact.includes(wantedCompact) || wantedCompact.includes(labelCompact)) return 84;
+    const wantedTokens = wantedNorm.split(/\s+/).filter(Boolean);
+    const labelTokens = labelNorm.split(/\s+/).filter(Boolean);
+    const tokenHits = wantedTokens.filter(tok => labelTokens.includes(tok) || labelCompact.includes(tok.replace(/\s+/g, ''))).length;
+    let score = wantedTokens.length ? Math.round((tokenHits / wantedTokens.length) * 70) : 0;
+    const bigrams = s => {
+      const out = {};
+      const clean = String(s || '').replace(/\s+/g, '');
+      for (let i = 0; i < clean.length - 1; i++) out[clean.slice(i, i + 2)] = 1;
+      return Object.keys(out);
+    };
+    const wb = bigrams(wantedCompact);
+    const lb = bigrams(labelCompact);
+    const inter = lb.filter(x => wb.indexOf(x) !== -1).length;
+    const dice = (2 * inter) / Math.max(1, wb.length + lb.length);
+    score = Math.max(score, Math.round(dice * 78));
+    return score;
+  }
+
   function findEmployeeMention(raw) {
     const text = normalizePersonName(raw);
+    const textCompact = text.replace(/\s+/g, '');
     if (!text) return '';
     return employeeList()
       .map(emp => ({ emp, normalized: normalizePersonName(emp && emp.name) }))
-      .filter(item => item.normalized && text.includes(item.normalized))
+      .filter(item => item.normalized && (text.includes(item.normalized) || textCompact.includes(item.normalized.replace(/\s+/g, ''))))
       .sort((a, b) => b.normalized.length - a.normalized.length)
       .map(item => item.emp && item.emp.name)
       .filter(Boolean)[0] || '';
@@ -222,20 +269,25 @@
 
   function findEmployeeByName(rawName) {
     const wanted = normalizePersonName(rawName);
+    const wantedCompact = wanted.replace(/\s+/g, '');
     const list = employeeList();
     if (!wanted) return { employee: null, candidates: [] };
 
     const exact = list.find(emp => normalizePersonName(emp && emp.name) === wanted);
     if (exact) return { employee: exact, candidates: [exact], match: 'exact' };
+    const compactExact = list.find(emp => normalizePersonName(emp && emp.name).replace(/\s+/g, '') === wantedCompact);
+    if (compactExact) return { employee: compactExact, candidates: [compactExact], match: 'compact_exact' };
 
     const wantedTokens = wanted.split(/\s+/).filter(Boolean);
     const scored = list.map(emp => {
       const normalized = normalizePersonName(emp && emp.name);
+      const normalizedCompact = normalized.replace(/\s+/g, '');
       if (!normalized) return { emp, score: 0 };
       let score = 0;
       if (normalized.includes(wanted) || wanted.includes(normalized)) score += 80;
+      if (normalizedCompact.includes(wantedCompact) || wantedCompact.includes(normalizedCompact)) score += 85;
       const nameTokens = normalized.split(/\s+/).filter(Boolean);
-      const tokenHits = wantedTokens.filter(tok => nameTokens.includes(tok) || normalized.includes(tok)).length;
+      const tokenHits = wantedTokens.filter(tok => nameTokens.includes(tok) || normalized.includes(tok) || normalizedCompact.includes(tok)).length;
       score += tokenHits * 20;
       if (wantedTokens.length > 1 && tokenHits === wantedTokens.length) score += 30;
       return { emp, score };
@@ -529,9 +581,23 @@
 
     const match = findEmployeeByName(requestedName);
     if (!match.employee) {
-      const near = (match.candidates || []).map(emp => emp && emp.name).filter(Boolean).slice(0, 5).join('، ');
-      const tail = near ? t(` أقرب أسماء: ${near}.`, ` Closest names: ${near}.`) : '';
-      return { ok: false, message: t(`لم أجد موظف مطابق لـ "${requestedName}".`, `Could not find an employee matching "${requestedName}".`) + tail };
+      let near = (match.candidates || []).map(emp => emp && emp.name).filter(Boolean).slice(0, 4);
+      if (!near.length) {
+        // Voice transcription garbles names; token scoring can miss entirely.
+        // Character-bigram similarity still finds "do you mean X?" candidates.
+        const bigrams = s => { const out = {}; for (let i = 0; i < s.length - 1; i++) out[s.slice(i, i + 2)] = 1; return Object.keys(out); };
+        const wb = bigrams(normalizePersonName(requestedName));
+        near = list.map(emp => {
+          const eb = bigrams(normalizePersonName(emp && emp.name));
+          const inter = eb.filter(x => wb.indexOf(x) !== -1).length;
+          return { name: emp && emp.name, score: inter / Math.max(1, Math.max(wb.length, eb.length)) };
+        }).filter(x => x.name && x.score > 0.18)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 4).map(x => x.name);
+      }
+      if (!near.length) near = list.slice(0, 5).map(e => e && e.name).filter(Boolean);
+      const ask = near.length ? t(` هل تقصد: ${near.join('، ')}؟`, ` Did you mean: ${near.join(', ')}?`) : '';
+      return { ok: false, message: t(`لم أجد موظفاً مطابقاً لـ "${requestedName}".`, `Could not find an employee matching "${requestedName}".`) + ask };
     }
 
     const period = resolvePayrollPeriod(args, raw);
@@ -600,7 +666,7 @@
             : null;
         } catch (_) { return null; }
       })();
-      ai.actionQueue.unshift({
+      const queueItem = {
         id: makeId('aiprop'),
         actionId: actionId || 'jarvis_proposal',
         actionType: actionType || actionId || 'jarvis_proposal',
@@ -620,7 +686,21 @@
         requestedByRole: groups.join(',') || user.role || user.roleId || 'unmapped',
         createdAt: new Date().toISOString(),
         source: 'jarvis_brain'
-      });
+      };
+      ai.actionQueue.unshift(queueItem);
+      // SECURITY HARDENING 2026-07-05: register the approval SERVER-SIDE too,
+      // so execution later re-validates against a server record (not client state).
+      if (payload && payload.tool) {
+        try {
+          fetch('/api/jarvis/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tool: payload.tool, args: payload.args || {}, clientActionId: queueItem.id })
+          }).then(r => r.json()).then(resp => {
+            if (resp && resp.approvalId) { queueItem.serverApprovalId = resp.approvalId; save(); }
+          }).catch(() => {});
+        } catch (_) {}
+      }
       audit('ai.action.proposed', { title: title || '', risk: risk || 'medium', actionType: actionType || actionId || 'jarvis_proposal', userId: user.id || 'system', role: groups.join(',') || user.role || user.roleId || 'unmapped', reason: explained?.reason || '' });
       if (typeof window.addAiRunHistory === 'function') {
         window.addAiRunHistory({ actionId: 'system_chat', title: title || 'Omni', status: 'queued', note: summary || '', outputType: 'ai_console' });
@@ -657,6 +737,84 @@
         } catch (_) {}
         try { if (typeof window.switchPage === 'function') window.switchPage(page); } catch (_) {}
         return { ok: true, message: t('فتحت ' + label, 'Opened ' + label), navigated: page };
+      }
+    },
+
+    // DOM control: click a visible SAFE element only after the server-side UI
+    // policy grants it. Sensitive/critical buttons are denied outright; manager
+    // approval does not authorize a generic DOM click.
+    click_ui: {
+      risk: 'safe',
+      desc_en: 'Click a server-allowlisted safe visible UI control on the CURRENT page. Sensitive or unknown DOM clicks are denied; use a dedicated server-side tool for writes.',
+      desc_ar: 'اضغط فقط تحكم UI آمن ومسموح من الخادم في الصفحة الحالية. النقرات الحساسة أو غير المعروفة تُرفض؛ استخدم أداة سيرفرية مخصصة للكتابة.',
+      params: { label: 'visible button text, Arabic or English', action_id: 'exact data-jarvis-action id (when known)' },
+      async run(args) {
+        const agent = window.JarvisActionAgent;
+        const wanted = String((args && (args.action_id || args.id || args.label || args.button || args.text)) || '').trim();
+        if (!wanted) return { ok: false, message: t('حدد الزر المطلوب (النص أو المعرف).', 'Specify the target button (text or id).') };
+        if (!agent || typeof agent.executeElementClick !== 'function') {
+          return { ok: false, blocked: true, message: t('بوابة click_ui غير جاهزة — أوقف النقر حمايةً للنظام.', 'click_ui gate is not ready — click blocked for safety.') };
+        }
+        const MATCH_THRESHOLD = 66;
+
+        const findTagged = () => {
+          if (!agent || typeof agent.collectVisibleJarvisActions !== 'function') return null;
+          const actions = agent.collectVisibleJarvisActions();
+          const scored = actions.map(a => ({
+            action: a,
+            score: Math.max(
+              a.id === wanted ? 100 : 0,
+              uiTextScore(a.label || '', wanted),
+              uiTextScore(a.id || '', wanted)
+            )
+          })).sort((a, b) => b.score - a.score);
+          return scored[0] && scored[0].score >= MATCH_THRESHOLD ? scored[0].action : null;
+        };
+        // Icon-only buttons have NO innerText — their name lives in title /
+        // aria-label / data-jarvis-label. Match those too, or half the UI
+        // (row action icons, toolbar icons) is invisible to voice control.
+        const labelOf = el => {
+          const attr = el.getAttribute('title') || el.getAttribute('aria-label') || el.getAttribute('data-jarvis-label')
+            || (el.tagName === 'INPUT' ? el.value : '')
+            || (el.querySelector('[title]') ? el.querySelector('[title]').getAttribute('title') : '');
+          return String(el.innerText || attr || '').replace(/\s+/g, ' ').trim();
+        };
+        let lastVisible = [];
+        const findByText = () => {
+          const els = Array.from(document.querySelectorAll('button, .btn, [role="button"], a.btn, .nav-btn, input[type="button"], input[type="submit"], [onclick]'));
+          lastVisible = els.filter(el => el.offsetParent !== null)
+            .map(el => ({ el, label: labelOf(el) }))
+            .filter(x => x.label.length > 1 && x.label.length < 90)
+            .map(x => ({ ...x, score: uiTextScore(x.label, wanted) }))
+            .sort((a, b) => b.score - a.score || a.label.length - b.label.length);
+          return lastVisible[0] && lastVisible[0].score >= MATCH_THRESHOLD ? lastVisible[0].el : null;
+        };
+
+        const deadline = Date.now() + 4500;
+        let tagged = null, el = null;
+        while (!tagged && !el && Date.now() < deadline) {
+          tagged = findTagged();
+          if (!tagged) el = findByText();
+          if (!tagged && !el) await new Promise(r => setTimeout(r, 250));
+        }
+        if (!tagged && !el) {
+          const near = lastVisible.filter(x => x.score >= 35).slice(0, 4).map(x => x.label).filter(Boolean);
+          const hint = near.length
+            ? t(' أقرب أزرار ظاهرة: ' + near.join('، ') + '.', ' Closest visible buttons: ' + near.join(', ') + '.')
+            : '';
+          return { ok: false, message: t('ما لگيت زراً مطابقاً لـ "' + wanted + '" في هذه الصفحة.', 'No button matching "' + wanted + '" on this page.') + hint };
+        }
+
+        const label = tagged ? (tagged.label || tagged.id)
+          : String(el.innerText || el.getAttribute('title') || el.getAttribute('aria-label') || el.getAttribute('data-jarvis-label') || (el.tagName === 'INPUT' ? el.value : '') || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+        if (tagged) {
+          const res = await agent.executeJarvisAction(tagged.id, (args && args.params) || {});
+          if (res && res.ok === false) return { ok: false, message: res.message || t('تعذر تنفيذ النقرة.', 'The click could not be executed.') };
+          return { ok: true, message: t('ضغطت: ', 'Clicked: ') + label, navigated: res && res.navigated };
+        }
+        const res = await agent.executeElementClick(el, { label, requested: wanted, source: 'jarvis_brain_text_match' });
+        if (res && res.ok === false) return { ok: false, blocked: true, message: res.message || t('تعذر تنفيذ النقرة.', 'The click could not be executed.') };
+        return { ok: true, message: t('ضغطت: ', 'Clicked: ') + label };
       }
     },
 
@@ -1286,13 +1444,18 @@
   // ==========================================================================
   // PLANNER — ask the model for a strict JSON plan.
   // ==========================================================================
-  function buildPlannerPrompt() {
+  function buildPlannerPrompt(serverSnap, kbContext) {
     const isEn = lang() === 'en';
     const catalog = JSON.stringify(toolCatalog());
-    const snap = JSON.stringify(snapshot());
+    const snap = JSON.stringify(serverSnap || snapshot());
+    let kbText = '';
+    if (kbContext) {
+      kbText = '\n\n=== KNOWLEDGE BASE (RAG) ===\n' + JSON.stringify(kbContext) + '\n(You must use this KB to answer policy/SOP/FAQ questions. Do NOT invent rules. Cite source titles.)';
+    }
     const persona = isEn
-      ? `You are "Omni", the AI operator of Octagon ERP — an Arabic-first workshop/manufacturing system. You understand the manager's intent and either answer, or drive the ERP by choosing tools.`
-      : `أنت "أومني"، المشغّل الذكي لنظام Octagon ERP — نظام ورشة/تصنيع عربي. تفهم نية المدير، فإمّا تجيبه وإمّا تشغّل النظام عبر اختيار الأدوات.`;
+      ? `You are "Omni", the AI operator of Octagon ERP — an Arabic-first workshop/manufacturing system. You understand the manager's intent and either answer, or drive the ERP by choosing tools.${kbText}`
+      : `أنت "أومني"، المشغّل الذكي لنظام Octagon ERP — نظام ورشة/تصنيع عربي. تفهم نية المدير، فإمّا تجيبه وإمّا تشغّل النظام عبر اختيار الأدوات.${kbText}`;
+
 
     const rules = isEn ? `
 RULES:
@@ -1333,11 +1496,49 @@ RULES:
 `;
 
     const replyLangLine = isEn
-      ? `\n- LANGUAGE: The user is speaking ENGLISH. Your "speak" reply and any "clarify" MUST be in English.`
-      : `\n- اللغة: المستخدم يتحدث بالعربية. يجب أن يكون ردّك في "speak" و"clarify" باللغة العربية.`;
+      ? `\n- LANGUAGE: The user is speaking ENGLISH. Your "speak" reply and any "clarify" MUST be in English. Keep the reply in ONE language for voice clarity — do not mix Arabic into it.`
+      : `\n- اللغة: المستخدم يتحدث بالعربية. يجب أن يكون ردّك في "speak" و"clarify" بالعربية، وبلغة واحدة فقط لوضوح النطق الصوتي — لا تخلط كلمات إنجليزية إلا اسماً لا بديل عربي له.`;
+
+    // GROUNDING: the model matches loose/dialect wording far better when it can
+    // SEE the real page keys and the current page's clickable buttons, instead
+    // of guessing exact names.
+    const pagesLine = Object.keys(PAGES).map(k => k + ':' + (PAGES[k][0] || k)).join('، ');
+    let uiActionsLine = '';
+    try {
+      // Tagged actions first (they carry ids + risk), then plain visible buttons
+      // by text — most pages have no data-jarvis-action tags, so the text list is
+      // what actually lets the model reference real on-screen buttons.
+      const tagged = (window.JarvisActionAgent && typeof window.JarvisActionAgent.collectVisibleJarvisActions === 'function')
+        ? window.JarvisActionAgent.collectVisibleJarvisActions() : [];
+      const parts = tagged.slice(0, 15)
+        .map(a => a.id + ':"' + String(a.label || '').replace(/\s+/g, ' ').trim().slice(0, 40) + '"' + (a.risk && a.risk !== 'safe' && a.risk !== 'ui_safe' ? '(' + a.risk + ')' : ''));
+      const seen = {};
+      const buttons = Array.from(document.querySelectorAll('button, .btn, [role="button"], a.btn'))
+        .filter(el => el.offsetParent !== null)
+        .map(el => String(el.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 35))
+        .filter(txt => { if (txt.length < 2 || seen[txt]) return false; seen[txt] = 1; return true; })
+        .slice(0, 25);
+      uiActionsLine = parts.concat(buttons.map(b => '"' + b + '"')).join('، ');
+    } catch (_) {}
+    const chainRule = isEn ? `
+- MULTI-STEP COMMANDS (real queue): when the user asks for a series ("open X, then click Y, then do Z"), emit ALL steps in "actions" in order — they execute sequentially, one after another. After a "navigate" you may emit "click_ui" only for safe UI controls such as navigation, tabs, filters, search focus, opening panels/modals, scrolling, or cancel/back controls.
+- Never use "click_ui" for save, submit, delete, approve, reject, execute, post, pay, payroll, journal, settings, permission, import/restore/reset, or any business-data mutation. Use a dedicated server-side tool; the server will deny generic sensitive DOM clicks even if a manager approval exists.` : `
+- الأوامر المتسلسلة (طابور حقيقي): إذا طلب المستخدم سلسلة ("افتح X ثم اضغط Y ثم سوّي Z") أصدر كل الخطوات في "actions" بالترتيب — تُنفَّذ واحدة تلو الأخرى. بعد "navigate" استخدم "click_ui" فقط لتحكم UI آمن مثل التنقل، التبويبات، الفلاتر، تركيز البحث، فتح لوحة/نافذة، التمرير، أو الإلغاء/الرجوع.
+- لا تستخدم "click_ui" للحفظ، التقديم، الحذف، الموافقة، الرفض، التنفيذ، الترحيل، الدفع، الرواتب، القيود، الإعدادات، الصلاحيات، الاستيراد/الاستعادة/التصفير، أو أي تعديل بيانات. استخدم أداة سيرفرية مخصصة؛ الخادم سيرفض النقر الحساس العام حتى لو توجد موافقة مدير.`;
+    // CONVERSATION MEMORY: without it every message stood alone and the user had
+    // to repeat the full order each time. The planner must resolve pronouns and
+    // follow-ups ("نعم"، "افتحها"، "ونفس الشي لشهر ٤") from the recent turns.
+    const historyBlock = TURN_HISTORY.length
+      ? `\n=== ${isEn ? 'RECENT CONVERSATION (oldest→newest; u=user, a=you). Resolve follow-ups, pronouns and confirmations from it.' : 'المحادثة الأخيرة (من الأقدم إلى الأحدث؛ u=المستخدم، a=أنت). افهم المتابعات والضمائر والتأكيدات منها.'} ===\n${JSON.stringify(TURN_HISTORY)}\n`
+      : '';
+    const groundingBlock = `${historyBlock}
+=== ${isEn ? 'VALID PAGE KEYS (for navigate)' : 'مفاتيح الصفحات الصالحة (لأداة navigate)'} ===
+${pagesLine}
+${uiActionsLine ? `\n=== ${isEn ? 'CURRENT PAGE UI ACTIONS (for click_ui)' : 'أزرار الصفحة الحالية القابلة للنقر (لأداة click_ui)'} ===\n${uiActionsLine}\n` : ''}`;
 
     return `${persona}
-${rules}${isEn ? `\n- For employee salary, payroll, attendance, or timesheet questions, use lookup_employee_payroll. Never conclude an employee is missing from counts or from the snapshot alone.` : `\n- \u0644\u0623\u0633\u0626\u0644\u0629 \u0631\u0627\u062a\u0628 \u0645\u0648\u0638\u0641 \u0623\u0648 \u0627\u0644\u062a\u0627\u064a\u0645 \u0634\u064a\u062a \u0623\u0648 \u0627\u0644\u062d\u0636\u0648\u0631\u060c \u0627\u0633\u062a\u062e\u062f\u0645 lookup_employee_payroll. \u0644\u0627 \u062a\u0633\u062a\u0646\u062a\u062c \u0623\u0646 \u0627\u0644\u0645\u0648\u0638\u0641 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f \u0645\u0646 \u0627\u0644\u0639\u062f\u0627\u062f\u0627\u062a \u0623\u0648 \u0627\u0644\u0644\u0642\u0637\u0629 \u0648\u062d\u062f\u0647\u0627.`}${replyLangLine}
+${rules}${chainRule}${isEn ? `\n- For employee salary, payroll, attendance, or timesheet questions, use lookup_employee_payroll. Never conclude an employee is missing from counts or from the snapshot alone.` : `\n- \u0644\u0623\u0633\u0626\u0644\u0629 \u0631\u0627\u062a\u0628 \u0645\u0648\u0638\u0641 \u0623\u0648 \u0627\u0644\u062a\u0627\u064a\u0645 \u0634\u064a\u062a \u0623\u0648 \u0627\u0644\u062d\u0636\u0648\u0631\u060c \u0627\u0633\u062a\u062e\u062f\u0645 lookup_employee_payroll. \u0644\u0627 \u062a\u0633\u062a\u0646\u062a\u062c \u0623\u0646 \u0627\u0644\u0645\u0648\u0638\u0641 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f \u0645\u0646 \u0627\u0644\u0639\u062f\u0627\u062f\u0627\u062a \u0623\u0648 \u0627\u0644\u0644\u0642\u0637\u0629 \u0648\u062d\u062f\u0647\u0627.`}${replyLangLine}
+${groundingBlock}
 === ${isEn ? 'TOOL CATALOG' : 'كتالوج الأدوات'} (JSON) ===
 ${catalog}
 
@@ -1357,12 +1558,12 @@ ${snap}`;
     try { return JSON.parse(text); } catch (_) { return null; }
   }
 
-  async function plan(userText) {
+  async function plan(userText, serverSnap, kbContext) {
     const caller = aiCaller();
     if (!caller) throw new Error('AI core not loaded');
     // task:'tools' lets the provider router pick the best structured-output model
     // for strict-JSON tool planning; a user-pinned model still wins.
-    const raw = await caller(String(userText || ''), buildPlannerPrompt(), { temperature: 0.2, task: 'tools' });
+    const raw = await caller(String(userText || ''), buildPlannerPrompt(serverSnap, kbContext), { temperature: 0.2, task: 'tools' });
     const parsed = extractJson(raw);
     if (parsed && typeof parsed === 'object') {
       audit('ai.plan.created', { actions: (Array.isArray(parsed.actions) ? parsed.actions : []).map(a => a && a.tool).filter(Boolean) });
@@ -1510,7 +1711,16 @@ ${snap}`;
         const r = await runFn.call(tool, a.args || {});
         const msg = (r && typeof r === 'object') ? (r.message || '') : (typeof r === 'string' ? r : '');
         audit('ai.tool.executed', { tool: a.tool, ok: !(r && r.ok === false) });
-        results.push({ tool: a.tool, risk: tool.risk || 'safe', ok: !(r && r.ok === false), message: msg, navigated: r && r.navigated, data: r && r.data });
+        results.push({ 
+          tool: a.tool, 
+          risk: tool.risk || 'safe', 
+          ok: !(r && r.ok === false), 
+          message: msg, 
+          navigated: r && r.navigated, 
+          data: r && r.data,
+          verification: r && r.verification,
+          status: r && r.status
+        });
       } catch (e) {
         audit('ai.tool.executed', { tool: a.tool, ok: false, error: String(e && e.message || e) });
         results.push({ tool: a.tool, ok: false, message: t('خطأ في تنفيذ ', 'Error running ') + a.tool });
@@ -1524,7 +1734,27 @@ ${snap}`;
     const parts = [];
     if (planObj && planObj.clarify) parts.push(planObj.clarify);
     if (planObj && planObj.speak) parts.push(planObj.speak);
-    results.forEach(r => { if (r.message) parts.push(r.message); });
+    results.forEach(r => {
+      if (r.verification) {
+        const v = r.verification;
+        let prefix = '';
+        if (v.verified === true) {
+          prefix = lang() === 'en' ? 'The action was completed and confirmed.' : 'تم التنفيذ وتم التحقق من النتيجة.';
+        } else if (v.verified === false) {
+          const warnings = (v.warnings || []).join(', ');
+          prefix = lang() === 'en' 
+            ? `The action was attempted, but verification failed: ${warnings || 'not confirmed'}.` 
+            : `تم إرسال التنفيذ، لكن لم أقدر أؤكد النتيجة من قاعدة البيانات. ${warnings || ''}`;
+        } else {
+          prefix = lang() === 'en' 
+            ? 'The action completed, but automatic verification is not available for this tool.' 
+            : 'اكتمل الإجراء، لكن التحقق التلقائي غير متوفر لهذه الأداة.';
+        }
+        parts.push(prefix + (r.message ? '\n' + r.message : ''));
+      } else if (r.message) {
+        parts.push(r.message);
+      }
+    });
     return parts.filter(Boolean).join('\n\n').trim();
   }
 
@@ -1532,6 +1762,23 @@ ${snap}`;
   // PUBLIC: handle(userText) — plan, execute, return a unified result.
   //   returns { text, results, actions, clarify }
   // ==========================================================================
+  // ---- short-term conversation memory ---------------------------------------
+  // The planner used to see ONLY the current sentence, so follow-ups
+  // ("ونفس الشي لشهر ٤؟", "افتحها", "نعم اقصد أحمد") had nothing to anchor to and
+  // the user had to repeat the whole order. Keep a small rolling window of the
+  // recent turns and feed it to the planner.
+  const TURN_HISTORY = [];
+  function rememberTurn(userText, replyText, results) {
+    try {
+      TURN_HISTORY.push({
+        u: String(userText || '').slice(0, 220),
+        a: String(replyText || '').slice(0, 220),
+        tools: (results || []).map(r => r.tool + (r.ok === false ? ':fail' : '')).slice(0, 5)
+      });
+      while (TURN_HISTORY.length > 6) TURN_HISTORY.shift();
+    } catch (_) {}
+  }
+
   async function handle(userText, opts) {
     opts = opts || {};
     // PROMPT-INJECTION GUARD: high-risk attempts never reach the planner.
@@ -1551,13 +1798,47 @@ ${snap}`;
     let planObj = { actions: [] };
     const local = localPlan(userText);
     const isOffline = (window.OctagonAI && window.OctagonAI.status().activeProvider === 'offline');
-    const isSimpleNavigate = local.actions && local.actions.length === 1 && local.actions[0].tool === 'navigate';
+    // Chained commands ("افتح X ثم اضغط Y", "open X then do Y") must reach the
+    // LLM planner — the deterministic shortcut only sees the navigation part and
+    // silently drops the rest of the series.
+    const looksChained = /(ثم|بعدين|وبعدها|بعدها|واضغط|اضغط|انقر|و بعد|\bthen\b|after that|and click|and press)/i.test(String(userText || ''));
+    const isSimpleNavigate = !looksChained && local.actions && local.actions.length === 1 && local.actions[0].tool === 'navigate';
 
     if (isOffline || isSimpleNavigate) {
       planObj = local;
     } else {
+      let serverSnap = null;
+      let kbContext = null;
       try {
-        planObj = await plan(userText);
+        const scope = (opts.scope || (String(userText || '').length > 50 || /(تحليل|تقرير|تفاصيل|audit|analyze|report|deep)/i.test(userText) ? 'standard' : 'brief'));
+        const resp = await fetch('/api/jarvis/snapshot?scope=' + scope);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.snapshot) serverSnap = data.snapshot;
+        }
+      } catch (e) {
+        console.warn('Jarvis Brain: Failed to fetch server snapshot, falling back to local.', e);
+      }
+
+      try {
+        const isKbQuery = /(شلون|كيف|شرح|معنى|سياسة|خطوات|قانون|دليل|استخدم|SOP|faq|help|policy)/i.test(userText || '');
+        if (isKbQuery) {
+          const kbResp = await fetch('/api/jarvis/kb/context', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ q: userText })
+          });
+          if (kbResp.ok) {
+            const kbData = await kbResp.json();
+            if (kbData && kbData.context) kbContext = kbData.context;
+          }
+        }
+      } catch (e) {
+        console.warn('Jarvis Brain: Failed to fetch KB context.', e);
+      }
+
+      try {
+        planObj = await plan(userText, serverSnap, kbContext);
       } catch (e) {
         planObj = local; // Fallback to local plan on API failure/timeout
       }
@@ -1567,6 +1848,7 @@ ${snap}`;
       ? []
       : await execute(planObj);
     const text = compose(planObj, results) || t('تم.', 'Done.');
+    rememberTurn(userText, text, results);
     return { text, results, actions: planObj.actions || [], clarify: planObj.clarify || '', local: !!planObj.local };
   }
 
@@ -1604,12 +1886,143 @@ ${snap}`;
     return [];
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SERVER-AUTHORITATIVE WRITE TOOLS
+  //   Security Hardening Sprint 2026-07-05  (grant-gated)  →
+  //   Server-Side Mutation Sprint 2026-07-05 (server EXECUTES the mutation)
+  //
+  // Write tools are now SERVER-AUTHORITATIVE. The browser NEVER mutates
+  // persistent business data. The exposed window.JarvisBrain.tools.<tool>.run()
+  // is a pure REQUESTER: it POSTs /api/jarvis/action and the SERVER runs the real
+  // mutation (server-jarvis-tools.js) against the source-of-truth DB. The client
+  // then refreshes its in-memory state FROM the server (never fakes success by
+  // pushing into local arrays).
+  //
+  //   • server says "executed"          → refresh affected state from server, return ok
+  //   • server says "approval_required" → return blocked + approvalId (manager must approve)
+  //   • server says "denied"/"failed"   → surface it, mutate nothing
+  //   • server unreachable              → FAIL CLOSED (no local mutation, ever)
+  //
+  // The original client executors (tool.run closures) are intentionally REPLACED
+  // and dropped — direct browser execution is impossible by construction.
+  //
+  // WARNING: do NOT reintroduce a client-side mutation path here. A new
+  // DB-writing tool must (1) be added to SERVER_ENFORCED_TOOLS below, and
+  // (2) get a real executor in server-jarvis-tools.js + risk entry in
+  // server-jarvis-security.js. Unknown tools fail closed server-side.
+  // ═══════════════════════════════════════════════════════════════════════════
+  const SERVER_ENFORCED_TOOLS = [
+    'add_customer_debt', 'create_sales_receipt', 'record_customer_payment',
+    'create_purchase_expense', 'create_journal_entry', 'modify_material',
+    'modify_employee', 'execute_js_mutation',
+    'create_task', 'create_customer'
+  ];
+  const SERVER_ENFORCED_SET = Object.create(null);
+
+  async function postJarvisApi(path, body) {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {})
+    });
+    let data = null;
+    try { data = await res.json(); } catch (_) {}
+    return data || { ok: false, status: 'failed', error: 'non-JSON response (HTTP ' + res.status + ')' };
+  }
+
+  function isServerEnforced(toolName) { return !!SERVER_ENFORCED_SET[toolName]; }
+
+  // ---- PART 6: refresh client state FROM the server after a server mutation ---
+  // Re-read the source-of-truth DB and reassign only the affected slices IN PLACE
+  // (so the next saveData() carries the server's change forward instead of
+  // clobbering it), then re-render the current page. No fake local pushes.
+  function gref(name) { try { if (typeof window[name] !== 'undefined' && window[name]) return window[name]; } catch (_) {} try { return eval(name); } catch (_) {} return null; }
+  const TOOL_REFRESH = {
+    create_task: ['tasks'], create_customer: ['finance'],
+    add_customer_debt: ['finance'], record_customer_payment: ['finance'],
+    create_purchase_expense: ['finance'], create_sales_receipt: ['finance'],
+    modify_material: ['inventory'], modify_employee: ['employees'],
+    create_journal_entry: ['omni']
+  };
+  async function refreshServerState(toolName) {
+    const scopes = TOOL_REFRESH[toolName] || [];
+    if (!scopes.length) return;
+    let db;
+    try { const r = await fetch('/api/db'); db = await r.json(); } catch (_) { return; }
+    if (!db || typeof db !== 'object') return;
+    const finance = gref('finance'); const omni = gref('omni'); const employees = gref('employees');
+    try {
+      if (scopes.indexOf('finance') !== -1 && finance && db.finance) {
+        if (Array.isArray(db.finance.customers) && Array.isArray(finance.customers)) { finance.customers.length = 0; db.finance.customers.forEach(x => finance.customers.push(x)); }
+        if (Array.isArray(db.finance.transactions) && Array.isArray(finance.transactions)) { finance.transactions.length = 0; db.finance.transactions.forEach(x => finance.transactions.push(x)); }
+      }
+      if (scopes.indexOf('inventory') !== -1 && omni && db.omni && Array.isArray(db.omni.materials)) omni.materials = db.omni.materials;
+      if (scopes.indexOf('tasks') !== -1 && omni && db.omni && db.omni.taskManager) omni.taskManager = db.omni.taskManager;
+      if (scopes.indexOf('omni') !== -1 && omni && db.omni && Array.isArray(db.omni.aiPendingJournalEntries)) omni.aiPendingJournalEntries = db.omni.aiPendingJournalEntries;
+      if (scopes.indexOf('employees') !== -1 && Array.isArray(employees) && Array.isArray(db.employees)) { employees.length = 0; db.employees.forEach(x => employees.push(x)); }
+    } catch (_) {}
+    // re-render whatever page is showing the affected data
+    try {
+      const k = pageKey();
+      if (k === 'customers' && typeof window.renderCustomersPage === 'function') window.renderCustomersPage();
+      if (k === 'finance' && typeof window.renderFinancePage === 'function') window.renderFinancePage();
+      if (k === 'inventory' && typeof window.renderInventoryPage === 'function') window.renderInventoryPage();
+      if (k === 'task_manager' && typeof window.renderTaskManager === 'function') window.renderTaskManager();
+      if (typeof window.renderEmployeesPage === 'function' && scopes.indexOf('employees') !== -1) window.renderEmployeesPage();
+    } catch (_) {}
+  }
+
+  // Interpret a /api/jarvis/action or /execute-approved response into a tool result.
+  function interpretServerOutcome(name, resp) {
+    if (resp && (resp.status === 'executed' || resp.status === 'executed_unverified' || (resp.ok === true && resp.decision === 'executed'))) {
+      // fire-and-forget refresh; the spoken reply is already accurate
+      try { refreshServerState(name); } catch (_) {}
+      return { 
+        ok: true, 
+        status: resp.status,
+        message: resp.message || t('تم التنفيذ على الخادم.', 'Executed on the server.'), 
+        server: true,
+        verification: resp.verification || null
+      };
+    }
+    if (resp && (resp.status === 'approval_required' || resp.decision === 'approval_required')) {
+      return { ok: false, blocked: true, approvalId: resp.approvalId,
+        message: t('هذا الإجراء يحتاج موافقة المدير قبل التنفيذ (بوابة الخادم).', 'This action requires manager approval before execution (server gate).') };
+    }
+    if (resp && resp.status === 'denied') {
+      return { ok: false, blocked: true, message: resp.message || resp.error || t('رُفض الإجراء.', 'Action denied.') };
+    }
+    return { ok: false, blocked: true,
+      message: (resp && (resp.message || resp.error)) ? String(resp.message || resp.error)
+        : t('بوابة الخادم غير متاحة — أُوقف الإجراء حمايةً للبيانات.', 'Server gate unreachable — action blocked to protect data.') };
+  }
+
+  function hardenServerEnforcedTools() {
+    SERVER_ENFORCED_TOOLS.forEach(function (name) {
+      const tool = TOOLS[name];
+      if (!tool || tool.__serverEnforced) return;
+      SERVER_ENFORCED_SET[name] = true;
+      tool.__serverEnforced = true;
+      // Pure requester. The original client executor is replaced and dropped —
+      // the browser CANNOT mutate persistent data through this tool anymore.
+      tool.run = async function (args) {
+        let resp = null;
+        try { resp = await postJarvisApi('/api/jarvis/action', { tool: name, args: args || {} }); }
+        catch (_) { resp = null; } // network failure => fail closed below
+        return interpretServerOutcome(name, resp);
+      };
+    });
+  }
+  hardenServerEnforcedTools();
+
   window.JarvisBrain = {
     handle,
     plan,
     localPlan,        // deterministic planner (exposed for debugging/testing)
     execute,
     compose,
+    isServerEnforced,
+    refreshServerState,   // used by ai-governance after approved server execution
     tools: TOOLS,
     catalog: toolCatalog,
     snapshot,

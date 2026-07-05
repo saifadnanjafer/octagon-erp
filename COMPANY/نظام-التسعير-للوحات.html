@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام التسعير الاحترافي للوحات</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"></script>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background:#f8fafc; }
+  input[type=range]{ -webkit-appearance:none; height:6px; border-radius:9999px; background:#dbeafe; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; border-radius:9999px; background:#2563eb; cursor:pointer; }
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  input[type=number]{-moz-appearance:textfield;}
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+  @media print {
+    body * { visibility: hidden; }
+    #invoice-print, #invoice-print * { visibility: visible; }
+    #invoice-print { position: absolute; inset: 0; width: 100%; padding: 24px; background:#fff; color:#000; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="invoice-print" class="hidden"></div>
+<script>
+const PRICING_CONFIG = {
+  BASE_PRICE_PER_UNIT: 100,
+  UNIT_AREA: 6000,
+  MODIFIERS: {
+    // ── إضافات على المتر ──
+    layers:         { value: 10, label: 'طبقات' },
+    perforated:     { value: 15, label: 'مثقب (وجه)' },
+    backLight:      { value: 15, label: 'إنارة خلفية' },
+    sideType: {
+      aluminumWrap:   { value: 0,  label: 'ربل ألمنيوم' },
+      metalPerforated:{ value: 10, label: 'جانبي مثقب معدني' },
+      thermalAcrylic: { value: 50, label: 'أكريليك حراري' },
+    },
+    uvPrinting:     { value: 50, label: 'طباعة UV' },
+    cobondBack:     { value: 20, label: 'كوبوند خلفي' },
+    frameBack: {
+      none:   { value: 0,  label: 'بدون' },
+      light:  { value: 15, label: 'خفيف' },
+      medium: { value: 25, label: 'متوسط' },
+      full:   { value: 40, label: 'كامل/ثقيل' },
+    },
+    acrylicThickness: {
+      t3: { addPerUnit: 0,  label: '3 ملم' },
+      t4: { addPerUnit: 8,  label: '4 ملم' },
+      t6: { addPerUnit: 15, label: '6 ملم' },
+    },
+    ledType: {
+      economic: { value: -10, label: 'اقتصادي (صيني)', warranty: 1 },
+      standard: { value: 0,   label: 'اعتيادي (قياسي)', warranty: 2 },
+      premium:  { value: 10,  label: 'ممتاز/بريميوم',   warranty: 3 },
+    },
+    acrylicType: {
+      thai:    { flatDiscount: 0,   label: 'تايلندي' },
+      chinese: { flatDiscount: -10, label: 'صيني' },
+    },
+    transformerType: {
+      economic: { value: -10, label: 'اقتصادي (صيني)', warranty: 1 },
+      standard: { value: 0,   label: 'اعتيادي (قياسي)', warranty: 1 },
+      premium:  { value: 10,  label: 'ممتاز/بريميوم',   warranty: 2 },
+    },
+    // ── تكاليف ثابتة ──
+    crane: { value: 100, label: 'كرين رافعة' },
+    installDifficulty: {
+      normal:  { label: 'اعتيادي' },
+      complex: { label: 'معقد' },
+    },
+    extraWarrantyPerYear: 10,
+    rushOrder: {
+      normal: { value: 0,  label: 'اعتيادي (10-14 يوم)' },
+      days7:  { value: 5,  label: '7 أيام' },
+      days4:  { value: 10, label: '4 أيام' },
+    },
+  },
+  CEMENT_BOARD_PRICE_IQD: 75000,
+};
+
+const state = {
+  image: null, analyzing: false, confidence: {}, autoAnalyze: true,
+  dimensions: { width: 100, height: 60 },
+  cementBoardDims: { width: 100, height: 60 },
+  exchangeRate: 1550,
+  extraFlat: 0, extraPct: 0, discountFlat: 0, discountPct: 0,
+  notes: '', attachments: [],
+  price: 0, breakdown: [],
+  ai: { facadeImage: null, adText: '', extraDetails: '', generating: false, resultImage: null, resultNotes: '', error: '',
+        editText: '', editing: false, vectorImage: null, vectorNotes: '', vectorGenerating: false, vectorError: '',
+        colors: [], svgCode: '', svgGenerating: false, svgError: '', traceMode: 'flat', traceSrc: 'auto',
+        aiGenerated: [], sendRefs: true,
+        geminiOpen: false, promptType: 'ad', promptDraft: '' },
+  training: { open: false, image: null, generating: false, result: '', error: '', notes: '', refsOpen: false },
+  options: {
+    layers: 0,
+    perforated: false,
+    sideType: 'aluminumWrap',
+    uvPrinting: false,
+    backLight: false, cobondBack: false,
+    acrylicType: 'thai',
+    ledType: 'standard', transformerType: 'standard',
+    ledExtraYears: 0, transformerExtraYears: 0,
+    frameBack: 'none',
+    crane: false,
+    designFee: false, designFeeCost: 0,
+    rushOrder: 'normal',
+    acrylicThickness: 't3',
+    installDifficulty: 'normal',
+    installComplexCost: 0,
+    hasCementBoard: false,
+  }
+};
+
+const I = {
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  trending:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  truck:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  percent:'<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  layout:'<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  paint:'<path d="M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3Z"/><path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7"/><path d="M14.5 17.5 4.5 15"/>',
+  construction:'<rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7M7 14v7M17 3v3M7 3v3M10 14 2.3 6.3M14 6l7.7 7.7M8 6l8 8"/>',
+  wallet:'<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
+  key:'<path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/>',
+  sparkles:'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+  layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  bolt:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+  frame:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  panel:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+};
+function icon(name, cls){
+  return '<svg xmlns="http://www.w3.org/2000/svg" class="inline-block '+(cls||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+I[name]+'</svg>';
+}
+
+function calculate(){
+  const o = state.options, d = state.dimensions;
+  const M = PRICING_CONFIG.MODIFIERS;
+  const units = (d.width * d.height) / PRICING_CONFIG.UNIT_AREA;
+
+  let subtotal = PRICING_CONFIG.BASE_PRICE_PER_UNIT * units;
+  let items = [{ label: 'السعر الأساسي (أكريليك '+M.acrylicThickness[o.acrylicThickness].label+')', value: subtotal }];
+
+  const acrylicAdd = M.acrylicThickness[o.acrylicThickness].addPerUnit * units;
+  if(acrylicAdd > 0){ subtotal += acrylicAdd; items.push({ label:'إضافة سماكة '+M.acrylicThickness[o.acrylicThickness].label, value: acrylicAdd }); }
+
+  // إضافات على المتر
+  [
+    { key:'layers',     val:M.layers.value,     label:'طبقات إضافية', mult:true },
+    { key:'perforated', val:M.perforated.value, label:'مثقب (وجه)' },
+    { key:'uvPrinting', val:M.uvPrinting.value, label:'طباعة UV' },
+    { key:'backLight',  val:M.backLight.value,  label:'إنارة خلفية' },
+    { key:'cobondBack', val:M.cobondBack.value, label:'كوبوند خلفي' },
+  ].forEach(function(m){
+    if(o[m.key]){
+      const cost = m.mult ? (m.val * o[m.key] * units) : (m.val * units);
+      subtotal += cost; items.push({ label: m.label, value: cost });
+    }
+  });
+
+  const sc = M.sideType[o.sideType].value * units;
+  if(sc > 0){ subtotal += sc; items.push({ label:'اللف الجانبي ('+M.sideType[o.sideType].label+')', value:sc }); }
+
+  const lc = M.ledType[o.ledType].value * units;
+  if(lc!==0){ subtotal+=lc; items.push({ label:'نوع الليد ('+M.ledType[o.ledType].label+')', value:lc }); }
+
+  const atyp = M.acrylicType[o.acrylicType].flatDiscount;
+  if(atyp!==0){ subtotal+=atyp; items.push({ label:'أكريليك '+M.acrylicType[o.acrylicType].label, value:atyp }); }
+
+  const tc = M.transformerType[o.transformerType].value * units;
+  if(tc!==0){ subtotal+=tc; items.push({ label:'نوع المحول ('+M.transformerType[o.transformerType].label+')', value:tc }); }
+
+  if(o.frameBack !== 'none'){
+    const fc = M.frameBack[o.frameBack].value * units;
+    subtotal += fc; items.push({ label:'حديد/ألمنيوم ('+M.frameBack[o.frameBack].label+')', value:fc });
+  }
+
+  // تكاليف ثابتة
+  if(o.crane){ subtotal+=M.crane.value; items.push({ label:'كرين رافعة', value:M.crane.value }); }
+
+  if(o.designFee && o.designFeeCost>0){ subtotal+=o.designFeeCost; items.push({ label:'رسوم تصميم', value:o.designFeeCost }); }
+
+  const rc = M.rushOrder[o.rushOrder].value;
+  if(rc>0){ subtotal+=rc; items.push({ label:'طلب مستعجل ('+M.rushOrder[o.rushOrder].label+')', value:rc }); }
+
+  const dc = o.installDifficulty==='complex' ? (o.installComplexCost||0) : 0;
+  if(dc>0){ subtotal+=dc; items.push({ label:'أجور تركيب (معقد)', value:dc }); }
+
+  // ضمان ليد إضافي (الصيني بسنة واحدة فقط، لا إضافة)
+  if(o.ledType !== 'economic' && o.ledExtraYears > 0){
+    const lwc = o.ledExtraYears * M.extraWarrantyPerYear;
+    subtotal+=lwc; items.push({ label:'ضمان ليد إضافي ('+o.ledExtraYears+' سنة)', value:lwc });
+  }
+  // ضمان محولة إضافي
+  if(o.transformerExtraYears > 0){
+    const twc = o.transformerExtraYears * M.extraWarrantyPerYear;
+    subtotal+=twc; items.push({ label:'ضمان محولة إضافي ('+o.transformerExtraYears+' سنة)', value:twc });
+  }
+
+  if(o.hasCementBoard){
+    const cb = state.cementBoardDims;
+    const areaM2 = (cb.width * cb.height) / 10000;
+    const costUSD = (areaM2 * PRICING_CONFIG.CEMENT_BOARD_PRICE_IQD) / state.exchangeRate;
+    subtotal+=costUSD; items.push({ label:'بوردكس أسمنتي ('+areaM2.toFixed(2)+' م²)', value:costUSD });
+  }
+
+  let total = subtotal;
+  if(state.extraFlat > 0){   total += state.extraFlat;  items.push({ label:'إضافي ($)',  value: state.extraFlat }); }
+  if(state.extraPct > 0){    const ep=subtotal*(state.extraPct/100);  total+=ep; items.push({ label:'إضافي ('+state.extraPct+'%)',  value: ep }); }
+  if(state.discountFlat > 0){ total -= state.discountFlat; items.push({ label:'خصم ($)',   value: -state.discountFlat }); }
+  if(state.discountPct > 0){ const dp=subtotal*(state.discountPct/100); total-=dp; items.push({ label:'خصم ('+state.discountPct+'%)', value: -dp }); }
+
+  state.price     = Math.round(total * 100) / 100;
+  state.breakdown = items;
+}
+
+function setOpt(key, val){ state.options[key] = val; render(); }
+function setDim(key, val){ state.dimensions[key] = Number(val); render(); }
+function setCBD(key, val){ state.cementBoardDims[key] = Number(val); render(); }
+
+// ── مفاتيح AI مخفية ──
+const OR_KEY = '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';
+const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const AI_IMAGE_MODEL  = 'google/gemini-3.1-flash-image';
+const AI_VISION_MODEL = 'anthropic/claude-sonnet-4-5';
+
+// ── عدّاد الاستهلاك (محلي، يبقى بعد إعادة التحميل) ──
+function getUsage(){ try{ return JSON.parse(localStorage.getItem('ai_usage')||'{}'); }catch(e){ return {}; } }
+function bumpUsage(model, u){
+  const x = getUsage();
+  x.calls = (x.calls||0)+1;
+  if(model===AI_IMAGE_MODEL) x.imageCalls = (x.imageCalls||0)+1;
+  if(u){ x.pt=(x.pt||0)+(u.prompt_tokens||u.promptTokens||0); x.ct=(x.ct||0)+(u.completion_tokens||u.completionTokens||0); }
+  localStorage.setItem('ai_usage', JSON.stringify(x));
+}
+function resetUsage(){ localStorage.removeItem('ai_usage'); if(typeof renderAi==='function') renderAi(); }
+
+function orPost(model, messages, extra){
+  return fetch(OR_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY},
+    body:JSON.stringify(Object.assign({model:model, messages:messages}, extra||{}))
+  }).then(function(r){ return r.json(); }).then(function(j){
+    try{ bumpUsage(model, j&&j.usage); }catch(e){}
+    return j;
+  });
+}
+function orText(result){
+  const msg=result.choices&&result.choices[0]&&result.choices[0].message;
+  if(!msg) throw new Error('استجابة فارغة.');
+  if(result.error) throw new Error(result.error.message||JSON.stringify(result.error));
+  if(typeof msg.content==='string') return msg.content;
+  if(Array.isArray(msg.content)) return msg.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('\n');
+  return '';
+}
+
+// ── مراجع التدريب البصري لكل خيار ──
+const TRAINING_REFS = {
+  'sideType.aluminumWrap':    { label:'اللف الجانبي – ربل ألمنيوم',    url:'', desc:'' },
+  'sideType.metalPerforated': { label:'الجانبي – مثقب معدني',          url:'', desc:'' },
+  'sideType.thermalAcrylic':  { label:'الجانبي – أكريليك حراري بارز',  url:'', desc:'' },
+  'ledType.economic':         { label:'ليد اقتصادي (صيني)',            url:'', desc:'' },
+  'ledType.standard':         { label:'ليد اعتيادي (قياسي)',           url:'', desc:'' },
+  'ledType.premium':          { label:'ليد ممتاز (بريميوم)',           url:'', desc:'' },
+  'acrylicType.thai':         { label:'أكريليك تايلندي',              url:'', desc:'' },
+  'acrylicType.chinese':      { label:'أكريليك صيني',                 url:'', desc:'' },
+  'option.backLight':         { label:'إنارة خلفية (هالة)',            url:'', desc:'' },
+  'option.cobondBack':        { label:'كوبوند – ستروك أوفست',         url:'', desc:'' },
+  'option.perforated':        { label:'وجه مثقب',                     url:'', desc:'' },
+  'option.uvPrinting':        { label:'طباعة UV',                     url:'', desc:'' },
+  'option.layers':            { label:'طبقات متعددة (بارزة)',          url:'', desc:'' },
+};
+function getRefs(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('sign_refs_v1')||'{}');
+    const out={};
+    Object.keys(TRAINING_REFS).forEach(function(k){
+      out[k]=Object.assign({},TRAINING_REFS[k],saved[k]||{});
+    });
+    return out;
+  } catch(e){ return Object.assign({},TRAINING_REFS); }
+}
+function saveRef(key,field,val){
+  const saved=JSON.parse(localStorage.getItem('sign_refs_v1')||'{}');
+  if(!saved[key]) saved[key]={};
+  saved[key][field]=val;
+  localStorage.setItem('sign_refs_v1',JSON.stringify(saved));
+}
+function exportRefsCode(){
+  const refs=getRefs();
+  let c='const TRAINING_REFS = {\n';
+  Object.entries(refs).forEach(function(e){
+    const k=e[0],v=e[1];
+    c+="  '"+k+"': { label:'"+v.label.replace(/'/g,"\\'")+
+      "', url:'"+v.url.replace(/'/g,"\\'")+
+      "', desc:'"+v.desc.replace(/'/g,"\\'").replace(/\n/g,'\\n')+"' },\n";
+  });
+  return c+'};';
+}
+function copyRefsCode(){
+  navigator.clipboard.writeText(exportRefsCode()).then(function(){
+    alert('تم النسخ! أرسل هذا الكود لـ Claude ليضيفه بالملف بشكل دائم.');
+  });
+}
+function refsEditorHtml(){
+  const refs=getRefs();
+  const locked=localStorage.getItem('sign_refs_locked')==='1';
+  let html='<div class="mt-4 space-y-4">'+
+    '<div class="flex items-center justify-between mb-1">'+
+      '<label class="flex items-center gap-2 cursor-pointer select-none">'+
+        '<input type="checkbox" '+(locked?'checked':'')+
+          ' onchange="localStorage.setItem(\'sign_refs_locked\',this.checked?\'1\':\'0\');render()" class="w-4 h-4 accent-violet-600">'+
+        '<span class="text-xs font-bold text-slate-500">قفل (للعرض فقط)</span>'+
+      '</label>'+
+      '<button onclick="copyRefsCode()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition">📋 تصدير الكود للمطور</button>'+
+    '</div>';
+  Object.entries(refs).forEach(function(e){
+    const k=e[0],v=e[1];
+    const dis=locked?'disabled':'';
+    const dc=locked?'opacity-50 cursor-not-allowed':'';
+    html+='<div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 space-y-2">'+
+      '<p class="text-xs font-black text-violet-700">'+v.label+'</p>'+
+      '<input type="url" value="'+v.url.replace(/"/g,'&quot;')+'" '+dis+
+        ' placeholder="رابط صورة مرجعية (PNG/JPG مباشر)..." '+
+        ' onchange="saveRef(\''+k+'\',\'url\',this.value)" '+
+        ' class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-mono outline-none '+dc+'" dir="ltr">'+
+      '<textarea rows="2" '+dis+
+        ' placeholder="وصف بصري – يُحقن تلقائياً في بروميت الذكاء الصناعي..." '+
+        ' onchange="saveRef(\''+k+'\',\'desc\',this.value)" '+
+        ' class="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs outline-none resize-none '+dc+'">'+
+        v.desc.replace(/</g,'&lt;')+'</textarea>'+
+    '</div>';
+  });
+  return html+'</div>';
+}
+
+// القاموس البصري: يترجم كل خيار تقني إلى وصف بصري دقيق لنموذج الصور
+function buildVisualSpec(){
+  const o = state.options, d = state.dimensions, M = PRICING_CONFIG.MODIFIERS;
+  const lines = [];
+
+  // النوع الأساسي: حروف ضوئية بارزة مجسمة (مو صندوق مضيء مسطح)
+  const isThermo = o.sideType === 'thermalAcrylic';
+  const thick = {t3:'3mm', t4:'4mm', t6:'6mm'}[o.acrylicThickness];
+  const aqual = o.acrylicType==='thai' ? 'premium high-clarity Thai acrylic' : 'economy acrylic';
+
+  if(isThermo){
+    lines.push(
+      'SIGN TYPE: 3D THERMOFORMED / VACUUM-FORMED illuminated sign. '+
+      'The entire sign face is heat-molded '+thick+' '+aqual+' that bulges, curves and protrudes outward in relief. '+
+      'Letters and shapes are embossed / raised — they pop out from a flat backing panel, creating strong 3D shadows. '+
+      'The acrylic face glows from within when lit. This is NOT a flat rectangle — it has deep sculptural relief.'
+    );
+  } else {
+    lines.push(
+      'SIGN TYPE: FABRICATED 3D CHANNEL LETTERS (حروف ضوئية بارزة مجسمة). '+
+      'Each letter/logo element is individually fabricated as a separate 3D box shape that mounts directly on the wall — '+
+      'NOT a flat panel, NOT a lightbox cabinet. '+
+      'Each letter has: (1) a '+thick+' '+aqual+' illuminated FACE (front), '+
+      '(2) aluminum or metal RETURNS/SIDES giving the letters physical depth (8–15 cm deep), '+
+      '(3) open or closed back. '+
+      'The letters are spaced slightly apart, floating on the facade independently. '+
+      'Between letters the wall surface is visible. '+
+      'This is the professional signage style used on storefronts worldwide.'
+    );
+  }
+
+  // اللف الجانبي (الريتيرن / الجانب)
+  if(o.sideType==='aluminumWrap'){
+    lines.push('Letter returns/sides: brushed ALUMINUM — clean silver metallic depth on the sides of each channel letter, giving a premium look.');
+  } else if(o.sideType==='metalPerforated'){
+    lines.push('Letter returns/sides: PERFORATED METAL — the depth/sides of each letter have a fine dot-pattern of punched holes that allow light to bleed through the sides as well.');
+  }
+
+  // الوجه
+  if(o.perforated){
+    lines.push('Letter face: PERFORATED acrylic face — tiny laser-cut holes across the face allow light pinpoints to shine through for a starfield/mesh texture effect.');
+  }
+  if(o.uvPrinting){
+    lines.push('Letter face: UV-PRINTED full-color graphics on the acrylic — rich photographic or illustrated imagery backlit from inside, vivid colors glowing through.');
+  }
+  if(o.layers>0){
+    lines.push(o.layers+' LAYERED depth effect: multiple stacked acrylic or metal layers in front of the main face, creating dramatic shadows and a multi-dimensional raised look — like letters within letters.');
+  }
+
+  // الإضاءة
+  const ledDesc = {
+    economic: 'economy LED modules — functional even glow, slightly cool white, visible light spread',
+    standard: 'standard quality LED — bright uniform white illumination, no dark spots, professional result',
+    premium:  'premium high-output LED — ultra-bright even glow, crisp white light, restaurant/hotel grade quality'
+  }[o.ledType];
+  lines.push('Internal LED illumination: '+ledDesc+'. The sign is SWITCHED ON and brightly glowing in the render.');
+
+  // إنارة خلفية (هالة)
+  if(o.backLight){
+    lines.push('HALO / BACK-LIT effect: additional LEDs mounted behind the letters project a soft glowing halo of light ONTO THE WALL SURFACE behind each letter — creating a floating luminous outline effect, especially visible at night.');
+  }
+
+  // كوبوند — ستروك أوفست
+  if(o.cobondBack){
+    lines.push(
+      'COBOND / ACM BACKING with STROKE OFFSET effect: '+
+      'Each letter or logo shape has a flat aluminum-composite (ACM/Alucobond) shadow plate BEHIND IT, '+
+      'extending 2–4 cm beyond the letter outline on all sides like an outer stroke/offset halo. '+
+      'This creates a sharp crisp border / outline silhouette visible around every letter — '+
+      'the shadow plate is typically a contrasting color (black, gold, or dark brushed metal) against the lighter wall. '+
+      'The 3D letter sits ON TOP of this plate.'
+    );
+  }
+
+  // الهيكل
+  if(o.frameBack!=='none'){
+    const fd = {light:'light 3–5cm',medium:'medium 8–10cm',full:'heavy full 15cm+'}[o.frameBack];
+    lines.push('Metal back frame: '+fd+' steel/aluminum racetrack or backer that holds the letters away from the wall, adding more projection and shadow depth.');
+  }
+
+  // بوردكس
+  if(o.hasCementBoard){
+    lines.push('Installed on a cement-board (fibro) base panel recessed into or flush-mounted on the facade surface.');
+  }
+
+  // النسبة
+  const ar = d.width / d.height;
+  lines.push('Overall sign composition proportions — width to height ratio: '+d.width+':'+d.height+' ('+(ar>1?'wide horizontal landscape':'tall vertical portrait')+' layout).');
+
+  // حقن مراجع التدريب البصري للخيارات النشطة
+  const refs=getRefs();
+  function injectRef(k){ const r=refs[k]; if(r&&(r.desc||'').trim()) lines.push('VISUAL REFERENCE for "'+r.label+'": '+r.desc.trim()); }
+  injectRef('sideType.'+o.sideType);
+  injectRef('ledType.'+o.ledType);
+  injectRef('acrylicType.'+o.acrylicType);
+  if(o.backLight)   injectRef('option.backLight');
+  if(o.cobondBack)  injectRef('option.cobondBack');
+  if(o.perforated)  injectRef('option.perforated');
+  if(o.uvPrinting)  injectRef('option.uvPrinting');
+  if(o.layers>0)    injectRef('option.layers');
+
+  return lines.join('\n\n');
+}
+
+function buildAdPrompt(){
+  const spec = buildVisualSpec();
+  const adText = (state.ai.adText||'').trim();
+  const extra = (state.ai.extraDetails||'').trim();
+
+  return [
+    'You are a professional architectural signage visualizer and photorealistic mockup artist.',
+    '',
+    'TASK: Take the uploaded FACADE photo and realistically composite a custom illuminated sign onto it.',
+    'Match the building perspective, vanishing point, lighting direction and scale exactly.',
+    'The result must look like a real professional photograph — not a 3D render, not a flat paste.',
+    '',
+    '════ SIGN TEXT ════',
+    'Render this text EXACTLY as written (Arabic — preserve letter connections and direction):',
+    '"'+adText+'"',
+    'Do NOT translate, do NOT alter spelling, do NOT use Latin characters.',
+    '',
+    '════ SIGN TECHNICAL SPECIFICATION ════',
+    spec,
+    '',
+    (extra ? '════ PLACEMENT & CONTEXT NOTES ════\n'+extra+'\n\n' : '')+
+    (refAttachments().length ? '════ REFERENCE IMAGES ════\nAdditional reference images are attached (logo, brand artwork, color samples, or design details). USE them as the source of truth for the logo shape, exact colors, and any specific details shown. Incorporate the logo/artwork faithfully onto the sign.\n\n' : '')+
+    '════ RENDERING RULES ════',
+    '• The sign must look physically INSTALLED on the building — correct perspective warp, wall attachment shadows.',
+    '• Cast realistic SHADOWS from the sign onto the wall surface (especially important for 3D channel letters).',
+    '• The sign is SWITCHED ON — LEDs are glowing, even in daylight.',
+    '• Preserve the original facade photo untouched except where the sign is placed.',
+    '• Output a single high-quality composed image.',
+  ].join('\n');
+}
+
+// ── ضغط الصورة قبل الإرسال للـAPI (يقلّل صرف التوكنات بشدّة) ──
+function shrinkImage(dataUrl, maxDim, quality){
+  return new Promise(function(resolve){
+    try{
+      const img = new Image();
+      img.onload = function(){
+        let w=img.width, h=img.height; const m=maxDim||1280;
+        if(w>m||h>m){ const s=Math.min(m/w,m/h); w=Math.round(w*s); h=Math.round(h*s); }
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg', quality||0.82));
+      };
+      img.onerror=function(){ resolve(dataUrl); };
+      img.src=dataUrl;
+    }catch(e){ resolve(dataUrl); }
+  });
+}
+// يبني أجزاء صور مضغوطة للإرسال
+async function buildImageParts(list){
+  const out=[];
+  for(let i=0;i<list.length;i++){
+    if(!list[i]) continue;
+    const small=await shrinkImage(list[i],1280,0.82);
+    out.push({ type:'image_url', image_url:{ url: small } });
+  }
+  return out;
+}
+// مرفقات المستخدم فقط (تستثني الصور المولّدة)
+function userAttachments(){
+  const gen = state.ai.aiGenerated||[];
+  return state.attachments.filter(function(s){ return gen.indexOf(s)===-1; });
+}
+// المرفقات التي تُرسَل للـAPI كمرجع: مرفقات المستخدم + حد أقصى 4 + قابل للإيقاف
+function refAttachments(){
+  if(!state.ai.sendRefs) return [];
+  return userAttachments().slice(0,4);
+}
+
+// ── تصدير البرومت لاستخدام Gemini مجاناً ──
+function geminiPrompt(){
+  const t = state.ai.promptType||'ad';
+  if(t==='vector') return buildVectorPrompt();
+  if(t==='edit')   return buildEditPrompt();
+  return buildAdPrompt();
+}
+function setPromptType(t){ state.ai.promptType=t; state.ai.promptDraft=''; renderAi(); }
+function copyGeminiPrompt(){
+  const ta=document.getElementById('gemini-prompt');
+  const txt = ta ? ta.value : geminiPrompt();
+  navigator.clipboard.writeText(txt).then(function(){
+    const b=document.getElementById('gemini-copy-btn'); if(b){ b.textContent='✅ تم النسخ'; setTimeout(function(){ b.textContent='📋 نسخ البرومت'; },2000); }
+  });
+}
+function openGemini(){ window.open('https://gemini.google.com/app','_blank','noopener'); }
+function downloadRefImages(){
+  const list=[];
+  if(state.ai.facadeImage) list.push(state.ai.facadeImage);
+  userAttachments().forEach(function(s){ list.push(s); });
+  if(!list.length){ alert('لا توجد صور مرجعية — ارفع صورة الواجهة أو مرفقات أولاً.'); return; }
+  list.forEach(function(src,i){ setTimeout(function(){ const a=document.createElement('a'); a.href=src; a.download='مرجع-'+(i+1)+'.png'; a.click(); }, i*350); });
+}
+// استخراج الصورة من رد الذكاء
+function extractImage(result){
+  const msg = result.choices&&result.choices[0]&&result.choices[0].message;
+  if(!msg) return null;
+  if(msg.images&&msg.images.length) return msg.images[0].image_url?msg.images[0].image_url.url:msg.images[0].url;
+  return null;
+}
+// حفظ تلقائي للصورة المولّدة (تُعلَّم كـ"مولّدة" فلا تُعاد إرسالها للـAPI)
+function autoAttach(img){
+  if(!img) return;
+  if(!state.ai.aiGenerated) state.ai.aiGenerated=[];
+  if(state.ai.aiGenerated.indexOf(img)===-1) state.ai.aiGenerated.push(img);
+  if(state.attachments.indexOf(img)===-1){ state.attachments.push(img); }
+}
+
+async function generateAd(){
+  if(!state.ai.facadeImage){ state.ai.error='ارفع صورة الواجهة أولاً.'; renderAi(); return; }
+  if(!(state.ai.adText||'').trim()){ state.ai.error='اكتب نص الإعلان أولاً.'; renderAi(); return; }
+  state.ai.generating=true; state.ai.error=''; state.ai.resultImage=null; state.ai.resultNotes=''; renderAi();
+  try {
+    const parts = await buildImageParts([state.ai.facadeImage].concat(refAttachments()));
+    const content = [{ type:'text', text: buildAdPrompt() }].concat(parts);
+    const result = await orPost(AI_IMAGE_MODEL,[{ role:'user', content:content }],{ modalities:['image','text'] });
+    if(result.error) throw new Error(result.error.message||JSON.stringify(result.error));
+    const img = extractImage(result);
+    state.ai.resultImage=img;
+    state.ai.resultNotes=orText(result);
+    if(!img&&!state.ai.resultNotes) throw new Error('لم يرجع النموذج صورة. جرّب مرة أخرى.');
+    autoAttach(img);
+  } catch(e){
+    state.ai.error='خطأ في التوليد: '+(e.message||e);
+  } finally {
+    state.ai.generating=false; renderAi();
+  }
+}
+
+// ── تعديل الصورة المولّدة بوصف إضافي ──
+function buildEditPrompt(){
+  const spec = buildVisualSpec();
+  const adText = (state.ai.adText||'').trim();
+  const extra = (state.ai.extraDetails||'').trim();
+  const edit = (state.ai.editText||'').trim();
+  return [
+    'You are editing an EXISTING illuminated-sign mockup. The FIRST attached image is the current generated result.',
+    'Apply ONLY the requested modification below, while keeping everything else (composition, building, perspective, lighting) consistent.',
+    '',
+    '════ MODIFICATION REQUESTED ════',
+    edit,
+    '',
+    '════ KEEP CONSISTENT WITH — SIGN TEXT ════',
+    '"'+adText+'"  (Arabic, exact, do not translate or alter)',
+    '',
+    '════ TECHNICAL SPECIFICATION ════',
+    spec,
+    (extra ? '\n════ CONTEXT NOTES ════\n'+extra : ''),
+    (refAttachments().length ? '\n════ REFERENCE IMAGES ════\nThe remaining attached images are references (logo, artwork, colors, details) — use them as the source of truth.' : ''),
+    '',
+    '════ RULES ════',
+    '• Output a single high-quality edited image. Apply the modification faithfully but change nothing else.',
+  ].join('\n');
+}
+async function generateEdit(){
+  if(!state.ai.resultImage){ state.ai.error='لا توجد صورة لتعديلها — ولّد الإعلان أولاً.'; renderAi(); return; }
+  if(!(state.ai.editText||'').trim()){ state.ai.error='اكتب وصف التعديل أولاً.'; renderAi(); return; }
+  state.ai.editing=true; state.ai.error=''; renderAi();
+  try {
+    const parts = await buildImageParts([state.ai.resultImage].concat(refAttachments()));
+    const content = [{ type:'text', text: buildEditPrompt() }].concat(parts);
+    const result = await orPost(AI_IMAGE_MODEL,[{ role:'user', content:content }],{ modalities:['image','text'] });
+    if(result.error) throw new Error(result.error.message||JSON.stringify(result.error));
+    const img = extractImage(result);
+    if(!img) throw new Error('لم يرجع النموذج صورة معدّلة. جرّب صياغة أخرى.');
+    state.ai.resultImage=img;
+    state.ai.resultNotes=orText(result)||state.ai.resultNotes;
+    state.ai.editText='';
+    autoAttach(img);
+  } catch(e){
+    state.ai.error='خطأ في التعديل: '+(e.message||e);
+  } finally {
+    state.ai.editing=false; renderAi();
+  }
+}
+
+// ── توليد التصميم التنفيذي ثنائي الأبعاد (بدون خلفية) ──
+function buildVectorPrompt(){
+  const spec = buildVisualSpec();
+  const d = state.dimensions;
+  const adText = (state.ai.adText||'').trim();
+  return [
+    'Produce a FLAT 2D PRODUCTION / EXECUTION design of the SIGN ONLY — NO building, NO facade, NO photographic background.',
+    'Background must be pure white (or transparent). This is a technical manufacturing / shop drawing in clean VECTOR style.',
+    '',
+    '════ REQUIREMENTS ════',
+    '• Front orthographic (flat) view of the sign artwork at true proportions '+d.width+' cm wide × '+d.height+' cm tall.',
+    '• Draw engineering DIMENSION LINES with arrowheads and numeric measurements in centimeters: overall width, overall height, and key element sizes (letter height, spacing).',
+    '• Use the EXACT required colors — flat, solid, accurate fills (match any attached color references / logo exactly).',
+    '• Letters and elements rendered as they will be MANUFACTURED: crisp sharp edges, flat colors, clean vector look — NOT photographic, NOT 3D, NO glow, NO lighting effects.',
+    '• Arabic sign text EXACTLY (preserve connections & direction): "'+adText+'"',
+    '• Add a small spec legend/callout box listing the key construction notes.',
+    '',
+    '════ TECHNICAL SPEC (for materials/colors reference) ════',
+    spec,
+    (refAttachments().length ? '\n════ REFERENCE IMAGES ════\nAttached images (logo, artwork, color samples) are the source of truth for shapes and exact colors — reproduce them precisely as flat vector.' : ''),
+    '',
+    'Output a single clean flat production drawing image on white/transparent background.',
+  ].join('\n');
+}
+async function generateVector(){
+  if(!(state.ai.adText||'').trim()){ state.ai.vectorError='اكتب نص الإعلان أولاً.'; renderAi(); return; }
+  state.ai.vectorGenerating=true; state.ai.vectorError=''; state.ai.vectorImage=null; state.ai.vectorNotes=''; renderAi();
+  try {
+    const imgs = [];
+    if(state.ai.resultImage) imgs.push(state.ai.resultImage);
+    refAttachments().forEach(function(s){ imgs.push(s); });
+    const parts = await buildImageParts(imgs);
+    const content = [{ type:'text', text: buildVectorPrompt() }].concat(parts);
+    const result = await orPost(AI_IMAGE_MODEL,[{ role:'user', content:content }],{ modalities:['image','text'] });
+    if(result.error) throw new Error(result.error.message||JSON.stringify(result.error));
+    const img = extractImage(result);
+    if(!img) throw new Error('لم يرجع النموذج تصميماً. جرّب مرة أخرى.');
+    state.ai.vectorImage=img;
+    state.ai.vectorNotes=orText(result);
+    autoAttach(img);
+  } catch(e){
+    state.ai.vectorError='خطأ في التوليد: '+(e.message||e);
+  } finally {
+    state.ai.vectorGenerating=false; renderAi();
+  }
+}
+function downloadVectorImage(){
+  if(!state.ai.vectorImage) return;
+  const a=document.createElement('a'); a.href=state.ai.vectorImage; a.download='تصميم-تنفيذي.png'; a.click();
+}
+// إضافة صورة مولّدة للمرفقات يدوياً (زر +)
+function attachGenerated(img){
+  if(!img) return;
+  const before=state.attachments.length;
+  autoAttach(img);
+  render();
+}
+// مسح الصفحة بالكامل
+function clearPage(){
+  if(!confirm('مسح كل البيانات والصور والمرفقات والبدء من جديد؟')) return;
+  state.image=null; state.confidence={}; state.analyzing=false;
+  state.dimensions={ width:100, height:60 };
+  state.cementBoardDims={ width:100, height:60 };
+  state.extraFlat=0; state.extraPct=0; state.discountFlat=0; state.discountPct=0;
+  state.notes=''; state.attachments=[];
+  state.ai={ facadeImage:null, adText:'', extraDetails:'', generating:false, resultImage:null, resultNotes:'', error:'',
+             editText:'', editing:false, vectorImage:null, vectorNotes:'', vectorGenerating:false, vectorError:'',
+             colors:[], svgCode:'', svgGenerating:false, svgError:'', traceMode:'flat', traceSrc:'auto',
+             aiGenerated:[], sendRefs:true,
+             geminiOpen:false, promptType:'ad', promptDraft:'' };
+  state.options.layers=0; state.options.perforated=false; state.options.uvPrinting=false;
+  state.options.backLight=false; state.options.cobondBack=false;
+  state.options.installDifficulty='normal'; state.options.installComplexCost=0;
+  state.options.hasCementBoard=false;
+  render();
+}
+
+// ── ألوان القص (لوحة ألوان تُفرض على الـTrace) ──
+function addColor(){ state.ai.colors.push({ name:'لون '+(state.ai.colors.length+1), hex:'#E11D2A' }); renderAi(); }
+function setColor(i,field,val){ if(state.ai.colors[i]){ state.ai.colors[i][field]=val; renderAi(); } }
+function removeColor(i){ state.ai.colors.splice(i,1); renderAi(); }
+
+// ── تتبُّع الصورة (Trace) → أشكال SVG حقيقية قابلة للقص ──
+function hexToRgba(h){
+  h=(h||'').replace('#','');
+  if(h.length===3) h=h.split('').map(function(c){return c+c;}).join('');
+  return { r:parseInt(h.slice(0,2),16)||0, g:parseInt(h.slice(2,4),16)||0, b:parseInt(h.slice(4,6),16)||0, a:255 };
+}
+// أي صورة نقطية نتتبّعها: التصميم التنفيذي أولاً، ثم الإعلان، ثم المرفق المختار
+function traceSourceImg(){
+  const s=state.ai;
+  if(s.traceSrc==='ad')      return s.resultImage;
+  if(s.traceSrc==='design')  return s.vectorImage;
+  if(typeof s.traceSrc==='number') return state.attachments[s.traceSrc]||null;
+  return s.vectorImage || s.resultImage || state.attachments[0] || null;
+}
+function traceToSVG(){
+  if(typeof ImageTracer==='undefined'){ state.ai.svgError='مكتبة التتبُّع لم تُحمّل بعد — تأكد من الاتصال بالإنترنت وأعد المحاولة.'; renderAi(); return; }
+  const src = traceSourceImg();
+  if(!src){ state.ai.svgError='لا توجد صورة للتتبُّع — ولّد التصميم التنفيذي أو الإعلان أولاً، أو اختر مرفقاً.'; renderAi(); return; }
+  state.ai.svgGenerating=true; state.ai.svgError=''; state.ai.svgCode=''; renderAi();
+
+  // خيارات التتبُّع حسب الوضع
+  const mode = state.ai.traceMode||'flat';
+  const opts = {
+    ltres:1, qtres:1, pathomit:8, rightangleenhance:true,
+    linefilter:true, strokewidth:0, scale:1, roundcoords:1,
+    viewbox:true, desc:false, blurradius:0
+  };
+  if(state.ai.colors.length){
+    // لوحة ألوان مفروضة من المستخدم (أدق للقص)
+    opts.pal = state.ai.colors.map(function(c){ return hexToRgba(c.hex); });
+    opts.colorsampling = 0;
+  } else if(mode==='bw'){
+    opts.pal = [{r:255,g:255,b:255,a:255},{r:0,g:0,b:0,a:255}];
+    opts.colorsampling = 0;
+  } else if(mode==='detailed'){
+    opts.numberofcolors = 16; opts.pathomit = 2; opts.ltres = 0.5; opts.qtres = 0.5;
+  } else { // flat
+    opts.numberofcolors = 6; opts.colorquantcycles = 3;
+  }
+
+  try {
+    ImageTracer.imageToSVG(src, function(svgstr){
+      state.ai.svgCode = svgstr || '';
+      if(!state.ai.svgCode) state.ai.svgError='تعذّر التتبُّع — جرّب صورة أنظف.';
+      state.ai.svgGenerating=false; renderAi();
+    }, opts);
+  } catch(e){
+    state.ai.svgError='خطأ في التتبُّع: '+(e.message||e);
+    state.ai.svgGenerating=false; renderAi();
+  }
+}
+// تتبُّع مرفق محدد مباشرة (زر على الصورة المرفقة)
+function traceAttachment(i){ state.ai.traceSrc=i; traceToSVG(); }
+
+function downloadSVG(){
+  if(!state.ai.svgCode) return;
+  const blob = new Blob([state.ai.svgCode], { type:'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='تصميم-تنفيذي.svg'; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+function copySVG(){
+  if(!state.ai.svgCode) return;
+  navigator.clipboard.writeText(state.ai.svgCode).then(function(){
+    const b=document.getElementById('copy-svg-btn'); if(b){ b.textContent='✅ تم النسخ'; setTimeout(function(){ b.textContent='نسخ الكود'; },2000); }
+  });
+}
+
+// ── فتح/تنزيل صورة من المرفقات ──
+function openAttachment(i){
+  const src = state.attachments[i]; if(!src) return;
+  const w = window.open('');
+  if(w){ w.document.write('<title>صورة مرفقة</title><body style="margin:0;background:#0f172a;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="'+src+'" style="max-width:100%;max-height:100vh"></body>'); }
+}
+function downloadAttachment(i){
+  const src = state.attachments[i]; if(!src) return;
+  const a=document.createElement('a'); a.href=src; a.download='مرفق-'+(i+1)+'.png'; a.click();
+}
+
+// ── وظائف التدريب ──
+function openTraining(){ state.training.open=true; render(); }
+function closeTraining(){ state.training.open=false; render(); }
+
+function handleTrainingImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){ state.training.image=ev.target.result; render(); };
+  reader.readAsDataURL(f);
+}
+
+async function generateTraining(){
+  const t = state.training;
+  if(!t.image){ t.error='ارفع صورة اللوحة المرجعية أولاً.'; render(); return; }
+
+  t.generating=true; t.error=''; t.result=''; render();
+
+  // نبني سياق المواصفات المختارة حالياً بالصفحة
+  const o=state.options, M=PRICING_CONFIG.MODIFIERS;
+  const currentSpecs=[
+    'Acrylic: '+M.acrylicThickness[o.acrylicThickness].label+' / '+M.acrylicType[o.acrylicType].label,
+    'Side type: '+M.sideType[o.sideType].label,
+    'LED: '+M.ledType[o.ledType].label,
+    o.perforated?'Perforated face':null,
+    o.uvPrinting?'UV printed face':null,
+    o.backLight?'Back-lit halo':null,
+    o.cobondBack?'Cobond ACM backing':null,
+    o.frameBack!=='none'?'Frame: '+M.frameBack[o.frameBack].label:null,
+    o.layers>0?(o.layers+' extra layers'):null,
+  ].filter(Boolean).join(', ');
+
+  const userNotes=(t.notes||'').trim();
+
+  const analysisPrompt=
+    'You are a professional illuminated sign analyst and prompt engineer for AI image generation.\n\n'+
+    'TASK: Analyze this illuminated sign photo and produce a TRAINING SPECIFICATION — a dense technical visual description in English that can be injected into an AI image generation prompt to reproduce this sign style accurately.\n\n'+
+    'CURRENTLY SELECTED SPECS (what these specs correspond to in our system):\n'+currentSpecs+'\n\n'+
+    (userNotes?'USER NOTES about this reference image: '+userNotes+'\n\n':'')+
+    'WHAT TO DESCRIBE (be extremely specific, use professional sign-industry terms):\n'+
+    '1. Sign construction type: channel letters / lightbox / thermoformed / combination?\n'+
+    '2. Letter/shape materials: acrylic face color, finish (glossy/matte/frosted), thickness impression\n'+
+    '3. Returns/sides: material (aluminum/steel/acrylic), color, visible depth in cm estimated\n'+
+    '4. Lighting: front-lit / back-lit halo / both / off — color temperature, brightness impression\n'+
+    '5. Any cobond/ACM shadow plate with stroke offset around letters? Describe color and offset size\n'+
+    '6. Perforations, layers, UV print, special effects if visible\n'+
+    '7. Mounting: on wall directly / on racetrack / on board / recessed\n'+
+    '8. Overall visual style: premium/economy/decorative/industrial\n'+
+    '9. Night/day appearance difference if inferable\n\n'+
+    'OUTPUT FORMAT: Write as 3-4 dense technical paragraphs (NOT bullet points, NOT JSON).\n'+
+    'Start each paragraph with a bold label like **CONSTRUCTION:**, **LIGHTING:**, **FINISH:**, **INSTALLATION:**\n'+
+    'This text will be pasted directly into an AI image prompt, so write it as descriptive instructions.\n'+
+    'Be brutally specific — "silver brushed aluminum returns approximately 8cm deep" not just "metal sides".';
+
+  try{
+    const smallT = await shrinkImage(t.image,1024,0.8);
+    const result=await orPost(AI_VISION_MODEL,[{role:'user', content:[
+      {type:'image_url', image_url:{url: smallT}},
+      {type:'text', text:analysisPrompt}
+    ]}],{max_tokens:1500});
+    if(result.error) throw new Error(result.error.message||JSON.stringify(result.error));
+    t.result=orText(result);
+    if(!t.result) throw new Error('استجابة فارغة من Claude.');
+  } catch(e){
+    t.error='خطأ: '+(e.message||e);
+  } finally {
+    t.generating=false; render();
+  }
+}
+
+function copyTrainingResult(){
+  const t=state.training;
+  if(!t.result) return;
+  navigator.clipboard.writeText(t.result).then(function(){
+    const btn=document.getElementById('copy-training-btn');
+    if(btn){ btn.textContent='✅ تم النسخ'; setTimeout(function(){ btn.textContent='نسخ النص'; },2000); }
+  });
+}
+
+function handleFacadeImg(e){
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){ state.ai.facadeImage = ev.target.result; renderAi(); };
+  reader.readAsDataURL(f);
+}
+function clearFacade(){ state.ai.facadeImage=null; renderAi(); }
+function downloadAdImage(){
+  if(!state.ai.resultImage) return;
+  const a=document.createElement('a'); a.href=state.ai.resultImage; a.download='اعلان-مولّد.png'; a.click();
+}
+
+async function analyzeImageAI(imageData){
+  state.analyzing=true; render();
+  try {
+    const small = await shrinkImage(imageData,1024,0.8);
+    const result = await orPost(AI_VISION_MODEL,[{ role:'user', content:[
+      { type:'image_url', image_url:{ url: small } },
+      { type:'text', text:'Analyze this illuminated sign image. Return ONLY valid JSON (no markdown):\n{"width":<cm>,"height":<cm>,"layers":<0-10>,"perforated":<bool>,"backLight":<bool>,"lightingType":"<standard|chinese>","transformerType":"<standard|original|chinese>","sideWrapping":<bool>,"confidence":{"dimensions":"<high|medium|low>","features":"<high|medium|low>"}}\nIf unsure use standard/false.' }
+    ]}],{ max_tokens:800 });
+    const txt = orText(result);
+    const a = JSON.parse(txt.trim().replace(/^```json\n?|\n?```$/g,''));
+    state.dimensions = { width:a.width||100, height:a.height||60 };
+    state.confidence = a.confidence||{};
+    const o = state.options;
+    o.layers=a.layers||0; o.perforated=a.perforated||false; o.backLight=a.backLight||false;
+    o.ledType=(a.lightingType==='chinese'?'economic':'standard');
+    o.transformerType=(a.transformerType==='chinese'?'economic':a.transformerType==='original'?'premium':'standard');
+  } catch(e){ console.error('analyzeImageAI:',e); }
+  finally { state.analyzing=false; render(); }
+}
+
+function render(){
+  calculate();
+  const o = state.options, M = PRICING_CONFIG.MODIFIERS;
+  // ── أكريليك ──
+  const acrylicBtns = Object.entries(M.acrylicThickness).map(function(e){
+    const k=e[0],v=e[1], active=o.acrylicThickness===k;
+    return '<button onclick="setOpt(\'acrylicThickness\',\''+k+'\')" class="flex flex-col items-center py-2.5 px-1 text-xs font-bold rounded-xl border-2 transition '+
+      (active?'bg-blue-600 text-white border-blue-600':'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300')+'">'+
+      '<span>'+v.label+'</span>'+
+      '<span class="text-[10px] mt-0.5 '+(active?'text-blue-100':'text-blue-500')+'" dir="ltr">'+(v.addPerUnit>0?'+$'+v.addPerUnit+'/م':'معياري')+'</span>'+
+    '</button>';
+  }).join('');
+
+  // ── صندوق اللف الجانبي (راديو) ──
+  const sideBox = Object.entries(M.sideType).map(function(e){
+    const k=e[0], v=e[1], active=o.sideType===k;
+    return '<label class="flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer border transition '+
+      (active?'border-indigo-400 bg-indigo-50':'border-slate-100 bg-white hover:border-indigo-200')+'">'+
+      '<input type="radio" name="sideType" value="'+k+'" '+(active?'checked':'')+
+        ' onchange="setOpt(\'sideType\',\''+k+'\')" class="w-4 h-4 accent-indigo-600">'+
+      '<span class="text-xs font-semibold text-slate-700 flex-1">'+v.label+'</span>'+
+      (v.value>0?'<span class="text-[11px] font-bold text-indigo-500" dir="ltr">+$'+v.value+'/م</span>':
+                 '<span class="text-[10px] text-slate-400">—</span>')+
+    '</label>';
+  }).join('');
+
+  // ── صندوق الوجه (checkboxes: مثقب + UV + طبقات) ──
+  const faceChecks = [
+    { key:'perforated', label:'مثقب', val:15 },
+    { key:'uvPrinting', label:'طباعة UV', val:50 },
+  ].map(function(it){
+    const active=o[it.key];
+    return '<label class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer border transition '+
+      (active?'border-violet-400 bg-violet-50':'border-slate-100 bg-white hover:border-violet-200')+'">'+
+      '<div class="flex items-center gap-2">'+
+        '<input type="checkbox" '+(active?'checked':'')+
+          ' onchange="setOpt(\''+it.key+'\',this.checked)" class="w-4 h-4 accent-violet-600">'+
+        '<span class="text-xs font-semibold text-slate-700">'+it.label+'</span>'+
+      '</div>'+
+      '<span class="text-[11px] font-bold text-violet-500" dir="ltr">+$'+it.val+'/م</span>'+
+    '</label>';
+  }).join('');
+
+  const faceBox =
+    faceChecks+
+    '<div>'+
+      '<div class="flex items-center justify-between mb-1.5">'+
+        '<span class="text-xs font-semibold text-slate-600">الطبقات الإضافية</span>'+
+        '<div class="flex items-center gap-1.5">'+
+          '<span class="text-[11px] font-bold text-violet-500" dir="ltr">+$10/م · طبقة</span>'+
+          '<span class="w-7 h-7 bg-violet-100 rounded-lg flex items-center justify-center text-xs font-black text-violet-700">'+o.layers+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<input type="range" min="0" max="10" value="'+o.layers+'" oninput="setOpt(\'layers\',parseInt(this.value))" class="w-full accent-violet-600">'+
+    '</div>';
+
+  // ── صندوق الميزات الإضافية المختلفة ──
+  const miscBox =
+    // checkboxes: إنارة خلفية + كوبوند
+    '<div class="grid grid-cols-2 gap-2 mb-3">'+
+    [
+      { key:'backLight',  label:'إنارة خلفية', val:15, color:'amber' },
+      { key:'cobondBack', label:'كوبوند خلفي',  val:20, color:'amber' },
+    ].map(function(it){
+      const active=o[it.key];
+      return '<label class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer border transition '+
+        (active?'border-amber-400 bg-amber-50':'border-slate-100 bg-white hover:border-amber-200')+'">'+
+        '<div class="flex items-center gap-2">'+
+          '<input type="checkbox" '+(active?'checked':'')+' onchange="setOpt(\''+it.key+'\',this.checked)" class="w-4 h-4 accent-amber-500">'+
+          '<span class="text-xs font-semibold text-slate-700">'+it.label+'</span>'+
+        '</div>'+
+        '<span class="text-[11px] font-bold text-amber-500" dir="ltr">+$'+it.val+'/م</span>'+
+      '</label>';
+    }).join('')+
+    '</div>'+
+    // dropdown حديد/ألمنيوم
+    '<div>'+
+      '<label class="text-[10px] font-bold text-slate-400 block mb-1.5">حديد أو ألمنيوم (هيكل الظهر)</label>'+
+      '<select onchange="setOpt(\'frameBack\',this.value)" class="w-full bg-white border '+(o.frameBack!=='none'?'border-amber-400':'border-slate-200')+' rounded-xl px-3 py-2 outline-none font-semibold text-sm">'+
+        '<option value="none"   '+(o.frameBack==='none'  ?'selected':'')+'>بدون هيكل</option>'+
+        '<option value="light"  '+(o.frameBack==='light' ?'selected':'')+'>خفيف ‪(+$15/م)‬</option>'+
+        '<option value="medium" '+(o.frameBack==='medium'?'selected':'')+'>متوسط ‪(+$25/م)‬</option>'+
+        '<option value="full"   '+(o.frameBack==='full'  ?'selected':'')+'>كامل/ثقيل ‪(+$40/م)‬</option>'+
+      '</select>'+
+    '</div>';
+
+  // ── تكاليف ثابتة ──
+  const rushHtml = Object.entries(M.rushOrder).map(function(e){
+    const k=e[0],v=e[1],active=o.rushOrder===k;
+    return '<label class="flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer border transition '+
+      (active?'border-blue-400 bg-blue-50':'border-slate-100 bg-slate-50 hover:border-slate-300')+'">'+
+      '<input type="radio" name="rushOrder" value="'+k+'" '+(active?'checked':'')+' onchange="setOpt(\'rushOrder\',\''+k+'\')" class="w-4 h-4 accent-blue-600">'+
+      '<span class="text-xs font-semibold text-slate-700 flex-1">'+v.label+'</span>'+
+      (v.value>0?'<span class="text-xs font-bold text-blue-600" dir="ltr">+$'+v.value+'</span>':'<span class="text-[10px] text-slate-400">مجاناً</span>')+
+    '</label>';
+  }).join('');
+
+  const designFeeHtml =
+    '<div class="p-3 rounded-xl border '+(o.designFee?'border-blue-300 bg-blue-50':'border-slate-100 bg-slate-50')+'">'+
+      '<label class="flex items-center justify-between cursor-pointer">'+
+        '<div class="flex items-center gap-2 text-sm font-semibold text-slate-700">'+icon('layout','w-4 h-4')+' رسوم تصميم</div>'+
+        '<input type="checkbox" '+(o.designFee?'checked':'')+' onchange="setOpt(\'designFee\',this.checked)" class="w-5 h-5 accent-blue-600">'+
+      '</label>'+
+      (o.designFee?
+        '<div class="mt-2 flex items-center gap-2">'+
+          '<span class="text-xs text-slate-500 shrink-0">الكلفة ($)</span>'+
+          '<input type="number" value="'+(o.designFeeCost||'')+'" oninput="setOpt(\'designFeeCost\',parseFloat(this.value)||0)" placeholder="0" class="flex-1 bg-white border border-blue-200 rounded-lg px-2 py-1.5 text-sm font-bold outline-none" dir="ltr">'+
+        '</div>':'')+
+    '</div>';
+
+  // بوردكس مع مجموع
+  const cbDims = state.cementBoardDims;
+  const cbAreaM2 = (cbDims.width * cbDims.height / 10000);
+  const cbCostUSD = (cbAreaM2 * PRICING_CONFIG.CEMENT_BOARD_PRICE_IQD / state.exchangeRate);
+  const cementHtml =
+    '<div class="p-3 rounded-xl border '+(o.hasCementBoard?'border-blue-300 bg-blue-50':'border-slate-100 bg-slate-50')+'">'+
+      '<label class="flex items-center justify-between cursor-pointer">'+
+        '<div class="flex items-center gap-2 text-sm font-semibold text-slate-700">'+icon('construction','w-4 h-4 text-slate-400')+' بوردكس أسمنتي</div>'+
+        '<div class="flex items-center gap-2">'+
+          '<span class="text-[10px] text-slate-400">75 ألف/م²</span>'+
+          '<input type="checkbox" '+(o.hasCementBoard?'checked':'')+' onchange="setOpt(\'hasCementBoard\',this.checked)" class="w-5 h-5 accent-blue-600">'+
+        '</div>'+
+      '</label>'+
+      (o.hasCementBoard?
+        '<div class="mt-3 space-y-2">'+
+          '<div class="grid grid-cols-2 gap-2">'+
+            '<div><label class="text-[10px] font-bold text-slate-400 block mb-1">العرض (سم)</label><input type="number" value="'+cbDims.width+'" onchange="setCBD(\'width\',this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-bold text-sm outline-none"></div>'+
+            '<div><label class="text-[10px] font-bold text-slate-400 block mb-1">الارتفاع (سم)</label><input type="number" value="'+cbDims.height+'" onchange="setCBD(\'height\',this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 font-bold text-sm outline-none"></div>'+
+          '</div>'+
+          '<div class="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-blue-200">'+
+            '<span class="text-xs text-slate-500">المساحة الإجمالية</span>'+
+            '<div class="flex items-center gap-3">'+
+              '<span class="text-xs font-bold text-slate-700" dir="ltr">'+cbAreaM2.toFixed(2)+' م²</span>'+
+              '<span class="text-xs font-black text-green-600" dir="ltr">≈ $'+cbCostUSD.toFixed(2)+'</span>'+
+            '</div>'+
+          '</div>'+
+        '</div>':'')+
+    '</div>';
+
+  // كشف الحساب
+  const breakdownRows = state.breakdown.map(function(it){
+    return '<div class="flex justify-between text-sm font-medium opacity-80 border-b border-white/10 pb-2">'+
+      '<span>'+it.label+'</span>'+
+      '<span class="'+(it.value<0?'text-red-400':'text-emerald-400')+'" dir="ltr">'+(it.value<0?'-':'+')+'$'+Math.abs(it.value).toFixed(2)+'</span>'+
+    '</div>';
+  }).join('');
+
+  // ثقة التحليل
+  const confStyle=function(l){return l==='high'?'background:#d1fae5;color:#065f46':l==='medium'?'background:#fef3c7;color:#92400e':'background:#fee2e2;color:#991b1b';};
+  const confLbl=function(l){return l==='high'?'عالية':l==='medium'?'متوسطة':'منخفضة';};
+  const confidenceHtml=Object.keys(state.confidence).length?
+    '<div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">'+
+      '<p class="text-xs font-bold text-slate-500 mb-3 flex items-center gap-2">'+icon('sparkles','w-3 h-3 text-amber-500')+' ثقة التحليل</p>'+
+      '<div class="space-y-2">'+
+        (state.confidence.dimensions?'<div class="flex items-center justify-between"><span class="text-xs text-slate-600">القياسات</span><span class="text-xs font-bold px-2 py-1 rounded-lg" style="'+confStyle(state.confidence.dimensions)+'">'+confLbl(state.confidence.dimensions)+'</span></div>':'')+
+        (state.confidence.features?'<div class="flex items-center justify-between"><span class="text-xs text-slate-600">الميزات</span><span class="text-xs font-bold px-2 py-1 rounded-lg" style="'+confStyle(state.confidence.features)+'">'+confLbl(state.confidence.features)+'</span></div>':'')+
+      '</div>'+
+    '</div>':'';
+
+  // الصورة
+  const imageSection=state.image
+    ?'<div class="relative rounded-2xl overflow-hidden shadow-sm border border-slate-200" style="height:172px;"><img src="'+state.image+'" class="w-full h-full object-cover">'+
+      (state.analyzing?'<div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center backdrop-blur-sm"><div class="w-8 h-8 border-4 border-white/30 border-t-white rounded-full spin"></div><p class="text-white text-xs font-bold mt-3">جاري التحليل...</p></div>':'')+
+      '</div>'+
+      (state.autoAnalyze===false && !state.analyzing ? '<button onclick="analyzeImageAI(state.image)" class="mt-2 w-full flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">'+icon('sparkles','w-3 h-3')+' تحليل بالذكاء (يدوي)</button>':'')+
+      '<label class="mt-2 flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl cursor-pointer transition"><input type="file" accept="image/*" class="hidden" onchange="handleImg(event)">'+icon('upload','w-3 h-3')+' تغيير الصورة</label>'
+    :'<label class="block cursor-pointer border-2 border-dashed border-slate-300 rounded-2xl hover:border-blue-500 transition overflow-hidden" style="height:172px;"><div class="flex flex-col items-center justify-center h-full text-slate-400">'+icon('upload','w-8 h-8 mb-2')+'<p class="text-xs font-bold">رفع صورة التصميم</p><p class="text-[10px] text-blue-400 mt-1">تحليل ذكي تلقائي</p></div><input type="file" accept="image/*" class="hidden" onchange="handleImg(event)"></label>';
+
+  // ── BUILD DOM ──
+  document.getElementById('app').innerHTML =
+  '<div class="min-h-screen bg-slate-50 text-slate-900">'+
+
+  '<header class="bg-white/90 border-b border-slate-200 sticky top-0 z-10 backdrop-blur-md">'+
+    '<div class="max-w-screen-2xl mx-auto px-6 py-4 flex justify-between items-center">'+
+      '<div><h1 class="text-2xl font-black text-slate-800">نظام التسعير الاحترافي للوحات</h1>'+
+        '<p class="text-xs text-slate-500">شامل كافة الخدمات الفنية واللوجستية</p></div>'+
+      '<div class="text-left">'+
+        '<span class="text-4xl font-black text-blue-600" dir="ltr">$'+state.price.toFixed(2)+'</span>'+
+        '<p class="text-sm font-bold text-slate-500 mt-0.5" dir="ltr">'+Math.round(state.price * state.exchangeRate).toLocaleString('ar-IQ')+' د.ع</p>'+
+        '<p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">الإجمالي النهائي</p>'+
+      '</div>'+
+    '</div>'+
+  '</header>'+
+
+  '<main class="max-w-screen-2xl mx-auto px-6 py-6 grid grid-cols-1 xl:grid-cols-12 gap-5">'+
+
+    // ── عمود أقصى اليسار: الصورة + الإعدادات العامة ──
+    '<div class="xl:col-span-3 space-y-4">'+
+      '<div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 space-y-3">'+imageSection+'</div>'+
+      confidenceHtml+
+      '<div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 space-y-4">'+
+        '<div class="flex items-center gap-2 text-slate-800 font-bold text-sm mb-1">'+icon('zap','w-4 h-4 text-amber-500')+' قياسات اللوحة</div>'+
+        '<div class="grid grid-cols-2 gap-3">'+
+          '<div><label class="text-[10px] font-bold text-slate-400 block mb-1">العرض (سم)</label><input type="number" value="'+state.dimensions.width+'" onchange="setDim(\'width\',this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-sm outline-none"></div>'+
+          '<div><label class="text-[10px] font-bold text-slate-400 block mb-1">الارتفاع (سم)</label><input type="number" value="'+state.dimensions.height+'" onchange="setDim(\'height\',this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-sm outline-none"></div>'+
+        '</div>'+
+        '<div><label class="text-[10px] font-bold text-slate-400 block mb-1">سعر صرف الدولار (د.ع)</label>'+
+          '<input type="number" value="'+state.exchangeRate+'" onchange="state.exchangeRate=Number(this.value);render()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-sm outline-none">'+
+        '</div>'+
+      '</div>'+
+      '<div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 space-y-3">'+
+        '<p class="text-xs font-black text-slate-500 flex items-center gap-2">'+icon('percent','w-3.5 h-3.5 text-emerald-500')+' إضافي</p>'+
+        '<div class="grid grid-cols-2 gap-2">'+
+          '<div>'+
+            '<label class="text-[10px] font-bold text-slate-400 block mb-1">مبلغ ثابت ($)</label>'+
+            '<input type="number" min="0" value="'+(state.extraFlat||'')+'" placeholder="0" '+
+              'onchange="state.extraFlat=parseFloat(this.value)||0;render()" '+
+              'class="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 font-bold text-sm outline-none" dir="ltr">'+
+          '</div>'+
+          '<div>'+
+            '<label class="text-[10px] font-bold text-slate-400 block mb-1">نسبة (%)</label>'+
+            '<input type="number" min="0" value="'+(state.extraPct||'')+'" placeholder="0" '+
+              'onchange="state.extraPct=parseFloat(this.value)||0;render()" '+
+              'class="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 font-bold text-sm outline-none" dir="ltr">'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="bg-white p-5 rounded-3xl shadow-sm border border-red-100 space-y-3">'+
+        '<p class="text-xs font-black text-red-400 flex items-center gap-2">'+icon('percent','w-3.5 h-3.5 text-red-400')+' خصم</p>'+
+        '<div class="grid grid-cols-2 gap-2">'+
+          '<div>'+
+            '<label class="text-[10px] font-bold text-slate-400 block mb-1">مبلغ ثابت ($)</label>'+
+            '<input type="number" min="0" value="'+(state.discountFlat||'')+'" placeholder="0" '+
+              'onchange="state.discountFlat=parseFloat(this.value)||0;render()" '+
+              'class="w-full bg-red-50 border border-red-200 rounded-xl px-3 py-2 font-bold text-sm outline-none" dir="ltr">'+
+          '</div>'+
+          '<div>'+
+            '<label class="text-[10px] font-bold text-slate-400 block mb-1">نسبة (%)</label>'+
+            '<input type="number" min="0" value="'+(state.discountPct||'')+'" placeholder="0" '+
+              'onchange="state.discountPct=parseFloat(this.value)||0;render()" '+
+              'class="w-full bg-red-50 border border-red-200 rounded-xl px-3 py-2 font-bold text-sm outline-none" dir="ltr">'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    // ── عمود الوسط: إضافات على المتر ──
+    '<div class="xl:col-span-5">'+
+      '<div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-5">'+
+        '<p class="text-sm font-black text-blue-600 flex items-center gap-2 border-b border-slate-100 pb-3">'+
+          icon('layers','w-4 h-4')+'إضافات على المتر'+
+          '<span class="text-[10px] font-medium text-slate-400 mr-auto">تُضرب في المساحة الكلية</span>'+
+        '</p>'+
+
+        // سماكة الأكريليك
+        '<div>'+
+          '<label class="text-xs font-bold text-slate-500 block mb-2">سماكة الأكريليك</label>'+
+          '<div class="grid grid-cols-3 gap-2">'+acrylicBtns+'</div>'+
+        '</div>'+
+
+        // نوع الأكريليك (تايلندي / صيني)
+        '<div>'+
+          '<label class="text-xs font-bold text-slate-500 block mb-2">نوع الأكريليك</label>'+
+          '<div class="grid grid-cols-2 gap-2">'+
+            ['thai','chinese'].map(function(k){
+              const v=M.acrylicType[k], active=o.acrylicType===k;
+              return '<button onclick="setOpt(\'acrylicType\',\''+k+'\')" class="py-2.5 text-xs font-bold rounded-xl border-2 transition '+
+                (active?'bg-blue-600 text-white border-blue-600':'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300')+'">'+
+                v.label+
+                '<span class="block text-[10px] mt-0.5 '+(active?'text-blue-100':'text-slate-400')+'" dir="ltr">'+
+                  (v.flatDiscount<0?'-$'+Math.abs(v.flatDiscount):'معياري')+
+                '</span>'+
+              '</button>';
+            }).join('')+
+          '</div>'+
+        '</div>'+
+
+        // نوع الليد (3 أزرار) + المحول
+        '<div class="grid grid-cols-2 gap-3">'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">نوع الليد</label>'+
+            '<div class="space-y-1.5">'+
+              Object.entries(M.ledType).map(function(e){
+                const k=e[0],v=e[1],active=o.ledType===k;
+                return '<button onclick="setOpt(\'ledType\',\''+k+'\')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold rounded-xl border-2 transition '+
+                  (active?'bg-emerald-500 text-white border-emerald-500':'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300')+'">'+
+                  '<span>'+v.label+'</span>'+
+                  '<span class="'+(active?'text-emerald-100':'text-slate-400')+' text-[10px]" dir="ltr">'+
+                    (v.value<0?'-$'+Math.abs(v.value)+'/م':v.value>0?'+$'+v.value+'/م':'معياري')+
+                  '</span>'+
+                '</button>';
+              }).join('')+
+            '</div>'+
+          '</div>'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">نوع المحول</label>'+
+            '<div class="space-y-1.5">'+
+              Object.entries(M.transformerType).map(function(e){
+                const k=e[0],v=e[1],active=o.transformerType===k;
+                return '<button onclick="setOpt(\'transformerType\',\''+k+'\')" class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold rounded-xl border-2 transition '+
+                  (active?'bg-sky-500 text-white border-sky-500':'bg-slate-50 text-slate-700 border-slate-200 hover:border-sky-300')+'">'+
+                  '<span>'+v.label+'</span>'+
+                  '<span class="'+(active?'text-sky-100':'text-slate-400')+' text-[10px]" dir="ltr">'+
+                    (v.value<0?'-$'+Math.abs(v.value)+'/م':v.value>0?'+$'+v.value+'/م':'معياري')+
+                  '</span>'+
+                '</button>';
+              }).join('')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+
+        // صندوقا الألف الجانبي + الوجه
+        '<div class="grid grid-cols-2 gap-3">'+
+
+          // صندوق الألف الجانبي
+          '<div class="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 space-y-2">'+
+            '<p class="text-xs font-black text-indigo-500 mb-3 flex items-center gap-1.5">'+icon('frame','w-3 h-3')+' اللف الجانبي</p>'+
+            sideBox+
+          '</div>'+
+
+          // صندوق الوجه
+          '<div class="bg-violet-50/50 border border-violet-100 rounded-2xl p-4 space-y-3">'+
+            '<p class="text-xs font-black text-violet-500 mb-3 flex items-center gap-1.5">'+icon('panel','w-3 h-3')+' الوجه</p>'+
+            faceBox+
+          '</div>'+
+
+        '</div>'+
+
+        // صندوق الميزات الإضافية المختلفة
+        '<div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 space-y-3">'+
+          '<p class="text-xs font-black text-amber-600 mb-3 flex items-center gap-1.5">'+icon('sun','w-3 h-3')+' ميزات إضافية مختلفة</p>'+
+          miscBox+
+        '</div>'+
+
+      '</div>'+
+    '</div>'+
+
+    // ── عمود أقصى اليمين: تكاليف ثابتة + كشف الحساب ──
+    '<div class="xl:col-span-4 space-y-5">'+
+      '<div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">'+
+        '<p class="text-sm font-black text-orange-500 flex items-center gap-2 border-b border-slate-100 pb-3">'+
+          icon('bolt','w-4 h-4')+'تكاليف ثابتة'+
+          '<span class="text-[10px] font-medium text-slate-400 mr-auto">مبلغ محدد بغض النظر عن المساحة</span>'+
+        '</p>'+
+
+        // كرين
+        '<label class="flex items-center justify-between p-3 bg-slate-50 rounded-xl cursor-pointer border border-slate-100 hover:border-blue-300 transition">'+
+          '<div class="flex items-center gap-2 text-sm font-semibold text-slate-700">'+icon('truck','w-4 h-4')+' كرين رافعة</div>'+
+          '<div class="flex items-center gap-2">'+
+            '<span class="text-xs font-bold text-blue-600" dir="ltr">+$100</span>'+
+            '<input type="checkbox" '+(o.crane?'checked':'')+' onchange="setOpt(\'crane\',this.checked)" class="w-5 h-5 accent-blue-600">'+
+          '</div>'+
+        '</label>'+
+
+        designFeeHtml+
+
+        // طلب مستعجل
+        '<div>'+
+          '<label class="text-xs font-bold text-slate-500 block mb-2 flex items-center gap-1.5">'+icon('clock','w-3 h-3')+' مدة التنفيذ</label>'+
+          '<div class="space-y-2">'+rushHtml+'</div>'+
+        '</div>'+
+
+        // أجور التركيب
+        '<div>'+
+          '<label class="text-xs font-bold text-slate-500 block mb-1.5">أجور التركيب</label>'+
+          '<div class="grid grid-cols-2 gap-2">'+
+            ['normal','complex'].map(function(k){
+              const active=o.installDifficulty===k;
+              const lbl=k==='normal'?'اعتيادي':'معقد';
+              const sub=k==='normal'?'مجاناً':'كلفة مخصصة';
+              return '<button onclick="setOpt(\'installDifficulty\',\''+k+'\')" class="py-2 text-xs font-bold rounded-xl border-2 transition '+
+                (active?'bg-orange-500 text-white border-orange-500':'bg-slate-50 text-slate-700 border-slate-200 hover:border-orange-300')+'">'+
+                lbl+'<span class="block text-[10px] mt-0.5 '+(active?'text-orange-100':'text-slate-400')+'">'+sub+'</span>'+
+              '</button>';
+            }).join('')+
+          '</div>'+
+          (o.installDifficulty==='complex'?
+            '<input type="number" min="0" value="'+(o.installComplexCost||'')+'" placeholder="كلفة التركيب بالدولار..." '+
+              'onchange="setOpt(\'installComplexCost\',parseFloat(this.value)||0)" '+
+              'class="mt-2 w-full bg-orange-50 border border-orange-200 rounded-xl px-3 py-2 text-sm font-bold outline-none focus:border-orange-400" dir="ltr">':'')+
+        '</div>'+
+
+        // الضمان — ليد + محولة
+        (function(){
+          const ledW = M.ledType[o.ledType].warranty;
+          const trW  = M.transformerType[o.transformerType].warranty;
+          const isChinedLed = o.ledType === 'economic';
+
+          function yearBtn(target, current, disabled){
+            const label = target === 0 ? 'صفر' : target+'';
+            const active = current === target;
+            return '<button '+(disabled?'disabled title="الصيني: سنة واحدة فقط"':'')+
+              ' onclick="setOpt(\''+( target <= 0 ? '' : '' )+'\',0)" '+
+              ' class="px-2 py-1 text-[10px] font-bold rounded-lg border '+(active?'bg-green-500 text-white border-green-500':'bg-slate-50 text-slate-600 border-slate-200')+(disabled?' opacity-40 cursor-not-allowed':' hover:border-green-300')+'" dir="ltr">'+target+'</button>';
+          }
+
+          return '<div class="bg-green-50 border border-green-100 rounded-2xl p-4 space-y-4">'+
+            '<p class="text-xs font-black text-green-700 flex items-center gap-1.5">'+icon('key','w-3 h-3')+' الضمان</p>'+
+
+            // ضمان الليد
+            '<div>'+
+              '<div class="flex items-center justify-between mb-1.5">'+
+                '<span class="text-xs font-bold text-slate-600">ضمان الليد</span>'+
+                '<span class="text-xs font-black text-green-600 bg-green-100 px-2 py-0.5 rounded-lg" dir="ltr">'+ledW+' سنة مشمول</span>'+
+              '</div>'+
+              (!isChinedLed ?
+                '<div class="flex items-center gap-2">'+
+                  '<span class="text-[10px] text-slate-400">سنوات إضافية ($10/سنة)</span>'+
+                  '<div class="flex items-center gap-1 mr-auto">'+
+                    '<button onclick="setOpt(\'ledExtraYears\',Math.max(0,(state.options.ledExtraYears||0)-1));render()" class="w-6 h-6 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-black">−</button>'+
+                    '<span class="w-6 text-center text-xs font-black text-slate-700">'+(o.ledExtraYears||0)+'</span>'+
+                    '<button onclick="setOpt(\'ledExtraYears\',(state.options.ledExtraYears||0)+1);render()" class="w-6 h-6 bg-green-500 hover:bg-green-400 text-white rounded-lg text-xs font-black">+</button>'+
+                  '</div>'+
+                '</div>'
+              :
+                '<p class="text-[10px] text-amber-500 font-semibold">الليد الصيني: ضمان سنة واحدة فقط</p>'
+              )+
+            '</div>'+
+
+            // ضمان المحولة
+            '<div>'+
+              '<div class="flex items-center justify-between mb-1.5">'+
+                '<span class="text-xs font-bold text-slate-600">ضمان المحولة</span>'+
+                '<span class="text-xs font-black text-sky-600 bg-sky-100 px-2 py-0.5 rounded-lg" dir="ltr">'+trW+' سنة مشمول</span>'+
+              '</div>'+
+              '<div class="flex items-center gap-2">'+
+                '<span class="text-[10px] text-slate-400">سنوات إضافية ($10/سنة)</span>'+
+                '<div class="flex items-center gap-1 mr-auto">'+
+                  '<button onclick="setOpt(\'transformerExtraYears\',Math.max(0,(state.options.transformerExtraYears||0)-1));render()" class="w-6 h-6 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-black">−</button>'+
+                  '<span class="w-6 text-center text-xs font-black text-slate-700">'+(o.transformerExtraYears||0)+'</span>'+
+                  '<button onclick="setOpt(\'transformerExtraYears\',(state.options.transformerExtraYears||0)+1);render()" class="w-6 h-6 bg-sky-500 hover:bg-sky-400 text-white rounded-lg text-xs font-black">+</button>'+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>';
+        })()+
+
+        cementHtml+
+
+      '</div>'+
+
+      // كشف الحساب
+      '<div class="bg-slate-900 text-white p-6 rounded-3xl shadow-2xl relative overflow-hidden">'+
+        '<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500"></div>'+
+        '<div class="flex items-center gap-3 mb-5">'+icon('trending','w-5 h-5 text-blue-400')+'<h3 class="font-bold">كشف الحساب التقديري</h3></div>'+
+        '<div class="space-y-2.5">'+breakdownRows+
+          '<div class="flex justify-between items-center pt-4 text-2xl font-black"><span>الإجمالي</span><span class="text-blue-400" dir="ltr">$'+state.price.toFixed(2)+'</span></div>'+
+        '</div>'+
+        '<button onclick="printInvoice()" class="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-2xl font-bold transition flex items-center justify-center gap-2 text-sm">'+
+          icon('wallet','w-4 h-4')+' إصدار فاتورة PDF'+
+        '</button>'+
+      '</div>'+
+
+    '</div>'+
+
+    // ── قسم الملاحظات والمرفقات (صف كامل) ──
+    '<div class="xl:col-span-7">'+
+      '<div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 h-full flex flex-col">'+
+        '<div class="flex items-center gap-2 text-slate-800 font-bold text-sm mb-3">'+icon('layout','w-4 h-4 text-slate-400')+' ملاحظات وتفاصيل إضافية</div>'+
+        '<textarea rows="5" placeholder="اكتب هنا أي تفاصيل أو ملاحظات خاصة بالطلب..." '+
+          'onchange="state.notes=this.value" '+
+          'class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm outline-none resize-none font-medium text-slate-700 placeholder-slate-400 focus:border-blue-300">'+state.notes+'</textarea>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="xl:col-span-5">'+
+      '<div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">'+
+        '<div class="flex items-center justify-between mb-3">'+
+          '<div class="flex items-center gap-2 text-slate-800 font-bold text-sm">'+icon('upload','w-4 h-4 text-slate-400')+' صور وملفات مرفقة</div>'+
+          '<label class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl cursor-pointer transition">'+
+            '<input type="file" accept="image/*" multiple class="hidden" onchange="addAttachment(event)">'+
+            icon('upload','w-3 h-3')+' إضافة صورة'+
+          '</label>'+
+        '</div>'+
+        (state.attachments.length ?
+          '<div class="grid grid-cols-3 gap-2">'+
+            state.attachments.map(function(src,i){
+              return '<div class="relative group rounded-xl overflow-hidden border border-slate-200" style="aspect-ratio:4/3;">'+
+                '<img src="'+src+'" class="w-full h-full object-cover cursor-pointer" onclick="openAttachment('+i+')">'+
+                '<button onclick="removeAttachment('+i+')" title="حذف" class="absolute top-1 left-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition">✕</button>'+
+                '<div class="absolute bottom-1 left-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition">'+
+                  '<button onclick="openAttachment('+i+')" title="فتح" class="flex-1 py-1 bg-slate-800/80 hover:bg-slate-900 text-white rounded-lg text-[10px] font-bold backdrop-blur">فتح</button>'+
+                  '<button onclick="downloadAttachment('+i+')" title="تنزيل" class="flex-1 py-1 bg-blue-600/90 hover:bg-blue-600 text-white rounded-lg text-[10px] font-bold backdrop-blur">تنزيل</button>'+
+                  '<button onclick="traceAttachment('+i+')" title="تتبُّع → SVG" class="flex-1 py-1 bg-emerald-600/90 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold backdrop-blur">تتبّع</button>'+
+                '</div>'+
+              '</div>';
+            }).join('')+
+          '</div>'
+          :
+          '<div class="border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center py-8 text-slate-400">'+
+            icon('upload','w-6 h-6 mb-2')+
+            '<p class="text-xs font-semibold">لا توجد مرفقات</p>'+
+            '<p class="text-[10px] mt-0.5">اضغط "إضافة صورة" لإرفاق صور تُطبع مع الوصل</p>'+
+          '</div>'
+        )+
+      '</div>'+
+    '</div>'+
+
+    // ── مولّد الإعلان بالذكاء الصناعي (صف كامل) ──
+    aiGeneratorHtml()+
+
+  '</main>'+
+  // ── مودال التدريب ──
+  trainingModalHtml()+
+  '</div>';
+}
+
+function renderAi(){ render(); }
+
+// ── مودال التدريب ──
+function trainingModalHtml(){
+  const t = state.training;
+  if(!t.open) return '';
+
+  const imgBox = t.image
+    ? '<div class="relative rounded-2xl overflow-hidden border-2 border-violet-200" style="height:220px;">'+
+        '<img src="'+t.image+'" class="w-full h-full object-contain bg-slate-100">'+
+        '<button onclick="state.training.image=null;render()" class="absolute top-2 left-2 w-7 h-7 bg-red-500 text-white rounded-full text-sm font-bold">✕</button>'+
+      '</div>'
+    : '<label class="block cursor-pointer border-2 border-dashed border-violet-200 rounded-2xl hover:border-violet-400 transition" style="height:220px;">'+
+        '<div class="flex flex-col items-center justify-center h-full text-violet-400">'+
+          icon('upload','w-8 h-8 mb-2')+
+          '<p class="text-sm font-bold text-violet-600">ارفع صورة لوحة مرجعية</p>'+
+          '<p class="text-xs text-slate-400 mt-1">صورة واقعية للنوع اللي تريده</p>'+
+        '</div>'+
+        '<input type="file" accept="image/*" class="hidden" onchange="handleTrainingImg(event)">'+
+      '</label>';
+
+  const resultBox = t.generating
+    ? '<div class="flex flex-col items-center justify-center py-12 text-violet-400">'+
+        '<div class="w-10 h-10 border-4 border-violet-200 border-t-violet-500 rounded-full spin mb-4"></div>'+
+        '<p class="text-sm font-bold">Claude يحلل الصورة...</p>'+
+        '<p class="text-xs text-slate-400 mt-1">قد يأخذ 15-20 ثانية</p>'+
+      '</div>'
+    : t.result
+      ? '<div class="space-y-3">'+
+          '<div class="flex items-center justify-between">'+
+            '<p class="text-xs font-black text-violet-700 flex items-center gap-2">'+icon('sparkles','w-3.5 h-3.5')+' الوصف التدريبي المولّد</p>'+
+            '<button id="copy-training-btn" onclick="copyTrainingResult()" class="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition">نسخ النص</button>'+
+          '</div>'+
+          '<textarea readonly class="w-full bg-violet-50 border border-violet-200 rounded-2xl px-4 py-3 text-xs text-slate-700 font-mono leading-relaxed outline-none resize-none" rows="14" style="direction:ltr;text-align:left;">'+t.result.replace(/</g,'&lt;')+'</textarea>'+
+          '<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800 leading-relaxed">'+
+            '<p class="font-black mb-1">📋 الخطوة التالية:</p>'+
+            '<p>انسخ هذا الوصف وأرسله للمطور في محادثة Claude Code قل له: "هذا وصف تدريبي لمواصفة [اسم المواصفة]، أدمجه في buildVisualSpec()".</p>'+
+            '<p class="mt-1">المطور سيضيفه كمثال مرجعي يُحقن تلقائياً عند اختيار نفس المواصفات.</p>'+
+          '</div>'+
+        '</div>'
+      : '<div class="flex flex-col items-center justify-center py-12 border-2 border-dashed border-slate-200 rounded-2xl text-slate-300">'+
+          icon('sparkles','w-8 h-8 mb-2')+
+          '<p class="text-xs font-semibold text-slate-400">الوصف التدريبي سيظهر هنا</p>'+
+        '</div>';
+
+  // المواصفات المختارة حالياً في الصفحة
+  const o=state.options, M=PRICING_CONFIG.MODIFIERS;
+  const activeSpecs=[
+    M.acrylicThickness[o.acrylicThickness].label+' '+M.acrylicType[o.acrylicType].label,
+    M.sideType[o.sideType].label,
+    'ليد '+M.ledType[o.ledType].label,
+    o.perforated?'مثقب':null, o.uvPrinting?'UV':null,
+    o.backLight?'إنارة خلفية':null, o.cobondBack?'كوبوند':null,
+    o.layers>0?(o.layers+' طبقات'):null,
+  ].filter(Boolean).map(function(s){
+    return '<span class="text-[10px] font-bold bg-violet-100 text-violet-700 px-2 py-1 rounded-lg">'+s+'</span>';
+  }).join('');
+
+  return '<div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="if(event.target===this)closeTraining()">'+
+    '<div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">'+
+
+      // الهيدر
+      '<div class="flex items-center justify-between p-6 border-b border-slate-100 sticky top-0 bg-white rounded-t-3xl z-10">'+
+        '<div>'+
+          '<h2 class="text-lg font-black text-slate-800 flex items-center gap-2">'+icon('sparkles','w-5 h-5 text-violet-500')+' تدريب الذكاء الصناعي</h2>'+
+          '<p class="text-xs text-slate-400 mt-0.5">ارفع صورة لوحة مرجعية → Claude يولّد وصفها التقني → أرسله للمطور ليُدمج في النظام</p>'+
+        '</div>'+
+        '<button onclick="closeTraining()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-2xl text-slate-500 font-black text-lg">✕</button>'+
+      '</div>'+
+
+      '<div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">'+
+
+        // عمود أيمن: الرفع + الإعدادات
+        '<div class="space-y-4">'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">1) صورة اللوحة المرجعية</label>'+
+            imgBox+
+          '</div>'+
+
+          '<div class="bg-violet-50 rounded-2xl p-4 space-y-2">'+
+            '<p class="text-xs font-black text-violet-700 mb-2">المواصفات النشطة حالياً في الصفحة (ستُضمَّن كسياق):</p>'+
+            '<div class="flex flex-wrap gap-1.5">'+activeSpecs+'</div>'+
+            '<p class="text-[10px] text-slate-400 mt-2">لتغييرها: أغلق هذه النافذة، عدّل الإعدادات، ثم افتحها مرة أخرى.</p>'+
+          '</div>'+
+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">2) ملاحظات إضافية (اختياري)</label>'+
+            '<textarea rows="3" placeholder="مثلاً: هذي حروف بارزة بعمق 10سم، الإضاءة أمامية فقط، الخلفية جدار طابوق..." '+
+              'onchange="state.training.notes=this.value" '+
+              'class="w-full bg-white border border-violet-200 rounded-2xl px-4 py-3 text-sm outline-none resize-none text-slate-700 focus:border-violet-400">'+(t.notes||'')+'</textarea>'+
+          '</div>'+
+
+          (t.error?'<div class="bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl px-4 py-3">'+t.error+'</div>':'')+
+
+          '<button onclick="generateTraining()" '+(t.generating?'disabled':'')+
+            ' class="w-full py-3.5 bg-gradient-to-l from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition '+(t.generating?'opacity-60 cursor-not-allowed':'')+'">'+
+            icon('sparkles','w-4 h-4')+' '+(t.generating?'Claude يحلل...':'توليد الوصف التدريبي')+
+          '</button>'+
+        '</div>'+
+
+        // عمود أيسر: النتيجة
+        '<div>'+
+          '<label class="text-xs font-bold text-slate-500 block mb-2">3) الوصف التدريبي</label>'+
+          resultBox+
+        '</div>'+
+
+      '</div>'+
+
+      // ── قسم المراجع البصرية (قابل للطي) ──
+      '<div class="border-t border-slate-100 px-6 pb-6 pt-4">'+
+        '<button onclick="state.training.refsOpen=!state.training.refsOpen;render()" '+
+          'class="w-full flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-violet-600 transition py-1">'+
+          icon('layers','w-3.5 h-3.5 text-violet-400')+
+          ' إعدادات المراجع البصرية لكل خيار'+
+          '<span class="mr-auto text-slate-400">'+(t.refsOpen?'▲':'▼')+'</span>'+
+        '</button>'+
+        (t.refsOpen ? refsEditorHtml() : '')+
+      '</div>'+
+
+    '</div>'+
+  '</div>';
+}
+
+// قسم مولّد الإعلان الذكي
+function aiGeneratorHtml(){
+  const ai = state.ai;
+  const o = state.options, M = PRICING_CONFIG.MODIFIERS;
+
+  // ملخص المواصفات المحقونة (حتى يشوف المستخدم شنو رح ينحقن بالذكاء)
+  const specChips = [
+    'أكريليك '+M.acrylicThickness[o.acrylicThickness].label+' / '+M.acrylicType[o.acrylicType].label,
+    M.sideType[o.sideType].label,
+    'ليد '+M.ledType[o.ledType].label,
+    o.perforated?'مثقب':null, o.uvPrinting?'طباعة UV':null,
+    o.layers>0?(o.layers+' طبقات'):null, o.backLight?'إنارة خلفية':null,
+    o.cobondBack?'كوبوند':null, o.frameBack!=='none'?('هيكل '+M.frameBack[o.frameBack].label):null,
+  ].filter(Boolean).map(function(t){
+    return '<span class="text-[10px] font-bold bg-white/15 text-white px-2 py-1 rounded-lg">'+t+'</span>';
+  }).join('');
+
+  // صندوق رفع الواجهة
+  const facadeBox = ai.facadeImage
+    ? '<div class="relative rounded-2xl overflow-hidden border-2 border-fuchsia-200" style="height:200px;">'+
+        '<img src="'+ai.facadeImage+'" class="w-full h-full object-cover">'+
+        '<button onclick="clearFacade()" class="absolute top-2 left-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm font-bold flex items-center justify-center shadow">✕</button>'+
+      '</div>'
+    : '<label class="block cursor-pointer border-2 border-dashed border-fuchsia-200 rounded-2xl hover:border-fuchsia-400 transition" style="height:200px;">'+
+        '<div class="flex flex-col items-center justify-center h-full text-fuchsia-300">'+icon('upload','w-8 h-8 mb-2')+
+        '<p class="text-xs font-bold text-fuchsia-500">رفع صورة الواجهة</p>'+
+        '<p class="text-[10px] text-slate-400 mt-1">صورة واجهة المحل ليُركّب عليها الإعلان</p></div>'+
+        '<input type="file" accept="image/*" class="hidden" onchange="handleFacadeImg(event)"></label>';
+
+  // كتلة التصميم التنفيذي ثنائي الأبعاد
+  const vectorBlock =
+    '<div class="border-t border-slate-200 pt-3 mt-1 space-y-2">'+
+      (ai.vectorImage ?
+        '<div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm" style="background:repeating-conic-gradient(#f1f5f9 0% 25%, #fff 0% 50%) 50%/16px 16px;">'+
+          '<img src="'+ai.vectorImage+'" class="w-full">'+
+          '<button onclick="attachGenerated(state.ai.vectorImage)" title="إضافة للمرفقات" class="absolute top-2 left-2 w-9 h-9 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xl font-black flex items-center justify-center shadow-lg leading-none">+</button>'+
+        '</div>'+
+        '<button onclick="downloadVectorImage()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2">'+icon('upload','w-4 h-4')+' تنزيل التصميم التنفيذي</button>'
+        : '')+
+      (ai.vectorError ? '<div class="bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl px-4 py-3">'+ai.vectorError+'</div>' : '')+
+      '<button onclick="generateVector()" '+(ai.vectorGenerating?'disabled':'')+
+        ' class="w-full py-3 bg-gradient-to-l from-slate-800 to-slate-600 hover:from-slate-700 hover:to-slate-500 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 '+(ai.vectorGenerating?'opacity-60 cursor-not-allowed':'')+'">'+
+        (ai.vectorGenerating?'<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full spin"></div> جاري توليد التصميم...':icon('layers','w-4 h-4')+' '+(ai.vectorImage?'إعادة توليد التصميم التنفيذي':'توليد التصميم التنفيذي ثنائي الأبعاد')) +
+      '</button>'+
+      '<p class="text-[10px] text-slate-400 text-center">تصميم مسطّح بدون خلفية + القياسات الهندسية + الألوان الصحيحة</p>'+
+    '</div>';
+
+  // لوحة ألوان القص (تُفرض على الـTrace)
+  const colorsEditor =
+    '<div class="space-y-1.5">'+
+      ai.colors.map(function(c,i){
+        return '<div class="flex items-center gap-2">'+
+          '<input type="color" value="'+c.hex+'" onchange="setColor('+i+',\'hex\',this.value)" class="w-9 h-9 rounded-lg border border-slate-200 cursor-pointer bg-white p-0.5">'+
+          '<input type="text" value="'+c.name.replace(/"/g,'&quot;')+'" onchange="setColor('+i+',\'name\',this.value)" placeholder="اسم اللون" class="flex-1 bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-emerald-400">'+
+          '<span class="text-[10px] font-mono text-slate-400" dir="ltr">'+c.hex+'</span>'+
+          '<button onclick="removeColor('+i+')" class="w-6 h-6 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg text-xs font-bold">✕</button>'+
+        '</div>';
+      }).join('')+
+      '<button onclick="addColor()" class="w-full py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold">+ إضافة لون قص</button>'+
+    '</div>';
+
+  // مصدر التتبُّع
+  const srcAvail = [];
+  if(ai.vectorImage) srcAvail.push({v:'design',l:'التصميم التنفيذي'});
+  if(ai.resultImage) srcAvail.push({v:'ad',l:'صورة الإعلان'});
+  state.attachments.forEach(function(_,i){ srcAvail.push({v:String(i),l:'مرفق '+(i+1)}); });
+  const srcSelect = srcAvail.length
+    ? '<select onchange="state.ai.traceSrc=(/^[0-9]+$/.test(this.value)?parseInt(this.value):this.value);renderAi()" class="flex-1 bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-emerald-400">'+
+        '<option value="auto" '+(ai.traceSrc==='auto'?'selected':'')+'>تلقائي (الأفضل)</option>'+
+        srcAvail.map(function(s){ return '<option value="'+s.v+'" '+(String(ai.traceSrc)===s.v?'selected':'')+'>'+s.l+'</option>'; }).join('')+
+      '</select>'
+    : '<span class="flex-1 text-[11px] text-slate-400">لا توجد صورة بعد — ولّد التصميم/الإعلان أو أضف مرفقاً</span>';
+
+  const modes=[['flat','مسطّح (6 ألوان)'],['detailed','مفصّل (16 لون)'],['bw','أبيض وأسود']];
+
+  // كتلة التتبُّع → SVG
+  const svgBlock =
+    '<div class="border-t border-slate-200 pt-3 mt-1 space-y-2">'+
+      '<p class="text-xs font-black text-slate-700 flex items-center gap-1.5">'+icon('layers','w-3.5 h-3.5 text-emerald-600')+' تتبُّع → SVG أشكال حقيقية (Trace, قابل للقص)</p>'+
+      // المصدر
+      '<div class="flex items-center gap-2"><span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">المصدر:</span>'+srcSelect+'</div>'+
+      // الوضع
+      '<div class="flex items-center gap-1.5">'+
+        modes.map(function(m){
+          const active=(ai.traceMode||'flat')===m[0];
+          return '<button onclick="state.ai.traceMode=\''+m[0]+'\';renderAi()" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg border-2 transition '+
+            (active?'bg-emerald-600 text-white border-emerald-600':'bg-slate-50 text-slate-600 border-slate-200 hover:border-emerald-300')+'">'+m[1]+'</button>';
+        }).join('')+
+      '</div>'+
+      // لوحة ألوان القص (اختياري)
+      '<div><p class="text-[11px] font-bold text-slate-500 mb-1.5">ألوان القص (اختياري — تُفرض على التتبُّع):</p>'+colorsEditor+'</div>'+
+      (ai.svgError ? '<div class="bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl px-4 py-3">'+ai.svgError+'</div>' : '')+
+      // المعاينة الحية
+      (ai.svgCode ?
+        '<div class="rounded-2xl border border-slate-200 overflow-auto p-2" style="background:repeating-conic-gradient(#f1f5f9 0% 25%, #fff 0% 50%) 50%/16px 16px;max-height:340px;">'+
+          '<div class="w-full [&>svg]:w-full [&>svg]:h-auto">'+ai.svgCode+'</div>'+
+        '</div>'+
+        '<div class="flex gap-2">'+
+          '<button onclick="downloadSVG()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2">'+icon('upload','w-4 h-4')+' تنزيل SVG</button>'+
+          '<button id="copy-svg-btn" onclick="copySVG()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">نسخ الكود</button>'+
+        '</div>'
+        : '')+
+      '<button onclick="traceToSVG()" '+(ai.svgGenerating?'disabled':'')+
+        ' class="w-full py-3 bg-gradient-to-l from-emerald-700 to-teal-600 hover:from-emerald-600 hover:to-teal-500 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 '+(ai.svgGenerating?'opacity-60 cursor-not-allowed':'')+'">'+
+        (ai.svgGenerating?'<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full spin"></div> جاري التتبُّع...':icon('sparkles','w-4 h-4')+' '+(ai.svgCode?'إعادة التتبُّع':'تتبُّع وتحويل لأشكال SVG')) +
+      '</button>'+
+      '<p class="text-[10px] text-slate-400 text-center">يحوّل الصورة إلى مسارات أشكال حقيقية — كل لون/حرف شكل مستقل قابل للقص (لا نص/خط)</p>'+
+    '</div>';
+
+  // نتيجة التوليد
+  const resultBox =
+    ai.generating
+      ? '<div class="flex flex-col items-center justify-center h-full text-fuchsia-400 py-16">'+
+          '<div class="w-10 h-10 border-4 border-fuchsia-200 border-t-fuchsia-500 rounded-full spin"></div>'+
+          '<p class="text-sm font-bold mt-4">جاري توليد الإعلان...</p>'+
+          '<p class="text-[10px] text-slate-400 mt-1">قد يستغرق 10-30 ثانية</p>'+
+        '</div>'
+    : ai.resultImage
+      ? '<div class="space-y-3">'+
+          '<div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm">'+
+            '<img src="'+ai.resultImage+'" class="w-full">'+
+            '<button onclick="attachGenerated(state.ai.resultImage)" title="إضافة للمرفقات" '+
+              'class="absolute top-2 left-2 w-9 h-9 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xl font-black flex items-center justify-center shadow-lg leading-none">+</button>'+
+          '</div>'+
+          '<div class="flex gap-2">'+
+            '<button onclick="downloadAdImage()" class="flex-1 py-2.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2">'+icon('upload','w-4 h-4')+' تنزيل</button>'+
+            '<button onclick="generateAd()" '+(ai.editing?'disabled':'')+' class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إعادة التوليد</button>'+
+          '</div>'+
+
+          // مربع التعديل
+          '<div class="bg-violet-50 border border-violet-200 rounded-2xl p-3 space-y-2">'+
+            '<label class="text-xs font-black text-violet-700 flex items-center gap-1.5">'+icon('sparkles','w-3 h-3')+' تعديل الصورة (يأخذها كمصدر + المرفقات + المواصفات)</label>'+
+            '<textarea rows="2" placeholder="مثلاً: كبّر الخط، غيّر اللون للأحمر، أضف اللوغو في اليسار، اجعل الإضاءة ليلية..." '+
+              'onchange="state.ai.editText=this.value" '+(ai.editing?'disabled':'')+
+              ' class="w-full bg-white border border-violet-200 rounded-xl px-3 py-2 text-sm outline-none resize-none focus:border-violet-400 text-slate-700">'+(ai.editText||'')+'</textarea>'+
+            '<button onclick="generateEdit()" '+(ai.editing?'disabled':'')+
+              ' class="w-full py-2.5 bg-gradient-to-l from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 '+(ai.editing?'opacity-60 cursor-not-allowed':'')+'">'+
+              (ai.editing?'<div class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full spin"></div> جاري التعديل...':icon('sparkles','w-4 h-4')+' توليد التعديل')+
+            '</button>'+
+          '</div>'+
+
+          (ai.resultNotes ?
+            '<div class="bg-amber-50 border border-amber-100 rounded-2xl p-4">'+
+              '<p class="text-xs font-black text-amber-600 mb-2 flex items-center gap-1.5">'+icon('sparkles','w-3 h-3')+' ملاحظات الذكاء الصناعي</p>'+
+              '<p class="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">'+ai.resultNotes.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>'+
+            '</div>':'')+
+        '</div>'
+      : '<div class="flex flex-col items-center justify-center h-full text-slate-300 py-12 border-2 border-dashed border-slate-200 rounded-2xl">'+
+          icon('sparkles','w-8 h-8 mb-2')+
+          '<p class="text-xs font-semibold text-slate-400">ستظهر هنا صورة الإعلان المولّدة</p>'+
+        '</div>';
+
+  return '<div class="xl:col-span-12">'+
+    '<div class="bg-gradient-to-br from-fuchsia-50 to-violet-50 p-6 rounded-3xl shadow-sm border border-fuchsia-100">'+
+
+      '<div class="flex items-center justify-between mb-5 flex-wrap gap-3">'+
+        '<div class="flex items-center gap-3">'+
+          '<div class="flex items-center gap-2 text-fuchsia-700 font-black text-base">'+icon('sparkles','w-5 h-5 text-fuchsia-500')+' مولّد الإعلان بالذكاء الصناعي</div>'+
+          '<button onclick="openTraining()" class="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition shadow-sm">'+
+            icon('layers','w-3.5 h-3.5')+' تدريب الذكاء الصناعي'+
+          '</button>'+
+        '</div>'+
+        '<button onclick="clearPage()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-xs font-bold rounded-xl transition shadow-sm">'+
+          '✕ مسح الصفحة'+
+        '</button>'+
+      '</div>'+
+
+      // ── عدّاد الاستهلاك + التحكّم بالتكلفة ──
+      (function(){
+        const u=getUsage();
+        const tok=((u.pt||0)+(u.ct||0));
+        const tokTxt = tok>1000 ? (tok/1000).toFixed(1)+'k' : tok;
+        return '<div class="flex items-center flex-wrap gap-2 mb-5 bg-white/70 border border-fuchsia-100 rounded-2xl px-3 py-2 text-[11px]">'+
+          '<span class="font-black text-slate-600">📊 استهلاك الجلسة:</span>'+
+          '<span class="px-2 py-0.5 bg-fuchsia-100 text-fuchsia-700 rounded-lg font-bold">نداءات: '+(u.calls||0)+'</span>'+
+          '<span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-lg font-bold">توليد صور: '+(u.imageCalls||0)+'</span>'+
+          '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-lg font-bold" dir="ltr">توكنات: '+tokTxt+'</span>'+
+          '<button onclick="resetUsage()" class="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg font-bold">تصفير</button>'+
+          '<label class="flex items-center gap-1.5 mr-auto cursor-pointer select-none">'+
+            '<input type="checkbox" '+(state.autoAnalyze!==false?'checked':'')+' onchange="state.autoAnalyze=this.checked;render()" class="w-3.5 h-3.5 accent-fuchsia-600">'+
+            '<span class="font-bold text-slate-500">تحليل الصورة تلقائياً عند الرفع</span>'+
+          '</label>'+
+        '</div>';
+      })()+
+
+      // ── تصدير البرومت لـ Gemini (مجاناً) ──
+      (function(){
+        const types=[['ad','إعلان على الواجهة'],['vector','تصميم تنفيذي 2D'],['edit','تعديل صورة']];
+        const refCount=(ai.facadeImage?1:0)+userAttachments().length;
+        const promptVal=(ai.promptDraft||geminiPrompt());
+        return '<div class="mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl overflow-hidden">'+
+          '<button onclick="state.ai.geminiOpen=!state.ai.geminiOpen;renderAi()" class="w-full flex items-center gap-2 px-4 py-3 text-emerald-800 font-black text-sm hover:bg-emerald-100/60 transition">'+
+            '🆓 استخدام Gemini مباشرة (مجاناً) — انسخ البرومت الجاهز'+
+            '<span class="mr-auto text-emerald-500">'+(ai.geminiOpen?'▲':'▼')+'</span>'+
+          '</button>'+
+          (ai.geminiOpen ?
+            '<div class="px-4 pb-4 space-y-3">'+
+              // نوع البرومت
+              '<div class="flex flex-wrap gap-2">'+
+                types.map(function(tp){
+                  const active=(ai.promptType||'ad')===tp[0];
+                  return '<button onclick="setPromptType(\''+tp[0]+'\')" class="px-3 py-1.5 text-xs font-bold rounded-xl border-2 transition '+
+                    (active?'bg-emerald-600 text-white border-emerald-600':'bg-white text-slate-600 border-slate-200 hover:border-emerald-300')+'">'+tp[1]+'</button>';
+                }).join('')+
+              '</div>'+
+              // البرومت الكامل (قابل للتعديل)
+              '<textarea id="gemini-prompt" rows="9" onchange="state.ai.promptDraft=this.value" dir="ltr" '+
+                'class="w-full bg-white border border-emerald-200 rounded-xl px-3 py-2 text-[11px] font-mono leading-relaxed outline-none resize-y text-slate-700 focus:border-emerald-400" style="text-align:left;">'+
+                promptVal.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</textarea>'+
+              // الأزرار
+              '<div class="flex flex-wrap gap-2">'+
+                '<button id="gemini-copy-btn" onclick="copyGeminiPrompt()" class="flex-1 min-w-[120px] py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm">📋 نسخ البرومت</button>'+
+                '<button onclick="downloadRefImages()" class="flex-1 min-w-[120px] py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm">⬇️ تنزيل صور المرجع ('+refCount+')</button>'+
+                '<button onclick="openGemini()" class="flex-1 min-w-[120px] py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-sm">🚀 فتح Gemini</button>'+
+              '</div>'+
+              // التعليمات
+              '<div class="bg-white border border-emerald-100 rounded-xl p-3 text-[11px] text-slate-600 leading-relaxed">'+
+                '<b class="text-emerald-700">الخطوات:</b> 1) اضغط «تنزيل صور المرجع» (الواجهة + المرفقات). '+
+                '2) «نسخ البرومت». 3) «فتح Gemini» → الصق البرومت وأرفق الصور المنزّلة → ولّد مجاناً. '+
+                '<span class="text-slate-400">(الصور المولّدة من الأداة لا تُنزَّل هنا — فقط صورك المرجعية.)</span>'+
+              '</div>'+
+            '</div>' : '')+
+        '</div>';
+      })()+
+
+      '<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">'+
+
+        // العمود الأيمن: المدخلات
+        '<div class="space-y-4">'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">1) صورة الواجهة</label>'+
+            facadeBox+
+          '</div>'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">2) نص الإعلان (يُكتب على اللوحة)</label>'+
+            '<input type="text" value="'+(ai.adText||'').replace(/"/g,'&quot;')+'" placeholder="مثلاً: مطعم الذواقة" '+
+              'onchange="state.ai.adText=this.value" '+
+              'class="w-full bg-white border border-fuchsia-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-fuchsia-400">'+
+          '</div>'+
+          '<div>'+
+            '<label class="text-xs font-bold text-slate-500 block mb-2">3) تفاصيل إضافية (موقع الإعلان، أسلوب، ألوان مرغوبة...)</label>'+
+            '<textarea rows="3" placeholder="مثلاً: الواجهة على شارع رئيسي، أريد اللوحة فوق الباب، ألوان ذهبية فاخرة، تصوير ليلي..." '+
+              'onchange="state.ai.extraDetails=this.value" '+
+              'class="w-full bg-white border border-fuchsia-200 rounded-xl px-4 py-3 text-sm outline-none resize-none focus:border-fuchsia-400 text-slate-700">'+(ai.extraDetails||'')+'</textarea>'+
+          '</div>'+
+
+          // ملخص المواصفات المحقونة
+          '<div class="bg-fuchsia-600 rounded-2xl p-4">'+
+            '<p class="text-[10px] font-black text-white/80 mb-2">المواصفات التقنية المحقونة تلقائياً في التوليد:</p>'+
+            '<div class="flex flex-wrap gap-1.5">'+specChips+'</div>'+
+          '</div>'+
+
+          // التحكّم بالتكلفة (إرسال المرفقات للذكاء)
+          '<div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 space-y-1.5">'+
+            '<label class="flex items-center justify-between gap-2 cursor-pointer select-none">'+
+              '<span class="text-[11px] font-bold text-amber-800">إرسال المرفقات كمرجع للذكاء (يزيد الكلفة)</span>'+
+              '<input type="checkbox" '+(ai.sendRefs?'checked':'')+' onchange="state.ai.sendRefs=this.checked;renderAi()" class="w-4 h-4 accent-amber-600">'+
+            '</label>'+
+            '<p class="text-[10px] text-amber-600 leading-relaxed">'+
+              'يُرسل الآن للذكاء: صورة الواجهة + <b>'+refAttachments().length+'</b> مرجع (مضغوطة تلقائياً). '+
+              'الصور المولّدة لا تُعاد إرسالها. قلّل المراجع لتوفير الكلفة.'+
+            '</p>'+
+          '</div>'+
+
+          (ai.error ? '<div class="bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl px-4 py-3">'+ai.error+'</div>' : '')+
+
+          '<button onclick="generateAd()" '+(ai.generating?'disabled':'')+' class="w-full py-3.5 bg-gradient-to-l from-fuchsia-600 to-violet-600 hover:from-fuchsia-500 hover:to-violet-500 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition '+(ai.generating?'opacity-60 cursor-not-allowed':'')+'">'+
+            icon('sparkles','w-4 h-4')+' '+(ai.generating?'جاري التوليد...':'توليد الإعلان')+
+          '</button>'+
+        '</div>'+
+
+        // العمود الأيسر: النتيجة
+        '<div class="bg-white rounded-2xl p-4 border border-slate-100 space-y-1">'+
+          resultBox+
+          (ai.generating?'':vectorBlock)+
+          (ai.generating?'':svgBlock)+
+        '</div>'+
+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function addAttachment(e){
+  Array.from(e.target.files).forEach(function(f){
+    const reader = new FileReader();
+    reader.onload = function(ev){ state.attachments.push(ev.target.result); render(); };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+}
+function removeAttachment(i){ state.attachments.splice(i,1); render(); }
+
+function handleImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){ state.image=ev.target.result; state.confidence={}; render(); if(state.autoAnalyze!==false) analyzeImageAI(ev.target.result); };
+  reader.readAsDataURL(f);
+}
+
+function printInvoice(){
+  const d=state.dimensions, o=state.options, M=PRICING_CONFIG.MODIFIERS;
+  const today=new Date().toLocaleDateString('ar-IQ');
+
+  const cell='padding:6px 10px;font-size:13px;';
+  const cellL='padding:6px 10px;font-size:13px;color:#64748b;';
+  const rows2=[
+    ['قياس اللوحة', d.width+' × '+d.height+' cm', 'اللف الجانبي', M.sideType[o.sideType].label],
+    ['سماكة الأكريليك', M.acrylicThickness[o.acrylicThickness].label+' / '+M.acrylicType[o.acrylicType].label, 'نوع الليد', M.ledType[o.ledType].label+' (ضمان '+M.ledType[o.ledType].warranty+(o.ledExtraYears?'+'+o.ledExtraYears:'')+' سنة)'],
+    ['نوع المحول', M.transformerType[o.transformerType].label+' (ضمان '+M.transformerType[o.transformerType].warranty+(o.transformerExtraYears?'+'+o.transformerExtraYears:'')+' سنة)', 'مدة التنفيذ', M.rushOrder[o.rushOrder].label],
+    ['أجور التركيب', o.installDifficulty==='complex'?('معقد – $'+(o.installComplexCost||0)):'اعتيادي (مجاناً)', 'أكريليك حراري', M.sideType[o.sideType].label],
+  ].map(function(r,i){
+    const bg=i%2===1?'background:#f8fafc;':'';
+    return '<tr style="'+bg+'"><td style="'+cellL+'">'+r[0]+'</td><td style="'+cell+';font-weight:600;">'+r[1]+'</td>'+
+      '<td style="'+cellL+';border-right:1px solid #e2e8f0;">'+r[2]+'</td><td style="'+cell+';font-weight:600;">'+r[3]+'</td></tr>';
+  }).join('');
+
+  const extraRows=
+    (o.hasCementBoard?'<tr><td style="'+cellL+'">بوردكس أسمنتي</td><td style="'+cell+';font-weight:600;" dir="ltr">'+((state.cementBoardDims.width*state.cementBoardDims.height/10000).toFixed(2))+' م²</td><td colspan="2"></td></tr>':'')+
+    (state.extraFlat>0?'<tr style="background:#f0fdf4"><td style="'+cellL+'">إضافي ($)</td><td style="'+cell+';font-weight:700;color:#059669" dir="ltr">+$'+state.extraFlat.toFixed(2)+'</td><td colspan="2"></td></tr>':'')+
+    (state.extraPct>0?'<tr style="background:#f0fdf4"><td style="'+cellL+'">إضافي ('+state.extraPct+'%)</td><td style="'+cell+';font-weight:700;color:#059669" dir="ltr">+$'+(state.price*(state.extraPct/100)).toFixed(2)+'</td><td colspan="2"></td></tr>':'')+
+    (state.discountFlat>0?'<tr style="background:#fff5f5"><td style="'+cellL+'">خصم ($)</td><td style="'+cell+';font-weight:700;color:#dc2626" dir="ltr">-$'+state.discountFlat.toFixed(2)+'</td><td colspan="2"></td></tr>':'')+
+    (state.discountPct>0?'<tr style="background:#fff5f5"><td style="'+cellL+'">خصم ('+state.discountPct+'%)</td><td style="'+cell+';font-weight:700;color:#dc2626" dir="ltr">-$'+(state.price*(state.discountPct/100)).toFixed(2)+'</td><td colspan="2"></td></tr>':'');
+
+  const notesHtml=state.notes.trim()?
+    '<div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">'+
+      '<p style="margin:0 0 6px;font-weight:700;font-size:13px;color:#475569;">ملاحظات</p>'+
+      '<p style="margin:0;font-size:13px;color:#1e293b;white-space:pre-wrap;">'+state.notes.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>'+
+    '</div>':'';
+
+  const designImgHtml=state.image?
+    '<div style="margin:16px 0;"><p style="margin:0 0 8px;font-weight:700;font-size:13px;color:#475569;">صورة التصميم</p>'+
+      '<img src="'+state.image+'" style="max-width:100%;max-height:280px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px;display:block;"></div>':'';
+
+  const attachHtml=state.attachments.length?
+    '<div style="margin:16px 0;"><p style="margin:0 0 8px;font-weight:700;font-size:13px;color:#475569;">صور مرفقة</p>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;">'+
+        state.attachments.map(function(src){
+          return '<img src="'+src+'" style="width:220px;height:160px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px;">';
+        }).join('')+
+      '</div></div>':'';
+
+  document.getElementById('invoice-print').innerHTML=
+    '<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;color:#0f172a;max-width:720px;margin:0 auto;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #2563eb;padding-bottom:12px;margin-bottom:18px;">'+
+        '<div><h1 style="margin:0;font-size:22px;font-weight:800;">فاتورة أولية تقديرية</h1>'+
+          '<p style="margin:4px 0 0;color:#64748b;font-size:12px;">نظام التسعير الاحترافي للوحات</p></div>'+
+        '<div style="text-align:left;font-size:12px;color:#64748b;">التاريخ: '+today+'</div>'+
+      '</div>'+
+      '<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">'+
+        rows2+extraRows+
+      '</table>'+
+      notesHtml+designImgHtml+attachHtml+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:16px;background:#0f172a;color:#fff;border-radius:10px;">'+
+        '<span style="font-size:18px;font-weight:bold;">الإجمالي النهائي</span>'+
+        '<div style="text-align:left;">'+
+          '<div style="font-size:24px;font-weight:800;" dir="ltr">$'+state.price.toFixed(2)+'</div>'+
+          '<div style="font-size:14px;font-weight:700;color:#93c5fd;" dir="ltr">'+Math.round(state.price*state.exchangeRate).toLocaleString('ar-IQ')+' د.ع</div>'+
+        '</div>'+
+      '</div>'+
+      '<p style="margin-top:12px;font-size:11px;color:#94a3b8;text-align:center;">هذه فاتورة تقديرية أولية وقابلة للتعديل حسب المعاينة الفعلية.</p>'+
+    '</div>';
+  const el=document.getElementById('invoice-print');
+  el.classList.remove('hidden'); window.print();
+  setTimeout(function(){ el.classList.add('hidden'); },500);
+}
+
+render();
+</script>
+</body>
+</html>

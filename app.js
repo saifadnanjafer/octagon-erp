@@ -120,6 +120,32 @@ function closeOmniModal() {
 }
 window.closeOmniModal = closeOmniModal;
 
+function applySidebarCompactState(collapsed) {
+  document.body.classList.toggle('sidebar-collapsed', !!collapsed);
+  localStorage.setItem('octagon-sidebar-collapsed', collapsed ? '1' : '0');
+  const btn = document.getElementById('sidebarToggleBtn');
+  if (btn) {
+    btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+    btn.title = collapsed ? 'إظهار الشريط الجانبي' : 'إخفاء الشريط الجانبي';
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = collapsed ? 'fa-solid fa-bars-staggered' : 'fa-solid fa-bars';
+  }
+}
+
+function toggleSidebarCompact() {
+  applySidebarCompactState(!document.body.classList.contains('sidebar-collapsed'));
+}
+window.toggleSidebarCompact = toggleSidebarCompact;
+
+function initSidebarCompactToggle() {
+  applySidebarCompactState(localStorage.getItem('octagon-sidebar-collapsed') === '1');
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSidebarCompactToggle);
+} else {
+  initSidebarCompactToggle();
+}
+
 function loadOctagonAIAssistantFromApp() {
   if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
     return Promise.resolve(window.octagonAIAssistant);
@@ -300,6 +326,89 @@ function recordsForMonth(emp, year, month) {
   return emp.records.filter(r => recordBelongsToMonth(r, year, month));
 }
 
+function getRecordPeriod(rec, fallback = getConfig()) {
+  if (rec?.year != null && rec?.month != null) {
+    return { year: Number(rec.year), month: Number(rec.month), day: Number(rec.day) || 0 };
+  }
+  if (rec?.date && typeof rec.date === 'string') {
+    const parts = rec.date.trim().split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+      if (Number.isFinite(year) && Number.isFinite(month)) {
+        return { year, month, day: Number.isFinite(day) ? day : Number(rec.day) || 0 };
+      }
+    }
+  }
+  return { year: Number(fallback.year), month: Number(fallback.month), day: Number(rec?.day) || 0 };
+}
+
+function getTimesheetMonthStorageKey(year = getConfig().year) {
+  return `octagon-timesheet-months-${Number(year) || new Date().getFullYear()}`;
+}
+
+function getTimesheetSelectedMonths(year = getConfig().year) {
+  let months = [];
+  try {
+    months = JSON.parse(localStorage.getItem(getTimesheetMonthStorageKey(year)) || '[]');
+  } catch (_) {
+    months = [];
+  }
+  months = (Array.isArray(months) ? months : [])
+    .map(Number)
+    .filter(m => Number.isInteger(m) && m >= 1 && m <= 12);
+  if (!months.length) months = [Number(getConfig().month) || new Date().getMonth() + 1];
+  return Array.from(new Set(months)).sort((a, b) => a - b);
+}
+
+function setTimesheetSelectedMonths(months, primaryMonth = null) {
+  const cfg = getConfig();
+  const clean = Array.from(new Set((months || [])
+    .map(Number)
+    .filter(m => Number.isInteger(m) && m >= 1 && m <= 12))).sort((a, b) => a - b);
+  const nextMonths = clean.length ? clean : [Number(cfg.month) || new Date().getMonth() + 1];
+  localStorage.setItem(getTimesheetMonthStorageKey(cfg.year), JSON.stringify(nextMonths));
+  if (primaryMonth && nextMonths.includes(Number(primaryMonth))) setConfigValue('cfgMonth', Number(primaryMonth));
+  else if (!nextMonths.includes(Number(cfg.month))) setConfigValue('cfgMonth', nextMonths[0]);
+  saveConfigToStorage();
+}
+
+function toggleTimesheetMonth(month) {
+  const cfg = getConfig();
+  const selected = getTimesheetSelectedMonths(cfg.year);
+  const m = Number(month);
+  const next = selected.includes(m)
+    ? selected.filter(item => item !== m)
+    : selected.concat(m);
+  setTimesheetSelectedMonths(next.length ? next : [m], m);
+  ensureSelectedEmployeeForTimesheetRange(getConfig());
+  renderTimesheet();
+}
+window.toggleTimesheetMonth = toggleTimesheetMonth;
+
+function getTimesheetPeriodLabel(cfg = getConfig()) {
+  const months = getTimesheetSelectedMonths(cfg.year);
+  return months.map(m => `${MONTHS_AR[m - 1] || m} ${cfg.year}`).join(' + ');
+}
+
+function recordBelongsToTimesheetRange(rec, cfg = getConfig()) {
+  const p = getRecordPeriod(rec, cfg);
+  return p.year === Number(cfg.year) && getTimesheetSelectedMonths(cfg.year).includes(p.month);
+}
+
+function recordsForTimesheetRange(emp, cfg = getConfig()) {
+  if (!emp || !Array.isArray(emp.records)) return [];
+  return emp.records
+    .filter(rec => recordBelongsToTimesheetRange(rec, cfg))
+    .slice()
+    .sort((a, b) => {
+      const ap = getRecordPeriod(a, cfg);
+      const bp = getRecordPeriod(b, cfg);
+      return (ap.year - bp.year) || (ap.month - bp.month) || (ap.day - bp.day);
+    });
+}
+
 function employeeHasRecordsForMonth(emp, year, month) {
   return recordsForMonth(emp, year, month).length > 0;
 }
@@ -311,8 +420,22 @@ function employeeIndexesForMonth(year, month) {
     .map(item => item.idx);
 }
 
+function employeeIndexesForTimesheetRange(cfg = getConfig()) {
+  return employees
+    .map((emp, idx) => ({ emp, idx }))
+    .filter(item => recordsForTimesheetRange(item.emp, cfg).length > 0)
+    .map(item => item.idx);
+}
+
 function ensureSelectedEmployeeForMonth(year, month) {
   const visibleIndexes = employeeIndexesForMonth(year, month);
+  if (visibleIndexes.length === 0) return false;
+  if (!visibleIndexes.includes(selectedEmpIdx)) selectedEmpIdx = visibleIndexes[0];
+  return true;
+}
+
+function ensureSelectedEmployeeForTimesheetRange(cfg = getConfig()) {
+  const visibleIndexes = employeeIndexesForTimesheetRange(cfg);
   if (visibleIndexes.length === 0) return false;
   if (!visibleIndexes.includes(selectedEmpIdx)) selectedEmpIdx = visibleIndexes[0];
   return true;
@@ -461,22 +584,45 @@ function defaultFinanceState() {
     cashOpening: 0,
     accounts: [
       { id: 'cash_workshop',         code: '1001', name: 'قاصة الورشة',               type: 'asset',     normal_side: 'debit'  },
+      { id: 'bank_account',          code: '1002', name: 'حساب بنكي / تحويلات',       type: 'asset',     normal_side: 'debit'  },
+      { id: 'employee_cash_custody', code: '1003', name: 'عهد نقدية عند موظفين',      type: 'asset',     normal_side: 'debit'  },
       { id: 'receivables_customers', code: '1101', name: 'ذمم العملاء',               type: 'asset',     normal_side: 'debit'  },
+      { id: 'employee_advances',     code: '1102', name: 'سلف الموظفين',              type: 'asset',     normal_side: 'debit'  },
+      { id: 'employee_meal_clearing', code: '1109', name: 'وسيط توزيع طعام الموظفين', type: 'asset',     normal_side: 'debit'  },
       { id: 'inventory_stock',       code: '1200', name: 'مخزون مواد',                type: 'asset',     normal_side: 'debit'  },
+      { id: 'fixed_assets_tools_machines', code: '1300', name: 'عدد ومعدات ومكائن',   type: 'asset',     normal_side: 'debit'  },
+      { id: 'accumulated_depreciation', code: '1390', name: 'مجمع إهلاك',             type: 'asset',     normal_side: 'credit' },
+      { id: 'payables_suppliers',    code: '2001', name: 'ذمم الموردين',              type: 'liability', normal_side: 'credit' },
+      { id: 'customer_deposits',     code: '2002', name: 'دفعات مقدمة من العملاء',    type: 'liability', normal_side: 'credit' },
       { id: 'accrued_payroll',       code: '2100', name: 'رواتب مستحقة',              type: 'liability', normal_side: 'credit' },
       { id: 'payables_people',       code: '2101', name: 'ذمم الأشخاص/الموظفين',     type: 'liability', normal_side: 'credit' },
+      { id: 'owner_loans_funding',   code: '2300', name: 'تمويل/قروض من المالك',      type: 'liability', normal_side: 'credit' },
+      { id: 'owner_capital',         code: '3000', name: 'رأس مال المالك',             type: 'equity',    normal_side: 'credit' },
+      { id: 'owner_drawings',        code: '3100', name: 'مسحوبات المالك',             type: 'equity',    normal_side: 'debit'  },
+      { id: 'retained_earnings',     code: '3200', name: 'أرباح/خسائر مرحلة',         type: 'equity',    normal_side: 'credit' },
+      { id: 'opening_balances',      code: '3900', name: 'أرصدة افتتاحية',             type: 'equity',    normal_side: 'credit' },
       { id: 'income_sales',          code: '4001', name: 'واردات مبيعات/خدمات',      type: 'income',    normal_side: 'credit' },
+      { id: 'income_projects',       code: '4002', name: 'إيرادات مشاريع',             type: 'income',    normal_side: 'credit' },
+      { id: 'other_income',          code: '4900', name: 'إيرادات أخرى',               type: 'income',    normal_side: 'credit' },
       { id: 'cogs_materials',        code: '5000', name: 'تكلفة المواد المباعة',      type: 'expense',   normal_side: 'debit'  },
       { id: 'expense_payroll',       code: '5101', name: 'رواتب وأجور',               type: 'expense',   normal_side: 'debit'  },
+      { id: 'expense_employee_benefits', code: '5102', name: 'منافع وطعام الموظفين',  type: 'expense',   normal_side: 'debit'  },
       { id: 'expense_materials',     code: '5201', name: 'مواد تشغيل',               type: 'expense',   normal_side: 'debit'  },
       { id: 'expense_tools',         code: '5202', name: 'عدد وصيانة',               type: 'expense',   normal_side: 'debit'  },
+      { id: 'rent_expense',          code: '5301', name: 'إيجار',                     type: 'expense',   normal_side: 'debit'  },
+      { id: 'utilities_expense',     code: '5302', name: 'كهرباء وماء',               type: 'expense',   normal_side: 'debit'  },
+      { id: 'transport_fuel_expense', code: '5303', name: 'نقل ووقود',                type: 'expense',   normal_side: 'debit'  },
+      { id: 'marketing_ads_expense', code: '5401', name: 'تسويق وإعلانات',            type: 'expense',   normal_side: 'debit'  },
       { id: 'expense_general',       code: '5299', name: 'مصروفات عامة',             type: 'expense',   normal_side: 'debit'  },
+      { id: 'adjustments_differences', code: '5900', name: 'فروقات وتسويات',          type: 'expense',   normal_side: 'debit'  },
       { id: 'vat_payable',           code: '2200', name: 'ضريبة القيمة المضافة المستحقة (VAT)', type: 'liability', normal_side: 'credit' },
       { id: 'suspense',              code: '9999', name: 'حساب الاستيداع',           type: 'asset',     normal_side: 'debit'  },
     ],
     categories: {
       expense: [
         { id: 'cat_payroll', name: 'رواتب', accountId: 'expense_payroll' },
+        { id: 'cat_employee_advance', name: 'سلف موظفين', accountId: 'employee_advances' },
+        { id: 'cat_employee_benefits', name: 'طعام ومنافع', accountId: 'expense_employee_benefits' },
         { id: 'cat_materials', name: 'مواد', accountId: 'expense_materials' },
         { id: 'cat_tools', name: 'صيانة وعدد', accountId: 'expense_tools' },
         { id: 'cat_transport', name: 'نقل وتجهيز', accountId: 'expense_general' },
@@ -510,7 +656,7 @@ function ensureFinance() {
     finance.accounts = defaults.accounts;
   } else {
     defaults.accounts.forEach(def => {
-      const existing = finance.accounts.find(a => a.id === def.id);
+      const existing = finance.accounts.find(a => a.id === def.id || (def.code && a.code === def.code));
       if (!existing) {
         finance.accounts.push(def);
       } else if (!existing.normal_side) {
@@ -518,9 +664,22 @@ function ensureFinance() {
       }
     });
   }
+  finance.accounts.forEach(account => {
+    if (!account.key) account.key = account.id;
+    if (!account.nameAr) account.nameAr = account.name;
+    if (!account.normalSide) account.normalSide = account.normal_side || 'debit';
+    if (account.active === undefined) account.active = true;
+  });
   finance.categories = finance.categories || {};
-  finance.categories.expense = Array.isArray(finance.categories.expense) && finance.categories.expense.length ? finance.categories.expense : defaults.categories.expense;
-  finance.categories.income = Array.isArray(finance.categories.income) && finance.categories.income.length ? finance.categories.income : defaults.categories.income;
+  finance.categories.expense = Array.isArray(finance.categories.expense) ? finance.categories.expense : [];
+  finance.categories.income = Array.isArray(finance.categories.income) ? finance.categories.income : [];
+  ['expense', 'income'].forEach(type => {
+    defaults.categories[type].forEach(def => {
+      const existing = finance.categories[type].find(c => c.id === def.id);
+      if (!existing) finance.categories[type].push(def);
+      else if (!existing.accountId) existing.accountId = def.accountId;
+    });
+  });
   finance.departments = Array.isArray(finance.departments) && finance.departments.length ? finance.departments : defaults.departments;
   finance.parties = Array.isArray(finance.parties) ? finance.parties : [];
   finance.customers = Array.isArray(finance.customers) ? finance.customers : [];
@@ -573,12 +732,62 @@ function getCashboxSignedAmount(tx) {
   return 0;
 }
 
-function getCashBalance() {
+// SOURCE OF TRUTH for the real cashbox balance: account_moves (the v6 ledger),
+// never finance.transactions/finance.cashOpening. Audit fix 2026-07-04: the
+// previous implementation summed only legacy `finance.transactions` (sourceType
+// 'cashbox') on top of `finance.cashOpening`, so once payroll accrual/advance-
+// settlement/payment/adjustment moves started posting straight to account_moves
+// (they never write a finance.transactions row) the two numbers silently
+// diverged — the cashbox screen kept showing the pre-payroll balance while the
+// real ledger had already moved. The opening balance is itself now a posted
+// account_move (dated 2026-02-14, sourceCanonicalKey
+// "OPENING_CASHBOX_LEGACY_2026_02_14_997000", origin "opening-balance/cash_workshop"),
+// so summing account_moves alone already includes it; do NOT also add
+// finance.cashOpening here or the opening balance gets double-counted.
+// See getLegacyCashboxReconciliationSnapshot() below for the separate,
+// clearly-labeled legacy/import-time view — the two must never be merged
+// into one number.
+function getCashBalance(accountId = 'cash_workshop') {
+  const db = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+  const moves = Array.isArray(db.account_moves) ? db.account_moves : [];
+  let balance = 0;
+  moves.forEach(move => {
+    if (move.state !== 'posted') return;
+    (move.line_ids || []).forEach(line => {
+      if (line.account_id === accountId) balance += Number(line.debit || 0) - Number(line.credit || 0);
+    });
+  });
+  return balance;
+}
+
+// LEGACY CASHBOX RECONCILIATION (audit 2026-07-04): a separate, read-only
+// diagnostic snapshot of the pre-migration numbers, for reconciliation only —
+// NEVER use this as the authoritative balance and never add its "importedFinal"
+// to getCashBalance()'s result (that would double count the opening balance,
+// which is exactly the bug this audit fixed). It intentionally mirrors
+// finance.cashOpening + the legacy finance.transactions cashbox rows exactly
+// as they stood at import time, so a human can visually reconcile "what the
+// Excel/legacy cashbox said" against "what the general ledger says now"
+// (getCashBalance()) — the two are expected to diverge once payroll/adjustment
+// moves post directly to account_moves without a mirrored finance.transactions row.
+function getLegacyCashboxReconciliationSnapshot() {
   ensureFinance();
-  return finance.transactions.reduce((sum, tx) => {
-    if (tx.sourceType !== 'cashbox') return sum;
-    return sum + getCashboxSignedAmount(tx);
-  }, asMoney(finance.cashOpening));
+  const openingMeta = asMoney(finance.cashOpening);
+  let importedCashIn = 0;
+  let importedCashOut = 0;
+  finance.transactions.forEach(tx => {
+    if (tx.sourceType !== 'cashbox') return;
+    const signed = getCashboxSignedAmount(tx);
+    if (signed > 0) importedCashIn += signed;
+    else importedCashOut += Math.abs(signed);
+  });
+  return {
+    openingMeta,
+    importedCashIn,
+    importedCashOut,
+    importedFinal: openingMeta + importedCashIn - importedCashOut,
+    note: 'Legacy/import-time reconciliation only — NOT the authoritative balance. See getCashBalance() (account_moves) for the real current cashbox figure.',
+  };
 }
 
 function getCashSummaryForDate(date) {
@@ -839,7 +1048,10 @@ function getEmployeeNominalSalary(employee, fallback = 0) {
 function calculateSalaryForEmployee(employee, config) {
   const { year, month } = config;
   const nominalSalary = getEmployeeNominalSalary(employee, config.nominalSalary);
-  applySystemPayrollRules(employee, year, month, false);
+  // skipSystemRules: read-only callers (timesheet month docs / print preview) must never
+  // rewrite record statuses as a side effect of merely rendering. Explicit actions
+  // (تطبيق القوانين، الحاسبة، التقارير) keep the legacy behavior.
+  if (!config.skipSystemRules) applySystemPayrollRules(employee, year, month, false);
 
   const PS = getPayrollSettings();
   const shift = getEmployeeShift(employee);
@@ -862,7 +1074,7 @@ function calculateSalaryForEmployee(employee, config) {
   let fridayOTHours = 0, fridayOTValue = 0;      // Friday work OT (×2)
   let rawLatenessDeduction = 0, totalLatenessMinutes = 0;
   let earlyDeduction = 0, absenceDeduction = 0;
-  let manualPenalty = 0, damageTotal = 0, bonusTotal = 0, currentAdvance = 0;
+  let manualPenalty = 0, damageTotal = 0, bonusTotal = 0, currentAdvance = 0, officialAdvance = 0;
   let attendanceDays = 0, leaveDays = 0, absentDays = 0, fridayWorkedDays = 0;
   let hourlyExcusedHours = 0, hourlyExcusedPay = 0;
   const lateDays = []; // chronological lateness for monthly grace allocation + markers
@@ -870,9 +1082,10 @@ function calculateSalaryForEmployee(employee, config) {
   records.forEach(r => {
     const statusType = normalizeStatus(r.status);
     const isFridayDate = isFriday(year, month, r.day);
-    const d = getDailyCalc(r, employee);
+    const d = getDailyCalc(r, employee, { ...config, nominalSalary });
 
     currentAdvance += r.advance || 0;
+    officialAdvance += d.officialAdvanceApplied || 0;
     manualPenalty += r.penalty || 0;
     bonusTotal += r.bonus || 0;
     damageTotal += r.damage || 0;
@@ -928,11 +1141,16 @@ function calculateSalaryForEmployee(employee, config) {
 
   const totalOvertimeValue = overtimeValue + fridayOTValue;
   const previousAdvance = employee.prevAdvance || 0;
-  const totalAdvance = currentAdvance + previousAdvance;
+  const officialAdvanceSummary = getEmployeeOfficialAdvancesSummary(employee, year, month);
+  const recordedAdvanceDays = new Set(records.map(r => Number(getRecordPeriod(r, config).day)).filter(Boolean));
+  officialAdvance += officialAdvanceSummary.rows
+    .filter(item => !recordedAdvanceDays.has(Number(String(item.date || '').slice(8, 10))))
+    .reduce((sum, item) => sum + asMoney(item.amount), 0);
+  const totalAdvance = currentAdvance + previousAdvance + officialAdvance;
 
   const automaticPenalties = latenessDeduction + earlyDeduction + absenceDeduction;
   const totalEarnings = baseSalary + allowances + totalOvertimeValue + fridayCompensation + bonusTotal;
-  const totalDeductions = latenessDeduction + earlyDeduction + absenceDeduction + currentAdvance + previousAdvance + manualPenalty + damageTotal;
+  const totalDeductions = latenessDeduction + earlyDeduction + absenceDeduction + currentAdvance + previousAdvance + officialAdvance + manualPenalty + damageTotal;
   const salaryDueDeductions = latenessDeduction + earlyDeduction + absenceDeduction + manualPenalty + damageTotal;
 
   return {
@@ -949,7 +1167,10 @@ function calculateSalaryForEmployee(employee, config) {
     earlyDeduction, leaveDeduction: 0, absenceDeduction,
     fridayCompensation, fridayWorkedDays, eligibleFridays, autoFridayPenalty: 0,
     missedFridayCount: Math.floor((absentDays + leaveDays) / (PS.fridayLossEveryDays || 6)), compensationDays: 0,
-    currentAdvance, previousAdvance, totalAdvance,
+    currentAdvance, officialAdvance, officialAdvanceCount: officialAdvanceSummary.rows.length,
+    officialAdvanceCash: officialAdvanceSummary.cashTotal,
+    officialAdvanceFood: officialAdvanceSummary.foodTotal,
+    previousAdvance, totalAdvance,
     penalty: manualPenalty, totalPenalty: manualPenalty,
     damage: damageTotal, totalDamage: damageTotal,
     bonus: bonusTotal, totalBonus: bonusTotal,
@@ -964,8 +1185,9 @@ function calculateSalaryForEmployee(employee, config) {
 
 // ─── Daily Calculation for Table Display ───
 // Returns: { dayPay, allowance, otHours, otValue, late, earlyDeduction, deduction, total }
-function getDailyCalc(rec, emp) {
-  const cfg = getConfig();
+function getDailyCalc(rec, emp, configOverride = null) {
+  const recordPeriod = getRecordPeriod(rec, configOverride || getConfig());
+  const cfg = { ...getConfig(), ...(configOverride || {}), year: recordPeriod.year, month: recordPeriod.month };
   cfg.nominalSalary = emp.salary || cfg.nominalSalary;
   const totalDays = getDaysInMonth(cfg.year, cfg.month);
   let fridayCount = 0;
@@ -1106,16 +1328,20 @@ function getDailyCalc(rec, emp) {
   }
 
   // Total penalties for this day (surfaced in the "إجمالي الغرامات" column).
+  const manualAdvance = Number(rec.advance) || 0;
+  const officialAdvanceApplied = getOfficialAdvanceAppliedForRecord(emp, rec, cfg);
+  const advanceTotal = manualAdvance + officialAdvanceApplied;
   const penaltyTotal = late + earlyDeduction + deduction + (rec.penalty || 0) + (rec.damage || 0);
 
   const total = dayPay + allowance + otValue + (rec.bonus || 0)
               - late - earlyDeduction - deduction
-              - (rec.penalty || 0) - (rec.advance || 0) - (rec.damage || 0);
+              - (rec.penalty || 0) - advanceTotal - (rec.damage || 0);
   return {
     dayPay, allowance, otHours, otValue, late, earlyDeduction, deduction,
     lateMinutes, earlyMinutes, penaltyTotal,
     isAttendanceDay, isFridayWorked, isPaidOff,
-    hourlyRate, dailyRate, allowanceRate, total
+    hourlyRate, dailyRate, allowanceRate,
+    manualAdvance, officialAdvanceApplied, advanceTotal, total
   };
 }
 
@@ -1137,12 +1363,868 @@ function getEmployeeMonthlyPayrollSummary(emp, cfg) {
     lateHours: result.totalLatenessHours || 0,
     penalties: (result.totalPenalty || 0) + (result.totalDamage || 0) + (result.automaticPenalties || 0),
     advances: result.totalAdvance || 0,
+    officialAdvances: result.officialAdvance || 0,
+    manualAdvances: result.currentAdvance || 0,
+    previousAdvance: result.previousAdvance || 0,
     bonuses: result.totalBonus || result.bonus || 0,
     nominalSalary: result.nominalSalary || empCfg.nominalSalary,
     finalNet: result.finalSalary || 0,
     payable: result.salaryDue || result.finalSalary || 0,
     reservedBalance: balanceAfterNoPayment
   };
+}
+
+function calculateTimesheetRangeResult(emp, records, cfg = getConfig()) {
+  const nominalSalary = getEmployeeNominalSalary(emp, cfg.nominalSalary);
+  const result = {
+    totalDays: records.length,
+    fridayCount: 0,
+    workingDays: 0,
+    dailyRate: 0,
+    hourlyRate: 0,
+    allowanceRate: 0,
+    attendanceDays: 0,
+    leaveDays: 0,
+    absentDays: 0,
+    baseSalary: 0,
+    allowances: 0,
+    overtimeHours: 0,
+    overtimeValue: 0,
+    regularOvertimeHours: 0,
+    fridayOTHours: 0,
+    fridayOTValue: 0,
+    fridayWorkOT: 0,
+    totalOvertime: 0,
+    totalOvertimeValue: 0,
+    latenessDeduction: 0,
+    totalLatenessDeduction: 0,
+    totalLatenessHours: 0,
+    earlyDeduction: 0,
+    absenceDeduction: 0,
+    fridayCompensation: 0,
+    fridayWorkedDays: 0,
+    eligibleFridays: 0,
+    currentAdvance: 0,
+    officialAdvance: 0,
+    previousAdvance: asMoney(emp?.prevAdvance),
+    penalty: 0,
+    totalPenalty: 0,
+    damage: 0,
+    totalDamage: 0,
+    bonus: 0,
+    totalBonus: 0,
+    automaticPenalties: 0,
+    totalEarnings: 0,
+    totalDeductions: 0,
+    salaryDueDeductions: 0,
+    salaryDue: 0,
+    nominalSalary,
+    rangeNetBeforeBalance: 0,
+    graceMinutesUsed: 0,
+    graceByKey: {},
+    graceByDay: {},
+  };
+
+  records.forEach(rec => {
+    const p = getRecordPeriod(rec, cfg);
+    const rowCfg = { ...cfg, year: p.year, month: p.month, nominalSalary };
+    const d = getDailyCalc(rec, emp, rowCfg);
+    const statusType = normalizeStatus(rec.status);
+    const key = `${p.year}-${p.month}-${p.day}`;
+
+    if (statusType === 'leave') result.leaveDays += 1;
+    else if (statusType === 'absent') result.absentDays += 1;
+    else if (statusType === 'friday_work') result.fridayWorkedDays += 1;
+    else if (d.isAttendanceDay) result.attendanceDays += 1;
+
+    if (isFriday(p.year, p.month, p.day)) result.fridayCount += 1;
+    else result.workingDays += 1;
+
+    result.dailyRate = d.dailyRate || result.dailyRate;
+    result.hourlyRate = d.hourlyRate || result.hourlyRate;
+    result.allowanceRate = d.allowanceRate || result.allowanceRate;
+    result.baseSalary += d.dayPay || 0;
+    result.allowances += d.allowance || 0;
+    result.overtimeHours += d.isFridayWorked ? 0 : (d.otHours || 0);
+    result.overtimeValue += d.isFridayWorked ? 0 : (d.otValue || 0);
+    result.fridayOTHours += d.isFridayWorked ? (d.otHours || 0) : 0;
+    result.fridayOTValue += d.isFridayWorked ? (d.otValue || 0) : 0;
+    result.latenessDeduction += d.late || 0;
+    result.earlyDeduction += d.earlyDeduction || 0;
+    result.absenceDeduction += d.deduction || 0;
+    result.currentAdvance += d.manualAdvance || 0;
+    result.officialAdvance += d.officialAdvanceApplied || 0;
+    result.penalty += Number(rec.penalty) || 0;
+    result.damage += Number(rec.damage) || 0;
+    result.bonus += Number(rec.bonus) || 0;
+    result.rangeNetBeforeBalance += d.total || 0;
+    if (d.lateMinutes > 0) result.graceByKey[key] = 0;
+  });
+
+  result.regularOvertimeHours = result.overtimeHours;
+  result.fridayWorkOT = result.fridayOTHours;
+  result.totalOvertime = result.overtimeHours + result.fridayOTHours;
+  result.totalOvertimeValue = result.overtimeValue + result.fridayOTValue;
+  result.totalLatenessDeduction = result.latenessDeduction;
+  result.totalLatenessHours = result.hourlyRate > 0 ? result.latenessDeduction / result.hourlyRate : 0;
+  result.totalPenalty = result.penalty;
+  result.totalDamage = result.damage;
+  result.totalBonus = result.bonus;
+  result.automaticPenalties = result.latenessDeduction + result.earlyDeduction + result.absenceDeduction;
+  result.salaryDueDeductions = result.automaticPenalties + result.penalty + result.damage;
+  result.totalEarnings = result.baseSalary + result.allowances + result.totalOvertimeValue + result.fridayCompensation + result.bonus;
+  result.totalDeductions = result.salaryDueDeductions + result.currentAdvance + result.officialAdvance + result.previousAdvance;
+  result.salaryDue = result.rangeNetBeforeBalance;
+  result.finalSalary = result.rangeNetBeforeBalance - result.previousAdvance;
+  result.totalAdvance = result.currentAdvance + result.officialAdvance + result.previousAdvance;
+  return result;
+}
+
+function getEmployeeTimesheetRangeSummary(emp, cfg = getConfig()) {
+  if (!emp) return null;
+  const records = recordsForTimesheetRange(emp, cfg);
+  const result = calculateTimesheetRangeResult(emp, records, cfg);
+  const attendanceHours = records.reduce((sum, rec) => sum + (isCalendarAttendanceRecord(rec) ? getRecordHours(rec) : 0), 0);
+  return {
+    employee: emp,
+    records,
+    result,
+    attendanceHours,
+    overtimeHours: result.totalOvertime || 0,
+    fridayWorkedDays: result.fridayWorkedDays || 0,
+    eligibleFridays: result.eligibleFridays || 0,
+    lateHours: result.totalLatenessHours || 0,
+    penalties: (result.totalPenalty || 0) + (result.totalDamage || 0) + (result.automaticPenalties || 0),
+    advances: result.totalAdvance || 0,
+    officialAdvances: result.officialAdvance || 0,
+    manualAdvances: result.currentAdvance || 0,
+    previousAdvance: result.previousAdvance || 0,
+    bonuses: result.totalBonus || result.bonus || 0,
+    nominalSalary: result.nominalSalary || getEmployeeNominalSalary(emp, cfg.nominalSalary),
+    finalNet: result.finalSalary || 0,
+    payable: result.salaryDue || result.finalSalary || 0,
+    reservedBalance: calculateBalanceAfterPayment(result, 0),
+  };
+}
+
+function payrollPeriodKey(year, month) {
+  return `${Number(year)}-${String(Number(month)).padStart(2, '0')}`;
+}
+
+function ensurePayrollCollections(db) {
+  if (!db || typeof db !== 'object') return db;
+  if (!Array.isArray(db.payroll_periods)) db.payroll_periods = [];
+  if (!Array.isArray(db.employee_payroll_closings)) db.employee_payroll_closings = [];
+  if (!Array.isArray(db.payroll_payments)) db.payroll_payments = [];
+  if (!Array.isArray(db.payroll_adjustments)) db.payroll_adjustments = [];
+  if (!Array.isArray(db.audit_log)) db.audit_log = [];
+  return db;
+}
+
+// ─── Operation locks (Production Hardening Final Lock Sprint, 2026-07-04) ───
+// Server/DB-backed idempotency. Supersedes the previous sprint's in-memory
+// Set-based lock, which only protected a single browser tab — this calls the
+// server's /api/operation-lock/* endpoints, backed by a real SQLite table
+// (`operation_locks`) whose lockKey is the PRIMARY KEY. Acquiring a lock is a
+// single atomic server-side INSERT (see server.js), which is what actually
+// closes the cross-tab/cross-device race: two "simultaneous" browser tabs (or
+// two devices) both calling acquire for the same lockKey cannot both succeed,
+// because Node processes each request's synchronous SQLite calls to
+// completion without interleaving, and the second INSERT hits a real PRIMARY
+// KEY violation.
+//
+// lockKey MUST be a fixed, deterministic string derived from the operation's
+// own identity (period id, closing id + amount + date, sourceCanonicalKey,
+// etc.) — never a random id — so that retries and re-invocations for the
+// SAME logical operation always collide with the SAME row.
+async function withOperationLock(lockKey, operationType, fn) {
+  const createdBy = window.PentagonAuth?.getCurrentUser?.()?.id || 'system';
+  const acquireRes = await fetch('/api/operation-lock/acquire', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lockKey, operationType, sourceCanonicalKey: lockKey, createdBy }),
+  }).then(r => r.json());
+
+  async function logLockAudit(result) {
+    try {
+      await PentagonDB.mutate(db => {
+        if (!Array.isArray(db.audit_log)) db.audit_log = [];
+        db.audit_log.push({
+          id: makeId('audit_lock'),
+          action: 'operation_lock_attempt',
+          entityType: 'operation_lock',
+          entityId: lockKey,
+          createdAt: new Date().toISOString(),
+          userId: createdBy,
+          reason: `operationType=${operationType} result=${result}`,
+          afterSnapshot: { lockKey, operationType, result, acquireRes },
+        });
+      });
+    } catch (_) { /* audit best-effort */ }
+  }
+
+  if (!acquireRes.acquired) {
+    if (acquireRes.reason === 'reused_existing') {
+      // A previous attempt for this exact lockKey already completed
+      // successfully elsewhere (another tab/device/retry). Re-run fn(): every
+      // protected operation has its OWN idempotency check (existing move by
+      // origin/sourceCanonicalKey), so this returns the already-created
+      // result instead of creating a duplicate.
+      await logLockAudit('reused_existing');
+      return fn();
+    }
+    // 'blocked_in_progress' or 'stale_lock_needs_manual_check' — refuse to
+    // proceed rather than guess.
+    await logLockAudit('duplicate_attempt_rejected');
+    const err = new Error(`عملية أخرى قيد التنفيذ بالفعل أو تحتاج مراجعة يدوية (${acquireRes.reason}) لنفس المفتاح: ${lockKey}`);
+    err.lockResult = acquireRes;
+    throw err;
+  }
+
+  try {
+    const result = await fn();
+    const relatedMoveId = result?.move?.id || result?.accrualMove?.id || result?.moveId || result?.id || '';
+    await fetch('/api/operation-lock/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lockKey, relatedMoveId }),
+    }).catch(() => {});
+    return result;
+  } catch (e) {
+    await fetch('/api/operation-lock/fail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lockKey, errorMessage: e.message || String(e) }),
+    }).catch(() => {});
+    throw e;
+  }
+}
+
+function getPayrollDataCache() {
+  return window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+}
+
+function getEmployeeAdvanceRowsForPeriod(db, emp, year, month, options = {}) {
+  ensurePayrollCollections(db);
+  const period = payrollPeriodKey(year, month);
+  const empId = emp?.id || '';
+  const empName = emp?.name || '';
+  return (db.employee_advances || []).filter(item => {
+    if (!options.includeNeedsReview && item.status === 'needs_review') return false;
+    if (String(item.period || '').slice(0, 7) !== period) return false;
+    if (empId && item.employeeId === empId) return true;
+    return empName && item.employeeNameSnapshot === empName;
+  });
+}
+
+function getOfficialAdvancesForEmployeePeriod(db, emp, year, month) {
+  return getEmployeeAdvanceRowsForPeriod(db, emp, year, month, { includeNeedsReview: false });
+}
+
+function getEmployeeOfficialAdvancesSummary(emp, year, month, db = getPayrollDataCache()) {
+  const rows = getOfficialAdvancesForEmployeePeriod(db, emp, year, month);
+  return {
+    rows,
+    total: rows.reduce((sum, item) => sum + asMoney(item.amount), 0),
+    cashTotal: rows.filter(item => item.type === 'cash').reduce((sum, item) => sum + asMoney(item.amount), 0),
+    foodTotal: rows.filter(item => item.type === 'food').reduce((sum, item) => sum + asMoney(item.amount), 0),
+  };
+}
+
+function getTimesheetOfficialAdvanceDayMap(emp, year, month) {
+  const rows = getOfficialAdvancesForEmployeePeriod(getPayrollDataCache(), emp, year, month);
+  return rows.reduce((map, item) => {
+    const day = Number(String(item.date || '').slice(8, 10));
+    if (!day) return map;
+    if (!map.has(day)) map.set(day, []);
+    map.get(day).push(item);
+    return map;
+  }, new Map());
+}
+
+function getOfficialAdvanceRowsForRecord(emp, rec, cfg = getConfig()) {
+  const period = getRecordPeriod(rec, cfg);
+  if (!period.day) return [];
+  return getOfficialAdvancesForEmployeePeriod(getPayrollDataCache(), emp, period.year, period.month)
+    .filter(item => Number(String(item.date || '').slice(8, 10)) === period.day);
+}
+
+function getOfficialAdvanceTotalForRecord(emp, rec, cfg = getConfig()) {
+  return getOfficialAdvanceRowsForRecord(emp, rec, cfg)
+    .reduce((sum, item) => sum + asMoney(item.amount), 0);
+}
+
+function getOfficialAdvanceAppliedForRecord(emp, rec, cfg = getConfig()) {
+  if (rec?.officialAdvanceOverride !== undefined && rec.officialAdvanceOverride !== null && rec.officialAdvanceOverride !== '') {
+    return asMoney(rec.officialAdvanceOverride);
+  }
+  return getOfficialAdvanceTotalForRecord(emp, rec, cfg);
+}
+
+function buildEmployeePayrollClosingSnapshot(db, emp, year, month, payrollPeriodId) {
+  const cfg = { ...getConfig(), year: Number(year), month: Number(month), nominalSalary: getEmployeeNominalSalary(emp, getConfig().nominalSalary) };
+  const summary = getEmployeeMonthlyPayrollSummary(emp, cfg);
+  const result = summary?.result || {};
+  const officialAdvances = getOfficialAdvancesForEmployeePeriod(db, emp, year, month);
+  const advanceSettlementAmount = officialAdvances.reduce((sum, item) => sum + asMoney(item.amount), 0);
+  const netAccruedSalary = Math.round(result.salaryDue || result.finalSalary || 0);
+  const previousEmployeeDebt = Math.max(0, asMoney(emp.prevAdvance));
+  const previousCompanyPayable = Math.max(0, -asMoney(emp.prevAdvance));
+  const netPayableAfterAdvanceSettlement = netAccruedSalary - advanceSettlementAmount - previousEmployeeDebt + previousCompanyPayable;
+  return {
+    id: makeId('payclose'),
+    payrollPeriodId,
+    employeeId: emp.id || '',
+    employeeNameSnapshot: emp.name || '',
+    baseSalarySnapshot: getEmployeeNominalSalary(emp, cfg.nominalSalary),
+    attendanceDays: result.attendanceDays || 0,
+    absenceDays: result.absentDays || 0,
+    fridayWorkDays: result.fridayWorkedDays || 0,
+    overtimeHours: result.totalOvertime || 0,
+    lateMinutes: Math.round((result.totalLatenessHours || 0) * 60),
+    grossSalary: Math.round(result.totalEarnings || 0),
+    salaryDeductions: Math.round(result.salaryDueDeductions || 0),
+    bonuses: Math.round(result.totalBonus || result.bonus || 0),
+    penalties: Math.round((result.totalPenalty || result.penalty || 0) + (result.automaticPenalties || 0)),
+    damageDeductions: Math.round(result.totalDamage || result.damage || 0),
+    currentPeriodAdvances: advanceSettlementAmount,
+    legacyTimesheetAdvancesSnapshot: Math.round(result.currentAdvance || 0),
+    previousEmployeeDebt,
+    previousCompanyPayable,
+    netAccruedSalary,
+    advanceSettlementAmount,
+    netPayableAfterAdvanceSettlement,
+    paidAmount: 0,
+    remainingAmount: netPayableAfterAdvanceSettlement,
+    balanceDirection: netPayableAfterAdvanceSettlement > 0 ? 'company_owes_employee' : netPayableAfterAdvanceSettlement < 0 ? 'employee_owes_company' : 'settled',
+    status: 'calculated',
+    lockedSnapshotJson: JSON.stringify({ employee: emp, cfg, summary, officialAdvances }, null, 2),
+    accrualMoveId: '',
+    advanceSettlementMoveId: '',
+    settlementMoveIds: [],
+    createdAt: new Date().toISOString(),
+    approvedAt: '',
+    postedAt: '',
+  };
+}
+
+async function calculatePayrollPeriod(year, month) {
+  const db = window.PentagonDB ? await PentagonDB.load() : { employee_advances: [] };
+  ensurePayrollCollections(db);
+  const period = payrollPeriodKey(year, month);
+  const closings = employees
+    .filter(emp => recordsForMonth(emp, Number(year), Number(month)).length)
+    .map(emp => buildEmployeePayrollClosingSnapshot(db, emp, Number(year), Number(month), `period_${period}`));
+  return {
+    period,
+    employeeCount: closings.length,
+    totalAccrued: closings.reduce((sum, row) => sum + asMoney(row.netAccruedSalary), 0),
+    totalAdvances: closings.reduce((sum, row) => sum + asMoney(row.advanceSettlementAmount), 0),
+    totalPayableAfterAdvances: closings.reduce((sum, row) => sum + asMoney(row.netPayableAfterAdvanceSettlement), 0),
+    closings,
+  };
+}
+
+async function closePayrollPeriod(year, month, options = {}) {
+  if (!window.PentagonDB) throw new Error('PentagonDB غير متاح');
+  const periodKey = payrollPeriodKey(year, month);
+  const preview = await calculatePayrollPeriod(year, month);
+  if (options.dryRun) return preview;
+  let savedPeriod;
+  await PentagonDB.mutate(db => {
+    ensurePayrollCollections(db);
+    let period = db.payroll_periods.find(item => Number(item.year) === Number(year) && Number(item.month) === Number(month));
+    if (period && ['closed', 'posted', 'locked'].includes(period.status)) throw new Error(`فترة الرواتب ${periodKey} مغلقة مسبقاً`);
+    if (!period) {
+      period = {
+        id: makeId('payperiod'),
+        year: Number(year),
+        month: Number(month),
+        startDate: `${periodKey}-01`,
+        endDate: new Date(Number(year), Number(month), 0).toISOString().slice(0, 10),
+        status: 'closed',
+        source: 'payroll_engine',
+        closedAt: new Date().toISOString(),
+        closedBy: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+        postedMoveId: '',
+        advanceSettlementMoveId: '',
+        notes: options.notes || '',
+      };
+      db.payroll_periods.push(period);
+    } else {
+      period.status = 'closed';
+      period.closedAt = new Date().toISOString();
+      period.closedBy = window.PentagonAuth?.getCurrentUser?.()?.id || 'system';
+    }
+    db.employee_payroll_closings = db.employee_payroll_closings.filter(row => row.payrollPeriodId !== period.id);
+    preview.closings.forEach(row => {
+      row.payrollPeriodId = period.id;
+      row.status = 'approved';
+      row.approvedAt = new Date().toISOString();
+      db.employee_payroll_closings.push(row);
+    });
+    db.audit_log.push({
+      id: makeId('audit_payroll_close'),
+      action: 'payroll_period_closed',
+      entityType: 'payroll_period',
+      entityId: period.id,
+      createdAt: new Date().toISOString(),
+      userId: period.closedBy,
+      reason: options.reason || 'Payroll period closing',
+      afterSnapshot: { period: periodKey, employeeCount: preview.employeeCount, totalAccrued: preview.totalAccrued, totalAdvances: preview.totalAdvances },
+    });
+    savedPeriod = period;
+  });
+  return { ...preview, payrollPeriod: savedPeriod };
+}
+
+async function postPayrollAccrual(payrollPeriodId) {
+  return postPayrollAccrualInner(payrollPeriodId);
+}
+
+async function postPayrollAccrualInner(payrollPeriodId) {
+  if (!window.PentagonDB || !window.FinanceService) throw new Error('FinanceService/PentagonDB غير متاح');
+  const db = await PentagonDB.load();
+  ensurePayrollCollections(db);
+  const period = db.payroll_periods.find(item => item.id === payrollPeriodId);
+  if (!period) throw new Error('فترة الرواتب غير موجودة');
+  if (period.status === 'posted' && period.postedMoveId) return { alreadyPosted: true, period };
+  const closings = db.employee_payroll_closings.filter(row => row.payrollPeriodId === payrollPeriodId);
+  const totalAccrued = closings.reduce((sum, row) => sum + asMoney(row.netAccruedSalary), 0);
+  const totalAdvances = closings.reduce((sum, row) => sum + asMoney(row.advanceSettlementAmount), 0);
+  // Idempotency: two layers now protect this posting.
+  // (1) Server-backed lock (Production Hardening Final Lock Sprint,
+  //     2026-07-04): withOperationLock acquires a real DB-row lock keyed by
+  //     `payroll/accrual/{periodId}` / `payroll/advance-settlement/{periodId}`
+  //     BEFORE either move is created — this is what actually closes the
+  //     cross-tab/cross-device race (see withOperationLock's own comment).
+  // (2) The existing-move-by-origin lookup below (origin regardless of
+  //     state — draft OR posted) is the fallback idempotency check used when
+  //     the lock reports 'reused_existing' (a prior attempt already
+  //     completed): it finds the already-posted move instead of creating a
+  //     duplicate.
+  const origin = `payroll/accrual/${period.year}-${String(period.month).padStart(2, '0')}`;
+  let accrualMove = null;
+  if (totalAccrued > 0) {
+    accrualMove = await withOperationLock(`payroll/accrual/${payrollPeriodId}`, 'payroll_accrual', async () => {
+      const existingAccrual = (await PentagonDB.load()).account_moves?.find(m => m.origin === origin && m.state !== 'cancel');
+      if (existingAccrual && existingAccrual.state === 'posted') {
+        return existingAccrual;
+      } else if (existingAccrual && existingAccrual.state === 'draft') {
+        return FinanceService.postMove(existingAccrual.id, { skip_backup: true });
+      }
+      return FinanceService.createMove({
+        journal_id: 'j_payroll',
+        move_type: 'entry',
+        date: period.endDate,
+        origin,
+        sourceType: 'payroll_accrual',
+        sourceCanonicalKey: `payroll/accrual/${payrollPeriodId}`,
+        line_ids: [
+          { account_id: 'expense_payroll', debit: totalAccrued, credit: 0, label: `استحقاق رواتب ${period.month}/${period.year}` },
+          { account_id: 'accrued_payroll', debit: 0, credit: totalAccrued, label: `رواتب مستحقة ${period.month}/${period.year}` },
+        ],
+        skip_backup: true,
+      }).then(move => FinanceService.postMove(move.id, { skip_backup: true }));
+    });
+  }
+  const advanceOrigin = `payroll/advance-settlement/${period.year}-${String(period.month).padStart(2, '0')}`;
+  let advanceMove = null;
+  if (totalAdvances > 0) {
+    advanceMove = await withOperationLock(`payroll/advance-settlement/${payrollPeriodId}`, 'payroll_advance_settlement', async () => {
+      const existingAdvance = (await PentagonDB.load()).account_moves?.find(m => m.origin === advanceOrigin && m.state !== 'cancel');
+      if (existingAdvance && existingAdvance.state === 'posted') {
+        return existingAdvance;
+      } else if (existingAdvance && existingAdvance.state === 'draft') {
+        return FinanceService.postMove(existingAdvance.id, { skip_backup: true });
+      }
+      return FinanceService.createMove({
+        journal_id: 'j_payroll',
+        move_type: 'entry',
+        date: period.endDate,
+        origin: advanceOrigin,
+        sourceType: 'payroll_advance_settlement',
+        sourceCanonicalKey: `payroll/advance-settlement/${payrollPeriodId}`,
+        line_ids: [
+          { account_id: 'accrued_payroll', debit: totalAdvances, credit: 0, label: `تسوية سلف الرواتب ${period.month}/${period.year}` },
+          { account_id: 'employee_advances', debit: 0, credit: totalAdvances, label: `إقفال سلف الموظفين ${period.month}/${period.year}` },
+        ],
+        skip_backup: true,
+      }).then(move => FinanceService.postMove(move.id, { skip_backup: true }));
+    });
+  }
+  await PentagonDB.mutate(mdb => {
+    ensurePayrollCollections(mdb);
+    const savedPeriod = mdb.payroll_periods.find(item => item.id === payrollPeriodId);
+    if (savedPeriod) {
+      savedPeriod.status = 'posted';
+      savedPeriod.postedMoveId = accrualMove?.id || '';
+      savedPeriod.advanceSettlementMoveId = advanceMove?.id || '';
+      savedPeriod.postedAt = new Date().toISOString();
+    }
+    mdb.employee_payroll_closings.filter(row => row.payrollPeriodId === payrollPeriodId).forEach(row => {
+      row.status = 'posted';
+      row.accrualMoveId = accrualMove?.id || '';
+      row.advanceSettlementMoveId = advanceMove?.id || '';
+      row.postedAt = new Date().toISOString();
+    });
+  });
+  return { periodId: payrollPeriodId, accrualMove, advanceMove, totalAccrued, totalAdvances };
+}
+
+function findPayrollClosingForEmployee(db, employeeId, year, month) {
+  ensurePayrollCollections(db);
+  const period = db.payroll_periods.find(item => Number(item.year) === Number(year) && Number(item.month) === Number(month) && ['closed', 'posted', 'locked'].includes(item.status));
+  if (!period) return null;
+  return db.employee_payroll_closings.find(row => row.payrollPeriodId === period.id && row.employeeId === employeeId) || null;
+}
+
+function isPayrollPeriodClosedForRecord(rec) {
+  const db = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+  ensurePayrollCollections(db);
+  return (db.payroll_periods || []).some(period => (
+    Number(period.year) === Number(rec.year)
+    && Number(period.month) === Number(rec.month)
+    && ['closed', 'posted', 'locked'].includes(period.status)
+  ));
+}
+
+async function settlePayrollPayment(closingId, amount, cashAccountId = 'cash_workshop') {
+  return settlePayrollPaymentInner(closingId, amount, cashAccountId);
+}
+
+async function settlePayrollPaymentInner(closingId, amount, cashAccountId = 'cash_workshop') {
+  if (!window.PentagonDB || !window.FinanceService) throw new Error('FinanceService/PentagonDB غير متاح');
+  amount = asMoney(amount);
+  if (amount <= 0) throw new Error('مبلغ الدفع يجب أن يكون أكبر من صفر');
+  const db = await PentagonDB.load();
+  ensurePayrollCollections(db);
+  const closing = db.employee_payroll_closings.find(row => row.id === closingId);
+  if (!closing) throw new Error('إقفال راتب الموظف غير موجود');
+  const period = db.payroll_periods.find(row => row.id === closing.payrollPeriodId);
+  if (!period || period.status !== 'posted') throw new Error('يجب ترحيل استحقاق الرواتب قبل الدفع');
+  const remaining = asMoney(closing.remainingAmount);
+
+  // Fixed, deterministic canonical key — NEVER a random id — so retries,
+  // duplicate clicks, and cross-tab/device attempts for the exact same
+  // payment (same employee closing, same amount, same date) always resolve
+  // to the same key (Production Hardening Final Lock Sprint, 2026-07-04).
+  const paymentDate = todayISO();
+  const canonicalKey = `payroll/payment/${closingId}/${paymentDate}/${amount}`;
+
+  // Idempotency check #1 (in addition to the server-backed lock below): if a
+  // payment already exists for this exact closing+amount+date, return it
+  // instead of creating a second one — covers the "same key after a page
+  // refresh" case (test 4), where there is no in-flight lock to reuse.
+  const existingPayment = (db.payroll_payments || []).find(p => (
+    p.employeePayrollClosingId === closingId && asMoney(p.amount) === amount && p.paymentDate === paymentDate && p.status !== 'voided'
+  ));
+  if (existingPayment) {
+    const existingMove = (db.account_moves || []).find(m => m.id === existingPayment.moveId);
+    return { payment: existingPayment, move: existingMove || null, reused: true };
+  }
+
+  if (amount > Math.max(0, remaining)) throw new Error('مبلغ الدفع أكبر من الرصيد المتبقي للموظف');
+
+  return withOperationLock(canonicalKey, 'payroll_payment', async () => {
+    // Re-check after acquiring the lock (and on the 'reused_existing' retry
+    // path) — another tab/device may have completed this exact payment while
+    // we were computing the above.
+    const freshDb = await PentagonDB.load();
+    const raceWinner = (freshDb.payroll_payments || []).find(p => (
+      p.employeePayrollClosingId === closingId && asMoney(p.amount) === amount && p.paymentDate === paymentDate && p.status !== 'voided'
+    ));
+    if (raceWinner) {
+      const raceMove = (freshDb.account_moves || []).find(m => m.id === raceWinner.moveId);
+      return { payment: raceWinner, move: raceMove || null, reused: true };
+    }
+
+    // Covers the "crashed after the move posted but before the payment
+    // record was linked" case (a move with this exact sourceCanonicalKey
+    // already exists in account_moves, the source of truth, even though no
+    // payroll_payments row references it yet): reuse that move, create the
+    // missing payment record retroactively instead of posting a second move.
+    const existingMoveForKey = (freshDb.account_moves || []).find(m => m.sourceCanonicalKey === canonicalKey && m.state !== 'cancel');
+
+    const payment = {
+      id: makeId('payrollpay'),
+      payrollPeriodId: period.id,
+      employeePayrollClosingId: closing.id,
+      employeeId: closing.employeeId,
+      paymentDate,
+      amount,
+      cashAccountId,
+      method: cashAccountId === 'cash_workshop' ? 'cash' : 'bank',
+      financeTransactionId: '',
+      moveId: '',
+      sourceCanonicalKey: canonicalKey,
+      createdBy: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+      notes: existingMoveForKey ? 'linked to a move created by a prior interrupted attempt (recovered, not duplicated)' : '',
+    };
+    const move = existingMoveForKey || await FinanceService.createMove({
+      journal_id: 'j_bank',
+      move_type: 'entry',
+      date: payment.paymentDate,
+      partner_id: closing.employeeId,
+      origin: canonicalKey,
+      sourceType: 'payroll_payment',
+      sourceCanonicalKey: canonicalKey,
+      line_ids: [
+        { account_id: 'accrued_payroll', debit: amount, credit: 0, label: `دفع راتب ${closing.employeeNameSnapshot}`, partner_id: closing.employeeId },
+        { account_id: cashAccountId, debit: 0, credit: amount, label: `دفع راتب ${closing.employeeNameSnapshot}`, partner_id: closing.employeeId },
+      ],
+      skip_backup: true,
+    }).then(draft => FinanceService.postMove(draft.id, { skip_backup: true }));
+    payment.moveId = move.id;
+    await PentagonDB.mutate(mdb => {
+      ensurePayrollCollections(mdb);
+      const saved = mdb.employee_payroll_closings.find(row => row.id === closing.id);
+      if (saved) {
+        saved.paidAmount = asMoney(saved.paidAmount) + amount;
+        saved.remainingAmount = asMoney(saved.netPayableAfterAdvanceSettlement) - asMoney(saved.paidAmount);
+        saved.status = saved.remainingAmount <= 0 ? 'paid' : 'partially_paid';
+        saved.balanceDirection = saved.remainingAmount > 0 ? 'company_owes_employee' : saved.remainingAmount < 0 ? 'employee_owes_company' : 'settled';
+        if (!Array.isArray(saved.settlementMoveIds)) saved.settlementMoveIds = [];
+        saved.settlementMoveIds.push(move.id);
+      }
+      mdb.payroll_payments.push(payment);
+      mdb.audit_log.push({
+        id: makeId('audit_payroll_payment'),
+        action: 'payroll_payment_settled',
+        entityType: 'employee_payroll_closing',
+        entityId: closing.id,
+        createdAt: new Date().toISOString(),
+        userId: payment.createdBy,
+        reason: 'Payroll payment settlement',
+        afterSnapshot: payment,
+      });
+    });
+    return { payment, move };
+  });
+}
+
+async function createPayrollAdjustment(closingId, adjustmentType, amount, reason) {
+  if (!window.PentagonDB || !window.FinanceService) throw new Error('FinanceService/PentagonDB غير متاح');
+  if (amount <= 0) throw new Error('المبلغ يجب أن يكون أكبر من صفر');
+  if (!['deduction', 'bonus'].includes(adjustmentType)) throw new Error('نوع التسوية غير صالح');
+
+  let move = null;
+  await PentagonDB.mutate(async db => {
+    ensurePayrollCollections(db);
+    const closing = db.employee_payroll_closings.find(row => row.id === closingId);
+    if (!closing) throw new Error('سجل الرواتب غير موجود');
+    const period = db.payroll_periods.find(p => p.id === closing.payrollPeriodId);
+    if (!period || period.status !== 'posted') throw new Error('لا يمكن إجراء تسوية إلا بعد ترحيل الفترة');
+
+    const adjId = makeId('payadj');
+    const moveOrigin = `payroll/adjustment/${adjId}`;
+    const date = new Date().toISOString().slice(0, 10);
+
+    // Create accounting move
+    move = await FinanceService.createMove({
+      journal_id: 'j_payroll',
+      move_type: 'entry',
+      date,
+      origin: moveOrigin,
+      line_ids: adjustmentType === 'deduction' ? [
+        { account_id: 'accrued_payroll', debit: amount, credit: 0, label: `تسوية استقطاع: ${reason}` },
+        { account_id: 'expense_payroll', debit: 0, credit: amount, label: `تخفيض مصروف رواتب: ${reason}` }
+      ] : [
+        { account_id: 'expense_payroll', debit: amount, credit: 0, label: `تسوية مكافأة: ${reason}` },
+        { account_id: 'accrued_payroll', debit: 0, credit: amount, label: `زيادة التزام رواتب: ${reason}` }
+      ],
+      skip_backup: true,
+    }).then(m => FinanceService.postMove(m.id, { skip_backup: true }));
+
+    const adj = {
+      id: adjId,
+      closingId,
+      payrollPeriodId: closing.payrollPeriodId,
+      employeeId: closing.employeeId,
+      type: adjustmentType,
+      amount,
+      reason,
+      moveId: move.id,
+      // status lifecycle: 'posted' here since this function creates AND posts
+      // the move atomically (no separate draft/approval staging exists yet);
+      // flips to 'cancelled' if the underlying move is later reversed by
+      // reopenPayrollPeriod. ('draft'/'approved' are reserved for a future
+      // staged-approval workflow, not reachable today.)
+      status: 'posted',
+      createdAt: new Date().toISOString(),
+      createdBy: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+    };
+    db.payroll_adjustments.push(adj);
+
+    // Update closing balance
+    if (adjustmentType === 'deduction') {
+      closing.netPayableAfterAdvanceSettlement -= amount;
+      closing.remainingAmount -= amount;
+    } else {
+      closing.netPayableAfterAdvanceSettlement += amount;
+      closing.remainingAmount += amount;
+    }
+
+    db.audit_log.push({
+      id: makeId('audit_payroll_adj'),
+      action: 'payroll_adjustment_created',
+      entityType: 'payroll_closing',
+      entityId: closingId,
+      createdAt: new Date().toISOString(),
+      reason,
+      afterSnapshot: { adjustmentId: adjId, amount, type: adjustmentType }
+    });
+  });
+  return move;
+}
+
+async function reopenPayrollPeriod(payrollPeriodId, reason) {
+  if (!window.PentagonDB || !window.FinanceService) throw new Error('PentagonDB/FinanceService غير متاح');
+  if (!reason || !reason.trim()) throw new Error('يجب تحديد سبب إعادة فتح الفترة');
+  // Admin-only + mandatory reason (audit fix 2026-07-04): reopening a posted
+  // payroll period reverses live financial postings, so it is gated the same
+  // way as other critical/approval-required HR-payroll actions (see
+  // services/permissionService.js ACTION_METADATA['hr.payroll.reopen_period']).
+  if (window.PermissionService) {
+    window.PermissionService.requireAction('hr.payroll.reopen_period', { page: 'employees', periodId: payrollPeriodId });
+  }
+
+  const db = await PentagonDB.load();
+  ensurePayrollCollections(db);
+  const period = db.payroll_periods.find(item => item.id === payrollPeriodId);
+  if (!period) throw new Error('فترة الرواتب غير موجودة');
+
+  if (!['closed', 'posted', 'locked'].includes(period.status)) {
+    throw new Error(`لا يمكن إعادة فتح فترة بحالة ${period.status}`);
+  }
+
+  const beforeStatus = period.status;
+  // Full before-snapshot for the audit trail — reopening resets closing
+  // status/move-links/paid amounts in place, so without this snapshot the
+  // specific move ids and paid amounts that were live before the reopen would
+  // be unrecoverable from the closings/payments rows themselves afterward
+  // (the moves stay in account_moves as cancelled/reversed, but the link is lost).
+  const closingsBeforeSnapshot = JSON.parse(JSON.stringify(
+    db.employee_payroll_closings.filter(row => row.payrollPeriodId === payrollPeriodId)
+  ));
+  const paymentsBeforeSnapshot = JSON.parse(JSON.stringify(
+    (db.payroll_payments || []).filter(p => p.payrollPeriodId === payrollPeriodId)
+  ));
+  const adjustmentsBeforeSnapshot = JSON.parse(JSON.stringify(
+    (db.payroll_adjustments || []).filter(a => a.payrollPeriodId === payrollPeriodId)
+  ));
+
+  const movesToCancel = [];
+  if (period.postedMoveId) movesToCancel.push(period.postedMoveId);
+  if (period.advanceSettlementMoveId) movesToCancel.push(period.advanceSettlementMoveId);
+
+  const closings = db.employee_payroll_closings.filter(row => row.payrollPeriodId === payrollPeriodId);
+  closings.forEach(row => {
+    if (row.accrualMoveId && !movesToCancel.includes(row.accrualMoveId)) movesToCancel.push(row.accrualMoveId);
+    if (row.advanceSettlementMoveId && !movesToCancel.includes(row.advanceSettlementMoveId)) movesToCancel.push(row.advanceSettlementMoveId);
+    if (Array.isArray(row.settlementMoveIds)) {
+      row.settlementMoveIds.forEach(mId => {
+        if (mId && !movesToCancel.includes(mId)) movesToCancel.push(mId);
+      });
+    }
+  });
+  // payroll_adjustments posted for this period must also be reversed —
+  // otherwise their moves stay live in account_moves after the period is
+  // reopened, and their status never reflects that they no longer apply.
+  (db.payroll_adjustments || []).filter(a => a.payrollPeriodId === payrollPeriodId && a.moveId).forEach(a => {
+    if (!movesToCancel.includes(a.moveId)) movesToCancel.push(a.moveId);
+  });
+
+  // moveId -> reversalMoveId, for a complete "original move / reversal move"
+  // audit trail (who reopened, when, why, which move, which reversal).
+  const reversalByMoveId = {};
+  for (const moveId of movesToCancel) {
+    try {
+      const result = await FinanceService.cancelMove(moveId, { skip_backup: true, reason: `إعادة فتح فترة الرواتب: ${reason}` });
+      reversalByMoveId[moveId] = result?.reversal?.id || '';
+    } catch (e) {
+      console.warn(`تعذر إلغاء القيد ${moveId} أثناء إعادة فتح الفترة:`, e);
+      reversalByMoveId[moveId] = null; // cancellation failed (e.g. already cancelled) — recorded, not silently dropped
+    }
+  }
+
+  // Reset the server-backed operation locks for this period's accrual/advance
+  // moves (Production Hardening Final Lock Sprint, 2026-07-04). Without this,
+  // a 'completed' lock still pointing at the now-cancelled move would make
+  // the NEXT genuine postPayrollAccrual() call believe it can just "reuse"
+  // that move — but it no longer applies (state is 'cancel'). Deleting the
+  // lock rows lets the next posting attempt acquire fresh ones.
+  const lockKeysToReset = [
+    `payroll/accrual/${payrollPeriodId}`,
+    `payroll/advance-settlement/${payrollPeriodId}`,
+  ];
+  for (const lockKey of lockKeysToReset) {
+    try {
+      await fetch('/api/operation-lock/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lockKey }),
+      });
+    } catch (e) {
+      console.warn(`تعذر تصفير قفل العملية ${lockKey}:`, e);
+    }
+  }
+
+  await PentagonDB.mutate(mdb => {
+    ensurePayrollCollections(mdb);
+    const savedPeriod = mdb.payroll_periods.find(item => item.id === payrollPeriodId);
+    if (savedPeriod) {
+      savedPeriod.status = 'draft';
+      savedPeriod.postedMoveId = '';
+      savedPeriod.advanceSettlementMoveId = '';
+    }
+
+    mdb.employee_payroll_closings.filter(row => row.payrollPeriodId === payrollPeriodId).forEach(row => {
+      row.status = 'calculated';
+      row.accrualMoveId = '';
+      row.advanceSettlementMoveId = '';
+      row.settlementMoveIds = [];
+      row.paidAmount = 0;
+      row.remainingAmount = asMoney(row.netPayableAfterAdvanceSettlement);
+      row.balanceDirection = row.remainingAmount > 0 ? 'company_owes_employee' : row.remainingAmount < 0 ? 'employee_owes_company' : 'settled';
+    });
+
+    // Never hard-delete payroll_payments: the underlying account_move was
+    // already reversed above via FinanceService.cancelMove (a dated reversal
+    // entry, not a deletion) — the payment record itself must survive as
+    // voided so the "who got paid what and when, and why was it undone" trail
+    // stays intact (audit fix 2026-07-04; this used to filter the rows out
+    // entirely).
+    mdb.payroll_payments.filter(p => p.payrollPeriodId === payrollPeriodId).forEach(p => {
+      p.status = 'voided';
+      p.voidedAt = new Date().toISOString();
+      p.voidedReason = reason.trim();
+    });
+
+    // Same non-destructive treatment for adjustments: never delete, flip to
+    // 'cancelled' now that their move has been reversed above.
+    mdb.payroll_adjustments.filter(a => a.payrollPeriodId === payrollPeriodId).forEach(a => {
+      a.status = 'cancelled';
+      a.cancelledAt = new Date().toISOString();
+      a.cancelledReason = reason.trim();
+    });
+
+    const currentUser = window.PentagonAuth?.getCurrentUser?.() || {};
+    mdb.audit_log.push({
+      id: makeId('audit_payroll_reopen'),
+      action: 'payroll_period_reopened',
+      entityType: 'payroll_period',
+      entityId: payrollPeriodId,
+      createdAt: new Date().toISOString(),
+      userId: currentUser.id || 'system',
+      userName: currentUser.name || currentUser.displayName || 'النظام',
+      reason: reason.trim(),
+      beforeSnapshot: { closings: closingsBeforeSnapshot, payments: paymentsBeforeSnapshot, adjustments: adjustmentsBeforeSnapshot, cancelledMoveIds: movesToCancel },
+      afterSnapshot: { period: `${period.year}-${String(period.month).padStart(2, '0')}`, beforeStatus, reversals: reversalByMoveId },
+    });
+  });
+
+  return { success: true };
 }
 
 function getEmployeeDailyFinancialSummary(emp, rec, cfg) {
@@ -1835,6 +2917,13 @@ function enforceUIPermissions() {
 }
 
 function switchPage(page) {
+  // TEMP: الحاسبة الذكية is hidden from the sidebar — the full calculator is docked inside
+  // the timesheet page. Direct opens (boot landing, palette, old links) go to the timesheet
+  // WHEN PERMITTED; users without timesheet permission still get the standalone calculator,
+  // which also keeps the permission-fallback below loop-free.
+  if (page === 'calculator' && (!window.PermissionService || window.PermissionService.checkPage('timesheet'))) {
+    return window.switchPage('timesheet'); // window.switchPage = template-guard wrapper (hydrates the view first)
+  }
   const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
   if (!stored) {
     const isDevMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
@@ -1947,7 +3036,7 @@ function switchPage(page) {
   if (navEl) { navEl.classList.add('active'); navEl.setAttribute('aria-current', 'page'); }
   ensureNavGroupForPage(page);
 
-  if (page === 'calculator') refreshCalcEmpDropdown();
+  if (page === 'calculator') { undockCalculatorToOwnPage(); refreshCalcEmpDropdown(); }
   if (page === 'timesheet') renderTimesheet();
   if (page === 'report') renderReport();
   if (page === 'employees') renderEmployeesTable();
@@ -1998,7 +3087,7 @@ function refreshEmpFilterDropdown() {
   // Keep the first option
   select.innerHTML = '<option value="-1">— جميع الموظفين —</option>';
   employees.forEach((emp, idx) => {
-    if (!employeeHasRecordsForMonth(emp, cfg.year, cfg.month)) return;
+    if (!recordsForTimesheetRange(emp, cfg).length) return;
     const opt = document.createElement('option');
     opt.value = idx;
     opt.text = emp.name;
@@ -2058,7 +3147,7 @@ function onCalcEmpChange() {
 
     if (!emp.records) emp.records = [];
 
-    const monthRecs = recordsForMonth(emp, cfg.year, cfg.month);
+    const monthRecs = recordsForTimesheetRange(emp, cfg);
 
     if (monthRecs.length === 0) {
       document.getElementById('inpAttendance').value = 0;
@@ -2074,9 +3163,10 @@ function onCalcEmpChange() {
       document.getElementById('inpBonus').value = 0;
       document.getElementById('inpDamage').value = 0;
       badge.style.display = 'flex';
-      document.getElementById('calcEmpBadgeText').textContent = `لا توجد سجلات للموظف في ${MONTHS_AR[cfg.month - 1]} ${cfg.year}`;
+      document.getElementById('calcEmpBadgeText').textContent = `لا توجد سجلات للموظف في ${getTimesheetPeriodLabel(cfg)}`;
     } else {
-      const result = calculateSalaryForEmployee(emp, cfg);
+      // Official per-month engine aggregate — same numbers as the payroll close and print.
+      const result = getTimesheetOfficialRangeResult(emp, cfg);
       document.getElementById('inpAttendance').value = result.attendanceDays;
       document.getElementById('inpLeaves').value = result.leaveDays;
       document.getElementById('inpAbsent').value = result.absentDays;
@@ -2103,7 +3193,7 @@ function onCalcEmpChange() {
       document.getElementById('inpDamage').value = result.totalDamage || 0;
 
       badge.style.display = 'flex';
-      document.getElementById('calcEmpBadgeText').textContent = `بيانات ${emp.name} مسحوبة من التايم شيت`;
+      document.getElementById('calcEmpBadgeText').textContent = `بيانات ${emp.name} مسحوبة من التايم شيت (${getTimesheetPeriodLabel(cfg)})`;
 
       validateDays();
       recalculate();
@@ -2126,6 +3216,17 @@ function onMonthYearChange() {
   }
   document.getElementById('inpFridayDays').value = `0/${fridayCount}`;
   document.getElementById('daysMonthDisplay').textContent = totalDays;
+
+  // Docked in the timesheet: the calculator's month/year selectors ARE the page filter.
+  // Point the timesheet's displayed range at the chosen month and re-render — the render
+  // re-docks and re-syncs the calculator, so rows, month docs and calc always agree.
+  const dockedCalc = document.getElementById('pageCalculator');
+  if (currentPage === 'timesheet' && dockedCalc?.classList.contains('ts-docked-calc')) {
+    saveConfigToStorage();
+    setTimesheetSelectedMonths([cfg.month], cfg.month);
+    renderTimesheet();
+    return;
+  }
 
   const select = document.getElementById('calcEmpSelect');
   const idx = parseInt(select.value, 10);
@@ -2195,6 +3296,29 @@ function validateDays() {
   // Sum of non-Friday days (attendance + leaves + absent should equal working days)
   const sum = attend + leaves + absents;
   const diff = sum - workingDays;
+
+  // Timesheet-sourced mode: the figures mirror the actual record (a Friday worked as regular
+  // duty counts as attendance while workingDays excludes Fridays), so the manual-entry
+  // "exceeds working days" warning is a FALSE alarm here. Show a calm source note instead.
+  const tsBadgeText = document.getElementById('calcEmpBadgeText')?.textContent || '';
+  const tsSelect = document.getElementById('calcEmpSelect');
+  const tsSourced = tsSelect && parseInt(tsSelect.value, 10) >= 0 && tsBadgeText.includes('مسحوبة من التايم شيت');
+  if (tsSourced) {
+    document.getElementById('daysSumDisplay').textContent = sum;
+    document.getElementById('daysMonthDisplay').textContent = workingDays;
+    const remainingSrcEl = document.getElementById('daysRemaining');
+    if (remainingSrcEl) {
+      remainingSrcEl.textContent = '✓ مطابق لسجل التايم شيت';
+      remainingSrcEl.className = 'days-remaining ok';
+    }
+    const warnEl = document.getElementById('daysWarning');
+    if (warnEl) warnEl.style.display = 'none';
+    const pctSrc = (v) => workingDays > 0 ? Math.min(100, (v / workingDays) * 100) : 0;
+    document.getElementById('daysBarAttend').style.width = pctSrc(attend) + '%';
+    document.getElementById('daysBarLeave').style.width = pctSrc(leaves) + '%';
+    document.getElementById('daysBarAbsent').style.width = pctSrc(absents) + '%';
+    return;
+  }
 
   // Update summary display
   document.getElementById('daysSumDisplay').textContent = sum;
@@ -2269,8 +3393,10 @@ function recalculate() {
   // early-leave, etc. Pure manual entry (no employee) still uses the settings-aware formula.
   let result;
   if (isTimesheetSourcedCalc && employees[calcEmpIdx]) {
+    // AUTHORITATIVE per-month engine aggregated over the displayed months — identical to the
+    // payroll close, month docs, print and slip, so every figure on the page agrees.
     const emp = employees[calcEmpIdx];
-    result = calculateSalaryForEmployee(emp, { ...cfg, nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary) });
+    result = getTimesheetOfficialRangeResult(emp, { ...cfg, nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary) });
   } else {
     result = calculateSalary(cfg, inputs);
   }
@@ -2352,8 +3478,7 @@ async function verifyCalculatorWithAI() {
   btn.disabled = true;
 
   try {
-    const apiKey = "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
-    
+    // Security hardening 2026-07-05: Gemini key moved to server .env — calls go through /api/ai/gemini.
     const promptText = `
 أنت مدقق ومراجع حسابات ذكي للرواتب.
 تم إجراء عملية حساب لراتب موظف. تفاصيل الحساب:
@@ -2370,10 +3495,11 @@ ${JSON.stringify(result, null, 2)}
 لا ترجع كود JSON، بل أرجع النص المنسق والمباشر فقط.
 `;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey, {
+    const response = await fetch("/api/ai/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "gemini-flash-latest",
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.2 }
       })
@@ -2415,7 +3541,7 @@ function updateValue(id, val) {
 
 function calculateBalanceAfterPayment(result, paidAmount) {
   const salaryBeforeAdvances = result.salaryDue || 0;
-  const advancesAndOldBalance = (result.previousAdvance || 0) + (result.currentAdvance || 0);
+  const advancesAndOldBalance = (result.previousAdvance || 0) + (result.currentAdvance || 0) + (result.officialAdvance || 0);
   return advancesAndOldBalance + (paidAmount || 0) - salaryBeforeAdvances;
 }
 
@@ -2443,6 +3569,11 @@ function formatTimesheetMoneyWithMinutes(hours, value) {
   return `${formatHoursAsMinutesLabel(hours)} (${formatMoneyReadable(value)})`;
 }
 
+// UNUSED as of the Production Stabilization Sprint (2026-07-04): markAsPaid()
+// no longer calls this — it now routes every payment through
+// settlePayrollPayment() instead of mutating emp.prevAdvance directly. Left
+// in place (no callers left in the codebase) rather than deleted, per the
+// add-only convention; safe to remove in a future cleanup pass.
 function applyPaymentToEmployeeBalance(emp, result, paidAmount) {
   const newBalance = calculateBalanceAfterPayment(result, paidAmount);
   emp.prevAdvance = Math.round(newBalance);
@@ -2463,71 +3594,33 @@ function registerPayment() {
   const cfg = getConfig();
   const empSelect = document.getElementById('calcEmpSelect');
   const employeeName = empSelect.value !== '-1' ? empSelect.options[empSelect.selectedIndex].text : 'حساب مباشر';
-  const payment = {
-    id: Date.now(),
-    timestamp: new Date().toISOString(),
-    month: cfg.month,
-    year: cfg.year,
-    monthName: MONTHS_AR[cfg.month - 1],
-    employeeId: empSelect.value !== '-1' ? empSelect.value : null,
-    employeeName: empSelect.value !== '-1' ? empSelect.options[empSelect.selectedIndex].text : 'حساب مباشر',
-    salaryDue: result.salaryDue,
-    currentBalance: result.finalSalary,
-    paidAmount: paymentAmount,
-    remainingBalance: calculateBalanceAfterPayment(result, paymentAmount)
-  };
-
-  // Get existing payments
-  let payments = JSON.parse(localStorage.getItem('payments') || '[]');
-  payments.push(payment);
-  localStorage.setItem('payments', JSON.stringify(payments));
-
   const empIdx = parseInt(empSelect.value, 10);
-  addFinanceTransaction({
-    type: 'salary_payment',
-    direction: 'out',
-    sourceType: 'cashbox',
-    date: todayISO(),
-    amount: paymentAmount,
-    categoryId: 'cat_payroll',
-    departmentId: 'dept_payroll',
-    accountId: 'expense_payroll',
-    description: `دفع راتب ${employeeName} - ${payment.monthName} ${payment.year}`,
-    partyName: employeeName,
-    receiptNo: `PAY-${payment.id}`
-  }, { skipSave: true });
-
-  // Sprint E: double-entry payroll JE (fire-and-forget, never blocks UI)
-  if (window.FinanceService?.generatePayrollEntry) {
-    FinanceService.generatePayrollEntry({
-      month:       payment.month,
-      year:        payment.year,
-      totalAmount: paymentAmount,
-      origin:      `payroll/${payment.id}`,
-    }).catch(e => console.warn('Payroll JE failed:', e));
+  if (empIdx < 0 || !employees[empIdx]) {
+    showToast('دفع الرواتب يجب أن يكون مرتبطاً بموظف وفترة Payroll مغلقة', 'error');
+    return;
   }
-
-  if (empIdx >= 0 && employees[empIdx]) {
-    applyPaymentToEmployeeBalance(employees[empIdx], result, paymentAmount);
-    saveData();
-    renderEmployeesTable();
-    onCalcEmpChange();
-  } else {
-    saveData();
-  }
-  financeRefreshAll();
-
-  showToast('✅ تم تسجيل الدفع بنجاح', 'success');
-  document.getElementById('inpPaymentAmount').value = '';
-  window.paymentAmountManuallyEdited = false;
-  if (typeof updatePaymentChangeDisplay === 'function') updatePaymentChangeDisplay();
-
-  // Update status display if exists
-  const statusDiv = document.getElementById('paymentStatus');
-  if (statusDiv) {
-    statusDiv.innerHTML = `✅ تم تسجيل دفعة بمبلغ <b>${formatNum(paymentAmount)}</b> د.ع<br>الرصيد بعد الدفع: <b>${formatSignedBalance(payment.remainingBalance)}</b>`;
-    statusDiv.style.display = 'block';
-  }
+  PentagonDB.load().then(db => {
+    const closing = findPayrollClosingForEmployee(db, employees[empIdx].id, cfg.year, cfg.month);
+    if (!closing) {
+      showToast(`يجب إقفال وترحيل راتب ${employeeName} لشهر ${cfg.month}/${cfg.year} قبل الدفع`, 'warning');
+      return null;
+    }
+    return settlePayrollPayment(closing.id, paymentAmount);
+  }).then(result => {
+    if (!result) return;
+    financeRefreshAll();
+    showToast('✅ تم تسجيل دفع الراتب كتسوية استحقاق', 'success');
+    document.getElementById('inpPaymentAmount').value = '';
+    window.paymentAmountManuallyEdited = false;
+    if (typeof updatePaymentChangeDisplay === 'function') updatePaymentChangeDisplay();
+    const statusDiv = document.getElementById('paymentStatus');
+    if (statusDiv) {
+      statusDiv.innerHTML = `✅ تم تسجيل دفعة بمبلغ <b>${formatNum(paymentAmount)}</b> د.ع<br>قيد الدفع: <b>${escapeHtml(result.move.name || result.move.id)}</b>`;
+      statusDiv.style.display = 'block';
+    }
+  }).catch(err => {
+    showToast(err.message || 'تعذر تسجيل دفع الراتب', 'error');
+  });
 }
 
 function adjustPaymentAmount(delta) {
@@ -3378,6 +4471,19 @@ function renderJournalEntryTab() {
   }).catch(() => { el.innerHTML = '<p style="color:var(--danger)">خطأ في تحميل القيود</p>'; });
 }
 
+// DEPRECATED / DEAD CODE (confirmed during the 2026-07-04 audit): this is the
+// FIRST of two top-level definitions of openNewJEModal/saveNewJE/postJEFromUI/
+// reverseJEFromUI in this file. JavaScript's "last function declaration wins"
+// means the SECOND set (further down, around line 26770+) is what actually
+// runs in the browser — this block is unreachable. It happens to be safe even
+// if it were reachable (FinanceService.createJournalEntry/postJournalEntry are
+// thin aliases for createMove/postMove, so it never bypassed account_moves),
+// but per the source-of-truth rule (account_moves is authoritative,
+// journal_entries is legacy/mirror only — see financeService.js) this dead
+// copy should not be extended or used as a reference; the live version below
+// already does the right thing (FinanceService.createMove/postMove/cancelMove
+// against account_moves). Left in place rather than deleted per the add-only
+// convention — safe to remove in a future cleanup pass.
 function openNewJEModal() {
   if (window.PermissionService && !window.PermissionService.check('journal_entries', 'create')) {
     return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
@@ -9022,12 +10128,15 @@ function renderMonthButtons(currentMonth) {
   const container = document.getElementById('monthFilterButtons');
   if (!container) return;
   container.innerHTML = '';
+  const cfg = getConfig();
+  const selectedMonths = getTimesheetSelectedMonths(cfg.year);
   
   const activeMonths = new Set();
   employees.forEach(emp => {
     if (!emp || !emp.records) return;
     emp.records.forEach(r => {
-      if (r.year === getConfig().year) activeMonths.add(r.month);
+      const p = getRecordPeriod(r, cfg);
+      if (p.year === cfg.year) activeMonths.add(p.month);
     });
   });
 
@@ -9042,7 +10151,7 @@ function renderMonthButtons(currentMonth) {
     btn.style.cursor = 'pointer';
     btn.style.transition = 'all 0.3s ease';
     
-    if (m === currentMonth) {
+    if (selectedMonths.includes(m)) {
       btn.style.background = 'var(--accent-blue)';
       btn.style.color = '#fff';
       btn.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.4)';
@@ -9056,12 +10165,8 @@ function renderMonthButtons(currentMonth) {
       btn.style.border = '1px solid var(--border-glass)';
     }
     
-    btn.onclick = () => {
-      setConfigValue('cfgMonth', m);
-      ensureSelectedEmployeeForMonth(getConfig().year, m);
-      saveData();
-      renderTimesheet();
-    };
+    btn.title = selectedMonths.includes(m) ? 'اضغط لإزالة هذا الشهر من العرض' : 'اضغط لإضافة هذا الشهر للعرض';
+    btn.onclick = () => toggleTimesheetMonth(m);
     container.appendChild(btn);
   }
 }
@@ -9071,6 +10176,16 @@ function renderTimesheetManagerMarker(rec) {
   const label = rec.managerApprovalKind === 'attendance_correction' || rec.attendanceCorrected ? 'تصحيح مدير' : 'مدير ✓';
   const title = [rec.managerApprovedBy, rec.managerApprovalNote, rec.managerApprovedAt ? formatOmniDateTime(rec.managerApprovedAt) : ''].filter(Boolean).join(' · ');
   return `<span class="timesheet-manager-marker" title="${escapeHtml(title)}">${escapeHtml(label)}</span>`;
+}
+
+function renderTimesheetDocumentedMarker(rec) {
+  if (!rec?.timesheetDocumented) return '';
+  const title = [
+    'موثق من التايم شيت',
+    rec.timesheetDocumentedAt ? formatOmniDateTime(rec.timesheetDocumentedAt) : '',
+    rec.timesheetDocumentedBy || '',
+  ].filter(Boolean).join(' · ');
+  return `<span class="timesheet-documented-marker" title="${escapeHtml(title)}"><i class="fa-solid fa-circle-check"></i></span>`;
 }
 
 // Debounce handle for the heavy month-wide payroll recompute triggered while typing in the timesheet.
@@ -9083,7 +10198,9 @@ function applyTimesheetStatCards(result) {
   setText('empStatAbsent', result.absentDays);
 
   const graceUsed = result.graceMinutesUsed || 0;
-  setText('latenessGraceTotal', `${Math.round(graceUsed)} دقيقة من ${getPayrollSettings().graceMinutesPerMonth} دقيقة`);
+  // Grace allowance is PER MONTH — scale the displayed ceiling by the number of displayed months.
+  const graceMonths = getTimesheetSelectedMonths().length || 1;
+  setText('latenessGraceTotal', `${Math.round(graceUsed)} دقيقة من ${getPayrollSettings().graceMinutesPerMonth * graceMonths} دقيقة`);
 
   setText('empStatSalary', formatMoneyReadable(result.finalSalary));
   setText('empStatAllowances', formatMoneyReadable(result.allowances));
@@ -9100,45 +10217,426 @@ function applyTimesheetStatCards(result) {
   setText('empStatFridays', formatMoneyReadable(result.fridayCompensation));
 }
 
-// Build the per-employee monthly summary panel HTML (carries a stable id so it can be replaced in place).
-function buildTimesheetSummaryPanelHtml(cfg) {
-  const summaries = employees
-    .map(empItem => getEmployeeMonthlyPayrollSummary(empItem, cfg))
-    .filter(summary => summary && summary.records.length > 0);
-  const payrollSummaryHtml = summaries.length ? `
-    <div class="payroll-summary-grid">
-      ${summaries.map(summary => `
-        <div class="payroll-summary-card">
-          <div class="payroll-summary-head">
-            <strong>${escapeHtml(summary.employee.name)}</strong>
-            <span>${formatMoneyReadable(summary.finalNet)}</span>
-          </div>
-          <div class="payroll-summary-lines">
-            <span>ساعات الحضور: <b>${summary.attendanceHours.toFixed(1)}</b></span>
-            <span>الإضافي: <b>${formatHoursAsMinutesLabel(summary.overtimeHours)}</b></span>
-            <span>الجمعة: <b>${summary.fridayWorkedDays} عمل / ${summary.eligibleFridays} مستحقة</b></span>
-            <span>التأخير: <b>${formatHoursAsMinutesLabel(summary.lateHours)}</b></span>
-            <span>الغرامات: <b>${formatNum(summary.penalties)}</b></span>
-            <span>السلف: <b>${formatNum(summary.advances)}</b></span>
-            <span>المكافآت: <b>${formatNum(summary.bonuses)}</b></span>
-            <span>الراتب الاسمي: <b>${formatNum(summary.nominalSalary)}</b></span>
-            <span>المستحق قبل السلف: <b>${formatNum(summary.payable)}</b></span>
-            <span>الرصيد/المبلغ المحجوز: <b>${formatSignedBalance(summary.reservedBalance)}</b></span>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  ` : '<div class="empty-cell">لا توجد ملخصات رواتب لهذا الشهر.</div>';
+// ─── Timesheet monthly salary documentation (selected employee ONLY) ───
+// One doc per displayed month, computed with the SAME per-month engine the calculator/print
+// use (calculateSalaryForEmployee) — with explicit { month, year } and skipSystemRules so a
+// pure render never mutates records. NO all-employee loops here (performance requirement).
+function getTimesheetMonthlyDocs(emp, cfg = getConfig()) {
+  if (!emp) return [];
+  const year = Number(cfg.year);
+  const nominalSalary = getEmployeeNominalSalary(emp, cfg.nominalSalary);
+  return getTimesheetSelectedMonths(year)
+    .filter(month => recordsForMonth(emp, year, month).length > 0)
+    .map(month => {
+      const result = calculateSalaryForEmployee(emp, { ...cfg, year, month, nominalSalary, skipSystemRules: true });
+      const penalties = (result.automaticPenalties || 0) + (result.totalPenalty || 0) + (result.totalDamage || 0);
+      const monthAdvances = (result.currentAdvance || 0) + (result.officialAdvance || 0);
+      const grossDue = result.totalEarnings || 0;
+      // صافي الشهر = المستحق الإجمالي − الغرامات − سلف هذا الشهر (الرصيد السابق يُحسب مرة واحدة في خلاصة الفترة)
+      const netDue = (result.salaryDue || 0) - monthAdvances;
+      return { month, year, label: `${MONTHS_AR[month - 1] || month} ${year}`, result, grossDue, penalties, monthAdvances, netDue };
+    });
+}
+
+// Aggregate the per-month OFFICIAL results (same engine payroll closing uses) over the displayed
+// months into one result-shaped object. This is the single source of truth for the timesheet
+// page: stat cards, docked calculator, posting suggestion and print/slip all read it, so the
+// page never shows two different "net" figures again. previousAdvance is applied ONCE.
+function getTimesheetOfficialRangeResult(emp, cfg = getConfig(), docsOpt = null) {
+  const docs = docsOpt || getTimesheetMonthlyDocs(emp, cfg);
+  const agg = {
+    totalDays: 0, fridayCount: 0, workingDays: 0,
+    attendanceDays: 0, leaveDays: 0, absentDays: 0,
+    baseSalary: 0, allowances: 0,
+    overtimeHours: 0, overtimeValue: 0, fridayOTHours: 0, fridayOTValue: 0,
+    totalOvertime: 0, totalOvertimeValue: 0,
+    latenessDeduction: 0, totalLatenessDeduction: 0, totalLatenessHours: 0,
+    earlyDeduction: 0, leaveDeduction: 0, absenceDeduction: 0,
+    fridayCompensation: 0, fridayWorkedDays: 0, eligibleFridays: 0, autoFridayPenalty: 0,
+    currentAdvance: 0, officialAdvance: 0,
+    penalty: 0, totalPenalty: 0, damage: 0, totalDamage: 0, bonus: 0, totalBonus: 0,
+    automaticPenalties: 0, totalEarnings: 0, salaryDueDeductions: 0, salaryDue: 0,
+    graceMinutesUsed: 0, graceByKey: {},
+    dailyRate: 0, hourlyRate: 0, allowanceRate: 0,
+    previousAdvance: asMoney(emp?.prevAdvance),
+    nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary),
+  };
+  docs.forEach(doc => {
+    const r = doc.result;
+    agg.totalDays += r.totalDays || 0;
+    agg.fridayCount += r.fridayCount || 0;
+    agg.workingDays += r.workingDays || 0;
+    agg.attendanceDays += r.attendanceDays || 0;
+    agg.leaveDays += r.leaveDays || 0;
+    agg.absentDays += r.absentDays || 0;
+    agg.baseSalary += r.baseSalary || 0;
+    agg.allowances += r.allowances || 0;
+    agg.overtimeHours += r.overtimeHours || 0;
+    agg.overtimeValue += r.overtimeValue || 0;
+    agg.fridayOTHours += r.fridayOTHours || 0;
+    agg.fridayOTValue += r.fridayOTValue || 0;
+    agg.latenessDeduction += r.latenessDeduction || 0;
+    agg.totalLatenessHours += r.totalLatenessHours || 0;
+    agg.earlyDeduction += r.earlyDeduction || 0;
+    agg.absenceDeduction += r.absenceDeduction || 0;
+    agg.fridayCompensation += r.fridayCompensation || 0;
+    agg.fridayWorkedDays += r.fridayWorkedDays || 0;
+    agg.eligibleFridays += r.eligibleFridays || 0;
+    agg.currentAdvance += r.currentAdvance || 0;
+    agg.officialAdvance += r.officialAdvance || 0;
+    agg.penalty += r.totalPenalty || 0;
+    agg.damage += r.totalDamage || 0;
+    agg.bonus += r.totalBonus || 0;
+    agg.automaticPenalties += r.automaticPenalties || 0;
+    agg.totalEarnings += r.totalEarnings || 0;
+    agg.salaryDueDeductions += r.salaryDueDeductions || 0;
+    agg.salaryDue += r.salaryDue || 0;
+    agg.graceMinutesUsed += r.graceMinutesUsed || 0;
+    agg.dailyRate = r.dailyRate || agg.dailyRate;
+    agg.hourlyRate = r.hourlyRate || agg.hourlyRate;
+    agg.allowanceRate = (r.transportRate || 0) + (r.foodRate || 0) || agg.allowanceRate;
+    // Monthly grace allocation → row markers (`⏱`), keyed year-month-day like the table rows.
+    Object.entries(r.graceByDay || {}).forEach(([day, minutes]) => {
+      agg.graceByKey[`${doc.year}-${doc.month}-${day}`] = minutes;
+    });
+  });
+  agg.totalOvertime = agg.overtimeHours + agg.fridayOTHours;
+  agg.totalOvertimeValue = agg.overtimeValue + agg.fridayOTValue;
+  agg.totalLatenessDeduction = agg.latenessDeduction;
+  agg.totalPenalty = agg.penalty;
+  agg.totalDamage = agg.damage;
+  agg.totalBonus = agg.bonus;
+  agg.totalAdvance = agg.currentAdvance + agg.officialAdvance + agg.previousAdvance;
+  agg.rangeNetBeforeBalance = agg.salaryDue - agg.currentAdvance - agg.officialAdvance;
+  agg.finalSalary = agg.rangeNetBeforeBalance - agg.previousAdvance;
+  return agg;
+}
+
+// Payroll close-state of a displayed month, read from the cached DB (no async in render).
+// state: 'open' | 'closed' (awaiting posting) | 'posted' (accrual booked, ready to pay).
+function getTimesheetMonthCloseState(year, month) {
+  const db = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+  const period = (db.payroll_periods || []).find(p => Number(p.year) === Number(year) && Number(p.month) === Number(month));
+  if (!period || !['closed', 'posted', 'locked'].includes(period.status)) return { state: 'open', period: period || null };
+  if (period.status === 'posted' || period.status === 'locked' || period.postedMoveId) return { state: 'posted', period };
+  return { state: 'closed', period };
+}
+
+function timesheetMonthStateChipHtml(year, month) {
+  const { state } = getTimesheetMonthCloseState(year, month);
+  if (state === 'posted') return '<span class="ts-close-chip posted"><i class="fa-solid fa-lock"></i> مقفل ومرحّل — جاهز للدفع</span>';
+  if (state === 'closed') return '<span class="ts-close-chip closed"><i class="fa-solid fa-lock"></i> مقفل — بانتظار الترحيل</span>';
+  return '<span class="ts-close-chip open"><i class="fa-solid fa-lock-open"></i> شهر مفتوح</span>';
+}
+
+// Close + post one month's payroll straight from the timesheet page (scroll → close → next).
+// Wraps the EXISTING engine (closePayrollPeriod → postPayrollAccrual): snapshot per employee,
+// accrual entry (expense_payroll ↦ accrued_payroll) + advance settlement, all idempotent and
+// server-locked. Shows a dry-run preview in the confirm so nothing is booked blind.
+window.timesheetCloseAndPostMonth = async function (year, month) {
+  const label = `${MONTHS_AR[month - 1] || month} ${year}`;
+  try {
+    const { state, period } = getTimesheetMonthCloseState(year, month);
+    if (state === 'posted') { showToast(`شهر ${label} مقفل ومرحّل مسبقاً`, 'info'); return; }
+    let periodId = period?.id;
+    if (state === 'open') {
+      const preview = await calculatePayrollPeriod(year, month);
+      if (!preview.employeeCount) { showToast(`لا يوجد موظفون بسجلات في ${label}`, 'warning'); return; }
+      const ok = confirm(
+        `قفل وترحيل رواتب شهر ${label}؟\n\n` +
+        `• عدد الموظفين: ${preview.employeeCount}\n` +
+        `• إجمالي الاستحقاق: ${formatNum(Math.round(preview.totalAccrued))} د.ع\n` +
+        `• تسوية السلف: ${formatNum(Math.round(preview.totalAdvances))} د.ع\n` +
+        `• صافي الدفع بعد السلف: ${formatNum(Math.round(preview.totalPayableAfterAdvances))} د.ع\n\n` +
+        `بعد القفل يصبح تايم شيت ${label} قراءة فقط، ويُرحّل قيد الاستحقاق إلى المحاسبة (دفتر الرواتب).`
+      );
+      if (!ok) return;
+      const closeRes = await closePayrollPeriod(year, month, { notes: 'إقفال من صفحة التايم شيت' });
+      periodId = closeRes?.payrollPeriod?.id;
+    } else if (!confirm(`شهر ${label} مقفل لكن غير مرحّل. ترحيل قيد الاستحقاق الآن؟`)) {
+      return;
+    }
+    if (!periodId) throw new Error('تعذر تحديد فترة الرواتب بعد القفل');
+    await postPayrollAccrual(periodId);
+    showToast(`✅ تم قفل وترحيل رواتب ${label} — جاهز للدفع من الحاسبة`, 'success');
+    renderTimesheet();
+  } catch (err) {
+    console.error('timesheetCloseAndPostMonth failed:', err);
+    showToast(err.message || `تعذر قفل شهر ${label}`, 'error');
+  }
+};
+
+// Compact inline metrics for a month separator row inside the timesheet table.
+function buildTimesheetMonthSummaryInnerHtml(doc) {
+  const r = doc.result;
   return `
-    <div class="payroll-summary-panel" id="timesheetSummaryPanel">
-      <div class="payroll-summary-title">
-        <h3>الخلاصة النهائية للرواتب من التايم شيت</h3>
-        <p>هذه القراءة هي مصدر الرواتب النهائي، والحاسبة الذكية تعرضها ولا تضاعفها.</p>
-      </div>
-      ${payrollSummaryHtml}
+    <div class="ts-month-summary-inner">
+      <strong class="ts-month-summary-title"><i class="fa-solid fa-file-invoice-dollar"></i> مستحقات شهر ${escapeHtml(doc.label)}</strong>
+      <span>المستحق الإجمالي: <b class="pos">${formatMoneyReadable(doc.grossDue)}</b></span>
+      <span>الغرامات: <b class="neg">${formatMoneyReadable(doc.penalties)}</b></span>
+      <span>السلف المسحوبة في هذا الشهر: <b class="neg">${formatMoneyReadable(doc.monthAdvances)}</b></span>
+      <span>صافي المستحق: <b class="net">${formatMoneyReadable(doc.netDue)}</b></span>
+      <span>الحضور: <b>${r.attendanceDays} يوم</b> · الغياب: <b>${r.absentDays}</b></span>
+      <span>التأخير: <b>${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</b> · الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)}</b></span>
+      ${timesheetMonthStateChipHtml(doc.year, doc.month)}
     </div>
   `;
 }
+
+// Build the bottom salary-calculator panel (selected employee, month-by-month documentation).
+// Keeps the stable id `timesheetSummaryPanel` so refreshTimesheetAggregates can replace it in place.
+function buildTimesheetSummaryPanelHtml(cfg, docsOpt = null) {
+  const emp = employees[selectedEmpIdx];
+  if (!emp) {
+    return `
+      <div class="payroll-summary-panel" id="timesheetSummaryPanel">
+        <div class="ts-calc-empty-state">
+          <i class="fa-solid fa-user-magnifying-glass"></i>
+          <strong>اختر موظفاً لعرض حاسبة الراتب</strong>
+          <span>اضغط على اسم الموظف من التبويبات أعلاه لعرض توثيق المستحقات شهراً بشهر.</span>
+        </div>
+      </div>
+    `;
+  }
+  const docs = docsOpt || getTimesheetMonthlyDocs(emp, cfg);
+  const totals = docs.reduce((acc, doc) => {
+    acc.gross += doc.grossDue;
+    acc.penalties += doc.penalties;
+    acc.advances += doc.monthAdvances;
+    acc.net += doc.netDue;
+    return acc;
+  }, { gross: 0, penalties: 0, advances: 0, net: 0 });
+  const previousBalance = asMoney(emp.prevAdvance);
+  const finalAfterBalance = totals.net - previousBalance;
+  const cardsHtml = docs.length ? `
+    <div class="payroll-summary-grid">
+      ${docs.map(doc => {
+        const r = doc.result;
+        const closeState = getTimesheetMonthCloseState(doc.year, doc.month).state;
+        const closeActionHtml = closeState === 'posted'
+          ? `<button class="btn-secondary ts-close-btn" disabled title="الشهر مقفل ومرحّل — سجّل الدفع من الحاسبة بالأسفل"><i class="fa-solid fa-circle-check"></i> مرحّل</button>`
+          : `<button class="btn-primary ts-close-btn" onclick="timesheetCloseAndPostMonth(${doc.year}, ${doc.month})" title="يقفل شهر ${escapeHtml(doc.label)} لكل الموظفين ويرحّل قيد الاستحقاق للمحاسبة">
+               <i class="fa-solid fa-lock"></i> ${closeState === 'closed' ? 'ترحيل القيود' : 'قفل وترحيل الشهر'}
+             </button>`;
+        return `
+        <div class="payroll-summary-card ts-month-doc-card">
+          <div class="payroll-summary-head">
+            <strong>مستحقات شهر ${escapeHtml(doc.label)}</strong>
+            <span>${formatMoneyReadable(doc.netDue)}</span>
+          </div>
+          <div class="payroll-summary-lines">
+            <span>المستحق الإجمالي: <b>${formatMoneyReadable(doc.grossDue)}</b></span>
+            <span>الأساس: <b>${formatNum(r.baseSalary)}</b> · البدلات: <b>${formatNum(r.allowances)}</b></span>
+            <span>الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)} (${formatNum(r.totalOvertimeValue)})</b></span>
+            <span>حافز الجمعة: <b>${formatNum(r.fridayCompensation)}</b> · المكافآت: <b>${formatNum(r.totalBonus)}</b></span>
+            <span>الغرامات (تأخير/غياب/يدوي/أضرار): <b>${formatNum(doc.penalties)}</b></span>
+            <span>السلف المسحوبة في هذا الشهر: <b>${formatNum(doc.monthAdvances)}</b> (رسمي ${formatNum(r.officialAdvance)} + جدول ${formatNum(r.currentAdvance)})</span>
+            <span>الحضور: <b>${r.attendanceDays}</b> · الغياب: <b>${r.absentDays}</b> · الإجازة: <b>${r.leaveDays}</b></span>
+            <span>التأخير: <b>${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</b> · سماحية مستعملة: <b>${Math.round(r.graceMinutesUsed || 0)} دقيقة</b></span>
+            <span>صافي المستحق لهذا الشهر: <b>${formatMoneyReadable(doc.netDue)}</b></span>
+          </div>
+          <div class="ts-month-doc-foot">
+            ${timesheetMonthStateChipHtml(doc.year, doc.month)}
+            ${closeActionHtml}
+          </div>
+        </div>
+      `;}).join('')}
+    </div>
+  ` : '<div class="empty-cell">لا توجد أيام معروضة لهذا الموظف ضمن الأشهر المختارة.</div>';
+  const totalsHtml = docs.length ? `
+    <div class="ts-calc-totals">
+      <span>إجمالي الفترة: <b class="pos">${formatMoneyReadable(totals.gross)}</b></span>
+      <span>إجمالي الغرامات: <b class="neg">${formatMoneyReadable(totals.penalties)}</b></span>
+      <span>إجمالي السلف المسحوبة: <b class="neg">${formatMoneyReadable(totals.advances)}</b></span>
+      <span>صافي الفترة: <b class="net">${formatMoneyReadable(totals.net)}</b></span>
+      <span>الرصيد السابق: <b>${formatSignedBalance(previousBalance)}</b></span>
+      <span class="ts-calc-final">الصافي النهائي بعد الرصيد: <b>${formatMoneyReadable(finalAfterBalance)}</b></span>
+    </div>
+  ` : '';
+  return `
+    <div class="payroll-summary-panel" id="timesheetSummaryPanel">
+      <div class="payroll-summary-title">
+        <h3><i class="fa-solid fa-calculator"></i> حاسبة الراتب — ${escapeHtml(emp.name || '-')}</h3>
+        <p>${escapeHtml(getTimesheetPeriodLabel(cfg))} · توثيق المستحقات شهراً بشهر بنفس محرك حساب الرواتب (عرض فقط، لا يعدّل أي بيانات).</p>
+      </div>
+      ${cardsHtml}
+      ${totalsHtml}
+    </div>
+  `;
+}
+
+function getPayrollPeriodForMonth(db, year, month) {
+  ensurePayrollCollections(db);
+  return (db.payroll_periods || []).find(item => Number(item.year) === Number(year) && Number(item.month) === Number(month)) || null;
+}
+
+function getTimesheetPayrollState(emp, cfg) {
+  const db = getPayrollDataCache();
+  ensurePayrollCollections(db);
+  const period = getPayrollPeriodForMonth(db, cfg.year, cfg.month);
+  const closing = period && emp?.id
+    ? (db.employee_payroll_closings || []).find(row => row.payrollPeriodId === period.id && row.employeeId === emp.id)
+    : null;
+  const summary = emp ? getEmployeeMonthlyPayrollSummary(emp, cfg) : null;
+  return { db, period, closing, summary };
+}
+
+function buildTimesheetPayrollControlsHtml(emp, cfg) {
+  const records = recordsForTimesheetRange(emp, cfg);
+  const documentedCount = records.filter(rec => rec.timesheetDocumented).length;
+  const rangeLabel = getTimesheetPeriodLabel(cfg);
+  const previousBalance = asMoney(emp?.prevAdvance);
+  // Official per-month engine (same as payroll closing/print) — the ONE net for the page.
+  const official = getTimesheetOfficialRangeResult(emp, cfg);
+  const suggestedPosting = Math.round(official.finalSalary || 0);
+  return `
+    <div class="timesheet-payroll-control-panel">
+      <div class="timesheet-payroll-copy">
+        <strong><i class="fa-solid fa-stamp"></i> مراجعة وتوثيق الأيام المعروضة</strong>
+        <span>${escapeHtml(rangeLabel)} · ${escapeHtml(emp?.name || '-')} · موثق ${documentedCount} من ${records.length} يوم</span>
+      </div>
+      <div class="timesheet-payroll-metrics">
+        <span>صافي الأشهر المعروضة: <b>${formatMoneyReadable(official.rangeNetBeforeBalance || 0)}</b></span>
+        <span>بعد الرصيد السابق: <b>${formatMoneyReadable(official.finalSalary || 0)}</b></span>
+        <span>رصيد الموظف الحالي: <b>${formatSignedBalance(previousBalance)}</b></span>
+      </div>
+      <div class="timesheet-payroll-inputs">
+        <label>
+          <span>الرصيد السابق</span>
+          <input type="number" id="timesheetPrevBalanceInput" class="form-input" value="${previousBalance}" oninput="updateTimesheetEmployeePrevBalance(this.value)">
+        </label>
+        <label>
+          <span>مبلغ تثبيت الراتب</span>
+          <input type="number" id="timesheetPostingAmountInput" class="form-input" value="${suggestedPosting}" oninput="this.dataset.manualEdit='1'">
+        </label>
+      </div>
+      <div class="timesheet-payroll-actions">
+        <button class="btn-primary" onclick="timesheetDocumentVisibleDays()" title="يوثق فقط الأيام الظاهرة حالياً في فلتر الأشهر والموظف">
+          <i class="fa-solid fa-circle-check"></i> توثيق الأيام المعروضة
+        </button>
+        <button class="btn-primary" onclick="timesheetPostSelectedEmployeeSalary()" title="يحفظ مبلغ التثبيت كرصيد للموظف في ملف الموظفين بدون إنشاء قيد محاسبي">
+          <i class="fa-solid fa-file-invoice-dollar"></i> تثبيت الراتب للرصيد
+        </button>
+        <button class="btn-secondary" onclick="openWorkshopLedgerPayroll()">
+          <i class="fa-solid fa-table-list"></i> لوحة الرواتب
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function buildTimesheetAdvanceLedgerPanelHtml(emp, cfg) {
+  const db = getPayrollDataCache();
+  const selectedMonths = getTimesheetSelectedMonths(cfg.year);
+  const rows = selectedMonths.flatMap(month => getEmployeeAdvanceRowsForPeriod(db, emp, cfg.year, month, { includeNeedsReview: true }))
+    .slice()
+    .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')));
+  const acceptedRows = rows.filter(row => row.status !== 'needs_review');
+  const total = acceptedRows.reduce((sum, item) => sum + asMoney(item.amount), 0);
+  const cashTotal = acceptedRows.filter(item => item.type === 'cash').reduce((sum, item) => sum + asMoney(item.amount), 0);
+  const foodTotal = acceptedRows.filter(item => item.type === 'food').reduce((sum, item) => sum + asMoney(item.amount), 0);
+  const reviewCount = rows.length - acceptedRows.length;
+  const rowHtml = rows.length ? rows.map(item => `
+    <tr>
+      <td>${escapeHtml(item.date || '-')}</td>
+      <td>${escapeHtml(item.type === 'food' ? 'طعام' : item.type === 'cash' ? 'نقدية' : (item.type || '-'))}</td>
+      <td class="num">${formatNum(item.amount)} ${getAdminCurrencySymbol()}</td>
+      <td>${escapeHtml(item.description || item.advanceTypeRaw || '-')}</td>
+      <td><span class="ts-status-pill ${item.status === 'needs_review' ? 'warn' : 'done'}">${escapeHtml(item.status === 'needs_review' ? 'تحتاج مراجعة' : 'معتمدة')}</span></td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" class="empty-cell">لا توجد سلف مسجلة لهذا الموظف في الأيام المعروضة.</td></tr>';
+
+  return `
+    <div class="timesheet-advance-ledger-panel">
+      <div class="timesheet-advance-ledger-head">
+        <div>
+          <strong><i class="fa-solid fa-hand-holding-dollar"></i> سجل السلف الرسمي لهذا الموظف</strong>
+          <span>${escapeHtml(emp?.name || '-')} · ${escapeHtml(getTimesheetPeriodLabel(cfg))}</span>
+        </div>
+        <button class="btn-secondary" onclick="openWorkshopLedgerAdvances()"><i class="fa-solid fa-up-right-from-square"></i> فتح كل السلف</button>
+      </div>
+      <div class="timesheet-advance-kpis">
+        <span>الإجمالي المعتمد: <b>${formatMoneyReadable(total)}</b></span>
+        <span>نقدي: <b>${formatMoneyReadable(cashTotal)}</b></span>
+        <span>طعام: <b>${formatMoneyReadable(foodTotal)}</b></span>
+        <span>تحتاج مراجعة: <b>${reviewCount}</b></span>
+      </div>
+      <div class="timesheet-advance-table-wrap">
+        <table class="timesheet-advance-table">
+          <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>الوصف</th><th>الحالة</th></tr></thead>
+          <tbody>${rowHtml}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+window.openWorkshopLedgerAdvances = function () {
+  switchPage('workshop_ledger');
+  setTimeout(() => { if (window.wsSetView) window.wsSetView('advances'); }, 300);
+};
+
+window.openWorkshopLedgerPayroll = function () {
+  switchPage('workshop_ledger');
+  setTimeout(() => { if (window.wsSetView) window.wsSetView('payroll'); }, 300);
+};
+
+window.updateTimesheetEmployeePrevBalance = function (value) {
+  const emp = employees[selectedEmpIdx];
+  if (!emp) return;
+  emp.prevAdvance = parseFloat(value) || 0;
+  const official = getTimesheetOfficialRangeResult(emp, getConfig());
+  const postingInput = document.getElementById('timesheetPostingAmountInput');
+  if (postingInput && !postingInput.dataset.manualEdit) {
+    postingInput.value = Math.round(official.finalSalary || 0);
+  }
+  applyTimesheetStatCards(official);
+  debounceSave();
+};
+
+window.timesheetDocumentVisibleDays = function () {
+  const cfg = getConfig();
+  const emp = employees[selectedEmpIdx];
+  if (!emp) return;
+  const records = recordsForTimesheetRange(emp, cfg);
+  if (!records.length) {
+    showToast('لا توجد أيام معروضة للتوثيق.', 'warning');
+    return;
+  }
+  if (!confirm(`توثيق ${records.length} يوم معروض للموظف ${emp.name} ضمن ${getTimesheetPeriodLabel(cfg)}؟`)) return;
+  const batchId = makeId('tsdoc');
+  const at = new Date().toISOString();
+  const by = window.PentagonAuth?.getCurrentUser?.()?.id || 'system';
+  records.forEach(rec => {
+    rec.timesheetDocumented = true;
+    rec.timesheetDocumentedAt = at;
+    rec.timesheetDocumentedBy = by;
+    rec.timesheetDocumentBatchId = batchId;
+  });
+  saveData();
+  renderTimesheet();
+  showToast(`تم توثيق ${records.length} يوم ظاهر بعلامة صح خضراء.`, 'success');
+};
+
+window.timesheetCloseCurrentPayrollMonth = window.timesheetDocumentVisibleDays;
+
+window.timesheetPostSelectedEmployeeSalary = async function () {
+  const cfg = getConfig();
+  const emp = employees[selectedEmpIdx];
+  if (!emp) return;
+  const amount = parseFloat(document.getElementById('timesheetPostingAmountInput')?.value || '0') || 0;
+  if (!confirm(`تثبيت مبلغ ${formatMoneyReadable(amount)} كرصيد للموظف ${emp.name}؟ سيُحفظ في رصيد الموظف اليدوي بدون قيد محاسبي.`)) return;
+  emp.prevAdvance = -Math.round(amount);
+  emp.lastTimesheetSalaryFix = {
+    amount: Math.round(amount),
+    periodLabel: getTimesheetPeriodLabel(cfg),
+    fixedAt: new Date().toISOString(),
+    fixedBy: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+  };
+  saveData();
+  renderTimesheet();
+  showToast(`تم تثبيت راتب ${emp.name} في الرصيد: ${formatSignedBalance(emp.prevAdvance)}.`, 'success');
+};
 
 // Live, in-place refresh of a single timesheet row's derived cells — does NOT touch any <input>,
 // so the field the user is typing in keeps focus and caret position.
@@ -9148,7 +10646,9 @@ function refreshTimesheetRow(empIdx, dayIdx) {
   if (!emp || !emp.records || !emp.records[dayIdx]) return;
   const row = document.querySelector(`#timesheetBody tr[data-ri="${dayIdx}"]`);
   if (!row) return;
-  const calc = getDailyCalc(emp.records[dayIdx], emp);
+  const rec = emp.records[dayIdx];
+  const period = getRecordPeriod(rec, getConfig());
+  const calc = getDailyCalc(rec, emp, { ...getConfig(), year: period.year, month: period.month });
   const netEl = row.querySelector('[data-ts-net]');
   if (netEl) netEl.textContent = formatMoneyReadable(calc.total);
   const otInfo = row.querySelector('[data-ts-otinfo]');
@@ -9169,20 +10669,36 @@ function refreshTimesheetAggregates() {
   const cfg = getConfig();
   const emp = employees[selectedEmpIdx];
   if (!emp) return;
-  const result = calculateSalaryForEmployee(emp, cfg);
-  applyTimesheetStatCards(result);
+  // Selected employee only: recompute the official month docs once and reuse everywhere —
+  // stat cards, bottom calculator panel AND the in-table month separators (no <input> is touched).
+  const monthlyDocs = getTimesheetMonthlyDocs(emp, cfg);
+  const officialResult = getTimesheetOfficialRangeResult(emp, cfg, monthlyDocs);
+  applyTimesheetStatCards(officialResult);
+  const docsByMonth = {};
+  monthlyDocs.forEach(doc => { docsByMonth[`${doc.year}-${doc.month}`] = doc; });
+  document.querySelectorAll('#timesheetBody tr[data-ts-month-summary]').forEach(row => {
+    const doc = docsByMonth[row.dataset.tsMonthSummary];
+    if (doc) row.firstElementChild.innerHTML = buildTimesheetMonthSummaryInnerHtml(doc);
+  });
   const panel = document.getElementById('timesheetSummaryPanel');
-  if (panel) panel.outerHTML = buildTimesheetSummaryPanelHtml(cfg);
+  if (panel) panel.outerHTML = buildTimesheetSummaryPanelHtml(cfg, monthlyDocs);
+  const controls = document.querySelector('.timesheet-payroll-control-panel');
+  if (controls) controls.outerHTML = buildTimesheetPayrollControlsHtml(emp, cfg);
   // Refresh the monthly-grace markers across all rows (cheap DOM updates, one recompute).
-  const graceByDay = result.graceByDay || {};
+  const graceByKey = officialResult.graceByKey || {};
   document.querySelectorAll('#timesheetBody tr[data-ri]').forEach(row => {
     const rec = emp.records[Number(row.dataset.ri)];
     const graceEl = row.querySelector('[data-ts-gracemark]');
     if (!rec || !graceEl) return;
-    const g = graceByDay[rec.day] || 0;
+    const p = getRecordPeriod(rec, cfg);
+    const g = graceByKey[`${p.year}-${p.month}-${p.day}`] || 0;
     graceEl.style.display = g > 0 ? '' : 'none';
-    graceEl.textContent = `⏱️ سماحية ${Math.round(g)}د`;
+    graceEl.textContent = `⏱ سماحية ${Math.round(g)}د`;
   });
+  // Keep the docked calculator in step with table edits (it shows the same official numbers).
+  if (document.getElementById('pageCalculator')?.classList.contains('ts-docked-calc')) {
+    syncDockedCalculatorToTimesheet();
+  }
 }
 
 function renderWarningIcon(rec, ri) {
@@ -9264,10 +10780,10 @@ function renderTimesheet() {
   const tabsContainer = document.getElementById('empTabs');
   tabsContainer.innerHTML = '';
   const cfg = getConfig();
-  const hasEmployeesThisMonth = ensureSelectedEmployeeForMonth(cfg.year, cfg.month);
+  ensureSelectedEmployeeForTimesheetRange(cfg);
   employees.forEach((emp, idx) => {
-    // Filter: Show only employees with records in this month OR the selected one
-    const hasMonthRecords = recordsForMonth(emp, cfg.year, cfg.month).length > 0;
+    // Filter: show employees with records in any selected month.
+    const hasMonthRecords = recordsForTimesheetRange(emp, cfg).length > 0;
     if (!hasMonthRecords) return;
 
     const btn = document.createElement('button');
@@ -9296,16 +10812,24 @@ function renderTimesheet() {
     tableContainer.style.marginTop = '20px';
     document.getElementById('pageTimesheet').appendChild(tableContainer);
   }
+  tableContainer.classList.add('timesheet-table-container');
 
   const emp = employees[selectedEmpIdx];
   if (!emp) return;
 
-  const monthRecs = recordsForMonth(emp, cfg.year, cfg.month);
+  const monthRecs = recordsForTimesheetRange(emp, cfg);
 
-  // Calculate stats and grace usage (top stat cards)
-  applyTimesheetStatCards(calculateSalaryForEmployee(emp, cfg));
+  // Month-by-month OFFICIAL salary docs (payroll-closing engine) — computed ONCE per render
+  // and reused everywhere: stat cards, grace markers, month separators and the bottom panel.
+  const monthlyDocs = getTimesheetMonthlyDocs(emp, cfg);
+  const officialResult = getTimesheetOfficialRangeResult(emp, cfg, monthlyDocs);
+
+  // Top stat cards read the official aggregate (same numbers the close/print/slip use).
+  applyTimesheetStatCards(officialResult);
 
   tableContainer.innerHTML = `
+    ${buildTimesheetPayrollControlsHtml(emp, cfg)}
+    ${buildTimesheetAdvanceLedgerPanelHtml(emp, cfg)}
     <table class="data-table">
       <thead>
         <tr>
@@ -9332,24 +10856,50 @@ function renderTimesheet() {
   `;
 
   const tbody = document.getElementById('timesheetBody');
-  const sortedRecs = monthRecs.sort((a, b) => a.day - b.day);
-  // Monthly grace allocation (which days consumed the 100-min lateness grace) for the marker.
-  const graceByDay = (calculateSalaryForEmployee(emp, cfg).graceByDay) || {};
+  const sortedRecs = monthRecs;
+  // Monthly grace allocation (which days consumed the 100-min lateness grace) for the ⏱ marker —
+  // taken from the official per-month engine's graceByDay allocation.
+  const graceByKey = officialResult.graceByKey || {};
+
+  const docsByMonth = {};
+  monthlyDocs.forEach(doc => { docsByMonth[`${doc.year}-${doc.month}`] = doc; });
+  let tsCurrentMonthKey = null;
+  const appendMonthSummaryRow = (key) => {
+    const doc = docsByMonth[key];
+    if (!doc) return;
+    const sumTr = document.createElement('tr');
+    sumTr.className = 'ts-month-summary-row';
+    sumTr.dataset.tsMonthSummary = key;
+    sumTr.innerHTML = `<td colspan="16">${buildTimesheetMonthSummaryInnerHtml(doc)}</td>`;
+    tbody.appendChild(sumTr);
+  };
 
   sortedRecs.forEach((rec) => {
     // Find absolute index in emp.records
     const ri = emp.records.findIndex(r => r.day === rec.day && r.month === rec.month && r.year === rec.year);
-    const dayOfWeek = getDayOfWeek(cfg.year, cfg.month, rec.day);
+    const recPeriod = getRecordPeriod(rec, cfg);
+    // Clear month separator: entitlement summary of the finished month + header of the new one.
+    const tsMonthKey = `${recPeriod.year}-${recPeriod.month}`;
+    if (tsMonthKey !== tsCurrentMonthKey) {
+      if (tsCurrentMonthKey !== null) appendMonthSummaryRow(tsCurrentMonthKey);
+      const headTr = document.createElement('tr');
+      headTr.className = 'ts-month-header-row';
+      headTr.innerHTML = `<td colspan="16"><span class="ts-month-header-label"><i class="fa-regular fa-calendar-days"></i> شهر ${escapeHtml(MONTHS_AR[recPeriod.month - 1] || recPeriod.month)} ${recPeriod.year}</span></td>`;
+      tbody.appendChild(headTr);
+      tsCurrentMonthKey = tsMonthKey;
+    }
+    const recCfg = { ...cfg, year: recPeriod.year, month: recPeriod.month, nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary) };
+    const dayOfWeek = getDayOfWeek(recPeriod.year, recPeriod.month, recPeriod.day);
     const dayName = DAY_NAMES[dayOfWeek];
     const isFri = dayOfWeek === 5;
-    const calc = getDailyCalc(rec, emp);
+    const calc = getDailyCalc(rec, emp, recCfg);
     const defaultCalc = getDailyCalc({ 
       ...rec, 
       allowanceOverride: null, 
       otHoursOverride: null, 
       lateOverride: null, 
       earlyDeductionOverride: null 
-    }, emp);
+    }, emp, recCfg);
 
     const tr = document.createElement('tr');
     tr.dataset.ri = ri; // anchor for in-place row refresh while typing (see refreshTimesheetRow)
@@ -9369,10 +10919,26 @@ function renderTimesheet() {
         ${optionsHtml}
       </select>
     `;
+    const noteText = rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '';
+    const officialAdvancesForDay = getOfficialAdvanceRowsForRecord(emp, rec, recCfg);
+    const officialAdvanceTotalForDay = officialAdvancesForDay.reduce((sum, item) => sum + asMoney(item.amount), 0);
+    const officialAdvanceApplied = getOfficialAdvanceAppliedForRecord(emp, rec, recCfg);
+    const hasOfficialOverride = rec.officialAdvanceOverride !== undefined && rec.officialAdvanceOverride !== null && rec.officialAdvanceOverride !== '';
+    const officialAdvanceInputValue = hasOfficialOverride ? officialAdvanceApplied : (officialAdvanceApplied || '');
+    const officialAdvanceTitle = officialAdvancesForDay
+      .map(item => `${item.date || ''} · ${formatMoneyReadable(item.amount)} · ${item.description || item.advanceTypeRaw || ''}`)
+      .join(' | ');
+    const officialAdvanceBadge = officialAdvanceTotalForDay > 0 || rec.officialAdvanceOverride != null
+      ? `<div class="timesheet-official-advance-edit" title="${escapeHtml(officialAdvanceTitle || 'سلفة رسمية قابلة للتعديل لهذا اليوم')}">
+          <span>رسمي</span>
+          <input type="number" class="timesheet-official-advance-input" value="${officialAdvanceInputValue}" placeholder="${formatNum(officialAdvanceTotalForDay)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'officialAdvanceOverride', this.value)">
+        </div>`
+      : '';
+    const graceKey = `${recPeriod.year}-${recPeriod.month}-${recPeriod.day}`;
 
     tr.innerHTML = `
       <td style="font-weight:700">${dayName}</td>
-      <td style="opacity:0.7; display: inline-flex; align-items: center; gap: 4px; justify-content: center; min-height: 34px;">${rec.day}/${cfg.month} ${renderWarningIcon(rec, ri)}</td>
+      <td style="opacity:0.7; display: inline-flex; align-items: center; gap: 4px; justify-content: center; min-height: 34px;">${recPeriod.day}/${recPeriod.month} ${renderTimesheetDocumentedMarker(rec)} ${renderWarningIcon(rec, ri)}</td>
       <td class="timesheet-cell-marked"><input class="cell-input${aiInputClass(rec, 'checkIn')}" value="${rec.checkIn || ''}" placeholder="--:--" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'checkIn', this.value)">${aiFieldIcon(rec, 'checkIn')}${renderTimesheetManagerMarker(rec)}</td>
       <td class="timesheet-cell-marked"><input class="cell-input${aiInputClass(rec, 'checkOut')}" value="${rec.checkOut || ''}" placeholder="--:--" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'checkOut', this.value)">${aiFieldIcon(rec, 'checkOut')}</td>
       <td style="display:flex; align-items:center; justify-content:center; gap:5px;">
@@ -9381,7 +10947,10 @@ function renderTimesheet() {
         ${rec.managerApprovalKind === 'leave' ? renderTimesheetManagerMarker(rec) : ''}
       </td>
       <td class="timesheet-cell-marked">
-        <input class="cell-input notes-input" value="${escapeHtml(rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '')}" placeholder="ملاحظة..." oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'notes', this.value)">
+        <div class="timesheet-note-wrap">
+          <input class="cell-input notes-input" value="${escapeHtml(noteText)}" title="${escapeHtml(noteText)}" placeholder="ملاحظة..." oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'notes', this.value); const tip=this.parentElement.querySelector('.timesheet-note-tip'); if(tip) tip.textContent=this.value || 'لا توجد ملاحظة'; this.title=this.value || '';">
+          <span class="timesheet-note-tip">${escapeHtml(noteText || 'لا توجد ملاحظة')}</span>
+        </div>
       </td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow" value="${rec.allowanceOverride ?? ''}" placeholder="${Math.round(defaultCalc.allowance)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'allowanceOverride', this.value)"></td>
       <td class="timesheet-cell-marked">
@@ -9394,7 +10963,7 @@ function renderTimesheet() {
         <div style="display:flex; flex-direction:column; align-items:center; gap:2px; justify-content:center;">
           <input type="number" class="cell-input narrow" style="width:45px; text-align:center; height:22px; padding:2px; margin:0;" value="${rec.lateOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.late)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'lateOverride', this.value)">
           <span data-ts-lateinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.lateMinutes || 0)}د (${formatMoneyReadable(calc.late)})</span>
-          <span data-ts-gracemark title="تم استعمال سماحية التأخير الشهرية هنا" style="font-size:9px; color:#a3e635; margin-top:-1px; ${graceByDay[rec.day] > 0 ? '' : 'display:none;'}">⏱️ ${Math.round(graceByDay[rec.day] || 0)}د</span>
+          <span data-ts-gracemark title="تم استعمال سماحية التأخير الشهرية هنا" style="font-size:9px; color:#a3e635; margin-top:-1px; ${graceByKey[graceKey] > 0 ? '' : 'display:none;'}">⏱ ${Math.round(graceByKey[graceKey] || 0)}د</span>
         </div>
       </td>
       <td class="timesheet-cell-marked">
@@ -9403,7 +10972,13 @@ function renderTimesheet() {
           <span data-ts-earlyinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.earlyMinutes || 0)}د (${formatMoneyReadable(calc.earlyDeduction)})</span>
         </div>
       </td>
-      <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'advance')}" value="${rec.advance || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'advance', this.value)">${aiFieldIcon(rec, 'advance')}</td>
+      <td class="timesheet-cell-marked">
+        <div class="timesheet-advance-cell">
+          <input type="number" class="cell-input narrow${aiInputClass(rec, 'advance')}" value="${rec.advance || ''}" title="سلفة يدوية داخل التايم شيت" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'advance', this.value)">
+          ${aiFieldIcon(rec, 'advance')}
+          ${officialAdvanceBadge}
+        </div>
+      </td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'penalty')}" value="${rec.penalty || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'penalty', this.value)">${aiFieldIcon(rec, 'penalty')}</td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'damage')}" value="${rec.damage || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'damage', this.value)">${aiFieldIcon(rec, 'damage')}</td>
       <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'bonus')}" value="${rec.bonus || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'bonus', this.value)">${aiFieldIcon(rec, 'bonus')}</td>
@@ -9412,8 +10987,63 @@ function renderTimesheet() {
     `;
     tbody.appendChild(tr);
   });
+  if (tsCurrentMonthKey !== null) appendMonthSummaryRow(tsCurrentMonthKey);
 
-  tableContainer.insertAdjacentHTML('beforeend', buildTimesheetSummaryPanelHtml(cfg));
+  tableContainer.insertAdjacentHTML('beforeend', buildTimesheetSummaryPanelHtml(cfg, monthlyDocs));
+
+  // Everything in one page: the FULL salary calculator lives at the very bottom of the timesheet.
+  dockCalculatorAtTimesheetBottom();
+}
+
+// ─── Salary-calculator docking ───
+// The whole calculator (#pageCalculator) is ONE live DOM node. On the timesheet it is MOVED
+// (never cloned — ids like cfgMonth/inpAttendance must stay unique) into a dock at the bottom
+// of the page; opening the calculator's own nav item moves it back. Nothing inside it changes,
+// so payment registration, receipt printing and the AI review keep working from both homes.
+function dockCalculatorAtTimesheetBottom() {
+  const tsPage = document.getElementById('pageTimesheet');
+  if (!tsPage) return;
+  const calcSection = document.getElementById('pageCalculator');
+  if (!calcSection) {
+    // Calculator template not hydrated yet — load it, then dock if we're still on the timesheet.
+    if (typeof window.ensurePageTemplateLoaded === 'function') {
+      window.ensurePageTemplateLoaded('calculator').then(() => {
+        if (currentPage === 'timesheet' && document.getElementById('pageCalculator')) {
+          dockCalculatorAtTimesheetBottom();
+        }
+      });
+    }
+    return;
+  }
+  let dock = document.getElementById('timesheetCalculatorDock');
+  if (!dock) {
+    dock = document.createElement('div');
+    dock.id = 'timesheetCalculatorDock';
+  }
+  tsPage.appendChild(dock); // re-append → the dock is always the LAST block of the page
+  if (calcSection.parentElement !== dock) dock.appendChild(calcSection);
+  calcSection.classList.add('ts-docked-calc');
+  syncDockedCalculatorToTimesheet();
+}
+
+function undockCalculatorToOwnPage() {
+  const calcSection = document.getElementById('pageCalculator');
+  if (!calcSection) return;
+  calcSection.classList.remove('ts-docked-calc');
+  const mainContent = document.getElementById('mainContent');
+  if (mainContent && calcSection.parentElement !== mainContent) mainContent.appendChild(calcSection);
+}
+
+// While docked, the calculator follows the timesheet's selected employee + displayed month range
+// (onCalcEmpChange already reads recordsForTimesheetRange, so both views always agree).
+function syncDockedCalculatorToTimesheet() {
+  const select = document.getElementById('calcEmpSelect');
+  if (!select) return;
+  refreshCalcEmpDropdown();
+  if (selectedEmpIdx >= 0 && employees[selectedEmpIdx]) {
+    select.value = String(selectedEmpIdx);
+  }
+  onCalcEmpChange();
 }
 
 function autoFillMissingDaysForEmployee(emp, year, month) {
@@ -9438,7 +11068,8 @@ function autoFillMissingDaysForEmployee(emp, year, month) {
 function autoFillMissingDays() {
   if (selectedEmpIdx < 0 || !employees[selectedEmpIdx]) return;
   const cfg = getConfig();
-  const added = autoFillMissingDaysForEmployee(employees[selectedEmpIdx], cfg.year, cfg.month);
+  const added = getTimesheetSelectedMonths(cfg.year)
+    .reduce((sum, month) => sum + autoFillMissingDaysForEmployee(employees[selectedEmpIdx], cfg.year, month), 0);
   if (added > 0) {
     showToast(`✅ تم تعبئة ${added} يوم مفقود كغياب`, 'info');
     renderTimesheet();
@@ -9450,6 +11081,10 @@ function autoFillMissingDays() {
 
 function updateRecord(empIdx, dayIdx, field, value) {
   const rec = employees[empIdx].records[dayIdx];
+  if (isPayrollPeriodClosedForRecord(rec)) {
+    showToast('شهر الرواتب مغلق. استخدم reopen أو payroll adjustment بدل تعديل التايم شيت مباشرة.', 'warning');
+    return;
+  }
 
   if (field === 'checkIn' || field === 'checkOut') {
     rec[field] = value;
@@ -9462,10 +11097,15 @@ function updateRecord(empIdx, dayIdx, field, value) {
     }
   } else if (['advance', 'penalty', 'bonus', 'damage'].includes(field)) {
     rec[field] = parseFloat(value) || 0;
+  } else if (field === 'officialAdvanceOverride') {
+    rec[field] = (value === '' || value == null) ? null : parseFloat(value) || 0;
   } else if (['allowanceOverride', 'otHoursOverride', 'lateOverride', 'earlyDeductionOverride'].includes(field)) {
     rec[field] = (value === '' || value == null) ? null : parseFloat(value);
   } else {
     rec[field] = value;
+  }
+  if (rec.timesheetDocumented) {
+    rec.timesheetEditedAfterDocumentAt = new Date().toISOString();
   }
 
   // Do NOT rebuild the whole table here. This handler fires on every keystroke (oninput); a full
@@ -9591,8 +11231,9 @@ function renderReport() {
         ['خصم الإجازات', formatNum(result.leaveDeduction) + ' ' + currency, 'val-deduct'],
         ['خصم الغيابات', formatNum(result.absenceDeduction) + ' ' + currency, 'val-deduct'],
         ['غرامة الجمعة التلقائية', formatNum(result.autoFridayPenalty) + ' ' + currency, 'val-deduct'],
-        ['سلف الشهر الحالي', formatNum(result.currentAdvance) + ' ' + currency, 'val-deduct'],
-        ['إجمالي سلف الشهر', formatNum(result.totalAdvance) + ' ' + currency, 'val-deduct'],
+        ['سلف التايم شيت اليدوية', formatNum(result.currentAdvance) + ' ' + currency, 'val-deduct'],
+        ['السلف الرسمية من سجل القاصة', formatNum(result.officialAdvance || 0) + ' ' + currency, 'val-deduct'],
+        ['إجمالي السلف والرصيد السابق', formatNum(result.totalAdvance) + ' ' + currency, 'val-deduct'],
         ['العقوبات', formatNum(result.totalPenalty) + ' ' + currency, 'val-deduct'],
         ['الأضرار', formatNum(result.totalDamage) + ' ' + currency, 'val-deduct'],
       ]
@@ -9751,38 +11392,65 @@ function updatePaymentBalance() {
 }
 
 // ─── Payment actions ───
-function markAsPaid() {
+// Audit fix (2026-07-04): logs the legacy off-ledger "تأكيد الدفع" toggle into
+// the same audit_log the rest of the payroll system writes to. This does NOT
+// markAsPaid() (Production Stabilization Sprint, 2026-07-04): fully converted
+// to ledger-backed. It no longer touches employee.prevAdvance or emp.payments
+// as a source of truth under any circumstance — every payment made from this
+// legacy report-page button now goes through settlePayrollPayment() exactly
+// like the new payroll screen, producing a real posted account_move
+// (Dr 2100 accrued_payroll / Cr 1001 cash_workshop). If no official payroll
+// closing exists yet for this employee/period, the action is BLOCKED (not
+// silently recorded off-ledger, and not auto-created either — closing a
+// period affects every eligible employee that month at once, so it must go
+// through the real closing screen, not be a side effect of one employee's
+// "mark paid" click). emp.payments[...] is kept only as local UI-display
+// cache (which button state to render) referencing the real moveId, never as
+// the source of the balance itself.
+async function markAsPaid() {
   const cfg = getConfig();
   const emp = employees[reportEmpIdx];
   if (!emp) return;
 
+  const cachedDb = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+  const existingClosing = (typeof findPayrollClosingForEmployee === 'function' && emp.id)
+    ? findPayrollClosingForEmployee(cachedDb, emp.id, cfg.year, cfg.month)
+    : null;
+
+  if (!existingClosing) {
+    showToast('لا يوجد إقفال راتب رسمي مرحّل لهذا الموظف ولهذا الشهر. أغلق ورحّل الشهر من شاشة إقفال الرواتب الجديدة أولاً، ثم سجّل الدفع من هناك أو من هنا بعد الترحيل.', 'error');
+    return;
+  }
+
   const paymentKey = `paid_${cfg.year}_${cfg.month}`;
   emp.payments = emp.payments || {};
-
   const paymentRecord = emp.payments[paymentKey];
-  const paidAmount = parseFloat(document.getElementById('inpPaidAmount').value) || 0;
 
   if (paymentRecord && paymentRecord.paid) {
-    // Unmark as paid
-    if (paymentRecord.balanceBeforePayment !== undefined) {
-      emp.prevAdvance = paymentRecord.balanceBeforePayment;
-    }
-    emp.payments[paymentKey] = null;
-    showToast('تم إلغاء حالة الدفع', 'info');
-  } else {
-    const balanceBeforePayment = emp.prevAdvance || 0;
-    // Mark as paid
+    // This payment is a real posted account_move now — it cannot be silently
+    // "unmarked" client-side. Undoing it means reversing the posting.
+    showToast('هذه الدفعة مرحّلة كقيد رسمي في الأستاذ العام. لإلغائها استخدم "إعادة فتح فترة الرواتب" من شاشة إقفال الرواتب (يتطلب صلاحية مدير وسبباً، وينشئ قيد عكس).', 'warning');
+    return;
+  }
+
+  const paidAmount = parseFloat(document.getElementById('inpPaidAmount').value) || 0;
+  if (paidAmount <= 0) {
+    showToast('أدخل مبلغاً صحيحاً للدفع', 'error');
+    return;
+  }
+
+  try {
+    const { move } = await settlePayrollPayment(existingClosing.id, paidAmount);
     emp.payments[paymentKey] = {
       paid: true,
       amount: paidAmount,
-      balanceBeforePayment,
-      date: new Date().toISOString()
+      moveId: move.id,
+      date: new Date().toISOString(),
     };
-
-    const result = calculateSalaryForEmployee(emp, cfg);
-    applyPaymentToEmployeeBalance(emp, result, paidAmount);
-    
-    showToast(`تم تأكيد دفع مبلغ ${formatAdminMoney(paidAmount)} وتحديث الرصيد بنجاح!`, 'success');
+    showToast(`تم تسجيل دفع مبلغ ${formatAdminMoney(paidAmount)} كقيد رسمي مرحّل (${move.name || move.id})`, 'success');
+  } catch (e) {
+    showToast(e.message || 'تعذر تسجيل الدفع', 'error');
+    return;
   }
 
   saveData();
@@ -9815,39 +11483,193 @@ function prepareSmartReportSummary() {
   `;
 }
 
+// Print EXACTLY the currently displayed state: selected employee + ALL selected months
+// (same month separators and monthly entitlement docs as the screen), not one default month.
 function printTimesheetForSelectedMonth() {
   const cfg = getConfig();
   const selectedEmp = employees[selectedEmpIdx];
   if (!selectedEmp) { showToast('لا توجد بيانات للطباعة', 'error'); return; }
+  const monthlyDocs = getTimesheetMonthlyDocs(selectedEmp, cfg);
+  if (!monthlyDocs.length) { showToast('لا توجد أيام معروضة للطباعة ضمن الأشهر المختارة', 'error'); return; }
   const w = window.open('', '_blank', 'width=1100,height=800');
   if (!w) return;
+
   const shift = getEmployeeShift(selectedEmp);
+  const nominalSalary = getEmployeeNominalSalary(selectedEmp, cfg.nominalSalary);
   const fmtMin = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
   const statusLabel = s => { const o = STATUS_OPTIONS.find(x => x.val === normalizeStatus(s)); return o ? o.label : (s || '-'); };
   const money = v => Math.round(v || 0).toLocaleString('en-US');
-  const recs = recordsForMonth(selectedEmp, cfg.year, cfg.month).slice().sort((a, b) => a.day - b.day);
-  // Per-day values come from the SAME engine the timesheet uses (getDailyCalc) → print matches screen.
-  const rows = recs.map(rec => {
-    const c = getDailyCalc(rec, selectedEmp);
-    const noteText = rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '';
-    return `<tr><td>${rec.day}/${cfg.month}</td><td>${statusLabel(rec.status)}</td><td>${rec.checkIn || '-'}</td><td>${rec.checkOut || '-'}</td><td>${money(c.dayPay)}</td><td>${money(c.allowance)}</td><td>${money(c.otValue)}</td><td>${money(c.penaltyTotal)}</td><td>${money(c.total)}</td><td>${escapeHtml(noteText)}</td></tr>`;
+  const periodLabel = getTimesheetPeriodLabel(cfg);
+
+  // One section per displayed month: attendance table + entitlement summary.
+  const monthSections = monthlyDocs.map((doc, idx) => {
+    const monthCfg = { ...cfg, year: doc.year, month: doc.month, nominalSalary, skipSystemRules: true };
+    const recs = recordsForMonth(selectedEmp, doc.year, doc.month).slice().sort((a, b) => a.day - b.day);
+    // Per-day values from the SAME engine the timesheet shows (getDailyCalc) with the
+    // record's explicit month/year — never the implicit current month.
+    const rows = recs.map(rec => {
+      const c = getDailyCalc(rec, selectedEmp, monthCfg);
+      const dayName = DAY_NAMES[getDayOfWeek(doc.year, doc.month, rec.day)] || '';
+      const noteText = rec.notes || rec.correctionNotes || rec.correctionReason || rec.managerApprovalNote || '';
+      const docMark = rec.timesheetDocumented ? ' <span class="doc-check" title="موثق">✓</span>' : '';
+      return `<tr><td>${dayName}</td><td>${rec.day}/${doc.month}${docMark}</td><td>${statusLabel(rec.status)}</td><td>${rec.checkIn || '-'}</td><td>${rec.checkOut || '-'}</td><td>${money(c.dayPay)}</td><td>${money(c.allowance)}</td><td>${money(c.otValue)}</td><td>${money(c.penaltyTotal)}</td><td>${money(c.advanceTotal)}</td><td>${money(c.total)}</td><td class="note">${escapeHtml(noteText)}</td></tr>`;
+    }).join('');
+    const documentedCount = recs.filter(rec => rec.timesheetDocumented).length;
+    const r = doc.result;
+    return `
+      <section class="month-section${idx > 0 ? ' page-break' : ''}">
+        <h3 class="month-sep">مستحقات شهر ${escapeHtml(doc.label)}</h3>
+        <table>
+          <thead><tr><th>اليوم</th><th>التاريخ</th><th>الحالة</th><th>دخول</th><th>خروج</th><th>أجر اليوم</th><th>البدل</th><th>الإضافي</th><th>الغرامات</th><th>السلف</th><th>الصافي</th><th>ملاحظات</th></tr></thead>
+          <tbody>${rows || '<tr><td colspan="12">لا توجد بيانات</td></tr>'}</tbody>
+        </table>
+        <div class="month-summary">
+          <div class="month-summary-grid">
+            <span>المستحق الإجمالي: <b>${money(doc.grossDue)}</b></span>
+            <span>الغرامات: <b class="neg">${money(doc.penalties)}</b></span>
+            <span>السلف المسحوبة في هذا الشهر: <b class="neg">${money(doc.monthAdvances)}</b></span>
+            <span>صافي المستحق لهذا الشهر: <b class="net">${money(doc.netDue)}</b></span>
+            <span>الحضور: <b>${r.attendanceDays} يوم</b> · الغياب: <b>${r.absentDays}</b> · الإجازة: <b>${r.leaveDays}</b></span>
+            <span>التأخير: <b>${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</b> · الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)} (${money(r.totalOvertimeValue)})</b></span>
+            <span>حافز الجمعة: <b>${money(r.fridayCompensation)}</b> (${r.eligibleFridays} مستحقة)</span>
+            <span>المكافآت: <b>${money(r.totalBonus)}</b></span>
+            <span>التوثيق: <b>${documentedCount} من ${recs.length} يوم موثق ✓</b></span>
+          </div>
+        </div>
+      </section>
+    `;
   }).join('');
-  const res = calculateSalaryForEmployee(selectedEmp, { ...cfg, nominalSalary: getEmployeeNominalSalary(selectedEmp, cfg.nominalSalary) });
+
+  const totals = monthlyDocs.reduce((acc, doc) => {
+    acc.gross += doc.grossDue; acc.penalties += doc.penalties;
+    acc.advances += doc.monthAdvances; acc.net += doc.netDue;
+    acc.attendance += doc.result.attendanceDays || 0;
+    acc.absent += doc.result.absentDays || 0;
+    acc.leave += doc.result.leaveDays || 0;
+    acc.otHours += doc.result.totalOvertime || 0;
+    acc.lateHours += doc.result.totalLatenessHours || 0;
+    return acc;
+  }, { gross: 0, penalties: 0, advances: 0, net: 0, attendance: 0, absent: 0, leave: 0, otHours: 0, lateHours: 0 });
+  const previousBalance = asMoney(selectedEmp.prevAdvance);
+  const finalAfterBalance = totals.net - previousBalance;
+  const allRangeRecs = monthlyDocs.flatMap(doc => recordsForMonth(selectedEmp, doc.year, doc.month));
+  const totalDocumented = allRangeRecs.filter(rec => rec.timesheetDocumented).length;
+  const slipSerial = `SLP-${selectedEmp.id || selectedEmpIdx}-${cfg.year}${monthlyDocs.map(d => String(d.month).padStart(2, '0')).join('')}`;
+
+  // ── قصاصة الراتب: polished salary slip page at the end of the same print job ──
+  const slipHtml = `
+    <section class="salary-slip page-break">
+      <div class="slip-frame">
+        <div class="slip-header">
+          <div class="slip-brand">OCTAGON</div>
+          <div class="slip-brand-sub">نظام إدارة الورشة والرواتب</div>
+          <div class="slip-title">قصاصة راتب</div>
+          <div class="slip-period">${escapeHtml(periodLabel)}</div>
+        </div>
+        <table class="slip-info">
+          <tr>
+            <td><b>الموظف:</b> ${escapeHtml(selectedEmp.name || '-')}</td>
+            <td><b>الراتب الاسمي:</b> ${money(nominalSalary)} د.ع</td>
+            <td><b>الشفت:</b> ${escapeHtml(shift.label || '-')}</td>
+          </tr>
+          <tr>
+            <td><b>الحضور:</b> ${totals.attendance} يوم · <b>الغياب:</b> ${totals.absent} · <b>الإجازة:</b> ${totals.leave}</td>
+            <td><b>الإضافي:</b> ${formatHoursAsMinutesLabel(totals.otHours)} · <b>التأخير:</b> ${formatHoursAsMinutesLabel(totals.lateHours)}</td>
+            <td><b>التوثيق:</b> ${totalDocumented} من ${allRangeRecs.length} يوم ✓</td>
+          </tr>
+        </table>
+        <table class="slip-table">
+          <thead><tr><th>البند</th><th>المستحق الإجمالي</th><th>الغرامات</th><th>السلف المسحوبة</th><th>صافي الشهر</th></tr></thead>
+          <tbody>
+            ${monthlyDocs.map(doc => `<tr><td class="slip-month">مستحقات شهر ${escapeHtml(doc.label)}</td><td>${money(doc.grossDue)}</td><td class="neg">-${money(doc.penalties)}</td><td class="neg">-${money(doc.monthAdvances)}</td><td class="net">${money(doc.netDue)}</td></tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr class="slip-total"><td>إجمالي الفترة</td><td>${money(totals.gross)}</td><td class="neg">-${money(totals.penalties)}</td><td class="neg">-${money(totals.advances)}</td><td class="net">${money(totals.net)}</td></tr>
+            <tr><td colspan="4" class="slip-line-label">الرصيد السابق (بذمة الموظف)</td><td class="neg">-${money(previousBalance)}</td></tr>
+            <tr class="slip-final"><td colspan="4">الصافي النهائي المستحق للموظف</td><td>${money(finalAfterBalance)} د.ع</td></tr>
+          </tfoot>
+        </table>
+        <div class="slip-payment">
+          <span>المبلغ المدفوع: ______________________ د.ع</span>
+          <span>طريقة الدفع: ☐ نقدي &nbsp; ☐ تحويل</span>
+          <span>التاريخ: ____ / ____ / ________</span>
+        </div>
+        <div class="slip-signatures">
+          <div><div class="sig-line"></div>توقيع الموظف</div>
+          <div><div class="sig-line"></div>توقيع المحاسب</div>
+          <div><div class="sig-line"></div>توقيع المدير</div>
+        </div>
+        <div class="slip-footer">رقم القصاصة: ${slipSerial} · أُصدرت من صفحة التايم شيت بتاريخ ${new Date().toLocaleDateString('en-GB')} ${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
+    </section>
+  `;
+
   w.document.open();
   w.document.write(`
-    <html dir="rtl"><head><meta charset="utf-8"><title>طباعة التايم شيت</title>
-    <style>body{font-family:Tahoma,Arial,sans-serif;padding:28px;color:#111}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #999;padding:6px;text-align:center}h2,p{text-align:center;margin:4px}thead{background:#eee}tfoot td{font-weight:bold;background:#f6f6f6}</style></head>
+    <html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير التايم شيت والرواتب — ${escapeHtml(selectedEmp.name || '-')}</title>
+    <style>
+      body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111;direction:rtl}
+      table{width:100%;border-collapse:collapse;font-size:12px}
+      th,td{border:1px solid #999;padding:5px;text-align:center}
+      td.note{text-align:right;font-size:11px}
+      thead{background:#eee}
+      .report-header{text-align:center;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px}
+      .report-header h2{margin:0 0 6px}
+      .report-header p{margin:2px 0;font-size:13px;color:#333}
+      .month-section{margin-bottom:26px}
+      .month-sep{background:#1a1a2e;color:#fff;padding:8px 14px;border-radius:6px 6px 0 0;margin:0;font-size:15px}
+      .month-summary{border:1px solid #999;border-top:none;background:#f6f6f6;padding:10px 14px}
+      .month-summary-grid{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px}
+      .neg{color:#b91c1c}.net{color:#065f46}
+      .doc-check{color:#059669;font-weight:900}
+      .final-summary{margin-top:18px;border:2px solid #1a1a2e;border-radius:6px;padding:12px 16px;page-break-inside:avoid}
+      .final-summary h3{margin:0 0 8px;font-size:15px}
+      .final-summary-grid{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:13px}
+      .final-line{width:100%;border-top:1px dashed #999;margin-top:8px;padding-top:8px;font-size:15px;font-weight:800}
+      .print-footer{text-align:center;margin-top:22px;font-size:10px;color:#777;border-top:1px dashed #bbb;padding-top:8px}
+      /* قصاصة الراتب */
+      .salary-slip{page-break-inside:avoid}
+      .slip-frame{max-width:720px;margin:0 auto;border:2px solid #1a1a2e;border-radius:10px;padding:26px 30px;background:#fff}
+      .slip-header{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
+      .slip-brand{font-size:26px;font-weight:900;letter-spacing:3px;color:#1a1a2e}
+      .slip-brand-sub{font-size:12px;color:#555;margin-top:2px}
+      .slip-title{font-size:19px;font-weight:800;margin-top:8px}
+      .slip-period{font-size:13px;color:#777;margin-top:4px}
+      .slip-info{margin-bottom:14px}
+      .slip-info td{border:none;text-align:right;padding:4px 6px;font-size:12.5px}
+      .slip-table th{background:#1a1a2e;color:#fff;padding:8px}
+      .slip-table td{padding:7px}
+      .slip-month{text-align:right;font-weight:700}
+      .slip-total td{background:#eef2ff;font-weight:800}
+      .slip-line-label{text-align:left;background:#fef3c7;color:#92400e}
+      .slip-final td{background:#1a1a2e;color:#fff;font-weight:900;font-size:15px;padding:11px}
+      .slip-payment{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:18px;font-size:12.5px;color:#333}
+      .slip-signatures{display:flex;justify-content:space-between;margin-top:44px;text-align:center;font-size:12px;color:#555}
+      .slip-signatures>div{width:150px}
+      .sig-line{border-top:1px solid #888;margin-bottom:6px}
+      .slip-footer{text-align:center;margin-top:20px;font-size:10px;color:#999;border-top:1px dashed #ccc;padding-top:8px}
+      @media print{ .page-break{page-break-before:always} .month-summary,.final-summary,.salary-slip{page-break-inside:avoid} @page{size:A4;margin:12mm} }
+    </style></head>
     <body>
-      <h2>التايم شيت الشهري</h2>
-      <p>${selectedEmp.name || '-'} | ${cfg.month} / ${cfg.year} | الشفت: ${shift.label} (${fmtMin(shift.startMin)}–${fmtMin(shift.endMin)} · ${shift.hours} ساعات)</p>
-      <table>
-        <thead><tr><th>التاريخ</th><th>الحالة</th><th>دخول</th><th>خروج</th><th>أجر اليوم</th><th>البدل</th><th>الإضافي</th><th>إجمالي الغرامات</th><th>الصافي</th><th>ملاحظات</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="10">لا توجد بيانات</td></tr>'}</tbody>
-        <tfoot>
-          <tr><td colspan="7" style="text-align:left">الأساس ${money(res.baseSalary)} + بدلات ${money(res.allowances)} + إضافي ${money(res.totalOvertimeValue)} + حافز جمعة ${money(res.fridayCompensation)}</td><td>الغرامات التلقائية</td><td>${money(res.automaticPenalties)}</td></tr>
-          <tr><td colspan="8" style="text-align:left">صافي الراتب</td><td>${money(res.finalSalary)}</td></tr>
-        </tfoot>
-      </table>
+      <div class="report-header">
+        <h2>تقرير التايم شيت والرواتب</h2>
+        <p><b>${escapeHtml(selectedEmp.name || '-')}</b> · الراتب الاسمي: ${money(nominalSalary)} د.ع · الشفت: ${escapeHtml(shift.label || '-')} (${fmtMin(shift.startMin)}–${fmtMin(shift.endMin)} · ${shift.hours} ساعات)</p>
+        <p>فترة التقرير: ${escapeHtml(periodLabel)} · تاريخ الطباعة: ${new Date().toLocaleDateString('en-GB')}</p>
+      </div>
+      ${monthSections}
+      <div class="final-summary">
+        <h3>الخلاصة النهائية للفترة (${escapeHtml(periodLabel)})</h3>
+        <div class="final-summary-grid">
+          <span>إجمالي المستحق: <b>${money(totals.gross)}</b></span>
+          <span>إجمالي الغرامات: <b class="neg">${money(totals.penalties)}</b></span>
+          <span>إجمالي السلف المسحوبة: <b class="neg">${money(totals.advances)}</b></span>
+          <span>صافي الفترة: <b class="net">${money(totals.net)}</b></span>
+          <span>الرصيد السابق: <b>${money(previousBalance)}</b></span>
+          <span class="final-line">الصافي النهائي بعد الرصيد السابق: ${money(finalAfterBalance)} د.ع</span>
+        </div>
+      </div>
+      ${slipHtml}
+      <div class="print-footer">أُنشئ هذا التقرير من صفحة التايم شيت — نظام OCTAGON لإدارة الرواتب</div>
       <script>window.print()<\/script>
     </body></html>
   `);
@@ -9943,7 +11765,8 @@ async function exportPayrollPdf() {
           <tr><td style="padding:7px 12px; border-bottom:1px solid #eee;">المكافآت</td>                                    <td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left;">${formatNum(result.totalBonus)}</td></tr>
           <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">خصم التأخيرات (×2) [${result.totalLatenessHours.toFixed(1)} ساعة]</td><td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.totalLatenessDeduction)}</td></tr>
           <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">خصم الغيابات</td>   <td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.absenceDeduction)}</td></tr>
-          <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">سلف الشهر الحالي</td><td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.currentAdvance)}</td></tr>
+          <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">سلف التايم شيت اليدوية</td><td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.currentAdvance)}</td></tr>
+          <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">السلف الرسمية من سجل القاصة</td><td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.officialAdvance || 0)}</td></tr>
           <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:1px solid #eee;">العقوبات</td>       <td style="padding:7px 12px; border-bottom:1px solid #eee; text-align:left; color:red;">-${formatNum(result.totalPenalty)}</td></tr>
           <tr style="background:#fff5f5;"><td style="padding:7px 12px; border-bottom:2px solid #333;">الأضرار</td>         <td style="padding:7px 12px; border-bottom:2px solid #333; text-align:left; color:red;">-${formatNum(result.totalDamage)}</td></tr>
         </tbody>
@@ -10127,6 +11950,25 @@ function saveData(skipAutomation = false) {
       selectedEmpIdx,
       reportEmpIdx
     };
+    const cachedDb = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
+    [
+      'journals',
+      'journal_entries',
+      'account_moves',
+      'account_payments',
+      'account_partial_reconciles',
+      'employee_advances',
+      'payroll_periods',
+      'employee_payroll_closings',
+      'payroll_payments',
+      'payroll_adjustments',
+      'audit_log',
+    ].forEach(collection => {
+      if (Array.isArray(cachedDb[collection])) data[collection] = cachedDb[collection];
+    });
+    ['_schema_version', '_migrated_at', '_release_tag', '_release_tagged_at', '_lock_date'].forEach(key => {
+      if (cachedDb[key] !== undefined) data[key] = cachedDb[key];
+    });
     sanitizePersistedArabicText(data);
     const jsonPayload = JSON.stringify(data);
     
@@ -10183,11 +12025,21 @@ function setConfigValue(id, value) {
 
 async function loadData() {
   let loadedFromFile = false;
-  
+
   try {
-    // PRIMARY: Load from local file database.json — the source of truth
-    const res = await fetch('/api/db');
-    if (res.ok) {
+    // PRIMARY: Load from local file database.json — the source of truth.
+    // RETRY LOOP (boot-race fix): the desktop launcher (Octagon ERP.bat) opens the browser
+    // only ~2s after starting the server; on cold starts Node+SQLite can need longer, so the
+    // FIRST fetch used to land on a dead port → scary "loaded from browser memory" failure
+    // toast on every fresh open. Retry briefly (up to ~7s total) before falling back.
+    let res = null;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      try { res = await fetch('/api/db'); } catch (e) { res = null; }
+      if (res && res.ok) break;
+      console.warn(`loadData: /api/db attempt ${attempt + 1} failed — retrying (server may still be starting)...`);
+      await new Promise(r => setTimeout(r, 400 + attempt * 500));
+    }
+    if (res && res.ok) {
       const data = await res.json();
       console.debug('📡 Data received from server:', data);
       if (data && Array.isArray(data.employees)) {
@@ -10219,7 +12071,7 @@ async function loadData() {
         console.warn('⚠️ Server returned empty employees list');
       }
     } else {
-      console.error('❌ Server error:', res.status);
+      console.error('❌ Server error:', res ? res.status : 'no response after retries');
     }
   } catch (e) {
     console.warn('Failed to load from Local JSON Database, trying localStorage fallback...');
@@ -10347,8 +12199,13 @@ function printReceipt() {
     return;
   }
 
-  // Determine which employee to show (either from calc dropdown or report tabs depending on active page)
-  const isCalcPage = document.getElementById('pageCalculator').classList.contains('page-active');
+  // Determine which employee to show (either from calc dropdown or report tabs depending on active page).
+  // The calculator counts as "active" both on its own page AND when docked inside the active timesheet.
+  const calcSectionEl = document.getElementById('pageCalculator');
+  const isCalcPage = !!calcSectionEl && (
+    calcSectionEl.classList.contains('page-active') ||
+    (currentPage === 'timesheet' && calcSectionEl.classList.contains('ts-docked-calc'))
+  );
 
   let empName = "حساب مباشر (بدون موظف)";
   let res = window.lastCalcResult;
@@ -10923,8 +12780,7 @@ async function smartMapImportFields() {
   }
 
   try {
-    const apiKey = "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
-
+    // Security hardening 2026-07-05: Gemini key moved to server .env — calls go through /api/ai/gemini.
     // رسالة المستخدم للذكاء الاصطناعي للتحكم بالبيانات المستوردة (اختيارية)
     const aiInstructions = (document.getElementById('importAiInstructions')?.value || '').trim();
 
@@ -10979,10 +12835,11 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
 }
 `;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey, {
+    const response = await fetch("/api/ai/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "gemini-flash-latest",
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.1 }
       })
@@ -11101,7 +12958,7 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
     let finalRows = dataRows;
     let refineMessage = '';
     if (aiInstructions && dataRows.length > 0) {
-      const refined = await refineImportedRowsWithAI(dataRows, aiInstructions, apiKey);
+      const refined = await refineImportedRowsWithAI(dataRows, aiInstructions, '');
       finalRows = (refined && Array.isArray(refined.rows) && refined.rows.length) ? refined.rows : dataRows;
       refineMessage = (refined && refined.message) ? refined.message : '';
     }
@@ -11143,7 +13000,8 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
 
 // تطبيق رسالة المستخدم على السجلات المستوردة عبر الذكاء الاصطناعي للتحكم بالبيانات المسترّدة
 async function refineImportedRowsWithAI(dataRows, instructions, apiKey) {
-  const key = apiKey || "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
+  // Security hardening 2026-07-05: the apiKey parameter is IGNORED — the call
+  // goes through the server proxy (/api/ai/gemini) which holds the key in .env.
   try {
     const promptText = `
 أنت مساعد ذكي لتنظيف وضبط بيانات الحضور والسلف المستوردة من ملف المستخدم.
@@ -11168,10 +13026,11 @@ ${JSON.stringify(dataRows)}
 }
 `;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + key, {
+    const response = await fetch("/api/ai/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "gemini-flash-latest",
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.1 }
       })
@@ -11268,8 +13127,7 @@ async function processTimesheetWithAI() {
   btn.disabled = true;
 
   try {
-    const apiKey = "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
-    
+    // Security hardening 2026-07-05: Gemini key moved to server .env — calls go through /api/ai/gemini.
     const simplifiedRecords = emp.records.map(r => ({
       date: r.date,
       checkIn: r.checkIn || '',
@@ -11313,10 +13171,11 @@ ${JSON.stringify(simplifiedRecords)}
 الرد يجب أن يكون كائن JSON صالح فقط (يبدأ بـ { وينتهي بـ }) بدون أي شرح أو علامات code-fence خارج الكائن.
 `;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey, {
+    const response = await fetch("/api/ai/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "gemini-flash-latest",
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.1 }
       })
@@ -11432,8 +13291,7 @@ async function applyComplexRulesWithAI() {
   btn.disabled = true;
 
   try {
-    const apiKey = "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
-
+    // Security hardening 2026-07-05: Gemini key moved to server .env — calls go through /api/ai/gemini.
     const promptText = `
 أنت المساعد الذكي الخاص بنظام OCTAGON ERP للرواتب. مهمتك مراجعة هذا السجل الشهري بدقة وتطبيق قوانين الرواتب المعقدة التالية:
 
@@ -11454,10 +13312,11 @@ ${JSON.stringify(simplifiedRecords)}
 3. الرد يجب أن يكون كود JSON صالح فقط (يبدأ بـ { وينتهي بـ }) بدون أي كلمات إضافية.
 `;
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey, {
+    const response = await fetch("/api/ai/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "gemini-flash-latest",
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.1 }
       })
@@ -26111,6 +27970,10 @@ async function openEditAccountMoveDraftModal(moveId) {
   }
 }
 
+// LIVE definition (this is the one that actually runs — see the deprecated
+// notice near the first openNewJEModal()/saveNewJE() around line 3991).
+// Correctly operates on account_moves via FinanceService.createMove/postMove,
+// consistent with the source-of-truth rule.
 function openNewJEModal() {
   if (window.PermissionService && !window.PermissionService.check('account_moves', 'create')) {
     return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
@@ -32701,6 +34564,9 @@ window.renderCustomerPortal = function() {
         let paymentCell = '-';
         
         if (tx.type === 'customer_charge') {
+          // Expose functions to window for DOM onclick events
+          window.reopenFinancePeriod = reopenFinancePeriod;
+          window.createPayrollAdjustment = createPayrollAdjustment;
           typeLabel = `<span class="customer-balance-badge customer-balance-owes" style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold;">مطالبة مالية</span>`;
           chargeCell = `${formatNum(tx.amount)} د.ع`;
         } else if (tx.type === 'income' || tx.type === 'sales_receipt') {
@@ -34770,6 +36636,11 @@ async function syncLegacyTransactionToV6(tx) {
 window.reopenFinancePeriod = reopenFinancePeriod;
 window.openCashboxTransactionModal = openCashboxTransactionModal;
 window.syncLegacyTransactionToV6 = syncLegacyTransactionToV6;
+window.calculatePayrollPeriod = calculatePayrollPeriod;
+window.closePayrollPeriod = closePayrollPeriod;
+window.postPayrollAccrual = postPayrollAccrual;
+window.settlePayrollPayment = settlePayrollPayment;
+window.reopenPayrollPeriod = reopenPayrollPeriod;
 
 /* ==========================================================================
    Operator Workspace Render Layer - language/icons/UI consolidation
@@ -35311,10 +37182,11 @@ function issueAiOrderTask() {
 }
 
 // === Octagon AI brain: one reusable, grounded call to the model ===
-// Single source of truth for the assistant. (Offline/local build: key kept inline
-// intentionally per project decision; move behind the server before going online.)
-const OCTAGON_AI_KEY = "AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk";
-const OCTAGON_AI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=";
+// Single source of truth for the assistant.
+// Security hardening 2026-07-05: the Gemini key was REMOVED from client code.
+// All calls (text + inline audio transcription) go through the server proxy
+// POST /api/ai/gemini, which reads GEMINI_API_KEY from the server's .env.
+const OCTAGON_AI_ENDPOINT = "/api/ai/gemini";
 
 async function callOctagonAi(userText, systemContext, opts = {}) {
   const promptText = `${systemContext}\n\n=== سؤال/أمر المستخدم ===\n${userText || ''}`;
@@ -35330,10 +37202,11 @@ async function callOctagonAi(userText, systemContext, opts = {}) {
       }
     });
   }
-  const response = await fetch(OCTAGON_AI_ENDPOINT + OCTAGON_AI_KEY, {
+  const response = await fetch(OCTAGON_AI_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      model: "gemini-flash-latest",
       contents: [{ parts: parts }],
       generationConfig: { temperature: typeof opts.temperature === 'number' ? opts.temperature : 0.3 }
     })

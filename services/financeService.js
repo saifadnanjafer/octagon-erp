@@ -62,6 +62,69 @@
     return 'suspense';
   }
 
+  function money(value) {
+    const n = Number(value || 0);
+    return Number.isFinite(n) ? Math.round(n) : 0;
+  }
+
+  function financeTransactionKey(tx = {}) {
+    return tx.sourceCanonicalKey || [
+      tx.sourceType || 'finance.transactions',
+      tx.sourceId || tx.id || '',
+      tx.type || '',
+      money(tx.amount),
+    ].join('|');
+  }
+
+  function cashboxEffect(tx = {}) {
+    const effect = Number(tx.cashboxEffect);
+    if (Number.isFinite(effect) && effect !== 0) return Math.round(effect);
+    const amount = money(tx.amount);
+    if (tx.direction === 'in') return amount;
+    if (tx.direction === 'out') return -amount;
+    return 0;
+  }
+
+  function resolveCounterAccount(tx = {}) {
+    if (tx.type === 'salary_payment') return resolveAccount('accrued_payroll');
+    return resolveAccount(tx.accountId || tx.chartAccountId || 'suspense');
+  }
+
+  function buildMoveLinesFromTransaction(tx = {}) {
+    const effect = cashboxEffect(tx);
+    const amount = Math.abs(effect || money(tx.amount));
+    if (amount <= 0) throw new Error('لا يمكن ترحيل حركة مالية بمبلغ صفر');
+    const label = tx.description || tx.cashboxCategory || tx.type || 'حركة مالية';
+    const partnerId = tx.customerId || tx.partyName || tx.paidByName || '';
+    const counterAccount = resolveCounterAccount(tx);
+    const cashAccount = resolveAccount(tx.cashAccountId || 'cash_workshop');
+
+    if (tx.sourceType === 'cashbox' || effect !== 0 || tx.paymentMethod === 'cash') {
+      if (effect > 0 || tx.direction === 'in') {
+        return [
+          { account_id: cashAccount, debit: amount, credit: 0, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+          { account_id: counterAccount, debit: 0, credit: amount, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+        ];
+      }
+      return [
+        { account_id: counterAccount, debit: amount, credit: 0, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+        { account_id: cashAccount, debit: 0, credit: amount, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+      ];
+    }
+
+    if (tx.sourceType === 'person_pocket') {
+      return [
+        { account_id: counterAccount, debit: amount, credit: 0, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+        { account_id: resolveAccount('payables_people'), debit: 0, credit: amount, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+      ];
+    }
+
+    return [
+      { account_id: counterAccount, debit: amount, credit: 0, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+      { account_id: resolveAccount('suspense'), debit: 0, credit: amount, label, partner_id: partnerId, department_id: tx.departmentId || '' },
+    ];
+  }
+
   function lineTotals(lines = []) {
     return lines.reduce((acc, line) => {
       acc.debit += Number(line.debit || 0);
@@ -255,6 +318,14 @@
     };
   }
 
+  // RULE (audit 2026-07-04): account_moves is the source of truth for the
+  // general ledger; journal_entries is legacy/mirror only — a read-only,
+  // one-row-per-move reflection kept for the old "القيود اليومية" screen and
+  // backward compatibility. Every balance calculation, trial balance, P&L,
+  // and reconciliation (getTrialBalance, getLedger, getProfitAndLoss, and
+  // app.js's getCashBalance) MUST read from account_moves only. Never sum
+  // account_moves and journal_entries together in the same report — they
+  // describe the same postings, so doing so would double count.
   function upsertLegacyJournalEntry(db, move) {
     if (!Array.isArray(db.journal_entries)) db.journal_entries = [];
     const legacy = mirrorJournalEntry(move);
@@ -280,6 +351,12 @@
       state: payload.state || 'draft',
       partner_id: partnerId,
       origin: payload.origin || '',
+      sourceType: payload.sourceType || '',
+      sourceId: payload.sourceId || '',
+      sourceCanonicalKey: payload.sourceCanonicalKey || '',
+      financeTransactionId: payload.financeTransactionId || '',
+      postingEngine: payload.postingEngine || '',
+      reviewStatus: payload.reviewStatus || '',
       line_ids: lineIds,
       amount_total: total.debit,
       hash: payload.hash || null,
@@ -381,6 +458,105 @@
       if (filters.type) list = list.filter(a => a.type === filters.type);
       if (filters.is_active !== undefined) list = list.filter(a => a.is_active !== false);
       return list;
+    },
+
+    resolveCounterAccount,
+    buildMoveLinesFromTransaction,
+
+    isAlreadyPosted(sourceCanonicalKey, db = root.PentagonDB.getCached() || {}) {
+      if (!sourceCanonicalKey) return false;
+      return getMoves(db).some(move => move.sourceCanonicalKey === sourceCanonicalKey || move.origin === `finance.transactions/${sourceCanonicalKey}`);
+    },
+
+    async postFinanceTransaction(transactionId, options = {}) {
+      root.PermissionService.require('account_moves', 'create');
+      const db = await root.PentagonDB.load();
+      const tx = (db.finance?.transactions || []).find(item => item.id === transactionId || item.sourceCanonicalKey === transactionId);
+      if (!tx) throw new Error('الحركة المالية غير موجودة');
+      const sourceCanonicalKey = financeTransactionKey(tx);
+      const existing = getMoves(db).find(move => move.sourceCanonicalKey === sourceCanonicalKey || move.origin === `finance.transactions/${sourceCanonicalKey}`);
+      if (existing) return clone(existing);
+      if (options.dryRun) {
+        const lines = buildMoveLinesFromTransaction(tx);
+        this.validateBalanced(lines);
+        return {
+          dryRun: true,
+          transactionId: tx.id,
+          sourceCanonicalKey,
+          line_ids: lines,
+        };
+      }
+      // Server-backed lock (Production Hardening Final Lock Sprint,
+      // 2026-07-04): withOperationLock (defined in app.js) acquires a real
+      // DB-row lock keyed by this transaction's own sourceCanonicalKey before
+      // creating anything, closing the cross-tab/cross-device race for the
+      // "any future posting that uses sourceCanonicalKey" case explicitly
+      // called out in the audit. Falls back to running unlocked only if
+      // app.js somehow hasn't loaded yet (should not happen in the live app).
+      const withLock = typeof root.withOperationLock === 'function' ? root.withOperationLock : (key, type, fn) => fn();
+      const posted = await withLock(sourceCanonicalKey, 'finance_transaction', async () => {
+        // Re-check after acquiring the lock — closes the window where a
+        // concurrent attempt for this exact key completed between our first
+        // `existing` check above and now.
+        const freshDb = await root.PentagonDB.load();
+        const raceWinner = getMoves(freshDb).find(move => move.sourceCanonicalKey === sourceCanonicalKey || move.origin === `finance.transactions/${sourceCanonicalKey}`);
+        if (raceWinner) return clone(raceWinner);
+        const draft = await this.createMove({
+          journal_id: (tx.sourceType === 'cashbox' || tx.paymentMethod === 'cash') ? 'j_bank' : 'j_gen',
+          move_type: 'entry',
+          date: tx.date || todayISO(),
+          partner_id: tx.customerId || tx.partyName || tx.paidByName || '',
+          origin: `finance.transactions/${sourceCanonicalKey}`,
+          sourceType: tx.sourceType || 'finance.transactions',
+          sourceId: tx.sourceId || tx.id || '',
+          sourceCanonicalKey,
+          financeTransactionId: tx.id || '',
+          postingEngine: 'finance_transactions_v1',
+          reviewStatus: tx.accountId === 'suspense' ? 'needs_review' : '',
+          line_ids: buildMoveLinesFromTransaction(tx),
+          companyId: tx.companyId || '',
+          skip_backup: options.skip_backup !== false,
+        });
+        return this.postMove(draft.id, { skip_backup: true });
+      });
+      await root.PentagonDB.mutate(mdb => {
+        const saved = (mdb.finance?.transactions || []).find(item => item.id === tx.id);
+        if (saved) {
+          saved.accountMoveId = posted.id;
+          saved.v6_move_id = posted.id;
+          saved.postingStatus = 'posted';
+          saved.postedAt = posted.posted_at || now();
+          saved.sourceCanonicalKey = sourceCanonicalKey;
+        }
+      });
+      return posted;
+    },
+
+    async postAllUnpostedFinanceTransactions(options = {}) {
+      root.PermissionService.require('account_moves', 'create');
+      const db = await root.PentagonDB.load();
+      const transactions = (db.finance?.transactions || []).filter(tx => {
+        const amount = Math.abs(cashboxEffect(tx) || money(tx.amount));
+        if (amount <= 0) return false;
+        if (tx.postingStatus === 'posted' && tx.accountMoveId) return false;
+        return !this.isAlreadyPosted(financeTransactionKey(tx), db);
+      });
+      if (options.dryRun) {
+        return {
+          dryRun: true,
+          candidates: transactions.map(tx => ({
+            id: tx.id,
+            sourceCanonicalKey: financeTransactionKey(tx),
+            line_ids: buildMoveLinesFromTransaction(tx),
+          })),
+        };
+      }
+      const backup = await backupBeforeLiveFinanceMutation(options.skip_backup ? false : (options.backup_tag || 'pre_finance_transaction_posting'));
+      const posted = [];
+      for (const tx of transactions) {
+        posted.push(await this.postFinanceTransaction(tx.id, { skip_backup: true }));
+      }
+      return { posted, backup };
     },
 
     async getMoves(options = {}) {

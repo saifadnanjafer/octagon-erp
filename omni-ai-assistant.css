@@ -1079,3 +1079,214 @@
   direction: rtl;
   text-align: right;
 }
+
+.ptxai-jarvis-status-card {
+  margin: 8px 12px 0;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, .22);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, .72);
+  color: #e5e7eb;
+}
+.jarvis-status-header,
+.jarvis-live-strip,
+.jarvis-status-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.jarvis-status-header { justify-content: space-between; margin-bottom: 8px; }
+.jarvis-status-title,
+.jarvis-coverage-badge,
+.jarvis-live-strip span,
+.jarvis-tool-sample {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.jarvis-status-title b { font-size: 12px; }
+.jarvis-coverage-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, .14);
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+}
+.jarvis-live-strip {
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  border-radius: 7px;
+  background: rgba(2, 6, 23, .35);
+  color: #cbd5e1;
+  font-size: 11px;
+}
+.jarvis-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.jarvis-status-item {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.jarvis-status-item.full-width { grid-column: 1 / -1; }
+.jarvis-status-item .label {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 800;
+}
+.jarvis-status-item .value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: #f8fafc;
+}
+.jarvis-status-item.is-warning .value { color: #fbbf24; white-space: normal; }
+.jarvis-mini-select {
+  width: 100%;
+  min-height: 30px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, .24);
+  background: rgba(15, 23, 42, .92);
+  color: #f8fafc;
+  font-size: 12px;
+  padding: 5px 8px;
+}
+.jarvis-status-actions { margin-top: 9px; }
+.jarvis-btn-mini {
+  min-height: 29px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, .25);
+  background: rgba(30, 41, 59, .85);
+  color: #e5e7eb;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.jarvis-btn-mini:disabled { opacity: .55; cursor: wait; }
+.jarvis-btn-mini:hover:not(:disabled) { border-color: rgba(96, 165, 250, .5); color: #fff; }
+.jarvis-tool-sample {
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+.jarvis-api-test-results {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+.jarvis-api-test-results span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px 7px;
+  border-radius: 7px;
+  font-size: 11px;
+  background: rgba(2, 6, 23, .32);
+}
+.jarvis-api-test-results span.ok { color: #86efac; }
+.jarvis-api-test-results span.fail { color: #fca5a5; }
+.jarvis-api-test-results b {
+  margin-inline-start: auto;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Omni compact runtime bar (2026-07-03) ================================
+   One tight strip: live state + provider/model + last API result + local-mode
+   flag + test/config buttons; a slim tool-visibility row; config collapsed
+   behind the gear. Keeps the chat window small and scannable. */
+.omni-runtime-card { padding: 8px; }
+.omni-rt-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.omni-rt-spacer { flex: 1 1 auto; }
+.omni-rt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, .2);
+  background: rgba(2, 6, 23, .35);
+  color: #cbd5e1;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.omni-rt-pill.is-ok { color: #86efac; border-color: rgba(134, 239, 172, .3); }
+.omni-rt-pill.is-fail { color: #fca5a5; border-color: rgba(252, 165, 165, .35); }
+.omni-rt-pill.is-local { color: #fbbf24; border-color: rgba(251, 191, 36, .35); }
+.omni-rt-state.st-listening { color: #7dd3fc; border-color: rgba(125, 211, 252, .4); }
+.omni-rt-state.st-listening i { animation: omniPulse 1.4s ease-in-out infinite; }
+.omni-rt-state.st-thinking i, .omni-rt-state.st-processing i { animation: omniPulse .8s ease-in-out infinite; }
+.omni-rt-state.st-speaking { color: #c4b5fd; border-color: rgba(196, 181, 253, .4); }
+.omni-rt-state.st-error { color: #fca5a5; border-color: rgba(252, 165, 165, .4); }
+@keyframes omniPulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.omni-rt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, .25);
+  background: rgba(30, 41, 59, .85);
+  color: #e5e7eb;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.omni-rt-btn:disabled { opacity: .55; cursor: wait; }
+.omni-rt-btn:hover:not(:disabled) { border-color: rgba(96, 165, 250, .5); color: #fff; }
+.omni-rt-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding: 4px 6px;
+  border-radius: 7px;
+  background: rgba(2, 6, 23, .28);
+  color: #94a3b8;
+  font-size: 10px;
+}
+.omni-rt-tools span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.omni-rt-tools span.is-ok { color: #86efac; }
+.omni-rt-tools span.is-fail { color: #fca5a5; }
+.omni-rt-config { margin-top: 8px; }
+.omni-rt-error {
+  margin-top: 6px;
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: rgba(251, 191, 36, .08);
+  color: #fbbf24;
+  font-size: 10.5px;
+  word-break: break-word;
+}
+/* deep API test capability badges (Arabic / JSON per model) */
+.jarvis-api-test-results em {
+  font-style: normal;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, .25);
+}
+.jarvis-api-test-results em.cap-ok { color: #86efac; border-color: rgba(134, 239, 172, .35); }
+.jarvis-api-test-results em.cap-fail { color: #fca5a5; border-color: rgba(252, 165, 165, .4); }

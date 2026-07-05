@@ -1,8 +1,10 @@
 /**
  * OCTAGON OMNISYSTEM - omni-ai-assistant.js
  *
- * One movable, resizable AI assistant for every page. It also owns the project
- * status/review details that used to appear as fixed banners at the top.
+ * Omni — one movable, resizable AI assistant for every page.
+ * (Internally many identifiers still say "jarvis" for stability; the
+ *  user-facing name is Omni. window.OmniBrain / window.OmniVoiceRuntime
+ *  are compatibility aliases over the Jarvis internals.)
  */
 (function () {
   'use strict';
@@ -11,7 +13,7 @@
   const LEGACY_CHAT_STORAGE_KEY = 'ptxAIChat';
   const PANEL_LAYOUT_KEY = 'octagonAIChatLayout';
   const BUTTON_LAYOUT_KEY = 'octagonAIButtonLayout';
-  const DETAILS_STORAGE_KEY = 'octagonAIProjectDetailsOpen';
+  const RT_CONFIG_OPEN_KEY = 'omniRuntimeConfigOpen';
   const PRODUCT_NAME = 'Octagon ERP';
 
   const PAGE_LABELS = {
@@ -61,10 +63,8 @@
     jarvisActive: false,
     jarvisListening: false,
     jarvisStatus: 'idle',
-    detailsOpen: localStorage.getItem(DETAILS_STORAGE_KEY) === '1',
+    rtConfigOpen: localStorage.getItem(RT_CONFIG_OPEN_KEY) === '1',
     byPage: {},
-    projectStatus: window.OctagonProjectStatus || window.PentagonProjectStatus || null,
-    reviewPointer: window.OctagonReviewPointer || window.PentagonReviewPointer || null,
     activeWorkflow: null,
     workflowStep: 0,
     conversationHistory: [],
@@ -72,9 +72,10 @@
     apiProvider: localStorage.getItem('octagon_jarvis_provider') || 'auto',
     jarvisMode: localStorage.getItem('octagon_jarvis_mode') || 'balanced',
     sessionTokens: Number(localStorage.getItem('jarvis_session_tokens') || '0'),
-    sessionCost: Number(localStorage.getItem('jarvis_session_cost') || '0')
+    sessionCost: Number(localStorage.getItem('jarvis_session_cost') || '0'),
+    apiTestRunning: false,
+    apiTestResults: null
   };
-
   let jarvisRecognition = null;
   let jarvisWatchdog = null;        // interval that keeps recognition alive
   let jarvisNetworkHintShown = false;
@@ -86,37 +87,40 @@
   let jarvisAudioStartedAt = 0;     // when the mic actually began delivering audio (onaudiostart)
   let jarvisConsecErrors = 0;       // consecutive recognition errors with no audio in between
   let jarvisProblemMsg = '';        // if set, the wave bar shows this instead of a fake "listening"
-  // --- Echo guard + wake-word state (stops Jarvis hearing itself / looping) ---
+  // --- Echo guard + wake-word state (stops Omni hearing itself / looping) ---
   let jarvisSpeakingUntil = 0;      // ignore ALL mic input until this ms (its own voice)
-  let jarvisLastSpokenNorm = '';    // normalized text Jarvis just said, for echo match
+  let jarvisLastSpokenNorm = '';    // normalized text Omni just said, for echo match
   let jarvisHardStopped = false;    // true after an explicit stop; blocks every auto-restart
   let jarvisArmedUntil = 0;         // wake-word armed window: command capture is open until this ms
   // Direct mode (default): every non-echo command runs immediately — no wake word needed.
-  // The echo guard alone prevents the self-loop. Set true to require "Hey Jarvis"/"Octagon".
+  // The echo guard alone prevents the self-loop. Set true to require "Hey Omni"/"Octagon".
   let jarvisWakeRequired = false;
   try { jarvisWakeRequired = localStorage.getItem('jarvisWakeRequired') === '1'; } catch (_) {}
   let jarvisCloudAudio = null;      // currently-playing cloud TTS <audio>, so stop can kill it
   let cloudTtsDisabled = false;     // latched off if the TTS API key is rejected (then use browser)
+  let cloudTtsCooldownUntil = 0;    // 429 rate-limit: pause cloud TTS briefly, then auto-recover
   let jarvisSpeechRunId = 0;        // invalidates stale TTS callbacks after interrupt/stop
   let jarvisSpeechInFlight = false; // true while TTS is preparing or playing
   let jarvisListenResumeTimer = null;
   let jarvisRestartBlockedUntil = 0;
   let jarvisTtsAbortController = null;
-  // Wake words. Bare "جارفيس" is intentionally excluded (too easy to false-trigger / self-echo).
-  const JARVIS_WAKE_WORDS = ['يا جارفيس', 'هاي جارفيس', 'هلو جارفيس', 'مرحبا جارفيس', 'اوكتاجون', 'أوكتاجون', 'اوكتاغون', 'أوكتاغون',
+  // Wake words. Bare "أومني" is intentionally excluded (too easy to false-trigger / self-echo).
+  // The old "جارفيس" wake words are kept as hidden aliases so existing habits keep working.
+  const JARVIS_WAKE_WORDS = ['يا أومني', 'هاي أومني', 'هلو أومني', 'مرحبا أومني',
+    'يا جارفيس', 'هاي جارفيس', 'هلو جارفيس', 'مرحبا جارفيس',
+    'اوكتاجون', 'أوكتاجون', 'اوكتاغون', 'أوكتاغون',
+    'hello omni', 'hey omni', 'hi omni', 'okay omni', 'ok omni',
     'hello jarvis', 'hey jarvis', 'hi jarvis', 'okay jarvis', 'ok jarvis', 'octagon'];
 
-  // API Configuration
+  // API Configuration — used ONLY for Gemini cloud TTS (googleTtsKey below).
+  // The dead Grok config (browser-CORS-blocked, deprecated model, exposed key) was removed;
+  // all chat traffic goes through modules/ai-providers.js (window.callOctagonAi).
   const API_CONFIG = {
-    grok: {
-      apiKey: 'xai-9eEHpj2MJDHTAAyLpLf8XcIlfEyQV33wrsywCBwJIa1Ot7XyjuWbvPAEsjJMNcdMknkJzrcmmOJY17uk',
-      endpoint: 'https://api.x.ai/v1/chat/completions',
-      model: 'grok-beta'
-    },
     google: {
-      apiKey: 'AQ.Ab8RN6LoZBPerQlJ5SD5BCoBtX8x-ljxA4N9vDsNar-Iv3g1-w',
+      apiKey: '',
       endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-      fallbackKey: 'AIzaSyD3RhK4qbqqjDacJdXDclh1OoLST_kV3Uk'
+      fallbackKey: '',
+      ttsEndpoint: '/api/tts'
     }
   };
   
@@ -206,13 +210,13 @@
     const masks = [];
     escaped = escaped.replace(/&[a-zA-Z0-9#]+;/g, match => {
       masks.push(match);
-      return `__ENTITY_MASK_${masks.length - 1}__`;
+      return `@@${masks.length - 1}@@`;
     });
     escaped = escaped.replace(/[a-zA-Z][a-zA-Z0-9\s\-_'\/]*[a-zA-Z0-9]/g, match => {
       if (match.trim().length <= 1) return match;
       return `<bdi class="jarvis-latin-token">${match}</bdi>`;
     });
-    escaped = escaped.replace(/__ENTITY_MASK_(\d+)__/g, (match, idx) => {
+    escaped = escaped.replace(/@@(\d+)@@/g, (match, idx) => {
       return masks[Number(idx)];
     });
     escaped = escaped.replace(/\n/g, '<br>');
@@ -321,6 +325,8 @@
     text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
     text = text.replace(/\*([^*]+)\*/g, '$1');
     text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    text = text.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ' ');
+    text = text.replace(/[#*_~|>\[\]{}]/g, ' ');
     text = text.replace(/\s+/g, ' ').trim();
     if (text.length > 520) text = text.slice(0, 520) + '...';
     return text;
@@ -355,13 +361,13 @@
   function warnMissingArabicVoiceOnce() {
     if (_arabicVoiceWarned) return;
     _arabicVoiceWarned = true;
-    console.warn('[Jarvis] No Arabic text-to-speech voice is installed on this OS; Arabic replies may sound wrong or stay silent.');
+    console.warn('[Omni] No Arabic text-to-speech voice is installed on this OS; Arabic replies may sound wrong or stay silent.');
     try {
       toast(t('لا يوجد صوت عربي مثبّت على النظام. أضِف صوتاً عربياً من إعدادات ويندوز: الوقت واللغة ← الكلام ← إضافة صوت ← العربية، ثم أعد فتح المتصفح.',
               'No Arabic TTS voice is installed. Add one in Windows Settings: Time & Language → Speech → Add voices → Arabic, then reopen the browser.'), 'warning');
     } catch (_) {}
   }
-  // The language Jarvis LISTENS in. The Web Speech recognition API can only listen
+  // The language Omni LISTENS in. The Web Speech recognition API can only listen
   // in one language at a time, so we expose a switch (default follows the UI). '' =
   // follow UI language, 'ar' / 'en' = force that family. Persisted across reloads.
   let jarvisListenLang = '';
@@ -390,8 +396,8 @@
       setTimeout(() => { if (state.jarvisActive) scheduleJarvisListening(); }, 250);
     }
     const fam = jarvisListenFamily();
-    toast(fam === 'en' ? t('جارفيس يستمع بالإنجليزية الآن', 'Jarvis now listens in English')
-                       : t('جارفيس يستمع بالعربية الآن', 'Jarvis now listens in Arabic'), 'info');
+    toast(fam === 'en' ? t('أومني يستمع بالإنجليزية الآن', 'Omni now listens in English')
+                       : t('أومني يستمع بالعربية الآن', 'Omni now listens in Arabic'), 'info');
     return fam;
   }
   function getJarvisListenFamily() { return jarvisListenFamily(); }
@@ -411,15 +417,15 @@
         input.placeholder = t(`جاري تنفيذ: ${workflowName} (الخطوة ${state.workflowStep + 1})`, 
                                 `Executing: ${workflowName} (Step ${state.workflowStep + 1})`);
       } else if (status === 'listening') {
-        input.placeholder = t('جارفيس يستمع... تحدث الآن', 'Jarvis is listening... speak now');
+        input.placeholder = t('أومني يستمع... تحدث الآن', 'Omni is listening... speak now');
       } else if (status === 'speaking') {
-        input.placeholder = t('جارفيس يتحدث...', 'Jarvis is speaking...');
+        input.placeholder = t('أومني يتحدث...', 'Omni is speaking...');
       } else if (status === 'processing') {
-        input.placeholder = t('جارفيس يعالج طلبك...', 'Jarvis is processing your request...');
+        input.placeholder = t('أومني يعالج طلبك...', 'Omni is processing your request...');
       }
     }
     updateJarvisWaveIndicator(status);
-    // Drive the floating Jarvis orb (additive; no-op if the orb module is absent).
+    // Drive the floating Omni orb (additive; no-op if the orb module is absent).
     try {
       if (window.JarvisOrb) {
         if (state.activeWorkflow) {
@@ -436,7 +442,7 @@
           window.JarvisOrb.say(t('يفكر', 'THINKING'), t('أعالج طلبك...', 'Working on it...'));
         } else if (status === 'speaking') {
           window.JarvisOrb.setMode('speaking');
-          window.JarvisOrb.say(t('يتحدث', 'SPEAKING'), t('جارفيس يردّ', 'Jarvis is replying'));
+          window.JarvisOrb.say(t('يتحدث', 'SPEAKING'), t('أومني يردّ', 'Omni is replying'));
         }
       }
     } catch (_) {}
@@ -446,12 +452,12 @@
     if (!btn) return;
     btn.classList.toggle('active', state.jarvisActive);
     const label = !state.jarvisActive
-      ? t('وضع جارفيس', 'Jarvis Mode')
+      ? t('وضع أومني', 'Omni Mode')
       : state.jarvisStatus === 'speaking'
-        ? t('جارفيس يتحدث', 'Jarvis Speaking')
+        ? t('أومني يتحدث', 'Omni Speaking')
         : state.jarvisStatus === 'processing'
-          ? t('جارفيس يفكر', 'Jarvis Thinking')
-          : t('جارفيس يستمع', 'Jarvis Listening');
+          ? t('أومني يفكر', 'Omni Thinking')
+          : t('أومني يستمع', 'Omni Listening');
     const icon = state.jarvisActive ? 'fa-microphone' : 'fa-microphone-slash';
     btn.innerHTML = `<i class="fa-solid ${icon}"></i> ${label}`;
     btn.title = state.jarvisActive
@@ -573,8 +579,45 @@
     new Uint8Array(buffer, 44).set(pcm);
     return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
   }
-  function synthesizeCloudTTS(text /*, langCode */) {
-    if (cloudTtsDisabled) return Promise.resolve(null);
+  function synthesizeCloudTTS(text, langCode) {
+    if (cloudTtsDisabled || Date.now() < cloudTtsCooldownUntil) return Promise.resolve(null);
+    const payloadText = String(text || '').slice(0, 900);
+    if (!payloadText) return Promise.resolve(null);
+    const serverEndpoint = (API_CONFIG.google && API_CONFIG.google.ttsEndpoint) || '/api/tts';
+    if (serverEndpoint) {
+      try { if (jarvisTtsAbortController) jarvisTtsAbortController.abort(); } catch (_) {}
+      const serverController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      jarvisTtsAbortController = serverController;
+      const serverTimeoutId = serverController ? setTimeout(() => { try { serverController.abort(); } catch (_) {} }, 7000) : null;
+      return fetch(serverEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: payloadText, lang: langCode || detectSpeechLangCode(payloadText) }),
+        signal: serverController ? serverController.signal : undefined
+      })
+        .then(r => {
+          if (!r.ok) {
+            if (r.status === 429) cloudTtsCooldownUntil = Date.now() + 90000;
+            if (r.status === 404 || r.status === 501) cloudTtsDisabled = true;
+            return null;
+          }
+          return r.json();
+        })
+        .then(j => {
+          if (!j || !j.success || !j.audioBase64) return null;
+          return pcmBase64ToWavUrl(j.audioBase64, Number(j.sampleRate) || 24000);
+        })
+        .catch(() => null)
+        .then(url => url || synthesizeBrowserKeyTTS(payloadText))
+        .finally(() => {
+          if (serverTimeoutId) clearTimeout(serverTimeoutId);
+          if (jarvisTtsAbortController === serverController) jarvisTtsAbortController = null;
+        });
+    }
+    return synthesizeBrowserKeyTTS(payloadText);
+  }
+
+  function synthesizeBrowserKeyTTS(text) {
     const key = googleTtsKey();
     if (!key || !/^AIza/.test(key)) return Promise.resolve(null);
     const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=' + encodeURIComponent(key);
@@ -589,9 +632,14 @@
     return fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller ? controller.signal : undefined })
       .then(r => {
         if (!r.ok) {
-          if (r.status === 403 || r.status === 400 || r.status === 404) {
+          if (r.status === 429) {
+            // Rate-limited, not broken: back off for 90s then try again —
+            // permanent latching here was starving mixed-language speech.
+            cloudTtsCooldownUntil = Date.now() + 90000;
+            console.warn('[Omni] Cloud TTS rate-limited (429); using the browser voice for 90s.');
+          } else if (r.status === 403 || r.status === 400 || r.status === 404) {
             cloudTtsDisabled = true;
-            console.warn('[Jarvis] Gemini cloud TTS unavailable (HTTP ' + r.status + '); using the browser voice instead.');
+            console.warn('[Omni] Gemini cloud TTS unavailable (HTTP ' + r.status + '); using the browser voice instead.');
           }
           return null;
         }
@@ -628,7 +676,7 @@
     setJarvisStatus('speaking');
     updateJarvisButton();
     const speechText = stripForSpeech(text);
-    // ECHO GUARD: block the mic for the whole time Jarvis is talking (plus a tail),
+    // ECHO GUARD: block the mic for the whole time Omni is talking (plus a tail),
     // and remember what it said, so its own voice can never be transcribed and
     // re-processed into an endless self-loop.
     jarvisLastSpokenNorm = normalizeJarvisText(speechText);
@@ -650,7 +698,7 @@
       // listening themselves, or the mic re-opens while the async TTS is still talking.
       if (state.jarvisStatus === 'speaking') setJarvisStatus('idle');
       // Resume listening quickly (was 1000ms). The 600ms echo tail above still guards
-      // the recognizer from catching Jarvis's last word, so this stays echo-safe.
+      // the recognizer from catching Omni's last word, so this stays echo-safe.
       updateJarvisButton();
       if (resumeListening) scheduleJarvisListening(1100);
     };
@@ -709,7 +757,7 @@
     });
   }
   // Find a wake word in the transcript. Returns the command text that FOLLOWS the
-  // wake word (so "يا جارفيس افتح المبيعات" -> "افتح المبيعات"), or null if none.
+  // wake word (so "يا أومني افتح المبيعات" -> "افتح المبيعات"), or null if none.
   function detectWakeWord(transcript) {
     const norm = normalizeJarvisText(transcript);
     if (!norm) return null;
@@ -722,7 +770,7 @@
     }
     return null;
   }
-  // Is the just-heard text really Jarvis hearing its own reply?
+  // Is the just-heard text really Omni hearing its own reply?
   function isJarvisEcho(transcript) {
     const norm = normalizeJarvisText(transcript);
     if (!norm || !jarvisLastSpokenNorm) return false;
@@ -744,7 +792,7 @@
       updateJarvisButton();
     };
     recognition.onresult = event => {
-      // ECHO GUARD: while Jarvis is speaking (or in the tail window) ignore EVERYTHING
+      // ECHO GUARD: while Omni is speaking (or in the tail window) ignore EVERYTHING
       // the mic picks up — that audio is its own voice. This is what breaks the loop.
       if (shouldHoldJarvisMic()) return;
       let interim = '';
@@ -784,7 +832,7 @@
         return;
       }
 
-      // WAKE-WORD MODE (opt-in): stay passive until "Hey Jarvis"/"Octagon" arms it.
+      // WAKE-WORD MODE (opt-in): stay passive until "Hey Omni"/"Octagon" arms it.
       const armed = Date.now() < jarvisArmedUntil;
       if (armed) {
         jarvisArmedUntil = 0;
@@ -802,7 +850,7 @@
         }
         return;
       }
-      showJarvisHeard(t('قل "يا جارفيس" أو "أوكتاجون" للأمر', 'Say "Hey Jarvis" or "Octagon" to command'));
+      showJarvisHeard(t('قل "يا أومني" أو "أوكتاجون" للأمر', 'Say "Hey Omni" or "Octagon" to command'));
     };
     recognition.onaudiostart = () => {
       // The mic actually started delivering audio to the engine — it's truly alive.
@@ -817,7 +865,7 @@
     recognition.onspeechstart = () => { jarvisLastHeardAt = Date.now(); clearJarvisProblem(); };
     recognition.onend = () => {
       state.jarvisListening = false;
-      // Restart only if Jarvis is active, not speaking, and not explicitly stopped.
+      // Restart only if Omni is active, not speaking, and not explicitly stopped.
       if (jarvisHardStopped || !state.jarvisActive) return;
       if (state.busy || shouldHoldJarvisMic()) scheduleJarvisListening(500);
       else scheduleJarvisListening(100);
@@ -826,7 +874,7 @@
       state.jarvisListening = false;
       if (jarvisHardStopped || !state.jarvisActive) return;
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-        toast(t('تم رفض إذن الميكروفون. فعّل الإذن ثم أعد تشغيل وضع جارفيس.', 'Microphone permission denied. Allow access and restart Jarvis Mode.'), 'warning');
+        toast(t('تم رفض إذن الميكروفون. فعّل الإذن ثم أعد تشغيل وضع أومني.', 'Microphone permission denied. Allow access and restart Omni Mode.'), 'warning');
         stopJarvis(true);
         return;
       }
@@ -859,7 +907,7 @@
         showJarvisProblem(t('لا أستطيع السماع الآن. تحقق من الميكروفون/الإنترنت أو استخدم زر 🎙️ بالأسفل.',
                             "I can't hear right now. Check the mic/internet or use the 🎙️ button below."));
       }
-      console.warn('Jarvis speech error:', event.error, '(streak ' + jarvisConsecErrors + ')');
+      console.warn('Omni speech error:', event.error, '(streak ' + jarvisConsecErrors + ')');
       if (!jarvisHardStopped && state.jarvisActive) scheduleJarvisListening(400);
     };
     return recognition;
@@ -907,7 +955,7 @@
     return { ok: true };
   }
 
-  // Show what Jarvis is hearing live, inside the wave indicator.
+  // Show what Omni is hearing live, inside the wave indicator.
   function showJarvisHeard(text) {
     const indicator = document.getElementById('jarvisWaveIndicator');
     if (!indicator) return;
@@ -1094,10 +1142,11 @@
     const input = document.getElementById('ptxAIInput');
     if (input) input.value = transcript.trim();
 
-    const stopPatterns = ['أوقف جارفيس', 'ايقاف جارفيس', 'إيقاف جارفيس', 'stop jarvis', 'disable jarvis', 'turn off jarvis', 'إلغاء', 'cancel'];
+    const stopPatterns = ['أوقف أومني', 'ايقاف أومني', 'إيقاف أومني', 'أوقف جارفيس', 'ايقاف جارفيس', 'إيقاف جارفيس',
+      'stop omni', 'disable omni', 'turn off omni', 'stop jarvis', 'disable jarvis', 'turn off jarvis', 'إلغاء', 'cancel'];
     if (stopPatterns.some(pattern => text.includes(normalizeJarvisText(pattern)))) {
       stopJarvis(true);
-      speakJarvis(t('تم إيقاف وضع جارفيس.', 'Jarvis Mode deactivated.'), false);
+      speakJarvis(t('تم إيقاف وضع أومني.', 'Omni Mode deactivated.'), false);
       return;
     }
     
@@ -1131,43 +1180,12 @@
       return;
     }
 
-    // ===== Jarvis Brain: understand any natural request + run real ERP actions =====
-    // This replaces the brittle keyword chain below when the brain is loaded.
+    // ===== Omni Brain: understand any natural request + run real ERP actions =====
+    // Hands-free speech goes through the SAME core pipeline (runOmniTurn) as typed
+    // text and recorded voice notes — one brain path for every input channel.
     if (window.JarvisBrain && typeof window.JarvisBrain.handle === 'function') {
-      if (state.busy) {
-        speakJarvis(t('انتظر قليلاً، ما زلت أعالج الطلب السابق.', 'Please wait, I am still processing the previous request.'));
-        return;
-      }
-      state.busy = true;
-      setJarvisStatus('processing');
-      updateJarvisButton();
-      const brainKey = currentKey();
-      if (!state.byPage[brainKey]) state.byPage[brainKey] = [];
-      state.byPage[brainKey].push({ role: 'user', text: transcript.trim() });
       if (input) input.value = '';
-      render();
-      try {
-        const res = await window.JarvisBrain.handle(transcript, { page: brainKey });
-        state.byPage[brainKey].push({ role: 'ai', text: res.text, brainResults: res.results, clarify: res.clarify, local: res.local });
-        if (res.results && res.results.some(r => r.navigated)) updateAttentionBadge();
-        speakJarvis(res.text);
-      } catch (err) {
-        const failMsg = t('تعذر تنفيذ الطلب الآن.', 'Could not handle the request right now.');
-        state.byPage[brainKey].push({ role: 'ai', text: failMsg });
-        speakJarvis(failMsg);
-      } finally {
-        state.busy = false;
-        updateJarvisButton();
-        render();
-        // speakJarvis() resumes the mic via afterSpeech() once the reply finishes
-        // playing. Only resume here when nothing is actually being spoken (e.g. an
-        // empty reply) — re-opening the mic during the async TTS is exactly what made
-        // Jarvis hear himself and then drop your next command as "busy".
-        if (state.jarvisActive && !state.jarvisListening &&
-            state.jarvisStatus !== 'speaking' && Date.now() >= jarvisSpeakingUntil) {
-          scheduleJarvisListening();
-        }
-      }
+      await runOmniTurn(transcript.trim(), { channel: 'handsfree', spoken: true });
       return;
     }
 
@@ -1198,7 +1216,7 @@
 
       // Don't force 'idle' here — speakJarvis() keeps the 'speaking' guard until the
       // reply finishes, then resumes the mic. Resetting to idle would let the watchdog
-      // re-open the mic mid-sentence and make Jarvis transcribe his own voice.
+      // re-open the mic mid-sentence and make Omni transcribe his own voice.
       updateJarvisButton();
       return;
     }
@@ -1335,7 +1353,7 @@
         - التنقل: افتح المخزون، اذهب للمهام، عرض المالية
         - السيرورات: تقرير صباحي، فحص المخزون المنخفض، حالة المكائن
         - الإجراءات: لخص الحالة، افحص القسم، ما يحتاج انتباه
-        - التحكم: أوقف جارفيس، مساعدة
+        - التحكم: أوقف أومني، مساعدة
         - للتنقل بين الأقسام، قل "افتح" متبوعاً باسم القسم
       `,
       en: `
@@ -1343,89 +1361,27 @@
         - Navigation: Open inventory, go to tasks, show finance
         - Workflows: Morning report, low stock check, machine status
         - Actions: Summarize status, scan section, what needs attention
-        - Control: Stop Jarvis, help
+        - Control: Stop Omni, help
         - To navigate, say "open" followed by the section name
       `
     };
     return helpTexts[lang()];
   }
 
-  // Advanced AI Integration with Multiple Providers
+  // Conversational AI — routed exclusively through the unified provider layer
+  // (modules/ai-providers.js). The old direct Grok/Google fetch fallbacks were
+  // removed: Grok was dead (CORS + deprecated model) and both exposed keys.
   async function callAdvancedAI(prompt, context = '') {
-    // Prefer the working grounded model (Gemini via callOctagonAi). The legacy
-    // Grok/Google block below is kept as a fallback but is normally unreached;
-    // the old Grok endpoint is browser-CORS-blocked and uses a deprecated model.
     try {
       const caller = window.callOctagonAi || window.callPentagonAi
         || (typeof callOctagonAi === 'function' ? callOctagonAi : null)
         || (typeof callPentagonAi === 'function' ? callPentagonAi : null);
       if (caller) {
-        const sys = `${context}\n\n${t('أنت جارفيس، مساعد ذكي للنظام. كن دقيقاً وموجزاً ومناسباً للنطق الصوتي، وأجب بلغة المستخدم.', 'You are Jarvis, the ERP assistant. Be accurate, concise, voice-friendly, and answer in the user\'s language.')}`;
-        const out = await caller(prompt, sys, { temperature: 0.4 });
+        const sys = `${context}\n\n${t('أنت أومني، مساعد ذكي للنظام. كن دقيقاً وموجزاً ومناسباً للنطق الصوتي، وأجب بلغة المستخدم.', 'You are Omni, the ERP assistant. Be accurate, concise, voice-friendly, and answer in the user\'s language.')}`;
+        const out = await caller(prompt, sys, { temperature: 0.4, task: 'fast' });
         if (out && String(out).trim()) return String(out).trim();
       }
-    } catch (e) { console.warn('Jarvis primary AI failed, falling back to legacy:', e); }
-
-    const fullPrompt = `
-You are Jarvis, an advanced AI assistant for an ERP system. You are helpful, professional, and concise.
-
-${context}
-
-User request: ${prompt}
-
-Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and suitable for voice output.
-`.trim();
-
-    // Try Grok first
-    try {
-      const response = await fetch(API_CONFIG.grok.endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_CONFIG.grok.apiKey}`
-        },
-        body: JSON.stringify({
-          model: API_CONFIG.grok.model,
-          messages: [
-            { role: 'system', content: 'You are Jarvis, a helpful AI assistant for an ERP system.' },
-            { role: 'user', content: fullPrompt }
-          ],
-          max_tokens: 500,
-          temperature: 0.7
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.choices[0]?.message?.content || null;
-      }
-    } catch (error) {
-      console.warn('Grok API failed, trying Google:', error);
-    }
-
-    // Fallback to Google
-    try {
-      const apiKey = API_CONFIG.google.apiKey || API_CONFIG.google.fallbackKey;
-      const response = await fetch(`${API_CONFIG.google.endpoint}?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: {
-            maxOutputTokens: 500,
-            temperature: 0.7
-          }
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.candidates[0]?.content?.parts[0]?.text || null;
-      }
-    } catch (error) {
-      console.warn('Google API failed:', error);
-    }
-
+    } catch (e) { console.warn('Omni conversational AI failed:', e); }
     return null;
   }
 
@@ -1483,7 +1439,7 @@ Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and
       window.JarvisVoiceRuntime.start();
     }
     setTimeout(() => showProactiveSuggestions(), 2000);
-    toast(t('جارفيس مفعّل — تكلّم الآن مباشرة، بدون كلمة تنبيه', 'Jarvis activated — just talk now, no wake word needed'), 'info');
+    toast(t('أومني مفعّل — تكلّم الآن مباشرة، بدون كلمة تنبيه', 'Omni activated — just talk now, no wake word needed'), 'info');
     return true;
   }
 
@@ -1602,7 +1558,7 @@ Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and
     if (window.JarvisVoiceRuntime) {
       window.JarvisVoiceRuntime.stop();
     }
-    if (!silent) toast(t('تم إيقاف وضع جارفيس.', 'Jarvis Mode deactivated.'), 'info');
+    if (!silent) toast(t('تم إيقاف وضع أومني.', 'Omni Mode deactivated.'), 'info');
   }
 
   function showJarvisWaveIndicator() {
@@ -1621,7 +1577,7 @@ Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
         </div>
-        <div class="jarvis-status-text">${t('جارفيس يستمع...', 'Jarvis Listening...')}</div>
+        <div class="jarvis-status-text">${t('يشغّل المايك… لحظة', 'Starting the mic…')}</div>
       `;
       
       const quickbar = panel.querySelector('.ptxai-quickbar');
@@ -1659,19 +1615,19 @@ Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and
 
     switch (status) {
       case 'listening':
-        statusText.textContent = t('جارفيس يستمع...', 'Jarvis Listening...');
+        statusText.textContent = t('أومني يستمع...', 'Omni Listening...');
         waveBars.forEach(bar => bar.style.animationPlayState = 'running');
         break;
       case 'processing':
-        statusText.textContent = t('جارفيس يفكر...', 'Jarvis Thinking...');
+        statusText.textContent = t('أومني يفكر...', 'Omni Thinking...');
         waveBars.forEach(bar => bar.style.animationPlayState = 'paused');
         break;
       case 'speaking':
-        statusText.textContent = t('جارفيس يتحدث...', 'Jarvis Speaking...');
+        statusText.textContent = t('أومني يتحدث...', 'Omni Speaking...');
         waveBars.forEach(bar => bar.style.animationPlayState = 'paused');
         break;
       default:
-        statusText.textContent = t('جارفيس جاهز', 'Jarvis Ready');
+        statusText.textContent = t('أومني جاهز', 'Omni Ready');
         waveBars.forEach(bar => bar.style.animationPlayState = 'paused');
     }
   }
@@ -1691,7 +1647,7 @@ Respond in ${lang() === 'ar' ? 'Arabic' : 'English'}. Keep responses concise and
     if (window.JarvisVoiceRuntime) {
       window.JarvisVoiceRuntime.stop();
     }
-    if (!silent) toast(t('تم إيقاف وضع جارفيس.', 'Jarvis Mode deactivated.'), 'info');
+    if (!silent) toast(t('تم إيقاف وضع أومني.', 'Omni Mode deactivated.'), 'info');
   }
   function toggleJarvis(force) {
     const next = typeof force === 'boolean' ? force : !state.jarvisActive;
@@ -1873,7 +1829,7 @@ ${t('إذا وجدت خطوات آمنة قابلة للتحويل إلى مهم
 {"actions":["${t('عنوان خطوة قصيرة', 'Short action title')}"]}
 \`\`\`
 
-${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب إجراءات صوتية. كن موجزاً في الردود الشفهية.', 'Jarvis voice mode is active. User may request voice actions. Keep responses concise for speech.')}`;
+${t('وضع أومني الصوتي مفعّل. المستخدم قد يطلب إجراءات صوتية. كن موجزاً في الردود الشفهية.', 'Omni voice mode is active. User may request voice actions. Keep responses concise for speech.')}`;
   }
 
   function buildERPSpecificContext(key) {
@@ -1884,16 +1840,16 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
                    'This is inventory section. Contains materials, quantities, minimum levels, and suppliers. Available actions: purchase requests, update quantities, show low stock items.'),
       task_manager: t('هذا قسم إدارة المهام. يحتوي على المهام، الموظفين المسؤولين، المواعيد النهائية، والحالات. الإجراءات المتاحة: إنشاء مهمة، تحديث الحالة، تعيين موظف.',
                       'This is task management section. Contains tasks, responsible employees, deadlines, and statuses. Available actions: create task, update status, assign employee.'),
-      finance: t('هذا قسم المالية. يحتوي على القيود المحاسبية، الحسابات، والتقارير المالية. الإجراءات الحساسة: إنشاء قيود، حذف حسابات، تعديل الأرصدة. للقراءة فقط في وضع جارفيس.',
-                 'This is finance section. Contains journal entries, accounts, and financial reports. Sensitive actions: create entries, delete accounts, modify balances. Read-only in Jarvis mode.'),
+      finance: t('هذا قسم المالية. يحتوي على القيود المحاسبية، الحسابات، والتقارير المالية. الإجراءات الحساسة: إنشاء قيود، حذف حسابات، تعديل الأرصدة. للقراءة فقط في وضع أومني.',
+                 'This is finance section. Contains journal entries, accounts, and financial reports. Sensitive actions: create entries, delete accounts, modify balances. Read-only in Omni mode.'),
       kanban: t('هذه اللوحة التنفيذية. تعرض تقدم العمليات، البطاقات، والحالة. الإجراءات المتاحة: تحريك البطاقات، تحديث الحالة، إضافة تعليقات.',
                 'This is execution board. Shows operation progress, cards, and status. Available actions: move cards, update status, add comments.'),
       machines: t('هذا قسم المكائن. يحتوي على معلومات الماكينة، جدول الصيانة، والحالة التشغيلية. الإجراءات المتاحة: تسجيل مشكلة، تحديث حالة الصيانة.',
                   'This is machines section. Contains machine information, maintenance schedule, and operational status. Available actions: report issue, update maintenance status.'),
       whatsapp: t('هذا قسم واتساب. يحتوي على المجموعات، الرسائل، والتكامل. الإجراءات المتاحة: إرسال رسائل، مراجعة المحادثات، تلخيص الرسائل المعلقة.',
                   'This is WhatsApp section. Contains groups, messages, and integration. Available actions: send messages, review conversations, summarize pending messages.'),
-      telegram: t('هذا موصل تلغرام (Telegram Connector). يحتوي على حالة البوت، صندوق الرسائل، قائمة الإرسال بانتظار الموافقة، وحالات الأتمتة. جارفيس يجهز ويقترح مسودات فقط ولا يرسل بدون موافقة بشرية. لا يُعرض أو يُخزّن أي توكن في المتصفح؛ التوكن Server-side فقط.',
-                   'This is the Telegram Connector. Contains bot status, message inbox, an approval-gated outbound queue, and automation use-cases. Jarvis only drafts and suggests; it never sends without human approval. No bot token is shown or stored in the browser — the token stays server-side only.'),
+      telegram: t('هذا موصل تلغرام (Telegram Connector). يحتوي على حالة البوت، صندوق الرسائل، قائمة الإرسال بانتظار الموافقة، وحالات الأتمتة. أومني يجهز ويقترح مسودات فقط ولا يرسل بدون موافقة بشرية. لا يُعرض أو يُخزّن أي توكن في المتصفح؛ التوكن Server-side فقط.',
+                   'This is the Telegram Connector. Contains bot status, message inbox, an approval-gated outbound queue, and automation use-cases. Omni only drafts and suggests; it never sends without human approval. No bot token is shown or stored in the browser — the token stays server-side only.'),
       command_center: t('مركز القيادة. يعرض نظرة عامة على النظام، التنبيهات، والقرارات المعلقة. الإجراءات المتاحة: الموافقة على الطلبات، مراجعة التنبيهات.',
                         'Command center. Shows system overview, alerts, and pending decisions. Available actions: approve requests, review alerts.'),
       intelligence: t('عقل النظام. يوفر تحليلات ذكية، توصيات، و رؤى. الإجراءات المتاحة: تشغيل تحليل، مراجعة التوصيات، إنشاء تقارير ذكية.',
@@ -2012,139 +1968,218 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     render();
   }
 
-  function phaseLabel(phase) {
+  // (The old project-progress/review panel was removed from the assistant window:
+  //  Omni's chat is for operating the system, not for build-status banners.)
+
+  function jarvisToolSummary() {
+    const tools = window.JarvisBrain && window.JarvisBrain.tools ? window.JarvisBrain.tools : {};
+    const names = Object.keys(tools);
+    const approval = names.filter(name => {
+      const tool = tools[name] || {};
+      const risk = String(tool.risk || '').toLowerCase();
+      return tool.approvalRequired || tool.gated || risk === 'high' || risk === 'critical';
+    }).length;
+    return { count: names.length, approval, sample: names.slice(0, 4).join(', ') };
+  }
+
+  function currentRuntimeState() {
+    try {
+      if (window.JarvisVoiceRuntime && typeof window.JarvisVoiceRuntime.getState === 'function') {
+        return window.JarvisVoiceRuntime.getState();
+      }
+    } catch (_) {}
+    return state.jarvisStatus || 'idle';
+  }
+
+  function currentAiSourceLabel() {
+    try {
+      const status = window.OctagonAI && typeof window.OctagonAI.status === 'function' ? window.OctagonAI.status() : null;
+      if (!status) return '';
+      return `${status.lastProvider || status.activeProvider || 'AI'} / ${status.effectiveModel || status.model || '-'}`;
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function renderApiTestResults() {
+    const results = state.apiTestResults;
+    if (!results || !Array.isArray(results.items)) return '';
+    return `<div class="jarvis-api-test-results">
+      ${results.items.map(item => {
+        const cls = item.ok ? 'ok' : 'fail';
+        const icon = item.ok ? 'fa-check' : 'fa-triangle-exclamation';
+        // Deep mode: show the capability checklist (Arabic / strict JSON) beside speed.
+        let caps = '';
+        if (results.deep && item.capabilities) {
+          const cap = (key, name) => {
+            const c = item.capabilities[key];
+            if (!c) return '';
+            return `<em class="${c.ok ? 'cap-ok' : 'cap-fail'}" title="${esc(c.error || (c.latencyMs + 'ms'))}">${name}${c.ok ? '✓' : '✗'}</em>`;
+          };
+          caps = ` ${cap('arabic', t('عربي', 'AR'))}${cap('json', 'JSON')}`;
+        }
+        const detail = item.ok ? (item.latencyMs + 'ms') : esc(item.error || 'failed');
+        return `<span class="${cls}"><i class="fa-solid ${icon}"></i>${esc(item.label)}${caps} <b>${detail}</b></span>`;
+      }).join('')}
+    </div>`;
+  }
+
+  function modelShortLabel(id) {
     const map = {
-      completed: t('مكتمل', 'Completed'),
-      in_progress: t('قيد العمل', 'In progress'),
-      paused: t('متوقف', 'Paused')
+      'qwen/qwen3.5-flash-02-23': 'Qwen Flash',
+      'qwen/qwen-2.5-72b-instruct': 'Qwen 72B',
+      'qwen/qwen-2.5-coder-32b-instruct': 'Qwen Coder',
+      'deepseek/deepseek-chat': 'DeepSeek V3',
+      'deepseek/deepseek-r1': 'DeepSeek R1',
+      'claude-sonnet-4-6': 'Claude Sonnet 4.6',
+      'claude-opus-4-8': 'Claude Opus 4.8',
+      'gemini-flash': 'Gemini Flash'
     };
-    return map[phase] || t('غير محدد', 'Unspecified');
+    if (!id) return '-';
+    return map[id] || String(id).split('/').pop();
   }
-  function projectDetailsSummary() {
-    const status = state.projectStatus;
-    const focus = status?.currentFocus || {};
-    if (focus.section) {
-      return `${focus.section} — ${phaseLabel(focus.phase)}${focus.percent !== undefined ? ` (${focus.percent}%)` : ''}`;
-    }
-    if (status?.overallPercent !== undefined) return `${Number(status.overallPercent) || 0}% ${t('مكتمل', 'complete')}`;
-    return t('اضغط لعرض التفاصيل', 'Click to view details');
+  function omniStateLabel(s) {
+    const map = {
+      idle: t('جاهز', 'Idle'),
+      listening: t('يستمع', 'Listening'),
+      user_speaking: t('يسمعك', 'Hearing you'),
+      thinking: t('يفكر', 'Thinking'),
+      processing: t('يفكر', 'Thinking'),
+      streaming: t('يرد', 'Replying'),
+      speaking: t('يتحدث', 'Speaking'),
+      interrupted: t('مقاطَع', 'Interrupted'),
+      error: t('خطأ', 'Error')
+    };
+    return map[s] || s;
   }
-  function renderProjectDetailsBody() {
-    const status = state.projectStatus;
-    const pointer = state.reviewPointer;
-    if (!status && !pointer) {
-      return `<p>${t('لا توجد تفاصيل حالة منشورة حالياً.', 'No project status is published right now.')}</p>`;
-    }
-    const focus = status?.currentFocus || {};
-    const recent = Array.isArray(status?.recent) ? status.recent.slice(0, 3) : [];
-    const next = Array.isArray(status?.next) ? status.next.slice(0, 3) : [];
-    const checks = Array.isArray(pointer?.checks) ? pointer.checks.slice(0, 4) : [];
-    return `
-      ${focus.section ? `<div class="ptxai-status-focus"><small>${t('الحالة الحالية', 'Current State')}</small><strong>${esc(focus.section)}</strong><em>${phaseLabel(focus.phase)}${focus.percent !== undefined ? ` - ${focus.percent}%` : ''}</em>${focus.note ? `<p>${esc(focus.note)}</p>` : ''}</div>` : ''}
-      ${recent.length ? `<div class="ptxai-status-list"><small>${t('آخر الإنجازات', 'Recent')}</small>${recent.map(item => `<div><b>${esc(item.section || '')}</b><span>${esc(item.date || '')} ${item.percent !== undefined ? `- ${item.percent}%` : ''}</span></div>`).join('')}</div>` : ''}
-      ${next.length ? `<div class="ptxai-status-list"><small>${t('التالي', 'Next')}</small>${next.map(item => `<div><b>${esc(item.label || '')}</b><span>${item.currentPercent !== undefined ? `${item.currentPercent}%` : ''}</span></div>`).join('')}</div>` : ''}
-      ${checks.length ? `<div class="ptxai-status-list"><small>${t('ملاحظات المراجعة', 'Review Notes')}</small>${checks.map(item => `<div><span>${esc(item)}</span></div>`).join('')}</div>` : ''}`;
-  }
-  function renderProjectDetails() {
-    const status = state.projectStatus;
-    const pointer = state.reviewPointer;
-    const summary = projectDetailsSummary();
-    const chevron = state.detailsOpen ? 'fa-chevron-up' : 'fa-chevron-down';
-    const percent = status?.overallPercent;
-    return `
-      <section class="ptxai-status-panel ${state.detailsOpen ? 'is-open' : 'is-collapsed'}">
-        <button type="button" class="ptxai-status-toggle" id="ptxAIDetailsToggle" aria-expanded="${state.detailsOpen ? 'true' : 'false'}">
-          <span class="ptxai-status-toggle-main">
-            <i class="fa-solid fa-chart-line"></i>
-            <span class="ptxai-status-toggle-copy">
-              <b>${t('تقدم المشروع والمعلومات', 'Build Progress & Info')}</b>
-              <em>${esc(summary)}</em>
-            </span>
-          </span>
-          <span class="ptxai-status-toggle-meta">
-            ${percent !== undefined ? `<span class="ptxai-status-pct">${Number(percent) || 0}%</span>` : ''}
-            <i class="fa-solid ${chevron}"></i>
-          </span>
-        </button>
-        ${state.detailsOpen ? `<div class="ptxai-status-body">${renderProjectDetailsBody()}</div>` : ''}
-      </section>`;
-  }
-  function toggleProjectDetails(force) {
-    state.detailsOpen = typeof force === 'boolean' ? force : !state.detailsOpen;
-    localStorage.setItem(DETAILS_STORAGE_KEY, state.detailsOpen ? '1' : '0');
-    render();
+  function omniConnections() {
+    let dbRead = false;
+    try { dbRead = !!(window.JarvisBrain && typeof window.JarvisBrain.snapshot === 'function' && typeof omni !== 'undefined' && omni); } catch (_) {}
+    let approvalQueue = false;
+    try { approvalQueue = typeof window.getAiControl === 'function' && Array.isArray(window.getAiControl().actionQueue); } catch (_) {}
+    let knowledge = false;
+    try { knowledge = typeof window.buildOctagonAiContext === 'function' || typeof window.buildPentagonAiContext === 'function' || typeof window.buildWorkshopAiContext === 'function'; } catch (_) {}
+    const domActions = (window.JarvisSystemMap && Number(window.JarvisSystemMap.actionsCount)) || 0;
+    return { dbRead, approvalQueue, knowledge, domActions };
   }
 
+  // Compact Omni runtime bar: live status + provider/model + last API result +
+  // honest local-fallback flag + tool visibility, with the full config tucked
+  // behind the gear toggle so the chat itself stays clean.
   function renderJarvisStatusPanel() {
-    if (!state.jarvisActive) return '';
-    const coverage = window.JarvisSystemMap ? window.JarvisSystemMap.coverageScore || 0 : 0;
-    
-    let budgetText = '$0.00 (0 tokens)';
-    const tokens = state.sessionTokens || 0;
-    const cost = state.sessionCost || 0;
-    budgetText = `$${cost.toFixed(4)} (${tokens} tokens)`;
-
+    const aiStatus = window.OctagonAI && typeof window.OctagonAI.status === 'function'
+      ? window.OctagonAI.status()
+      : { activeProvider: state.apiProvider || 'auto', model: '', effectiveModel: '', lastStatus: 'unknown', lastProvider: '', lastError: '' };
+    const runtimeState = state.jarvisActive ? currentRuntimeState() : 'idle';
+    const tools = jarvisToolSummary();
+    const conn = omniConnections();
+    const activeProvider = aiStatus.activeProvider || state.apiProvider || 'auto';
+    const aiCfg = window.OctagonAI && typeof window.OctagonAI.config === 'function' ? window.OctagonAI.config() : {};
+    const autoRoute = aiCfg.autoRoute !== false;
+    const activeModel = aiStatus.effectiveModel || (activeProvider === 'contactbox' ? (aiCfg.contactboxModel || aiCfg.model) : aiCfg.model) || '-';
+    const lastOk = aiStatus.lastStatus === 'ok';
+    const lastFailed = aiStatus.lastStatus === 'failed';
+    const localMode = activeProvider === 'offline' || (lastFailed && !aiStatus.lastSuccessAt);
+    const providerLabels = {
+      auto: t('تلقائي', 'Auto'),
+      openrouter: 'OpenRouter',
+      contactbox: 'ContactBox (Claude)',
+      gemini: 'Gemini',
+      offline: t('دون اتصال', 'Offline')
+    };
     const modeLabels = {
       economy: t('اقتصادي', 'Economy'),
       balanced: t('متوازن', 'Balanced'),
       strong: t('تحليل قوي', 'Strong Analysis')
     };
     const activeMode = state.jarvisMode || 'balanced';
-
-    const providerLabels = {
-      auto: t('تلقائي', 'Auto'),
-      openrouter: 'OpenRouter',
-      gemini: 'Gemini',
-      offline: t('دون اتصال', 'Offline')
+    const modelOptions = {
+      'qwen/qwen3.5-flash-02-23': 'Qwen Flash',
+      'qwen/qwen-2.5-72b-instruct': 'Qwen 72B',
+      'deepseek/deepseek-chat': 'DeepSeek V3',
+      'deepseek/deepseek-r1': 'DeepSeek R1',
+      'claude-sonnet-4-6': 'Claude Sonnet 4.6',
+      'claude-opus-4-8': 'Claude Opus 4.8'
     };
-    const activeProvider = state.apiProvider || 'auto';
+    const budgetText = `$${(state.sessionCost || 0).toFixed(4)} (${state.sessionTokens || 0} tokens)`;
+    const yes = `<i class="fa-solid fa-circle-check"></i>`;
+    const no = `<i class="fa-solid fa-circle-xmark"></i>`;
 
-    return `
-      <section class="ptxai-jarvis-status-card">
-        <div class="jarvis-status-header">
-          <div class="jarvis-status-title">
-            <i class="fa-solid fa-microchip jarvis-pulse-icon"></i>
-            <b>${t('لوحة تحكم JARVIS V2', 'JARVIS V2 Control Panel')}</b>
-          </div>
-          <span class="jarvis-coverage-badge" title="${t('تغطية خريطة النظام', 'System Map Coverage')}">
-            <i class="fa-solid fa-map"></i> ${coverage.toFixed(0)}%
-          </span>
-        </div>
-        
+    const strip = `
+      <div class="omni-rt-strip">
+        <span class="omni-rt-pill omni-rt-state st-${esc(runtimeState)}" title="${t('حالة أومني الآن', 'Omni state right now')}">
+          <i class="fa-solid fa-wave-square"></i> ${esc(omniStateLabel(runtimeState))}
+        </span>
+        <span class="omni-rt-pill" title="${t('المزود والنموذج الفعليان', 'Active provider and effective model')}${autoRoute ? t(' — توجيه ذكي مفعّل', ' — smart routing on') : ''}">
+          <i class="fa-solid fa-microchip"></i> ${esc(providerLabels[activeProvider] || activeProvider)} · ${esc(modelShortLabel(activeModel))}${autoRoute ? ' ⚡' : ''}
+        </span>
+        <span class="omni-rt-pill ${lastOk ? 'is-ok' : (lastFailed ? 'is-fail' : '')}" title="${t('آخر نداء API', 'Last API call')}: ${esc(aiStatus.lastProvider || '-')} — ${esc(aiStatus.lastError || aiStatus.lastStatus || '')}">
+          <i class="fa-solid fa-plug"></i> ${esc(aiStatus.lastProvider || '—')}: ${esc(aiStatus.lastStatus || 'unknown')}
+        </span>
+        ${localMode ? `<span class="omni-rt-pill is-local" title="${t('لا يوجد مزود سحابي متاح — الردود من المنطق المحلي فقط', 'No cloud provider reachable — replies come from local logic only')}"><i class="fa-solid fa-computer"></i> ${t('وضع محلي', 'local mode')}</span>` : ''}
+        <span class="omni-rt-spacer"></span>
+        <button type="button" class="omni-rt-btn" id="jarvisTestApisBtn" ${state.apiTestRunning ? 'disabled' : ''} title="${t('فحص سريع: سرعة واستجابة كل نموذج', 'Quick check: each model\'s speed and availability')}">
+          <i class="fa-solid fa-vial"></i> ${state.apiTestRunning ? t('يفحص...', 'Testing...') : t('اختبار', 'Test')}
+        </button>
+        <button type="button" class="omni-rt-btn" id="jarvisDeepTestBtn" ${state.apiTestRunning ? 'disabled' : ''} title="${t('فحص عميق: السرعة + جودة العربية + صحة JSON لكل نموذج (أبطأ)', 'Deep check: speed + Arabic quality + JSON validity per model (slower)')}">
+          <i class="fa-solid fa-list-check"></i> ${t('عميق', 'Deep')}
+        </button>
+        <button type="button" class="omni-rt-btn" id="omniRtConfigBtn" title="${t('إعدادات أومني', 'Omni settings')}">
+          <i class="fa-solid ${state.rtConfigOpen ? 'fa-chevron-up' : 'fa-gear'}"></i>
+        </button>
+      </div>`;
+
+    const toolsRow = `
+      <div class="omni-rt-tools">
+        <span title="${t('أدوات أومني القابلة للتنفيذ', 'Executable Omni tools')}"><i class="fa-solid fa-cubes"></i> ${tools.count} ${t('أداة', 'tools')}</span>
+        <span title="${t('أدوات حساسة تمر بطابور الموافقة', 'Sensitive tools routed to the approval queue')}"><i class="fa-solid fa-shield-halved"></i> ${tools.approval} ${t('بموافقة', 'gated')}</span>
+        <span title="${t('عناصر الواجهة المكتشفة في خريطة النظام', 'DOM actions discovered in the system map')}"><i class="fa-solid fa-map"></i> ${conn.domActions} ${t('عنصر واجهة', 'DOM actions')}</span>
+        <span class="${conn.dbRead ? 'is-ok' : 'is-fail'}" title="${t('قراءة قاعدة البيانات الحية', 'Live database read layer')}">${conn.dbRead ? yes : no} ${t('قاعدة البيانات', 'DB read')}</span>
+        <span class="${conn.approvalQueue ? 'is-ok' : 'is-fail'}" title="${t('طابور الموافقة للإجراءات الحساسة', 'Approval queue for sensitive actions')}">${conn.approvalQueue ? yes : no} ${t('طابور الموافقة', 'approvals')}</span>
+        <span class="${conn.knowledge ? 'is-ok' : 'is-fail'}" title="${t('طبقة السياق والمعرفة', 'Knowledge/context layer')}">${conn.knowledge ? yes : no} ${t('سياق المعرفة', 'knowledge')}</span>
+      </div>`;
+
+    const config = !state.rtConfigOpen ? '' : `
+      <div class="omni-rt-config">
         <div class="jarvis-status-grid">
           <div class="jarvis-status-item">
             <span class="label">${t('المزود:', 'Provider:')}</span>
             <select id="jarvisProviderSelect" class="jarvis-mini-select">
-              ${['auto', 'openrouter', 'gemini', 'offline'].map(p => 
+              ${['auto', 'openrouter', 'contactbox', 'gemini', 'offline'].map(p =>
                 `<option value="${p}" ${activeProvider === p ? 'selected' : ''}>${providerLabels[p]}</option>`
               ).join('')}
             </select>
           </div>
-          
           <div class="jarvis-status-item">
             <span class="label">${t('الوضع:', 'Mode:')}</span>
             <select id="jarvisModeSelect" class="jarvis-mini-select">
-              ${['economy', 'balanced', 'strong'].map(m => 
+              ${['economy', 'balanced', 'strong'].map(m =>
                 `<option value="${m}" ${activeMode === m ? 'selected' : ''}>${modeLabels[m]}</option>`
               ).join('')}
             </select>
           </div>
-
+          <div class="jarvis-status-item full-width">
+            <span class="label">${t('النموذج:', 'Model:')}</span>
+            <select id="jarvisModelSelect" class="jarvis-mini-select">
+              <option value="auto" ${autoRoute ? 'selected' : ''}>${t('توجيه ذكي حسب نوع الطلب', 'Smart routing by task type')}</option>
+              ${Object.keys(modelOptions).map(m =>
+                `<option value="${m}" ${!autoRoute && activeModel === m ? 'selected' : ''}>${modelOptions[m]}</option>`
+              ).join('')}
+            </select>
+          </div>
           <div class="jarvis-status-item full-width" style="display: flex; align-items: center; gap: 8px;">
             <input type="checkbox" id="jarvisWakeToggle" ${jarvisWakeRequired ? 'checked' : ''} style="margin: 0; cursor: pointer; width: auto; height: auto;">
             <label for="jarvisWakeToggle" style="cursor: pointer; font-size: 11px; opacity: 0.9;">
-              ${t('طلب كلمة تنبيه (جارفيس / أوكتاجون)', 'Require Wake Word (Jarvis / Octagon)')}
+              ${t('طلب كلمة تنبيه (أومني / أوكتاجون)', 'Require Wake Word (Omni / Octagon)')}
             </label>
           </div>
-
           <div class="jarvis-status-item full-width">
             <span class="label">${t('استهلاك الجلسة:', 'Session Usage:')}</span>
             <span class="value budget-value">${budgetText}</span>
           </div>
         </div>
-
         <div class="jarvis-status-actions">
-          <button type="button" class="jarvis-btn-mini" id="jarvisRebuildMapBtn" title="${t('إعادة مسح عناصر الواجهة وتحديث الخريطة', 'Rebuild JARVIS Map')}">
+          <button type="button" class="jarvis-btn-mini" id="jarvisRebuildMapBtn" title="${t('إعادة مسح عناصر الواجهة وتحديث الخريطة', 'Rescan UI elements and rebuild the map')}">
             <i class="fa-solid fa-arrows-rotate"></i> ${t('تحديث الخريطة', 'Sync Map')}
           </button>
           <button type="button" class="jarvis-btn-mini" id="jarvisClearBufferBtn" title="${t('مسح ذاكرة الصوت المؤقتة والاستهلاك', 'Clear voice buffers')}">
@@ -2153,12 +2188,59 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
           <button type="button" class="jarvis-btn-mini" id="jarvisRetryBtn" title="${t('إعادة محاولة تنفيذ الأمر الأخير', 'Retry last command')}">
             <i class="fa-solid fa-reply"></i> ${t('إعادة الأمر', 'Retry')}
           </button>
-          <button type="button" class="jarvis-btn-mini" id="jarvisDiagnosticsBtn" title="${t('تشغيل لوحة الفحص والتشخيص الذاتي', 'Run Diagnostics')}">
-            <i class="fa-solid fa-stethoscope"></i> ${t('تشخيص النظام', 'Diagnostics')}
+          <button type="button" class="jarvis-btn-mini" id="jarvisDiagnosticsBtn" title="${t('تشغيل لوحة الفحص والتشخيص الذاتي', 'Run the self-test diagnostics panel')}">
+            <i class="fa-solid fa-stethoscope"></i> ${t('تشخيص', 'Diagnostics')}
           </button>
         </div>
+      </div>`;
+
+    return `
+      <section class="ptxai-jarvis-status-card omni-runtime-card">
+        ${strip}
+        ${toolsRow}
+        ${config}
+        ${renderApiTestResults()}
       </section>
     `;
+  }
+
+  // Evidence card for Omni audit answers: source module, employee/period, totals,
+  // and a warning when the numbers rely on Excel review notes. Read-only rendering.
+  function renderJarvisEvidence(ev) {
+    if (!ev || typeof ev !== 'object') return '';
+    const rows = [];
+    if (ev.sourceLabel || (Array.isArray(ev.source) && ev.source.length)) {
+      rows.push(`<div class="jarvis-ev-row"><span class="jarvis-ev-k">${t('المصدر', 'Source')}</span><span class="jarvis-ev-v">${esc(ev.sourceLabel || (ev.source || []).join(' + '))}</span></div>`);
+    }
+    if (ev.employee) rows.push(`<div class="jarvis-ev-row"><span class="jarvis-ev-k">${t('الموظف', 'Employee')}</span><span class="jarvis-ev-v">${esc(ev.employee)}</span></div>`);
+    if (ev.period) rows.push(`<div class="jarvis-ev-row"><span class="jarvis-ev-k">${t('الفترة', 'Period')}</span><span class="jarvis-ev-v">${esc(String(ev.period))}</span></div>`);
+    const totals = (ev.totals && typeof ev.totals === 'object') ? ev.totals : null;
+    if (totals) {
+      const labels = {
+        income: t('الواردات', 'Income'), expense: t('المصروفات', 'Expense'), net: t('الصافي', 'Net'),
+        opening: t('رصيد افتتاحي', 'Opening'), finalCashbox: t('القاصة النهائية', 'Final cashbox'),
+        transactions: t('عدد الحركات', 'Transactions'), recordsCount: t('سجلات الشهر', 'Month records'),
+        nominalSalary: t('الراتب الاسمي', 'Nominal'), attendanceDays: t('حضور', 'Attendance'),
+        absentDays: t('غياب', 'Absent'), totalEarnings: t('استحقاق', 'Earnings'),
+        totalDeductions: t('استقطاعات', 'Deductions'), finalSalary: t('الصافي', 'Net salary'),
+        monthAdvances: t('سلف الشهر', 'Month advances'), financeAdvances: t('سلف المالية', 'Finance advances'),
+        financeAdvanceTx: t('حركات سلف', 'Advance tx'), financeAdvanceTotal: t('مجموع سلف المالية', 'Finance advances'),
+        timesheetAdvanceTotal: t('سلف التايم شيت', 'Timesheet advances'), duplicateGroups: t('مجموعات مكررة', 'Duplicate groups'),
+        fingerprintNotes: t('ملاحظات بصمة', 'Fingerprint notes'), missingPunches: t('بصمة ناقصة', 'Missing punches'),
+        employeesAffected: t('موظفون متأثرون', 'Employees affected')
+      };
+      Object.keys(totals).forEach(k => {
+        const v = totals[k];
+        if (v === null || v === undefined || v === '' || !labels[k]) return;
+        const shown = (typeof v === 'number' && Math.abs(v) >= 1000) ? v.toLocaleString('en-US') : String(v);
+        rows.push(`<div class="jarvis-ev-row"><span class="jarvis-ev-k">${labels[k]}</span><span class="jarvis-ev-v">${esc(shown)}</span></div>`);
+      });
+    }
+    if (!rows.length) return '';
+    const warn = ev.fromReviewNotes
+      ? `<div class="jarvis-ev-warn"><i class="fa-solid fa-triangle-exclamation"></i> ${t(`جزء من البيانات من ملاحظات مراجعة الإكسل (${Number(ev.reviewNotes) || 0} ملاحظة) — تحتاج قرار المدير.`, `Part of this comes from Excel review notes (${Number(ev.reviewNotes) || 0}) — needs a manager decision.`)}</div>`
+      : '';
+    return `<div class="jarvis-evidence"><div class="jarvis-ev-title"><i class="fa-solid fa-scale-balanced"></i> ${t('الأدلة', 'Evidence')}</div>${rows.join('')}${warn}</div>`;
   }
 
   function render() {
@@ -2168,12 +2250,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     if (!panel) return;
     const pageNode = panel.querySelector('.ptxai-title-page');
     if (pageNode) pageNode.textContent = pageLabel(key);
-    const detailsHost = panel.querySelector('#ptxAIProjectDetails');
-    if (detailsHost) detailsHost.innerHTML = renderProjectDetails();
     const jarvisStatusHost = panel.querySelector('#ptxAIJarvisStatus');
     if (jarvisStatusHost) jarvisStatusHost.innerHTML = renderJarvisStatusPanel();
-    const detailsButton = panel.querySelector('[data-q="details"]');
-    if (detailsButton) detailsButton.classList.toggle('active', state.detailsOpen);
     const stream = panel.querySelector('#ptxAIStream');
     if (!stream) return;
     stream.innerHTML = log.length
@@ -2185,18 +2263,182 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
           const navs = (message.navActions && message.navActions.length)
             ? `<div class="ptxai-acts">${message.navActions.map(action => `<button type="button" class="ptxai-nav-btn" data-page="${esc(action.page)}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${esc(action.label)}</button>`).join('')}</div>`
             : '';
-          const chips = (message.brainResults && message.brainResults.length)
-            ? `<div class="jarvis-actions-row">${message.brainResults.map(r => {
-                const cls = r.ok === false ? 'is-failed' : (r.risk === 'sensitive' ? 'is-queued' : 'is-done');
-                const icon = r.ok === false ? 'fa-triangle-exclamation' : (r.risk === 'sensitive' ? 'fa-clock' : 'fa-check');
-                return `<span class="jarvis-action-chip ${cls}"><i class="fa-solid ${icon}"></i><span class="jarvis-chip-label">${esc(r.tool)}</span></span>`;
-              }).join('')}${message.local ? `<span class="jarvis-action-chip is-note"><i class="fa-solid fa-wifi"></i><span class="jarvis-chip-label">${t('وضع محلي', 'local mode')}</span></span>` : ''}</div>`
+          const tookTitle = message.tookMs ? ` — ${Math.round(message.tookMs)}ms` : '';
+          const sourceChip = message.local
+            ? `<span class="jarvis-action-chip is-note" title="${t('رد من المنطق المحلي بدون نموذج سحابي', 'Answered by local logic, no cloud model')}${tookTitle}"><i class="fa-solid fa-computer"></i><span class="jarvis-chip-label">${t('وضع محلي', 'local mode')}</span></span>`
+            : (message.source ? `<span class="jarvis-action-chip is-audit" title="${t('المزود / النموذج الذي أنتج هذا الرد', 'Provider / model that produced this reply')}${tookTitle}"><i class="fa-solid fa-cloud"></i><span class="jarvis-chip-label">${esc(message.source)}</span></span>` : '');
+          const resultChips = (message.brainResults && message.brainResults.length)
+            ? message.brainResults.map(r => {
+                const isAudit = r.audit === true || (r.data && r.data.audit === true);
+                const needsApproval = r.blocked === true || r.approval === true || (r.data && r.data.approval === true);
+                const cls = r.ok === false ? 'is-failed' : (needsApproval ? 'is-queued' : (isAudit ? 'is-audit' : (r.risk === 'sensitive' ? 'is-queued' : 'is-done')));
+                const icon = r.ok === false ? 'fa-triangle-exclamation' : (needsApproval ? 'fa-clock' : (isAudit ? 'fa-shield-halved' : (r.risk === 'sensitive' ? 'fa-clock' : 'fa-check')));
+                const badge = r.ok === false ? '' : (needsApproval
+                  ? `<span class="jarvis-mode-badge is-approval">${t('يتطلب موافقة', 'approval required')}</span>`
+                  : (isAudit ? `<span class="jarvis-mode-badge is-readonly">${t('قراءة فقط', 'read-only')}</span>` : ''));
+                return `<span class="jarvis-action-chip ${cls}"><i class="fa-solid ${icon}"></i><span class="jarvis-chip-label">${esc(r.tool)}</span></span>${badge}`;
+              }).join('')
             : '';
-          return `<div class="ptxai-bubble ptxai-bot">${formatJarvisMessage(message.text)}</div>${chips}${actions}${navs}`;
+          const chips = (resultChips || sourceChip) ? `<div class="jarvis-actions-row">${resultChips}${sourceChip}</div>` : '';
+          const evidence = (message.brainResults && message.brainResults.length)
+            ? message.brainResults.map(r => renderJarvisEvidence(r.evidence || (r.data && r.data.evidence))).filter(Boolean).join('')
+            : '';
+          const evidenceLinks = (message.brainResults && message.brainResults.length)
+            ? (() => {
+                const seen = {};
+                const buttons = [];
+                message.brainResults.forEach(r => {
+                  const list = (Array.isArray(r.links) && r.links.length) ? r.links : ((r.data && Array.isArray(r.data.links)) ? r.data.links : []);
+                  list.forEach(l => {
+                    if (!l || !l.page || seen[l.page]) return;
+                    seen[l.page] = true;
+                    buttons.push(`<button type="button" class="ptxai-nav-btn" data-page="${esc(l.page)}"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${esc(l.label || l.page)}</button>`);
+                  });
+                });
+                return buttons.length ? `<div class="ptxai-acts">${buttons.join('')}</div>` : '';
+              })()
+            : '';
+          return `<div class="ptxai-bubble ptxai-bot">${formatJarvisMessage(message.text)}</div>${chips}${evidence}${evidenceLinks}${actions}${navs}`;
         }).join('')
       : `<div class="ptxai-empty">${t('اسألني عن', 'Ask me about')} "<b>${esc(pageLabel(key))}</b>"</div><div class="ptxai-sugg-wrap">${suggestionsFor(key).map(s => `<button type="button" class="ptxai-sugg" data-prompt="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
     stream.scrollTop = stream.scrollHeight;
     persistChat();
+  }
+
+  function aiCoreCaller() {
+    return window.callOctagonAi || window.callPentagonAi
+      || (typeof callOctagonAi === 'function' ? callOctagonAi : null)
+      || (typeof callPentagonAi === 'function' ? callPentagonAi : null);
+  }
+
+  // ==========================================================================
+  // OMNI CORE PIPELINE — the single entry point for EVERY input channel.
+  // Typed text, recorded voice notes (after transcription) and hands-free
+  // speech ALL land here, so they get identical behavior: brain planning,
+  // real tool execution, approval gating, source labeling, chat rendering
+  // and (when voice is active) the spoken reply.
+  //   opts.channel: 'text' | 'voice_note' | 'handsfree'
+  //   opts.spoken : force speaking the reply even outside hands-free mode
+  // ==========================================================================
+  async function runOmniTurn(text, opts = {}) {
+    const clean = String(text || '').trim();
+    if (!clean) return null;
+    if (state.busy) {
+      if (opts.spoken || state.jarvisActive) speakJarvis(t('انتظر قليلاً، ما زلت أعالج الطلب السابق.', 'Please wait, I am still processing the previous request.'));
+      return null;
+    }
+    const key = currentKey();
+    if (!state.byPage[key]) state.byPage[key] = [];
+    state.byPage[key].push({ role: 'user', text: clean, channel: opts.channel || 'text' });
+    state.busy = true;
+    if (state.jarvisActive) { setJarvisStatus('processing'); updateJarvisButton(); }
+    render();
+
+    const stream = document.getElementById('ptxAIStream');
+    if (stream) {
+      const thinking = document.createElement('div');
+      thinking.className = 'ptxai-bubble ptxai-bot ptxai-thinking';
+      thinking.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('أقرأ بيانات القسم وأحضر الرد...', 'Reading this section and preparing the answer...')}`;
+      stream.appendChild(thinking);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    const startedAt = Date.now();
+    try {
+      let entry;
+      if (window.JarvisBrain && typeof window.JarvisBrain.handle === 'function') {
+        // Brain path: plan → execute tools (approval-gated) → composed reply.
+        const res = await window.JarvisBrain.handle(clean, { page: key, channel: opts.channel || 'text' });
+        const answer = res.text || t('تم.', 'Done.');
+        entry = {
+          role: 'ai', text: answer,
+          brainResults: res.results, clarify: res.clarify, local: res.local,
+          source: res.local ? '' : currentAiSourceLabel(),
+          tookMs: Date.now() - startedAt
+        };
+        state.byPage[key].push(entry);
+        const afterKey = currentKey();
+        if (afterKey && afterKey !== key) {
+          if (!state.byPage[afterKey]) state.byPage[afterKey] = [];
+          state.byPage[afterKey].push({ role: 'user', text: clean, channel: opts.channel || 'text' });
+          state.byPage[afterKey].push(entry);
+        }
+        if (res.results && res.results.some(r => r.navigated)) updateAttentionBadge();
+        if (opts.spoken || state.jarvisActive) speakJarvis(answer);
+        return res;
+      }
+      // Legacy grounded Q&A (brain module missing): still answers, honestly labeled.
+      const caller = aiCoreCaller();
+      if (!caller) throw new Error('AI core not loaded');
+      const raw = await caller(clean, aiContextForPage(key), {});
+      const parsed = parseActions(raw);
+      let answer = parsed.text || t('لم يصلني رد نصي. حاول إعادة صياغة سؤالك.', 'No text answer came back. Try rephrasing your question.');
+      if (SENSITIVE_RE.test(clean)) {
+        answer += '\n\n' + t('هذا طلب حساس. التنفيذ الفعلي يجب أن يمر عبر طابور الموافقة الآمن.', 'This is a sensitive request. Real execution must go through the safe approval queue.');
+      }
+      entry = { role: 'ai', text: answer, actions: parsed.actions, source: currentAiSourceLabel(), tookMs: Date.now() - startedAt };
+      state.byPage[key].push(entry);
+      if (opts.spoken || state.jarvisActive) speakJarvis(answer);
+      return { text: answer, results: [], actions: [], clarify: '' };
+    } catch (error) {
+      const errText = t('تعذر الاتصال بالذكاء الصناعي الآن', 'Could not reach the AI model right now') + ` (${error.message || 'error'}).`;
+      state.byPage[key].push({ role: 'ai', text: errText, local: true });
+      if (opts.spoken || state.jarvisActive) speakJarvis(errText);
+      toast(t('تعذر الاتصال بالذكاء الصناعي.', 'Could not reach the AI model.'), 'warning');
+      return null;
+    } finally {
+      state.busy = false;
+      updateJarvisButton();
+      render();
+      // speakJarvis() owns resuming the mic after a spoken reply ends. Only resume
+      // here when nothing is being spoken, so the mic never re-opens during the TTS.
+      if (state.jarvisActive && !state.jarvisListening &&
+          state.jarvisStatus !== 'speaking' && Date.now() >= jarvisSpeakingUntil) {
+        scheduleJarvisListening();
+      }
+    }
+  }
+
+  // Recorded voice note: transcribe FIRST (Gemini takes inline audio), show the
+  // transcript as the user message, then run it through the SAME Omni pipeline
+  // as typed text and hands-free speech. If transcription fails we say so —
+  // no silent second pipeline.
+  async function sendRecordedVoice(audio) {
+    const key = currentKey();
+    if (!state.byPage[key]) state.byPage[key] = [];
+    const caller = aiCoreCaller();
+    if (!caller) {
+      state.byPage[key].push({ role: 'ai', text: t('طبقة الذكاء غير محمّلة — لا يمكن تفريغ التسجيل.', 'AI layer is not loaded — cannot transcribe the recording.'), local: true });
+      render();
+      return;
+    }
+    state.busy = true;
+    render();
+    const stream = document.getElementById('ptxAIStream');
+    if (stream) {
+      const transcribing = document.createElement('div');
+      transcribing.className = 'ptxai-bubble ptxai-bot ptxai-thinking';
+      transcribing.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('أفرّغ التسجيل الصوتي...', 'Transcribing the voice recording...')}`;
+      stream.appendChild(transcribing);
+      stream.scrollTop = stream.scrollHeight;
+    }
+    let transcript = '';
+    try {
+      transcript = (await caller(
+        t('فرّغ هذا المقطع الصوتي إلى نص حرفي فقط بنفس لغته، بدون أي شرح أو ترجمة أو علامات اقتباس. أعد النص فقط.',
+          'Transcribe this audio to literal text only, in its own language — no explanation, translation, or quotation marks. Return only the text.'),
+        '', { audio, task: 'transcribe' }
+      ) || '').trim();
+    } catch (_) {}
+    transcript = transcript.replace(/^["'«»\s]+|["'«»\s]+$/g, '').trim();
+    state.busy = false;
+    if (!transcript) {
+      state.byPage[key].push({ role: 'ai', text: t('لم أتمكن من تفريغ التسجيل الصوتي. جرّب مرة أخرى أو اكتب الطلب نصاً.', 'Could not transcribe the recording. Try again or type the request.'), local: true });
+      render();
+      return;
+    }
+    if (state.jarvisActive) { try { window.__jarvisReplyLang = jarvisListenFamily(); } catch (_) {} }
+    await runOmniTurn(transcript, { channel: 'voice_note', spoken: state.jarvisActive });
   }
 
   async function send(audio = null) {
@@ -2207,112 +2449,12 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       setJarvisStatus('processing');
       updateJarvisButton();
     }
+    if (audio) { await sendRecordedVoice(audio); return; }
     const input = document.getElementById('ptxAIInput');
     const text = (input?.value || '').trim();
-    if (!text && !audio) return;
-    const key = currentKey();
-    if (!state.byPage[key]) state.byPage[key] = [];
-    let displayText = text || t('🎙️ رسالة صوتية مضافة', '🎙️ Voice message sent');
-    const userMsg = { role: 'user', text: displayText };
-    state.byPage[key].push(userMsg);
-    input.value = '';
-    state.busy = true;
-    render();
-
-    const stream = document.getElementById('ptxAIStream');
-    const thinking = document.createElement('div');
-    thinking.className = 'ptxai-bubble ptxai-bot ptxai-thinking';
-    thinking.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${t('أقرأ بيانات القسم وأحضر الرد...', 'Reading this section and preparing the answer...')}`;
-    stream.appendChild(thinking);
-    stream.scrollTop = stream.scrollHeight;
-
-    try {
-      const caller = window.callOctagonAi || window.callPentagonAi || (typeof callOctagonAi === 'function' ? callOctagonAi : null) || (typeof callPentagonAi === 'function' ? callPentagonAi : null);
-      if (audio) {
-        if (!caller) throw new Error('AI core not loaded');
-        // Voice note → transcribe to text FIRST, then run it through the SAME brain
-        // pipeline as a typed/hands-free command, so it actually executes actions and
-        // shows the DOM highlight instead of only answering. Falls back to grounded Q&A
-        // if transcription comes back empty.
-        let transcript = '';
-        try {
-          transcript = (await caller(
-            t('فرّغ هذا المقطع الصوتي إلى نص حرفي فقط بنفس لغته، بدون أي شرح أو ترجمة أو علامات اقتباس. أعد النص فقط.',
-              'Transcribe this audio to literal text only, in its own language — no explanation, translation, or quotation marks. Return only the text.'),
-            '', { audio }
-          ) || '').trim();
-        } catch (_) {}
-        transcript = transcript.replace(/^["'«»\s]+|["'«»\s]+$/g, '').trim();
-
-        if (transcript && window.JarvisBrain && typeof window.JarvisBrain.handle === 'function') {
-          // Show what we heard, then handle it exactly like a typed command.
-          userMsg.text = transcript;
-          displayText = transcript;
-          if (state.jarvisActive) { try { window.__jarvisReplyLang = jarvisListenFamily(); } catch (_) {} }
-          const res = await window.JarvisBrain.handle(transcript, { page: key });
-          const answer = res.text || t('تم.', 'Done.');
-          const answerEntry = { role: 'ai', text: answer, brainResults: res.results, clarify: res.clarify, local: res.local };
-          state.byPage[key].push(answerEntry);
-          const afterKey = currentKey();
-          if (afterKey && afterKey !== key) {
-            if (!state.byPage[afterKey]) state.byPage[afterKey] = [];
-            state.byPage[afterKey].push({ role: 'user', text: transcript });
-            state.byPage[afterKey].push(answerEntry);
-          }
-          if (res.results && res.results.some(r => r.navigated)) updateAttentionBadge();
-          if (state.jarvisActive) speakJarvis(answer);
-        } else {
-          // Could not transcribe → keep the old grounded-answer behavior.
-          const raw = await caller(text, aiContextForPage(key), { audio });
-          const parsed = parseActions(raw);
-          let answer = parsed.text || t('لم يصلني رد نصي. حاول إعادة صياغة سؤالك.', 'No text answer came back. Try rephrasing your question.');
-          if (SENSITIVE_RE.test(text || '')) {
-            answer += '\n\n' + t('هذا طلب حساس. التنفيذ الفعلي يجب أن يمر عبر طابور الموافقة الآمن.', 'This is a sensitive request. Real execution must go through the safe approval queue.');
-          }
-          state.byPage[key].push({ role: 'ai', text: answer, actions: parsed.actions });
-          if (state.jarvisActive) speakJarvis(answer);
-        }
-      } else if (window.JarvisBrain && typeof window.JarvisBrain.handle === 'function') {
-        // Typed request: let the brain understand it and run real ERP actions.
-        const res = await window.JarvisBrain.handle(text, { page: key });
-        const answer = res.text || t('تم.', 'Done.');
-        const answerEntry = { role: 'ai', text: answer, brainResults: res.results, clarify: res.clarify, local: res.local };
-        state.byPage[key].push(answerEntry);
-        const afterKey = currentKey();
-        if (afterKey && afterKey !== key) {
-          if (!state.byPage[afterKey]) state.byPage[afterKey] = [];
-          state.byPage[afterKey].push({ role: 'user', text: displayText });
-          state.byPage[afterKey].push(answerEntry);
-        }
-        if (res.results && res.results.some(r => r.navigated)) updateAttentionBadge();
-        if (state.jarvisActive) speakJarvis(answer);
-      } else {
-        // Legacy fallback: grounded Q&A only.
-        if (!caller) throw new Error('AI core not loaded');
-        const raw = await caller(text, aiContextForPage(key), {});
-        const parsed = parseActions(raw);
-        let answer = parsed.text || t('لم يصلني رد نصي. حاول إعادة صياغة سؤالك.', 'No text answer came back. Try rephrasing your question.');
-        if (SENSITIVE_RE.test(text || '')) {
-          answer += '\n\n' + t('هذا طلب حساس. التنفيذ الفعلي يجب أن يمر عبر طابور الموافقة الآمن.', 'This is a sensitive request. Real execution must go through the safe approval queue.');
-        }
-        state.byPage[key].push({ role: 'ai', text: answer, actions: parsed.actions });
-        if (state.jarvisActive) speakJarvis(answer);
-      }
-    } catch (error) {
-      const errText = t('تعذر الاتصال بالذكاء الصناعي الآن', 'Could not reach the AI model right now') + ` (${error.message || 'error'}).`;
-      state.byPage[key].push({ role: 'ai', text: errText });
-      if (state.jarvisActive) speakJarvis(errText);
-      toast(t('تعذر الاتصال بالذكاء الصناعي.', 'Could not reach the AI model.'), 'warning');
-    } finally {
-      state.busy = false;
-      render();
-      // speakJarvis() owns resuming the mic after a spoken reply ends. Only resume
-      // here when nothing is being spoken, so the mic never re-opens during the TTS.
-      if (state.jarvisActive && !state.jarvisListening &&
-          state.jarvisStatus !== 'speaking' && Date.now() >= jarvisSpeakingUntil) {
-        scheduleJarvisListening();
-      }
-    }
+    if (!text) return;
+    if (input) input.value = '';
+    await runOmniTurn(text, { channel: 'text' });
   }
 
   const QUICK = {
@@ -2326,10 +2468,6 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     }
   };
   function quick(key) {
-    if (key === 'details') {
-      toggleProjectDetails();
-      return;
-    }
     const input = document.getElementById('ptxAIInput');
     if (!input) return;
     input.value = QUICK[key]?.[lang()] || key;
@@ -2629,19 +2767,54 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     render();
   }
 
+  async function testJarvisApis(deep = false) {
+    if (!window.OctagonAI || typeof window.OctagonAI.testMatrix !== 'function') {
+      toast(t('طبقة مزودات الذكاء غير متصلة.', 'AI provider layer is not connected.'), 'warning');
+      return;
+    }
+    state.apiTestRunning = true;
+    state.apiTestResults = null;
+    render();
+    try {
+      state.apiTestResults = await window.OctagonAI.testMatrix({ deep });
+      const okCount = (state.apiTestResults.items || []).filter(item => item.ok).length;
+      toast(t(`اكتمل فحص API: ${okCount} ناجحة`, `API test complete: ${okCount} passed`), okCount ? 'success' : 'warning');
+    } catch (e) {
+      state.apiTestResults = { ok: false, items: [{ label: 'API matrix', ok: false, error: String(e && e.message || e), latencyMs: 0 }] };
+      toast(t('فشل فحص API.', 'API test failed.'), 'warning');
+    } finally {
+      state.apiTestRunning = false;
+      render();
+    }
+  }
+
   function setJarvisMode(mode) {
     state.jarvisMode = mode;
     try { localStorage.setItem('octagon_jarvis_mode', mode); } catch (_) {}
     if (window.OctagonAI) {
-      if (mode === 'economy') {
-        window.OctagonAI.setModel('qwen-coder');
-        window.OctagonAI.setConfig({ maxTokens: 400 });
-      } else if (mode === 'balanced') {
-        window.OctagonAI.setModel('qwen');
-        window.OctagonAI.setConfig({ maxTokens: 1000 });
-      } else if (mode === 'strong') {
-        window.OctagonAI.setModel('deepseek-r1');
-        window.OctagonAI.setConfig({ maxTokens: 2000 });
+      const c = window.OctagonAI.config();
+      if (c.provider === 'contactbox' || state.apiProvider === 'contactbox') {
+        if (mode === 'economy') {
+          window.OctagonAI.setConfig({ model: 'claude-sonnet-4-6', contactboxModel: 'claude-sonnet-4-6', maxTokens: 800 });
+        } else if (mode === 'balanced') {
+          window.OctagonAI.setConfig({ model: 'claude-sonnet-4-6', contactboxModel: 'claude-sonnet-4-6', maxTokens: 1500 });
+        } else if (mode === 'strong') {
+          window.OctagonAI.setConfig({ model: 'claude-opus-4-8', contactboxModel: 'claude-opus-4-8', maxTokens: 2500 });
+        }
+      } else {
+        // Benchmark 2026-07-03: Qwen 72B was erroring on OpenRouter (2/4 probes
+        // failed) so "balanced" now uses DeepSeek V3 (4/4, fastest). Economy
+        // keeps the cheapest passing model (Qwen Flash, slow but reliable).
+        if (mode === 'economy') {
+          window.OctagonAI.setModel('qwen/qwen3.5-flash-02-23');
+          window.OctagonAI.setConfig({ maxTokens: 400 });
+        } else if (mode === 'balanced') {
+          window.OctagonAI.setModel('deepseek');
+          window.OctagonAI.setConfig({ maxTokens: 1000 });
+        } else if (mode === 'strong') {
+          window.OctagonAI.setModel('deepseek-r1');
+          window.OctagonAI.setConfig({ maxTokens: 2000 });
+        }
       }
     }
     render();
@@ -2655,10 +2828,35 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
         window.OctagonAI.useGemini();
       } else if (provider === 'openrouter') {
         window.OctagonAI.useOpenRouter();
+      } else if (provider === 'contactbox') {
+        window.OctagonAI.useContactBox();
       }
     }
     if (window.JarvisVoiceRuntime) {
       window.JarvisVoiceRuntime.setProvider(provider);
+    }
+    render();
+  }
+
+  function setJarvisModel(model) {
+    if (!model || !window.OctagonAI) return;
+    if (model === 'auto') {
+      // Smart routing: the provider layer picks the model per task type.
+      if (typeof window.OctagonAI.useAutoRoute === 'function') window.OctagonAI.useAutoRoute();
+      else window.OctagonAI.setConfig({ autoRoute: true });
+      toast(t('تم تفعيل التوجيه الذكي: أومني يختار النموذج حسب نوع الطلب.', 'Smart routing on: Omni picks the model per task type.'), 'info');
+      render();
+      return;
+    }
+    if (typeof window.OctagonAI.setModel === 'function') {
+      window.OctagonAI.setModel(model);
+      const cfg = typeof window.OctagonAI.config === 'function' ? window.OctagonAI.config() : {};
+      state.apiProvider = cfg.provider || state.apiProvider;
+      try { localStorage.setItem('octagon_jarvis_provider', state.apiProvider); } catch (_) {}
+      if (window.JarvisVoiceRuntime && typeof window.JarvisVoiceRuntime.setProvider === 'function') {
+        window.JarvisVoiceRuntime.setProvider(state.apiProvider);
+      }
+      toast(t('تم تثبيت النموذج: ', 'Model pinned: ') + modelShortLabel(cfg.provider === 'contactbox' ? cfg.contactboxModel : cfg.model), 'info');
     }
     render();
   }
@@ -2680,7 +2878,7 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
         <span class="ptxai-fab-sheen"></span>
         <i class="fa-solid fa-robot"></i>
       </span>
-      <span class="ptxai-fab-lobe ptxai-fab-mic" data-agent-action="jarvis" title="${t('تشغيل جارفيس الصوتي', 'Start Jarvis voice')}">
+      <span class="ptxai-fab-lobe ptxai-fab-mic" data-agent-action="jarvis" title="${t('تشغيل أومني الصوتي', 'Start Omni voice')}">
         <i class="fa-solid fa-microphone-lines"></i>
       </span>
       <span class="ptxai-fab-lobe ptxai-fab-alerts" data-agent-action="attention" title="${t('عرض التنبيهات', 'Show alerts')}">
@@ -2696,7 +2894,7 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       <div class="ptxai-head">
         <div class="ptxai-drag-grip"><i class="fa-solid fa-grip-lines"></i></div>
         <div class="ptxai-titles">
-          <b><i class="fa-solid fa-brain"></i> ${t('عميل Octagon الذكي', 'Octagon AI Agent')}</b>
+          <b><i class="fa-solid fa-brain"></i> ${t('أومني — مساعد Octagon', 'Omni — Octagon Assistant')}</b>
           <span>${t('القسم', 'Section')}: <span class="ptxai-title-page">-</span></span>
         </div>
         <div class="ptxai-window-actions">
@@ -2704,14 +2902,12 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
           <button type="button" class="ptxai-close" title="${t('إغلاق', 'Close')}"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
-      <div id="ptxAIProjectDetails"></div>
       <div id="ptxAIJarvisStatus"></div>
       <div class="ptxai-quickbar">
-        <button type="button" data-q="details"><i class="fa-solid fa-list-check"></i> ${t('التفاصيل', 'Details')}</button>
         <button type="button" data-q="attention" class="ptxai-attn"><i class="fa-solid fa-bell"></i> ${t('تحتاج انتباهك', 'Needs Attention')}</button>
         <button type="button" data-q="scan"><i class="fa-solid fa-magnifying-glass-chart"></i> ${t('افحص القسم', 'Scan')}</button>
         <button type="button" data-q="summary"><i class="fa-solid fa-clipboard-list"></i> ${t('لخص الحالة', 'Summary')}</button>
-        <button type="button" id="ptxAIJarvisBtn" class="ptxai-jarvis" title="${t('تفعيل التحكم الصوتي المستمر', 'Enable hands-free voice control')}"><i class="fa-solid fa-microphone-slash"></i> ${t('وضع جارفيس', 'Jarvis Mode')}</button>
+        <button type="button" id="ptxAIJarvisBtn" class="ptxai-jarvis" title="${t('تفعيل التحكم الصوتي المستمر', 'Enable hands-free voice control')}"><i class="fa-solid fa-microphone-slash"></i> ${t('وضع أومني', 'Omni Mode')}</button>
         <button type="button" id="ptxAIQueueBtn" class="ptxai-queue" title="${t('أرسل آخر طلب إلى طابور الموافقة', 'Send the latest request to approval')}"><i class="fa-solid fa-plus"></i> ${t('للموافقة', 'Approval')}</button>
       </div>
       <div id="ptxAIStream" class="ptxai-stream"></div>
@@ -2815,13 +3011,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     panel.querySelector('#ptxAIJarvisBtn')?.addEventListener('click', () => toggleJarvis());
     panel.querySelector('#ptxAIQueueBtn').addEventListener('click', () => queueToApproval());
     
-    // Delegated event listeners for Jarvis V2 controls
+    // Delegated event listeners for Omni V2 controls
     panel.addEventListener('click', event => {
-      if (event.target.closest('#ptxAIDetailsToggle')) {
-        toggleProjectDetails();
-        return;
-      }
-      
       const rebuildBtn = event.target.closest('#jarvisRebuildMapBtn');
       if (rebuildBtn) {
         if (window.JarvisSystemMapBuilder && typeof window.JarvisSystemMapBuilder.rebuildJarvisMap === 'function') {
@@ -2866,6 +3057,26 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
         }
         return;
       }
+
+      const testApisBtn = event.target.closest('#jarvisTestApisBtn');
+      if (testApisBtn) {
+        testJarvisApis(false);
+        return;
+      }
+
+      const deepTestBtn = event.target.closest('#jarvisDeepTestBtn');
+      if (deepTestBtn) {
+        testJarvisApis(true);
+        return;
+      }
+
+      const rtConfigBtn = event.target.closest('#omniRtConfigBtn');
+      if (rtConfigBtn) {
+        state.rtConfigOpen = !state.rtConfigOpen;
+        try { localStorage.setItem(RT_CONFIG_OPEN_KEY, state.rtConfigOpen ? '1' : '0'); } catch (_) {}
+        render();
+        return;
+      }
     });
 
     panel.addEventListener('change', event => {
@@ -2873,6 +3084,8 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
         setJarvisProvider(event.target.value);
       } else if (event.target.id === 'jarvisModeSelect') {
         setJarvisMode(event.target.value);
+      } else if (event.target.id === 'jarvisModelSelect') {
+        setJarvisModel(event.target.value);
       } else if (event.target.id === 'jarvisWakeToggle') {
         const val = event.target.checked;
         jarvisWakeRequired = val;
@@ -2923,14 +3136,6 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
       window.speechSynthesis.onvoiceschanged = () => pickSpeechVoice(lang() === 'en' ? 'en-US' : 'ar-SA');
     }
 
-    window.addEventListener('octagon:project-status', event => {
-      state.projectStatus = event.detail || null;
-      render();
-    });
-    window.addEventListener('octagon:review-pointer', event => {
-      state.reviewPointer = event.detail || null;
-      render();
-    });
     window.addEventListener('octagon:notifications-updated', updateAttentionBadge);
     window.addEventListener('resize', () => {
       applyButtonLayout();
@@ -2981,7 +3186,10 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     getJarvisListenFamily,
     toggleJarvisListenLang: () => setJarvisListenLang(jarvisListenFamily() === 'en' ? 'ar' : 'en'),
     synthesizeCloudTTS,
-    // JARVIS Runtime V2 bridge: the voice runtime delegates each finalized utterance
+    stripForSpeech,
+    detectSpeechLangCode,
+    pickSpeechVoice,
+    // OMNI Runtime V2 bridge: the voice runtime delegates each finalized utterance
     // here so spoken commands get the SAME rich pipeline as typed ones — chat
     // rendering, workflow/scan/summary shortcuts, language lock and stop-word handling.
     // Without these exports the runtime silently fell back to a bare brain call.
@@ -2989,8 +3197,15 @@ ${t('وضع جارفيس الصوتي مفعّل. المستخدم قد يطلب
     speakJarvis,
     pauseJarvisListening,
     resumeJarvisListening: () => scheduleJarvisListening(0),
+    // Omni core pipeline: the ONE entry point all channels share (text / voice
+    // note / hands-free). Exposed so external modules and tests can drive it.
+    runOmniTurn,
+    handleText: runOmniTurn,
+    render,
     refreshBadge: updateAttentionBadge
   };
   window.octagonAIAssistant = api;
   window.ptxAIAssistant = api;
+  // User-facing name is Omni — expose it under the new name too.
+  window.OmniAssistant = api;
 })();

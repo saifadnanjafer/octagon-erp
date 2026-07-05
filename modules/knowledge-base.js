@@ -947,8 +947,15 @@
           desc_en: 'Search published and Jarvis-readable knowledge base/FAQ entries by keywords.',
           risk: 'safe',
           params: { query: { type: 'string', required: true } },
-          run: function (args) {
-            return searchPublished(args.query);
+          run: async function (args) {
+            try {
+              const resp = await fetch('/api/jarvis/kb/search?q=' + encodeURIComponent(args.query || ''));
+              if (!resp.ok) return { error: 'Server search failed.' };
+              const data = await resp.json();
+              return data.results || [];
+            } catch (e) {
+              return { error: 'Network error or server unavailable.' };
+            }
           }
         };
       }

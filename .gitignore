@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 
+# Secrets (Security Hardening 2026-07-05): real keys live ONLY in .env
+.env
+server-ai-approvals.json
+
 # Runtime databases and generated backups
 *.db
 *.db-*
@@ -26,6 +30,7 @@ scratch/
 tmp/
 temp/
 exports/
+review-reports/
 *.tmp
 
 # Local editor/cache state

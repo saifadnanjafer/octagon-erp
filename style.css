@@ -1144,6 +1144,119 @@ body {
   width: 80px;
 }
 
+.timesheet-table-container {
+  overflow: visible;
+}
+
+.timesheet-note-wrap {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.timesheet-note-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 50%;
+  transform: translateX(50%) translateY(-4px);
+  min-width: 240px;
+  max-width: min(520px, 70vw);
+  white-space: normal;
+  text-align: right;
+  direction: rtl;
+  line-height: 1.7;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(9, 14, 27, 0.98);
+  color: var(--text-primary);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 30;
+  transition: opacity 0.14s ease, transform 0.14s ease, visibility 0.14s ease;
+}
+
+.timesheet-note-tip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(50%) rotate(45deg);
+  background: rgba(9, 14, 27, 0.98);
+  border-top: 1px solid rgba(56, 189, 248, 0.35);
+  border-right: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.timesheet-note-wrap:hover .timesheet-note-tip,
+.timesheet-note-wrap:focus-within .timesheet-note-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(50%) translateY(0);
+}
+
+.timesheet-advance-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.timesheet-official-advance-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.36);
+  background: rgba(251, 191, 36, 0.11);
+  color: #fbbf24;
+  font-size: 9.5px;
+  font-weight: 800;
+  cursor: help;
+}
+
+.timesheet-official-advance-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.36);
+  background: rgba(251, 191, 36, 0.11);
+  color: #fbbf24;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+
+.timesheet-official-advance-input {
+  width: 62px;
+  min-width: 62px;
+  height: 20px;
+  padding: 1px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #fef3c7;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+.timesheet-documented-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #22c55e;
+  font-size: 13px;
+  line-height: 1;
+}
+
 /* Status select */
 .status-select {
   padding: 4px 6px;
@@ -3085,6 +3198,171 @@ body.theme-glass .theme-indicator {
   margin-top: 18px;
 }
 
+.timesheet-payroll-control-panel,
+.timesheet-advance-ledger-panel {
+  margin: 0 0 14px;
+  padding: 14px;
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.38);
+}
+
+.timesheet-payroll-control-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(240px, 0.9fr) minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.timesheet-payroll-copy,
+.timesheet-payroll-metrics,
+.timesheet-payroll-actions,
+.timesheet-advance-ledger-head,
+.timesheet-advance-kpis {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.timesheet-payroll-copy {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.timesheet-payroll-copy span,
+.timesheet-payroll-metrics span,
+.timesheet-advance-ledger-head span,
+.timesheet-advance-kpis span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.timesheet-payroll-metrics {
+  justify-content: flex-start;
+}
+
+.timesheet-payroll-actions {
+  justify-content: flex-end;
+}
+
+.timesheet-payroll-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.timesheet-payroll-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.timesheet-payroll-inputs input {
+  width: 100%;
+  min-height: 34px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.timesheet-payroll-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.55);
+}
+
+.ts-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ts-status-pill.warn {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+.ts-status-pill.done {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.11);
+  border-color: rgba(52, 211, 153, 0.28);
+}
+
+.ts-status-pill.cash {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.11);
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.timesheet-advance-ledger-head {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.timesheet-advance-ledger-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timesheet-advance-kpis {
+  margin-bottom: 10px;
+}
+
+.timesheet-advance-kpis span {
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.timesheet-advance-table-wrap {
+  overflow-x: auto;
+}
+
+.timesheet-advance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.timesheet-advance-table th,
+.timesheet-advance-table td {
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: right;
+  white-space: normal;
+}
+
+.timesheet-advance-table th {
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.timesheet-advance-table .num {
+  text-align: center;
+  white-space: nowrap;
+  color: var(--accent-blue);
+  font-weight: 800;
+}
+
+@media (max-width: 1100px) {
+  .timesheet-payroll-control-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .timesheet-payroll-actions {
+    justify-content: flex-start;
+  }
+}
+
 .payroll-summary-title {
   margin: 18px 0 12px;
 }
@@ -3125,6 +3403,193 @@ body.theme-glass .theme-indicator {
   display: grid;
   gap: 6px;
   font-size: 12px;
+}
+
+/* TEMP: الحاسبة الذكية nav item hidden — the calculator is docked inside the timesheet page.
+   Remove this rule to bring the standalone sidebar entry back. */
+#navCalculator {
+  display: none !important;
+}
+
+/* ── Docked salary calculator: the whole #pageCalculator lives at the bottom of the timesheet ── */
+#timesheetCalculatorDock {
+  margin-top: 34px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--border-glass);
+}
+
+/* Higher specificity than `.page { display:none !important }` so the docked section is visible
+   inside the active timesheet without needing page-active. */
+.page.ts-docked-calc {
+  display: block !important;
+  min-height: auto !important;
+  animation: none;
+}
+
+/* ── Timesheet month separators + salary documentation (single-employee dashboard) ── */
+.ts-month-header-row td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.ts-month-header-row .ts-month-header-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.04));
+  border-right: 4px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.ts-month-summary-row td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.ts-month-summary-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  margin: 6px 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px dashed rgba(16, 185, 129, 0.35);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.ts-month-summary-inner .ts-month-summary-title {
+  color: var(--accent-green);
+  font-size: 13px;
+}
+
+.ts-month-summary-inner b,
+.ts-calc-totals b {
+  color: var(--text);
+}
+
+.ts-month-summary-inner b.pos,
+.ts-calc-totals b.pos {
+  color: var(--accent-green);
+}
+
+.ts-month-summary-inner b.neg,
+.ts-calc-totals b.neg {
+  color: #f87171;
+}
+
+.ts-month-summary-inner b.net,
+.ts-calc-totals b.net {
+  color: var(--accent-blue);
+}
+
+/* Month payroll close-state chips + close button (timesheet month docs) */
+.ts-close-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ts-close-chip.open {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.ts-close-chip.closed {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.ts-close-chip.posted {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.ts-month-doc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.ts-close-btn {
+  font-size: 12px;
+  padding: 7px 12px;
+}
+
+.ts-close-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ts-calc-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+  background: rgba(15, 23, 42, 0.5);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.ts-calc-totals .ts-calc-final {
+  margin-right: auto;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.14);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent-blue);
+  font-weight: 800;
+  font-size: 13.5px;
+}
+
+.ts-calc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 34px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-glass);
+  border-radius: 10px;
+}
+
+.ts-calc-empty-state i {
+  font-size: 26px;
+  color: var(--accent-blue);
+  opacity: 0.8;
+}
+
+.ts-calc-empty-state strong {
+  color: var(--text);
+  font-size: 15px;
 }
 
 .calendar-finance-line {

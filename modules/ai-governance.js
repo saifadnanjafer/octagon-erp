@@ -1,5 +1,5 @@
 /**
- * OCTAGON ERP — AI GOVERNANCE CORE (Jarvis Brain Governance sprint).
+ * OCTAGON ERP — AI GOVERNANCE CORE (Omni Brain Governance sprint).
  *
  * Central safety layer for the whole AI stack. AI-First, NOT AI-Only:
  *  - omni.aiSystem            → AI system manifest (philosophy, providers, gates)
@@ -11,7 +11,7 @@
  *  - page ai_status (حالة الذكاء الصناعي) → visible system status panel
  *
  * Add-only module: wraps switchPage like every other module, registers gates the
- * Jarvis brain consults (window.OctagonAIGovernance.gateTool / .audit), and wraps
+ * Omni brain consults (window.OctagonAIGovernance.gateTool / .audit), and wraps
  * waiQueueApprove so approved payload-bearing actions actually execute with
  * revalidation. Never deletes existing tools, queue items, or localStorage keys.
  */
@@ -97,7 +97,7 @@
     todays_urgent_jobs: 'low', wo_missing_materials: 'low', list_material_shortages: 'low',
     machine_conflicts: 'low', list_machine_conflicts: 'low', my_tasks_today: 'low', open_traveller_card: 'low',
     // MEDIUM — drafts / proposals / task creation (execute but only create reviewable artifacts)
-    create_task: 'medium', report_problem: 'medium',
+    create_task: 'medium', create_customer: 'medium', report_problem: 'medium',
     propose_purchase: 'medium', propose_purchase_request: 'medium',
     propose_finance_review: 'medium', request_finance_review: 'medium',
     propose_payroll_review: 'medium', request_payroll_review: 'medium',
@@ -106,7 +106,9 @@
     generate_dev_prompt: 'medium', generate_development_prompt: 'medium', propose_rework_action: 'medium',
     propose_close_work_order: 'medium',
     // HIGH — direct mutation of business data: approval queue only
-    add_customer_debt: 'high', create_journal_entry: 'high', modify_material: 'high',
+    add_customer_debt: 'high', create_sales_receipt: 'high',
+    record_customer_payment: 'high', create_purchase_expense: 'high',
+    create_journal_entry: 'high', modify_material: 'high',
     modify_employee: 'high', post_finance: 'high', consume_material: 'high',
     change_price: 'high', send_whatsapp: 'high', waive_qc: 'high', close_work_order: 'high',
     archive_record: 'high', browser_search: 'high',
@@ -118,15 +120,18 @@
   };
   // tools that must NEVER execute directly — routed to the approval queue
   const APPROVAL_REQUIRED = [
-    'add_customer_debt', 'create_journal_entry', 'modify_material', 'modify_employee',
-    'execute_js_mutation', 'post_finance', 'consume_material', 'change_price',
+    'add_customer_debt', 'create_sales_receipt', 'record_customer_payment',
+    'create_purchase_expense', 'create_journal_entry', 'modify_material',
+    'modify_employee', 'execute_js_mutation', 'post_finance', 'consume_material', 'change_price',
     'send_whatsapp', 'waive_qc', 'close_work_order', 'archive_record',
     'apply_code_patch', 'sandbox_computer_control', 'browser_search',
     'open_file', 'download_file', 'organize_folder', 'prepare_design_file',
     'draft_email_with_attachment', 'send_file_to_customer', 'run_dev_agent', 'apply_patch_in_sandbox'
   ];
   const GATE_TARGET = {
-    add_customer_debt: 'finance', create_journal_entry: 'finance', post_finance: 'finance',
+    add_customer_debt: 'finance', create_sales_receipt: 'finance',
+    record_customer_payment: 'finance', create_purchase_expense: 'finance',
+    create_journal_entry: 'finance', post_finance: 'finance',
     modify_employee: 'payroll', modify_material: 'inventory', consume_material: 'inventory',
     change_price: 'finance', send_whatsapp: 'whatsapp', waive_qc: 'qc', close_work_order: 'work_orders',
     execute_js_mutation: 'system_code', apply_code_patch: 'system_code'
@@ -140,7 +145,7 @@
     return 'medium'; // unknown tools are never assumed safe
   }
   function getAiActionRisk(actionType) { return getToolRisk(String(actionType || ''), null); }
-  /** Consulted by the Jarvis executor before every tool run. */
+  /** Consulted by the Omni executor before every tool run. */
   function gateTool(name, tool) {
     const risk = getToolRisk(name, tool && tool.risk);
     const approvalRequired = APPROVAL_REQUIRED.indexOf(name) !== -1
@@ -209,10 +214,11 @@
     if (!Array.isArray(o.aiProviders)) o.aiProviders = [];
     const seed = [
       { id: 'openrouter', name: 'OpenRouter (DeepSeek/Qwen)', enabled: true, apiKeySource: 'localStorage:octagonAIProvider', model: 'deepseek/deepseek-chat', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: true, priority: 1 },
-      { id: 'gemini', name: 'Google Gemini', enabled: true, apiKeySource: 'app.js inline / localStorage', model: 'gemini-flash', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 2 },
-      { id: 'openai', name: 'OpenAI (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 3 },
-      { id: 'anthropic', name: 'Anthropic Claude (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: false, supportsToolPlanning: true, priority: 4 },
-      { id: 'local', name: 'نموذج محلي (مستقبلاً)', enabled: false, apiKeySource: 'none (local)', model: '', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 5 },
+      { id: 'contactbox', name: 'ContactBox (Claude)', enabled: true, apiKeySource: 'localStorage:octagonAIProvider', model: 'claude-sonnet-4-6', supportsText: true, supportsVision: true, supportsAudio: false, supportsToolPlanning: true, priority: 2 },
+      { id: 'gemini', name: 'Google Gemini', enabled: true, apiKeySource: 'app.js inline / localStorage', model: 'gemini-flash', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 3 },
+      { id: 'openai', name: 'OpenAI (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: true, supportsToolPlanning: true, priority: 4 },
+      { id: 'anthropic', name: 'Anthropic Claude (مستقبلاً)', enabled: false, apiKeySource: 'not configured', model: '', supportsText: true, supportsVision: true, supportsAudio: false, supportsToolPlanning: true, priority: 5 },
+      { id: 'local', name: 'نموذج محلي (مستقبلاً)', enabled: false, apiKeySource: 'none (local)', model: '', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 6 },
       { id: 'deterministic', name: 'احتياطي حتمي (مفعّل دائماً)', enabled: true, apiKeySource: 'none', model: 'local rules + real data', supportsText: true, supportsVision: false, supportsAudio: false, supportsToolPlanning: false, priority: 99 }
     ];
     seed.forEach(s => {
@@ -236,6 +242,7 @@
     ['report_manager_attention', 'ما يحتاج انتباه المدير', 'deterministic_report', 'workshop', 'low', 'report_attention', true],
     ['switch_language', 'تبديل اللغة', 'navigation', '', 'low', 'set_language', true],
     ['create_task', 'إنشاء مهمة', 'work_order_action', '', 'medium', 'create_task', true],
+    ['create_customer', 'إنشاء عميل', 'finance_action', '', 'medium', 'create_customer', true],
     ['draft_whatsapp_reply', 'مسودة رد واتساب', 'customer_message_draft', '', 'medium', 'propose_whatsapp_reply', true],
     ['propose_purchase_request', 'اقتراح طلب شراء', 'inventory_action', '', 'medium', 'propose_purchase', true],
     ['request_finance_review', 'طلب مراجعة مالية', 'finance_action', '', 'medium', 'propose_finance_review', true],
@@ -262,6 +269,9 @@
     ['generate_dev_prompt', 'توليد prompt تطوير', 'development_prompt', '', 'medium', '', true],
     // approval-gated direct-write tools (registered so the registry is honest about them)
     ['add_customer_debt', 'إضافة دين/دفعة عميل (موافقة)', 'finance_action', '', 'high', 'add_customer_debt', true],
+    ['create_sales_receipt', 'إنشاء وصل مبيعات (موافقة)', 'finance_action', '', 'high', 'create_sales_receipt', true],
+    ['record_customer_payment', 'تسجيل دفعة عميل (موافقة)', 'finance_action', '', 'high', 'record_customer_payment', true],
+    ['create_purchase_expense', 'تسجيل مصروف شراء (موافقة)', 'finance_action', '', 'high', 'create_purchase_expense', true],
     ['create_journal_entry', 'قيد محاسبي مزدوج (موافقة)', 'finance_action', '', 'high', 'create_journal_entry', true],
     ['modify_material', 'تعديل مادة مخزون (موافقة)', 'inventory_action', '', 'high', 'modify_material', true],
     ['modify_employee', 'تعديل بيانات موظف (موافقة)', 'payroll_action', '', 'high', 'modify_employee', true],
@@ -593,7 +603,7 @@
     audit('ai.action.rejected', { id: a.id, actionType: a.actionType, reason: reason || '' });
     save(true); return { ok: true };
   }
-  /** Executes an APPROVED payload-bearing action via the live Jarvis tool, with re-validation. */
+  /** Executes an APPROVED payload-bearing action via the live Omni tool, with re-validation. */
   function executeApprovedAiAction(id) {
     const a = queue().find(x => x.id === id); if (!a) return { ok: false, message: 'غير موجود' };
     if (a.status !== 'approved') return { ok: false, message: 'الإجراء غير معتمد' };
@@ -605,6 +615,61 @@
     }
     const p = a.payload || {};
     if (!p.tool) { a.executionLog.push({ at: nowIso(), by: userName(), note: 'approved — manual execution required (no payload)' }); save(true); return { ok: true, message: 'معتمد — تنفيذ يدوي مطلوب' }; }
+    // click_ui hardening sprint 2026-07-05:
+    // Manager approval must not authorize an arbitrary browser DOM click. Legacy
+    // queued click_ui records are revalidated by the server and should be denied
+    // when sensitive/critical instead of falling through to T.click_ui.run().
+    if (p.tool === 'click_ui') {
+      const finishClick = (ok, message) => {
+        a.status = ok ? 'executed' : 'failed';
+        a.executedAt = nowIso();
+        if (!ok) a.failureReason = message || 'click_ui denied by server policy';
+        a.executionLog.push({ at: nowIso(), by: userName(), ok: ok, note: message || '' });
+        audit('ai.action.executed', { id: a.id, tool: p.tool, ok: ok, via: 'server_click_ui_policy' });
+        save(true);
+        toast(ok ? ('نُفّذ click_ui عبر سياسة الخادم ✅ ' + (message || '')) : ('رُفض click_ui: ' + (message || '')), ok ? 'success' : 'error');
+        return { ok: ok, message: message || '' };
+      };
+      fetch('/api/jarvis/execute-approved', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approvalId: a.serverApprovalId || '', tool: p.tool, args: p.args || {}, clientActionId: a.id })
+      }).then(r2 => r2.json()).then(resp => {
+        const ok = !!(resp && resp.ok === true && resp.status === 'executed');
+        finishClick(ok, ok ? (resp.message || '') : ((resp && (resp.error || resp.message)) || 'رفض الخادم تنفيذ generic click_ui'));
+      }).catch(e => finishClick(false, 'بوابة الخادم غير متاحة: ' + String(e && e.message || e)));
+      return { ok: true, message: 'قيد إعادة فحص click_ui عبر الخادم…' };
+    }
+    // ── SERVER-SIDE MUTATION SPRINT 2026-07-05 ───────────────────────────────
+    // Server-enforced tools EXECUTE ON THE SERVER. POST /api/jarvis/execute-approved
+    // re-checks the manager role + gate policy, runs the real mutation via
+    // server-jarvis-tools.js against the source-of-truth DB, and returns the
+    // executed result — NO grant, NO client-side mutation. The client only
+    // refreshes its in-memory state from the server afterwards.
+    if (window.JarvisBrain && typeof window.JarvisBrain.isServerEnforced === 'function'
+        && window.JarvisBrain.isServerEnforced(p.tool)) {
+      const finish = (ok, message) => {
+        a.status = ok ? 'executed' : 'failed';
+        a.executedAt = nowIso();
+        if (!ok) a.failureReason = message || 'execution failed';
+        a.executionLog.push({ at: nowIso(), by: userName(), ok: ok, note: message || '' });
+        audit('ai.action.executed', { id: a.id, tool: p.tool, ok: ok, via: 'server_gate' });
+        save(true);
+        toast(ok ? ('نُفّذ الإجراء المعتمد على الخادم ✅ ' + (message || '')) : ('فشل التنفيذ: ' + (message || '')), ok ? 'success' : 'error');
+        try { if (ok && typeof window.JarvisBrain.refreshServerState === 'function') window.JarvisBrain.refreshServerState(p.tool); } catch (_) {}
+        try { if (window.currentPage === 'ai_queue' && typeof window.switchPage === 'function') window.switchPage('ai_queue'); } catch (_) {}
+        return { ok: ok, message: message || '' };
+      };
+      fetch('/api/jarvis/execute-approved', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approvalId: a.serverApprovalId || '', tool: p.tool, args: p.args || {}, clientActionId: a.id })
+      }).then(r2 => r2.json()).then(resp => {
+        const ok = !!(resp && resp.ok === true && resp.status === 'executed');
+        finish(ok, ok ? (resp.message || '') : ((resp && (resp.error || resp.message)) || 'رفض الخادم إعادة التحقق من الإجراء'));
+      }).catch(e => finish(false, 'بوابة الخادم غير متاحة: ' + String(e && e.message || e)));
+      return { ok: true, message: 'قيد التنفيذ عبر الخادم…' };
+    }
     const T = window.JarvisBrain && window.JarvisBrain.tools;
     const tool = T && T[p.tool];
     const runFn = tool && (typeof tool === 'function' ? tool : tool.run);
@@ -672,7 +737,7 @@
     return o.aiDevelopmentFactory;
   }
 
-  /* ════════════════ Jarvis alias wiring (sprint section 18) ════════════════ */
+  /* ════════════════ Omni alias wiring (sprint section 18) ════════════════ */
   // Registers the spec's canonical names as aliases of real deterministic executors.
   const TOOL_ALIASES = {
     navigate_page: 'navigate', switch_language: 'set_language',
@@ -767,7 +832,7 @@
       + row('بوابات الموافقة', h.approvalGatesEnabled ? pill('فعّالة', 'ok') : pill('مطفأة', 'bad'))
       + row('حارس السياق (الأدوار)', h.contextGuardEnabled ? pill('فعّال', 'ok') : pill('غير محمّل', 'warn'))
       + row('حارس حقن الأوامر', pill('فعّال', 'ok'))
-      + row('دماغ جارفيس', h.brainLoaded ? pill('محمّل v' + h.brainVersion, 'ok') : pill('احتياطي حتمي', 'warn'))
+      + row('دماغ أومني', h.brainLoaded ? pill('محمّل v' + h.brainVersion, 'ok') : pill('احتياطي حتمي', 'warn'))
       + row('آخر رد ناجح', pill(h.lastSuccessfulAiResponse ? h.lastSuccessfulAiResponse.slice(0, 19).replace('T', ' ') : '—', h.lastSuccessfulAiResponse ? 'ok' : 'muted'))
       + row('فشل نداءات المزوّد', pill(String(h.failedProviderCalls), h.failedProviderCalls ? 'warn' : 'ok'))
       + '<div class="aigov-toolbar"><button class="aigov-btn primary" onclick="aigovTestProvider()">🧪 اختبار المزوّد</button>'

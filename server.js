@@ -1,8 +1,15 @@
+// Load environment variables from .env file.
+// Security hardening 2026-07-05: load from __dirname (not process.cwd()) so
+// provider keys resolve no matter which directory the server is launched from.
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const net = require('net');
+// Security hardening 2026-07-05: server-side Jarvis tool gate + AI key proxy.
+const jarvisSecurity = require('./server-jarvis-security');
 
 let DatabaseSync;
 try {
@@ -34,6 +41,7 @@ const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per
 let lastAutoBackupMs = 0;
 const BACKUP_TAG_RE = /[^a-z0-9_]/gi;
 const BACKUP_DIR = process.env.OCTAGON_BACKUP_DIR ? path.resolve(process.env.OCTAGON_BACKUP_DIR) : __dirname;
+const REVIEW_REPORT_DIR = process.env.OCTAGON_REVIEW_REPORT_DIR ? path.resolve(process.env.OCTAGON_REVIEW_REPORT_DIR) : path.join(__dirname, 'review-reports');
 const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const authSessions = new Map();
 const authFailures = new Map();
@@ -55,6 +63,11 @@ const V5_PRESERVED_TOP_LEVEL_KEYS = [
   'account_moves',
   'account_payments',
   'account_partial_reconciles',
+  'employee_advances',
+  'payroll_periods',
+  'employee_payroll_closings',
+  'payroll_payments',
+  'payroll_adjustments',
   'payments',
   'maintenance_requests',
   'production_orders',
@@ -73,6 +86,11 @@ const SERVER_TENANT_COLLECTIONS = new Set([
   'journal_entries',
   'account_payments',
   'account_partial_reconciles',
+  'employee_advances',
+  'payroll_periods',
+  'employee_payroll_closings',
+  'payroll_payments',
+  'payroll_adjustments',
   'finance.customers',
   'finance.transactions',
   'finance.receipts',
@@ -160,6 +178,66 @@ function sendJson(res, status, payload) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.writeHead(status);
   res.end(JSON.stringify(payload));
+}
+
+function geminiTtsApiKey() {
+  return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_TTS_API_KEY || '';
+}
+
+async function synthesizeServerTTS(text, lang = 'ar-SA') {
+  const key = geminiTtsApiKey();
+  if (!key) {
+    const error = new Error('Server TTS is not configured');
+    error.statusCode = 501;
+    throw error;
+  }
+  if (typeof fetch !== 'function') {
+    const error = new Error('Server runtime does not support fetch');
+    error.statusCode = 501;
+    throw error;
+  }
+  const cleanText = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 900);
+  if (!cleanText) {
+    const error = new Error('Missing text');
+    error.statusCode = 400;
+    throw error;
+  }
+  const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=' + encodeURIComponent(key);
+  const body = {
+    contents: [{ parts: [{ text: cleanText }] }],
+    generationConfig: {
+      responseModalities: ['AUDIO'],
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } }
+    }
+  };
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    const error = new Error('TTS provider failed');
+    error.statusCode = response.status;
+    error.providerError = errText.slice(0, 300);
+    throw error;
+  }
+  const data = await response.json();
+  const part = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0];
+  const inline = part && part.inlineData;
+  const audioBase64 = inline && inline.data;
+  if (!audioBase64) {
+    const error = new Error('TTS provider returned no audio');
+    error.statusCode = 502;
+    throw error;
+  }
+  const match = /rate=(\d+)/.exec(inline.mimeType || '') || [];
+  return {
+    audioBase64,
+    sampleRate: Number(match[1]) || 24000,
+    mimeType: inline.mimeType || 'audio/pcm',
+    lang
+  };
 }
 
 function parseCookies(req) {
@@ -480,7 +558,8 @@ function extractDbCollections(obj, path = '', collections = {}, metadata = {}) {
   
   const isKnownCollection = [
     'employees', 'contacts', 'departments', 'users', 'locations', 'quants', 'stock_moves', 
-    'transfers', 'journals', 'journal_entries', 'account_moves', 'account_payments', 'account_partial_reconciles', 
+    'transfers', 'journals', 'journal_entries', 'account_moves', 'account_payments', 'account_partial_reconciles',
+    'employee_advances', 'payroll_periods', 'employee_payroll_closings', 'payroll_payments', 'payroll_adjustments',
     'payments', 'maintenance_requests', 'production_orders', 'work_orders', 'audit_log'
   ].includes(path) || (path.startsWith('omni.') && Array.isArray(obj));
   
@@ -514,12 +593,12 @@ function saveDbToSqlite(sqliteDb, db) {
   try {
     sqliteDb.exec("DELETE FROM metadata");
     sqliteDb.exec("DELETE FROM collections");
-    
+
     const insertMeta = sqliteDb.prepare("INSERT INTO metadata (key, value) VALUES (?, ?)");
     for (const key in metadata) {
       insertMeta.run(key, JSON.stringify(metadata[key]));
     }
-    
+
     const insertCol = sqliteDb.prepare("INSERT INTO collections (collection, id, data) VALUES (?, ?, ?)");
     const seen = new Set();
     for (const colName in collections) {
@@ -578,15 +657,28 @@ function loadDbFromSqlite(sqliteDb) {
 
 // Single safe entry point for every DB write. Validates, keeps a last-good
 // snapshot, writes atomically, and throttled-auto-backups.
+//
+// database.json policy (Production Stabilization Sprint, 2026-07-04):
+// SQLite (database.db) is the sole live read/write store whenever dbSync is
+// active — database.json is NEVER read by the running app in that mode
+// (confirmed: GET/POST /api/db both branch on `dbSync` first). Before this
+// fix database.json was a frozen snapshot from whenever SQLite last took
+// over, silently missing everything posted since (it was found ~1 payroll
+// cycle stale during this audit). It is kept only as (a) a human-readable
+// mirror for git/manual inspection and (b) the automatic fallback store IF
+// SQLite is ever unavailable — so it must never be allowed to go stale
+// again. Every SQLite save now also mirrors the full DB to database.json
+// (best-effort: failures here are logged but never abort the real save).
 function safeSaveDb(db) {
   if (!db || typeof db !== 'object') throw new Error('Refusing to save invalid DB (not an object)');
   sanitizePersistedArabicText(db);
-  
+
   if (dbSync) {
     saveDbToSqlite(dbSync, db);
+    mirrorDbToJsonBestEffort(db);
     return;
   }
-  
+
   const json = JSON.stringify(db, null, 2);
   if (json.length < 2) throw new Error('Refusing to save empty DB payload');
   try {
@@ -596,6 +688,16 @@ function safeSaveDb(db) {
   }
   atomicWriteFileSync(DB_FILE, json);
   maybeAutoBackup();
+}
+
+function mirrorDbToJsonBestEffort(db) {
+  try {
+    const json = JSON.stringify(db, null, 2);
+    if (json.length < 2) return;
+    atomicWriteFileSync(DB_FILE, json);
+  } catch (e) {
+    console.warn('database.json mirror write failed (SQLite save already succeeded, this is non-fatal):', e.message);
+  }
 }
 
 function maybeAutoBackup() {
@@ -1069,6 +1171,33 @@ function requireAdminSession(req, res, options = {}) {
   return requireRoleSession(req, res, ['system.admin'], options);
 }
 
+function safeReviewReportSegment(value, fallback = 'report') {
+  const cleaned = String(value || fallback)
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 80);
+  return cleaned || fallback;
+}
+
+function saveReviewReport(report) {
+  if (!report || typeof report !== 'object') throw new Error('Invalid review report');
+  const page = safeReviewReportSegment(report.page || 'page');
+  const id = safeReviewReportSegment(report.id || makeId('pilot_review'));
+  const file = `${page}-${id}.json`;
+  const target = path.join(REVIEW_REPORT_DIR, file);
+  const resolvedDir = path.resolve(REVIEW_REPORT_DIR);
+  const resolvedTarget = path.resolve(target);
+  if (!resolvedTarget.startsWith(resolvedDir + path.sep)) throw new Error('Invalid review report path');
+  fs.mkdirSync(resolvedDir, { recursive: true });
+  atomicWriteFileSync(resolvedTarget, JSON.stringify({
+    ...report,
+    savedAt: new Date().toISOString(),
+    storage: { folder: 'review-reports', file }
+  }, null, 2));
+  return file;
+}
+
 function probeDefaultPort() {
   const socket = net.createConnection({ host: '127.0.0.1', port: DEFAULT_PORT });
   let done = false;
@@ -1231,6 +1360,8 @@ function apiProtectionMatrix() {
     { endpoint: 'POST /api/auth/logout', classification: 'session-clear', protection: 'safe clear, works with or without active session' },
     { endpoint: 'GET /api/server/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
     { endpoint: 'GET /api/release/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
+    { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'localhost or login session only; API key stays server-side' },
+    { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'localhost or login session only; writes only to review-reports' },
     { endpoint: 'GET /api/db', classification: 'public/dev-safe read', protection: 'local/dev readable; not production-safe' },
     { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'admin session or local-dev only' },
     { endpoint: 'POST /api/collection', classification: 'data write', protection: 'login session or local-dev only' },
@@ -1245,8 +1376,25 @@ function apiProtectionMatrix() {
   ];
 }
 
+// Security hardening 2026-07-05: hand the shared helpers to the Jarvis
+// security layer (server-side tool gate, approvals, one-time grants, AI proxy).
+jarvisSecurity.init({
+  sendJson,
+  readRequestBody,
+  requireSession,
+  requireRoleSession,
+  appendServerAudit,
+  loadDbForMutation,
+  saveDb,
+  makeId,
+});
+
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+
+  // Security hardening 2026-07-05: /api/jarvis/* (server-side tool gate,
+  // approvals, grants) and /api/ai/* (provider proxy — keys stay in .env).
+  if (jarvisSecurity.handle(req, res, requestUrl)) return;
 
   if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
     const active = authSessionFromRequest(req);
@@ -1344,6 +1492,49 @@ const server = http.createServer((req, res) => {
       auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: authSessions.size, apiProtectionFoundation: true },
       apiProtection: apiProtectionMatrix(),
     });
+  }
+
+  if (requestUrl.pathname === '/api/tts' && req.method === 'POST') {
+    const session = isLocalRequest(req)
+      ? { ok: true, mode: 'local-tts', userId: 'local-tts' }
+      : requireSession(req, res, { allowLocalDev: false });
+    if (!session.ok) return;
+    readRequestBody(req, 32 * 1024).then(async body => {
+      let parsed = {};
+      try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+      try {
+        const result = await synthesizeServerTTS(parsed.text, parsed.lang || 'ar-SA');
+        return sendJson(res, 200, { success: true, ...result });
+      } catch (error) {
+        return sendJson(res, error.statusCode || 500, {
+          success: false,
+          error: error.message || 'TTS failed',
+          providerError: error.providerError || undefined
+        });
+      }
+    }).catch(error => sendJson(res, error.message === 'Payload too large' ? 413 : 500, { success: false, error: error.message || 'Failed to read TTS body' }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/review-report' && req.method === 'POST') {
+    const session = isLocalRequest(req)
+      ? { ok: true, mode: 'local-review', userId: 'local-review' }
+      : requireSession(req, res, { allowLocalDev: false });
+    if (!session.ok) return;
+    readRequestBody(req, 5 * 1024 * 1024).then(body => {
+      let parsed = {};
+      try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+      try {
+        const report = parsed.report || parsed;
+        if (!report || typeof report !== 'object' || !report.page) return sendJson(res, 400, { success: false, error: 'Invalid review report' });
+        report.savedBy = report.savedBy || session.userId || 'unknown';
+        const file = saveReviewReport(report);
+        return sendJson(res, 200, { success: true, file, folder: 'review-reports' });
+      } catch (error) {
+        return sendJson(res, 400, { success: false, error: error.message || 'Failed to save review report' });
+      }
+    }).catch(error => sendJson(res, error.message === 'Payload too large' ? 413 : 500, { success: false, error: error.message || 'Failed to read review report body' }));
+    return;
   }
 
   if (requestUrl.pathname === '/api/backup/verify' && req.method === 'GET') {
@@ -1574,6 +1765,125 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Production Hardening Final Lock Sprint (2026-07-04): server-backed
+  // idempotency for sensitive postings. See the operation_locks table
+  // comment in initializeDatabase() for why this closes the cross-tab race
+  // that a client-side in-memory lock cannot.
+  if (requestUrl.pathname === '/api/operation-lock/acquire' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
+    if (!dbSync) { sendJson(res, 503, { error: 'SQLite غير نشطة — لا يمكن ضمان القفل الذري في هذا الوضع' }); return; }
+    readRequestBody(req).then(body => {
+      try {
+        const { lockKey, operationType, sourceCanonicalKey, createdBy } = JSON.parse(body);
+        if (!lockKey) return sendJson(res, 400, { error: 'lockKey مطلوب' });
+        const STALE_MS = 5 * 60 * 1000;
+        const now = new Date().toISOString();
+        try {
+          dbSync.prepare(`
+            INSERT INTO operation_locks (lockKey, id, operationType, sourceCanonicalKey, status, createdAt, completedAt, failedAt, createdBy, relatedMoveId, errorMessage)
+            VALUES (?, ?, ?, ?, 'active', ?, NULL, NULL, ?, '', '')
+          `).run(lockKey, makeId('lock'), operationType || '', sourceCanonicalKey || '', now, createdBy || 'system');
+          return sendJson(res, 200, { acquired: true, reason: 'lock_created', lockKey });
+        } catch (insertErr) {
+          // PRIMARY KEY collision on lockKey — a lock already exists. This is
+          // the atomic uniqueness guarantee: exactly one of any number of
+          // concurrent acquire attempts for the same lockKey reaches here.
+          const existing = dbSync.prepare('SELECT * FROM operation_locks WHERE lockKey = ?').get(lockKey);
+          if (!existing) {
+            // Extremely unlikely (row vanished between insert and select) — fail closed.
+            return sendJson(res, 500, { error: insertErr.message || 'تعذر الحصول على القفل' });
+          }
+          if (existing.status === 'completed') {
+            return sendJson(res, 200, { acquired: false, reason: 'reused_existing', lockKey, relatedMoveId: existing.relatedMoveId || '' });
+          }
+          if (existing.status === 'failed') {
+            // A failed attempt never completed — safe to reclaim and retry.
+            dbSync.prepare(`UPDATE operation_locks SET status='active', createdAt=?, failedAt=NULL, errorMessage='' WHERE lockKey=?`).run(now, lockKey);
+            return sendJson(res, 200, { acquired: true, reason: 'reclaimed_after_failed', lockKey });
+          }
+          // status === 'active'
+          const ageMs = Date.now() - new Date(existing.createdAt).getTime();
+          if (ageMs <= STALE_MS) {
+            return sendJson(res, 200, { acquired: false, reason: 'blocked_in_progress', lockKey, ageMs });
+          }
+          // Stale active lock. If it never recorded a relatedMoveId, the
+          // previous attempt almost certainly died before creating anything —
+          // safe to reclaim. If it DID record a relatedMoveId but never
+          // completed, we cannot be sure whether the move was fully committed
+          // and the "complete" call just failed to arrive, or something else
+          // — refuse to guess and surface it for manual review instead.
+          if (!existing.relatedMoveId) {
+            dbSync.prepare(`UPDATE operation_locks SET status='active', createdAt=?, failedAt=NULL, errorMessage='' WHERE lockKey=?`).run(now, lockKey);
+            return sendJson(res, 200, { acquired: true, reason: 'stale_lock_recovered', lockKey });
+          }
+          return sendJson(res, 200, { acquired: false, reason: 'stale_lock_needs_manual_check', lockKey, relatedMoveId: existing.relatedMoveId, ageMs });
+        }
+      } catch (e) {
+        sendJson(res, 400, { error: e.message || 'Invalid JSON' });
+      }
+    }).catch(error => sendJson(res, 500, { error: error.message || 'Failed to read request body' }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/operation-lock/complete' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
+    if (!dbSync) { sendJson(res, 503, { error: 'SQLite غير نشطة' }); return; }
+    readRequestBody(req).then(body => {
+      try {
+        const { lockKey, relatedMoveId } = JSON.parse(body);
+        if (!lockKey) return sendJson(res, 400, { error: 'lockKey مطلوب' });
+        dbSync.prepare(`UPDATE operation_locks SET status='completed', completedAt=?, relatedMoveId=? WHERE lockKey=?`)
+          .run(new Date().toISOString(), relatedMoveId || '', lockKey);
+        sendJson(res, 200, { success: true });
+      } catch (e) {
+        sendJson(res, 400, { error: e.message || 'Invalid JSON' });
+      }
+    }).catch(error => sendJson(res, 500, { error: error.message || 'Failed to read request body' }));
+    return;
+  }
+
+  // Used when the operation the lock represents gets reversed (e.g.
+  // reopenPayrollPeriod cancels the accrual/advance-settlement moves) — a
+  // 'completed' lock pointing at a now-cancelled move must not make the next
+  // genuine posting attempt believe it can "reuse" a move that no longer
+  // applies. Deleting the row lets the next acquire start fresh.
+  if (requestUrl.pathname === '/api/operation-lock/reset' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
+    if (!dbSync) { sendJson(res, 503, { error: 'SQLite غير نشطة' }); return; }
+    readRequestBody(req).then(body => {
+      try {
+        const { lockKey } = JSON.parse(body);
+        if (!lockKey) return sendJson(res, 400, { error: 'lockKey مطلوب' });
+        dbSync.prepare('DELETE FROM operation_locks WHERE lockKey=?').run(lockKey);
+        sendJson(res, 200, { success: true });
+      } catch (e) {
+        sendJson(res, 400, { error: e.message || 'Invalid JSON' });
+      }
+    }).catch(error => sendJson(res, 500, { error: error.message || 'Failed to read request body' }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/operation-lock/fail' && req.method === 'POST') {
+    const guard = requireSession(req, res);
+    if (!guard.ok) return;
+    if (!dbSync) { sendJson(res, 503, { error: 'SQLite غير نشطة' }); return; }
+    readRequestBody(req).then(body => {
+      try {
+        const { lockKey, errorMessage } = JSON.parse(body);
+        if (!lockKey) return sendJson(res, 400, { error: 'lockKey مطلوب' });
+        dbSync.prepare(`UPDATE operation_locks SET status='failed', failedAt=?, errorMessage=? WHERE lockKey=?`)
+          .run(new Date().toISOString(), String(errorMessage || '').slice(0, 500), lockKey);
+        sendJson(res, 200, { success: true });
+      } catch (e) {
+        sendJson(res, 400, { error: e.message || 'Invalid JSON' });
+      }
+    }).catch(error => sendJson(res, 500, { error: error.message || 'Failed to read request body' }));
+    return;
+  }
+
   if (requestUrl.pathname === '/api/upload' && req.method === 'POST') {
     const guard = requireSession(req, res);
     if (!guard.ok) return;
@@ -1777,12 +2087,29 @@ const server = http.createServer((req, res) => {
       res.end('<h1>404 - الملف غير موجود</h1>');
       return;
     }
+
+    // Inject custom API configuration into HTML — non-secret fields only.
+    // The API key is intentionally NOT sent to the browser: this route has no
+    // session/auth check, so anyone reaching the server could otherwise read
+    // the key straight out of page source. callCustomApi() fails closed
+    // ("Custom API key not configured") until a real server-side proxy exists.
+    let content = data;
+    if (filePath.endsWith('index.html')) {
+      const apiConfig = {
+        endpoint: process.env.CUSTOM_API_ENDPOINT || '',
+        provider: process.env.CUSTOM_API_PROVIDER || 'contactbox',
+        model: process.env.CUSTOM_API_MODEL || 'gpt-4'
+      };
+      const injectionScript = `<script>window.__customApiConfig = ${JSON.stringify(apiConfig)};</script>`;
+      content = content.toString().replace('</head>', injectionScript + '\n</head>');
+    }
+
     res.setHeader("Content-Type", contentType);
     if (['.html', '.js', '.css'].includes(ext)) {
       res.setHeader('Cache-Control', 'no-store, max-age=0');
     }
     res.writeHead(200);
-    res.end(data);
+    res.end(content);
   });
 });
 
@@ -1807,7 +2134,36 @@ function initializeDatabase() {
           PRIMARY KEY (collection, id)
         );
       `);
-      
+      // Production Hardening Final Lock Sprint (2026-07-04): server/DB-backed
+      // idempotency for sensitive postings (payroll accrual, payroll payment,
+      // opening balance, finance-transaction posting, and any future
+      // sourceCanonicalKey-based posting). `lockKey` is the PRIMARY KEY, so
+      // acquiring a lock is a single atomic SQLite INSERT — see
+      // acquireOperationLock() below. This is what actually closes the
+      // cross-tab/cross-device race that the previous sprint's in-memory
+      // Set-based lock could not: the in-memory lock only protected a single
+      // browser tab; this table is shared server-side state, and the INSERT's
+      // UNIQUE/PRIMARY KEY violation is detected atomically by SQLite even
+      // under concurrent requests (Node's single-threaded event loop runs the
+      // synchronous DatabaseSync calls in each request handler to completion
+      // without interleaving, so two "simultaneous" acquire requests can never
+      // both see the row missing and both insert).
+      dbSync.exec(`
+        CREATE TABLE IF NOT EXISTS operation_locks (
+          lockKey TEXT PRIMARY KEY,
+          id TEXT,
+          operationType TEXT,
+          sourceCanonicalKey TEXT,
+          status TEXT,
+          createdAt TEXT,
+          completedAt TEXT,
+          failedAt TEXT,
+          createdBy TEXT,
+          relatedMoveId TEXT,
+          errorMessage TEXT
+        );
+      `);
+
       const rowCount = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
                        dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;
                        
@@ -1825,6 +2181,20 @@ function initializeDatabase() {
       console.error('Failed to initialize SQLite DatabaseSync:', sqliteInitError.message);
       dbSync = null;
     }
+  }
+
+  if (!dbSync && fs.existsSync(DB_FILE)) {
+    // Loud, impossible-to-miss warning (Production Stabilization Sprint,
+    // 2026-07-04): SQLite is the sole live store in normal operation, so
+    // landing here means the server is about to run the whole app off
+    // database.json instead — which could be an old mirror snapshot rather
+    // than the true current state. This must never happen silently.
+    console.error('════════════════════════════════════════════════════════');
+    console.error('⚠️  DEGRADED MODE: SQLite unavailable — running on database.json.');
+    console.error('    database.json is a MIRROR, not guaranteed to be current if');
+    console.error('    SQLite has ever been active on this machine. Do not treat this');
+    console.error('    session as production-safe until database.db is restored.');
+    console.error('════════════════════════════════════════════════════════');
   }
 }
 

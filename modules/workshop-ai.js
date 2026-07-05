@@ -86,7 +86,7 @@
     return {
       provider: (cfg && cfg.provider) || (hasGemini ? 'gemini' : 'none'),
       model: (cfg && cfg.model) || 'gemini-flash',
-      hasKey: !!(cfg && (cfg.openrouterKey || cfg.geminiKey)) || hasGemini,
+      hasKey: !!(cfg && (cfg.openrouterKey || cfg.contactboxKey || cfg.geminiKey)) || hasGemini,
       online: (typeof navigator !== 'undefined') ? navigator.onLine : true,
       deterministicFallback: true,
       brainLoaded: !!(window.JarvisBrain && window.JarvisBrain.handle)
@@ -145,7 +145,7 @@
   }
   function briefingText(b) {
     if (!b || typeof b !== 'object') b = briefing(); // public-API safety: allow briefingText() with no arg
-    const L = ['☀️ ملخص جارفيس الصباحي — ' + new Date().toLocaleDateString('ar-IQ')];
+    const L = ['☀️ ملخص أومني الصباحي — ' + new Date().toLocaleDateString('ar-IQ')];
     L.push('• مستعجل/اليوم: ' + b.urgent.length + ' · متأخر: ' + b.overdue.length + ' · معاق: ' + b.blocked.length);
     L.push('• مواد ناقصة: ' + b.shortages.length + ' · تعارض مكائن: ' + b.conflicts.length);
     L.push('• فشل جودة: ' + b.qcFails.length + ' · إعادة عمل: ' + b.rework.length + ' · جاهز للتسليم: ' + b.deliveriesToday.length);
@@ -531,7 +531,7 @@
       + '<div class="wai-side-card"><div class="wai-card-title">🧠 مزوّد الذكاء</div>'
       + row('المزوّد', ps.provider, ps.provider === 'none' ? 'warn' : 'ai')
       + row('احتياطي حتمي', 'فعّال دائماً', 'ok')
-      + row('الدماغ (Jarvis)', ps.brainLoaded ? 'محمّل' : 'احتياطي', ps.brainLoaded ? 'ok' : 'muted')
+      + row('الدماغ (Omni)', ps.brainLoaded ? 'محمّل' : 'احتياطي', ps.brainLoaded ? 'ok' : 'muted')
       + '</div>';
   }
   function kioskHtml() {
@@ -561,7 +561,7 @@
     const box = (title, arr, cls, render2, empty) => '<div class="wai-brief-box ' + (arr.length ? cls : '') + '"><div class="wai-brief-box-title">' + title + '<span class="wai-pill ' + (arr.length ? cls : 'ok') + '">' + arr.length + '</span></div>'
       + (arr.length ? arr.slice(0, 5).map(render2).join('') : '<div class="wai-brief-empty">لا شيء ✅</div>') + '</div>';
     const woLine = w => '<div class="wai-brief-line" onclick="OctagonWorkOrders.open(\'' + w.id + '\')"><span>' + esc(w.ref) + ' ' + esc(String(w.title).slice(0, 18)) + '</span><span class="wai-muted">' + esc(stateAr(w.state)) + '</span></div>';
-    return '<div class="wai-card"><div class="wai-card-title">☀️ ملخص جارفيس الصباحي <span class="wai-pill ai">حتمي من بيانات حقيقية</span></div>'
+    return '<div class="wai-card"><div class="wai-card-title">☀️ ملخص أومني الصباحي <span class="wai-pill ai">حتمي من بيانات حقيقية</span></div>'
       + '<div class="wai-brief-grid">'
       + box('🔥 مستعجل/اليوم', b.urgent, 'warn', woLine)
       + box('⏰ متأخر', b.overdue, 'danger', woLine)

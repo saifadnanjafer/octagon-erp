@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EventOS — مدير المناسبات الذكي</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.474.0/font/lucide.css">
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Tajawal','Cairo','sans-serif'], display: ['Cairo','Tajawal','sans-serif'] },
+      colors: {
+        navy: { 950:'#0a0f2c', 900:'#0f1640', 800:'#151d52', 700:'#1d2870' },
+        royal: { 500:'#7c5cff', 600:'#6a47f5', 700:'#5836d8' },
+        gold:  { 400:'#f6d488', 500:'#e9bf6b', 600:'#c89a47' }
+      },
+      boxShadow: {
+        glow: '0 10px 40px -10px rgba(124,92,255,.45)',
+        soft: '0 10px 30px -12px rgba(15,22,64,.18)',
+      }
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family:'Tajawal','Cairo',sans-serif; }
+  .glass { background: rgba(255,255,255,.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,.5); }
+  .dark .glass { background: rgba(20,28,80,.45); border-color: rgba(255,255,255,.08); }
+  .grad-hero { background: radial-gradient(1200px 600px at 80% -10%, rgba(124,92,255,.35), transparent 60%), radial-gradient(900px 500px at 10% 10%, rgba(233,191,107,.25), transparent 60%), linear-gradient(160deg,#0a0f2c 0%,#151d52 60%,#1d2870 100%); }
+  .grad-text { background: linear-gradient(90deg,#f6d488,#7c5cff 60%,#e9bf6b); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grad-card { background: linear-gradient(160deg, rgba(124,92,255,.10), rgba(233,191,107,.08)); }
+  .scroll-hide::-webkit-scrollbar{display:none;}
+  .scroll-hide{scrollbar-width:none;}
+  .step-dot{ width:14px;height:14px;border-radius:9999px;background:#cbd1e7;display:inline-block; }
+  .step-dot.active{ background:linear-gradient(135deg,#7c5cff,#e9bf6b); box-shadow:0 0 0 5px rgba(124,92,255,.15); }
+  .fade-up{opacity:0;transform:translateY(20px);transition:all .7s ease;}
+  .fade-up.show{opacity:1;transform:none;}
+  .ring-grad{background:linear-gradient(135deg,#7c5cff,#e9bf6b);padding:1px;border-radius:1rem;}
+  .badge-ai{background:linear-gradient(90deg,#7c5cff,#e9bf6b);color:#0a0f2c;font-weight:800;}
+  .phone{ width:280px; height:560px; border-radius:38px; background:linear-gradient(160deg,#0f1640,#1d2870); padding:14px; box-shadow:0 30px 60px -20px rgba(10,15,44,.45), inset 0 0 0 2px rgba(255,255,255,.05); position:relative;}
+  .phone:before{content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);width:90px;height:18px;background:#0a0f2c;border-radius:14px;z-index:2;}
+  .phone-screen{ width:100%; height:100%; border-radius:28px; background:#f6f7fb; overflow:hidden; position:relative;}
+  .dark .phone-screen{ background:#0f1640;}
+  .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:9999px;font-size:.75rem;font-weight:700;}
+  .progress-bar{height:8px;border-radius:9999px;background:#e7e9f3;overflow:hidden;}
+  .dark .progress-bar{background:rgba(255,255,255,.08);}
+  .progress-bar > span{display:block;height:100%;background:linear-gradient(90deg,#7c5cff,#e9bf6b);}
+  details > summary { list-style:none; cursor:pointer;}
+  details > summary::-webkit-details-marker{display:none;}
+  .nav-link.active{ background:linear-gradient(90deg, rgba(124,92,255,.15), rgba(233,191,107,.12)); color:#5836d8; font-weight:700;}
+  .dark .nav-link.active{color:#f6d488;}
+  .float { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .pulse-dot{ width:10px;height:10px;border-radius:9999px;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)} 70%{box-shadow:0 0 0 14px rgba(34,197,94,0)} 100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+  .tbl th,.tbl td{padding:.85rem 1rem; text-align:right;}
+  .tbl thead th{background:rgba(124,92,255,.08); font-weight:700;}
+  .tbl tbody tr{border-top:1px solid rgba(15,22,64,.06);}
+  .dark .tbl tbody tr{border-color:rgba(255,255,255,.06);}
+  .top-progress{position:fixed;top:0;right:0;left:0;height:3px;background:transparent;z-index:60;}
+  .top-progress > span{display:block;height:100%;background:linear-gradient(90deg,#7c5cff,#e9bf6b);width:0%;}
+</style>
+</head>
+<body class="bg-[#f6f7fb] text-navy-900 dark:bg-navy-950 dark:text-white">
+
+<div class="top-progress"><span id="topProg"></span></div>
+
+<!-- ============ LAYOUT ============ -->
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside id="sidebar" class="hidden lg:flex flex-col w-72 shrink-0 sticky top-0 h-screen border-l border-black/5 dark:border-white/5 bg-white/70 dark:bg-navy-900/60 backdrop-blur-xl p-5 overflow-y-auto scroll-hide">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-11 h-11 rounded-2xl ring-grad"><div class="w-full h-full rounded-2xl bg-navy-950 flex items-center justify-center text-white"><i class="lucide lucide-sparkles"></i></div></div>
+      <div>
+        <div class="font-black text-lg leading-none grad-text">EventOS</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-300 mt-1">مدير المناسبات الذكي</div>
+      </div>
+    </div>
+
+    <nav id="sideNav" class="text-sm space-y-1">
+      <a href="#hero" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-home text-base"></i> الواجهة</a>
+      <a href="#problem" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-alert-triangle text-base"></i> مشكلة السوق</a>
+      <a href="#solution" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-lightbulb text-base"></i> الحل</a>
+      <a href="#journey" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-route text-base"></i> رحلة المستخدم</a>
+      <a href="#events" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-party-popper text-base"></i> أنواع المناسبات</a>
+      <a href="#packages" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-package text-base"></i> الباقات</a>
+      <a href="#visual" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-image text-base"></i> الاختيار البصري</a>
+      <a href="#cart" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-shopping-cart text-base"></i> السلة الموحدة</a>
+      <a href="#payment" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-credit-card text-base"></i> الدفع والضمان</a>
+      <a href="#timeline" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-calendar-clock text-base"></i> الجدول الزمني</a>
+      <a href="#suppliers" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-store text-base"></i> الموردين</a>
+      <a href="#replace" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-refresh-cw text-base"></i> الاستبدال الذكي</a>
+      <a href="#concierge" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-headset text-base"></i> المساعد البشري</a>
+      <a href="#admin" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-layout-dashboard text-base"></i> لوحة الإدارة</a>
+      <a href="#supplier-dash" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-briefcase text-base"></i> لوحة المورد</a>
+      <a href="#ai" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-brain text-base"></i> محرك الذكاء</a>
+      <a href="#scenarios" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-book-open text-base"></i> سيناريوهات</a>
+      <a href="#compare" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-scale text-base"></i> المقارنة</a>
+      <a href="#safwa" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-hammer text-base"></i> الورشة المميزة</a>
+      <a href="#roadmap" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-map text-base"></i> خارطة الطريق</a>
+      <a href="#cta" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg"><i class="lucide lucide-rocket text-base"></i> الختام</a>
+    </nav>
+
+    <div class="mt-6 p-4 rounded-2xl grad-card border border-royal-500/20">
+      <div class="text-xs text-slate-600 dark:text-slate-300 mb-2">شريط تقدم العرض</div>
+      <div class="progress-bar"><span id="sideProg" style="width:0%"></span></div>
+      <div class="flex justify-between text-[11px] mt-2 text-slate-500 dark:text-slate-300"><span>البداية</span><span id="sideProgPct">0%</span></div>
+    </div>
+
+    <div class="mt-auto pt-6 flex items-center justify-between">
+      <button onclick="toggleDark()" class="text-xs flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-900/5 dark:bg-white/5 hover:bg-navy-900/10">
+        <i class="lucide lucide-moon"></i><span id="modeLabel">داكن</span>
+      </button>
+      <span class="text-[11px] text-slate-500 dark:text-slate-300">v1.0 · Basra</span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="flex-1 min-w-0">
+
+    <!-- Mobile top bar -->
+    <div class="lg:hidden sticky top-0 z-40 glass border-b border-white/40 dark:border-white/5 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl ring-grad"><div class="w-full h-full rounded-xl bg-navy-950 flex items-center justify-center text-white"><i class="lucide lucide-sparkles text-sm"></i></div></div>
+        <div class="font-black grad-text">EventOS</div>
+      </div>
+      <button onclick="toggleDark()" class="text-xs flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-900/5 dark:bg-white/5"><i class="lucide lucide-moon"></i></button>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section id="hero" class="grad-hero text-white relative overflow-hidden">
+      <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-royal-500/30 blur-3xl"></div>
+      <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gold-500/20 blur-3xl"></div>
+
+      <div class="relative px-6 lg:px-14 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs mb-6">
+            <span class="pulse-dot"></span> النسخة التجريبية تنطلق من البصرة
+          </div>
+          <h1 class="text-4xl lg:text-6xl font-black leading-[1.15]">
+            مدير مناسبات ذكي <br>
+            يبني وينفذ <span class="grad-text">المناسبة بالكامل</span>
+          </h1>
+          <p class="mt-6 text-lg text-white/80 leading-relaxed max-w-xl">
+            اختار نوع المناسبة، الميزانية، والستايل… والذكاء الصناعي يبني كلشي. أنت فقط توافق وتدفع — ونحن نتابع التنفيذ من أول يوم لحد بعد المناسبة.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#journey" class="px-5 py-3 rounded-xl badge-ai shadow-glow flex items-center gap-2"><i class="lucide lucide-play"></i> شاهد رحلة المستخدم</a>
+            <a href="#scenarios" class="px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 flex items-center gap-2"><i class="lucide lucide-heart"></i> شاهد مثال زفاف</a>
+            <a href="#suppliers" class="px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 flex items-center gap-2"><i class="lucide lucide-store"></i> شاهد لوحة الموردين</a>
+          </div>
+
+          <!-- Quick feature cards -->
+          <div class="mt-10 grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-brain"></i></div><div class="text-sm font-bold">تخطيط بالذكاء الصناعي</div></div>
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-badge-check"></i></div><div class="text-sm font-bold">موردين موثقين</div></div>
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-shopping-bag"></i></div><div class="text-sm font-bold">سلة موحدة</div></div>
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-shield-check"></i></div><div class="text-sm font-bold">دفع آمن (Escrow)</div></div>
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-activity"></i></div><div class="text-sm font-bold">متابعة لحظية</div></div>
+            <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-gold-400 mb-1"><i class="lucide lucide-headset"></i></div><div class="text-sm font-bold">مساعد بشري</div></div>
+          </div>
+        </div>
+
+        <!-- Phone mockup -->
+        <div class="flex justify-center lg:justify-end">
+          <div class="relative">
+            <div class="phone float">
+              <div class="phone-screen p-4 text-navy-900">
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mb-3"><span>9:41</span><span>EventOS</span></div>
+                <div class="rounded-2xl p-3 bg-gradient-to-br from-royal-500 to-gold-500 text-white">
+                  <div class="text-[11px] opacity-80">المناسبة الحالية</div>
+                  <div class="font-black">زفاف — البصرة</div>
+                  <div class="mt-2 text-[11px] flex justify-between"><span>180 ضيف</span><span>15/5/2026</span></div>
+                </div>
+                <div class="mt-3 text-xs font-bold">الميزانية</div>
+                <div class="text-lg font-black">12,000,000 د.ع</div>
+                <div class="mt-2 progress-bar"><span style="width:68%"></span></div>
+                <div class="mt-1 text-[10px] text-slate-500">68% من التخطيط مكتمل</div>
+
+                <div class="mt-4 grid grid-cols-3 gap-2 text-[10px] text-center">
+                  <div class="p-2 rounded-xl bg-royal-500/10 text-royal-700">قاعة ✓</div>
+                  <div class="p-2 rounded-xl bg-royal-500/10 text-royal-700">طعام ✓</div>
+                  <div class="p-2 rounded-xl bg-gold-500/15 text-gold-600">كيك ⏳</div>
+                  <div class="p-2 rounded-xl bg-royal-500/10 text-royal-700">ديكور ✓</div>
+                  <div class="p-2 rounded-xl bg-gold-500/15 text-gold-600">تصوير ⏳</div>
+                  <div class="p-2 rounded-xl bg-slate-200">DJ</div>
+                </div>
+
+                <div class="mt-4 p-3 rounded-2xl bg-navy-950 text-white text-[11px]">
+                  <div class="flex items-center gap-2 mb-1"><i class="lucide lucide-sparkles text-gold-400"></i> توصية الذكاء الصناعي</div>
+                  <div class="opacity-80">"باقة B الموصى بها تناسب 180 ضيف بميزانيتك."</div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -bottom-6 -left-6 glass rounded-2xl p-3 shadow-soft text-navy-900 dark:text-white">
+              <div class="text-[11px] text-slate-500 dark:text-slate-300">حالة التنفيذ</div>
+              <div class="text-sm font-bold flex items-center gap-2"><span class="pulse-dot"></span> 5 موردين مؤكدين</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="relative px-6 lg:px-14 pb-10">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+          <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black text-gold-400">+50</div><div class="text-xs">مورد عند الإطلاق</div></div>
+          <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black text-gold-400">15</div><div class="text-xs">فئة خدمات</div></div>
+          <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black text-gold-400">3</div><div class="text-xs">باقات لكل مناسبة</div></div>
+          <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black text-gold-400">30%</div><div class="text-xs">دفعة أولى</div></div>
+          <div class="glass !bg-white/10 rounded-2xl p-4"><div class="text-2xl font-black text-gold-400">24</div><div class="text-xs">أسبوع MVP</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROBLEM ============ -->
+    <section id="problem" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-3xl">
+        <div class="chip bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300"><i class="lucide lucide-alert-triangle"></i> مشكلة السوق</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">تنظيم المناسبة في العراق اليوم = فوضى</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">السوق غير منظم، الموردين متفرقين، والعميل يتحمل العبء الكامل من البداية للنهاية.</p>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- problem cards -->
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-users"></i></div><div class="font-bold">الموردين متفرقين</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">لا توجد منصة واحدة تجمع كل الموردين الموثقين.</p></div>
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-message-square"></i></div><div class="font-bold">العميل يتعب بالمراسلات</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">عشرات الاتصالات والزيارات لكل عنصر صغير.</p></div>
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-tag"></i></div><div class="font-bold">لا توجد أسعار واضحة</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">الأسعار تتغير حسب الشخص والوقت والوسيط.</p></div>
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-clock-alert"></i></div><div class="font-bold">القلق من تأخير أو إلغاء المورد</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">لا يوجد ضمان ولا بديل سريع.</p></div>
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-calendar-x"></i></div><div class="font-bold">لا يوجد جدول زمني واضح</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">الكل يشتغل بطريقته الخاصة وبدون تنسيق.</p></div>
+        <div class="glass rounded-2xl p-5"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-wallet"></i></div><div class="font-bold">الدفع غير منظم</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">دفعات نقدية متفرقة بدون أي ضمان قانوني.</p></div>
+        <div class="glass rounded-2xl p-5 md:col-span-2 lg:col-span-3"><div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center mb-3"><i class="lucide lucide-map-pin-off"></i></div><div class="font-bold">لا منصة عراقية محلية تفهم السوق</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-1">المنصات العالمية لا تفهم اللهجة، طبيعة المناسبات العراقية، طرق الدفع المحلية، أو خصوصية السوق.</p></div>
+      </div>
+
+      <!-- Real example -->
+      <div class="mt-8 ring-grad rounded-2xl">
+        <div class="rounded-2xl bg-white dark:bg-navy-900 p-6 lg:p-8">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gold-500/15 text-gold-600 flex items-center justify-center shrink-0"><i class="lucide lucide-quote"></i></div>
+            <div>
+              <div class="text-xs font-bold text-royal-600 dark:text-gold-400">مثال واقعي من البصرة</div>
+              <p class="mt-1 text-lg leading-relaxed">عائلة تريد <b>زفاف لـ 180 شخص في البصرة</b>، تحتاج قاعة، طعام، ديكور، تصوير، كيك، صالون، طباعة، هدايا، نقل، ومتابعة. بدون EventOS يحتاجون <b>عشرات الاتصالات والزيارات</b> ولا يحصلون على ضمان أن كل شيء سيصل في موعده.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SOLUTION ============ -->
+    <section id="solution" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-3xl">
+        <div class="chip bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"><i class="lucide lucide-lightbulb"></i> الحل</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">من فكرة المناسبة إلى تنفيذها — بـ <span class="grad-text">10 خطوات</span></h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">EventOS يحول الفوضى إلى مسار واضح، منظم، ومضمون.</p>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-5 gap-3">
+        <script>document.write('')</script>
+      </div>
+
+      <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-5 gap-3" id="solSteps"></div>
+    </section>
+
+    <!-- ============ JOURNEY ============ -->
+    <section id="journey" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="max-w-2xl">
+          <div class="chip badge-ai"><i class="lucide lucide-route"></i> رحلة المستخدم</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">مثال زفاف — 9 خطوات بشاشات وهمية</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">شاهد كيف ينتقل المستخدم من فكرة المناسبة إلى التنفيذ، بشكل بصري بالكامل.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="step-dot active"></span><span class="step-dot active"></span><span class="step-dot active"></span><span class="step-dot"></span>
+          <span class="text-slate-500 dark:text-slate-300">عرض تدريجي</span>
+        </div>
+      </div>
+
+      <div id="journeyGrid" class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- ============ EVENTS TABS ============ -->
+    <section id="events" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-party-popper"></i> أنواع المناسبات</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">EventOS يغطي كل نوع مناسبة</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">من زفاف فاخر إلى صندوق هدية صغير — نفس النظام الذكي.</p>
+      </div>
+
+      <!-- tabs -->
+      <div class="mt-8 flex flex-wrap gap-2" id="eventTabs"></div>
+
+      <div id="eventContent" class="mt-6 grid lg:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- ============ PACKAGES ============ -->
+    <section id="packages" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="max-w-2xl">
+          <div class="chip bg-gold-500/15 text-gold-600"><i class="lucide lucide-package"></i> نظام الباقات</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">3 باقات ذكية لكل مناسبة</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">الذكاء الصناعي يبني الباقات حسب عدد الضيوف والميزانية والستايل.</p>
+        </div>
+        <div class="text-xs text-slate-500 dark:text-slate-300">اضغط على أي باقة لتحديثها في الملخص الجانبي.</div>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-5">
+        <!-- A -->
+        <button onclick="selectPkg('A',5500000,'اقتصادية')" class="text-right glass rounded-3xl p-6 hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between"><div class="text-sm font-bold text-slate-500">الباقة A</div><i class="lucide lucide-leaf text-emerald-500"></i></div>
+          <div class="mt-2 text-2xl font-black">اقتصادية</div>
+          <div class="mt-4 text-3xl font-black">5,500,000 <span class="text-sm">د.ع</span></div>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">مناسبة للميزانيات المحدودة. موردين موثقين بسعر أقل والعناصر الأساسية فقط.</p>
+          <ul class="mt-4 text-sm space-y-2">
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> قاعة متوسطة</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> ديكور بسيط</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> طعام أساسي</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> مصور 4 ساعات</li>
+          </ul>
+        </button>
+        <!-- B recommended -->
+        <button onclick="selectPkg('B',8000000,'موصى بها')" class="text-right rounded-3xl p-[2px] bg-gradient-to-br from-royal-500 to-gold-500 hover:scale-[1.02] transition relative">
+          <div class="absolute -top-3 right-6 chip badge-ai">اختيار الذكاء الصناعي</div>
+          <div class="rounded-3xl bg-white dark:bg-navy-900 p-6">
+            <div class="flex items-center justify-between"><div class="text-sm font-bold text-royal-600">الباقة B</div><i class="lucide lucide-sparkles text-gold-500"></i></div>
+            <div class="mt-2 text-2xl font-black">موصى بها</div>
+            <div class="mt-4 text-3xl font-black">8,000,000 <span class="text-sm">د.ع</span></div>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">هذه الباقة تناسب 180 ضيف وتوازن بين الديكور والطعام والتصوير.</p>
+            <ul class="mt-4 text-sm space-y-2">
+              <li class="flex items-center gap-2"><i class="lucide lucide-check text-royal-500"></i> قاعة فندقية</li>
+              <li class="flex items-center gap-2"><i class="lucide lucide-check text-royal-500"></i> ديكور مودرن</li>
+              <li class="flex items-center gap-2"><i class="lucide lucide-check text-royal-500"></i> طعام متنوع + كيك ذهبي</li>
+              <li class="flex items-center gap-2"><i class="lucide lucide-check text-royal-500"></i> تصوير 8 ساعات + فيديو</li>
+              <li class="flex items-center gap-2"><i class="lucide lucide-check text-royal-500"></i> Welcome Sign + Table Numbers</li>
+            </ul>
+          </div>
+        </button>
+        <!-- C -->
+        <button onclick="selectPkg('C',13500000,'فاخرة')" class="text-right glass rounded-3xl p-6 hover:scale-[1.02] transition">
+          <div class="flex items-center justify-between"><div class="text-sm font-bold text-gold-600">الباقة C</div><i class="lucide lucide-crown text-gold-500"></i></div>
+          <div class="mt-2 text-2xl font-black">فاخرة</div>
+          <div class="mt-4 text-3xl font-black">13,500,000 <span class="text-sm">د.ع</span></div>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">موردين Premium وتفاصيل إضافية وديكور أعلى.</p>
+          <ul class="mt-4 text-sm space-y-2">
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-gold-500"></i> قاعة فاخرة Royal</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-gold-500"></i> ديكور Royal Gold Theme</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-gold-500"></i> Open buffet عالمي</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-gold-500"></i> Full Day Photo + Cinema Video</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-gold-500"></i> سيارة عروس + DJ + MC</li>
+          </ul>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ VISUAL SELECTION ============ -->
+    <section id="visual" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-image"></i> الاختيار البصري</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">اختيار بصري بدون كتابة</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">المستخدم لا يحتاج أن يصف بالتفصيل — يختار من بطاقات جميلة.</p>
+      </div>
+
+      <div id="visualBlocks" class="mt-10 grid lg:grid-cols-2 gap-8"></div>
+    </section>
+
+    <!-- ============ CART ============ -->
+    <section id="cart" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"><i class="lucide lucide-shopping-cart"></i> السلة الموحدة</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">Event Cart — كل المناسبة في سلة واحدة</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">مصنفة حسب الفئة، مع موافقة وتعديل وحذف وأزرار تواصل مع المساعد.</p>
+      </div>
+
+      <div class="mt-10 grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass rounded-3xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="font-bold">زفاف — البصرة</div>
+              <div class="text-xs text-slate-500">180 ضيف · 15/5/2026 · ميزانية 12,000,000 د.ع</div>
+            </div>
+            <div class="text-left">
+              <div class="text-xs text-slate-500">نسبة اكتمال التخطيط</div>
+              <div class="w-44 progress-bar mt-1"><span style="width:78%"></span></div>
+              <div class="text-xs mt-1 font-bold text-royal-600">78%</div>
+            </div>
+          </div>
+
+          <div id="cartCats" class="space-y-3"></div>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <button class="px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm flex items-center gap-2"><i class="lucide lucide-check"></i> موافقة على الكل</button>
+            <button class="px-4 py-2 rounded-xl bg-royal-500 text-white text-sm flex items-center gap-2"><i class="lucide lucide-pencil"></i> تعديل عنصر</button>
+            <button class="px-4 py-2 rounded-xl bg-red-500/10 text-red-600 text-sm flex items-center gap-2"><i class="lucide lucide-trash-2"></i> إزالة عنصر</button>
+            <button class="px-4 py-2 rounded-xl bg-navy-900 text-white text-sm flex items-center gap-2"><i class="lucide lucide-headset"></i> تحدث مع المساعد</button>
+          </div>
+        </div>
+
+        <!-- Sticky summary -->
+        <aside class="glass rounded-3xl p-6 h-fit lg:sticky lg:top-6">
+          <div class="text-xs text-slate-500">ملخص المناسبة</div>
+          <div class="font-black text-lg mt-1">زفاف فاخر — البصرة</div>
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between"><span>الميزانية</span><b>12,000,000 د.ع</b></div>
+            <div class="flex justify-between"><span>الباقة</span><b id="sumPkg">B — موصى بها</b></div>
+            <div class="flex justify-between"><span>السعر الحالي</span><b id="sumPrice">8,000,000 د.ع</b></div>
+            <div class="flex justify-between"><span>عدد العناصر</span><b>23</b></div>
+            <div class="flex justify-between"><span>حالة التخطيط</span><b class="text-emerald-600">قيد الإنجاز</b></div>
+          </div>
+          <div class="mt-4 progress-bar"><span id="sumProg" style="width:67%"></span></div>
+          <button class="mt-5 w-full px-4 py-3 rounded-xl badge-ai font-bold">تأكيد ودفع</button>
+          <div class="mt-3 text-[11px] text-slate-500 text-center">المبلغ محجوز Escrow حتى تأكيد التسليم.</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PAYMENT ============ -->
+    <section id="payment" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-gold-500/15 text-gold-600"><i class="lucide lucide-credit-card"></i> الدفع والضمان</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">3 خيارات دفع — كلها مضمونة</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">نظام Escrow ذكي: المبلغ محجوز داخل EventOS والمورد يستلم بعد تأكيد التسليم.</p>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-5">
+        <div class="glass rounded-3xl p-6"><div class="text-sm font-bold text-royal-600">خيار 1</div><div class="text-2xl font-black mt-1">دفعة 30% الآن</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-2">و70% بعد تأكيد التنفيذ. الأكثر شيوعاً للعملاء الجدد.</p><div class="mt-4 chip bg-royal-500/15 text-royal-600">الأشهر</div></div>
+        <div class="ring-grad rounded-3xl"><div class="rounded-3xl bg-white dark:bg-navy-900 p-6"><div class="text-sm font-bold text-gold-600">خيار 2</div><div class="text-2xl font-black mt-1">دفع كامل</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-2">مع خصم 2% على إجمالي المناسبة.</p><div class="mt-4 chip badge-ai">خصم -2%</div></div></div>
+        <div class="glass rounded-3xl p-6"><div class="text-sm font-bold text-emerald-600">خيار 3</div><div class="text-2xl font-black mt-1">تقسيط 4 دفعات</div><p class="text-sm text-slate-600 dark:text-slate-300 mt-2">مع رسوم 3% على إجمالي المبلغ.</p><div class="mt-4 chip bg-emerald-500/15 text-emerald-600">مرونة عالية</div></div>
+      </div>
+
+      <div class="mt-8 grid md:grid-cols-5 gap-3 text-center text-sm">
+        <div class="glass rounded-2xl p-4"><i class="lucide lucide-smartphone text-royal-500"></i><div class="mt-2 font-bold">ZainCash</div></div>
+        <div class="glass rounded-2xl p-4"><i class="lucide lucide-credit-card text-royal-500"></i><div class="mt-2 font-bold">Qi Card</div></div>
+        <div class="glass rounded-2xl p-4"><i class="lucide lucide-circle-dollar-sign text-royal-500"></i><div class="mt-2 font-bold">Visa / Mastercard</div></div>
+        <div class="glass rounded-2xl p-4"><i class="lucide lucide-building-2 text-royal-500"></i><div class="mt-2 font-bold">تحويل مصرفي</div></div>
+        <div class="glass rounded-2xl p-4"><i class="lucide lucide-banknote text-royal-500"></i><div class="mt-2 font-bold">Cash لعناصر مختارة</div></div>
+      </div>
+
+      <div class="mt-10 ring-grad rounded-3xl">
+        <div class="rounded-3xl bg-white dark:bg-navy-900 p-6 lg:p-8 grid lg:grid-cols-3 gap-6 items-center">
+          <div class="lg:col-span-2">
+            <div class="chip bg-emerald-500/15 text-emerald-600"><i class="lucide lucide-shield-check"></i> ضمان Escrow</div>
+            <h3 class="mt-3 text-2xl font-black">المبلغ يبقى محجوز داخل EventOS</h3>
+            <p class="mt-2 text-slate-600 dark:text-slate-300">المورد يستلم بعد تأكيد التسليم من العميل أو من المساعد البشري. لا دفع مسبق بدون ضمان.</p>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="p-3 rounded-xl bg-royal-500/10"><div class="font-black text-lg text-royal-600">1</div>يدفع العميل</div>
+            <div class="p-3 rounded-xl bg-gold-500/15"><div class="font-black text-lg text-gold-600">2</div>EventOS يحتجز</div>
+            <div class="p-3 rounded-xl bg-emerald-500/15"><div class="font-black text-lg text-emerald-600">3</div>المورد يستلم</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TIMELINE ============ -->
+    <section id="timeline" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-calendar-clock"></i> الجدول الزمني</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">من اليوم الأول إلى ما بعد المناسبة</h2>
+      </div>
+
+      <div class="mt-10 relative">
+        <div class="absolute top-0 bottom-0 right-5 lg:right-1/2 w-px bg-gradient-to-b from-royal-500 to-gold-500"></div>
+        <div id="timelineList" class="space-y-6"></div>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-2 text-xs">
+        <span class="chip bg-slate-200 text-slate-700">Draft</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip bg-royal-500/15 text-royal-600">Approved</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip bg-gold-500/15 text-gold-600">Paid</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip bg-emerald-500/15 text-emerald-600">Confirmed</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip bg-blue-500/15 text-blue-600">In Progress</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip bg-fuchsia-500/15 text-fuchsia-600">Delivered</span>
+        <i class="lucide lucide-arrow-left text-slate-400"></i>
+        <span class="chip badge-ai">Completed</span>
+      </div>
+    </section>
+
+    <!-- ============ SUPPLIERS ============ -->
+    <section id="suppliers" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="max-w-2xl">
+          <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-store"></i> Marketplace الموردين</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">موردين موثقين — Profile كامل لكل مورد</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">صور أعمال، تقييم، موقع، نطاق خدمة، أسعار، وقت إنتاج، سياسة إلغاء.</p>
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-navy-900 text-white text-sm flex items-center gap-2"><i class="lucide lucide-filter"></i> فلترة</button>
+      </div>
+
+      <div id="suppliersGrid" class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- ============ REPLACE ENGINE ============ -->
+    <section id="replace" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="grid lg:grid-cols-2 gap-10 items-start">
+        <div>
+          <div class="chip bg-gold-500/15 text-gold-600"><i class="lucide lucide-refresh-cw"></i> الاستبدال الذكي</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">إذا اعتذر مورد… EventOS يحل المشكلة فوراً</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">يبحث عن بديل بنفس التصنيف، يقارن السعر، يتحقق من التوفر، ثم يطلب موافقة المستخدم.</p>
+
+          <div class="mt-6 space-y-3">
+            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-lg bg-royal-500/15 text-royal-600 flex items-center justify-center"><i class="lucide lucide-search"></i></div><div><b>بحث فوري</b><div class="text-sm text-slate-600 dark:text-slate-300">في قاعدة بيانات الموردين الموثقين.</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-lg bg-royal-500/15 text-royal-600 flex items-center justify-center"><i class="lucide lucide-equal"></i></div><div><b>تصنيف مطابق</b><div class="text-sm text-slate-600 dark:text-slate-300">نفس مستوى الجودة والسعر.</div></div></div>
+            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-lg bg-royal-500/15 text-royal-600 flex items-center justify-center"><i class="lucide lucide-check-circle-2"></i></div><div><b>موافقة المستخدم</b><div class="text-sm text-slate-600 dark:text-slate-300">لا يتم أي تغيير بدون إذنك.</div></div></div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl p-6">
+          <div class="flex items-center justify-between"><div class="font-bold">سيناريو اعتذار مصور</div><span class="chip bg-red-500/15 text-red-600">يحتاج إجراء</span></div>
+          <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div class="p-3 rounded-2xl border border-red-200 dark:border-red-500/20">
+              <div class="text-xs text-slate-500">المورد الأصلي</div>
+              <div class="font-bold">Lens Masters</div>
+              <div class="text-xs text-red-600 mt-1">غير متاح في 15/5/2026</div>
+            </div>
+            <div class="p-3 rounded-2xl border border-emerald-200 dark:border-emerald-500/20">
+              <div class="text-xs text-slate-500">البديل المقترح</div>
+              <div class="font-bold">Basra Pro Studio</div>
+              <div class="text-xs text-emerald-600 mt-1">متاح ومضمون</div>
+            </div>
+          </div>
+          <div class="mt-4 p-3 rounded-xl bg-gold-500/10 text-sm flex items-center justify-between">
+            <span>فرق السعر</span><b class="text-gold-600">+50,000 د.ع</b>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <button class="flex-1 px-4 py-3 rounded-xl badge-ai font-bold">وافق على الاستبدال</button>
+            <button class="px-4 py-3 rounded-xl bg-slate-200/60 dark:bg-white/5">رفض</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONCIERGE ============ -->
+    <section id="concierge" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <div class="chip badge-ai"><i class="lucide lucide-headset"></i> المساعد البشري Concierge</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">للمناسبات فوق 5,000$ — مساعد بشري عبر واتساب</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">يعطيك ثقة كاملة، يتدخل عند المشاكل، وينسق في أسبوع المناسبة.</p>
+          <ul class="mt-5 space-y-2 text-sm">
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> يتأكد من الموردين</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> يتابع التغييرات</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> يتدخل عند المشاكل</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> ينسق في أسبوع المناسبة</li>
+            <li class="flex items-center gap-2"><i class="lucide lucide-check text-emerald-500"></i> يعطي ثقة للعميل</li>
+          </ul>
+        </div>
+
+        <!-- chat -->
+        <div class="glass rounded-3xl p-5">
+          <div class="flex items-center gap-3 pb-3 border-b border-black/5 dark:border-white/10">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-royal-500 to-gold-500 flex items-center justify-center text-white font-black">م</div>
+            <div><div class="font-bold">مساعد EventOS</div><div class="text-[11px] text-emerald-500 flex items-center gap-1"><span class="pulse-dot"></span> متصل الآن</div></div>
+          </div>
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="max-w-[85%] p-3 rounded-2xl bg-royal-500/10 text-navy-900 dark:text-white">أستاذ، تم تأكيد القاعة والتصوير، باقي نحتاج تأكيد عدد الضيوف النهائي قبل 5 أيام.</div>
+            <div class="max-w-[85%] ms-auto p-3 rounded-2xl bg-navy-900 text-white">خلي العدد 190 بدل 180.</div>
+            <div class="max-w-[85%] p-3 rounded-2xl bg-royal-500/10 text-navy-900 dark:text-white">تم، راح أعيد حساب الطعام والكراسي وأرسل الفرق.</div>
+            <div class="max-w-[85%] p-3 rounded-2xl bg-gold-500/15">
+              <div class="text-xs font-bold mb-1">تحديث تلقائي</div>
+              فرق التكلفة: +180,000 د.ع · سيتم تحديث السلة الآن.
+            </div>
+          </div>
+          <div class="mt-4 flex items-center gap-2">
+            <input class="flex-1 bg-slate-100 dark:bg-white/5 rounded-xl px-3 py-2 text-sm" placeholder="اكتب رسالة..." />
+            <button class="w-10 h-10 rounded-xl badge-ai flex items-center justify-center"><i class="lucide lucide-send"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ADMIN DASHBOARD ============ -->
+    <section id="admin" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-layout-dashboard"></i> لوحة الإدارة</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">Admin Dashboard — كل شيء تحت السيطرة</h2>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">مناسبات هذا الشهر</div><div class="text-3xl font-black mt-1">42</div><div class="text-xs text-emerald-600 mt-1">+18% عن الشهر الماضي</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">إجمالي المبيعات</div><div class="text-3xl font-black mt-1">312M <span class="text-sm">د.ع</span></div><div class="text-xs text-emerald-600 mt-1">+24%</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">عدد الموردين</div><div class="text-3xl font-black mt-1">68</div><div class="text-xs text-royal-600 mt-1">+5 جدد هذا الأسبوع</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">طلبات بانتظار التأكيد</div><div class="text-3xl font-black mt-1">7</div><div class="text-xs text-gold-600 mt-1">يحتاج مراجعة</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">مشاكل حرجة</div><div class="text-3xl font-black mt-1 text-red-600">2</div><div class="text-xs text-red-600 mt-1">تأخير تسليم</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">مدفوعات محتجزة</div><div class="text-3xl font-black mt-1">86M <span class="text-sm">د.ع</span></div><div class="text-xs text-slate-500 mt-1">Escrow</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">موردين يحتاجون توثيق</div><div class="text-3xl font-black mt-1">4</div><div class="text-xs text-gold-600 mt-1">قيد المراجعة</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500">نسبة الرضا</div><div class="text-3xl font-black mt-1">96%</div><div class="text-xs text-emerald-600 mt-1">⭐ 4.8</div></div>
+      </div>
+
+      <div class="mt-8 glass rounded-3xl p-2 overflow-x-auto">
+        <table class="w-full text-sm tbl">
+          <thead>
+            <tr>
+              <th>المناسبة</th><th>العميل</th><th>التاريخ</th><th>الحالة</th><th>القيمة</th><th>المسؤول</th><th>الإجراء</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>زفاف الجزائر</td><td>أم محمد</td><td>15/5/2026</td><td><span class="chip bg-emerald-500/15 text-emerald-600">Confirmed</span></td><td>12,000,000</td><td>سارة</td><td><button class="text-royal-600">عرض</button></td></tr>
+            <tr><td>خطوبة العشار</td><td>أبو علي</td><td>22/3/2026</td><td><span class="chip bg-gold-500/15 text-gold-600">Paid</span></td><td>3,200,000</td><td>أحمد</td><td><button class="text-royal-600">عرض</button></td></tr>
+            <tr><td>عيد ميلاد ليلى</td><td>أم ليلى</td><td>8/2/2026</td><td><span class="chip bg-blue-500/15 text-blue-600">In Progress</span></td><td>950,000</td><td>زينب</td><td><button class="text-royal-600">عرض</button></td></tr>
+            <tr><td>افتتاح فرع Safwa</td><td>شركة الصفوة</td><td>1/4/2026</td><td><span class="chip bg-royal-500/15 text-royal-600">Approved</span></td><td>7,800,000</td><td>حسين</td><td><button class="text-royal-600">عرض</button></td></tr>
+            <tr><td>هدية تخرج</td><td>نور</td><td>12/2/2026</td><td><span class="chip badge-ai">Completed</span></td><td>180,000</td><td>سارة</td><td><button class="text-royal-600">عرض</button></td></tr>
+            <tr><td>زفاف الكورنيش</td><td>أبو حسن</td><td>9/6/2026</td><td><span class="chip bg-slate-200 text-slate-700">Draft</span></td><td>—</td><td>—</td><td><button class="text-royal-600">عرض</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ SUPPLIER DASH ============ -->
+    <section id="supplier-dash" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-gold-500/15 text-gold-600"><i class="lucide lucide-briefcase"></i> لوحة المورد</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">Supplier Dashboard — تصور مستقبلي</h2>
+      </div>
+
+      <div class="mt-10 grid lg:grid-cols-3 gap-5">
+        <div class="glass rounded-3xl p-5 lg:col-span-2">
+          <div class="font-bold mb-3">الطلبات الجديدة</div>
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-royal-500/5 flex items-center justify-between flex-wrap gap-3">
+              <div><div class="font-bold">زفاف الجزائر — 15/5/2026</div><div class="text-xs text-slate-500">ديكور Royal Gold · 180 ضيف</div></div>
+              <div class="flex gap-2"><button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs">قبول</button><button class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-xs">رفض</button></div>
+            </div>
+            <div class="p-4 rounded-2xl bg-gold-500/5 flex items-center justify-between flex-wrap gap-3">
+              <div><div class="font-bold">خطوبة العشار — 22/3/2026</div><div class="text-xs text-slate-500">ديكور منزل · 60 ضيف</div></div>
+              <div class="flex gap-2"><button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs">قبول</button><button class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-xs">رفض</button></div>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-500/5 flex items-center justify-between flex-wrap gap-3">
+              <div><div class="font-bold">افتتاح Safwa — 1/4/2026</div><div class="text-xs text-slate-500">Backdrop + Booth</div></div>
+              <div class="flex gap-2"><button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs">قبول</button><button class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-xs">رفض</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl p-5">
+          <div class="font-bold mb-3">تحديث حالة طلب</div>
+          <ol class="space-y-3 text-sm">
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span> الطلب مستلم</li>
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</span> دفعة محجوزة</li>
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-full bg-royal-500 text-white flex items-center justify-center text-xs">…</span> قيد التنفيذ</li>
+            <li class="flex items-center gap-3 opacity-50"><span class="w-7 h-7 rounded-full bg-slate-300 flex items-center justify-center text-xs">4</span> رفع صور التقدم</li>
+            <li class="flex items-center gap-3 opacity-50"><span class="w-7 h-7 rounded-full bg-slate-300 flex items-center justify-center text-xs">5</span> تأكيد التسليم</li>
+          </ol>
+          <button class="mt-5 w-full px-4 py-2 rounded-xl badge-ai font-bold text-sm">تحديث الحالة</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AI ENGINE ============ -->
+    <section id="ai" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip badge-ai"><i class="lucide lucide-brain"></i> Decision Engine</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">الذكاء الصناعي يبني كل شيء</h2>
+        <p class="mt-3 text-slate-600 dark:text-slate-300">5 معلومات من المستخدم — وخطة كاملة من EventOS.</p>
+      </div>
+
+      <div class="mt-10 grid lg:grid-cols-2 gap-6">
+        <div class="glass rounded-3xl p-6">
+          <div class="font-bold mb-4">المدخلات</div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between p-3 rounded-xl bg-royal-500/5"><span>نوع المناسبة</span><b>زفاف</b></div>
+            <div class="flex justify-between p-3 rounded-xl bg-royal-500/5"><span>عدد الضيوف</span><b>180</b></div>
+            <div class="flex justify-between p-3 rounded-xl bg-royal-500/5"><span>الميزانية</span><b>12,000,000 د.ع</b></div>
+            <div class="flex justify-between p-3 rounded-xl bg-royal-500/5"><span>التاريخ</span><b>15/5/2026</b></div>
+            <div class="flex justify-between p-3 rounded-xl bg-royal-500/5"><span>الستايل</span><b>فاخر مودرن</b></div>
+          </div>
+        </div>
+
+        <div class="ring-grad rounded-3xl">
+          <div class="rounded-3xl bg-white dark:bg-navy-900 p-6">
+            <div class="font-bold mb-4">حسابات الذكاء الصناعي</div>
+            <ul class="space-y-3 text-sm">
+              <li class="flex items-center justify-between"><span>الكراسي (180 + 10%)</span><b>198 كرسي</b></li>
+              <li class="flex items-center justify-between"><span>الوجبات</span><b>180 وجبة</b></li>
+              <li class="flex items-center justify-between"><span>المشروبات</span><b>270 serving</b></li>
+              <li class="flex items-center justify-between"><span>الكيك</span><b>3 tiers</b></li>
+              <li class="flex items-center justify-between"><span>الطاولات</span><b>23 طاولة</b></li>
+              <li class="flex items-center justify-between"><span>Welcome Sign</span><b>1 — Gold Acrylic</b></li>
+              <li class="flex items-center justify-between"><span>Seating Chart</span><b>مطبوع 70x100</b></li>
+            </ul>
+            <div class="mt-5 p-3 rounded-xl badge-ai text-sm font-bold">اقتراح: الباقة B — موصى بها · 8,000,000 د.ع</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid md:grid-cols-3 gap-4 text-sm">
+        <div class="glass rounded-2xl p-5"><div class="font-bold mb-1">AI يقترح الموردين</div>أفضل تطابق بين الميزانية والتقييم.</div>
+        <div class="glass rounded-2xl p-5"><div class="font-bold mb-1">AI يبني الجدول الزمني</div>من الحجز إلى ما بعد المناسبة.</div>
+        <div class="glass rounded-2xl p-5"><div class="font-bold mb-1">AI يكشف العناصر الناقصة</div>تنبيه قبل أن يتأخر شيء.</div>
+      </div>
+    </section>
+
+    <!-- ============ SCENARIOS ============ -->
+    <section id="scenarios" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-book-open"></i> سيناريوهات واقعية</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">5 أمثلة من السوق العراقي</h2>
+      </div>
+
+      <div id="scenariosList" class="mt-10 space-y-4"></div>
+    </section>
+
+    <!-- ============ COMPARE ============ -->
+    <section id="compare" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-gold-500/15 text-gold-600"><i class="lucide lucide-scale"></i> الميزة التنافسية</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">التخطيط التقليدي مقابل EventOS</h2>
+      </div>
+
+      <div class="mt-10 glass rounded-3xl p-2 overflow-x-auto">
+        <table class="w-full text-sm tbl">
+          <thead><tr><th>المعيار</th><th>التخطيط التقليدي</th><th>EventOS</th></tr></thead>
+          <tbody>
+            <tr><td>عدد الاتصالات</td><td>+40 اتصال</td><td><span class="chip bg-emerald-500/15 text-emerald-600">صفر — كله بالتطبيق</span></td></tr>
+            <tr><td>وضوح الأسعار</td><td>غير واضح</td><td><span class="chip bg-emerald-500/15 text-emerald-600">سعر ثابت لكل عنصر</span></td></tr>
+            <tr><td>متابعة الموردين</td><td>يدوي</td><td><span class="chip bg-emerald-500/15 text-emerald-600">آلي + مساعد بشري</span></td></tr>
+            <tr><td>الدفع</td><td>نقدي متفرق</td><td><span class="chip bg-emerald-500/15 text-emerald-600">Escrow مضمون</span></td></tr>
+            <tr><td>الضمان</td><td>لا يوجد</td><td><span class="chip bg-emerald-500/15 text-emerald-600">ضمان كامل</span></td></tr>
+            <tr><td>البدائل</td><td>صعب الإيجاد</td><td><span class="chip bg-emerald-500/15 text-emerald-600">محرك استبدال ذكي</span></td></tr>
+            <tr><td>تجربة المستخدم</td><td>متعبة</td><td><span class="chip bg-emerald-500/15 text-emerald-600">سلسة وممتعة</span></td></tr>
+            <tr><td>الوقت المطلوب</td><td>أسابيع من المراسلات</td><td><span class="chip bg-emerald-500/15 text-emerald-600">دقائق</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ SAFWA ============ -->
+    <section id="safwa" class="px-6 lg:px-14 py-20 bg-white dark:bg-navy-900/40 fade-up">
+      <div class="grid lg:grid-cols-3 gap-10 items-start">
+        <div class="lg:col-span-1">
+          <div class="chip badge-ai"><i class="lucide lucide-hammer"></i> Featured Supplier</div>
+          <h2 class="mt-3 text-3xl lg:text-4xl font-black">Al-Safwa Engineering</h2>
+          <p class="mt-3 text-slate-600 dark:text-slate-300">الورشة كمورد مميز للمنتجات المخصصة ضمن EventOS — وليست المورد الوحيد.</p>
+          <div class="mt-5 ring-grad rounded-3xl"><div class="rounded-3xl bg-white dark:bg-navy-900 p-5">
+            <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl bg-navy-950 text-gold-400 flex items-center justify-center"><i class="lucide lucide-factory"></i></div><div><div class="font-bold">Al-Safwa Engineering</div><div class="text-xs text-slate-500">البصرة · ⭐ 4.9 · موثق</div></div></div>
+            <div class="mt-3 text-sm text-slate-600 dark:text-slate-300">CNC, Laser, Acrylic, Wood, Printing — جودة عالية ووقت تنفيذ سريع.</div>
+          </div></div>
+        </div>
+
+        <div class="lg:col-span-2 grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-royal-500/30 to-gold-500/30 mb-3 flex items-center justify-center"><i class="lucide lucide-signpost text-3xl text-royal-600"></i></div><div class="font-bold text-sm">CNC Welcome Signs</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-gold-500/30 to-royal-500/30 mb-3 flex items-center justify-center"><i class="lucide lucide-mail text-3xl text-gold-600"></i></div><div class="font-bold text-sm">Laser Invitations</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-royal-500/30 to-emerald-500/20 mb-3 flex items-center justify-center"><i class="lucide lucide-hash text-3xl text-royal-600"></i></div><div class="font-bold text-sm">Acrylic Table Numbers</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-gold-500/30 to-emerald-500/20 mb-3 flex items-center justify-center"><i class="lucide lucide-gift text-3xl text-gold-600"></i></div><div class="font-bold text-sm">Gift Boxes</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-royal-500/30 to-gold-500/30 mb-3 flex items-center justify-center"><i class="lucide lucide-sticker text-3xl text-royal-600"></i></div><div class="font-bold text-sm">Printed Stickers</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-gold-500/30 to-royal-500/30 mb-3 flex items-center justify-center"><i class="lucide lucide-box text-3xl text-gold-600"></i></div><div class="font-bold text-sm">Foam Decorations</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-royal-500/30 to-emerald-500/20 mb-3 flex items-center justify-center"><i class="lucide lucide-image text-3xl text-royal-600"></i></div><div class="font-bold text-sm">Backdrops</div></div>
+          <div class="glass rounded-2xl p-4"><div class="aspect-square rounded-xl bg-gradient-to-br from-gold-500/30 to-emerald-500/20 mb-3 flex items-center justify-center"><i class="lucide lucide-palette text-3xl text-gold-600"></i></div><div class="font-bold text-sm">Custom Branding</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROADMAP ============ -->
+    <section id="roadmap" class="px-6 lg:px-14 py-20 fade-up">
+      <div class="max-w-2xl">
+        <div class="chip bg-royal-500/15 text-royal-700 dark:text-gold-400"><i class="lucide lucide-map"></i> MVP Roadmap</div>
+        <h2 class="mt-3 text-3xl lg:text-4xl font-black">من البصرة إلى الخليج — 3 مراحل</h2>
+      </div>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-5">
+        <div class="glass rounded-3xl p-6">
+          <div class="chip bg-emerald-500/15 text-emerald-600">Phase 1 · MVP</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li class="flex gap-2"><i class="lucide lucide-check text-emerald-500"></i> تسجيل مستخدم</li>
+            <li class="flex gap-2"><i class="lucide lucide-check text-emerald-500"></i> اختيار مناسبة</li>
+            <li class="flex gap-2"><i class="lucide lucide-check text-emerald-500"></i> خطة AI</li>
+            <li class="flex gap-2"><i class="lucide lucide-check text-emerald-500"></i> موردين + سلة</li>
+            <li class="flex gap-2"><i class="lucide lucide-check text-emerald-500"></i> دفع + واتساب</li>
+          </ul>
+        </div>
+        <div class="ring-grad rounded-3xl"><div class="rounded-3xl bg-white dark:bg-navy-900 p-6">
+          <div class="chip badge-ai">Phase 2 · Scale</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-royal-500"></i> لوحة موردين كاملة</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-royal-500"></i> RSVP للضيوف</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-royal-500"></i> Event Website</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-royal-500"></i> توسع بغداد</li>
+          </ul>
+        </div></div>
+        <div class="glass rounded-3xl p-6">
+          <div class="chip bg-gold-500/15 text-gold-600">Phase 3 · Expand</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-gold-500"></i> GCC</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-gold-500"></i> Corporate Events</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-gold-500"></i> Advanced AI</li>
+            <li class="flex gap-2"><i class="lucide lucide-arrow-left text-gold-500"></i> Mobile App</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section id="cta" class="px-6 lg:px-14 py-24 fade-up">
+      <div class="grad-hero text-white rounded-[2rem] p-10 lg:p-16 relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gold-500/20 blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-royal-500/30 blur-3xl"></div>
+
+        <div class="relative max-w-3xl">
+          <div class="chip badge-ai mb-4"><i class="lucide lucide-sparkles"></i> EventOS</div>
+          <h2 class="text-3xl lg:text-5xl font-black leading-tight">
+            EventOS لا يبيع قائمة موردين. <br>
+            EventOS يبيع <span class="grad-text">راحة بال</span>.
+          </h2>
+          <p class="mt-5 text-white/80 text-lg">يختصر القلق، ينظم الدفع، يتابع التنفيذ، ويحوّل المناسبة من فوضى إلى نظام.</p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <button onclick="openModal('demo')" class="px-5 py-3 rounded-xl badge-ai font-bold flex items-center gap-2"><i class="lucide lucide-play"></i> ابدأ تجربة زفاف تجريبية</button>
+            <a href="#admin" class="px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 flex items-center gap-2"><i class="lucide lucide-layout-dashboard"></i> شاهد لوحة الإدارة</a>
+            <a href="#suppliers" class="px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 flex items-center gap-2"><i class="lucide lucide-store"></i> شاهد Marketplace الموردين</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center text-xs text-slate-500 mt-10">© 2026 EventOS — صُمم بحب في البصرة 💜</div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div id="modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+  <div class="bg-white dark:bg-navy-900 rounded-3xl max-w-lg w-full p-6 relative">
+    <button onclick="closeModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center"><i class="lucide lucide-x"></i></button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ================== DATA ================== */
+
+const solutionSteps = [
+  ['اختيار نوع المناسبة','party-popper'],
+  ['إدخال العدد والميزانية والتاريخ','sliders'],
+  ['اختيار الستايل','palette'],
+  ['الذكاء الصناعي يبني خطة كاملة','brain'],
+  ['عرض 3 باقات','package'],
+  ['اختيار العناصر بصرياً','image'],
+  ['مراجعة السلة الكاملة','shopping-cart'],
+  ['الدفع (دفعة أو كامل)','credit-card'],
+  ['متابعة الموردين','activity'],
+  ['تتبع التنفيذ يوم المناسبة','check-circle-2'],
+];
+
+const journeySteps = [
+  {n:1,t:'اختيار نوع المناسبة',d:'زفاف / خطوبة / عيد ميلاد / هدية / مناسبة خاصة',screen:`<div class='grid grid-cols-2 gap-2 text-[11px]'><div class='p-3 rounded-xl bg-royal-500/15 text-royal-700 font-bold'>زفاف ✓</div><div class='p-3 rounded-xl bg-slate-100'>خطوبة</div><div class='p-3 rounded-xl bg-slate-100'>عيد ميلاد</div><div class='p-3 rounded-xl bg-slate-100'>هدية</div></div>`},
+  {n:2,t:'أساسيات المناسبة',d:'180 ضيف · 12M د.ع · 15/5/2026 · البصرة - الجزائر · فاخر مودرن',screen:`<div class='space-y-2 text-[11px]'><div class='flex justify-between p-2 rounded-lg bg-slate-100'>عدد الضيوف <b>180</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>الميزانية <b>12M</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>التاريخ <b>15/5/2026</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>الموقع <b>الجزائر</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>الستايل <b>فاخر مودرن</b></div></div>`},
+  {n:3,t:'الذكاء الصناعي يبني الخطة',d:'تحليل + توصيات + حسابات تلقائية',screen:`<div class='flex flex-col items-center justify-center h-full text-center'><div class='w-16 h-16 rounded-full bg-gradient-to-br from-royal-500 to-gold-500 flex items-center justify-center text-white text-2xl mb-3'>✨</div><div class='text-xs font-bold'>يحلل البيانات...</div><div class='mt-2 w-full progress-bar'><span style='width:72%'></span></div></div>`},
+  {n:4,t:'الباقات الثلاث',d:'اقتصادية · موصى بها · فاخرة',screen:`<div class='space-y-2 text-[11px]'><div class='p-2 rounded-lg bg-slate-100'>A — 5.5M</div><div class='p-2 rounded-lg badge-ai font-bold'>B — 8M ✓</div><div class='p-2 rounded-lg bg-slate-100'>C — 13.5M</div></div>`},
+  {n:5,t:'اختيار الكيك',d:'كلاسيك · ذهبي فاخر · شوكليت مودرن',screen:`<div class='grid grid-cols-3 gap-1 text-[10px] text-center'><div class='p-2 rounded-lg bg-slate-100'>أبيض</div><div class='p-2 rounded-lg badge-ai font-bold'>ذهبي</div><div class='p-2 rounded-lg bg-slate-100'>شوكليت</div></div><div class='mt-3 text-[11px] text-slate-500'>السعر: 350,000 د.ع</div>`},
+  {n:6,t:'اختيار الديكور والقاعة',d:'Royal Gold Theme · فندق الجزائر',screen:`<div class='p-3 rounded-xl bg-gradient-to-br from-royal-500/20 to-gold-500/20 text-[11px]'><b>Royal Gold Theme</b><div class='text-slate-500 mt-1'>فندق الجزائر · 200 ضيف</div><div class='mt-2 text-royal-600 font-bold'>2,400,000 د.ع</div></div>`},
+  {n:7,t:'التصوير + منتجات الورشة',d:'Premium Full Day + Welcome Sign + Table Numbers + Gift Boxes',screen:`<div class='space-y-2 text-[11px]'><div class='flex justify-between p-2 rounded-lg bg-slate-100'>تصوير Premium <b>1.2M</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>Welcome Sign <b>150K</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>Table Numbers <b>180K</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100'>Gift Boxes <b>540K</b></div></div>`},
+  {n:8,t:'مراجعة السلة والدفع',d:'سلة موحدة + 3 خيارات دفع + Escrow',screen:`<div class='text-[11px]'><div class='flex justify-between p-2 rounded-lg bg-slate-100'>الإجمالي <b>8,000,000</b></div><div class='flex justify-between p-2 rounded-lg bg-slate-100 mt-1'>دفعة 30% <b>2,400,000</b></div><button class='mt-3 w-full p-2 rounded-lg badge-ai font-bold'>ادفع الآن</button></div>`},
+  {n:9,t:'التتبع يوم المناسبة',d:'متابعة لحظية لكل مورد وعنصر',screen:`<div class='space-y-1 text-[11px]'><div class='flex items-center gap-2 p-2 rounded-lg bg-emerald-500/15'><span class='pulse-dot'></span> القاعة جاهزة</div><div class='flex items-center gap-2 p-2 rounded-lg bg-emerald-500/15'><span class='pulse-dot'></span> الديكور مكتمل</div><div class='flex items-center gap-2 p-2 rounded-lg bg-gold-500/15'>⏳ المصور بالطريق</div></div>`},
+];
+
+const eventTypes = [
+  { key:'wedding', label:'زفاف', icon:'heart', items:[
+    'قاعة','طعام','كيك','ديكور','سيارة عروس','صالون','تصوير','DJ','دعوات','هدايا ضيوف','Welcome Sign','Table Numbers','Seating Chart','جدول زمني'
+  ]},
+  { key:'engagement', label:'خطوبة', icon:'gem', items:[
+    'ديكور منزل','ضيافة','كيك','تصوير','صالون','باقة ورد','لوحة أسماء','هدايا صغيرة'
+  ]},
+  { key:'birthday', label:'عيد ميلاد', icon:'cake', items:[
+    'ثيم أطفال','كيك','بالونات','طباعة','ألعاب','هدايا','مصور','بوث تصوير'
+  ]},
+  { key:'gift', label:'طلب هدية', icon:'gift', items:[
+    'صندوق هدية مخصص','طباعة اسم','كرت تهنئة','تغليف','توصيل','اختيار مناسبة (عيد ميلاد/تخرج/زواج/مولود)'
+  ]},
+  { key:'corporate', label:'مناسبة شركة', icon:'building-2', items:[
+    'افتتاح','مؤتمر','Booth','Rollups','Backdrop','هدايا موظفين','تصوير','ضيافة'
+  ]},
+];
+
+const visualBlocks = [
+  { title:'اختيار الكيك', icon:'cake', options:[
+    {n:'كلاسيك أبيض', p:'250,000 د.ع', t:'كلاسيك'},
+    {n:'ذهبي فاخر', p:'350,000 د.ع', t:'موصى به', featured:true},
+    {n:'شوكليت مودرن', p:'300,000 د.ع', t:'مودرن'}
+  ]},
+  { title:'اختيار Welcome Sign', icon:'signpost', options:[
+    {n:'Acrylic Standard', p:'75,000 د.ع', t:'بسيط'},
+    {n:'Gold Back Acrylic', p:'150,000 د.ع', t:'Featured', featured:true},
+    {n:'3D Wooden Sign', p:'200,000 د.ع', t:'خشب'}
+  ]},
+  { title:'اختيار التصوير', icon:'camera', options:[
+    {n:'Basic 4 Hours', p:'600,000 د.ع', t:'أساسي'},
+    {n:'Standard 8 Hours', p:'1,000,000 د.ع', t:'الأفضل قيمة', featured:true},
+    {n:'Premium Full Day + Video', p:'1,800,000 د.ع', t:'كامل'}
+  ]},
+  { title:'اختيار الديكور', icon:'palette', options:[
+    {n:'Simple Floral', p:'1,200,000 د.ع', t:'بسيط'},
+    {n:'Luxury Modern', p:'2,400,000 د.ع', t:'موصى به', featured:true},
+    {n:'Royal Gold Theme', p:'3,800,000 د.ع', t:'فاخر'}
+  ]},
+];
+
+const cartCats = [
+  { cat:'Venue & Hospitality', icon:'building', items:[
+    ['قاعة فندق الجزائر','4,500,000'],['نقل ضيوف','350,000'],['تنظيف','120,000'],['AV setup','280,000']
+  ]},
+  { cat:'Food & Beverages', icon:'utensils', items:[
+    ['وجبات 180 شخص','2,700,000'],['كيك ذهبي 3 طبقات','350,000'],['مشروبات 270 serving','540,000'],['قهوة وشاي','180,000'],['Staff خدمة','220,000']
+  ]},
+  { cat:'Decoration', icon:'sparkles', items:[
+    ['ديكور قاعة Royal Gold','2,400,000'],['ورد العرسان','480,000'],['ديكور سيارة','180,000'],['ديكور بيت العائلة','350,000'],['Welcome Sign','150,000'],['Table Numbers','180,000'],['إضاءة','220,000']
+  ]},
+  { cat:'Personal Items', icon:'shirt', items:[
+    ['فستان العروس','1,800,000'],['بدلة العريس','650,000'],['خواتم','—'],['صالون العروس','450,000']
+  ]},
+  { cat:'Services', icon:'camera', items:[
+    ['تصوير 8 ساعات','1,000,000'],['فيديو سينمائي','600,000'],['DJ','550,000'],['MC','350,000'],['Security','180,000']
+  ]},
+  { cat:'Printing & Custom Items', icon:'printer', items:[
+    ['دعوات Laser','220,000'],['هدايا ضيوف (180)','540,000'],['Stickers','85,000'],['Gift Boxes','320,000'],['Seating Chart','140,000']
+  ]},
+];
+
+const timeline = [
+  ['اليوم','تأكيد ودفع الدفعة الأولى','emerald'],
+  ['قبل 30 يوم','تثبيت الموردين الأساسيين','royal'],
+  ['قبل 14 يوم','تأكيد نهائي على العناصر','royal'],
+  ['قبل 7 أيام','قياسات وتجربة فستان وبدلة','gold'],
+  ['قبل 3 أيام','بدء الإنتاج (كيك، طباعة، ديكور)','gold'],
+  ['قبل يوم','تجهيز وتسليم القاعة','gold'],
+  ['يوم المناسبة','متابعة مباشرة من EventOS','royal'],
+  ['بعد المناسبة','تقييم واسترجاع/إغلاق الدفعات','emerald'],
+];
+
+const suppliers = [
+  {n:'Basra Luxury Hall', cat:'قاعة', rating:4.9, reviews:128, price:'4,500,000 د.ع', time:'1-3 أشهر', icon:'building'},
+  {n:'Premium Kitchens', cat:'طعام', rating:4.8, reviews:96, price:'15,000 د.ع / شخص', time:'2-4 أسابيع', icon:'utensils'},
+  {n:'Lens Masters', cat:'تصوير', rating:4.9, reviews:212, price:'1,000,000 د.ع', time:'حسب التاريخ', icon:'camera'},
+  {n:'Creative Decor Co.', cat:'ديكور', rating:4.7, reviews:74, price:'2,400,000 د.ع', time:'1-2 أسابيع', icon:'sparkles'},
+  {n:'Al-Safwa Engineering', cat:'طباعة وورشة', rating:4.9, reviews:188, price:'يبدأ من 75,000', time:'3-7 أيام', icon:'hammer', featured:true},
+  {n:'Elegance Beauty Studio', cat:'صالون', rating:4.8, reviews:142, price:'450,000 د.ع', time:'يوم المناسبة', icon:'scissors'},
+  {n:'Flower House Basra', cat:'ورد', rating:4.7, reviews:65, price:'480,000 د.ع', time:'3-5 أيام', icon:'flower-2'},
+];
+
+const scenarios = [
+  {t:'سيناريو 1 — زفاف فاخر',d:'عروس تريد زفاف في البصرة خلال 45 يوم بميزانية 15 مليون.', inputs:'180 ضيف · فاخر مودرن · 15/5/2026',plan:'قاعة فندقية + Open Buffet + Royal Decor + Premium Photo',items:'14 عنصر',price:'14,800,000 د.ع',sched:'تثبيت كل الموردين خلال 5 أيام'},
+  {t:'سيناريو 2 — عيد ميلاد طفل',d:'أم تريد عيد ميلاد خلال أسبوع بميزانية 700 ألف.',inputs:'25 ضيف · ثيم سفاري · 5/2/2026',plan:'بالونات + كيك + بوث تصوير + هدايا',items:'8 عناصر',price:'680,000 د.ع',sched:'تنفيذ خلال 6 أيام'},
+  {t:'سيناريو 3 — افتتاح فرع',d:'شركة تريد افتتاح فرع جديد.',inputs:'200 ضيف · رسمي',plan:'Backdrop + Booth + ضيافة + تصوير + Rollups',items:'10 عناصر',price:'7,800,000 د.ع',sched:'جاهز خلال 14 يوم'},
+  {t:'سيناريو 4 — هدية تخرج',d:'شخص يريد هدية تخرج مخصصة.',inputs:'صندوق فاخر + اسم + توصيل',plan:'Gift Box + Print + Card + Delivery',items:'4 عناصر',price:'180,000 د.ع',sched:'48 ساعة'},
+  {t:'سيناريو 5 — خطوبة منزلية',d:'خطيب يريد ترتيب خطوبة منزلية خلال 10 أيام.',inputs:'60 ضيف · بسيط أنيق',plan:'ديكور منزل + كيك + تصوير + باقة ورد + صالون',items:'9 عناصر',price:'1,950,000 د.ع',sched:'تنفيذ خلال 9 أيام'},
+];
+
+/* ================== RENDER ================== */
+const lucide = (name) => `<i class="lucide lucide-${name}"></i>`;
+const $ = (id)=>document.getElementById(id);
+
+// Solution steps
+$('solSteps').innerHTML = solutionSteps.map((s,i)=>`
+  <div class="glass rounded-2xl p-5">
+    <div class="flex items-center justify-between"><span class="text-2xl font-black grad-text">${String(i+1).padStart(2,'0')}</span><div class="w-9 h-9 rounded-xl bg-royal-500/15 text-royal-600 flex items-center justify-center">${lucide(s[1])}</div></div>
+    <div class="mt-3 font-bold">${s[0]}</div>
+  </div>
+`).join('');
+
+// Journey
+$('journeyGrid').innerHTML = journeySteps.map(s=>`
+  <div class="glass rounded-3xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="chip badge-ai">خطوة ${s.n}</div>
+      <span class="text-[11px] text-slate-500">شاشة وهمية</span>
+    </div>
+    <div class="font-bold">${s.t}</div>
+    <div class="text-xs text-slate-500 dark:text-slate-300 mt-1">${s.d}</div>
+    <div class="mt-4 p-3 rounded-2xl bg-white dark:bg-navy-950 border border-black/5 dark:border-white/10 min-h-[140px]">${s.screen}</div>
+  </div>
+`).join('');
+
+// Events tabs
+const eventTabsEl = $('eventTabs');
+const eventContentEl = $('eventContent');
+function renderEvent(key){
+  const e = eventTypes.find(x=>x.key===key);
+  eventTabsEl.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('badge-ai', b.dataset.k===key);
+    b.classList.toggle('bg-slate-100', b.dataset.k!==key);
+    b.classList.toggle('dark:bg-white/5', b.dataset.k!==key);
+  });
+  eventContentEl.innerHTML = `
+    <div class="glass rounded-3xl p-6">
+      <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-royal-500 to-gold-500 text-white flex items-center justify-center">${lucide(e.icon)}</div><div><div class="font-black text-xl">${e.label}</div><div class="text-xs text-slate-500">${e.items.length} عنصر مقترح</div></div></div>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        ${e.items.map(i=>`<div class="p-3 rounded-xl bg-royal-500/5 flex items-center gap-2"><i class="lucide lucide-check text-emerald-500 text-xs"></i>${i}</div>`).join('')}
+      </div>
+    </div>
+    <div class="glass rounded-3xl p-6">
+      <div class="font-bold mb-3">شاشة المناسبة</div>
+      <div class="phone-screen p-4 rounded-2xl border border-black/5 dark:border-white/10 text-navy-900 dark:text-white">
+        <div class="rounded-2xl p-3 bg-gradient-to-br from-royal-500 to-gold-500 text-white"><div class="text-[11px] opacity-80">نوع المناسبة</div><div class="font-black">${e.label}</div></div>
+        <div class="mt-3 grid grid-cols-3 gap-2 text-[11px] text-center">${e.items.slice(0,6).map(i=>`<div class="p-2 rounded-xl bg-royal-500/10 text-royal-700">${i}</div>`).join('')}</div>
+        <div class="mt-3 p-3 rounded-xl bg-gold-500/15 text-xs"><b>توصية AI:</b> الباقة B الموصى بها تناسب احتياجك.</div>
+      </div>
+    </div>
+  `;
+}
+eventTabsEl.innerHTML = eventTypes.map(e=>`<button data-k="${e.key}" onclick="renderEvent('${e.key}')" class="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 bg-slate-100 dark:bg-white/5">${lucide(e.icon)} ${e.label}</button>`).join('');
+renderEvent('wedding');
+
+// Visual selection
+$('visualBlocks').innerHTML = visualBlocks.map(b=>`
+  <div class="glass rounded-3xl p-6">
+    <div class="flex items-center gap-2 mb-4"><div class="w-10 h-10 rounded-xl bg-gold-500/15 text-gold-600 flex items-center justify-center">${lucide(b.icon)}</div><div class="font-bold">${b.title}</div></div>
+    <div class="grid sm:grid-cols-3 gap-3">
+      ${b.options.map(o=>`
+        <button class="text-right rounded-2xl p-3 border ${o.featured?'border-transparent ring-grad':'border-black/5 dark:border-white/10'} hover:scale-[1.02] transition">
+          <div class="${o.featured?'rounded-2xl bg-white dark:bg-navy-900 p-3 -m-3':''}">
+            <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-royal-500/20 to-gold-500/20 mb-3 flex items-center justify-center text-2xl">${lucide(b.icon)}</div>
+            <div class="font-bold text-sm">${o.n}</div>
+            <div class="flex items-center justify-between mt-2"><span class="text-xs text-slate-500">${o.p}</span><span class="chip ${o.featured?'badge-ai':'bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-300'}">${o.t}</span></div>
+          </div>
+        </button>`).join('')}
+    </div>
+  </div>
+`).join('');
+
+// Cart
+$('cartCats').innerHTML = cartCats.map(c=>`
+  <details open class="rounded-2xl bg-white/60 dark:bg-white/5">
+    <summary class="flex items-center justify-between p-4">
+      <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-royal-500/15 text-royal-600 flex items-center justify-center">${lucide(c.icon)}</div><div class="font-bold">${c.cat}</div></div>
+      <div class="text-xs text-slate-500">${c.items.length} عنصر</div>
+    </summary>
+    <div class="p-2">
+      <table class="w-full text-sm">
+        ${c.items.map(([n,p])=>`<tr class="border-t border-black/5 dark:border-white/10"><td class="py-2 px-3">${n}</td><td class="py-2 px-3 text-left font-bold">${p} ${p==='—'?'':'د.ع'}</td></tr>`).join('')}
+      </table>
+    </div>
+  </details>
+`).join('');
+
+// Timeline
+$('timelineList').innerHTML = timeline.map((t,i)=>{
+  const sideRight = i%2===0;
+  const color = t[2];
+  return `
+  <div class="relative grid lg:grid-cols-2 gap-4">
+    <div class="${sideRight?'lg:order-1 lg:text-left':'lg:order-2'} lg:pr-10">
+      <div class="glass rounded-2xl p-5 inline-block w-full">
+        <div class="chip bg-${color}-500/15 text-${color}-600">${t[0]}</div>
+        <div class="mt-2 font-bold">${t[1]}</div>
+      </div>
+    </div>
+    <div class="${sideRight?'lg:order-2':'lg:order-1'}"></div>
+    <div class="absolute right-3 lg:right-1/2 lg:translate-x-1/2 top-4 w-5 h-5 rounded-full bg-gradient-to-br from-royal-500 to-gold-500 ring-4 ring-white dark:ring-navy-950"></div>
+  </div>`;
+}).join('');
+
+// Suppliers
+$('suppliersGrid').innerHTML = suppliers.map(s=>`
+  <div class="glass rounded-3xl p-5 ${s.featured?'ring-grad !p-[2px]':''}">
+    <div class="${s.featured?'rounded-3xl bg-white dark:bg-navy-900 p-5':''}">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-navy-950 text-gold-400 flex items-center justify-center">${lucide(s.icon)}</div><div><div class="font-bold">${s.n}</div><div class="text-xs text-slate-500">${s.cat} · البصرة</div></div></div>
+        ${s.featured?'<span class="chip badge-ai">Featured</span>':'<span class="chip bg-emerald-500/15 text-emerald-600">Verified</span>'}
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+        <div class="p-2 rounded-lg bg-gold-500/10">⭐ ${s.rating} (${s.reviews})</div>
+        <div class="p-2 rounded-lg bg-royal-500/10">⏱ ${s.time}</div>
+      </div>
+      <div class="mt-3 text-sm">يبدأ من <b>${s.price}</b></div>
+      <div class="mt-4 grid grid-cols-2 gap-2 aspect-[3/1]">
+        <div class="rounded-lg bg-gradient-to-br from-royal-500/30 to-gold-500/30"></div>
+        <div class="rounded-lg bg-gradient-to-br from-gold-500/30 to-royal-500/30"></div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button onclick='openModal("supplier", ${JSON.stringify(s).replace(/'/g,"&apos;")})' class="flex-1 px-3 py-2 rounded-xl badge-ai text-sm font-bold">اختيار المورد</button>
+        <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/5 text-sm">البدائل</button>
+      </div>
+    </div>
+  </div>
+`).join('');
+
+// Scenarios
+$('scenariosList').innerHTML = scenarios.map((s,i)=>`
+  <details ${i===0?'open':''} class="glass rounded-3xl">
+    <summary class="p-5 flex items-center justify-between">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl badge-ai flex items-center justify-center font-black">${i+1}</div><div><div class="font-bold">${s.t}</div><div class="text-xs text-slate-500 mt-1">${s.d}</div></div></div>
+      <i class="lucide lucide-chevron-down"></i>
+    </summary>
+    <div class="px-5 pb-5 grid md:grid-cols-5 gap-3 text-sm">
+      <div class="p-3 rounded-xl bg-royal-500/5"><div class="text-xs text-slate-500">المدخلات</div><div class="font-bold mt-1">${s.inputs}</div></div>
+      <div class="p-3 rounded-xl bg-royal-500/5"><div class="text-xs text-slate-500">خطة AI</div><div class="font-bold mt-1">${s.plan}</div></div>
+      <div class="p-3 rounded-xl bg-royal-500/5"><div class="text-xs text-slate-500">العناصر</div><div class="font-bold mt-1">${s.items}</div></div>
+      <div class="p-3 rounded-xl bg-gold-500/10"><div class="text-xs text-slate-500">السعر</div><div class="font-bold mt-1">${s.price}</div></div>
+      <div class="p-3 rounded-xl bg-emerald-500/10"><div class="text-xs text-slate-500">الجدول</div><div class="font-bold mt-1">${s.sched}</div></div>
+    </div>
+  </details>
+`).join('');
+
+/* ================== INTERACTIONS ================== */
+function selectPkg(name, price, label){
+  $('sumPkg').textContent = `${name} — ${label}`;
+  $('sumPrice').textContent = price.toLocaleString('en-US') + ' د.ع';
+  const pct = Math.min(100, Math.round((price/15000000)*100));
+  $('sumProg').style.width = pct+'%';
+}
+
+function toggleDark(){
+  document.documentElement.classList.toggle('dark');
+  $('modeLabel') && ($('modeLabel').textContent = document.documentElement.classList.contains('dark')?'فاتح':'داكن');
+}
+
+function openModal(type, data){
+  const m = $('modal'); m.classList.remove('hidden'); m.classList.add('flex');
+  if(type==='demo'){
+    $('modalContent').innerHTML = `
+      <h3 class="text-2xl font-black grad-text">تجربة زفاف تجريبية</h3>
+      <p class="mt-2 text-sm text-slate-500">عرض تفاعلي يحاكي رحلة المستخدم من البداية إلى التنفيذ.</p>
+      <div class="mt-5 space-y-2 text-sm">
+        <div class="p-3 rounded-xl bg-royal-500/10">1. تعبئة بيانات وهمية (180 ضيف، 12M، البصرة)</div>
+        <div class="p-3 rounded-xl bg-gold-500/10">2. الذكاء الصناعي يبني خطة Royal Gold</div>
+        <div class="p-3 rounded-xl bg-emerald-500/10">3. مراجعة السلة والدفع التجريبي</div>
+      </div>
+      <button onclick="closeModal()" class="mt-5 w-full px-4 py-3 rounded-xl badge-ai font-bold">ابدأ التجربة</button>`;
+  } else if(type==='supplier'){
+    const s = typeof data==='string'?JSON.parse(data):data;
+    $('modalContent').innerHTML = `
+      <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl bg-navy-950 text-gold-400 flex items-center justify-center">${lucide(s.icon)}</div><div><h3 class="text-xl font-black">${s.n}</h3><div class="text-xs text-slate-500">${s.cat} · البصرة · ⭐ ${s.rating}</div></div></div>
+      <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+        <div class="p-3 rounded-xl bg-gold-500/10">يبدأ من <b>${s.price}</b></div>
+        <div class="p-3 rounded-xl bg-royal-500/10">وقت التنفيذ: <b>${s.time}</b></div>
+        <div class="p-3 rounded-xl bg-emerald-500/10">${s.reviews} مراجعة</div>
+        <div class="p-3 rounded-xl bg-slate-100 dark:bg-white/5">سياسة إلغاء مرنة</div>
+      </div>
+      <div class="mt-4 grid grid-cols-4 gap-2 aspect-[4/1]">
+        <div class="rounded-lg bg-gradient-to-br from-royal-500/30 to-gold-500/30"></div>
+        <div class="rounded-lg bg-gradient-to-br from-gold-500/30 to-royal-500/30"></div>
+        <div class="rounded-lg bg-gradient-to-br from-royal-500/30 to-emerald-500/30"></div>
+        <div class="rounded-lg bg-gradient-to-br from-gold-500/30 to-emerald-500/30"></div>
+      </div>
+      <button onclick="closeModal()" class="mt-5 w-full px-4 py-3 rounded-xl badge-ai font-bold">إضافة إلى السلة</button>`;
+  }
+}
+function closeModal(){ const m=$('modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+$('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+
+/* progress + nav active */
+const sections = [...document.querySelectorAll('main section[id]')];
+const navLinks = [...document.querySelectorAll('#sideNav a')];
+function onScroll(){
+  const sc = window.scrollY;
+  const max = document.body.scrollHeight - window.innerHeight;
+  const pct = Math.min(100, Math.round((sc/max)*100));
+  $('topProg').style.width = pct+'%';
+  if($('sideProg')){ $('sideProg').style.width = pct+'%'; $('sideProgPct').textContent = pct+'%'; }
+  let current = sections[0].id;
+  for(const s of sections){ if(s.getBoundingClientRect().top < 120) current = s.id; }
+  navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+current));
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
+
+/* fade-up on view */
+const io = new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }), {threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

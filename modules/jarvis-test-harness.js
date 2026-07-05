@@ -1,7 +1,7 @@
 /**
  * OCTAGON OMNISYSTEM - modules/jarvis-test-harness.js
  *
- * JARVIS V2 Diagnostics & Test Harness:
+ * OMNI V2 Diagnostics & Test Harness:
  * Automatically runs a 53-test matrix verifying boot, UI, language, navigation,
  * actions, safety gating, budgeting, and voice runtime capabilities.
  * Outputs a diagnostic report in JSON format and displays results in a visual self-test panel.
@@ -43,7 +43,7 @@
     { id: 21, name: 'Read current page context', category: 'data_reading' },
     { id: 22, name: 'Read selected record/inspector context', category: 'data_reading' },
     // DOM-lite Actions
-    { id: 23, name: 'Collect visible JARVIS actions from current page', category: 'dom_lite' },
+    { id: 23, name: 'Collect visible OMNI actions from current page', category: 'dom_lite' },
     { id: 24, name: 'Execute safe action by action ID', category: 'dom_lite' },
     { id: 25, name: 'Visually highlight the target action element', category: 'dom_lite' },
     { id: 26, name: 'Trigger safe UI filter actions', category: 'dom_lite' },
@@ -549,7 +549,7 @@
         ">
           <h2 style="margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; color: #38bdf8;">
             <i class="fa-solid fa-stethoscope"></i>
-            <span>لوحة فحص تشخيص ومطابقة JARVIS V2</span>
+            <span>لوحة فحص تشخيص ومطابقة OMNI V2</span>
           </h2>
           <button onclick="document.getElementById('jarvisTestPanelOverlay').remove()" style="
             background: transparent;
@@ -603,10 +603,10 @@
         ">
           <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #38bdf8; border-bottom: 1px solid rgba(147,197,253,0.1); padding-bottom: 5px;">ملخص المكونات</h3>
           <div style="font-size: 12px; display: grid; gap: 6px;">
-            <div>صوت جارفيس: ${voiceStatus}</div>
+            <div>صوت أومني: ${voiceStatus}</div>
             <div>خريطة النظام: ${mapStatus}</div>
             <div>وكيل العمليات: ${agentStatus}</div>
-            <div>عقل جارفيس: ${brainStatus}</div>
+            <div>عقل أومني: ${brainStatus}</div>
             <div>مزود الذكاء: ${providerStatus}</div>
           </div>
         </div>

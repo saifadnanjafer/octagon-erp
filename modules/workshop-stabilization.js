@@ -132,7 +132,7 @@
       }
     },
     {
-      id: 'jarvis_tools', label: 'أدوات جارفيس للورشة مُسجَّلة',
+      id: 'jarvis_tools', label: 'أدوات أومني للورشة مُسجَّلة',
       fn: function () {
         const T = window.JarvisBrain && window.JarvisBrain.tools;
         if (!T) return { ok: false, detail: 'JarvisBrain.tools غير متاح' };
@@ -229,7 +229,7 @@
     window.__stabWrapped = true;
   }
 
-  /* ───────── Jarvis read-only tool ───────── */
+  /* ───────── Omni read-only tool ───────── */
   function wireJarvis() {
     if (window.__stabJarvis) return;
     try {

@@ -69,7 +69,7 @@
         // Creates a proposal in the Command Center queue
         if (window.JarvisBrain && typeof window.JarvisBrain.queueApproval === 'function') {
           const ok = window.JarvisBrain.queueApproval({
-            title: 'طلب شراء مواد ناقصة (تجهيز جارفيس)',
+            title: 'طلب شراء مواد ناقصة (تجهيز أومني)',
             target: 'inventory',
             risk: 'medium',
             summary: `طلب شراء تلقائي للمواد التي بلغت الحد الأدنى: ${params?.source || 'low_stock_materials'}`,
@@ -89,17 +89,123 @@
     /احذف كل/i, /مسح كل/i, /delete all/i, /reset db/i, /reset database/i,
     /احذف الموظفين/i, /delete employees/i, /حذف الحسابات/i, /delete finance/i
   ];
+  const DENIED_DOM_CLICK_MESSAGE = 'هذا الزر حساس ولا أقدر أضغطه كـ DOM click. استخدم أداة مخصصة/موافقة سيرفرية.';
 
   // Visual highlights
   let activeHighlightTimer = null;
   let activeBubble = null;
 
+  function pageKey() {
+    try { if (typeof currentPage !== 'undefined' && currentPage) return String(currentPage); } catch (_) {}
+    try {
+      const active = document.querySelector('.nav-btn.active[data-page], .page.page-active[id]');
+      if (active) return active.getAttribute('data-page') || String(active.id || '').replace(/^page-/, '');
+    } catch (_) {}
+    return 'unknown';
+  }
+
+  function isVisibleElement(el) {
+    if (!el) return false;
+    try {
+      const rect = el.getBoundingClientRect();
+      const style = window.getComputedStyle ? window.getComputedStyle(el) : null;
+      return !!(rect.width || rect.height) && (!style || (style.visibility !== 'hidden' && style.display !== 'none'));
+    } catch (_) {
+      return !!el.offsetParent;
+    }
+  }
+
+  function labelOf(el) {
+    if (!el) return '';
+    const attr = el.getAttribute('title') || el.getAttribute('aria-label') || el.getAttribute('data-jarvis-label')
+      || (el.tagName === 'INPUT' ? el.value : '')
+      || (el.querySelector && el.querySelector('[title]') ? el.querySelector('[title]').getAttribute('title') : '');
+    return String(el.innerText || attr || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function attrSafe(value) {
+    return String(value || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  }
+
+  function stableSelectorFor(el, actionId) {
+    if (actionId) return `[data-jarvis-action="${attrSafe(actionId)}"]`;
+    try {
+      const dataPage = el && el.getAttribute && el.getAttribute('data-page');
+      if (dataPage && el.classList && el.classList.contains('nav-btn')) return `.nav-btn[data-page="${attrSafe(dataPage)}"]`;
+      if (el && el.id && /^[A-Za-z][A-Za-z0-9_:-]{0,80}$/.test(el.id)) return `#${el.id}`;
+    } catch (_) {}
+    return '';
+  }
+
+  async function postJarvisJson(route, body) {
+    let response;
+    try {
+      response = await fetch(route, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body || {})
+      });
+    } catch (error) {
+      return { ok: false, status: 'network_error', error: String(error && error.message || error) };
+    }
+    let data = {};
+    try { data = await response.json(); } catch (_) { data = {}; }
+    if (!response.ok && data.ok !== false) data.ok = false;
+    data.httpStatus = response.status;
+    return data;
+  }
+
+  function describeUiAction(el, options) {
+    const opts = options || {};
+    const actionId = opts.actionId || opts.action_id || (el && el.getAttribute && el.getAttribute('data-jarvis-action')) || '';
+    return {
+      action_id: actionId,
+      label: opts.label || labelOf(el) || actionId,
+      selector: opts.selector || stableSelectorFor(el, actionId),
+      page: opts.page || pageKey(),
+      kind: opts.kind || '',
+      visible: opts.visible !== undefined ? !!opts.visible : isVisibleElement(el),
+      requested: opts.requested || '',
+      source: opts.source || 'jarvis_action_agent'
+    };
+  }
+
+  async function authorizeUiClick(action) {
+    const gate = await postJarvisJson('/api/jarvis/action', { tool: 'click_ui', args: action });
+    if (!gate || gate.ok !== true || gate.status !== 'granted' || !gate.grantId) {
+      return {
+        ok: false,
+        blocked: true,
+        message: (gate && (gate.message || gate.error)) || DENIED_DOM_CLICK_MESSAGE,
+        uiAction: gate && gate.uiAction,
+        server: true
+      };
+    }
+    const consumed = await postJarvisJson('/api/jarvis/consume-grant', { tool: 'click_ui', grantId: gate.grantId });
+    if (!consumed || consumed.ok !== true) {
+      return {
+        ok: false,
+        blocked: true,
+        message: (consumed && (consumed.message || consumed.error)) || 'Server click grant could not be consumed.',
+        uiAction: gate.uiAction,
+        server: true
+      };
+    }
+    return { ok: true, grantId: gate.grantId, uiAction: gate.uiAction, server: true };
+  }
+
+  function reportUiClickResult(grantId, ok, message) {
+    if (!grantId) return;
+    postJarvisJson('/api/jarvis/result', { grantId, tool: 'click_ui', ok: ok !== false, message: message || '' });
+  }
+
   function collectVisibleJarvisActions() {
     const list = [];
     const elements = document.querySelectorAll('[data-jarvis-action]');
     elements.forEach(el => {
+      if (!isVisibleElement(el)) return;
       const id = el.getAttribute('data-jarvis-action');
-      const label = el.getAttribute('data-jarvis-label') || el.innerText;
+      const label = el.getAttribute('data-jarvis-label') || labelOf(el);
       const risk = el.getAttribute('data-jarvis-risk') || JARVIS_RISK_LEVELS.UI_SAFE;
       list.push({ id, label, risk, selector: `[data-jarvis-action="${id}"]` });
     });
@@ -165,9 +271,8 @@
     // Structure: { intent, steps: [{ type, actionId, risk, label }] }
   }
 
-  // Safety check policy
+  // Local screen only. The server policy is authoritative for every click_ui run.
   function validateActionSafety(actionId, textQuery) {
-    // Pattern checks
     if (textQuery) {
       const match = BLOCKED_PATTERNS.some(pat => pat.test(textQuery));
       if (match) return { allowed: false, policy: JARVIS_RISK_LEVELS.BLOCKED, reason: 'إجراء مدمر ومحظور أمنياً.' };
@@ -179,18 +284,34 @@
         return { allowed: false, policy: JARVIS_RISK_LEVELS.BLOCKED, reason: 'هذا الإجراء غير مسموح به.' };
       }
       if (registered.risk === JARVIS_RISK_LEVELS.APPROVAL || registered.risk === JARVIS_RISK_LEVELS.WRITE) {
-        return { allowed: true, policy: JARVIS_RISK_LEVELS.APPROVAL, reason: 'يتطلب موافقة المدير.' };
+        return { allowed: false, policy: JARVIS_RISK_LEVELS.APPROVAL, reason: DENIED_DOM_CLICK_MESSAGE };
       }
     }
 
     return { allowed: true, policy: JARVIS_RISK_LEVELS.UI_SAFE };
   }
 
+  async function executeElementClick(el, options) {
+    const action = describeUiAction(el, options || {});
+    const gate = await authorizeUiClick(action);
+    if (!gate.ok) return gate;
+    const label = action.label || action.action_id || 'UI action';
+    try {
+      highlightJarvisTarget(el, (options && options.stepText) || `جاري الضغط: ${label}`);
+      el.click();
+      reportUiClickResult(gate.grantId, true, `clicked ${label}`);
+      return { ok: true, message: 'Clicked: ' + label, uiAction: gate.uiAction };
+    } catch (error) {
+      const message = String(error && error.message || error || 'click failed');
+      reportUiClickResult(gate.grantId, false, message);
+      return { ok: false, message, uiAction: gate.uiAction };
+    }
+  }
+
   async function executeJarvisAction(actionId, params) {
     console.log(`[JarvisActionAgent] Executing action: ${actionId}`, params);
     
-    // Check if safety policy allows it
-    const check = validateActionSafety(actionId);
+    const check = validateActionSafety(actionId, actionId);
     if (!check.allowed) {
       console.warn(`[JarvisActionAgent] Blocked execution of ${actionId}: ${check.reason}`);
       return { ok: false, blocked: true, message: check.reason };
@@ -199,27 +320,39 @@
     // If it's a registered page navigation or deterministic script action
     const registered = ACTIONS_REGISTRY[actionId];
     if (registered) {
-      // Handle visual overlay highlights
-      const selector = `[data-jarvis-action="${actionId}"]`;
-      highlightJarvisTarget(selector, registered.labelAr);
-
-      // Approval routing
-      if (check.policy === JARVIS_RISK_LEVELS.APPROVAL) {
-        const result = registered.run(params);
-        return { ok: result.ok, policy: JARVIS_RISK_LEVELS.APPROVAL, message: 'أرسلت طلب الموافقة إلى مركز القيادة.' };
-      }
-
-      // Execute safely
-      const result = registered.run(params);
-      return { ok: result.ok, navigated: result.navigated };
+      const policy = await authorizeUiClick({
+        action_id: actionId,
+        label: registered.labelAr || registered.labelEn || actionId,
+        selector: `[data-jarvis-action="${attrSafe(actionId)}"]`,
+        page: pageKey(),
+        kind: registered.risk === JARVIS_RISK_LEVELS.NAVIGATION ? 'navigation' : '',
+        visible: true,
+        source: 'jarvis_action_registry'
+      });
+      if (!policy.ok) return policy;
+      highlightJarvisTarget(`[data-jarvis-action="${attrSafe(actionId)}"]`, registered.labelAr || registered.labelEn);
+      const result = registered.run(params) || {};
+      reportUiClickResult(policy.grantId, result && result.ok !== false, (result && (result.message || result.navigated)) || actionId);
+      return { ok: result.ok !== false, navigated: result.navigated };
     }
 
     // Dynamic execution: if actionId maps to a page navigation (e.g. page.open.calculator)
     if (actionId.startsWith('page.open.')) {
       const pageKey = actionId.replace('page.open.', '');
       if (typeof window.switchPage === 'function') {
+        const policy = await authorizeUiClick({
+          action_id: actionId,
+          label: 'Open page ' + pageKey,
+          selector: `.nav-btn[data-page="${attrSafe(pageKey)}"]`,
+          page: pageKey,
+          kind: 'navigation',
+          visible: true,
+          source: 'jarvis_page_open'
+        });
+        if (!policy.ok) return policy;
         highlightJarvisTarget(`.sidebar [data-page="${pageKey}"]`, `جاري فتح ${pageKey}...`);
         window.switchPage(pageKey);
+        reportUiClickResult(policy.grantId, true, 'opened page ' + pageKey);
         return { ok: true, navigated: pageKey };
       }
     }
@@ -227,9 +360,7 @@
     // Dynamic selectors or generic click triggers
     const el = document.querySelector(`[data-jarvis-action="${actionId}"]`);
     if (el) {
-      highlightJarvisTarget(el, el.getAttribute('data-jarvis-label') || 'جاري التشغيل...');
-      el.click();
-      return { ok: true };
+      return executeElementClick(el, { actionId, label: el.getAttribute('data-jarvis-label') || labelOf(el), requested: actionId, source: 'jarvis_tagged_action' });
     }
 
     console.warn(`[JarvisActionAgent] No handler or element found for actionId: ${actionId}`);
@@ -277,6 +408,8 @@
   window.JarvisActionAgent = {
     collectVisibleJarvisActions,
     executeJarvisAction,
+    executeElementClick,
+    authorizeUiClick,
     highlightJarvisTarget,
     openJarvisActionPreview,
     removeHighlights,
@@ -285,7 +418,8 @@
     jarvisFindRecords,
     jarvisGetCurrentPageContext,
     jarvisGetSelectedRecordContext,
-    RISK_LEVELS: JARVIS_RISK_LEVELS
+    RISK_LEVELS: JARVIS_RISK_LEVELS,
+    DENIED_DOM_CLICK_MESSAGE
   };
 
 })();

@@ -1,13 +1,13 @@
 /**
  * OCTAGON OMNISYSTEM - modules/jarvis-orb.js
  *
- * The Jarvis floating orb. A living AI ball that turns the old flat "Jarvis Mode"
+ * The Omni floating orb. A living AI ball that turns the old flat "Omni Mode"
  * button into something you can watch work:
  *   - idle:   a small breathing ball you can DRAG anywhere; it remembers where.
  *   - press:  it flies BIG to the centre of the screen and "wakes up"
  *   - listening / executing: it docks to the screen edge with a caption pill so
  *     you can see what it heard and what it is doing while the app navigates.
- * It also carries a small AR/EN chip to switch the language Jarvis listens in.
+ * It also carries a small AR/EN chip to switch the language Omni listens in.
  *
  * Fully additive. Loads AFTER app.js + omni-ai-assistant.js. Reuses only public
  * globals (window.ptxAIAssistant). Never modifies existing markup or core logic.
@@ -87,7 +87,7 @@
         var r = el.getBoundingClientRect();
         savedPos = { left: Math.round(r.left), top: Math.round(r.top) };
         savePos();
-        suppressClick = true;            // don't fire Jarvis toggle after a drag
+        suppressClick = true;            // don't fire Omni toggle after a drag
         setTimeout(function () { suppressClick = false; }, 60);
       }
       drag = null;
@@ -109,7 +109,7 @@
       }
     } catch (_) {}
     langChip.textContent = fam === 'en' ? 'EN' : 'AR';
-    langChip.title = t('لغة استماع جارفيس — اضغط للتبديل', 'Jarvis listening language — tap to switch');
+    langChip.title = t('لغة استماع أومني — اضغط للتبديل', 'Omni listening language — tap to switch');
   }
 
   function mount() {
@@ -118,7 +118,7 @@
     el = document.createElement('button');
     el.id = 'jarvisOrb';
     el.type = 'button';
-    el.setAttribute('aria-label', t('مساعد جارفيس الصوتي', 'Jarvis voice assistant'));
+    el.setAttribute('aria-label', t('مساعد أومني الصوتي', 'Omni voice assistant'));
     el.title = t('اضغط للتحدث — اسحب لتحريكه', 'Tap to talk — drag to move');
     el.innerHTML =
       '<span class="jorb-ring"></span>' +
@@ -181,7 +181,7 @@
       el.classList.add('is-center');
       clearModes();
       el.classList.add('mode-listening');
-      this.say(t('أستيقظ...', 'Waking up...'), t('جارفيس جاهز للاستماع', 'Jarvis is getting ready'));
+      this.say(t('أستيقظ...', 'Waking up...'), t('أومني جاهز للاستماع', 'Omni is getting ready'));
     },
     // Settle to the side edge so you can watch it work.
     dock: function () {

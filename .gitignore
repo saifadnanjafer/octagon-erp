@@ -39,3 +39,13 @@ Thumbs.db
 .vscode/
 .idea/
 .claude/
+
+# Office lock files
+~$*
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
+# Multi-agent runtime lock (coordination/README.md)
+coordination/verify.lock

@@ -22117,7 +22117,10 @@ function removeOperationPackStepMaterial(packId, stepId, materialId) {
 }
 
 // ═══════════ MACHINES PAGE ═══════════
-function renderMachinesPage() {
+// T0.4 dedup (2026-07-12): dead copy (basic card grid), shadowed by the
+// richer live definition below (KPI strip, priority scoring, maintenance
+// risk levels, photo). Kept per add-only rule.
+function renderMachinesPage_deprecated_dup1() {
   ensureOmni();
   const grid = document.getElementById('machinesGrid');
   if (!grid) return;
@@ -22143,7 +22146,10 @@ function renderMachinesPage() {
   }).join('');
 }
 
-async function addMachine() {
+// T0.4 dedup (2026-07-12): dead copy (basic name/operator/status form),
+// shadowed by the richer live definition below (adds photo, hourly cost,
+// maintenance interval, AI workspace notes). Kept per add-only rule.
+async function addMachine_deprecated_dup1() {
   ensureOmni();
   const html = `
     <div style="display:flex; flex-direction:column; gap:10px;">
@@ -22169,18 +22175,18 @@ async function addMachine() {
     };
   });
   if (!result) return;
-  omni.machines.push({ 
-    id: makeId('mach'), 
-    name: result.name, 
-    type: 'other', 
-    status: result.status, 
-    operator: result.operator, 
-    queue: [], 
-    lastMaintenance: todayISO(), 
-    hoursTotal: 0, 
-    downtime: 0, 
-    sopId: '', 
-    jobsToday: 0 
+  omni.machines.push({
+    id: makeId('mach'),
+    name: result.name,
+    type: 'other',
+    status: result.status,
+    operator: result.operator,
+    queue: [],
+    lastMaintenance: todayISO(),
+    hoursTotal: 0,
+    downtime: 0,
+    sopId: '',
+    jobsToday: 0
   });
   saveData(); renderMachinesPage();
 }
@@ -27047,7 +27053,10 @@ function renderAnalytics() {
 
 
 // ═══════════ UNIVERSAL INSPECTOR PANEL ═══════════
-function renderMachineInspectorTab(machineId, tabIdx = 0) {
+// T0.4 dedup (2026-07-12): dead copy (SOP/maintenance tabs are placeholder
+// "قريباً..."), shadowed by the richer live definition further below (SOP
+// link + maintenance actions actually implemented). Kept per add-only rule.
+function renderMachineInspectorTab_deprecated_dup1(machineId, tabIdx = 0) {
   ensureOmni();
   const data = (omni.machines||[]).find(m => m.id === machineId);
   const panel = document.getElementById('inspectorPanel');
@@ -27057,7 +27066,7 @@ function renderMachineInspectorTab(machineId, tabIdx = 0) {
   if (!data || !panel || !tabs || !body) return;
   title.textContent = data.name;
   const tabList = ['نظرة عامة', 'الطابور', 'SOP', 'الصيانة', 'روابط'];
-  tabs.innerHTML = tabList.map((t,i) => `<button class="insp-tab ${i===tabIdx?'active':''}" onclick="renderMachineInspectorTab('${machineId}', ${i})">${t}</button>`).join('');
+  tabs.innerHTML = tabList.map((t,i) => `<button class="insp-tab ${i===tabIdx?'active':''}" onclick="renderMachineInspectorTab_deprecated_dup1('${machineId}', ${i})">${t}</button>`).join('');
   if (tabIdx === 0) {
     body.innerHTML = `
       <div class="insp-section"><h4>الحالة</h4><p>${{operational:'تعمل',maintenance:'في الصيانة',idle:'متوقفة'}[data.status]||data.status}</p></div>
@@ -27346,7 +27355,10 @@ function closeInspector() {
   document.getElementById('inspectorOverlay')?.classList.add('hidden');
 }
 
-async function editMachineFromInspector(machId) {
+// T0.4 dedup (2026-07-12): dead copy (status/operator/queue only), shadowed
+// by the richer live definition below (SOP link, AI workspace, photo, cost,
+// model, description). Kept per add-only rule.
+async function editMachineFromInspector_deprecated_dup1(machId) {
   ensureOmni();
   const m = (omni.machines||[]).find(x => x.id === machId);
   if (!m) return;

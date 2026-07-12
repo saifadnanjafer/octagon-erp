@@ -13,13 +13,17 @@ LANE-A applies at session start/end, checks the box, commits.
 - [x] (T3.2) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/import-wizard.css?v=20260712-t3.2-v1">`
 - [x] (T3.2) index.html after `app.js` in the additive module script block: add `<script src="modules/import-wizard.js?v=20260712-t3.2-v1"></script>`
 - [x] (T3.3) index.html after `modules/schema-registry.js` and before `app.js`: add `<script src="modules/acl-client.js?v=20260712-t3.3-v1"></script>` so `Acl.can()` is available to app/module UI code.
-- [ ] (T3.3) server.js near startup: load `acl.json` server-side and expose a helper equivalent to `Acl.can(group, action, role)` using the request session role.
-- [ ] (T3.3) server.js in `/api/db`, `/api/collection`, and `/api/record` write paths: map touched collections to ACL groups from `acl.json`, reject or strip writes where the session role does not have `write`, and log the rejection with actor, collection, group, and endpoint.
-- [ ] (T3.3) server.js in `apiProtectionMatrix()`: add ACL enforcement notes for `/api/db`, `/api/collection`, and `/api/record`.
+- [x] (T3.3) server.js near startup: load `acl.json` server-side and expose a helper equivalent to `Acl.can(group, action, role)` using the request session role.
+- [x] (T3.3) server.js in `/api/db`, `/api/collection`, and `/api/record` write paths: map touched collections to ACL groups from `acl.json`, reject or strip writes where the session role does not have `write`, and log the rejection with actor, collection, group, and endpoint.
+- [x] (T3.3) server.js in `apiProtectionMatrix()`: add ACL enforcement notes for `/api/db`, `/api/collection`, and `/api/record`.
 - [x] (T3.4) index.html after `modules/schema-registry.js` and before `app.js`: add `<script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>` so future modules can call `OctagonStates.transition()`.
 
-<!-- T3.3 server-side ACL enforcement (3 remaining items above) is a substantial
-     new implementation, not just wiring — deferred to its own careful pass
-     since it touches the same write paths T1.3's guard already covers.
-     Client-side Acl.can()/acl.json are live; only the server enforcement
-     itself is still pending. -->
+<!-- All Phase 3 (T3.1-T3.4) integration items applied. T3.3 server enforcement
+     verified against an isolated copy server with local-trust disabled
+     (OCTAGON_TRUST_LOCALHOST=false) so real, non-loopback role/session logic
+     actually ran — 6 role x group scenarios, all correct. Found and fixed a
+     real role-mapping gap first: the seeded users' actual `groups` (empty for
+     employee_user/viewer_user, "workshop.user" for operator_user) don't
+     resolve onto acl.json's generic role-alias system, which would have
+     silently downgraded them to defaultRole "viewer" — added an explicit
+     per-user override map in server.js keyed on the known seed user ids. -->

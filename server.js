@@ -166,6 +166,83 @@ function logWriteGuardRejection(reason, detail, req) {
   }
 }
 
+// T3.3 (server half): coarse role x collection write enforcement using
+// acl.json (client mirror: modules/acl-client.js). Loaded once at startup;
+// acl.json is small and hand-edited, not worth hot-reloading.
+let ACL_MATRIX = { groups: {}, roles: {}, roleAliases: {}, defaultRole: 'viewer' };
+try {
+  ACL_MATRIX = JSON.parse(fs.readFileSync(path.join(__dirname, 'acl.json'), 'utf8'));
+} catch (e) {
+  console.warn('[acl] failed to load acl.json, ACL enforcement disabled (fail-open to avoid blocking all writes on a config typo):', e.message);
+}
+const ACL_ENABLED = !!(ACL_MATRIX.groups && Object.keys(ACL_MATRIX.groups).length);
+
+// Explicit override for this app's known seed users (phase6d_seed, see
+// omni.users/omni.roles): their real `groups` (from enrichAuthUser) don't
+// all resolve cleanly onto acl.json's role keys — operator_user's group is
+// "workshop.user" (not an ACL role), and employee_user/viewer_user have
+// EMPTY groups arrays. Falling through to acl.json's generic alias system
+// for these specific users would silently downgrade finance_manager/
+// workshop_manager (whose groups list happens not to match glancing at
+// role name casing in some code paths) to defaultRole "viewer" — verified
+// live against the actual seeded data before writing this. userId is the
+// most reliable signal for the known accounts; acl.json's own
+// roles/roleAliases still apply for any other/future user.
+const ACL_SEED_USER_ROLE_OVERRIDES = {
+  system_admin: 'system.admin',
+  finance_manager: 'finance.manager',
+  workshop_manager: 'workshop.manager',
+  operator_user: 'employee',
+  employee_user: 'employee',
+  viewer_user: 'viewer',
+};
+
+function resolveAclRole(session) {
+  if (!ACL_ENABLED) return null;
+  if (session.userId && ACL_SEED_USER_ROLE_OVERRIDES[session.userId]) {
+    return ACL_SEED_USER_ROLE_OVERRIDES[session.userId];
+  }
+  const groups = Array.isArray(session.groups) ? session.groups : [];
+  const direct = groups.find(g => ACL_MATRIX.roles && ACL_MATRIX.roles[g]);
+  if (direct) return direct;
+  for (const g of groups) {
+    const alias = ACL_MATRIX.roleAliases && ACL_MATRIX.roleAliases[g];
+    if (alias && ACL_MATRIX.roles && ACL_MATRIX.roles[alias]) return alias;
+  }
+  return ACL_MATRIX.defaultRole || 'viewer';
+}
+
+function aclGroupForCollection(collectionPath) {
+  const key = String(collectionPath || '');
+  let best = null;
+  Object.keys(ACL_MATRIX.groups || {}).forEach(group => {
+    (ACL_MATRIX.groups[group].collections || []).forEach(prefix => {
+      if (key === prefix || key.startsWith(`${prefix}.`)) {
+        if (!best || String(prefix).length > String(best.prefix).length) best = { group, prefix };
+      }
+    });
+  });
+  return best ? best.group : '';
+}
+
+const ACL_ACCESS_RANK = { none: 0, read: 1, write: 2 };
+function aclCan(role, group, action) {
+  if (!ACL_ENABLED || !group) return true; // no matrix loaded, or collection isn't ACL-mapped -> not this gate's concern
+  const policy = (ACL_MATRIX.roles && ACL_MATRIX.roles[role]) || (ACL_MATRIX.roles && ACL_MATRIX.roles[ACL_MATRIX.defaultRole]) || {};
+  const have = ACL_ACCESS_RANK[policy[group]] ?? 0;
+  const need = ACL_ACCESS_RANK[action] ?? 2;
+  return have >= need;
+}
+
+const ACL_LOG_FILE = path.join(__dirname, 'server-acl.log');
+function logAclRejection(detail) {
+  try {
+    fs.appendFileSync(ACL_LOG_FILE, JSON.stringify({ at: new Date().toISOString(), ...detail }) + '\n');
+  } catch (e) {
+    console.warn('[acl] failed to write server-acl.log:', e.message);
+  }
+}
+
 const SERVER_TENANT_COLLECTIONS = new Set([
   'employees',
   'contacts',
@@ -1532,9 +1609,9 @@ function apiProtectionMatrix() {
     { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'localhost or login session only; API key stays server-side' },
     { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'localhost or login session only; writes only to review-reports' },
     { endpoint: 'GET /api/db', classification: 'public/dev-safe read', protection: 'local/dev readable; not production-safe' },
-    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'admin session or local-dev only' },
-    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'login session or local-dev only' },
-    { endpoint: 'POST /api/record', classification: 'data write', protection: 'login session or local-dev only' },
+    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'admin session or local-dev only; T3.3 ACL strips (not rejects) collection groups the role lacks write on, logged to server-acl.log' },
+    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'login session or local-dev only; T3.3 ACL rejects (403) if role lacks write on the collection\'s group, logged to server-acl.log' },
+    { endpoint: 'POST /api/record', classification: 'data write', protection: 'login session or local-dev only; T3.3 ACL rejects (403) if role lacks write on the collection\'s group, logged to server-acl.log' },
     { endpoint: 'POST /api/upload', classification: 'file write', protection: 'login session or local-dev only' },
     { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'system admin/finance manager or local-dev only' },
     { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'system admin/finance manager or local-dev only' },
@@ -1883,6 +1960,36 @@ const server = http.createServer((req, res) => {
             });
           }
 
+          // T3.3: coarse role x collection ACL for the full-DB-replacement
+          // path. requireAdminSession above already restricts this endpoint
+          // to system.admin-equivalent sessions (who have write-all in
+          // acl.json), so in practice this rarely fires today — kept for
+          // defense-in-depth / if that restriction is ever loosened. Strips
+          // (reverts to existing) rather than rejecting the whole request:
+          // saveData() always sends the FULL db state regardless of which
+          // collections the current role actually needs to touch, so a hard
+          // reject on any incidental difference would be far more
+          // disruptive than silently keeping the existing values for groups
+          // this session isn't allowed to write.
+          if (existing && guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
+            const aclRole = resolveAclRole(guard);
+            const strippedGroups = [];
+            Object.keys(ACL_MATRIX.groups || {}).forEach(group => {
+              if (aclCan(aclRole, group, 'write')) return;
+              (ACL_MATRIX.groups[group].collections || []).forEach(colPath => {
+                const existingArr = getNestedPath(existing, colPath);
+                const incomingArr = getNestedPath(parsed, colPath);
+                if (JSON.stringify(existingArr) === JSON.stringify(incomingArr)) return;
+                setNestedPath(parsed, colPath, existingArr);
+                strippedGroups.push({ group, collection: colPath });
+              });
+            });
+            if (strippedGroups.length) {
+              logAclRejection({ endpoint: '/api/db', actor: guard.userId, role: aclRole, stripped: strippedGroups });
+              console.warn('[/api/db POST] ACL stripped unauthorized collection changes:', strippedGroups);
+            }
+          }
+
           // T1.3: SERVER_TENANT_COLLECTIONS protection above only runs when
           // multiTenant is on (tenantEnabledForWrite) — for this
           // single-tenant deployment that's a no-op, so account_moves/
@@ -1931,7 +2038,18 @@ const server = http.createServer((req, res) => {
         if (!collection || !Array.isArray(data)) {
           return sendJson(res, 400, { error: 'Invalid collection or data' });
         }
-        
+        // T3.3: coarse role x collection ACL. Local-dev/loopback trust
+        // already grants system.admin (full write), so this only bites
+        // real network sessions with a lesser role.
+        if (guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
+          const aclGroup = aclGroupForCollection(collection);
+          const aclRole = resolveAclRole(guard);
+          if (!aclCan(aclRole, aclGroup, 'write')) {
+            logAclRejection({ endpoint: '/api/collection', actor: guard.userId, collection, group: aclGroup, role: aclRole });
+            return sendJson(res, 403, { success: false, error: `صلاحياتك لا تسمح بالكتابة على "${collection}"`, collection, group: aclGroup });
+          }
+        }
+
         const db = loadDbForMutation();
         const result = mergeTenantCollectionForWrite(db, db, collection, data);
         setNestedPath(db, collection, result.data);
@@ -1955,7 +2073,16 @@ const server = http.createServer((req, res) => {
         if (!collection || !id || !data) {
           return sendJson(res, 400, { error: 'Invalid collection, id, or data' });
         }
-        
+        // T3.3: coarse role x collection ACL (see /api/collection above).
+        if (guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
+          const aclGroup = aclGroupForCollection(collection);
+          const aclRole = resolveAclRole(guard);
+          if (!aclCan(aclRole, aclGroup, 'write')) {
+            logAclRejection({ endpoint: '/api/record', actor: guard.userId, collection, group: aclGroup, role: aclRole });
+            return sendJson(res, 403, { success: false, error: `صلاحياتك لا تسمح بالكتابة على "${collection}"`, collection, group: aclGroup });
+          }
+        }
+
         const db = loadDbForMutation();
         let arr = getNestedPath(db, collection);
         if (!Array.isArray(arr)) {

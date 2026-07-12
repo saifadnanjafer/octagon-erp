@@ -9,7 +9,7 @@ let finance = null;
 let omni = null;
 let selectedEmpIdx = 0;
 let reportEmpIdx = 0;
-let currentPage = 'calculator';
+let currentPage = 'home';
 let selectedCalendarDay = null;
 window.lastCalcResult = null;
 let saveTimeout = null;
@@ -77,10 +77,13 @@ function showOmniModal(title, contentHtml, onConfirm, onOpen) {
     titleEl.textContent = title;
     bodyEl.innerHTML = contentHtml;
     overlay.style.display = 'flex';
+    bodyEl.scrollTop = 0;
+    document.body.classList.add('omni-modal-open');
     if (typeof onOpen === 'function') onOpen(bodyEl);
 
     const closeModal = () => {
       overlay.style.display = 'none';
+      document.body.classList.remove('omni-modal-open');
       cancelBtn.onclick = null;
       confirmBtn.onclick = null;
     };
@@ -113,12 +116,75 @@ function closeOmniModal() {
   const overlay = document.getElementById('omniModalOverlay');
   if (!overlay) return;
   overlay.style.display = 'none';
+  document.body.classList.remove('omni-modal-open');
   const cancelBtn = document.getElementById('omniModalCancel');
   const confirmBtn = document.getElementById('omniModalConfirm');
   if (cancelBtn) cancelBtn.onclick = null;
   if (confirmBtn) confirmBtn.onclick = null;
 }
 window.closeOmniModal = closeOmniModal;
+
+function isOmniModalOpen() {
+  const overlay = document.getElementById('omniModalOverlay');
+  return !!overlay && overlay.style.display === 'flex';
+}
+
+// Small standalone overlay (independent of the reusable omni modal singleton)
+// used to ask "save / discard / stay" when Escape is pressed. Kept separate
+// so it can render as the true topmost layer above an already-open popup
+// without clobbering that popup's own title/body/button bindings.
+function showOmniEscCloseConfirm() {
+  return new Promise((resolve) => {
+    let host = document.getElementById('omniEscConfirm');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'omniEscConfirm';
+      host.className = 'omni-esc-confirm-overlay';
+      host.innerHTML = `
+        <div class="omni-esc-confirm-box">
+          <p>هل تريد حفظ التغييرات قبل الإغلاق؟</p>
+          <div class="omni-esc-confirm-actions">
+            <button type="button" class="btn-secondary" data-action="stay">البقاء في النافذة</button>
+            <button type="button" class="btn-secondary" data-action="discard">تجاهل والإغلاق</button>
+            <button type="button" class="btn-primary" data-action="save">حفظ والإغلاق</button>
+          </div>
+        </div>`;
+      document.body.appendChild(host);
+    }
+    host.style.display = 'flex';
+    host.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.onclick = () => {
+        host.style.display = 'none';
+        resolve(btn.dataset.action);
+      };
+    });
+  });
+}
+
+// Global Escape handling for every omni modal: instead of doing nothing (old
+// behavior) or silently discarding, ask the user whether to save, discard,
+// or stay. Runs in the capture phase so it takes priority over page-specific
+// Escape shortcuts (e.g. the workflow studio) while a modal sits on top.
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  const escHost = document.getElementById('omniEscConfirm');
+  if (escHost && escHost.style.display === 'flex') {
+    event.preventDefault();
+    event.stopPropagation();
+    escHost.style.display = 'none';
+    return;
+  }
+  if (!isOmniModalOpen()) return;
+  event.preventDefault();
+  event.stopPropagation();
+  showOmniEscCloseConfirm().then((action) => {
+    if (!action || action === 'stay') return;
+    const confirmBtn = document.getElementById('omniModalConfirm');
+    const cancelBtn = document.getElementById('omniModalCancel');
+    if (action === 'save' && confirmBtn) confirmBtn.click();
+    else if (action === 'discard' && cancelBtn) cancelBtn.click();
+  });
+}, true);
 
 function applySidebarCompactState(collapsed) {
   document.body.classList.toggle('sidebar-collapsed', !!collapsed);
@@ -153,7 +219,7 @@ function loadOctagonAIAssistantFromApp() {
   if (window.__octagonAIAssistantPromise) return window.__octagonAIAssistantPromise;
   window.__octagonAIAssistantPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'omni-ai-assistant.js?v=20260625-agent-orb-v1';
+    script.src = 'omni-ai-assistant.js?v=20260707-restore-cluster-v2';
     script.async = true;
     script.onload = () => resolve(window.octagonAIAssistant || null);
     script.onerror = () => reject(new Error('AI assistant failed to load'));
@@ -547,6 +613,48 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// ─── Date-input ISO hint (YYYY-MM-DD) ───
+// Native <input type="date"> always STORES a "YYYY-MM-DD" value (HTML spec
+// guarantee — every normalizeXDateInput()/getRecordPeriod() style parser in
+// this file relies on that), but the widget DISPLAYS it per the browser/OS
+// locale — on this box that renders day-before-month, which reads like the
+// year-day-month mixups reported in the field. There is no cross-browser way
+// to force the native picker's own text to a fixed order (Chrome ignores the
+// page's lang="ar" for this), so instead every date input gets a small
+// always-visible "YYYY-MM-DD" hint underneath that mirrors its real value —
+// unambiguous regardless of how the picker itself renders.
+// Mutation-observer scan is scoped to only the nodes that were actually
+// added (never a full-DOM re-scan on every tick) — see [[reference_language_fix_perf]]
+// for why a naive whole-DOM observer previously made the app "super slow".
+function ensureDateIsoHint(input) {
+  if (!input || input.tagName !== 'INPUT' || input.type !== 'date' || input.dataset.isoHintAttached) return;
+  input.dataset.isoHintAttached = '1';
+  const hint = document.createElement('small');
+  hint.className = 'date-iso-hint';
+  hint.textContent = input.value || 'YYYY-MM-DD';
+  input.insertAdjacentElement('afterend', hint);
+  const update = () => { hint.textContent = input.value || 'YYYY-MM-DD'; };
+  input.addEventListener('input', update);
+  input.addEventListener('change', update);
+}
+
+function scanForDateIsoHints(root) {
+  if (!root) return;
+  if (root.nodeType !== 1) return;
+  if (root.matches && root.matches('input[type="date"]')) ensureDateIsoHint(root);
+  if (root.querySelectorAll) root.querySelectorAll('input[type="date"]').forEach(ensureDateIsoHint);
+}
+
+(function initDateIsoHintObserver() {
+  if (typeof document === 'undefined') return;
+  scanForDateIsoHints(document.body);
+  document.addEventListener('DOMContentLoaded', () => scanForDateIsoHints(document.body));
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(m => m.addedNodes.forEach(node => scanForDateIsoHints(node)));
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+
 function makeId(prefix = 'id') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -626,6 +734,9 @@ function defaultFinanceState() {
         { id: 'cat_materials', name: 'مواد', accountId: 'expense_materials' },
         { id: 'cat_tools', name: 'صيانة وعدد', accountId: 'expense_tools' },
         { id: 'cat_transport', name: 'نقل وتجهيز', accountId: 'expense_general' },
+        { id: 'cat_rent', name: 'إيجار', accountId: 'rent_expense' },
+        { id: 'cat_utilities', name: 'خدمات (كهرباء/ماء/إنترنت)', accountId: 'utilities_expense' },
+        { id: 'cat_fuel', name: 'وقود ومحروقات', accountId: 'transport_fuel_expense' },
         { id: 'cat_general', name: 'مصروف عام', accountId: 'expense_general' }
       ],
       income: [
@@ -1045,6 +1156,267 @@ function getEmployeeNominalSalary(employee, fallback = 0) {
   return Number(employee.salary ?? employee.nominalSalary ?? employee.baseSalary ?? fallback) || 0;
 }
 
+function parseEmployeeLifecycleDate(value) {
+  if (!value) return null;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+  const raw = String(value).trim();
+  if (!raw) return null;
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmy) return new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
+  const parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) {
+    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  }
+  return null;
+}
+
+function formatLifecycleDateInput(value) {
+  const date = parseEmployeeLifecycleDate(value);
+  if (!date) return '';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+const EMPLOYEE_AUTO_RESIGN_AFTER_DAYS = 15;
+
+function addDaysToDate(date, days) {
+  if (!date) return null;
+  const next = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  next.setDate(next.getDate() + Number(days || 0));
+  return next;
+}
+
+function dayDiff(start, end) {
+  if (!start || !end) return 0;
+  return Math.floor((end - start) / 86400000);
+}
+
+function normalizeEmploymentPeriod(raw = {}, source = 'manual') {
+  const start = parseEmployeeLifecycleDate(raw.start || raw.startDate || raw.hireDate || raw.from || raw.date);
+  const end = parseEmployeeLifecycleDate(raw.end || raw.endDate || raw.terminationDate || raw.to || raw.releaseDate);
+  if (!start && !end) return null;
+  return {
+    start,
+    end,
+    source: raw.source || source,
+    note: raw.note || raw.reason || '',
+    id: raw.id || makeId('PER')
+  };
+}
+
+function getStoredEmploymentPeriods(employee) {
+  const stored = Array.isArray(employee?.employmentPeriods)
+    ? employee.employmentPeriods.map(item => normalizeEmploymentPeriod(item, item.source || 'manual')).filter(Boolean)
+    : [];
+  const legacy = normalizeEmploymentPeriod({
+    start: employee?.lastHireDate || employee?.lastStartDate || employee?.hireDate || employee?.startDate || employee?.joiningDate || employee?.joinedAt,
+    end: employee?.lastTerminationDate || employee?.lastEndDate || employee?.terminationDate || employee?.endDate || employee?.separationDate || employee?.releasedAt,
+    note: 'Legacy employee lifecycle fields'
+  }, 'legacy');
+  if (legacy) stored.push(legacy);
+  return stored.sort((a, b) => (a.start || a.end || 0) - (b.start || b.end || 0));
+}
+
+function getEmployeeTimesheetLifecycle(employee) {
+  const dates = (employee?.records || [])
+    .filter(rec => isCalendarAttendanceRecord(rec))
+    .map(rec => getRecordDateObject(rec))
+    .filter(Boolean)
+    .sort((a, b) => a - b);
+  const firstAttendance = dates[0] || null;
+  const lastAttendance = dates[dates.length - 1] || null;
+  const periods = [];
+  let current = null;
+  dates.forEach(date => {
+    if (!current) {
+      current = { start: date, lastAttendance: date, source: 'timesheet' };
+      return;
+    }
+    if (dayDiff(current.lastAttendance, date) > EMPLOYEE_AUTO_RESIGN_AFTER_DAYS) {
+      const autoEnd = addDaysToDate(current.lastAttendance, EMPLOYEE_AUTO_RESIGN_AFTER_DAYS);
+      periods.push({
+        start: current.start,
+        end: autoEnd,
+        lastAttendance: current.lastAttendance,
+        autoEnd,
+        source: 'timesheet',
+        note: `Auto break after ${EMPLOYEE_AUTO_RESIGN_AFTER_DAYS} days`
+      });
+      current = { start: date, lastAttendance: date, source: 'timesheet' };
+      return;
+    }
+    current.lastAttendance = date;
+  });
+  if (current) {
+    const autoEnd = addDaysToDate(current.lastAttendance, EMPLOYEE_AUTO_RESIGN_AFTER_DAYS);
+    periods.push({
+      start: current.start,
+      end: null,
+      lastAttendance: current.lastAttendance,
+      autoEnd,
+      source: 'timesheet',
+      note: 'Timesheet inferred period'
+    });
+  }
+  return {
+    firstAttendance,
+    lastAttendance,
+    autoResignationDate: lastAttendance ? addDaysToDate(lastAttendance, EMPLOYEE_AUTO_RESIGN_AFTER_DAYS) : null,
+    periods
+  };
+}
+
+function getEmployeeLifecycle(employee) {
+  const timesheetLifecycle = getEmployeeTimesheetLifecycle(employee);
+  const periods = [
+    ...getStoredEmploymentPeriods(employee),
+    ...timesheetLifecycle.periods
+  ].filter(item => item.start || item.end)
+    .sort((a, b) => (a.start || a.end || 0) - (b.start || b.end || 0));
+  const start = periods[0]?.start || timesheetLifecycle.firstAttendance || null;
+  const openPeriod = [...periods].reverse().find(period => period.start && !period.end);
+  const end = openPeriod ? null : ([...periods].reverse().find(period => period.end)?.end || null);
+  return { start, end, periods, timesheetLifecycle };
+}
+
+// Human-readable "X سنة Y شهر Z يوم" span between two dates (end defaults to today).
+function formatEmployeeDurationLabel(start, end) {
+  if (!start) return '-';
+  const endDate = end || new Date();
+  let totalDays = Math.max(0, dayDiff(start, endDate));
+  const years = Math.floor(totalDays / 365);
+  totalDays -= years * 365;
+  const months = Math.floor(totalDays / 30);
+  totalDays -= months * 30;
+  const days = totalDays;
+  const parts = [];
+  if (years) parts.push(`${years} سنة`);
+  if (months) parts.push(`${months} شهر`);
+  if (days || !parts.length) parts.push(`${days} يوم`);
+  return parts.join(' و');
+}
+
+function isEmployeeFlagActive(employee) {
+  if (!employee || !employee.name) return false;
+  const status = String(employee.status || employee.employmentStatus || '').toLowerCase();
+  if (employee.is_active === false || employee.active === false || status === 'inactive' || status === 'terminated' || status === 'resigned') return false;
+  return true;
+}
+
+function getLastAttendanceDateOnOrBefore(employee, referenceDate, minDate = null) {
+  if (!employee?.records?.length || !referenceDate) return null;
+  const ref = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  const min = minDate ? new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()) : null;
+  const dates = employee.records
+    .filter(rec => isCalendarAttendanceRecord(rec))
+    .map(rec => getRecordDateObject(rec))
+    .filter(date => date && date <= ref && (!min || date >= min))
+    .sort((a, b) => b - a);
+  return dates[0] || null;
+}
+
+function getEmployeePeriodForDate(employee, referenceDate) {
+  if (!referenceDate) return null;
+  const ref = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  const { periods } = getEmployeeLifecycle(employee);
+  return [...periods]
+    .filter(period => {
+      const start = period.start || new Date(0);
+      const end = period.end || new Date(8640000000000000);
+      return start <= ref && ref <= end;
+    })
+    .sort((a, b) => (b.start || 0) - (a.start || 0))[0] || null;
+}
+
+function getEmployeeAutoResignationInfo(employee, referenceDate) {
+  const ref = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  const lifecycle = getEmployeeLifecycle(employee);
+  const period = getEmployeePeriodForDate(employee, ref);
+  const start = period?.start || lifecycle.start;
+  if (start && ref < start) {
+    return { resigned: false, lastAttendance: null, daysSinceAttendance: 0, reason: 'لم يصل تاريخ المباشرة بعد' };
+  }
+  if (lifecycle.periods.length && !period) {
+    return { resigned: true, lastAttendance: null, daysSinceAttendance: Infinity, reason: 'خارج فترات العمل' };
+  }
+  const lastAttendance = getLastAttendanceDateOnOrBefore(employee, ref, period?.start || null);
+  const baseDate = lastAttendance || start || null;
+  if (!baseDate) {
+    return { resigned: true, lastAttendance: null, daysSinceAttendance: Infinity, reason: 'لا يوجد حضور سابق' };
+  }
+  const daysSinceAttendance = Math.floor((ref - baseDate) / 86400000);
+  if (daysSinceAttendance > EMPLOYEE_AUTO_RESIGN_AFTER_DAYS) {
+    return {
+      resigned: true,
+      lastAttendance,
+      daysSinceAttendance,
+      reason: `لا يوجد حضور منذ ${daysSinceAttendance} يوم`
+    };
+  }
+  return { resigned: false, lastAttendance, daysSinceAttendance, reason: 'يعمل' };
+}
+
+function isEmployeeActiveOnDate(employee, year, month, day) {
+  if (!isEmployeeFlagActive(employee)) return false;
+  const target = new Date(Number(year), Number(month) - 1, Number(day));
+  const { start, end, periods } = getEmployeeLifecycle(employee);
+  if (start && target < start) return false;
+  if (end && target > end) return false;
+  if (periods.length && !getEmployeePeriodForDate(employee, target)) return false;
+  const today = new Date();
+  const todayClean = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const autoReference = target > todayClean ? todayClean : target;
+  if (getEmployeeAutoResignationInfo(employee, autoReference).resigned) return false;
+  return true;
+}
+
+function employeeHasActiveDayInMonth(employee, year, month) {
+  const days = getDaysInMonth(year, month);
+  for (let day = 1; day <= days; day++) {
+    if (isEmployeeActiveOnDate(employee, year, month, day)) return true;
+  }
+  return false;
+}
+
+function getEmployeeLifecycleStatus(employee, year, month) {
+  const days = getDaysInMonth(year, month);
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month - 1, days);
+  const { start, end } = getEmployeeLifecycle(employee);
+  const flagActive = isEmployeeFlagActive(employee);
+  if (!flagActive) return { status: 'inactive', reason: 'مستقيل يدويا', start, end };
+  if (start && start > monthEnd) return { status: 'active', reason: 'يعمل - لم يصل تاريخ المباشرة بعد', start, end };
+  if (end && end < monthStart) return { status: 'inactive', reason: 'مستقيل قبل هذا الشهر', start, end };
+  const today = new Date();
+  const todayClean = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const referenceDate = monthEnd < todayClean ? monthEnd : todayClean;
+  const autoInfo = getEmployeeAutoResignationInfo(employee, referenceDate);
+  if (autoInfo.resigned) return { status: 'inactive', reason: autoInfo.reason, start, end, lastAttendance: autoInfo.lastAttendance };
+  return { status: 'active', reason: 'يعمل', start, end, lastAttendance: autoInfo.lastAttendance };
+}
+
+function getTimesheetMonthBonusKey(year, month) {
+  return payrollPeriodKey(year, month);
+}
+
+function getTimesheetMonthEndBonus(employee, year, month) {
+  if (!employee) return 0;
+  const bonuses = employee.timesheetMonthEndBonuses || employee.monthEndBonuses || {};
+  return asMoney(bonuses[getTimesheetMonthBonusKey(year, month)]);
+}
+
+function setTimesheetMonthEndBonus(employee, year, month, value) {
+  if (!employee) return;
+  employee.timesheetMonthEndBonuses = employee.timesheetMonthEndBonuses || {};
+  const key = getTimesheetMonthBonusKey(year, month);
+  const amount = asMoney(value);
+  if (amount > 0) employee.timesheetMonthEndBonuses[key] = amount;
+  else delete employee.timesheetMonthEndBonuses[key];
+}
+
 function calculateSalaryForEmployee(employee, config) {
   const { year, month } = config;
   const nominalSalary = getEmployeeNominalSalary(employee, config.nominalSalary);
@@ -1140,16 +1512,22 @@ function calculateSalaryForEmployee(employee, config) {
   const fridayCompensation = eligibleFridays * dailyRate; // worked Fridays already in baseSalary
 
   const totalOvertimeValue = overtimeValue + fridayOTValue;
-  const previousAdvance = employee.prevAdvance || 0;
+  // Stored emp.prevAdvance uses the "ledger" sign convention: positive = company owes
+  // the employee (carried-over balance in their favor), negative = employee owes the
+  // company. The advance/deduction math below expects the opposite (positive = amount
+  // the employee owes back, matching currentAdvance/officialAdvance), so negate once here.
+  const previousAdvance = -(employee.prevAdvance || 0);
   const officialAdvanceSummary = getEmployeeOfficialAdvancesSummary(employee, year, month);
   const recordedAdvanceDays = new Set(records.map(r => Number(getRecordPeriod(r, config).day)).filter(Boolean));
   officialAdvance += officialAdvanceSummary.rows
     .filter(item => !recordedAdvanceDays.has(Number(String(item.date || '').slice(8, 10))))
     .reduce((sum, item) => sum + asMoney(item.amount), 0);
   const totalAdvance = currentAdvance + previousAdvance + officialAdvance;
+  const monthEndBonus = getTimesheetMonthEndBonus(employee, year, month);
+  const totalBonusWithMonthEnd = bonusTotal + monthEndBonus;
 
   const automaticPenalties = latenessDeduction + earlyDeduction + absenceDeduction;
-  const totalEarnings = baseSalary + allowances + totalOvertimeValue + fridayCompensation + bonusTotal;
+  const totalEarnings = baseSalary + allowances + totalOvertimeValue + fridayCompensation + totalBonusWithMonthEnd;
   const totalDeductions = latenessDeduction + earlyDeduction + absenceDeduction + currentAdvance + previousAdvance + officialAdvance + manualPenalty + damageTotal;
   const salaryDueDeductions = latenessDeduction + earlyDeduction + absenceDeduction + manualPenalty + damageTotal;
 
@@ -1173,7 +1551,7 @@ function calculateSalaryForEmployee(employee, config) {
     previousAdvance, totalAdvance,
     penalty: manualPenalty, totalPenalty: manualPenalty,
     damage: damageTotal, totalDamage: damageTotal,
-    bonus: bonusTotal, totalBonus: bonusTotal,
+    bonus: totalBonusWithMonthEnd, dailyBonus: bonusTotal, monthEndBonus, totalBonus: totalBonusWithMonthEnd,
     hourlyExcusedHours, hourlyExcusedPay,
     automaticPenalties,
     totalEarnings, totalDeductions, finalSalary: totalEarnings - totalDeductions,
@@ -1181,6 +1559,30 @@ function calculateSalaryForEmployee(employee, config) {
     graceMinutesUsed: gracedMin, graceByDay,
     nominalSalary
   };
+}
+
+// A worked Friday (friday_work) forfeits its ×2 Friday bonus and is downgraded to a NORMAL
+// working day (+ the Friday's own dailyRate) when the employee had an ABSENT or unpaid LEAVE
+// day earlier in the SAME work-week — the 6 days (Sat→Thu) leading up to that Friday. Early
+// departure (early_excused) and every other excused state do NOT trigger the downgrade; only
+// full-day absence and leave do. Week can cross a month boundary, so we match by real dates.
+function hasDisqualifyingAbsenceInFridayWeek(emp, year, month, day) {
+  if (!emp || !Array.isArray(emp.records)) return false;
+  const friday = new Date(year, month - 1, day);
+  for (let i = 1; i <= 6; i++) {
+    const d = new Date(friday);
+    d.setDate(friday.getDate() - i);
+    const yy = d.getFullYear(), mm = d.getMonth() + 1, dd = d.getDate();
+    const rec = emp.records.find(r => {
+      const p = getRecordPeriod(r);
+      return p.year === yy && p.month === mm && p.day === dd;
+    });
+    if (rec) {
+      const s = normalizeStatus(rec.status);
+      if (s === 'absent' || s === 'leave') return true;
+    }
+  }
+  return false;
 }
 
 // ─── Daily Calculation for Table Display ───
@@ -1203,7 +1605,15 @@ function getDailyCalc(rec, emp, configOverride = null) {
   const foodRate = workingDays > 0 ? (cfg.cfgFood || 50000) / workingDays : 0;
   const allowanceRate = transportRate + foodRate;
 
-  const statusType = normalizeStatus(rec.status);
+  let statusType = normalizeStatus(rec.status);
+  // Worked-Friday downgrade: a friday_work day whose week had an absent/leave day loses the ×2
+  // bonus and is computed as a NORMAL working day (hours ×1 + allowance), with the Friday's own
+  // dailyRate re-added below. We do that by calculating the day as 'normal' here, then adding
+  // dailyRate and keeping the allowance further down. The record's real status stays friday_work,
+  // so the monthly engine still excludes it from eligibleFridays (no double dailyRate).
+  const fridayWorkDowngraded = (statusType === 'friday_work') &&
+    hasDisqualifyingAbsenceInFridayWeek(emp, recordPeriod.year, recordPeriod.month, recordPeriod.day);
+  if (fridayWorkDowngraded) statusType = 'normal';
   const SHIFT_START = shift.startMin, SHIFT_END = shift.endMin;
   const STD_MIN = shift.durationMin;          // full shift length in minutes
   const OT_MULT = PS.otMultiplier;            // regular overtime multiplier
@@ -1311,6 +1721,20 @@ function getDailyCalc(rec, emp, configOverride = null) {
     deduction = dailyRate;
   }
 
+  // A Friday NEVER earns transport/food allowance — those budgets are spread across the
+  // month's non-Friday working days only (allowanceRate = budget / workingDays, and
+  // workingDays excludes Fridays). This holds however the Friday is treated: worked as a
+  // normal day (dayPay from hours), worked as friday_work, or taken as a paid day off.
+  // The Friday itself is still paid (dailyRate via monthly fridayCompensation / friday_work
+  // baseline) — only the allowance is dropped. Placed before overrides so an explicit
+  // manager allowanceOverride can still win when deliberately set.
+  if (isFriday(recordPeriod.year, recordPeriod.month, recordPeriod.day) && !fridayWorkDowngraded) allowance = 0;
+
+  // Downgraded worked-Friday: on top of the normal-day pay + allowance computed above, the
+  // employee still receives the Friday's own basic salary (dailyRate). Its ×1 OT (if any) was
+  // already routed to the normal overtime bucket because isFridayWorked stayed false.
+  if (fridayWorkDowngraded) dayPay += dailyRate;
+
   // Apply overrides if present:
   if (rec.allowanceOverride != null) allowance = Number(rec.allowanceOverride) || 0;
   if (rec.otHoursOverride != null) {
@@ -1406,7 +1830,7 @@ function calculateTimesheetRangeResult(emp, records, cfg = getConfig()) {
     eligibleFridays: 0,
     currentAdvance: 0,
     officialAdvance: 0,
-    previousAdvance: asMoney(emp?.prevAdvance),
+    previousAdvance: -asMoney(emp?.prevAdvance),
     penalty: 0,
     totalPenalty: 0,
     damage: 0,
@@ -1655,11 +2079,371 @@ function getOfficialAdvanceTotalForRecord(emp, rec, cfg = getConfig()) {
 }
 
 function getOfficialAdvanceAppliedForRecord(emp, rec, cfg = getConfig()) {
-  if (rec?.officialAdvanceOverride !== undefined && rec.officialAdvanceOverride !== null && rec.officialAdvanceOverride !== '') {
-    return asMoney(rec.officialAdvanceOverride);
-  }
   return getOfficialAdvanceTotalForRecord(emp, rec, cfg);
 }
+
+function buildTimesheetAdvanceCanonicalKey(advanceId) {
+  return `employee_advance/${advanceId}`;
+}
+
+function normalizeTimesheetAdvanceDateInput(value) {
+  const raw = String(value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return '';
+  const [year, month, day] = raw.split('-').map(Number);
+  const dt = new Date(Date.UTC(year, month - 1, day));
+  if (dt.getUTCFullYear() !== year || dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) return '';
+  return raw;
+}
+
+function formatTimesheetAdvanceDateDisplay(dateIso) {
+  const date = normalizeTimesheetAdvanceDateInput(dateIso);
+  if (!date) return '';
+  const [year, month, day] = date.split('-');
+  return `${day}/${month}/${year}`;
+}
+
+function buildTimesheetAdvanceSettlementNote(fromDate, toDate) {
+  if (!fromDate || !toDate || fromDate === toDate) return '';
+  return `تم تغيير تاريخ السلفة من ${formatTimesheetAdvanceDateDisplay(fromDate) || fromDate} إلى ${formatTimesheetAdvanceDateDisplay(toDate) || toDate} لتصفية الراتب.`;
+}
+
+function findTimesheetAdvanceLinkedMoveIds(db, advanceRow) {
+  const ids = new Set([advanceRow?.moveId, advanceRow?.accountMoveId].filter(Boolean));
+  const canonicalKey = buildTimesheetAdvanceCanonicalKey(advanceRow?.id || '');
+  const legacyKey = advanceRow?.sourceCanonicalKey || '';
+  const financeTx = (db?.finance?.transactions || []).find(tx => tx.id === advanceRow?.financeTransactionId);
+  [financeTx?.v6_move_id, financeTx?.accountMoveId, financeTx?.moveId].filter(Boolean).forEach(id => ids.add(id));
+  (db?.account_moves || []).forEach(move => {
+    if (move.state === 'cancel') return;
+    if (move.id && ids.has(move.id)) return;
+    if (canonicalKey && (move.sourceCanonicalKey === canonicalKey || move.origin === canonicalKey)) ids.add(move.id);
+    if (legacyKey && move.sourceCanonicalKey === legacyKey) ids.add(move.id);
+    if (advanceRow?.id && move.sourceType === 'employee_advance' && move.sourceId === advanceRow.id) ids.add(move.id);
+    if (financeTx?.sourceId && move.sourceType === 'cashbox' && move.sourceId === financeTx.sourceId) ids.add(move.id);
+  });
+  return Array.from(ids).filter(Boolean);
+}
+
+async function cancelTimesheetOfficialAdvanceMoves(advanceRow, reason) {
+  if (!window.FinanceService || !window.PentagonDB) return [];
+  const db = await PentagonDB.load();
+  const reversed = new Set((db.account_moves || []).map(move => move.reversed_of).filter(Boolean));
+  const moveIds = findTimesheetAdvanceLinkedMoveIds(db, advanceRow);
+  const cancelled = [];
+  for (const moveId of moveIds) {
+    const move = (db.account_moves || []).find(item => item.id === moveId);
+    if (!move || move.state !== 'posted' || reversed.has(move.id)) continue;
+    await FinanceService.cancelMove(move.id, { skip_backup: true, date: move.date || advanceRow?.date || todayISO(), reason });
+    cancelled.push(move.id);
+  }
+  return cancelled;
+}
+
+function syncTimesheetAdvanceSourceRows(db, saved, nextRow, settlementNote) {
+  const note = settlementNote || '';
+  const dateParts = normalizeTimesheetAdvanceDateInput(nextRow.date).split('-').map(Number);
+  const [year, month] = dateParts;
+  if (saved.source === 'omni.workshopAdvances' && saved.sourceId && db.omni?.workshopAdvances) {
+    const source = db.omni.workshopAdvances.find(item => item.id === saved.sourceId);
+    if (source) {
+      source.date = nextRow.date;
+      source.dateDisplay = formatTimesheetAdvanceDateDisplay(nextRow.date) || source.dateDisplay || '';
+      source.month = month || source.month;
+      source.year = year || source.year;
+      source.amount = nextRow.amount;
+      source.description = nextRow.description;
+      if (saved.advanceTypeRaw) source.advanceType = saved.advanceTypeRaw;
+      if (note) source.review = [source.review, note].filter(Boolean).join(' | ');
+    }
+  }
+  if (saved.financeTransactionId && db.finance?.transactions) {
+    const tx = db.finance.transactions.find(item => item.id === saved.financeTransactionId);
+    if (tx) {
+      tx.date = nextRow.date;
+      tx.amount = nextRow.amount;
+      tx.cashboxEffect = -Math.abs(nextRow.amount);
+      tx.description = nextRow.description;
+      if (note) tx.review = [tx.review, note].filter(Boolean).join(' | ');
+    }
+  }
+}
+
+async function postTimesheetOfficialAdvanceMove(advanceRow) {
+  if (!window.FinanceService || !window.PentagonDB) {
+    throw new Error('FinanceService/PentagonDB غير متاح');
+  }
+  const amount = asMoney(advanceRow.amount);
+  if (amount <= 0) throw new Error('مبلغ السلفة يجب أن يكون أكبر من صفر');
+  const sourceCanonicalKey = buildTimesheetAdvanceCanonicalKey(advanceRow.id);
+  const freshDb = await PentagonDB.load();
+  const existing = (freshDb.account_moves || []).find(move =>
+    move.sourceCanonicalKey === sourceCanonicalKey && move.state !== 'cancel'
+  );
+  if (existing) return existing;
+  const move = await FinanceService.createMove({
+    journal_id: 'j_bank',
+    move_type: 'entry',
+    date: advanceRow.date || todayISO(),
+    partner_id: advanceRow.employeeId || advanceRow.employeeNameSnapshot || '',
+    origin: sourceCanonicalKey,
+    sourceType: 'employee_advance',
+    sourceId: advanceRow.id,
+    sourceCanonicalKey,
+    line_ids: [
+      { account_id: 'employee_advances', debit: amount, credit: 0, label: advanceRow.description || `سلفة ${advanceRow.employeeNameSnapshot || ''}`, partner_id: advanceRow.employeeId || '' },
+      { account_id: 'cash_workshop', debit: 0, credit: amount, label: advanceRow.description || `سلفة ${advanceRow.employeeNameSnapshot || ''}`, partner_id: advanceRow.employeeId || '' },
+    ],
+    skip_backup: true,
+  });
+  return FinanceService.postMove(move.id, { skip_backup: true });
+}
+
+function getTimesheetAdvanceRecordContext(empIdx, dayIdx) {
+  const emp = employees[empIdx];
+  const rec = emp?.records?.[dayIdx];
+  if (!emp || !rec) return null;
+  const period = getRecordPeriod(rec, getConfig());
+  const date = `${period.year}-${String(period.month).padStart(2, '0')}-${String(period.day).padStart(2, '0')}`;
+  return { emp, rec, period, date };
+}
+
+window.openTimesheetInlineAmountEdit = async function(empIdx, dayIdx, field) {
+  const ctx = getTimesheetAdvanceRecordContext(empIdx, dayIdx);
+  if (!ctx || !['penalty', 'bonus'].includes(field)) return;
+  if (isPayrollPeriodClosedForRecord(ctx.rec)) {
+    showToast('شهر الرواتب مغلق. لا يمكن تعديل مبالغ التايم شيت مباشرة.', 'warning');
+    return;
+  }
+  const currentValue = field === 'penalty'
+    ? asMoney(ctx.rec.penalty) + asMoney(ctx.rec.damage)
+    : asMoney(ctx.rec.bonus);
+  const label = field === 'penalty' ? 'الغرامة اليدوية' : 'المكافأة';
+  const value = await showOmniPrompt(`${label} ليوم ${ctx.period.day}/${ctx.period.month}:`, currentValue ? String(Math.round(currentValue)) : '');
+  if (value === null || value === undefined) return;
+  const amount = asMoney(String(value).replace(/,/g, ''));
+  if (amount < 0) {
+    showToast('أدخل مبلغاً موجباً أو صفراً.', 'warning');
+    return;
+  }
+  if (field === 'penalty') {
+    ctx.rec.penalty = amount;
+    ctx.rec.damage = 0;
+  } else {
+    ctx.rec.bonus = amount;
+  }
+  if (ctx.rec.timesheetDocumented) ctx.rec.timesheetEditedAfterDocumentAt = new Date().toISOString();
+  saveData();
+  renderTimesheet();
+};
+
+function getTimesheetAdvanceSettlementNote(row) {
+  if (row?.salarySettlementNote) return row.salarySettlementNote;
+  const flag = (row?.reviewFlags || []).slice().reverse().find(item => item?.type === 'salary_settlement_date_change' && item.note);
+  return flag?.note || '';
+}
+
+function renderTimesheetAdvanceListHtml(rows) {
+  if (!rows.length) return '<div class="timesheet-advance-list-empty">لا توجد سلف رسمية لهذا اليوم.</div>';
+  const total = rows.reduce((sum, item) => sum + asMoney(item.amount), 0);
+  return `
+    <div class="timesheet-advance-list-total"><span>إجمالي السلف الرسمية</span><b>${formatMoneyReadable(total)}</b></div>
+    ${rows.map(row => {
+      const settlementNote = getTimesheetAdvanceSettlementNote(row);
+      return `
+      <div class="timesheet-advance-list-row">
+        <div>
+          <b>${formatMoneyReadable(row.amount)}</b>
+          <small>${escapeHtml(row.date || '')} · ${escapeHtml(row.description || row.advanceTypeRaw || 'سلفة رسمية')}</small>
+          ${settlementNote ? `<small>${escapeHtml(settlementNote)}</small>` : ''}
+        </div>
+        <button type="button" class="timesheet-advance-list-edit" onclick="editTimesheetOfficialAdvance('${jsString(row.id)}')">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>تعديل</span>
+        </button>
+      </div>
+    `}).join('')}
+  `;
+}
+
+window.openTimesheetAdvanceDayList = function(empIdx, dayIdx) {
+  const ctx = getTimesheetAdvanceRecordContext(empIdx, dayIdx);
+  if (!ctx) return;
+  const rows = getOfficialAdvanceRowsForRecord(ctx.emp, ctx.rec, { ...getConfig(), year: ctx.period.year, month: ctx.period.month });
+  showOmniModal(
+    `سلف ${ctx.emp.name} - ${ctx.period.day}/${ctx.period.month}`,
+    `<div class="timesheet-advance-list">${renderTimesheetAdvanceListHtml(rows)}</div>`,
+    () => true
+  );
+};
+
+window.openTimesheetAdvanceCreate = async function(empIdx, dayIdx) {
+  const ctx = getTimesheetAdvanceRecordContext(empIdx, dayIdx);
+  if (!ctx) return;
+  if (isPayrollPeriodClosedForRecord(ctx.rec)) {
+    showToast('شهر الرواتب مغلق. لا يمكن إضافة سلفة رسمية لهذا اليوم.', 'warning');
+    return;
+  }
+  const amountRaw = await showOmniPrompt(`مبلغ السلفة الرسمية ليوم ${ctx.period.day}/${ctx.period.month}:`, '');
+  if (amountRaw === null || amountRaw === undefined || amountRaw === '') return;
+  const amount = asMoney(String(amountRaw).replace(/,/g, ''));
+  if (amount <= 0) {
+    showToast('مبلغ السلفة يجب أن يكون أكبر من صفر.', 'warning');
+    return;
+  }
+  const description = await showOmniPrompt('بيان السلفة:', `سلفة ${ctx.emp.name}`);
+  const advanceRow = {
+    id: makeId('adv'),
+    employeeId: ctx.emp.id || '',
+    employeeNameSnapshot: ctx.emp.name || '',
+    date: ctx.date,
+    period: ctx.date.slice(0, 7),
+    amount,
+    type: 'cash',
+    status: 'approved',
+    source: 'timesheet',
+    description: description || `سلفة ${ctx.emp.name}`,
+    createdAt: new Date().toISOString(),
+    createdBy: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+    moveId: '',
+  };
+  try {
+    const move = await postTimesheetOfficialAdvanceMove(advanceRow);
+    advanceRow.moveId = move?.id || '';
+    await PentagonDB.mutate(db => {
+      ensurePayrollCollections(db);
+      db.employee_advances.push(advanceRow);
+      db.audit_log.push({
+        id: makeId('audit_employee_advance'),
+        action: 'employee_advance_created_from_timesheet',
+        entityType: 'employee_advance',
+        entityId: advanceRow.id,
+        createdAt: new Date().toISOString(),
+        userId: advanceRow.createdBy,
+        afterSnapshot: advanceRow,
+      });
+    });
+    await PentagonDB.load({ force: true });
+    renderTimesheet();
+    showToast('تمت إضافة السلفة الرسمية وربطها بقيد مالي.', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || 'تعذرت إضافة السلفة الرسمية.', 'error');
+  }
+};
+
+function openTimesheetOfficialAdvanceEditForm(row) {
+  const settlementNote = getTimesheetAdvanceSettlementNote(row);
+  const html = `
+    <div class="timesheet-advance-form timesheet-advance-edit-form">
+      <label>
+        <span>مبلغ السلفة الرسمية</span>
+        <input type="number" id="tsAdvanceEditAmount" class="form-input" min="1" step="1" value="${escapeHtml(String(Math.round(asMoney(row.amount))))}">
+      </label>
+      <label>
+        <span>تاريخ السلفة</span>
+        <input type="date" id="tsAdvanceEditDate" class="form-input" value="${escapeHtml(normalizeTimesheetAdvanceDateInput(row.date) || todayISO())}">
+      </label>
+      <label>
+        <span>بيان السلفة</span>
+        <input type="text" id="tsAdvanceEditDescription" class="form-input" value="${escapeHtml(row.description || row.advanceTypeRaw || 'سلفة رسمية')}">
+      </label>
+      <div class="timesheet-advance-form-note">
+        عند تغيير التاريخ سيتم نقل السلفة إلى شهر التاريخ الجديد، وإعادة ربط القيد المالي بهذا التاريخ.
+      </div>
+      ${settlementNote ? `<div class="timesheet-advance-form-note">${escapeHtml(settlementNote)}</div>` : ''}
+    </div>
+  `;
+  return showOmniModal('تعديل السلفة الرسمية', html, (bodyEl) => {
+    const amountRaw = bodyEl.querySelector('#tsAdvanceEditAmount')?.value || '';
+    const dateRaw = bodyEl.querySelector('#tsAdvanceEditDate')?.value || '';
+    const description = bodyEl.querySelector('#tsAdvanceEditDescription')?.value?.trim() || '';
+    const amount = asMoney(String(amountRaw).replace(/,/g, ''));
+    if (amount <= 0) {
+      showToast('مبلغ السلفة يجب أن يكون أكبر من صفر.', 'warning');
+      return false;
+    }
+    const nextDate = normalizeTimesheetAdvanceDateInput(dateRaw);
+    if (!nextDate) {
+      showToast('أدخل تاريخ السلفة بصيغة صحيحة.', 'warning');
+      return false;
+    }
+    return { amount, nextDate, description };
+  }, (bodyEl) => {
+    bodyEl.querySelector('#tsAdvanceEditAmount')?.focus();
+    bodyEl.querySelector('#tsAdvanceEditAmount')?.select?.();
+  });
+}
+
+window.editTimesheetOfficialAdvance = async function(advanceId) {
+  const db = window.PentagonDB ? await PentagonDB.load() : null;
+  const row = db?.employee_advances?.find(item => item.id === advanceId);
+  if (!row) {
+    showToast('السلفة غير موجودة.', 'warning');
+    return;
+  }
+  const payload = await openTimesheetOfficialAdvanceEditForm(row);
+  if (!payload) return;
+  const { amount, nextDate, description } = payload;
+  const previousDate = normalizeTimesheetAdvanceDateInput(row.date) || row.date || '';
+  const settlementNote = buildTimesheetAdvanceSettlementNote(previousDate, nextDate);
+  try {
+    await cancelTimesheetOfficialAdvanceMoves(row, settlementNote || 'تعديل سلفة رسمية من التايم شيت');
+    const nextRow = {
+      ...row,
+      date: nextDate,
+      period: nextDate.slice(0, 7),
+      amount,
+      description: description || row.description || 'سلفة رسمية',
+      moveId: '',
+      accountMoveId: '',
+    };
+    const move = await postTimesheetOfficialAdvanceMove(nextRow);
+    await PentagonDB.mutate(mdb => {
+      ensurePayrollCollections(mdb);
+      const saved = mdb.employee_advances.find(item => item.id === advanceId);
+      if (saved) {
+        saved.date = nextDate;
+        saved.period = nextDate.slice(0, 7);
+        saved.amount = amount;
+        saved.description = nextRow.description;
+        saved.moveId = move?.id || '';
+        saved.accountMoveId = move?.id || '';
+        saved.salarySettlementNote = settlementNote || saved.salarySettlementNote || '';
+        if (settlementNote) {
+          saved.reviewFlags = Array.isArray(saved.reviewFlags) ? saved.reviewFlags : [];
+          saved.reviewFlags.push({
+            type: 'salary_settlement_date_change',
+            note: settlementNote,
+            fromDate: previousDate,
+            toDate: nextDate,
+            createdAt: new Date().toISOString(),
+          });
+        }
+        saved.updatedAt = new Date().toISOString();
+        saved.updatedBy = window.PentagonAuth?.getCurrentUser?.()?.id || 'system';
+        syncTimesheetAdvanceSourceRows(mdb, saved, { ...nextRow, moveId: move?.id || '', accountMoveId: move?.id || '' }, settlementNote);
+      }
+      mdb.audit_log.push({
+        id: makeId('audit_employee_advance'),
+        action: 'employee_advance_updated_from_timesheet',
+        entityType: 'employee_advance',
+        entityId: advanceId,
+        createdAt: new Date().toISOString(),
+        userId: window.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+        reason: settlementNote || 'تعديل سلفة رسمية من التايم شيت',
+        beforeSnapshot: row,
+        afterSnapshot: saved || nextRow,
+      });
+    });
+    closeOmniModal();
+    await PentagonDB.load({ force: true });
+    renderTimesheet();
+    showToast('تم تعديل السلفة الرسمية وتحديث القيد المالي.', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || 'تعذر تعديل السلفة الرسمية.', 'error');
+  }
+};
 
 function buildEmployeePayrollClosingSnapshot(db, emp, year, month, payrollPeriodId) {
   const cfg = { ...getConfig(), year: Number(year), month: Number(month), nominalSalary: getEmployeeNominalSalary(emp, getConfig().nominalSalary) };
@@ -1668,8 +2452,9 @@ function buildEmployeePayrollClosingSnapshot(db, emp, year, month, payrollPeriod
   const officialAdvances = getOfficialAdvancesForEmployeePeriod(db, emp, year, month);
   const advanceSettlementAmount = officialAdvances.reduce((sum, item) => sum + asMoney(item.amount), 0);
   const netAccruedSalary = Math.round(result.salaryDue || result.finalSalary || 0);
-  const previousEmployeeDebt = Math.max(0, asMoney(emp.prevAdvance));
-  const previousCompanyPayable = Math.max(0, -asMoney(emp.prevAdvance));
+  // emp.prevAdvance: positive = company owes employee, negative = employee owes company.
+  const previousEmployeeDebt = Math.max(0, -asMoney(emp.prevAdvance));
+  const previousCompanyPayable = Math.max(0, asMoney(emp.prevAdvance));
   const netPayableAfterAdvanceSettlement = netAccruedSalary - advanceSettlementAmount - previousEmployeeDebt + previousCompanyPayable;
   return {
     id: makeId('payclose'),
@@ -2916,6 +3701,169 @@ function enforceUIPermissions() {
   }
 }
 
+/* ═══════════════════ HOME / LANDING ═══════════════════
+   The app boots onto a proper welcome page (pageHome) and "resumes where you
+   left off": every page visit is remembered and restored on the next launch.
+   Before this, the boot default was 'calculator' (the old standalone salary
+   calculator, now merged into the timesheet) which flashed on startup. */
+
+const HOME_LAST_PAGE_KEY = 'octagon_last_page';
+// Pages we never auto-resume into: transient, context-bound, kiosk/mobile shells,
+// or the retired standalone calculator. Landing on these out of context is wrong.
+const HOME_NON_RESUMABLE = new Set([
+  'home', 'calculator', 'customer_portal', 'receipt',
+  'kiosk', 'employee_mobile', 'workshop_tv', 'mobile_inventory_count',
+  // Heavy diagnostic pages that hydrate ALL page templates at once — landing here on
+  // boot wedges startup on "جاري تحميل قوالب الصفحات". Reachable via nav, never auto-resumed.
+  'route_health', 'deploy_ready'
+]);
+
+function persistLastVisitedPage(page) {
+  if (!page || HOME_NON_RESUMABLE.has(page)) return;
+  try { localStorage.setItem(HOME_LAST_PAGE_KEY, page); } catch (_) {}
+}
+
+// Resolve the page to open on boot: the last visited page when it's still valid
+// and permitted, otherwise the home landing.
+function getBootLandingPage() {
+  // Always boot onto the main menu (home) on every reload, per operator preference.
+  // The last visited page is still tracked and is one click away via the
+  // "الذهاب إلى: (آخر صفحة)" button rendered on the home screen.
+  return 'home';
+}
+
+// Wrapper-order-independent persistence: whichever code path activates a page,
+// it always marks a nav button `.active`. Observe that and remember the page.
+function startLastPageTracking() {
+  if (window.__homeLastPageObserver) return;
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav || !window.MutationObserver) return;
+  const obs = new MutationObserver(() => {
+    const active = document.querySelector('.sidebar-nav .nav-btn.active');
+    const page = active && active.getAttribute('data-page');
+    if (page) persistLastVisitedPage(page);
+  });
+  obs.observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  window.__homeLastPageObserver = obs;
+}
+
+function homePageLabel(key) {
+  const el = document.querySelector(`.nav-btn[data-page="${key}"] .nav-label`);
+  return (el && el.textContent.trim()) || key;
+}
+
+// Curated quick-access tiles for the most-used destinations. Only tiles the
+// current user is permitted to open are shown.
+const HOME_QUICK_ACTIONS = [
+  { page: 'timesheet',       icon: '📅', color: 'var(--accent-blue)',   desc: 'الدوام والرواتب وحاسبة الراتب' },
+  { page: 'finance',         icon: '💰', color: 'var(--accent-green)',  desc: 'المحاسبة المزدوجة والقيود' },
+  { page: 'workshop_ledger', icon: '🏭', color: 'var(--accent-orange)', desc: 'محاسبة ودوام الورشة' },
+  { page: 'inventory',       icon: '📦', color: 'var(--accent-purple)', desc: 'المخزون وحركات المواد' },
+  { page: 'sales',           icon: '🤝', color: 'var(--accent-blue)',   desc: 'المبيعات والعملاء المحتملون' },
+  { page: 'customers',       icon: '👥', color: 'var(--accent-green)',  desc: 'ملفات العملاء والأرصدة' },
+  { page: 'report',          icon: '📊', color: 'var(--accent-yellow)', desc: 'تقارير الرواتب والدوام' },
+  { page: 'admin_panel',     icon: '⚙️', color: 'var(--text-muted)',    desc: 'الإعدادات وإدارة النظام' }
+];
+
+function renderHome() {
+  const body = document.getElementById('homeBody');
+  if (!body) return;
+
+  const now = new Date();
+  const hour = now.getHours();
+  const greetWord = hour < 12 ? 'صباح الخير' : (hour < 18 ? 'مساء الخير' : 'مساء الخير');
+  const wave = hour < 12 ? '🌅' : (hour < 18 ? '☀️' : '🌙');
+
+  let userName = 'بك';
+  try {
+    const u = window.PentagonAuth && window.PentagonAuth.getCurrentUser && window.PentagonAuth.getCurrentUser();
+    if (u && (u.displayName || u.name) && u.id !== 'guest') userName = u.displayName || u.name;
+  } catch (_) {}
+
+  let branch = 'الرئيسي';
+  try {
+    const org = omni && omni.adminSettings && omni.adminSettings.organization;
+    const co = org && (org.companies || []).find(c => c.id === org.activeCompanyId);
+    if (co && co.name) branch = co.name;
+  } catch (_) {}
+
+  const empCount = Array.isArray(employees) ? employees.length : 0;
+  let custCount = 0;
+  try { custCount = (finance && Array.isArray(finance.customers)) ? finance.customers.length : 0; } catch (_) {}
+
+  const dateStr = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+  // "Resume" banner — only when the last real page differs from home.
+  let savedPage = '';
+  try { savedPage = localStorage.getItem(HOME_LAST_PAGE_KEY) || ''; } catch (_) {}
+  const canResume = savedPage && !HOME_NON_RESUMABLE.has(savedPage) &&
+    (!window.PermissionService || window.PermissionService.checkPage(savedPage));
+  const resumeHtml = canResume ? `
+    <div class="home-resume">
+      <span style="font-size:20px;">↩️</span>
+      <button class="home-btn" onclick="switchPage('${savedPage}')"><i class="fa-solid fa-arrow-right-to-bracket"></i> الذهاب إلى: ${homePageLabel(savedPage)}</button>
+    </div>` : '';
+
+  const stats = [
+    { ico: '👷', color: 'rgba(56,189,248,0.15)',  val: empCount,  lbl: 'الموظفون' },
+    { ico: '👥', color: 'rgba(52,211,153,0.15)',  val: custCount, lbl: 'العملاء' },
+    { ico: '🌐', color: 'rgba(129,140,248,0.15)', val: branch,    lbl: 'الفرع النشط' }
+  ].map(s => `
+    <div class="home-stat">
+      <div class="home-stat-ico" style="background:${s.color}">${s.ico}</div>
+      <div>
+        <div class="home-stat-val">${s.val}</div>
+        <div class="home-stat-lbl">${s.lbl}</div>
+      </div>
+    </div>`).join('');
+
+  const tiles = HOME_QUICK_ACTIONS
+    .filter(a => !window.PermissionService || window.PermissionService.checkPage(a.page))
+    .map(a => `
+      <button class="home-tile" onclick="switchPage('${a.page}')">
+        <div class="home-tile-ico" style="background:${a.color}22;">${a.icon}</div>
+        <div class="home-tile-name">${homePageLabel(a.page)}</div>
+        <div class="home-tile-desc">${a.desc}</div>
+      </button>`).join('');
+
+  body.innerHTML = `
+    <div class="home-hero">
+      <div class="home-hero-row">
+        <div>
+          <h1 class="home-greeting"><span class="home-wave">${wave}</span> ${greetWord}، ${userName}</h1>
+          <p class="home-sub">أهلاً بك في نظام أوكتاغون لإدارة الأعمال — كل ما تحتاجه للورشة والمخازن والمبيعات والمحاسبة والرواتب في مكان واحد.</p>
+          ${resumeHtml}
+        </div>
+        <div class="home-clock">
+          <div class="home-clock-time" id="homeClockTime">${timeStr}</div>
+          <div class="home-clock-date" id="homeClockDate">${dateStr}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-stats">${stats}</div>
+
+    <div class="home-section-title">🚀 اختصارات سريعة <small>افتح أكثر الأقسام استخداماً بضغطة واحدة</small></div>
+    <div class="home-grid">${tiles}</div>
+  `;
+
+  startHomeClock();
+}
+
+// Lightweight shared ticker: updates the home clock while the home page is visible.
+function startHomeClock() {
+  if (window.__homeClockTimer) return;
+  window.__homeClockTimer = setInterval(() => {
+    const t = document.getElementById('homeClockTime');
+    if (!t || !document.getElementById('pageHome') || !document.getElementById('pageHome').classList.contains('page-active')) return;
+    const now = new Date();
+    t.textContent = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+    const d = document.getElementById('homeClockDate');
+    if (d) d.textContent = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }, 1000);
+}
+
 function switchPage(page) {
   // TEMP: الحاسبة الذكية is hidden from the sidebar — the full calculator is docked inside
   // the timesheet page. Direct opens (boot landing, palette, old links) go to the timesheet
@@ -2962,6 +3910,7 @@ function switchPage(page) {
   }
 
   const pageMap = {
+    home: 'pageHome',
     calculator: 'pageCalculator',
     import: 'pageImport',
     timesheet: 'pageTimesheet',
@@ -2996,6 +3945,7 @@ function switchPage(page) {
     equipment: 'pageEquipment'
   };
   const navMap = {
+    home: 'navHome',
     calculator: 'navCalculator',
     import: 'navImport',
     timesheet: 'navTimesheet',
@@ -3036,6 +3986,12 @@ function switchPage(page) {
   if (navEl) { navEl.classList.add('active'); navEl.setAttribute('aria-current', 'page'); }
   ensureNavGroupForPage(page);
 
+  if (page === 'home') renderHome();
+  // Isolate every page's render: a thrown error in one page must NOT break the whole
+  // program. On failure we show a clean error panel in that page's container and keep the
+  // app alive. (This cannot interrupt an infinite loop — those are fixed per-page — but it
+  // stops the far more common "one bad render wedges everything" class of failure.)
+  try {
   if (page === 'calculator') { undockCalculatorToOwnPage(); refreshCalcEmpDropdown(); }
   if (page === 'timesheet') renderTimesheet();
   if (page === 'report') renderReport();
@@ -3046,7 +4002,15 @@ function switchPage(page) {
   if (page === 'income') renderIncomePage();
   if (page === 'customers') renderCustomersPage();
   if (page === 'receipt') renderReceiptPage();
-  if (page === 'calendar') renderAttendanceCalendar();
+  if (page === 'calendar') {
+    // Always land on the real current month when navigating INTO the calendar tab,
+    // instead of whatever month the shared calculator/timesheet selector was last left on.
+    const today = new Date();
+    setConfigValue('cfgMonth', today.getMonth() + 1);
+    setConfigValue('cfgYear', today.getFullYear());
+    selectedCalendarDay = null;
+    renderAttendanceCalendar();
+  }
   if (page === 'kanban') renderKanbanBoard();
   if (page === 'workflow') renderWorkflowStudio();
   if (page === 'task_manager') renderTaskManager();
@@ -3067,7 +4031,34 @@ function switchPage(page) {
   if (page === 'sales') renderSalesCrmPage();
   if (page === 'customer_portal') renderCustomerPortal();
   if (page === 'equipment') renderEquipmentPage();
+  } catch (err) {
+    console.error(`[switchPage] render failed for "${page}":`, err);
+    if (typeof showToast === 'function') showToast('تعذّر فتح هذه الصفحة بسبب خطأ — تم احتواؤه حتى لا يتوقف البرنامج بالكامل. جرّب صفحة أخرى أو أعد التحميل.', 'error');
+    const _pmap = pageMap[page];
+    const _el = _pmap && document.getElementById(_pmap);
+    if (_el) _el.innerHTML = `<div style="padding:40px;text-align:center;color:#f87171;max-width:620px;margin:40px auto;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:14px;">
+        <div style="font-size:42px;margin-bottom:12px;">⚠️</div>
+        <h3 style="margin:0 0 8px;color:#fca5a5;">تعذّر عرض هذه الصفحة</h3>
+        <p style="color:#cbd5e1;font-size:14px;line-height:1.8;">حدث خطأ أثناء تحميل محتوى هذه الصفحة، لكن البرنامج ما زال يعمل. يمكنك فتح صفحة أخرى أو العودة للرئيسية. (تفاصيل الخطأ في وحدة التحكم Console.)</p>
+        <p style="color:#94a3b8;font-size:12px;direction:ltr;background:rgba(0,0,0,0.25);padding:8px 12px;border-radius:8px;display:inline-block;margin-top:4px;word-break:break-word;">${escapeHtml((err && err.message ? String(err.message) : String(err)).slice(0,300))}</p>
+        <div style="margin-top:18px;"><button class="btn-primary" onclick="switchPage('home')" style="padding:9px 20px;">العودة للرئيسية</button></div>
+      </div>`;
+  }
   renderOmniNotificationBell();
+}
+
+// Global safety net: any uncaught error in a click/change handler or async task is logged
+// and surfaced as a toast instead of silently leaving the UI wedged. (Does not interrupt
+// infinite loops — those are page-specific bugs — but stops silent, app-breaking failures.)
+if (!window.__octagonGlobalErrorGuard) {
+  window.__octagonGlobalErrorGuard = true;
+  window.addEventListener('error', (e) => {
+    console.error('[global error]', e.error || e.message);
+    try { if (typeof showToast === 'function') showToast('حدث خطأ غير متوقع — تم تسجيله. إذا تجمّدت الصفحة أعد تحميلها.', 'error'); } catch (_) {}
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    console.error('[unhandled promise rejection]', e.reason);
+  });
 }
 
 document.addEventListener('click', (event) => {
@@ -3132,6 +4123,29 @@ function refreshCalcEmpDropdown() {
   }
 }
 
+function getCalculatorTimesheetSource() {
+  const select = document.getElementById('calcEmpSelect');
+  const badge = document.getElementById('calcEmpBadge');
+  const idx = select ? parseInt(select.value, 10) : -1;
+  if (idx < 0 || !employees[idx] || badge?.dataset.timesheetSourced !== '1') return null;
+  return { idx, emp: employees[idx], cfg: getConfig() };
+}
+
+function getTimesheetRangeDayDistribution(emp, cfg = getConfig()) {
+  const rows = recordsForTimesheetRange(emp, cfg);
+  return rows.reduce((acc, rec) => {
+    const period = getRecordPeriod(rec, cfg);
+    const statusType = normalizeStatus(rec.status);
+    const fridayDate = isFriday(period.year, period.month, period.day);
+    acc.totalDays += 1;
+    if (statusType === 'leave') acc.leaveDays += 1;
+    else if (statusType === 'absent') acc.absentDays += 1;
+    else if (fridayDate || statusType === 'friday' || statusType === 'friday_work') acc.fridayDays += 1;
+    else acc.attendanceDays += 1;
+    return acc;
+  }, { totalDays: 0, attendanceDays: 0, fridayDays: 0, leaveDays: 0, absentDays: 0 });
+}
+
 function onCalcEmpChange() {
   window.paymentAmountManuallyEdited = false;
   const select = document.getElementById('calcEmpSelect');
@@ -3150,6 +4164,7 @@ function onCalcEmpChange() {
     const monthRecs = recordsForTimesheetRange(emp, cfg);
 
     if (monthRecs.length === 0) {
+      badge.dataset.timesheetSourced = '0';
       document.getElementById('inpAttendance').value = 0;
       document.getElementById('inpLeaves').value = 0;
       document.getElementById('inpAbsent').value = 0;
@@ -3158,7 +4173,9 @@ function onCalcEmpChange() {
       document.getElementById('inpLateness').value = 0;
       document.getElementById('inpFridays').value = 0;
       document.getElementById('inpCurrentAdvance').value = 0;
-      document.getElementById('inpPreviousAdvance').value = emp.prevAdvance || 0;
+      // Negated to match the "has records" branch below, which populates this same field
+      // from result.previousAdvance (already in the internal positive=employee-owes convention).
+      document.getElementById('inpPreviousAdvance').value = -(emp.prevAdvance || 0);
       document.getElementById('inpPenalty').value = 0;
       document.getElementById('inpBonus').value = 0;
       document.getElementById('inpDamage').value = 0;
@@ -3167,9 +4184,10 @@ function onCalcEmpChange() {
     } else {
       // Official per-month engine aggregate — same numbers as the payroll close and print.
       const result = getTimesheetOfficialRangeResult(emp, cfg);
-      document.getElementById('inpAttendance').value = result.attendanceDays;
-      document.getElementById('inpLeaves').value = result.leaveDays;
-      document.getElementById('inpAbsent').value = result.absentDays;
+      const dayDist = getTimesheetRangeDayDistribution(emp, cfg);
+      document.getElementById('inpAttendance').value = dayDist.attendanceDays;
+      document.getElementById('inpLeaves').value = dayDist.leaveDays;
+      document.getElementById('inpAbsent').value = dayDist.absentDays;
 
       // Keep regular overtime and Friday overtime DISJOINT. `totalOvertime` already includes Friday
       // hours, and the calculator adds `inpFridayOT` again at 2× — so feeding totalOvertime here
@@ -3177,7 +4195,7 @@ function onCalcEmpChange() {
       document.getElementById('inpOvertime').value = result.overtimeHours > 0 ? result.overtimeHours.toFixed(1) : 0;
       document.getElementById('inpFridayOT').value = result.fridayOTHours > 0 ? result.fridayOTHours.toFixed(1) : 0;
       document.getElementById('inpLateness').value = result.totalLatenessHours > 0 ? result.totalLatenessHours.toFixed(1) : 0;
-      document.getElementById('inpFridayDays').value = result.fridayWorkedDays;
+      document.getElementById('inpFridayDays').value = dayDist.fridayDays;
 
       // Calculate eligible Fridays directly from calculated leave and absent days
       document.getElementById('inpFridays').value = result.eligibleFridays;
@@ -3193,6 +4211,7 @@ function onCalcEmpChange() {
       document.getElementById('inpDamage').value = result.totalDamage || 0;
 
       badge.style.display = 'flex';
+      badge.dataset.timesheetSourced = '1';
       document.getElementById('calcEmpBadgeText').textContent = `بيانات ${emp.name} مسحوبة من التايم شيت (${getTimesheetPeriodLabel(cfg)})`;
 
       validateDays();
@@ -3201,6 +4220,7 @@ function onCalcEmpChange() {
     }
   } else {
     badge.style.display = 'none';
+    badge.dataset.timesheetSourced = '0';
   }
 
   validateDays();
@@ -3214,7 +4234,7 @@ function onMonthYearChange() {
   for (let d = 1; d <= totalDays; d++) {
     if (isFriday(cfg.year, cfg.month, d)) fridayCount++;
   }
-  document.getElementById('inpFridayDays').value = `0/${fridayCount}`;
+  document.getElementById('inpFridayDays').value = 0;
   document.getElementById('daysMonthDisplay').textContent = totalDays;
 
   // Docked in the timesheet: the calculator's month/year selectors ARE the page filter.
@@ -3246,13 +4266,14 @@ function onMonthYearChange() {
 
 // ─── Auto-Calculate Eligible Fridays ───
 function autoCalcEligibleFridays() {
-  const select = document.getElementById('calcEmpSelect');
-  const idx = select ? parseInt(select.value, 10) : -1;
-  const badgeText = document.getElementById('calcEmpBadgeText')?.textContent || '';
-  const isTimesheetSourcedCalc = idx >= 0 && badgeText.includes('مسحوبة من التايم شيت');
-  if (isTimesheetSourcedCalc) {
+  const tsSource = getCalculatorTimesheetSource();
+  if (tsSource) {
+    const result = getTimesheetOfficialRangeResult(tsSource.emp, {
+      ...tsSource.cfg,
+      nominalSalary: getEmployeeNominalSalary(tsSource.emp, tsSource.cfg.nominalSalary)
+    });
     const inpFridaysEl = document.getElementById('inpFridays');
-    if (inpFridaysEl) inpFridaysEl.value = 0;
+    if (inpFridaysEl) inpFridaysEl.value = result.eligibleFridays || 0;
     recalculate();
     return;
   }
@@ -3300,12 +4321,11 @@ function validateDays() {
   // Timesheet-sourced mode: the figures mirror the actual record (a Friday worked as regular
   // duty counts as attendance while workingDays excludes Fridays), so the manual-entry
   // "exceeds working days" warning is a FALSE alarm here. Show a calm source note instead.
-  const tsBadgeText = document.getElementById('calcEmpBadgeText')?.textContent || '';
-  const tsSelect = document.getElementById('calcEmpSelect');
-  const tsSourced = tsSelect && parseInt(tsSelect.value, 10) >= 0 && tsBadgeText.includes('مسحوبة من التايم شيت');
-  if (tsSourced) {
-    document.getElementById('daysSumDisplay').textContent = sum;
-    document.getElementById('daysMonthDisplay').textContent = workingDays;
+  const tsSource = getCalculatorTimesheetSource();
+  if (tsSource) {
+    const dayDist = getTimesheetRangeDayDistribution(tsSource.emp, tsSource.cfg);
+    document.getElementById('daysSumDisplay').textContent = dayDist.totalDays;
+    document.getElementById('daysMonthDisplay').textContent = dayDist.totalDays;
     const remainingSrcEl = document.getElementById('daysRemaining');
     if (remainingSrcEl) {
       remainingSrcEl.textContent = '✓ مطابق لسجل التايم شيت';
@@ -3313,10 +4333,11 @@ function validateDays() {
     }
     const warnEl = document.getElementById('daysWarning');
     if (warnEl) warnEl.style.display = 'none';
-    const pctSrc = (v) => workingDays > 0 ? Math.min(100, (v / workingDays) * 100) : 0;
-    document.getElementById('daysBarAttend').style.width = pctSrc(attend) + '%';
-    document.getElementById('daysBarLeave').style.width = pctSrc(leaves) + '%';
-    document.getElementById('daysBarAbsent').style.width = pctSrc(absents) + '%';
+    const pctSrc = (v) => dayDist.totalDays > 0 ? Math.min(100, (v / dayDist.totalDays) * 100) : 0;
+    document.getElementById('daysBarAttend').style.width = pctSrc(dayDist.attendanceDays) + '%';
+    document.getElementById('daysBarFriday').style.width = pctSrc(dayDist.fridayDays) + '%';
+    document.getElementById('daysBarLeave').style.width = pctSrc(dayDist.leaveDays) + '%';
+    document.getElementById('daysBarAbsent').style.width = pctSrc(dayDist.absentDays) + '%';
     return;
   }
 
@@ -3358,10 +4379,7 @@ function validateDays() {
 function recalculate() {
   const cfg = getConfig();
 
-  const calcEmpSelect = document.getElementById('calcEmpSelect');
-  const calcEmpIdx = calcEmpSelect ? parseInt(calcEmpSelect.value, 10) : -1;
-  const calcEmpBadgeText = document.getElementById('calcEmpBadgeText')?.textContent || '';
-  const isTimesheetSourcedCalc = calcEmpIdx >= 0 && calcEmpBadgeText.includes('مسحوبة من التايم شيت');
+  const tsSource = getCalculatorTimesheetSource();
 
   // Always keep fields editable and synchronized
   const inpFridaysEl = document.getElementById('inpFridays');
@@ -3392,11 +4410,10 @@ function recalculate() {
   // the timesheet uses) so the two pages always agree — including shift, early-arrival, hourly,
   // early-leave, etc. Pure manual entry (no employee) still uses the settings-aware formula.
   let result;
-  if (isTimesheetSourcedCalc && employees[calcEmpIdx]) {
+  if (tsSource) {
     // AUTHORITATIVE per-month engine aggregated over the displayed months — identical to the
     // payroll close, month docs, print and slip, so every figure on the page agrees.
-    const emp = employees[calcEmpIdx];
-    result = getTimesheetOfficialRangeResult(emp, { ...cfg, nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary) });
+    result = getTimesheetOfficialRangeResult(tsSource.emp, { ...cfg, nominalSalary: getEmployeeNominalSalary(tsSource.emp, cfg.nominalSalary) });
   } else {
     result = calculateSalary(cfg, inputs);
   }
@@ -3695,37 +4712,33 @@ function getLastAttendanceDate(employee) {
 }
 
 function isEmployeeActive(employee, year, month) {
-  const lastAttendance = getLastAttendanceDate(employee);
-  if (!lastAttendance) return false;
-
-  // Compare distance from the last day of the currently viewed month
-  const targetEndOfMonth = new Date(year, month, 0); 
-  const diffTime = targetEndOfMonth - lastAttendance;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
-  // If they worked within 30 days before the end of the selected month (or anytime after), they are active
-  return diffDays <= 30;
+  return employeeHasActiveDayInMonth(employee, year, month);
 }
 
 const employeeTableState = { sortKey: 'name', sortDir: 'asc', activeOnly: false };
 
 function getEmployeeActivityInfo(employee, cfg) {
   const lastActivity = getLastAttendanceDate(employee);
-  const targetEnd = new Date(cfg.year, cfg.month, 0);
-  const inactive = !lastActivity || Math.floor((targetEnd - lastActivity) / 86400000) > 30;
-  let liveBalance = Number(employee.prevAdvance || 0);
+  const lifecycle = getEmployeeLifecycleStatus(employee, cfg.year, cfg.month);
+  // Fallback only (used if the calc below throws): negate to match calculateBalanceAfterPayment's
+  // internal convention (positive = employee owes), since raw prevAdvance is positive = company owes.
+  let liveBalance = -Number(employee.prevAdvance || 0);
   try {
     const res = calculateSalaryForEmployee(employee, { ...cfg, nominalSalary: getEmployeeNominalSalary(employee, cfg.nominalSalary) });
     liveBalance = calculateBalanceAfterPayment(res, 0);
   } catch (e) {}
-  const status = inactive ? (Math.round(liveBalance) !== 0 ? 'pending' : 'inactive') : 'active';
-  return { lastActivity, liveBalance, status };
+  const status = lifecycle.status;
+  return { lastActivity, liveBalance, status, lifecycle };
 }
 
 function getEmployeeStatusLabel(status) {
   if (status === 'active') return '✅ فعال';
   if (status === 'pending') return '⚠️ رصيد معلق';
   return '❌ غير فعال';
+}
+
+function getEmployeeStatusLabel(status) {
+  return status === 'active' ? 'يعمل' : 'مستقيل';
 }
 
 function sortEmployeesTable(key) {
@@ -3769,7 +4782,7 @@ function renderEmployeesTableLegacyDisabled() {
       if (employeeTableState.sortKey === 'lastActivity') return (((a.info.lastActivity || 0) - (b.info.lastActivity || 0)) * dir);
       if (employeeTableState.sortKey === 'balance') return (a.info.liveBalance - b.info.liveBalance) * dir;
       if (employeeTableState.sortKey === 'status') {
-        const order = { active: 1, pending: 2, inactive: 3 };
+        const order = { active: 1, inactive: 2 };
         return ((order[a.info.status] || 9) - (order[b.info.status] || 9)) * dir;
       }
       return 0;
@@ -3796,7 +4809,7 @@ function renderEmployeesTableLegacyDisabled() {
       liveNet = res.finalSalary || 0;
     } catch (e) { console.warn('Live calc error for', emp.name, e); }
     const row = document.createElement('tr');
-    const statusClass = info.status === 'active' ? 'active' : info.status === 'pending' ? 'pending' : 'inactive';
+    const statusClass = info.status === 'active' ? 'active' : 'inactive';
     const canSeeSalary = !window.PermissionService || window.PermissionService.checkField('employees', 'salary');
     const canSeeBalance = !window.PermissionService || window.PermissionService.checkField('employees', 'prevAdvance');
     const canUpdateEmployees = !window.PermissionService || window.PermissionService.check('employees', 'update');
@@ -8296,6 +9309,7 @@ function setAdminSetting(path, value, options = {}) {
   if (currentPage === 'admin_panel') renderAdminPanel();
   if (currentPage === 'workflow' && path.startsWith('workflow.')) renderWorkflowStudio();
   if (currentPage === 'inventory' && path.startsWith('inventory.')) renderInventoryPage();
+  if (path === 'ui.orbStyle') applyOrbStyle(value);
 }
 
 let workflowViewport = { zoom: 1, panX: 0, panY: 0, isPanning: false, panStartX: 0, panStartY: 0, originX: 0, originY: 0 };
@@ -10234,7 +11248,7 @@ function getTimesheetMonthlyDocs(emp, cfg = getConfig()) {
       const grossDue = result.totalEarnings || 0;
       // صافي الشهر = المستحق الإجمالي − الغرامات − سلف هذا الشهر (الرصيد السابق يُحسب مرة واحدة في خلاصة الفترة)
       const netDue = (result.salaryDue || 0) - monthAdvances;
-      return { month, year, label: `${MONTHS_AR[month - 1] || month} ${year}`, result, grossDue, penalties, monthAdvances, netDue };
+      return { month, year, label: `${MONTHS_AR[month - 1] || month} ${year}`, result, grossDue, penalties, monthAdvances, netDue, monthEndBonus: result.monthEndBonus || 0 };
     });
 }
 
@@ -10254,11 +11268,13 @@ function getTimesheetOfficialRangeResult(emp, cfg = getConfig(), docsOpt = null)
     earlyDeduction: 0, leaveDeduction: 0, absenceDeduction: 0,
     fridayCompensation: 0, fridayWorkedDays: 0, eligibleFridays: 0, autoFridayPenalty: 0,
     currentAdvance: 0, officialAdvance: 0,
-    penalty: 0, totalPenalty: 0, damage: 0, totalDamage: 0, bonus: 0, totalBonus: 0,
+    penalty: 0, totalPenalty: 0, damage: 0, totalDamage: 0, bonus: 0, dailyBonus: 0, monthEndBonus: 0, totalBonus: 0,
     automaticPenalties: 0, totalEarnings: 0, salaryDueDeductions: 0, salaryDue: 0,
     graceMinutesUsed: 0, graceByKey: {},
     dailyRate: 0, hourlyRate: 0, allowanceRate: 0,
-    previousAdvance: asMoney(emp?.prevAdvance),
+    // Negate the raw ledger value once here (positive=company owes → internal positive=employee owes),
+    // matching calculateSalaryForEmployee's convention so rangeNetBeforeBalance/finalSalary below stay correct.
+    previousAdvance: -asMoney(emp?.prevAdvance),
     nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary),
   };
   docs.forEach(doc => {
@@ -10287,6 +11303,8 @@ function getTimesheetOfficialRangeResult(emp, cfg = getConfig(), docsOpt = null)
     agg.penalty += r.totalPenalty || 0;
     agg.damage += r.totalDamage || 0;
     agg.bonus += r.totalBonus || 0;
+    agg.dailyBonus += r.dailyBonus || 0;
+    agg.monthEndBonus += r.monthEndBonus || 0;
     agg.automaticPenalties += r.automaticPenalties || 0;
     agg.totalEarnings += r.totalEarnings || 0;
     agg.salaryDueDeductions += r.salaryDueDeductions || 0;
@@ -10378,6 +11396,7 @@ function buildTimesheetMonthSummaryInnerHtml(doc) {
       <span>صافي المستحق: <b class="net">${formatMoneyReadable(doc.netDue)}</b></span>
       <span>الحضور: <b>${r.attendanceDays} يوم</b> · الغياب: <b>${r.absentDays}</b></span>
       <span>التأخير: <b>${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</b> · الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)}</b></span>
+      <span>حافز نهاية الشهر: <b>${formatMoneyReadable(r.monthEndBonus || 0)}</b></span>
       ${timesheetMonthStateChipHtml(doc.year, doc.month)}
     </div>
   `;
@@ -10403,10 +11422,13 @@ function buildTimesheetSummaryPanelHtml(cfg, docsOpt = null) {
     acc.gross += doc.grossDue;
     acc.penalties += doc.penalties;
     acc.advances += doc.monthAdvances;
+    acc.monthEndBonus += doc.monthEndBonus || 0;
     acc.net += doc.netDue;
     return acc;
-  }, { gross: 0, penalties: 0, advances: 0, net: 0 });
-  const previousBalance = asMoney(emp.prevAdvance);
+  }, { gross: 0, penalties: 0, advances: 0, monthEndBonus: 0, net: 0 });
+  // Negated: raw emp.prevAdvance is positive=company-owes, but this display/subtraction
+  // below uses the internal positive=employee-owes convention (read-only panel, no edit input).
+  const previousBalance = -asMoney(emp.prevAdvance);
   const finalAfterBalance = totals.net - previousBalance;
   const cardsHtml = docs.length ? `
     <div class="payroll-summary-grid">
@@ -10428,7 +11450,8 @@ function buildTimesheetSummaryPanelHtml(cfg, docsOpt = null) {
             <span>المستحق الإجمالي: <b>${formatMoneyReadable(doc.grossDue)}</b></span>
             <span>الأساس: <b>${formatNum(r.baseSalary)}</b> · البدلات: <b>${formatNum(r.allowances)}</b></span>
             <span>الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)} (${formatNum(r.totalOvertimeValue)})</b></span>
-            <span>حافز الجمعة: <b>${formatNum(r.fridayCompensation)}</b> · المكافآت: <b>${formatNum(r.totalBonus)}</b></span>
+            <span>حافز الجمعة: <b>${formatNum(r.fridayCompensation)}</b> · مكافآت الأيام: <b>${formatNum(r.dailyBonus || 0)}</b></span>
+            <span>حافز نهاية الشهر: <b>${formatMoneyReadable(r.monthEndBonus || 0)}</b></span>
             <span>الغرامات (تأخير/غياب/يدوي/أضرار): <b>${formatNum(doc.penalties)}</b></span>
             <span>السلف المسحوبة في هذا الشهر: <b>${formatNum(doc.monthAdvances)}</b> (رسمي ${formatNum(r.officialAdvance)} + جدول ${formatNum(r.currentAdvance)})</span>
             <span>الحضور: <b>${r.attendanceDays}</b> · الغياب: <b>${r.absentDays}</b> · الإجازة: <b>${r.leaveDays}</b></span>
@@ -10448,6 +11471,7 @@ function buildTimesheetSummaryPanelHtml(cfg, docsOpt = null) {
       <span>إجمالي الفترة: <b class="pos">${formatMoneyReadable(totals.gross)}</b></span>
       <span>إجمالي الغرامات: <b class="neg">${formatMoneyReadable(totals.penalties)}</b></span>
       <span>إجمالي السلف المسحوبة: <b class="neg">${formatMoneyReadable(totals.advances)}</b></span>
+      <span>إجمالي حوافز نهاية الشهر: <b class="pos">${formatMoneyReadable(totals.monthEndBonus)}</b></span>
       <span>صافي الفترة: <b class="net">${formatMoneyReadable(totals.net)}</b></span>
       <span>الرصيد السابق: <b>${formatSignedBalance(previousBalance)}</b></span>
       <span class="ts-calc-final">الصافي النهائي بعد الرصيد: <b>${formatMoneyReadable(finalAfterBalance)}</b></span>
@@ -10489,6 +11513,17 @@ function buildTimesheetPayrollControlsHtml(emp, cfg) {
   // Official per-month engine (same as payroll closing/print) — the ONE net for the page.
   const official = getTimesheetOfficialRangeResult(emp, cfg);
   const suggestedPosting = Math.round(official.finalSalary || 0);
+  const monthBonusInputs = getTimesheetSelectedMonths(cfg.year)
+    .filter(month => recordsForMonth(emp, cfg.year, month).length > 0)
+    .map(month => {
+      const value = getTimesheetMonthEndBonus(emp, cfg.year, month);
+      return `
+        <label>
+          <span>حافز نهاية ${escapeHtml(MONTHS_AR[month - 1] || month)}</span>
+          <input type="number" class="form-input" value="${value || ''}" placeholder="0" oninput="updateTimesheetMonthEndBonus(${cfg.year}, ${month}, this.value)">
+        </label>
+      `;
+    }).join('');
   return `
     <div class="timesheet-payroll-control-panel">
       <div class="timesheet-payroll-copy">
@@ -10498,7 +11533,7 @@ function buildTimesheetPayrollControlsHtml(emp, cfg) {
       <div class="timesheet-payroll-metrics">
         <span>صافي الأشهر المعروضة: <b>${formatMoneyReadable(official.rangeNetBeforeBalance || 0)}</b></span>
         <span>بعد الرصيد السابق: <b>${formatMoneyReadable(official.finalSalary || 0)}</b></span>
-        <span>رصيد الموظف الحالي: <b>${formatSignedBalance(previousBalance)}</b></span>
+        <span>رصيد الموظف الحالي: <b>${formatSignedBalance(-previousBalance)}</b></span>
       </div>
       <div class="timesheet-payroll-inputs">
         <label>
@@ -10509,6 +11544,7 @@ function buildTimesheetPayrollControlsHtml(emp, cfg) {
           <span>مبلغ تثبيت الراتب</span>
           <input type="number" id="timesheetPostingAmountInput" class="form-input" value="${suggestedPosting}" oninput="this.dataset.manualEdit='1'">
         </label>
+        ${monthBonusInputs}
       </div>
       <div class="timesheet-payroll-actions">
         <button class="btn-primary" onclick="timesheetDocumentVisibleDays()" title="يوثق فقط الأيام الظاهرة حالياً في فلتر الأشهر والموظف">
@@ -10536,15 +11572,23 @@ function buildTimesheetAdvanceLedgerPanelHtml(emp, cfg) {
   const cashTotal = acceptedRows.filter(item => item.type === 'cash').reduce((sum, item) => sum + asMoney(item.amount), 0);
   const foodTotal = acceptedRows.filter(item => item.type === 'food').reduce((sum, item) => sum + asMoney(item.amount), 0);
   const reviewCount = rows.length - acceptedRows.length;
-  const rowHtml = rows.length ? rows.map(item => `
-    <tr>
+  const rowHtml = rows.length ? rows.map(item => {
+    const settlementNote = getTimesheetAdvanceSettlementNote(item);
+    return `
+    <tr role="button" tabindex="0" title="تعديل السلفة" onclick="editTimesheetOfficialAdvance('${jsString(item.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editTimesheetOfficialAdvance('${jsString(item.id)}');}">
       <td>${escapeHtml(item.date || '-')}</td>
       <td>${escapeHtml(item.type === 'food' ? 'طعام' : item.type === 'cash' ? 'نقدية' : (item.type || '-'))}</td>
       <td class="num">${formatNum(item.amount)} ${getAdminCurrencySymbol()}</td>
-      <td>${escapeHtml(item.description || item.advanceTypeRaw || '-')}</td>
+      <td>${escapeHtml(item.description || item.advanceTypeRaw || '-')}${settlementNote ? `<br><small>${escapeHtml(settlementNote)}</small>` : ''}</td>
       <td><span class="ts-status-pill ${item.status === 'needs_review' ? 'warn' : 'done'}">${escapeHtml(item.status === 'needs_review' ? 'تحتاج مراجعة' : 'معتمدة')}</span></td>
+      <td>
+        <button type="button" class="timesheet-advance-list-edit" onclick="event.stopPropagation(); editTimesheetOfficialAdvance('${jsString(item.id)}')">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>تعديل</span>
+        </button>
+      </td>
     </tr>
-  `).join('') : '<tr><td colspan="5" class="empty-cell">لا توجد سلف مسجلة لهذا الموظف في الأيام المعروضة.</td></tr>';
+  `}).join('') : '<tr><td colspan="6" class="empty-cell">لا توجد سلف مسجلة لهذا الموظف في الأيام المعروضة.</td></tr>';
 
   return `
     <div class="timesheet-advance-ledger-panel">
@@ -10563,7 +11607,7 @@ function buildTimesheetAdvanceLedgerPanelHtml(emp, cfg) {
       </div>
       <div class="timesheet-advance-table-wrap">
         <table class="timesheet-advance-table">
-          <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>الوصف</th><th>الحالة</th></tr></thead>
+          <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>الوصف</th><th>الحالة</th><th>تعديل</th></tr></thead>
           <tbody>${rowHtml}</tbody>
         </table>
       </div>
@@ -10591,6 +11635,21 @@ window.updateTimesheetEmployeePrevBalance = function (value) {
     postingInput.value = Math.round(official.finalSalary || 0);
   }
   applyTimesheetStatCards(official);
+  debounceSave();
+};
+
+window.updateTimesheetMonthEndBonus = function (year, month, value) {
+  const emp = employees[selectedEmpIdx];
+  if (!emp) return;
+  setTimesheetMonthEndBonus(emp, Number(year), Number(month), value);
+  const official = getTimesheetOfficialRangeResult(emp, getConfig());
+  const postingInput = document.getElementById('timesheetPostingAmountInput');
+  if (postingInput && !postingInput.dataset.manualEdit) {
+    postingInput.value = Math.round(official.finalSalary || 0);
+  }
+  applyTimesheetStatCards(official);
+  if (timesheetAggregateTimer) clearTimeout(timesheetAggregateTimer);
+  timesheetAggregateTimer = setTimeout(refreshTimesheetAggregates, 250);
   debounceSave();
 };
 
@@ -10626,7 +11685,9 @@ window.timesheetPostSelectedEmployeeSalary = async function () {
   if (!emp) return;
   const amount = parseFloat(document.getElementById('timesheetPostingAmountInput')?.value || '0') || 0;
   if (!confirm(`تثبيت مبلغ ${formatMoneyReadable(amount)} كرصيد للموظف ${emp.name}؟ سيُحفظ في رصيد الموظف اليدوي بدون قيد محاسبي.`)) return;
-  emp.prevAdvance = -Math.round(amount);
+  // amount is what the company owes the employee this period, so store it as-is
+  // (positive = company owes, matching the ledger convention of emp.prevAdvance).
+  emp.prevAdvance = Math.round(amount);
   emp.lastTimesheetSalaryFix = {
     amount: Math.round(amount),
     periodLabel: getTimesheetPeriodLabel(cfg),
@@ -10635,11 +11696,35 @@ window.timesheetPostSelectedEmployeeSalary = async function () {
   };
   saveData();
   renderTimesheet();
-  showToast(`تم تثبيت راتب ${emp.name} في الرصيد: ${formatSignedBalance(emp.prevAdvance)}.`, 'success');
+  showToast(`تم تثبيت راتب ${emp.name} في الرصيد: ${formatSignedBalance(-emp.prevAdvance)}.`, 'success');
 };
 
 // Live, in-place refresh of a single timesheet row's derived cells — does NOT touch any <input>,
 // so the field the user is typing in keeps focus and caret position.
+// Monthly lateness grace (100 min/month) is a MONTHLY pool, allocated to specific days by the
+// payroll engine (officialResult.graceByKey → minutes graced on each day). getDailyCalc is per-day
+// and knows nothing about it, so on its own every late day shows its full raw deduction. This helper
+// folds the day's graced minutes back into the daily figures so the row matches the monthly total:
+// a graced minute costs nothing — its ×1 penalty is removed AND its unearned pay is restored
+// (exactly what calculateSalaryForEmployee does at the month level). Cached so the instant per-row
+// refresh (keystroke) and the debounced aggregate pass both apply the same allocation.
+let timesheetGraceByKey = {};
+function graceAdjustedDaily(calc, gracedMinForDay) {
+  const graceCredit = ((Number(gracedMinForDay) || 0) / 60) * (calc.hourlyRate || 0);
+  // graceCredit can never exceed the day's own late penalty (grace minutes ≤ that day's late minutes).
+  const capped = Math.min(graceCredit, calc.late || 0);
+  return {
+    graceCredit: capped,
+    late: Math.max(0, (calc.late || 0) - capped),               // penalty after grace
+    dayPay: (calc.dayPay || 0) + capped,                         // unearned pay restored
+    penaltyTotal: Math.max(0, (calc.penaltyTotal || 0) - capped),// day's total deductions after grace
+    total: (calc.total || 0) + 2 * capped,                       // net after grace (restore + un-penalize)
+  };
+}
+function timesheetGracedMinutesFor(period) {
+  return timesheetGraceByKey[`${period.year}-${period.month}-${period.day}`] || 0;
+}
+
 function refreshTimesheetRow(empIdx, dayIdx) {
   if (currentPage !== 'timesheet' || empIdx !== selectedEmpIdx) return;
   const emp = employees[empIdx];
@@ -10649,16 +11734,19 @@ function refreshTimesheetRow(empIdx, dayIdx) {
   const rec = emp.records[dayIdx];
   const period = getRecordPeriod(rec, getConfig());
   const calc = getDailyCalc(rec, emp, { ...getConfig(), year: period.year, month: period.month });
+  const adj = graceAdjustedDaily(calc, timesheetGracedMinutesFor(period));
   const netEl = row.querySelector('[data-ts-net]');
-  if (netEl) netEl.textContent = formatMoneyReadable(calc.total);
+  if (netEl) netEl.textContent = formatMoneyReadable(adj.total);
+  const grossEl = row.querySelector('[data-ts-gross]');
+  if (grossEl) grossEl.textContent = formatMoneyReadable(adj.dayPay + calc.allowance + calc.otValue + (Number(rec.bonus) || 0));
+  const deductionsEl = row.querySelector('[data-ts-deductions]');
+  if (deductionsEl) deductionsEl.textContent = formatMoneyReadable(adj.penaltyTotal + calc.advanceTotal);
   const otInfo = row.querySelector('[data-ts-otinfo]');
   if (otInfo) otInfo.textContent = `${formatHoursAsMinutesLabel(calc.otHours, { withHours: false })} (${formatMoneyReadable(calc.otValue)})`;
   const lateInfo = row.querySelector('[data-ts-lateinfo]');
-  if (lateInfo) lateInfo.textContent = `${Math.round(calc.lateMinutes || 0)} دقائق (${formatMoneyReadable(calc.late)})`;
+  if (lateInfo) lateInfo.textContent = `${Math.round(calc.lateMinutes || 0)} دقائق (${formatMoneyReadable(adj.late)})`;
   const earlyInfo = row.querySelector('[data-ts-earlyinfo]');
   if (earlyInfo) earlyInfo.textContent = `${Math.round(calc.earlyMinutes || 0)} دقائق (${formatMoneyReadable(calc.earlyDeduction)})`;
-  const penEl = row.querySelector('[data-ts-penalties]');
-  if (penEl) penEl.textContent = formatMoneyReadable(calc.penaltyTotal);
   // Grace marker depends on the month-wide allocation → updated in the debounced refreshTimesheetAggregates.
 }
 
@@ -10678,22 +11766,37 @@ function refreshTimesheetAggregates() {
   monthlyDocs.forEach(doc => { docsByMonth[`${doc.year}-${doc.month}`] = doc; });
   document.querySelectorAll('#timesheetBody tr[data-ts-month-summary]').forEach(row => {
     const doc = docsByMonth[row.dataset.tsMonthSummary];
-    if (doc) row.firstElementChild.innerHTML = buildTimesheetMonthSummaryInnerHtml(doc);
+    if (doc) row.firstElementChild.innerHTML = buildTimesheetMonthSummaryInnerHtml(doc) + buildTimesheetForecastLineHtml(emp, doc);
   });
   const panel = document.getElementById('timesheetSummaryPanel');
   if (panel) panel.outerHTML = buildTimesheetSummaryPanelHtml(cfg, monthlyDocs);
   const controls = document.querySelector('.timesheet-payroll-control-panel');
   if (controls) controls.outerHTML = buildTimesheetPayrollControlsHtml(emp, cfg);
-  // Refresh the monthly-grace markers across all rows (cheap DOM updates, one recompute).
+  // Refresh the monthly-grace markers AND the money cells across all rows. Editing one day can
+  // reallocate the 100-min pool to different days, so every row's late/deduction/net may shift —
+  // recompute them here from the fresh allocation (cheap DOM updates, one month recompute).
   const graceByKey = officialResult.graceByKey || {};
+  timesheetGraceByKey = graceByKey; // keep the keystroke-path cache in sync with the fresh allocation
   document.querySelectorAll('#timesheetBody tr[data-ri]').forEach(row => {
     const rec = emp.records[Number(row.dataset.ri)];
     const graceEl = row.querySelector('[data-ts-gracemark]');
-    if (!rec || !graceEl) return;
+    if (!rec) return;
     const p = getRecordPeriod(rec, cfg);
     const g = graceByKey[`${p.year}-${p.month}-${p.day}`] || 0;
-    graceEl.style.display = g > 0 ? '' : 'none';
-    graceEl.textContent = `⏱ سماحية ${Math.round(g)}د`;
+    if (graceEl) {
+      graceEl.style.display = g > 0 ? '' : 'none';
+      graceEl.textContent = `⏱ سماحية ${Math.round(g)}د`;
+    }
+    const calc = getDailyCalc(rec, emp, { ...cfg, year: p.year, month: p.month });
+    const adj = graceAdjustedDaily(calc, g);
+    const netEl = row.querySelector('[data-ts-net]');
+    if (netEl) netEl.textContent = formatMoneyReadable(adj.total);
+    const grossEl = row.querySelector('[data-ts-gross]');
+    if (grossEl) grossEl.textContent = formatMoneyReadable(adj.dayPay + calc.allowance + calc.otValue + (Number(rec.bonus) || 0));
+    const dedEl = row.querySelector('[data-ts-deductions]');
+    if (dedEl) dedEl.textContent = formatMoneyReadable(adj.penaltyTotal + calc.advanceTotal);
+    const lateInfo = row.querySelector('[data-ts-lateinfo]');
+    if (lateInfo) lateInfo.textContent = `${Math.round(calc.lateMinutes || 0)}د (${formatMoneyReadable(adj.late)})`;
   });
   // Keep the docked calculator in step with table edits (it shows the same official numbers).
   if (document.getElementById('pageCalculator')?.classList.contains('ts-docked-calc')) {
@@ -10774,6 +11877,149 @@ window.changeYearFilter = function(year) {
   renderTimesheet();
 };
 
+// ─── Payroll forecast (month still in progress) ───
+// Projects what a single "normal" day (fully present, no lateness, no OT)
+// would earn this employee — used only to forecast days that haven't
+// happened/been entered yet. Deliberately excludes advances and bonuses: a
+// forecast is a projection of base pay, not a reconstruction of every manual
+// adjustment.
+function getEmployeeNormalDayPay(emp, year, month, day, cfg) {
+  const mockRec = { year, month, day, status: 'normal', checkInMin: null, checkOutMin: null };
+  const calc = getDailyCalc(mockRec, emp, cfg);
+  return (calc.dayPay || 0) + (calc.allowance || 0);
+}
+
+function getEmployeeForecastDailySummary(emp, year, month, day, cfg = getConfig()) {
+  const forecastCfg = { ...cfg, year, month, nominalSalary: getEmployeeNominalSalary(emp, cfg.nominalSalary) };
+  const mockRec = { year, month, day, status: 'normal', checkInMin: null, checkOutMin: null };
+  const calc = getDailyCalc(mockRec, emp, forecastCfg);
+  const shift = getEmployeeShift(emp);
+  return {
+    calc,
+    payable: (calc.dayPay || 0) + (calc.allowance || 0),
+    netDue: (calc.dayPay || 0) + (calc.allowance || 0),
+    hours: shift.hours || getPayrollSettings().standardDayHours || 9,
+    allowance: calc.allowance || 0
+  };
+}
+
+// Forecasts an employee's payroll position for a month: actual wages due
+// for days already recorded + a projection for every remaining working day
+// (excluding Friday) that has no record yet AND falls after the attendance
+// cutoff anchor (see isCalendarDayForecastEligible — NOT simply "today
+// onward"), at their normal per-day rate. This means a lagging import (last
+// complete update behind today, or even behind the viewed month) still
+// forecasts the in-between gap instead of silently dropping those days.
+// A closed month never forecasts. There's no separate "hire date" field, so
+// a new employee with no records yet simply has nothing to forecast until
+// their attendance starts getting logged — no special-casing needed. Uses
+// netDue (never advances) throughout, matching
+// getEmployeeDailyFinancialSummary's existing exclusion.
+function getEmployeePayrollForecast(emp, year, month) {
+  const cfg = { ...getConfig(), year, month };
+  const daysInMonth = getDaysInMonth(year, month);
+  const monthClosed = isPayrollMonthClosed(year, month);
+
+  let actualSoFar = 0;
+  const recordedDays = new Set();
+  (emp.records || []).forEach(rec => {
+    if (!recordBelongsToMonth(rec, year, month)) return;
+    if (!isCalendarAttendanceRecord(rec) && !rec.managerApproved) return;
+    const period = getRecordPeriod(rec, cfg);
+    recordedDays.add(period.day);
+    actualSoFar += getEmployeeDailyFinancialSummary(emp, rec, cfg).netDue;
+  });
+
+  let forecastedRemaining = 0;
+  let forecastedDaysCount = 0;
+  if (!monthClosed) {
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (isFriday(year, month, d)) continue;
+      if (recordedDays.has(d)) continue;
+      if (!isCalendarDayForecastEligible(year, month, d)) continue;
+      if (!isEmployeeActiveOnDate(emp, year, month, d)) continue;
+      forecastedRemaining += getEmployeeForecastDailySummary(emp, year, month, d, cfg).netDue;
+      forecastedDaysCount++;
+    }
+  }
+
+  return {
+    actualSoFar,
+    forecastedRemaining,
+    forecastedDaysCount,
+    projectedTotal: actualSoFar + forecastedRemaining,
+    isForecastActive: forecastedDaysCount > 0
+  };
+}
+
+// Company-wide payroll + operating-cost forecast — the single "how much do
+// I still need to pay/spend this month" figure. Active whenever the month
+// has at least one forecast-eligible day left (per the cutoff anchor, not
+// wall-clock "today") and isn't closed — a month can still have real gaps to
+// forecast even if it's chronologically in the past, when the last import
+// never fully covered it.
+function getPayrollForecastSummary(year, month) {
+  const monthClosed = isPayrollMonthClosed(year, month);
+  const activeEmployees = employees.filter(emp => emp && emp.name && employeeHasActiveDayInMonth(emp, year, month));
+  const perEmployee = activeEmployees.map(emp => ({ emp, forecast: getEmployeePayrollForecast(emp, year, month) }));
+  const actualLaborSoFar = perEmployee.reduce((sum, p) => sum + p.forecast.actualSoFar, 0);
+  const forecastedLaborRemaining = perEmployee.reduce((sum, p) => sum + p.forecast.forecastedRemaining, 0);
+  const operating = getWorkshopOperatingCostBreakdown(year, month);
+
+  return {
+    perEmployee,
+    actualLaborSoFar,
+    forecastedLaborRemaining,
+    projectedLaborTotal: actualLaborSoFar + forecastedLaborRemaining,
+    operatingMonthlyTotal: operating.monthlyTotal,
+    projectedGrandTotal: actualLaborSoFar + forecastedLaborRemaining + operating.monthlyTotal,
+    monthClosed,
+    isForecastActive: !monthClosed && perEmployee.some(p => p.forecast.isForecastActive)
+  };
+}
+
+function buildPayrollForecastCardHtml(year, month) {
+  const summary = getPayrollForecastSummary(year, month);
+  if (!summary.isForecastActive) {
+    const message = summary.monthClosed
+      ? `${MONTHS_AR[month - 1]} ${year} شهر مغلق — لا يوجد توقع، الأرقام كلها فعلية ومجمّدة.`
+      : `${MONTHS_AR[month - 1]} ${year} — لا توجد أيام متبقية للتوقع، الأرقام كلها فعلية.`;
+    return `
+      <div class="ts-forecast-card ts-forecast-closed" id="payrollForecastCard">
+        <div class="ts-forecast-header"><i class="fa-solid fa-circle-check"></i> ${message}</div>
+      </div>
+    `;
+  }
+  return `
+    <div class="ts-forecast-card" id="payrollForecastCard">
+      <div class="ts-forecast-header"><i class="fa-solid fa-wand-magic-sparkles"></i> توقع الإنفاق الإجمالي حتى نهاية ${MONTHS_AR[month - 1]}</div>
+      <div class="ts-forecast-grid">
+        <div class="ts-forecast-stat"><span>الأجور المستحقة حتى الآن (كل الموظفين)</span><strong>${formatMoneyReadable(summary.actualLaborSoFar)}</strong></div>
+        <div class="ts-forecast-stat ts-forecast-projected"><span>🔮 الأجور المتوقعة للأيام المتبقية</span><strong>${formatMoneyReadable(summary.forecastedLaborRemaining)}</strong></div>
+        <div class="ts-forecast-stat"><span>تشغيل/إيجار الشهر (تقديري)</span><strong>${formatMoneyReadable(summary.operatingMonthlyTotal)}</strong></div>
+        <div class="ts-forecast-stat ts-forecast-total"><span>🔮 الإجمالي المتوقع لنهاية الشهر</span><strong>${formatMoneyReadable(summary.projectedGrandTotal)}</strong></div>
+      </div>
+      <small class="ts-forecast-note">التوقع مبني على يوم عمل عادي بدون إضافي لكل موظف حسب دوامه المعتاد، ولا يشمل السلف إطلاقاً — السلف دفعة مقدّمة من مستحقات موجودة أصلاً وليست كلفة حقيقية إضافية.</small>
+    </div>
+  `;
+}
+
+// Per-selected-employee forecast line, appended alongside the existing
+// month summary row — only rendered for the month actually in progress.
+function buildTimesheetForecastLineHtml(emp, doc) {
+  if (!emp) return '';
+  const forecast = getEmployeePayrollForecast(emp, doc.year, doc.month);
+  if (!forecast.isForecastActive) return '';
+  return `
+    <div class="ts-forecast-inline">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      🔮 متوقع حتى نهاية الشهر (${forecast.forecastedDaysCount} يوم عمل متبقٍ بمعدّل يوم عادي):
+      <b>${formatMoneyReadable(forecast.projectedTotal)}</b>
+      <small>(الحالي ${formatMoneyReadable(forecast.actualSoFar)} + المتوقع ${formatMoneyReadable(forecast.forecastedRemaining)}) — بدون سلف</small>
+    </div>
+  `;
+}
+
 function renderTimesheet() {
   populateYearFilterDropdown();
   renderAttendanceFreshnessBanner('pageTimesheet', '.month-filter-bar');
@@ -10817,6 +12063,21 @@ function renderTimesheet() {
   const emp = employees[selectedEmpIdx];
   if (!emp) return;
 
+  // Ensure every day of each displayed month exists as an official row BEFORE building the
+  // table, so days no longer appear only after manually clicking "تعبئة الأيام المفقودة".
+  // Frozen (closed) months are left untouched; forecast/future days stay unmaterialized.
+  // Wrapped defensively: a failure here must never wedge or blank the timesheet render.
+  try {
+    let tsMaterialized = 0;
+    getTimesheetSelectedMonths(cfg.year).forEach(m => {
+      if (isPayrollMonthClosed(cfg.year, m)) return;
+      tsMaterialized += materializeTimesheetDays(emp, cfg.year, m);
+    });
+    if (tsMaterialized > 0) debounceSave();
+  } catch (e) {
+    console.warn('[timesheet] day materialization skipped:', e);
+  }
+
   const monthRecs = recordsForTimesheetRange(emp, cfg);
 
   // Month-by-month OFFICIAL salary docs (payroll-closing engine) — computed ONCE per render
@@ -10828,27 +12089,28 @@ function renderTimesheet() {
   applyTimesheetStatCards(officialResult);
 
   tableContainer.innerHTML = `
+    ${buildPayrollForecastCardHtml(cfg.year, cfg.month)}
     ${buildTimesheetPayrollControlsHtml(emp, cfg)}
     ${buildTimesheetAdvanceLedgerPanelHtml(emp, cfg)}
     <table class="data-table">
       <thead>
         <tr>
-          <th>اليوم</th>
-          <th>التاريخ</th>
-          <th>دخول</th>
-          <th>خروج</th>
-          <th>الحالة</th>
-          <th>ملاحظات</th>
-          <th>البدلات</th>
-          <th>الإضافي</th>
-          <th>تأخير</th>
-          <th>مغادرة مبكرة</th>
-          <th>سلفة</th>
-          <th>غرامة</th>
-          <th>أضرار</th>
-          <th>مكافأة</th>
-          <th>إجمالي الغرامات</th>
-          <th>الصافي</th>
+          <th class="ts-col-day">اليوم</th>
+          <th class="ts-col-date">التاريخ</th>
+          <th class="ts-col-time">دخول</th>
+          <th class="ts-col-time">خروج</th>
+          <th class="ts-col-status">الحالة</th>
+          <th class="ts-col-notes">ملاحظات</th>
+          <th class="ts-col-allowance">البدلات</th>
+          <th class="ts-col-ot">الإضافي</th>
+          <th class="ts-col-late">تأخير</th>
+          <th class="ts-col-early">مغادرة مبكرة</th>
+          <th class="ts-col-advance">سلفة</th>
+          <th class="ts-col-penalty">غرامة</th>
+          <th class="ts-col-bonus">مكافأة</th>
+          <th class="ts-col-gross">إجمالي الاستحقاق</th>
+          <th class="ts-col-deductions">إجمالي الاستقطاعات</th>
+          <th class="ts-col-net">الصافي</th>
         </tr>
       </thead>
       <tbody id="timesheetBody"></tbody>
@@ -10860,6 +12122,7 @@ function renderTimesheet() {
   // Monthly grace allocation (which days consumed the 100-min lateness grace) for the ⏱ marker —
   // taken from the official per-month engine's graceByDay allocation.
   const graceByKey = officialResult.graceByKey || {};
+  timesheetGraceByKey = graceByKey; // cache for refreshTimesheetRow (keystroke) so it applies the same grace
 
   const docsByMonth = {};
   monthlyDocs.forEach(doc => { docsByMonth[`${doc.year}-${doc.month}`] = doc; });
@@ -10870,7 +12133,7 @@ function renderTimesheet() {
     const sumTr = document.createElement('tr');
     sumTr.className = 'ts-month-summary-row';
     sumTr.dataset.tsMonthSummary = key;
-    sumTr.innerHTML = `<td colspan="16">${buildTimesheetMonthSummaryInnerHtml(doc)}</td>`;
+    sumTr.innerHTML = `<td colspan="16">${buildTimesheetMonthSummaryInnerHtml(doc)}${buildTimesheetForecastLineHtml(emp, doc)}</td>`;
     tbody.appendChild(sumTr);
   };
 
@@ -10923,18 +12186,43 @@ function renderTimesheet() {
     const officialAdvancesForDay = getOfficialAdvanceRowsForRecord(emp, rec, recCfg);
     const officialAdvanceTotalForDay = officialAdvancesForDay.reduce((sum, item) => sum + asMoney(item.amount), 0);
     const officialAdvanceApplied = getOfficialAdvanceAppliedForRecord(emp, rec, recCfg);
-    const hasOfficialOverride = rec.officialAdvanceOverride !== undefined && rec.officialAdvanceOverride !== null && rec.officialAdvanceOverride !== '';
-    const officialAdvanceInputValue = hasOfficialOverride ? officialAdvanceApplied : (officialAdvanceApplied || '');
+    const manualAdvanceForDay = asMoney(rec.advance);
     const officialAdvanceTitle = officialAdvancesForDay
       .map(item => `${item.date || ''} · ${formatMoneyReadable(item.amount)} · ${item.description || item.advanceTypeRaw || ''}`)
       .join(' | ');
-    const officialAdvanceBadge = officialAdvanceTotalForDay > 0 || rec.officialAdvanceOverride != null
-      ? `<div class="timesheet-official-advance-edit" title="${escapeHtml(officialAdvanceTitle || 'سلفة رسمية قابلة للتعديل لهذا اليوم')}">
-          <span>رسمي</span>
-          <input type="number" class="timesheet-official-advance-input" value="${officialAdvanceInputValue}" placeholder="${formatNum(officialAdvanceTotalForDay)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'officialAdvanceOverride', this.value)">
+    const advanceBadgeTitle = [
+      officialAdvanceTitle,
+      manualAdvanceForDay > 0 ? `سلفة تايم شيت محفوظة: ${formatMoneyReadable(manualAdvanceForDay)}` : '',
+    ].filter(Boolean).join(' | ');
+    const officialAdvanceBadge = calc.advanceTotal > 0
+      ? `<div class="timesheet-official-advance-edit" title="${escapeHtml(advanceBadgeTitle || 'سلفة لهذا اليوم')}">
+          <span>${officialAdvanceTotalForDay > 0 ? 'رسمي' : 'سلفة'}</span>
+          <b>${formatNum(calc.advanceTotal)}</b>
+          ${officialAdvancesForDay.length > 1 ? `<em>+${officialAdvancesForDay.length - 1}</em>` : ''}
         </div>`
       : '';
+    const advanceCellOpenAttrs = officialAdvancesForDay.length
+      ? `role="button" tabindex="0" title="${escapeHtml(officialAdvanceTitle || 'فتح السلف الرسمية لهذا اليوم')}" onclick="openTimesheetAdvanceDayList(${selectedEmpIdx}, ${ri})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTimesheetAdvanceDayList(${selectedEmpIdx}, ${ri});}"`
+      : '';
+    const addOfficialAdvanceButton = `<button type="button" class="timesheet-advance-action" title="إضافة سلفة رسمية لهذا اليوم" onclick="event.stopPropagation(); openTimesheetAdvanceCreate(${selectedEmpIdx}, ${ri})" aria-label="إضافة سلفة رسمية">+</button>`;
+    const manualPenaltyForDay = asMoney(rec.penalty) + asMoney(rec.damage);
+    const manualBonusForDay = asMoney(rec.bonus);
+    const penaltyInlineControl = `
+      <div class="timesheet-inline-amount-cell">
+        <button type="button" class="timesheet-inline-plus penalty" title="إضافة أو تعديل غرامة داخل التايم شيت" onclick="event.stopPropagation(); openTimesheetInlineAmountEdit(${selectedEmpIdx}, ${ri}, 'penalty')" aria-label="إضافة غرامة">+</button>
+        ${manualPenaltyForDay > 0 ? `<button type="button" class="timesheet-inline-amount-value penalty" title="تعديل الغرامة" onclick="event.stopPropagation(); openTimesheetInlineAmountEdit(${selectedEmpIdx}, ${ri}, 'penalty')">-${formatNum(manualPenaltyForDay)}</button>` : ''}
+        ${aiFieldIcon(rec, 'penalty')}
+      </div>`;
+    const bonusInlineControl = `
+      <div class="timesheet-inline-amount-cell">
+        <button type="button" class="timesheet-inline-plus bonus" title="إضافة أو تعديل مكافأة داخل التايم شيت" onclick="event.stopPropagation(); openTimesheetInlineAmountEdit(${selectedEmpIdx}, ${ri}, 'bonus')" aria-label="إضافة مكافأة">+</button>
+        ${manualBonusForDay > 0 ? `<button type="button" class="timesheet-inline-amount-value bonus" title="تعديل المكافأة" onclick="event.stopPropagation(); openTimesheetInlineAmountEdit(${selectedEmpIdx}, ${ri}, 'bonus')">+${formatNum(manualBonusForDay)}</button>` : ''}
+        ${aiFieldIcon(rec, 'bonus')}
+      </div>`;
     const graceKey = `${recPeriod.year}-${recPeriod.month}-${recPeriod.day}`;
+    const adj = graceAdjustedDaily(calc, graceByKey[graceKey]);
+    const dayGrossTotal = adj.dayPay + calc.allowance + calc.otValue + manualBonusForDay;
+    const dayDeductionTotal = adj.penaltyTotal + calc.advanceTotal;
 
     tr.innerHTML = `
       <td style="font-weight:700">${dayName}</td>
@@ -10962,7 +12250,7 @@ function renderTimesheet() {
       <td class="timesheet-cell-marked">
         <div style="display:flex; flex-direction:column; align-items:center; gap:2px; justify-content:center;">
           <input type="number" class="cell-input narrow" style="width:45px; text-align:center; height:22px; padding:2px; margin:0;" value="${rec.lateOverride ?? ''}" placeholder="${formatMoneyReadable(defaultCalc.late)}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'lateOverride', this.value)">
-          <span data-ts-lateinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.lateMinutes || 0)}د (${formatMoneyReadable(calc.late)})</span>
+          <span data-ts-lateinfo style="font-size:9.5px; opacity:0.75; white-space:nowrap;">${Math.round(calc.lateMinutes || 0)}د (${formatMoneyReadable(adj.late)})</span>
           <span data-ts-gracemark title="تم استعمال سماحية التأخير الشهرية هنا" style="font-size:9px; color:#a3e635; margin-top:-1px; ${graceByKey[graceKey] > 0 ? '' : 'display:none;'}">⏱ ${Math.round(graceByKey[graceKey] || 0)}د</span>
         </div>
       </td>
@@ -10973,17 +12261,17 @@ function renderTimesheet() {
         </div>
       </td>
       <td class="timesheet-cell-marked">
-        <div class="timesheet-advance-cell">
-          <input type="number" class="cell-input narrow${aiInputClass(rec, 'advance')}" value="${rec.advance || ''}" title="سلفة يدوية داخل التايم شيت" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'advance', this.value)">
-          ${aiFieldIcon(rec, 'advance')}
+        <div class="timesheet-advance-cell ${officialAdvancesForDay.length ? 'has-advances' : ''}" ${advanceCellOpenAttrs}>
           ${officialAdvanceBadge}
+          ${addOfficialAdvanceButton}
+          ${aiFieldIcon(rec, 'advance')}
         </div>
       </td>
-      <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'penalty')}" value="${rec.penalty || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'penalty', this.value)">${aiFieldIcon(rec, 'penalty')}</td>
-      <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'damage')}" value="${rec.damage || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'damage', this.value)">${aiFieldIcon(rec, 'damage')}</td>
-      <td class="timesheet-cell-marked"><input type="number" class="cell-input narrow${aiInputClass(rec, 'bonus')}" value="${rec.bonus || ''}" oninput="updateRecord(${selectedEmpIdx}, ${ri}, 'bonus', this.value)">${aiFieldIcon(rec, 'bonus')}</td>
-      <td data-ts-penalties style="font-weight:700; color:#f87171;" title="تأخير + مغادرة مبكرة + غياب + غرامة يدوية + أضرار">${formatMoneyReadable(calc.penaltyTotal)}</td>
-      <td data-ts-net style="font-weight:800; color:var(--accent-blue)">${formatMoneyReadable(calc.total)}</td>
+      <td class="timesheet-cell-marked">${penaltyInlineControl}</td>
+      <td class="timesheet-cell-marked">${bonusInlineControl}</td>
+      <td data-ts-gross style="font-weight:700; color:#34d399;" title="الأجر اليومي + البدلات + الإضافي + المكافأة">${formatMoneyReadable(dayGrossTotal)}</td>
+      <td data-ts-deductions style="font-weight:700; color:#f87171;" title="تأخير + مغادرة مبكرة + غياب + غرامة يدوية + السلف">${formatMoneyReadable(dayDeductionTotal)}</td>
+      <td data-ts-net style="font-weight:800; color:var(--accent-blue)">${formatMoneyReadable(adj.total)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -11065,6 +12353,48 @@ function autoFillMissingDaysForEmployee(emp, year, month) {
   return added;
 }
 
+// The last day of a month that may be materialized as an OFFICIAL row. We never
+// fabricate rows past the attendance-data cutoff — those days are forecast, not
+// confirmed zeros (see isCalendarDayForecastEligible). A month entirely before the
+// cutoff → whole month; the month containing the cutoff → up to the cutoff day; a
+// month entirely after the cutoff → nothing.
+function lastMaterializableDayForMonth(year, month) {
+  const daysInMonth = getDaysInMonth(year, month);
+  const cutoff = getAttendanceUpdateCutoffDate();
+  if (!cutoff) return 0;                       // no real attendance data yet → all forecast
+  const monthStart = new Date(year, month - 1, 1);
+  if (cutoff < monthStart) return 0;           // month is entirely after the cutoff
+  const monthEnd = new Date(year, month - 1, daysInMonth);
+  if (cutoff >= monthEnd) return daysInMonth;  // month is entirely on/before the cutoff
+  return cutoff.getDate();                      // cutoff lands inside this month
+}
+
+// Guarantee the timesheet OFFICIALLY contains every day of the given month (rows never
+// appear/disappear based on whether a value happens to exist). Empty pre-cutoff days
+// become plain 'absent' (or 'friday') rows so the fields can be filled in afterwards.
+// Bounded by both the data cutoff and the employee's employment period so we don't
+// invent absences for days that haven't been imported yet or before/after they worked.
+function materializeTimesheetDays(emp, year, month) {
+  if (!emp) return 0;
+  if (!Array.isArray(emp.records)) emp.records = [];
+  const maxDay = lastMaterializableDayForMonth(year, month);
+  let added = 0;
+  for (let d = 1; d <= maxDay; d++) {
+    if (typeof isEmployeeActiveOnDate === 'function' && !isEmployeeActiveOnDate(emp, year, month, d)) continue;
+    const exists = emp.records.some(r => r.day === d && r.month === month && r.year === year);
+    if (exists) continue;
+    emp.records.push({
+      day: d, month: month, year: year,
+      date: `${String(d).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`,
+      checkIn: '', checkOut: '',
+      status: isFriday(year, month, d) ? 'friday' : 'absent',
+      advance: 0, penalty: 0, bonus: 0, damage: 0
+    });
+    added++;
+  }
+  return added;
+}
+
 function autoFillMissingDays() {
   if (selectedEmpIdx < 0 || !employees[selectedEmpIdx]) return;
   const cfg = getConfig();
@@ -11095,10 +12425,11 @@ function updateRecord(empIdx, dayIdx, field, value) {
         : ((24 * 60 - rec.checkInMin) + rec.checkOutMin) / 60;
       rec.hours = Math.round(h * 100) / 100;
     }
-  } else if (['advance', 'penalty', 'bonus', 'damage'].includes(field)) {
+  } else if (field === 'penalty') {
+    rec.penalty = parseFloat(value) || 0;
+    rec.damage = 0;
+  } else if (['advance', 'bonus', 'damage'].includes(field)) {
     rec[field] = parseFloat(value) || 0;
-  } else if (field === 'officialAdvanceOverride') {
-    rec[field] = (value === '' || value == null) ? null : parseFloat(value) || 0;
   } else if (['allowanceOverride', 'otHoursOverride', 'lateOverride', 'earlyDeductionOverride'].includes(field)) {
     rec[field] = (value === '' || value == null) ? null : parseFloat(value);
   } else {
@@ -11491,7 +12822,7 @@ function printTimesheetForSelectedMonth() {
   if (!selectedEmp) { showToast('لا توجد بيانات للطباعة', 'error'); return; }
   const monthlyDocs = getTimesheetMonthlyDocs(selectedEmp, cfg);
   if (!monthlyDocs.length) { showToast('لا توجد أيام معروضة للطباعة ضمن الأشهر المختارة', 'error'); return; }
-  const w = window.open('', '_blank', 'width=1100,height=800');
+  const w = window.open('', '_blank', 'width=1280,height=900');
   if (!w) return;
 
   const shift = getEmployeeShift(selectedEmp);
@@ -11532,7 +12863,8 @@ function printTimesheetForSelectedMonth() {
             <span>الحضور: <b>${r.attendanceDays} يوم</b> · الغياب: <b>${r.absentDays}</b> · الإجازة: <b>${r.leaveDays}</b></span>
             <span>التأخير: <b>${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</b> · الإضافي: <b>${formatHoursAsMinutesLabel(r.totalOvertime || 0)} (${money(r.totalOvertimeValue)})</b></span>
             <span>حافز الجمعة: <b>${money(r.fridayCompensation)}</b> (${r.eligibleFridays} مستحقة)</span>
-            <span>المكافآت: <b>${money(r.totalBonus)}</b></span>
+            <span>مكافآت الأيام: <b>${money(r.dailyBonus || 0)}</b></span>
+            <span>حافز نهاية الشهر: <b>${money(r.monthEndBonus || 0)}</b></span>
             <span>التوثيق: <b>${documentedCount} من ${recs.length} يوم موثق ✓</b></span>
           </div>
         </div>
@@ -11543,28 +12875,37 @@ function printTimesheetForSelectedMonth() {
   const totals = monthlyDocs.reduce((acc, doc) => {
     acc.gross += doc.grossDue; acc.penalties += doc.penalties;
     acc.advances += doc.monthAdvances; acc.net += doc.netDue;
+    acc.monthEndBonus += doc.monthEndBonus || 0;
     acc.attendance += doc.result.attendanceDays || 0;
     acc.absent += doc.result.absentDays || 0;
     acc.leave += doc.result.leaveDays || 0;
     acc.otHours += doc.result.totalOvertime || 0;
     acc.lateHours += doc.result.totalLatenessHours || 0;
     return acc;
-  }, { gross: 0, penalties: 0, advances: 0, net: 0, attendance: 0, absent: 0, leave: 0, otHours: 0, lateHours: 0 });
-  const previousBalance = asMoney(selectedEmp.prevAdvance);
+  }, { gross: 0, penalties: 0, advances: 0, monthEndBonus: 0, net: 0, attendance: 0, absent: 0, leave: 0, otHours: 0, lateHours: 0 });
+  // Negated so the printed "الرصيد السابق"/"الصافي النهائي" figures stay arithmetically
+  // consistent (raw prevAdvance is positive=company-owes; this subtraction below expects
+  // the internal positive=employee-owes convention).
+  const previousBalance = -asMoney(selectedEmp.prevAdvance);
   const finalAfterBalance = totals.net - previousBalance;
-  const allRangeRecs = monthlyDocs.flatMap(doc => recordsForMonth(selectedEmp, doc.year, doc.month));
-  const totalDocumented = allRangeRecs.filter(rec => rec.timesheetDocumented).length;
-  const slipSerial = `SLP-${selectedEmp.id || selectedEmpIdx}-${cfg.year}${monthlyDocs.map(d => String(d.month).padStart(2, '0')).join('')}`;
 
-  // ── قصاصة الراتب: polished salary slip page at the end of the same print job ──
-  const slipHtml = `
+  // ── قصاصة الراتب: ONE separate signed slip page PER displayed month (not one combined
+  // table listing every month) — each carries only that month's own numbers and its own
+  // signature block. The multi-month total + previous balance stays in the final-summary
+  // box above (applied once, never per-slip) so it is never duplicated or ambiguous.
+  const slipSections = monthlyDocs.map(doc => {
+    const r = doc.result;
+    const monthRecs = recordsForMonth(selectedEmp, doc.year, doc.month);
+    const monthDocumented = monthRecs.filter(rec => rec.timesheetDocumented).length;
+    const slipSerial = `SLP-${selectedEmp.id || selectedEmpIdx}-${doc.year}${String(doc.month).padStart(2, '0')}`;
+    return `
     <section class="salary-slip page-break">
       <div class="slip-frame">
         <div class="slip-header">
           <div class="slip-brand">OCTAGON</div>
           <div class="slip-brand-sub">نظام إدارة الورشة والرواتب</div>
           <div class="slip-title">قصاصة راتب</div>
-          <div class="slip-period">${escapeHtml(periodLabel)}</div>
+          <div class="slip-period">${escapeHtml(doc.label)}</div>
         </div>
         <table class="slip-info">
           <tr>
@@ -11573,20 +12914,21 @@ function printTimesheetForSelectedMonth() {
             <td><b>الشفت:</b> ${escapeHtml(shift.label || '-')}</td>
           </tr>
           <tr>
-            <td><b>الحضور:</b> ${totals.attendance} يوم · <b>الغياب:</b> ${totals.absent} · <b>الإجازة:</b> ${totals.leave}</td>
-            <td><b>الإضافي:</b> ${formatHoursAsMinutesLabel(totals.otHours)} · <b>التأخير:</b> ${formatHoursAsMinutesLabel(totals.lateHours)}</td>
-            <td><b>التوثيق:</b> ${totalDocumented} من ${allRangeRecs.length} يوم ✓</td>
+            <td><b>الحضور:</b> ${r.attendanceDays} يوم · <b>الغياب:</b> ${r.absentDays} · <b>الإجازة:</b> ${r.leaveDays}</td>
+            <td><b>الإضافي:</b> ${formatHoursAsMinutesLabel(r.totalOvertime || 0)} · <b>التأخير:</b> ${formatHoursAsMinutesLabel(r.totalLatenessHours || 0)}</td>
+            <td><b>التوثيق:</b> ${monthDocumented} من ${monthRecs.length} يوم ✓</td>
           </tr>
         </table>
         <table class="slip-table">
-          <thead><tr><th>البند</th><th>المستحق الإجمالي</th><th>الغرامات</th><th>السلف المسحوبة</th><th>صافي الشهر</th></tr></thead>
+          <thead><tr><th>البند</th><th>المبلغ (د.ع)</th></tr></thead>
           <tbody>
-            ${monthlyDocs.map(doc => `<tr><td class="slip-month">مستحقات شهر ${escapeHtml(doc.label)}</td><td>${money(doc.grossDue)}</td><td class="neg">-${money(doc.penalties)}</td><td class="neg">-${money(doc.monthAdvances)}</td><td class="net">${money(doc.netDue)}</td></tr>`).join('')}
+            <tr><td class="slip-month">المستحق الإجمالي</td><td>${money(doc.grossDue)}</td></tr>
+            ${doc.monthEndBonus ? `<tr><td class="slip-month">حافز نهاية الشهر</td><td class="val-earn">${money(doc.monthEndBonus)}</td></tr>` : ''}
+            <tr><td class="slip-month">الغرامات</td><td class="neg">-${money(doc.penalties)}</td></tr>
+            <tr><td class="slip-month">السلف المسحوبة هذا الشهر</td><td class="neg">-${money(doc.monthAdvances)}</td></tr>
           </tbody>
           <tfoot>
-            <tr class="slip-total"><td>إجمالي الفترة</td><td>${money(totals.gross)}</td><td class="neg">-${money(totals.penalties)}</td><td class="neg">-${money(totals.advances)}</td><td class="net">${money(totals.net)}</td></tr>
-            <tr><td colspan="4" class="slip-line-label">الرصيد السابق (بذمة الموظف)</td><td class="neg">-${money(previousBalance)}</td></tr>
-            <tr class="slip-final"><td colspan="4">الصافي النهائي المستحق للموظف</td><td>${money(finalAfterBalance)} د.ع</td></tr>
+            <tr class="slip-final"><td>صافي راتب الشهر</td><td>${money(doc.netDue)} د.ع</td></tr>
           </tfoot>
         </table>
         <div class="slip-payment">
@@ -11603,33 +12945,37 @@ function printTimesheetForSelectedMonth() {
       </div>
     </section>
   `;
+  }).join('');
 
   w.document.open();
   w.document.write(`
     <html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير التايم شيت والرواتب — ${escapeHtml(selectedEmp.name || '-')}</title>
     <style>
-      body{font-family:Tahoma,Arial,sans-serif;padding:24px;color:#111;direction:rtl}
-      table{width:100%;border-collapse:collapse;font-size:12px}
-      th,td{border:1px solid #999;padding:5px;text-align:center}
-      td.note{text-align:right;font-size:11px}
+      @page{size:A4 landscape;margin:8mm}
+      *{box-sizing:border-box}
+      html,body{width:297mm;min-height:210mm;margin:0 auto;background:#fff}
+      body{font-family:Tahoma,Arial,sans-serif;padding:8mm;color:#111;direction:rtl}
+      table{width:100%;border-collapse:collapse;font-size:9.4px;table-layout:fixed}
+      th,td{border:1px solid #999;padding:3px 4px;text-align:center;vertical-align:middle;word-break:keep-all;overflow-wrap:anywhere}
+      td.note{text-align:right;font-size:8.8px;width:17%}
       thead{background:#eee}
-      .report-header{text-align:center;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px}
+      .report-header{text-align:center;border-bottom:3px double #333;padding-bottom:8px;margin-bottom:10px}
       .report-header h2{margin:0 0 6px}
-      .report-header p{margin:2px 0;font-size:13px;color:#333}
-      .month-section{margin-bottom:26px}
-      .month-sep{background:#1a1a2e;color:#fff;padding:8px 14px;border-radius:6px 6px 0 0;margin:0;font-size:15px}
-      .month-summary{border:1px solid #999;border-top:none;background:#f6f6f6;padding:10px 14px}
-      .month-summary-grid{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px}
-      .neg{color:#b91c1c}.net{color:#065f46}
+      .report-header p{margin:2px 0;font-size:11px;color:#333}
+      .month-section{margin-bottom:14px}
+      .month-sep{background:#1a1a2e;color:#fff;padding:6px 10px;border-radius:4px 4px 0 0;margin:0;font-size:12px}
+      .month-summary{border:1px solid #999;border-top:none;background:#f6f6f6;padding:7px 10px}
+      .month-summary-grid{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:10.5px}
+      .neg{color:#b91c1c}.net{color:#065f46}.val-earn{color:#059669;font-weight:700}
       .doc-check{color:#059669;font-weight:900}
-      .final-summary{margin-top:18px;border:2px solid #1a1a2e;border-radius:6px;padding:12px 16px;page-break-inside:avoid}
-      .final-summary h3{margin:0 0 8px;font-size:15px}
-      .final-summary-grid{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:13px}
-      .final-line{width:100%;border-top:1px dashed #999;margin-top:8px;padding-top:8px;font-size:15px;font-weight:800}
+      .final-summary{margin-top:12px;border:2px solid #1a1a2e;border-radius:6px;padding:9px 12px;page-break-inside:avoid}
+      .final-summary h3{margin:0 0 6px;font-size:12px}
+      .final-summary-grid{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:11px}
+      .final-line{width:100%;border-top:1px dashed #999;margin-top:6px;padding-top:6px;font-size:12px;font-weight:800}
       .print-footer{text-align:center;margin-top:22px;font-size:10px;color:#777;border-top:1px dashed #bbb;padding-top:8px}
       /* قصاصة الراتب */
       .salary-slip{page-break-inside:avoid}
-      .slip-frame{max-width:720px;margin:0 auto;border:2px solid #1a1a2e;border-radius:10px;padding:26px 30px;background:#fff}
+      .slip-frame{max-width:240mm;margin:0 auto;border:2px solid #1a1a2e;border-radius:10px;padding:18px 24px;background:#fff}
       .slip-header{text-align:center;border-bottom:3px double #333;padding-bottom:14px;margin-bottom:16px}
       .slip-brand{font-size:26px;font-weight:900;letter-spacing:3px;color:#1a1a2e}
       .slip-brand-sub{font-size:12px;color:#555;margin-top:2px}
@@ -11640,15 +12986,19 @@ function printTimesheetForSelectedMonth() {
       .slip-table th{background:#1a1a2e;color:#fff;padding:8px}
       .slip-table td{padding:7px}
       .slip-month{text-align:right;font-weight:700}
-      .slip-total td{background:#eef2ff;font-weight:800}
-      .slip-line-label{text-align:left;background:#fef3c7;color:#92400e}
       .slip-final td{background:#1a1a2e;color:#fff;font-weight:900;font-size:15px;padding:11px}
       .slip-payment{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:18px;font-size:12.5px;color:#333}
       .slip-signatures{display:flex;justify-content:space-between;margin-top:44px;text-align:center;font-size:12px;color:#555}
       .slip-signatures>div{width:150px}
       .sig-line{border-top:1px solid #888;margin-bottom:6px}
       .slip-footer{text-align:center;margin-top:20px;font-size:10px;color:#999;border-top:1px dashed #ccc;padding-top:8px}
-      @media print{ .page-break{page-break-before:always} .month-summary,.final-summary,.salary-slip{page-break-inside:avoid} @page{size:A4;margin:12mm} }
+      @media print{
+        @page{size:A4 landscape;margin:8mm}
+        html,body{width:auto;min-height:auto;margin:0}
+        body{padding:0}
+        .page-break{page-break-before:always}
+        .month-summary,.final-summary,.salary-slip{page-break-inside:avoid}
+      }
     </style></head>
     <body>
       <div class="report-header">
@@ -11661,6 +13011,7 @@ function printTimesheetForSelectedMonth() {
         <h3>الخلاصة النهائية للفترة (${escapeHtml(periodLabel)})</h3>
         <div class="final-summary-grid">
           <span>إجمالي المستحق: <b>${money(totals.gross)}</b></span>
+          <span>إجمالي حوافز نهاية الشهر: <b>${money(totals.monthEndBonus)}</b></span>
           <span>إجمالي الغرامات: <b class="neg">${money(totals.penalties)}</b></span>
           <span>إجمالي السلف المسحوبة: <b class="neg">${money(totals.advances)}</b></span>
           <span>صافي الفترة: <b class="net">${money(totals.net)}</b></span>
@@ -11668,9 +13019,9 @@ function printTimesheetForSelectedMonth() {
           <span class="final-line">الصافي النهائي بعد الرصيد السابق: ${money(finalAfterBalance)} د.ع</span>
         </div>
       </div>
-      ${slipHtml}
+      ${slipSections}
       <div class="print-footer">أُنشئ هذا التقرير من صفحة التايم شيت — نظام OCTAGON لإدارة الرواتب</div>
-      <script>window.print()<\/script>
+      <script>window.onload=function(){setTimeout(function(){window.print()},250)}<\/script>
     </body></html>
   `);
   w.document.close();
@@ -12023,6 +13374,26 @@ function setConfigValue(id, value) {
   if (el) el.value = value;
 }
 
+// One-time migration (2026-07-08): emp.prevAdvance's sign convention flipped from
+// "positive = employee owes company" to "positive = company owes employee" (matching
+// how users actually read the balance: موجب = تطلبنا، سالب = نطلبه). Negate every
+// employee's stored value once so already-displayed balances stay factually the same
+// after the flip; only the calculation formulas' sign handling changes going forward.
+// Idempotent via omni.migrationsApplied, same pattern as the other ensureOmni() migrations.
+// Returns true only the first time it actually flips data, so the caller knows
+// whether a saveData() is needed to persist the migration.
+function migrateEmployeePrevAdvanceSignConvention() {
+  if (!omni || !Array.isArray(omni.migrationsApplied)) return false;
+  if (omni.migrationsApplied.includes('prev_advance_sign_flip_v1')) return false;
+  (employees || []).forEach(emp => {
+    if (!emp) return;
+    emp.prevAdvance = -(Number(emp.prevAdvance) || 0);
+  });
+  omni.migrationsApplied.push('prev_advance_sign_flip_v1');
+  console.log('[OMNI] Migration applied: prev_advance_sign_flip_v1 — employee balance sign flipped (positive = company owes employee)');
+  return true;
+}
+
 async function loadData() {
   let loadedFromFile = false;
 
@@ -12210,23 +13581,35 @@ function printReceipt() {
   let empName = "حساب مباشر (بدون موظف)";
   let res = window.lastCalcResult;
   let cfg = getConfig();
+  let periodLabel = `${MONTHS_AR[cfg.month - 1] || cfg.month} ${cfg.year}`;
 
   if (isCalcPage) {
     const selIdx = parseInt(document.getElementById('calcEmpSelect').value);
     if (selIdx >= 0 && employees[selIdx]) {
-      empName = employees[selIdx].name;
+      const emp = employees[selIdx];
+      empName = emp.name;
+      cfg.nominalSalary = getEmployeeNominalSalary(emp, cfg.nominalSalary);
+      const monthlyDocs = getTimesheetMonthlyDocs(emp, cfg);
+      if (monthlyDocs.length) {
+        res = getTimesheetOfficialRangeResult(emp, cfg, monthlyDocs);
+        periodLabel = getTimesheetPeriodLabel(cfg);
+      }
     }
   } else {
     // We are on report page
     if (employees[reportEmpIdx]) {
-      empName = employees[reportEmpIdx].name;
-      cfg.nominalSalary = employees[reportEmpIdx].salary || cfg.nominalSalary;
-      res = calculateSalaryForEmployee(employees[reportEmpIdx], cfg);
+      const emp = employees[reportEmpIdx];
+      empName = emp.name;
+      cfg.nominalSalary = getEmployeeNominalSalary(emp, cfg.nominalSalary);
+      const monthlyDocs = getTimesheetMonthlyDocs(emp, cfg);
+      if (monthlyDocs.length) {
+        res = getTimesheetOfficialRangeResult(emp, cfg, monthlyDocs);
+        periodLabel = getTimesheetPeriodLabel(cfg);
+      } else {
+        res = calculateSalaryForEmployee(emp, cfg);
+      }
     }
   }
-
-  const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-  const monthName = monthNames[cfg.month - 1];
 
   const html = `
   <html dir="rtl">
@@ -12267,7 +13650,7 @@ function printReceipt() {
     <div class="receipt-container">
       <div class="header">
         <h1>وصل استلام راتب</h1>
-        <p>لشهر ${monthName} لسنة ${cfg.year}</p>
+        <p>${escapeHtml(periodLabel)}</p>
       </div>
       
       <div class="info-grid">
@@ -13128,7 +14511,23 @@ async function processTimesheetWithAI() {
 
   try {
     // Security hardening 2026-07-05: Gemini key moved to server .env — calls go through /api/ai/gemini.
-    const simplifiedRecords = emp.records.map(r => ({
+    // 2026-07-08 fix: scope the AI to the months actually DISPLAYED in the filter, not the whole
+    // record history. Otherwise the model edits whichever month has data (e.g. March) even when the
+    // user is viewing April/May/June. The assistant must operate on what's on screen.
+    const cfg = getConfig();
+    const selectedMonths = getTimesheetSelectedMonths(cfg.year);
+    const scopedRecords = emp.records.filter(r =>
+      Number(r.year) === Number(cfg.year) && selectedMonths.includes(Number(r.month))
+    );
+
+    if (scopedRecords.length === 0) {
+      const monthLabels = selectedMonths.map(m => MONTHS_AR[m - 1]).join('، ');
+      showToast(`لا توجد سجلات في الأشهر المعروضة (${monthLabels} ${cfg.year}) لتطبيق الأمر عليها`, 'warning');
+      return;
+    }
+
+    const monthLabels = selectedMonths.map(m => MONTHS_AR[m - 1]).join('، ');
+    const simplifiedRecords = scopedRecords.map(r => ({
       date: r.date,
       checkIn: r.checkIn || '',
       checkOut: r.checkOut || '',
@@ -13142,10 +14541,13 @@ async function processTimesheetWithAI() {
     const promptText = `
 أنت مساعد ذكي لنظام الرواتب.
 هذا سجل حضور الموظف: ${emp.name}
-الأمر المطلوب منك تنفيذه بدقة على هذه السجلات:
+النطاق المعروض حالياً والمطلوب العمل عليه حصراً: الأشهر (${monthLabels}) من سنة ${cfg.year}.
+الأمر المطلوب منك تنفيذه بدقة على هذه السجلات فقط:
 "${customPrompt}"
 
-البيانات الحالية للموظف:
+مهم جداً: اعمل حصراً على السجلات المعطاة أدناه (وهي تخص الأشهر المعروضة فقط). لا تشر إلى أي شهر آخر ولا تعدّل أي تاريخ خارج هذه القائمة.
+
+البيانات الحالية للموظف (الأشهر المعروضة فقط):
 ${JSON.stringify(simplifiedRecords)}
 
 المطلوب:
@@ -13190,20 +14592,25 @@ ${JSON.stringify(simplifiedRecords)}
     const parsed = JSON.parse(text);
     
     if (parsed && parsed.records && Array.isArray(parsed.records)) {
+      // Only accept edits to dates inside the displayed scope, so a stray date from the
+      // model can't leak back into a month the user isn't looking at.
+      const scopedDates = new Set(scopedRecords.map(r => r.date));
       parsed.records.forEach(p => {
+        if (!scopedDates.has(p.date)) return;
         const rec = emp.records.find(r => r.date === p.date);
         if (rec) {
           const changedFields = [];
           ['checkIn', 'checkOut', 'status', 'bonus', 'damage', 'penalty', 'advance'].forEach(field => {
             if (setRecordFieldFromAI(rec, field, p[field])) changedFields.push(field);
           });
-          
+
           rec.checkInMin = parseTime(rec.checkIn);
           rec.checkOutMin = parseTime(rec.checkOut);
           markAiFields(rec, changedFields);
         }
       });
-      applySystemPayrollRules(emp, getConfig().year, getConfig().month, true);
+      // Re-apply deterministic payroll rules for every displayed month, not just the primary one.
+      selectedMonths.forEach(m => applySystemPayrollRules(emp, cfg.year, m, true));
       
       saveData();
       renderTimesheet();
@@ -13440,7 +14847,11 @@ function isActualAttendanceDataRecord(rec) {
   return !!(rec.checkIn || rec.checkOut || rec.checkInMin != null || rec.checkOutMin != null || rec.managerApproved || rec.attendanceCorrected);
 }
 
-function getAttendanceDataFreshness() {
+// Single source of truth for "what's the newest day we actually have real
+// attendance data for". Never looks past today (a record dated in the future
+// isn't a real update yet). Shared by the freshness banner AND the calendar's
+// actual/forecast cutoff below — both must agree on the same anchor date.
+function findLatestActualAttendanceRecord() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   let latest = null;
@@ -13452,6 +14863,46 @@ function getAttendanceDataFreshness() {
       if (!latest || dt > latest.date) latest = { date: dt, rec, emp };
     });
   });
+  return latest;
+}
+
+// The forecast cutoff anchor (requirement: lastCompleteAttendanceUpdateDate /
+// lastCompleteDatabaseUpdateDate). An admin can pin this manually via
+// omni.adminSettings.lastCompleteAttendanceUpdateDate (ISO date string) when
+// the last full import doesn't line up with the newest single record (e.g. a
+// bulk import that was verified complete through a specific date). Absent an
+// override, it's derived from the newest actual attendance record. Returns
+// null only when there has never been any real attendance data at all — in
+// that case every day, in every month, is forecast-eligible.
+function getAttendanceUpdateCutoffDate() {
+  const manual = omni?.adminSettings?.lastCompleteAttendanceUpdateDate || omni?.adminSettings?.lastCompleteDatabaseUpdateDate;
+  if (manual) {
+    const parsed = parseEmployeeLifecycleDate(manual);
+    if (parsed) return parsed;
+  }
+  const latest = findLatestActualAttendanceRecord();
+  return latest ? latest.date : null;
+}
+
+// A day is forecast-eligible when it falls strictly after the cutoff anchor
+// (or when there's no anchor at all yet, e.g. a brand-new install with zero
+// imported attendance). Days on/before the cutoff are never auto-forecast —
+// if they're empty, that's either a confirmed zero or a genuine data gap,
+// never a "day hasn't happened yet" situation. This deliberately does NOT
+// compare against today's wall-clock date — the cutoff can be weeks behind
+// today if the last import lagged, and every one of those in-between days
+// must still forecast rather than render as a confirmed zero.
+function isCalendarDayForecastEligible(year, month, day) {
+  const cutoff = getAttendanceUpdateCutoffDate();
+  if (!cutoff) return true;
+  const target = new Date(year, month - 1, day);
+  return target > cutoff;
+}
+
+function getAttendanceDataFreshness() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const latest = findLatestActualAttendanceRecord();
   if (!latest) {
     return {
       status: 'missing',
@@ -13470,12 +14921,81 @@ function getAttendanceDataFreshness() {
     title: status === 'fresh' ? 'بيانات الحضور محدثة' : 'بيانات الحضور قديمة',
     detail: status === 'fresh'
       ? `آخر تحديث فعلي للبيانات في ${dateLabel} (${ageLabel}).`
-      : `آخر تحديث فعلي للبيانات في ${dateLabel} (${ageLabel}). يجب تحديث البيانات لأن آخر تحديث يجب ألا يتجاوز أسبوعاً.`,
+      : `آخر تحديث فعلي للبيانات في ${dateLabel} (${ageLabel}). الأيام التي بعده تُعرض كتنبؤ وليست صفراً فعلياً، إلى أن يتم استيراد بياناتها.`,
     dateLabel,
     ageLabel,
     daysOld
   };
 }
+
+// ─── Payroll month close/reopen (requirement: "closed" day-calc mode) ───
+// A closed month is frozen: actual records already recorded still display
+// normally, but forecast projection stops entirely (no speculative rows, no
+// auto-recompute) until explicitly reopened. Stored as a flat list of
+// "YYYY-MM" keys — deliberately NOT nested under workshopOperatingCosts or
+// any other settings blob, so it can't be silently wiped by an unrelated
+// partial write to those.
+function monthKeyOf(year, month) {
+  return `${year}-${String(month).padStart(2, '0')}`;
+}
+
+function getClosedPayrollMonthsSet() {
+  const raw = omni?.adminSettings?.closedPayrollMonths;
+  return new Set(Array.isArray(raw) ? raw : []);
+}
+
+function isPayrollMonthClosed(year, month) {
+  return getClosedPayrollMonthsSet().has(monthKeyOf(year, month));
+}
+
+window.setPayrollMonthClosed = function(year, month, closed) {
+  if (window.PermissionService && !window.PermissionService.check('employees', 'update')) {
+    if (typeof showToast === 'function') showToast('لا تملك صلاحية إغلاق أو إعادة فتح الشهر', 'error');
+    return;
+  }
+  if (!omni) return;
+  if (!omni.adminSettings) omni.adminSettings = {};
+  const set = getClosedPayrollMonthsSet();
+  const key = monthKeyOf(year, month);
+  if (closed) set.add(key); else set.delete(key);
+  omni.adminSettings.closedPayrollMonths = Array.from(set);
+  saveData();
+  if (typeof showToast === 'function') {
+    showToast(closed ? `تم إغلاق شهر ${MONTHS_AR[month - 1]} ${year} — لا مزيد من التوقعات حتى إعادة الفتح` : `تمت إعادة فتح شهر ${MONTHS_AR[month - 1]} ${year}`, 'success');
+  }
+  if (typeof renderAttendanceCalendar === 'function') renderAttendanceCalendar();
+};
+
+// Single classification for a calendar day, per the requirement's four
+// modes. Priority order matters: an actually-recorded day always wins (even
+// a Friday with approved overtime), Friday/weekly-off is checked before the
+// forecast cutoff (a Friday never gets a normal payroll forecast — see
+// getCalendarDayData), and only then does the cutoff decide forecast vs a
+// pre-cutoff gap.
+function getCalendarDayMode(year, month, day, { hasActualRows, isFridayDay, monthClosed }) {
+  if (monthClosed) return 'closed';
+  if (hasActualRows) return 'actual';
+  if (isFridayDay) return 'weekly_off';
+  if (isCalendarDayForecastEligible(year, month, day)) return 'forecast';
+  const hasExpectedStaff = employees.some(emp => isEmployeeActiveOnDate(emp, year, month, day));
+  return hasExpectedStaff ? 'missing' : 'actual';
+}
+
+const CALENDAR_DAY_MODE_LABELS = {
+  actual: 'فعلي',
+  forecast: 'تنبؤي',
+  closed: 'مغلق',
+  weekly_off: 'يوم عطلة',
+  missing: 'بيانات ناقصة'
+};
+
+const CALENDAR_DAY_MODE_ICONS = {
+  actual: 'fa-circle-check',
+  forecast: 'fa-wand-magic-sparkles',
+  closed: 'fa-lock',
+  weekly_off: 'fa-mug-hot',
+  missing: 'fa-triangle-exclamation'
+};
 
 function renderAttendanceFreshnessBanner(pageId, anchorSelector) {
   const page = document.getElementById(pageId);
@@ -13521,17 +15041,148 @@ function getWorkshopOperatingCostSettings() {
   return { ...settings, monthlyItems };
 }
 
+// How many days in the month actually have staffing — either real recorded
+// attendance, or (past the forecast cutoff) at least one employee expected
+// to be active. Used only by the 'attendance_days' allocation basis. Falls
+// back to 1 so a division by it never produces Infinity on a month with no
+// staffing signal at all.
+function getMonthStaffedDayCount(year, month) {
+  const daysInMonth = getDaysInMonth(year, month);
+  let count = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    if (isFriday(year, month, d)) continue;
+    const hasActual = employees.some(emp => (emp.records || []).some(rec =>
+      recordBelongsToMonth(rec, year, month) && Number(rec.day) === d && (isCalendarAttendanceRecord(rec) || rec.managerApproved)
+    ));
+    if (hasActual) { count++; continue; }
+    if (isCalendarDayForecastEligible(year, month, d) && employees.some(emp => isEmployeeActiveOnDate(emp, year, month, d))) count++;
+  }
+  return Math.max(count, 1);
+}
+
+// Fixed operating costs (rent, internet, electricity...) each carry their own
+// allocation basis — how their monthly amount gets spread across days. This
+// replaces the old single global "divide by working days" rule: fixed
+// overhead must keep showing up even on days with zero attendance, which
+// only 'calendar_days' (the new default) guarantees.
+//   calendar_days   — every day of the month, Friday included.
+//   working_days     — every non-Friday day only (old default behaviour);
+//                       Friday's share is rolled into the weekly figure.
+//   attendance_days   — only on days with real/forecast staffing.
+//   manual            — counted in the monthly total, but never auto-spread
+//                       into a daily figure (the admin accounts for it
+//                       elsewhere).
 function getWorkshopOperatingCostBreakdown(year, month) {
   const daysInMonth = getDaysInMonth(year, month);
+  const fridayCount = getFridaysInMonth(year, month).length;
+  const workingDaysInMonth = Math.max(daysInMonth - fridayCount, 1);
+  const staffedDaysInMonth = getMonthStaffedDayCount(year, month);
   const settings = getWorkshopOperatingCostSettings();
-  const activeItems = settings.monthlyItems.filter(item => item.active !== false && Number(item.amount) > 0);
-  const monthlyTotal = activeItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+
+  const items = settings.monthlyItems.map(item => {
+    const actualRecord = item.actuals ? item.actuals[monthKey] : null;
+    const isVerified = actualRecord ? actualRecord.verified === true : false;
+    const defaultVal = Number(item.amount) || 0;
+    const actualVal = actualRecord ? (Number(actualRecord.amount) || 0) : defaultVal;
+
+    // Amount to use in calculations: actual if verified, default estimate if not verified
+    const amountToUse = isVerified ? actualVal : defaultVal;
+    const allocationBasis = item.allocationBasis || 'calendar_days';
+
+    return {
+      ...item,
+      defaultAmount: defaultVal,
+      actualAmount: actualVal,
+      isVerified: isVerified,
+      amountToUse: amountToUse,
+      allocationBasis,
+      perCalendarDay: amountToUse / daysInMonth,
+      perWorkingDay: amountToUse / workingDaysInMonth,
+      perAttendanceDay: amountToUse / staffedDaysInMonth,
+      paymentDate: actualRecord?.paymentDate || '',
+      paymentSource: actualRecord?.paymentSource || '',
+      paidBy: actualRecord?.paidBy || ''
+    };
+  });
+
+  const activeItems = items.filter(item => item.active !== false);
+  const monthlyTotal = activeItems.reduce((sum, item) => sum + item.amountToUse, 0);
+
+  // Legacy aggregate figures — still meaningful as a single "all items,
+  // spread over working days" summary number for callers that don't need
+  // the per-day/per-basis breakdown (e.g. the payroll forecast card).
+  const dailyShare = monthlyTotal / workingDaysInMonth;
+
   return {
     items: activeItems,
     monthlyTotal,
-    dailyShare: daysInMonth > 0 ? monthlyTotal / daysInMonth : 0,
+    daysInMonth,
+    fridayCount,
+    workingDaysInMonth,
+    staffedDaysInMonth,
+    dailyShare,
+    // Friday itself carries no daily share (it's not a working day for this
+    // purpose) — instead the whole week's worth (6 working days) is rolled
+    // up and shown once, on Friday, as a distinct "weekly" figure.
+    weeklyShare: dailyShare * 6,
     configured: monthlyTotal > 0
   };
+}
+
+// Per-day operating cost share, respecting each item's own allocation basis.
+// isStaffedDay must reflect actual-or-forecast staffing for THIS specific
+// day (not the month-wide count above), so 'attendance_days' items track the
+// real presence pattern day by day rather than a flat average.
+function getOperatingCostShareForDay(operatingCost, isFridayDay, isStaffedDay) {
+  return operatingCost.items.reduce((sum, item) => {
+    switch (item.allocationBasis) {
+      case 'working_days':
+        return sum + (isFridayDay ? 0 : item.perWorkingDay);
+      case 'attendance_days':
+        return sum + (isStaffedDay ? item.perAttendanceDay : 0);
+      case 'manual':
+        return sum; // entered/accounted for directly elsewhere, never auto-spread
+      case 'calendar_days':
+      default:
+        return sum + item.perCalendarDay;
+    }
+  }, 0);
+}
+
+// The "look back at this past week" convenience figure shown only on
+// Friday's card. Only 'working_days' items belong here — 'calendar_days'
+// items already collected their own share on Friday itself via
+// getOperatingCostShareForDay, so including them again here would double
+// them. 'attendance_days'/'manual' items aren't rolled up weekly at all.
+function getOperatingCostWeeklyShare(operatingCost) {
+  return operatingCost.items.reduce((sum, item) => sum + (item.allocationBasis === 'working_days' ? item.perWorkingDay * 6 : 0), 0);
+}
+
+// Sums each employee's netDue (wages due, advances already excluded — see
+// getEmployeeDailyFinancialSummary) for the 6 working days preceding a
+// Friday, so the Friday "weekly" rollup can include labor cost, not just
+// rent/operating cost. Skips any day that falls before day 1 (partial week
+// at the start of a month) rather than reaching into the previous month.
+function getWeeklyLaborCost(year, month, fridayDay) {
+  const cfg = { ...getConfig(), year, month };
+  let total = 0;
+  for (let d = fridayDay - 6; d <= fridayDay - 1; d++) {
+    if (d < 1) continue;
+    employees.forEach(emp => {
+      const rec = (emp.records || []).find(r => recordBelongsToMonth(r, year, month) && r.day === d);
+      if (!rec || (!isCalendarAttendanceRecord(rec) && !rec?.managerApproved)) return;
+      total += getEmployeeDailyFinancialSummary(emp, rec, cfg).netDue;
+    });
+  }
+  return total;
+}
+
+function isFutureCalendarDay(year, month, day) {
+  const today = new Date();
+  const target = new Date(year, month - 1, day);
+  const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return target > current;
 }
 
 function getCalendarDayData(year, month, day) {
@@ -13546,6 +15197,7 @@ function getCalendarDayData(year, month, day) {
     const money = getEmployeeDailyFinancialSummary(emp, rec, cfg);
     return {
       empIdx: idx,
+      employee: emp,
       name: emp.name,
       rec,
       hours,
@@ -13554,13 +15206,53 @@ function getCalendarDayData(year, month, day) {
       statusColor: statusInfo.color
     };
   }).filter(Boolean);
+  const actualEmployeeKeys = new Set(rows.map(item => String(item.employee?.id || item.name || item.empIdx)));
+  const isFridayDay = isFriday(year, month, day);
+  const monthClosed = isPayrollMonthClosed(year, month);
+  const mode = getCalendarDayMode(year, month, day, { hasActualRows: rows.length > 0, isFridayDay, monthClosed });
+  // A closed month never forecasts (frozen), a Friday never gets a normal
+  // payroll forecast (see requirement: weekly-off payroll forecast is zero
+  // unless there's actual/approved overtime, which would already be in
+  // `rows` and short-circuit mode to 'actual'), and any other day only
+  // forecasts once it's past the cutoff anchor — never based on wall-clock
+  // "today", so a lagging import doesn't silently render as a confirmed zero.
+  const forecastRows = mode === 'forecast'
+    ? employees.map((emp, idx) => {
+        if (!isEmployeeActiveOnDate(emp, year, month, day)) return null;
+        const key = String(emp.id || emp.name || idx);
+        if (actualEmployeeKeys.has(key)) return null;
+        const money = getEmployeeForecastDailySummary(emp, year, month, day, cfg);
+        return {
+          empIdx: idx,
+          name: emp.name,
+          money,
+          hours: money.hours,
+          statusLabel: 'متوقع',
+          statusColor: '#a78bfa',
+          isForecast: true
+        };
+      }).filter(Boolean)
+    : [];
 
   const totalHours = rows.reduce((sum, item) => sum + item.hours, 0);
+  const forecastHours = forecastRows.reduce((sum, item) => sum + item.hours, 0);
   const totalPayable = rows.reduce((sum, item) => sum + item.money.payable, 0);
   const totalPenalties = rows.reduce((sum, item) => sum + item.money.penalties, 0);
   const totalAdvances = rows.reduce((sum, item) => sum + item.money.advances, 0);
   const laborDueCost = rows.reduce((sum, item) => sum + item.money.netDue, 0);
-  const netDailyCost = laborDueCost + operatingCost.dailyShare;
+  const forecastLaborCost = forecastRows.reduce((sum, item) => sum + item.money.netDue, 0);
+  // Fixed operating costs are allocated per their own basis (see
+  // getOperatingCostShareForDay) — a 'calendar_days' item (the default) now
+  // gets its share on every day including Friday, so rent/internet/etc.
+  // never silently disappear just because attendance is zero that day.
+  const isStaffedDay = rows.length > 0 || forecastRows.length > 0;
+  const operatingShareForDay = getOperatingCostShareForDay(operatingCost, isFridayDay, isStaffedDay);
+  // The Friday "look back at the week" rollup only needs 'working_days'
+  // items — 'calendar_days' items already got their own share above.
+  const weeklyOperatingShare = isFridayDay ? getOperatingCostWeeklyShare(operatingCost) : 0;
+  const weeklyLaborShare = isFridayDay ? getWeeklyLaborCost(year, month, day) : 0;
+  const weeklyTotalShare = weeklyOperatingShare + weeklyLaborShare;
+  const netDailyCost = laborDueCost + forecastLaborCost + operatingShareForDay;
   const lateCount = rows.filter(item => item.rec.checkInMin != null && item.rec.checkInMin > 9 * 60).length;
   const overtimeCount = rows.filter(item => item.hours > 9).length;
 
@@ -13568,22 +15260,65 @@ function getCalendarDayData(year, month, day) {
     year,
     month,
     day,
-    isFriday: isFriday(year, month, day),
+    isFriday: isFridayDay,
     dayName: CALENDAR_DAY_NAMES[date.getDay()],
+    mode,
+    modeLabel: CALENDAR_DAY_MODE_LABELS[mode],
+    modeIcon: CALENDAR_DAY_MODE_ICONS[mode],
+    monthClosed,
     rows,
+    forecastRows,
+    hasForecast: forecastRows.length > 0,
     totalHours,
+    forecastHours,
     totalPayable,
     totalPenalties,
     totalAdvances,
     laborDueCost,
+    forecastLaborCost,
     operatingCost,
+    operatingShareForDay,
+    weeklyOperatingShare,
+    weeklyLaborShare,
+    weeklyTotalShare,
     netDailyCost,
     lateCount,
     overtimeCount
   };
 }
 
+function formatCutoffDateLabel(date) {
+  if (!date) return 'غير محدد';
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
 
+function buildCalendarForecastBasisNote() {
+  const cutoff = getAttendanceUpdateCutoffDate();
+  return `
+    <div class="cal-forecast-basis-note">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      توقع مبني على آخر تحديث فعلي للبيانات بتاريخ <b>${formatCutoffDateLabel(cutoff)}</b> — ليس صفراً مؤكداً، بل عرض مسبق للموظفين والساعات والكلفة المتوقعة حتى يتم استيراد أو تأكيد الحضور الفعلي لهذا اليوم.
+    </div>
+  `;
+}
+
+// Never render a bare "0 employees / 0 cost" for a day that isn't a
+// confirmed actual — each mode gets its own honest explanation instead.
+function buildCalendarEmptyDayMessage(dayData) {
+  switch (dayData.mode) {
+    case 'forecast':
+      return `<div class="cal-empty-detail">لا يوجد موظفون نشطون متوقعون لهذا اليوم (تنبؤي) — راجع حالة الموظفين وتواريخ المباشرة/الانفكاك.</div>`;
+    case 'missing':
+      return `<div class="cal-empty-detail cal-empty-missing"><i class="fa-solid fa-triangle-exclamation"></i> بيانات ناقصة: لم يتم استيراد حضور هذا اليوم بعد، ولا يمكن اعتباره صفر حضور فعلي مؤكد.</div>`;
+    case 'weekly_off':
+      return `<div class="cal-empty-detail">يوم عطلة (جمعة) — لا يوجد حضور عادي متوقع، إلا إذا وُجد إضافي معتمد من المدير.</div>`;
+    case 'closed':
+      return `<div class="cal-empty-detail">الشهر مغلق ولا يوجد حضور مسجل لهذا اليوم في السجل الفعلي.</div>`;
+    case 'actual':
+    default:
+      return `<div class="cal-empty-detail">لا يوجد حضور مسجل لهذا اليوم (صفر فعلي مؤكد).</div>`;
+  }
+}
 
 function renderCalendarDayDetails(dayData) {
   const panel = document.getElementById('calDayDetails');
@@ -13603,10 +15338,38 @@ function renderCalendarDayDetails(dayData) {
         <div class="cal-worker-hours">${formatHoursAsMinutesLabel(item.hours)}<br><small>${formatMoneyReadable(item.money.payable)}</small></div>
       </div>
     `).join('')
-    : `<div class="cal-empty-detail">لا يوجد حضور مسجل لهذا اليوم.</div>`;
+    : buildCalendarEmptyDayMessage(dayData);
+
+  const forecastWorkersHtml = dayData.forecastRows?.length
+    ? `
+      <div class="cal-forecast-workers-title"><i class="fa-solid fa-wand-magic-sparkles"></i> حضور متوقع غير مسجل بعد</div>
+      ${dayData.forecastRows.map(item => `
+        <div class="cal-worker-row cal-worker-forecast">
+          <div class="cal-worker-main">
+            <span class="cal-worker-avatar">${escapeHtml(item.name.slice(0, 2))}</span>
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>متوقع حسب حالة الموظف وتاريخ المباشرة/الانفكاك والشفت</span>
+              <small class="calendar-forecast-line">بدلات اليوم داخلة بالحساب: ${formatMoneyReadable(item.money.allowance)} · مستحق متوقع ${formatMoneyReadable(item.money.netDue)}</small>
+            </div>
+          </div>
+          <div class="cal-worker-hours">${formatHoursAsMinutesLabel(item.hours)}<br><small>${formatMoneyReadable(item.money.netDue)}</small></div>
+        </div>
+      `).join('')}
+    `
+    : '';
 
   const operatingItemsHtml = dayData.operatingCost.items.length
-    ? dayData.operatingCost.items.map(item => `<span>${escapeHtml(item.name)}: <b>${formatMoneyReadable(item.amount)}</b>/شهر</span>`).join('')
+    ? dayData.operatingCost.items.map(item => {
+        const badgeStyle = item.isVerified
+          ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 1px 4px; border-radius: 4px; font-size: 10px; margin-right: 4px;'
+          : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 1px 4px; border-radius: 4px; font-size: 10px; margin-right: 4px;';
+        const badgeText = item.isVerified ? 'موثق' : 'مقدّر';
+        const tooltip = item.isVerified
+          ? `دُفع ${item.paymentDate ? 'بتاريخ ' + item.paymentDate : ''} ${item.paymentSource === 'person_pocket' ? `من جيب ${item.paidBy || 'المالك'}` : 'من قاصة الورشة'}`.trim()
+          : 'قيمة تقديرية غير موثقة بعد';
+        return `<span style="display: inline-flex; align-items: center; margin-left: 8px;" title="${escapeHtml(tooltip)}">${escapeHtml(item.name)}: <b style="margin: 0 4px;">${formatMoneyReadable(item.amountToUse)}</b> <small style="${badgeStyle}">${badgeText}</small></span>`;
+      }).join(' · ')
     : '<span>لم تضبط مبالغ الإيجار والتشغيل الشهرية بعد.</span>';
 
   panel.innerHTML = `
@@ -13615,25 +15378,548 @@ function renderCalendarDayDetails(dayData) {
         <span class="cal-detail-kicker">${dayData.isFriday ? 'جمعة' : 'يوم دوام'}</span>
         <h3>${dayData.dayName} ${dayData.day} ${MONTHS_AR[dayData.month - 1]} ${dayData.year}</h3>
       </div>
-      <div class="cal-detail-total">${dayData.rows.length} موظف</div>
+      <div class="cal-detail-badges">
+        <span class="cal-mode-badge cal-mode-badge-${dayData.mode}"><i class="fa-solid ${dayData.modeIcon}"></i> ${dayData.modeLabel}</span>
+        <div class="cal-detail-total">${dayData.rows.length} موظف</div>
+      </div>
     </div>
+    ${dayData.mode === 'forecast' ? buildCalendarForecastBasisNote() : ''}
+    ${dayData.mode === 'missing' ? `<div class="cal-missing-note"><i class="fa-solid fa-triangle-exclamation"></i> لا توجد بيانات حضور مستوردة لهذا اليوم رغم وجود موظفين نشطين — هذه فجوة بيانات محتملة وليست صفراً فعلياً مؤكداً.</div>` : ''}
+    ${dayData.mode === 'closed' ? `<div class="cal-closed-note"><i class="fa-solid fa-lock"></i> هذا الشهر مغلق — لا يتم احتساب توقعات جديدة. استخدم زر "إعادة فتح الشهر" لإعادة تفعيل التوقع.</div>` : ''}
     <div class="cal-detail-stats calendar-finance-stats">
+      ${dayData.hasForecast ? `
+        <div class="cal-forecast-stat"><span>الموظفون المتوقعون</span><strong>${dayData.forecastRows.length}</strong></div>
+        <div class="cal-forecast-stat"><span>ساعات متوقعة</span><strong>${dayData.forecastHours.toFixed(1)}</strong></div>
+        <div class="cal-forecast-stat"><span>أجور وبدلات متوقعة</span><strong>${formatMoneyReadable(dayData.forecastLaborCost)}</strong></div>
+      ` : ''}
       <div><span>إجمالي الساعات</span><strong>${dayData.totalHours.toFixed(1)}</strong></div>
       <div><span>الموظفون المتواجدون</span><strong>${dayData.rows.length}</strong></div>
       <div><span>الأجور المستحقة قبل الخصم</span><strong>${formatMoneyReadable(dayData.totalPayable)}</strong></div>
       <div><span>الغرامات/الخصومات</span><strong>${formatMoneyReadable(dayData.totalPenalties)}</strong></div>
       <div><span>الأجور المستحقة بعد الخصم</span><strong>${formatMoneyReadable(dayData.laborDueCost)}</strong></div>
       <div><span>السلف المدفوعة منفصلة</span><strong>${formatMoneyReadable(dayData.totalAdvances)}</strong></div>
-      <div><span>تشغيل/إيجار اليوم</span><strong>${formatMoneyReadable(dayData.operatingCost.dailyShare)}</strong></div>
+      <div><span>${dayData.isFriday ? 'تشغيل/إيجار اليوم (جمعة)' : 'تشغيل/إيجار اليوم'}</span><strong>${formatMoneyReadable(dayData.operatingShareForDay)}</strong></div>
+      ${dayData.isFriday ? `
+        <div class="cal-weekly-opcost-stat"><span>📅 الكلفة الأسبوعية الكاملة (تشغيل + أجور، بدون سلف)</span><strong>${formatMoneyReadable(dayData.weeklyTotalShare)}</strong></div>
+      ` : ''}
       <div><span>كلفة اليوم المستحقة</span><strong>${formatMoneyReadable(dayData.netDailyCost)}</strong></div>
     </div>
     <div class="calendar-cost-note">
-      <strong>كلفة اليوم = أجور مستحقة بعد الغرامات + حصة تشغيل/إيجار اليوم.</strong>
-      <span>السلف والمشتريات وحركات القاصة لا تدخل في هذه الكلفة، وتبقى معروضة كمدفوعات منفصلة.</span>
-      <div class="calendar-operating-items">${operatingItemsHtml}</div>
+      <strong>كلفة اليوم = أجور مستحقة بعد الغرامات + حصة تشغيل/إيجار اليوم (كل بند حسب أساس تخصيصه: يومي تقويمي، أيام عمل، أيام حضور، أو يدوي).</strong>
+      <span>${dayData.isFriday
+        ? 'الجمعة يوم عطلة فلا تُحسب لها حصة تشغيل يومية خاصة بها؛ بدلاً من ذلك تظهر أعلاه الكلفة الأسبوعية الكاملة (أجور ٦ أيام العمل + تشغيل/إيجار الأسبوع) كخانة منفصلة مميّزة. السلف لا تدخل في هذا الرقم إطلاقاً — تبقى معروضة كمدفوعات منفصلة أسفل الصفحة لأنها ليست كلفة حقيقية بل دفعة مقدّمة من مستحقات الموظف.'
+        : 'السلف والمشتريات وحركات القاصة لا تدخل في هذه الكلفة، وتبقى معروضة كمدفوعات منفصلة.'}</span>
+      <div class="calendar-operating-items" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">${operatingItemsHtml}</div>
     </div>
-    <div class="cal-workers-list">${workersHtml}</div>
+    <div class="cal-workers-list">${dayData.rows.length ? workersHtml : ''}${forecastWorkersHtml || (!dayData.rows.length ? workersHtml : '')}</div>
   `;
+}
+
+function opcItemIcon(id) {
+  const icons = {
+    rent: 'fa-house', internet: 'fa-wifi', electricity: 'fa-bolt',
+    water: 'fa-droplet', diesel: 'fa-gas-pump', chatgpt: 'fa-robot'
+  };
+  return icons[id] || 'fa-receipt';
+}
+
+// Scans the expenses ledger for this month for transactions matching an
+// operating-cost item's keywords, so the modal can suggest the actual paid
+// amount instead of leaving it to manual re-entry. Excludes transactions this
+// same module already posted (sourceId prefix 'opcost_') to avoid a suggestion
+// that just echoes back what was already recorded.
+function findMatchingExpenseSuggestion(item, monthKey) {
+  if (!finance || !Array.isArray(finance.transactions)) return 0;
+  const rawTerms = (Array.isArray(item.keywords) && item.keywords.length) ? item.keywords : [item.name];
+  const terms = rawTerms.map(t => String(t).toLowerCase()).filter(Boolean);
+  if (!terms.length) return 0;
+  return finance.transactions
+    .filter(tx => tx.type === 'expense' && String(tx.date || '').startsWith(monthKey))
+    .filter(tx => !String(tx.sourceId || '').startsWith('opcost_'))
+    .filter(tx => {
+      const hay = `${tx.description || ''} ${getCategoryName('expense', tx.categoryId) || ''}`.toLowerCase();
+      return terms.some(term => hay.includes(term));
+    })
+    .reduce((sum, tx) => sum + asMoney(tx.amount), 0);
+}
+
+window.openMonthlyOperatingCostsModal = async function() {
+  ensureOmni();
+  ensureFinance();
+  const cfg = getConfig();
+  const monthKey = `${cfg.year}-${String(cfg.month).padStart(2, '0')}`;
+  const settings = getWorkshopOperatingCostSettings();
+  // Session-only mirror of in-progress (not yet confirmed) edits, keyed by
+  // item id. Populated by syncDraftFromDom() right before any action that
+  // re-renders the list (add/delete/undo), so those edits survive the
+  // rebuild. Deliberately kept OUT of item.actuals — writing draft values
+  // there made an item's saved actuals record exist prematurely, which
+  // broke the "no record yet -> show the default estimate" fallback (a
+  // real regression: editing another item's default then re-rendering
+  // froze an unrelated item's actual-paid field at a stale value instead
+  // of tracking further default edits).
+  const draftState = {};
+
+  function buildModalHtml() {
+    const activeItems = settings.monthlyItems.filter(item => item.active !== false);
+    const totalDefault = activeItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+    const verifiedCount = activeItems.filter(item => item.actuals?.[monthKey]?.verified).length;
+
+    return `
+    <div class="opc-modal-scope">
+      <style>
+        #omniModalBox.opc-modal-wide { width: 680px !important; max-width: 94vw !important; padding: 28px !important; }
+        .opc-modal-scope { direction: rtl; text-align: right; }
+        .opc-intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.8; }
+        .opc-summary-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+        .opc-summary-chip { flex: 1; min-width: 150px; background: var(--gradient-card); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px 16px; backdrop-filter: blur(12px); }
+        .opc-summary-chip span { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; }
+        .opc-summary-chip strong { font-size: 16px; color: var(--text-primary); }
+        .opc-items-list { display: flex; flex-direction: column; gap: 18px; max-height: 52vh; overflow-y: auto; padding: 4px 6px 4px 2px; margin-bottom: 20px; }
+        .opc-item-card { background: var(--gradient-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 18px; backdrop-filter: blur(16px); transition: var(--transition); }
+        .opc-item-card.opc-is-verified { border-color: rgba(52,211,153,0.35); box-shadow: 0 0 0 1px rgba(52,211,153,0.08), var(--shadow-md); }
+        .opc-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .opc-item-name { display: flex; align-items: center; gap: 9px; font-size: 15px; color: var(--text-heading); }
+        .opc-item-name i { color: var(--accent-blue); width: 18px; text-align: center; font-size: 15px; }
+        .opc-locked-badge { font-size: 10.5px; background: rgba(52,211,153,0.15); color: var(--accent-green); border: 1px solid rgba(52,211,153,0.3); padding: 3px 9px; border-radius: 999px; margin-right: 10px; display: inline-flex; align-items: center; gap: 4px; }
+        .opc-delete-btn { background: transparent; border: none; color: var(--accent-red); cursor: pointer; padding: 5px 7px; border-radius: 7px; transition: var(--transition); }
+        .opc-delete-btn:hover { background: rgba(248,113,113,0.12); }
+        .opc-amounts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+        .opc-field label { display: block; font-size: 11.5px; color: var(--text-secondary); margin-bottom: 5px; }
+        .opc-field input.form-input { width: 100%; height: 38px; font-size: 13px; }
+        .opc-basis-field { margin-bottom: 14px; }
+        .opc-basis-field select.form-input { width: 100%; height: 38px; font-size: 13px; }
+        .opc-suggestion-chip { margin-top: 7px; width: 100%; font-size: 11px; background: rgba(56,189,248,0.12); color: var(--accent-blue); border: 1px solid rgba(56,189,248,0.3); border-radius: 999px; padding: 5px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; justify-content: center; transition: var(--transition); }
+        .opc-suggestion-chip:hover { background: rgba(56,189,248,0.22); }
+        .opc-toggle-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 11px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
+        .opc-toggle-row:hover { background: rgba(255,255,255,0.045); }
+        .opc-toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+        .opc-toggle-switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+        .opc-toggle-switch input:disabled { cursor: not-allowed; }
+        .opc-toggle-track { position: absolute; inset: 0; background: rgba(255,255,255,0.14); border-radius: 999px; transition: var(--transition); }
+        .opc-toggle-knob { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: var(--transition); box-shadow: var(--shadow-sm); }
+        .opc-toggle-switch input:checked + .opc-toggle-track { background: var(--accent-green); }
+        .opc-toggle-switch input:checked + .opc-toggle-track .opc-toggle-knob { transform: translateX(-18px); }
+        .opc-toggle-switch input:disabled + .opc-toggle-track { opacity: 0.6; }
+        .opc-toggle-text { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+        .opc-verify-panel { display: none; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px dashed var(--border-glass); }
+        .opc-verify-panel.opc-panel-open { display: grid; margin-top: 16px; padding-top: 16px; animation: opcSlideDown .22s ease; }
+        @keyframes opcSlideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .opc-radio-row { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+        .opc-radio-row label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+        .opc-radio-row input[type=radio] { accent-color: var(--accent-blue); cursor: pointer; width: 15px; height: 15px; }
+        .opc-hidden { display: none !important; }
+        .opc-locked-note { grid-column: 1 / -1; font-size: 12.5px; color: var(--text-secondary); background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.2); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+        .opc-locked-note i { color: var(--accent-green); margin-left: 6px; }
+        .opc-undo-btn { align-self: flex-start; margin-top: 4px; font-size: 11.5px; background: rgba(248,113,113,0.1); color: var(--accent-red); border: 1px solid rgba(248,113,113,0.3); border-radius: 999px; padding: 6px 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: var(--transition); }
+        .opc-undo-btn:hover { background: rgba(248,113,113,0.2); }
+        .opc-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 22px; }
+        .opc-add-section { border-top: 1px solid var(--border-glass); padding-top: 16px; }
+        .opc-add-section h4 { margin: 0 0 12px; font-size: 13.5px; color: var(--text-secondary); }
+        .opc-add-row { display: flex; gap: 10px; }
+        .opc-add-row input.form-input { height: 38px; font-size: 13px; }
+      </style>
+
+      <p class="opc-intro">
+        لشهر <strong>${MONTHS_AR[cfg.month - 1]} ${cfg.year}</strong>. البند الموثّق يستخدم القيمة الفعلية المعتمدة، بينما البند غير الموثّق يستخدم القيمة الافتراضية التقديرية في حساب حصة اليوم بالتقويم.
+      </p>
+
+      <div class="opc-summary-bar">
+        <div class="opc-summary-chip"><span>عدد البنود</span><strong>${activeItems.length}</strong></div>
+        <div class="opc-summary-chip"><span>الموثّق هذا الشهر</span><strong style="direction: ltr; unicode-bidi: embed; display: inline-block;">${verifiedCount} / ${activeItems.length}</strong></div>
+        <div class="opc-summary-chip"><span>إجمالي الافتراضي الشهري</span><strong>${formatMoneyReadable(totalDefault)}</strong></div>
+      </div>
+
+      <div class="opc-items-list" id="modalCostItemsContainer"><!-- Rows injected here --></div>
+
+      <div class="opc-add-section">
+        <h4><i class="fa-solid fa-circle-plus"></i> إضافة بند مصروف تشغيلي جديد</h4>
+        <div class="opc-add-row">
+          <input type="text" id="newCostItemName" class="form-input" placeholder="اسم المصروف (مثال: صيانة دورية)" style="flex: 2;">
+          <input type="number" id="newCostItemDefault" class="form-input" placeholder="الافتراضي شهرياً" style="flex: 1;">
+          <button type="button" class="btn btn-secondary" onclick="addCostItemFromModal()" style="padding: 0 15px;">إضافة</button>
+        </div>
+      </div>
+    </div>
+  `;
+  }
+
+  function renderModalCostRows() {
+    const container = document.getElementById('modalCostItemsContainer');
+    if (!container) return;
+
+    const activeItems = settings.monthlyItems.filter(item => item.active !== false);
+
+    if (activeItems.length === 0) {
+      container.innerHTML = `<div class="opc-empty">لا توجد بنود مصاريف مضافة.</div>`;
+      return;
+    }
+
+    container.innerHTML = activeItems.map(item => {
+      const actualRecord = item.actuals ? item.actuals[monthKey] : null;
+      const draft = draftState[item.id];
+      const isLocked = !!(actualRecord && actualRecord.postedTxId);
+      const defaultVal = Number(item.amount) || 0;
+      const isVerified = draft ? draft.verified : (actualRecord ? actualRecord.verified === true : false);
+      const actualVal = draft ? draft.actualVal : (actualRecord ? (Number(actualRecord.amount) || 0) : defaultVal);
+      const paymentDate = draft ? draft.paymentDate : (actualRecord?.paymentDate || todayISO());
+      const paymentSource = draft ? draft.paymentSource : (actualRecord?.paymentSource || 'cashbox');
+      const paidBy = draft ? draft.paidBy : (actualRecord?.paidBy || 'سيف');
+      const adoptDefaultDraft = draft ? draft.adoptDefault : false;
+      const suggestion = isLocked ? 0 : findMatchingExpenseSuggestion(item, monthKey);
+
+      return `
+        <div class="opc-item-card ${isVerified ? 'opc-is-verified' : ''}">
+          <div class="opc-item-header">
+            <div class="opc-item-name">
+              <i class="fa-solid ${opcItemIcon(item.id)}"></i>
+              <strong>${escapeHtml(item.name)}</strong>
+              ${isLocked ? '<span class="opc-locked-badge"><i class="fa-solid fa-lock"></i> مرحّل</span>' : ''}
+            </div>
+            ${isLocked ? '' : `<button type="button" class="opc-delete-btn" onclick="deleteCostItemFromModal('${item.id}')" title="حذف"><i class="fa-solid fa-trash-can"></i></button>`}
+          </div>
+
+          <div class="opc-amounts-row">
+            <div class="opc-field">
+              <label>الافتراضي التقديري (شهرياً)</label>
+              <input type="number" class="form-input opc-default-amt" data-id="${item.id}" value="${defaultVal}" ${isLocked ? 'disabled' : ''}>
+            </div>
+            <div class="opc-field">
+              <label>الفعلي المشتري (لهذا الشهر)</label>
+              <input type="number" class="form-input opc-actual-amt" data-id="${item.id}" value="${actualVal}" ${isLocked ? 'disabled' : ''}>
+              ${suggestion > 0 ? `<button type="button" class="opc-suggestion-chip" onclick="applyOpcSuggestion('${item.id}', ${suggestion})"><i class="fa-solid fa-wand-magic-sparkles"></i> اقتراح من سجل المصاريف: ${formatMoneyReadable(suggestion)}</button>` : ''}
+            </div>
+          </div>
+
+          <div class="opc-field opc-basis-field">
+            <label>أساس توزيع الكلفة على الأيام</label>
+            <select class="form-input opc-allocation-basis" data-id="${item.id}" onchange="setOpcAllocationBasis('${item.id}', this.value)" ${isLocked ? 'disabled' : ''}>
+              <option value="calendar_days" ${item.allocationBasis === 'calendar_days' || !item.allocationBasis ? 'selected' : ''}>كل أيام الشهر (تقويمي)</option>
+              <option value="working_days" ${item.allocationBasis === 'working_days' ? 'selected' : ''}>أيام العمل فقط (بدون الجمعة)</option>
+              <option value="attendance_days" ${item.allocationBasis === 'attendance_days' ? 'selected' : ''}>أيام الحضور الفعلي فقط</option>
+              <option value="manual" ${item.allocationBasis === 'manual' ? 'selected' : ''}>يدوي (بدون توزيع يومي تلقائي)</option>
+            </select>
+          </div>
+
+          <label class="opc-toggle-row">
+            <span class="opc-toggle-switch">
+              <input type="checkbox" class="opc-verified-check" data-id="${item.id}" ${isVerified ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="toggleOpcVerifyPanel('${item.id}')">
+              <span class="opc-toggle-track"><span class="opc-toggle-knob"></span></span>
+            </span>
+            <span class="opc-toggle-text">توثيق واعتماد هذا الشهر</span>
+          </label>
+
+          <div class="opc-verify-panel ${isVerified ? 'opc-panel-open' : ''}" id="opcVerifyPanel_${item.id}">
+            ${isLocked ? `
+              <div class="opc-locked-note">
+                <div><i class="fa-solid fa-circle-check"></i>تم اعتماد هذا المصروف وترحيله ${paymentSource === 'person_pocket' ? `من جيب <b>${escapeHtml(paidBy || 'المالك')}</b>` : '<b>وخصمه من قاصة الورشة</b>'} بتاريخ <b>${escapeHtml(paymentDate)}</b>.</div>
+                <small>لتصحيح مبلغ أو تاريخ خاطئ، استخدم "تراجع" لعكس القيد المحاسبي وإعادة فتح البند.</small>
+                <button type="button" class="opc-undo-btn" onclick="undoOpcPostedItem('${item.id}')"><i class="fa-solid fa-rotate-left"></i> تراجع عن الترحيل</button>
+              </div>
+            ` : `
+              <div class="opc-field">
+                <label>تاريخ الدفع الفعلي</label>
+                <input type="date" class="form-input opc-payment-date" data-id="${item.id}" value="${paymentDate}">
+              </div>
+              <div class="opc-field">
+                <label>التأثير على القاصة</label>
+                <div class="opc-radio-row">
+                  <label><input type="radio" name="opcSource_${item.id}" class="opc-payment-source" data-id="${item.id}" value="cashbox" ${paymentSource !== 'person_pocket' ? 'checked' : ''} onchange="toggleOpcPocketField('${item.id}')"> نعم، يخصم من قاصة الورشة</label>
+                  <label><input type="radio" name="opcSource_${item.id}" class="opc-payment-source" data-id="${item.id}" value="person_pocket" ${paymentSource === 'person_pocket' ? 'checked' : ''} onchange="toggleOpcPocketField('${item.id}')"> لا، دفع مباشر من جيب المالك</label>
+                </div>
+              </div>
+              <div class="opc-field opc-pocket-field ${paymentSource === 'person_pocket' ? '' : 'opc-hidden'}" id="opcPocketField_${item.id}" style="grid-column: 1 / -1;">
+                <label>اسم الدافع</label>
+                <input type="text" class="form-input opc-paid-by" data-id="${item.id}" value="${escapeHtml(paidBy)}" placeholder="اسم المالك">
+              </div>
+              <label class="opc-toggle-row" style="grid-column: 1 / -1; margin-top: 0;">
+                <span class="opc-toggle-switch">
+                  <input type="checkbox" class="opc-adopt-default" data-id="${item.id}" ${adoptDefaultDraft ? 'checked' : ''}>
+                  <span class="opc-toggle-track"><span class="opc-toggle-knob"></span></span>
+                </span>
+                <span class="opc-toggle-text">اعتماد هذه القيمة كافتراضي مستقبلي للأشهر القادمة</span>
+              </label>
+            `}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // renderModalCostRows() rebuilds the ENTIRE items container from
+  // `settings`/`draftState`, so anything the user typed but hasn't reached
+  // final Confirm yet (default/actual amounts, verify toggle, payment date/
+  // source/payer, adopt-default) only lives in the live DOM. Any action that
+  // re-renders (add item, delete item, undo) must first pull those
+  // in-progress values out of the DOM here, or the re-render silently wipes
+  // every other card's unsaved edits — this was reported live: adding a
+  // custom item after editing every other item erased all the edits above
+  // it. Default-estimate edits (`item.amount`) are safe to apply immediately;
+  // actual/verify/payment fields go into `draftState`, NOT `item.actuals` —
+  // writing them there would create a premature "saved" record that breaks
+  // the "no record yet -> fall back to the default estimate" display logic
+  // for every later default edit on that same item.
+  function syncDraftFromDom() {
+    const container = document.getElementById('modalCostItemsContainer');
+    if (!container) return;
+
+    settings.monthlyItems.forEach(item => {
+      if (item.active === false) return;
+      const existingRecord = item.actuals ? item.actuals[monthKey] : null;
+      if (existingRecord && existingRecord.postedTxId) return; // never touch a posted month/item
+
+      const defaultInput = container.querySelector(`.opc-default-amt[data-id="${item.id}"]`);
+      if (defaultInput) item.amount = Number(defaultInput.value) || 0;
+
+      const actualInput = container.querySelector(`.opc-actual-amt[data-id="${item.id}"]`);
+      if (!actualInput) return; // row not rendered (e.g. brand new item pushed this same tick)
+
+      const verifiedCheck = container.querySelector(`.opc-verified-check[data-id="${item.id}"]`);
+      const paymentDateInput = container.querySelector(`.opc-payment-date[data-id="${item.id}"]`);
+      const sourceRadio = container.querySelector(`.opc-payment-source[data-id="${item.id}"]:checked`);
+      const paidByInput = container.querySelector(`.opc-paid-by[data-id="${item.id}"]`);
+      const adoptCheck = container.querySelector(`.opc-adopt-default[data-id="${item.id}"]`);
+
+      draftState[item.id] = {
+        actualVal: Number(actualInput.value) || 0,
+        verified: !!verifiedCheck?.checked,
+        paymentDate: paymentDateInput?.value || todayISO(),
+        paymentSource: sourceRadio?.value === 'person_pocket' ? 'person_pocket' : 'cashbox',
+        paidBy: paidByInput?.value.trim() || '',
+        adoptDefault: !!adoptCheck?.checked
+      };
+    });
+  }
+
+  window.toggleOpcVerifyPanel = function(id) {
+    const panel = document.getElementById(`opcVerifyPanel_${id}`);
+    const checkbox = document.querySelector(`.opc-verified-check[data-id="${id}"]`);
+    if (!panel || !checkbox) return;
+    panel.classList.toggle('opc-panel-open', checkbox.checked);
+  };
+
+  // Applied immediately to the item (like the default-estimate amount) —
+  // it's a display/calculation setting, not a financial verification field,
+  // so it doesn't need to go through draftState + the confirm review prompt.
+  window.setOpcAllocationBasis = function(id, basis) {
+    const item = settings.monthlyItems.find(x => x.id === id);
+    if (item) item.allocationBasis = basis;
+  };
+
+  window.toggleOpcPocketField = function(id) {
+    const field = document.getElementById(`opcPocketField_${id}`);
+    const selected = document.querySelector(`.opc-payment-source[data-id="${id}"]:checked`);
+    if (field) field.classList.toggle('opc-hidden', !selected || selected.value !== 'person_pocket');
+  };
+
+  window.applyOpcSuggestion = function(id, amount) {
+    const input = document.querySelector(`.opc-actual-amt[data-id="${id}"]`);
+    if (input) input.value = amount;
+    if (typeof showToast === 'function') showToast('تم تعبئة القيمة المقترحة من سجل المصاريف', 'success');
+  };
+
+  // Reverses a posted operating-cost item: cancels the v6 move via the
+  // existing audited FinanceService.cancelMove (creates a reversing entry,
+  // marks the original cancelled — same pattern as cancelMoveFromUI), drops
+  // the synthetic legacy mirror row this module created, and reopens the
+  // item for re-entry. Never deletes the real ledger history.
+  window.undoOpcPostedItem = async function(id) {
+    const item = settings.monthlyItems.find(x => x.id === id);
+    const record = item?.actuals?.[monthKey];
+    if (!item || !record || !record.postedTxId) return;
+
+    if (!confirm(`سيتم عكس مصروف "${item.name}" المُرحّل بقيد عكسي في السجل المحاسبي وإعادة فتح البند للتعديل. هل تريد المتابعة؟`)) return;
+
+    const legacyTx = finance.transactions.find(tx => tx.id === record.postedTxId);
+    try {
+      if (legacyTx?.v6_move_id && window.FinanceService) {
+        await FinanceService.cancelMove(legacyTx.v6_move_id, { backup_tag: 'pre_opcost_undo' });
+        if (window.PentagonDB) await PentagonDB.load({ force: true });
+      }
+    } catch (err) {
+      if (typeof showToast === 'function') showToast(err.message || 'تعذّر عكس القيد المحاسبي', 'error');
+      return;
+    }
+
+    if (legacyTx) {
+      finance.transactions = finance.transactions.filter(tx => tx.id !== record.postedTxId);
+    }
+
+    delete item.actuals[monthKey];
+    omni.adminSettings.workshopOperatingCosts = settings;
+    saveData();
+
+    if (typeof showToast === 'function') showToast('تم التراجع عن الترحيل وإعادة فتح البند', 'success');
+    syncDraftFromDom();
+    renderModalCostRows();
+  };
+
+  window.addCostItemFromModal = function() {
+    const nameInput = document.getElementById('newCostItemName');
+    const defaultInput = document.getElementById('newCostItemDefault');
+    const name = nameInput.value.trim();
+    const defaultVal = Number(defaultInput.value) || 0;
+
+    if (!name) {
+      if (typeof showToast === 'function') showToast('يرجى إدخال اسم المصروف', 'error');
+      return;
+    }
+
+    syncDraftFromDom();
+
+    settings.monthlyItems.push({
+      id: 'cost_' + Date.now(),
+      name,
+      amount: defaultVal,
+      active: true,
+      allocationBasis: 'calendar_days',
+      accountId: 'expense_general',
+      categoryId: 'cat_general',
+      keywords: [name],
+      actuals: {}
+    });
+
+    nameInput.value = '';
+    defaultInput.value = '';
+
+    renderModalCostRows();
+  };
+
+  window.deleteCostItemFromModal = function(id) {
+    const item = settings.monthlyItems.find(x => x.id === id);
+    if (item) {
+      syncDraftFromDom();
+      item.active = false;
+      renderModalCostRows();
+    }
+  };
+
+  // This item list needs more room than the generic 400px omni modal box —
+  // widen it just for this feature's lifetime via a scoped class, restored on close.
+  const opcModalBoxEl = document.getElementById('omniModalBox');
+  if (opcModalBoxEl) opcModalBoxEl.classList.add('opc-modal-wide');
+
+  const confirmed = await showOmniModal(
+    `ضبط مصاريف التشغيل - ${MONTHS_AR[cfg.month - 1]} ${cfg.year}`,
+    buildModalHtml(),
+    (bodyEl) => {
+      const activeItems = settings.monthlyItems.filter(item => item.active !== false);
+
+      // Pass 1 — read the form and validate, WITHOUT mutating anything yet.
+      // This lets us show the user exactly what's about to hit the ledger
+      // before committing, and abort cleanly (nothing touched) if validation
+      // fails or the user declines the review prompt below.
+      const plan = [];
+      for (const item of activeItems) {
+        const actualRecord = item.actuals ? item.actuals[monthKey] : null;
+        const isLocked = !!(actualRecord && actualRecord.postedTxId);
+        const defaultVal = Number(bodyEl.querySelector(`.opc-default-amt[data-id="${item.id}"]`)?.value ?? item.amount) || 0;
+
+        if (isLocked) { plan.push({ item, isLocked: true }); continue; }
+
+        const actualInput = bodyEl.querySelector(`.opc-actual-amt[data-id="${item.id}"]`);
+        const verifiedCheck = bodyEl.querySelector(`.opc-verified-check[data-id="${item.id}"]`);
+        const actualVal = Number(actualInput?.value) || 0;
+        const verified = !!verifiedCheck?.checked;
+
+        if (!verified) { plan.push({ item, isLocked: false, defaultVal, verified: false, actualVal }); continue; }
+
+        const paymentDate = bodyEl.querySelector(`.opc-payment-date[data-id="${item.id}"]`)?.value || todayISO();
+        const sourceRadio = bodyEl.querySelector(`.opc-payment-source[data-id="${item.id}"]:checked`);
+        const paymentSource = sourceRadio?.value === 'person_pocket' ? 'person_pocket' : 'cashbox';
+        const paidBy = paymentSource === 'person_pocket'
+          ? (bodyEl.querySelector(`.opc-paid-by[data-id="${item.id}"]`)?.value.trim() || '')
+          : '';
+        const adoptDefault = !!bodyEl.querySelector(`.opc-adopt-default[data-id="${item.id}"]`)?.checked;
+
+        if (paymentSource === 'person_pocket' && !paidBy) {
+          if (typeof showToast === 'function') showToast(`يرجى إدخال اسم الدافع لبند "${item.name}"`, 'error');
+          return false;
+        }
+        if (actualVal <= 0) {
+          if (typeof showToast === 'function') showToast(`أدخل مبلغاً صحيحاً لبند "${item.name}"`, 'error');
+          return false;
+        }
+
+        plan.push({ item, isLocked: false, defaultVal, verified: true, actualVal, paymentDate, paymentSource, paidBy, adoptDefault });
+      }
+
+      // Pass 2 — anything about to post a real ledger entry gets shown to the
+      // user first and requires an explicit yes. Items that only update the
+      // estimate/unverified actual (no ledger impact) skip this prompt.
+      const toPost = plan.filter(p => p.verified && !p.isLocked);
+      if (toPost.length > 0) {
+        const lines = toPost.map(p => {
+          const src = p.paymentSource === 'person_pocket' ? `من جيب ${p.paidBy}` : 'من قاصة الورشة';
+          return `• ${p.item.name}: ${formatMoneyReadable(p.actualVal)} (${src}) بتاريخ ${p.paymentDate}`;
+        }).join('\n');
+        const ok = confirm(`سيتم تسجيل القيود التالية في السجل المالي:\n\n${lines}\n\nهل تريد إضافتها للسجل المالي؟`);
+        if (!ok) return false;
+      }
+
+      // Pass 3 — apply. Only now do we mutate settings/post to the ledger.
+      for (const p of plan) {
+        const { item } = p;
+        if (p.isLocked) continue; // never touch an already-posted month/item
+        item.amount = p.defaultVal;
+
+        if (!item.actuals) item.actuals = {};
+
+        if (!p.verified) {
+          item.actuals[monthKey] = { amount: p.actualVal, verified: false };
+          continue;
+        }
+
+        const posted = addFinanceTransaction({
+          type: 'expense',
+          direction: 'out',
+          sourceType: p.paymentSource,
+          sourceId: `opcost_${item.id}_${monthKey}`,
+          date: p.paymentDate,
+          amount: p.actualVal,
+          categoryId: item.categoryId || 'cat_general',
+          departmentId: 'dept_workshop',
+          accountId: item.accountId || 'expense_general',
+          description: `مصاريف تشغيل - ${item.name} - ${MONTHS_AR[cfg.month - 1]} ${cfg.year}`,
+          paidByName: p.paidBy
+        }, { skipSave: true });
+
+        item.actuals[monthKey] = {
+          amount: p.actualVal,
+          verified: true,
+          paymentDate: p.paymentDate,
+          paymentSource: p.paymentSource,
+          paidBy: p.paidBy,
+          postedTxId: posted?.id || ''
+        };
+
+        if (p.adoptDefault) item.amount = p.actualVal;
+      }
+
+      if (!omni.adminSettings) omni.adminSettings = {};
+      omni.adminSettings.workshopOperatingCosts = settings;
+      saveData();
+
+      if (typeof showToast === 'function') showToast('✅ تم حفظ مصاريف التشغيل وتحديث التقويم', 'success');
+      return true;
+    },
+    () => {
+      renderModalCostRows();
+    }
+  );
+
+  delete window.addCostItemFromModal;
+  delete window.deleteCostItemFromModal;
+  delete window.toggleOpcVerifyPanel;
+  delete window.setOpcAllocationBasis;
+  delete window.toggleOpcPocketField;
+  delete window.applyOpcSuggestion;
+  delete window.undoOpcPostedItem;
+  if (opcModalBoxEl) opcModalBoxEl.classList.remove('opc-modal-wide');
+
+  if (confirmed) {
+    renderAttendanceCalendar();
+  }
 }
 
 function selectCalendarDay(day) {
@@ -13647,6 +15933,147 @@ function calendarJumpToday() {
   setConfigValue('cfgYear', now.getFullYear());
   selectedCalendarDay = now.getDate();
   renderAttendanceCalendar();
+}
+
+// Official, persistent documentation log for verified monthly operating-cost
+// items — a standing table on the calendar page (not the transient config
+// modal), listing every documented item across every month so it stays
+// reviewable after the modal closes. Sorted most recent payment first.
+function renderOpcDocumentationLog() {
+  const tbody = document.getElementById('opcDocLogBody');
+  const statsEl = document.getElementById('opcDocLogStats');
+  if (!tbody || !statsEl) return; // section not present on this page build
+
+  ensureOmni();
+  const items = (omni.adminSettings?.workshopOperatingCosts?.monthlyItems) || [];
+  const rows = [];
+  items.forEach(item => {
+    Object.entries(item.actuals || {}).forEach(([monthKey, record]) => {
+      if (!record || record.verified !== true) return;
+      rows.push({
+        monthKey,
+        itemName: item.name,
+        amount: Number(record.amount) || 0,
+        paymentDate: record.paymentDate || '',
+        paymentSource: record.paymentSource || 'cashbox',
+        paidBy: record.paidBy || '',
+        posted: !!record.postedTxId
+      });
+    });
+  });
+
+  rows.sort((a, b) => (b.paymentDate || b.monthKey).localeCompare(a.paymentDate || a.monthKey) || b.monthKey.localeCompare(a.monthKey));
+
+  const totalAmount = rows.reduce((sum, r) => sum + r.amount, 0);
+  statsEl.innerHTML = `
+    <span><strong>${rows.length}</strong> قيد موثّق</span>
+    <span><strong>${formatMoneyReadable(totalAmount)}</strong> إجمالي موثّق</span>
+  `;
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="opc-doclog-empty">لا توجد بنود موثّقة بعد. وثّق مصروفاً من نافذة "مصاريف التشغيل" ليظهر هنا.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => {
+    const [y, m] = r.monthKey.split('-');
+    const monthLabel = `${MONTHS_AR[Number(m) - 1] || m} ${y}`;
+    const sourceLabel = r.paymentSource === 'person_pocket' ? `جيب ${escapeHtml(r.paidBy || 'المالك')}` : 'قاصة الورشة';
+    const statusBadge = r.posted
+      ? `<span class="opc-doclog-badge opc-doclog-posted"><i class="fa-solid fa-lock"></i> مرحّل</span>`
+      : `<span class="opc-doclog-badge opc-doclog-pending"><i class="fa-solid fa-triangle-exclamation"></i> غير مرحّل</span>`;
+    return `
+      <tr>
+        <td>${escapeHtml(monthLabel)}</td>
+        <td>${escapeHtml(r.itemName)}</td>
+        <td class="opc-doclog-amount">${formatMoneyReadable(r.amount)}</td>
+        <td>${escapeHtml(r.paymentDate || '-')}</td>
+        <td>${sourceLabel}</td>
+        <td>${statusBadge}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Splits the month into actual-vs-forecast on both the payroll AND the
+// operating-cost side (requirement: never mix a forecast total into a
+// finalized/actual figure). A day only ever contributes to one side —
+// getCalendarDayData already resolved its `mode`, so there's no double
+// counting between actualLabor/forecastLabor or actualOperating/
+// forecastOperating.
+function getCalendarMonthForecastSummary(year, month, allDayData) {
+  const monthClosed = isPayrollMonthClosed(year, month);
+  const activeEmployees = employees.filter(emp => emp && emp.name && employeeHasActiveDayInMonth(emp, year, month));
+
+  let actualLabor = 0, forecastLabor = 0, actualOperating = 0, forecastOperating = 0;
+  let actualDays = 0, forecastDays = 0, missingDays = 0, weeklyOffDays = 0;
+  allDayData.forEach(day => {
+    if (day.mode === 'forecast') {
+      forecastLabor += day.forecastLaborCost;
+      forecastOperating += day.operatingShareForDay;
+      forecastDays++;
+    } else {
+      actualLabor += day.laborDueCost;
+      actualOperating += day.operatingShareForDay;
+      if (day.mode === 'actual') actualDays++;
+      else if (day.mode === 'missing') missingDays++;
+      else if (day.mode === 'weekly_off') weeklyOffDays++;
+    }
+  });
+
+  const operating = getWorkshopOperatingCostBreakdown(year, month);
+  return {
+    mode: monthClosed ? 'closed' : (forecastDays > 0 ? (actualDays > 0 ? 'mixed' : 'forecast') : 'actual'),
+    monthClosed,
+    activeEmployees: activeEmployees.length,
+    actualLabor,
+    forecastLabor,
+    actualOperating,
+    forecastOperating,
+    operatingMonthlyTotal: operating.monthlyTotal,
+    totalActual: actualLabor + actualOperating,
+    totalForecast: forecastLabor + forecastOperating,
+    // The authoritative grand total still uses the month's full fixed-cost
+    // total (not actualOperating+forecastOperating), because 'manual'-basis
+    // items aren't auto-spread across days and would otherwise be silently
+    // dropped from this figure.
+    projectedGrandTotal: actualLabor + forecastLabor + operating.monthlyTotal,
+    actualDays,
+    forecastDays,
+    missingDays,
+    weeklyOffDays
+  };
+}
+
+function buildCalendarMonthForecastBox(summary, year, month) {
+  const modeLabel = summary.mode === 'closed' ? 'شهر مغلق' : summary.mode === 'actual' ? 'خلاصة فعلية' : summary.mode === 'forecast' ? 'توقع شهري كامل' : 'فعلي + تنبؤي';
+  const forecastLine = summary.mode === 'actual' || summary.mode === 'closed'
+    ? `<span>أيام فعلية</span><strong>${summary.actualDays}</strong>`
+    : `<span>أيام مستقبلية متوقعة</span><strong>${summary.forecastDays}</strong>`;
+  const missingLine = summary.missingDays > 0
+    ? `<div class="cal-month-forecast-missing"><span>أيام بيانات ناقصة</span><strong>${summary.missingDays}</strong></div>`
+    : '';
+  return `
+    <div class="cal-month-forecast-box ${summary.mode === 'closed' ? 'cal-month-forecast-box-closed' : ''}" role="note" aria-label="توقعات شهر ${MONTHS_AR[month - 1]} ${year}">
+      <div class="cal-month-forecast-head">
+        <i class="fa-solid ${summary.mode === 'closed' ? 'fa-lock' : 'fa-chart-line'}"></i>
+        <div>
+          <strong>${modeLabel}</strong>
+          <small>${MONTHS_AR[month - 1]} ${year}</small>
+        </div>
+      </div>
+      <div class="cal-month-forecast-grid">
+        <div><span>موظفون داخل الحساب</span><strong>${summary.activeEmployees}</strong></div>
+        <div>${forecastLine}</div>
+        <div><span>أجور فعلية</span><strong>${formatMoneyReadable(summary.actualLabor)}</strong></div>
+        <div class="cal-forecast-stat"><span>أجور متوقعة</span><strong>${formatMoneyReadable(summary.forecastLabor)}</strong></div>
+        <div><span>تشغيل فعلي</span><strong>${formatMoneyReadable(summary.actualOperating)}</strong></div>
+        <div class="cal-forecast-stat"><span>تشغيل متوقع</span><strong>${formatMoneyReadable(summary.forecastOperating)}</strong></div>
+        ${missingLine}
+        <div class="cal-month-forecast-total"><span>إجمالي الشهر المتوقع</span><strong>${formatMoneyReadable(summary.projectedGrandTotal)}</strong></div>
+      </div>
+    </div>
+  `;
 }
 
 function renderAttendanceCalendar() {
@@ -13722,6 +16149,15 @@ function renderAttendanceCalendar() {
       moneyMini.innerHTML = `<b>كلفة اليوم</b> ${formatMoneyReadable(dayData.netDailyCost)}<small>سلف ${formatMoneyReadable(dayData.totalAdvances)}</small>`;
       box.appendChild(moneyMini);
     }
+    // Friday shows the week's rolled-up operating + labor cost as its own
+    // distinct badge — even with no attendance rows of its own, since it
+    // summarizes the preceding 6 working days, not Friday itself.
+    if (dayData.isFriday && dayData.weeklyTotalShare > 0) {
+      const weeklyMini = document.createElement('div');
+      weeklyMini.className = 'cal-weekly-mini-badge';
+      weeklyMini.innerHTML = `<b>📅 أسبوعي</b> ${formatMoneyReadable(dayData.weeklyTotalShare)}`;
+      box.appendChild(weeklyMini);
+    }
 
     const dots = document.createElement('div');
     dots.className = 'cal-emp-dots';
@@ -13750,7 +16186,289 @@ function renderAttendanceCalendar() {
   document.getElementById('calDailyTotalHours').textContent = selectedData ? selectedData.totalHours.toFixed(1) : '0';
   document.getElementById('calDailyActiveEmps').textContent = selectedData ? selectedData.rows.length : '0';
   renderCalendarDayDetails(selectedData);
+  renderOpcDocumentationLog();
 }
+
+function renderAttendanceCalendar() {
+  renderAttendanceFreshnessBanner('pageCalendar', '.calendar-container-pro');
+  const container = document.getElementById('attendanceCalendarGrid');
+  if (!container) return;
+  const cfg = getConfig();
+  const daysInMonth = getDaysInMonth(cfg.year, cfg.month);
+  const firstDay = new Date(cfg.year, cfg.month - 1, 1).getDay();
+  const header = document.getElementById('calHeaderMonthYear');
+  if (header) header.textContent = `${MONTHS_AR[cfg.month - 1]} ${cfg.year}`;
+  container.innerHTML = '';
+
+  const allDayData = Array.from({ length: daysInMonth }, (_, idx) => getCalendarDayData(cfg.year, cfg.month, idx + 1));
+  const today = new Date();
+  if (selectedCalendarDay == null && today.getFullYear() === cfg.year && today.getMonth() + 1 === cfg.month) {
+    selectedCalendarDay = today.getDate();
+  }
+  if (selectedCalendarDay == null || selectedCalendarDay > daysInMonth) {
+    const firstVisibleDay = allDayData.find(day => day.rows.length > 0 || day.hasForecast);
+    selectedCalendarDay = firstVisibleDay ? firstVisibleDay.day : 1;
+  }
+
+  CALENDAR_DAY_NAMES.forEach((name, idx) => {
+    const head = document.createElement('div');
+    head.className = 'cal-weekday' + (idx === 5 ? ' cal-weekday-friday' : '');
+    head.textContent = name;
+    container.appendChild(head);
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day-box cal-day-off';
+    container.appendChild(empty);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayData = allDayData[d - 1];
+    const badgeRows = dayData.hasForecast ? dayData.forecastRows : dayData.rows;
+    const box = document.createElement('div');
+    box.className = [
+      'cal-day-box',
+      `cal-day-mode-${dayData.mode}`,
+      dayData.isFriday ? 'cal-day-friday' : '',
+      dayData.hasForecast ? 'cal-day-forecast' : '',
+      dayData.rows.length ? 'cal-day-has-attendance' : 'cal-day-empty',
+      selectedCalendarDay === d ? 'cal-day-selected' : ''
+    ].filter(Boolean).join(' ');
+    box.setAttribute('role', 'button');
+    box.setAttribute('tabindex', '0');
+    box.onclick = () => selectCalendarDay(d);
+    box.onkeydown = (event) => {
+      if (event.key === 'Enter' || event.key === ' ') selectCalendarDay(d);
+    };
+
+    const dateNum = document.createElement('div');
+    dateNum.className = 'cal-date-num';
+    dateNum.innerHTML = `<span>${d}</span><small>${dayData.dayName}</small>`;
+    box.appendChild(dateNum);
+
+    const modeBadge = document.createElement('div');
+    modeBadge.className = `cal-day-mode-badge cal-day-mode-badge-${dayData.mode}`;
+    modeBadge.innerHTML = `<i class="fa-solid ${dayData.modeIcon}"></i> ${dayData.modeLabel}`;
+    box.appendChild(modeBadge);
+
+    const visibleCount = dayData.hasForecast ? dayData.forecastRows.length : dayData.rows.length;
+    const visibleHours = dayData.hasForecast ? dayData.forecastHours : dayData.totalHours;
+    const visibleLabel = dayData.hasForecast ? 'متوقع' : 'حضور';
+    const summary = document.createElement('div');
+    summary.className = 'cal-day-summary';
+    summary.innerHTML = `<strong>${visibleCount}</strong><span>${visibleLabel}</span><em>${visibleHours.toFixed(1)} س</em>`;
+    box.appendChild(summary);
+
+    if (dayData.rows.length || dayData.hasForecast) {
+      const moneyMini = document.createElement('div');
+      moneyMini.className = 'calendar-finance-mini' + (dayData.hasForecast ? ' calendar-finance-mini-forecast' : '');
+      moneyMini.innerHTML = dayData.hasForecast
+        ? `<b>متوقع</b> ${formatMoneyReadable(dayData.netDailyCost)}<small>بدون سلف</small>`
+        : `<b>كلفة اليوم</b> ${formatMoneyReadable(dayData.netDailyCost)}<small>سلف ${formatMoneyReadable(dayData.totalAdvances)}</small>`;
+      box.appendChild(moneyMini);
+    }
+
+    if (dayData.isFriday && dayData.weeklyTotalShare > 0) {
+      const weeklyMini = document.createElement('div');
+      weeklyMini.className = 'cal-weekly-mini-badge';
+      weeklyMini.innerHTML = `<b>أسبوعي</b> ${formatMoneyReadable(dayData.weeklyTotalShare)}`;
+      box.appendChild(weeklyMini);
+    }
+
+    const dots = document.createElement('div');
+    dots.className = 'cal-emp-dots';
+    badgeRows.slice(0, 8).forEach(item => {
+      const badge = document.createElement('div');
+      badge.className = 'cal-emp-badge' + (item.isForecast ? ' cal-emp-badge-forecast' : '');
+      badge.textContent = item.name.substring(0, 2);
+      badge.title = item.isForecast ? `${item.name} (متوقع)` : `${item.name} (${item.rec.checkIn || '--:--'} - ${item.rec.checkOut || '--:--'})`;
+      badge.style.borderColor = item.statusColor;
+      dots.appendChild(badge);
+    });
+    if (badgeRows.length > 8) {
+      const more = document.createElement('div');
+      more.className = 'cal-emp-more';
+      more.textContent = `+${badgeRows.length - 8}`;
+      dots.appendChild(more);
+    }
+
+    box.appendChild(dots);
+    container.appendChild(box);
+  }
+
+  const monthSummary = getCalendarMonthForecastSummary(cfg.year, cfg.month, allDayData);
+  container.insertAdjacentHTML('beforeend', buildCalendarMonthForecastBox(monthSummary, cfg.year, cfg.month));
+
+  const closeBtn = document.getElementById('calendarCloseMonthBtn');
+  if (closeBtn) {
+    const closed = monthSummary.monthClosed;
+    closeBtn.innerHTML = closed
+      ? '<i class="fa-solid fa-lock-open"></i><span>إعادة فتح الشهر</span>'
+      : '<i class="fa-solid fa-lock"></i><span>إغلاق الشهر</span>';
+    closeBtn.title = closed ? 'إعادة فتح الشهر لاستئناف التوقع' : 'إغلاق الشهر وتجميد التوقعات';
+    closeBtn.classList.toggle('calendar-month-closed-active', closed);
+  }
+
+  const selectedData = allDayData.find(day => day.day === selectedCalendarDay) || allDayData[0];
+  const selectedHours = selectedData ? (selectedData.hasForecast ? selectedData.forecastHours : selectedData.totalHours) : 0;
+  const selectedEmployees = selectedData ? (selectedData.hasForecast ? selectedData.forecastRows.length : selectedData.rows.length) : 0;
+  const hoursEl = document.getElementById('calDailyTotalHours');
+  const empsEl = document.getElementById('calDailyActiveEmps');
+  if (hoursEl) hoursEl.textContent = selectedHours.toFixed(1);
+  if (empsEl) empsEl.textContent = selectedEmployees;
+  renderCalendarDayDetails(selectedData);
+  renderOpcDocumentationLog();
+}
+
+window.toggleCalendarMonthClosed = function() {
+  const cfg = getConfig();
+  setPayrollMonthClosed(cfg.year, cfg.month, !isPayrollMonthClosed(cfg.year, cfg.month));
+};
+
+// ─── Attendance forecast regression tests ───
+// Manual diagnostic (run from the console: runAttendanceForecastRegressionTests()).
+// Swaps the live `employees` array and the operating-cost/closed-month admin
+// settings for a synthetic fixture, runs the scenarios, and restores the
+// originals in `finally` — never touches real data, never persists anything
+// (no saveData() call anywhere in here). Uses the REAL current year/month so
+// isEmployeeActiveOnDate's auto-resignation guard (anchored to the real
+// wall-clock date) doesn't false-positive against synthetic dates.
+function runAttendanceForecastRegressionTests() {
+  const results = [];
+  const assert = (name, cond, detail = '') => results.push({ name, pass: !!cond, detail });
+
+  const originalEmployees = employees;
+  if (!omni) omni = {};
+  if (!omni.adminSettings) omni.adminSettings = {};
+  const originalWorkshopCosts = omni.adminSettings.workshopOperatingCosts;
+  const originalClosedMonths = omni.adminSettings.closedPayrollMonths;
+  const originalManualCutoff = omni.adminSettings.lastCompleteAttendanceUpdateDate;
+  const originalManualCutoffAlt = omni.adminSettings.lastCompleteDatabaseUpdateDate;
+  const originalSelectedDay = selectedCalendarDay;
+
+  try {
+    omni.adminSettings.workshopOperatingCosts = {
+      monthlyItems: [
+        { id: 'rent', name: 'إيجار الورشة', amount: 300000, active: true, allocationBasis: 'calendar_days' },
+        { id: 'internet', name: 'اشتراك الإنترنت', amount: 60000, active: true, allocationBasis: 'calendar_days' },
+        { id: 'electricity', name: 'اشتراك الكهرباء', amount: 90000, active: true, allocationBasis: 'calendar_days' }
+      ]
+    };
+    omni.adminSettings.closedPayrollMonths = [];
+    omni.adminSettings.lastCompleteAttendanceUpdateDate = null;
+    omni.adminSettings.lastCompleteDatabaseUpdateDate = null;
+
+    const now = new Date();
+    const YEAR = now.getFullYear();
+    const MONTH = now.getMonth() + 1;
+    const prevMonth = MONTH === 1 ? 12 : MONTH - 1;
+    const prevYear = MONTH === 1 ? YEAR - 1 : YEAR;
+    const prevMonthLastDay = getDaysInMonth(prevYear, prevMonth);
+    const nextNonFriday = (startDay) => {
+      let d = startDay;
+      while (isFriday(YEAR, MONTH, d)) d++;
+      return d;
+    };
+
+    const empA = {
+      id: 'test_emp_forecast_a',
+      name: 'موظف اختبار توقع',
+      active: true,
+      salary: 300000,
+      records: [
+        { year: prevYear, month: prevMonth, day: prevMonthLastDay, checkIn: '08:00', checkOut: '17:00', status: 'normal', hours: 8 }
+      ]
+    };
+    employees = [empA];
+
+    // 1) A month with the last update on the previous month's end shows the
+    //    current month as forecast, never as a confirmed zero.
+    const dayOne = nextNonFriday(1);
+    const day1Data = getCalendarDayData(YEAR, MONTH, dayOne);
+    assert(
+      'شهر بلا استيراد جديد يظهر تنبؤي وليس صفراً فعلياً',
+      day1Data.mode === 'forecast' && day1Data.rows.length === 0,
+      `day=${dayOne} mode=${day1Data.mode} rows=${day1Data.rows.length}`
+    );
+
+    // 2) A day after the cutoff with no attendance records forecasts the
+    //    active employee.
+    assert(
+      'يوم بعد آخر تحديث يتوقع الموظفين النشطين',
+      day1Data.forecastRows.length === 1 && day1Data.forecastRows[0].name === empA.name,
+      `forecastRows=${day1Data.forecastRows.length}`
+    );
+
+    // 3) Friday shows no normal payroll forecast, but fixed (calendar_days)
+    //    operating expenses are still allocated to it.
+    const firstFriday = getFridaysInMonth(YEAR, MONTH)[0];
+    if (firstFriday) {
+      const fridayData = getCalendarDayData(YEAR, MONTH, firstFriday);
+      assert(
+        'الجمعة بلا أجور تنبؤية عادية لكن مصاريف التشغيل الثابتة تُحسب',
+        fridayData.mode === 'weekly_off' && fridayData.forecastLaborCost === 0 && fridayData.operatingShareForDay > 0,
+        `mode=${fridayData.mode} forecastLaborCost=${fridayData.forecastLaborCost} opShare=${fridayData.operatingShareForDay}`
+      );
+    } else {
+      assert('الجمعة بلا أجور تنبؤية عادية لكن مصاريف التشغيل الثابتة تُحسب', false, 'لا توجد جمعة في الشهر (غير متوقع)');
+    }
+
+    // 4) Importing actual attendance for a forecast day converts ONLY that
+    //    day to actual — the next day stays forecast.
+    const dayTwo = nextNonFriday(dayOne + 1);
+    const dayThree = nextNonFriday(dayTwo + 1);
+    empA.records.push({ year: YEAR, month: MONTH, day: dayTwo, checkIn: '08:00', checkOut: '17:00', status: 'normal', hours: 8 });
+    const day2Data = getCalendarDayData(YEAR, MONTH, dayTwo);
+    const day3Data = getCalendarDayData(YEAR, MONTH, dayThree);
+    assert(
+      'استيراد حضور فعلي ليوم واحد يحوّله لفعلي دون التأثير على بقية الأيام',
+      day2Data.mode === 'actual' && day3Data.mode === 'forecast',
+      `day${dayTwo}=${day2Data.mode} day${dayThree}=${day3Data.mode}`
+    );
+
+    // 5) Fixed rent/internet/electricity still appear on a day with zero
+    //    employees.
+    employees = [];
+    const emptyDayData = getCalendarDayData(YEAR, MONTH, nextNonFriday(5));
+    assert(
+      'مصاريف الإيجار/الإنترنت/الكهرباء تظهر رغم صفر موظفين',
+      emptyDayData.rows.length === 0 && emptyDayData.operatingShareForDay > 0,
+      `rows=${emptyDayData.rows.length} opShare=${emptyDayData.operatingShareForDay}`
+    );
+
+    // 6) Forecast totals never create accounting journal entries or payable
+    //    balances — purely computed for display, nothing posted.
+    const txCountBefore = (finance?.transactions || []).length;
+    const allDays = Array.from({ length: getDaysInMonth(YEAR, MONTH) }, (_, i) => getCalendarDayData(YEAR, MONTH, i + 1));
+    getCalendarMonthForecastSummary(YEAR, MONTH, allDays);
+    getPayrollForecastSummary(YEAR, MONTH);
+    const txCountAfter = (finance?.transactions || []).length;
+    assert(
+      'التوقعات لا تُنشئ قيود محاسبية أو مستحقات فعلية',
+      txCountAfter === txCountBefore,
+      `before=${txCountBefore} after=${txCountAfter}`
+    );
+  } finally {
+    employees = originalEmployees;
+    omni.adminSettings.workshopOperatingCosts = originalWorkshopCosts;
+    omni.adminSettings.closedPayrollMonths = originalClosedMonths;
+    omni.adminSettings.lastCompleteAttendanceUpdateDate = originalManualCutoff;
+    omni.adminSettings.lastCompleteDatabaseUpdateDate = originalManualCutoffAlt;
+    selectedCalendarDay = originalSelectedDay;
+  }
+
+  const passCount = results.filter(r => r.pass).length;
+  const allPassed = passCount === results.length;
+  if (typeof console !== 'undefined') {
+    console.log(`%cattendance forecast regression: ${passCount}/${results.length} passed`, allPassed ? 'color:#34d399;font-weight:bold' : 'color:#f87171;font-weight:bold');
+    if (typeof console.table === 'function') {
+      console.table(results.map(r => ({ الفحص: r.name, النتيجة: r.pass ? 'PASS' : 'FAIL', التفاصيل: r.detail })));
+    }
+  }
+  return { passCount, total: results.length, allPassed, results };
+}
+window.runAttendanceForecastRegressionTests = runAttendanceForecastRegressionTests;
 
 function prevMonthCal() {
   let m = parseInt(getConfigNumber('cfgMonth', 3), 10);
@@ -13825,6 +16543,9 @@ function importData(event) {
           omni = data.omni || defaultOmniState();
           ensureFinance();
           ensureOmni();
+          // Restoring an older backup taken before the balance sign-flip migration:
+          // bring its employees up to the current convention too.
+          migrateEmployeePrevAdvanceSignConvention();
           if (data.config) {
             setConfigValue('cfgMonth', data.config.month);
             setConfigValue('cfgYear', data.config.year);
@@ -13895,6 +16616,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   await loadData();
   window.__dataLoadComplete = true; // unlock saveData() now that real data is loaded
+  if (migrateEmployeePrevAdvanceSignConvention()) saveData();
   ensureFinance();
   if (!finance.customers || finance.customers.length === 0) {
     finance.customers = [{
@@ -13907,6 +16629,9 @@ window.addEventListener('DOMContentLoaded', async () => {
       notes: 'عميل افتراضي تجريبي لمحاكاة البوابة'
     }];
   }
+  // Start remembering visited pages now; the boot landing page is resolved later
+  // (just before we navigate) so PermissionService is fully initialised by then.
+  startLastPageTracking();
   const urlParams = new URLSearchParams(window.location.search);
   const urlCustomerId = urlParams.get('customer');
   if (urlCustomerId) {
@@ -13914,6 +16639,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.customerPortalInitialCustomerId = urlCustomerId;
   }
   ensureOmni();
+  applyOrbStyle(getAdminSetting('ui.orbStyle', 'classic'));
   updateGlobalCurrencyUI();
   resetSurfaceViewStateForExamples();
   // Guard: do NOT save during init if employees is empty. A previous race wrote `employees:[]` over
@@ -13941,8 +16667,19 @@ window.addEventListener('DOMContentLoaded', async () => {
   refreshCalcEmpDropdown();
   refreshEmpFilterDropdown();
   
-  // 3.5 Refresh current view with loaded data
-  switchPage(currentPage);
+  // 3.5 Land on the boot page. Resolve it here (PermissionService is ready by now)
+  // so we can "resume where you left off". A ?customer= deep-link takes priority.
+  // Use window.switchPage (the template-loading guard) so the landing view is
+  // hydrated first, plus a short re-land retry for module-owned pages whose
+  // switchPage wrapper may not be wired yet this early in boot.
+  if (currentPage !== 'customer_portal') currentPage = getBootLandingPage();
+  const __bootLanding = currentPage;
+  (window.switchPage || switchPage)(__bootLanding);
+  setTimeout(() => {
+    if (currentPage !== __bootLanding) return; // user already navigated — leave them be
+    const active = document.querySelector(`.nav-btn[data-page="${__bootLanding}"].active`);
+    if (!active) (window.switchPage || switchPage)(__bootLanding);
+  }, 900);
 
   // 4. Auto-Fetch Excel Data — only when on import/timesheet views to avoid startup noise
   if (currentPage === 'timesheet' || currentPage === 'import') {
@@ -21731,6 +24468,10 @@ function renderAdminTabSettings() {
         ${renderAdminSelect('ui.density', 'الكثافة', [{ value: 'comfortable', label: 'مريحة' }, { value: 'compact', label: 'مضغوطة' }])}
         ${renderAdminToggle('ui.bigScreenMode', 'وضع الشاشة الكبيرة')}
         ${renderAdminToggle('ui.animations', 'الحركات')}
+        ${renderAdminSelect('ui.orbStyle', 'تصميم أومني (الأورب الذكي)', [
+          { value: 'classic', label: 'كلاسيكي — ألوان دوّارة' },
+          { value: 'glass', label: 'زجاجي حي — جديد' }
+        ])}
       </section>
       <section class="admin-card"><h3>إعدادات مصمم العمليات</h3>
         ${renderAdminToggle('workflow.quickEditEnabled', 'القائمة السريعة للعقد')}
@@ -25108,6 +27849,17 @@ function initTheme() {
   }
 }
 
+// ─── Omni Orb Style (تصميم أومني/الأورب) ───
+// Settings-selectable visual for the floating Jarvis/Omni orb (#jarvisOrb).
+// 'classic' = the original spinning color-wheel ball (unchanged, default).
+// 'glass'   = the reverse-engineered volumetric glass core (modules/jarvis-orb.css).
+// Purely a body[data-orb-style] flag; the orb widget itself renders both
+// variants and CSS shows/hides them, so this function only needs to persist
+// the flag and toggle the attribute - no DOM rebuild required.
+function applyOrbStyle(style) {
+  document.body.dataset.orbStyle = (style === 'glass') ? 'glass' : 'classic';
+}
+
 function setTheme(theme) {
   if (!THEMES.includes(theme)) return;
 
@@ -26348,7 +29100,7 @@ function renderEmployeesTable() {
       if (employeeTableState.sortKey === 'lastActivity') return (((a.info.lastActivity || 0) - (b.info.lastActivity || 0)) * dir);
       if (employeeTableState.sortKey === 'balance') return (a.info.liveBalance - b.info.liveBalance) * dir;
       if (employeeTableState.sortKey === 'status') {
-        const order = { active: 1, pending: 2, inactive: 3 };
+        const order = { active: 1, inactive: 2 };
         return ((order[a.info.status] || 9) - (order[b.info.status] || 9)) * dir;
       }
       return 0;
@@ -26378,7 +29130,7 @@ function renderEmployeesTable() {
     }
 
     const row = document.createElement('tr');
-    const statusClass = info.status === 'active' ? 'active' : info.status === 'pending' ? 'pending' : 'inactive';
+    const statusClass = info.status === 'active' ? 'active' : 'inactive';
     const canSeeSalary = !window.PermissionService || window.PermissionService.checkField('employees', 'salary');
     const canSeeBalance = !window.PermissionService || window.PermissionService.checkField('employees', 'prevAdvance');
     const canUpdateEmployees = !window.PermissionService || window.PermissionService.check('employees', 'update');
@@ -26393,6 +29145,8 @@ function renderEmployeesTable() {
     const saveHtml = canUpdateEmployees
       ? `<button class="btn-small btn-success employee-save-btn" onclick="saveEmployeeData(${idx})">حفظ</button>`
       : '<button class="btn-small btn-secondary employee-save-btn" disabled title="لا توجد صلاحية">مقفل</button>';
+
+    const detailsHtml = `<button class="btn-small employee-details-btn" onclick="openEmployeeDetails(${idx})">تفاصيل</button>`;
 
     const _PS = getPayrollSettings();
     const _fmtMin = m => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
@@ -26411,7 +29165,7 @@ function renderEmployeesTable() {
         <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">صافي الشهر: <strong style="color:var(--accent-blue)">${canSeeSalary ? formatNum(liveNet) : 'مقفل'}</strong></div>
       </td>
       <td>${balanceHtml}</td>
-      <td>${saveHtml}</td>
+      <td><div class="employee-actions-cell">${detailsHtml}${saveHtml}</div></td>
     `;
     tbody.appendChild(row);
   });
@@ -26437,6 +29191,340 @@ function saveEmployeeData(empIdx) {
   saveData();
   renderEmployeesTable();
   showToast(`تم حفظ بيانات ${employees[empIdx].name} بنجاح`, 'success');
+}
+
+function minutesToHHMM(m) {
+  return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+}
+
+function buildEmployeeShiftOptions(selectedShift) {
+  const PS = getPayrollSettings();
+  return Object.keys(PS.shifts || {}).map(key => {
+    const shift = PS.shifts[key];
+    return `<option value="${key}" ${String(selectedShift || 'morning') === key ? 'selected' : ''}>${escapeHtml(shift.label || key)} (${minutesToHHMM(shift.startMin)}-${minutesToHHMM(shift.endMin)})</option>`;
+  }).join('');
+}
+
+// Live "من 09:00 إلى 18:00 · 9 ساعة" line under the shift picker; reflects the
+// currently selected base shift OR this employee's custom start/end override.
+function buildEmployeeShiftInfoLine(shift) {
+  const hoursLabel = Number.isInteger(shift.hours) ? shift.hours : shift.hours.toFixed(1);
+  return `من ${minutesToHHMM(shift.startMin)} إلى ${minutesToHHMM(shift.endMin)} · ${hoursLabel} ساعة`;
+}
+
+function buildEmployeeManualPeriodRow(period = {}, canUpdate = true) {
+  const disabled = canUpdate ? '' : 'disabled';
+  return `
+    <div class="employee-period-row" data-source="manual" data-id="${escapeHtml(period.id || makeId('PER'))}">
+      <input type="date" class="form-input emp-period-start" value="${formatLifecycleDateInput(period.start || period.startDate)}" ${disabled}>
+      <input type="date" class="form-input emp-period-end" value="${formatLifecycleDateInput(period.end || period.endDate)}" ${disabled}>
+      <input class="form-input emp-period-note" value="${escapeHtml(period.note || '')}" placeholder="ملاحظة" ${disabled}>
+      <button type="button" class="btn-small employee-period-remove" onclick="removeEmployeePeriodRow(this)" ${disabled}>×</button>
+    </div>
+  `;
+}
+
+function buildEmployeeReadonlyPeriodRow(period) {
+  const label = period.source === 'timesheet' ? 'تايم شيت' : 'قديم';
+  const end = period.end || (period.source === 'timesheet' ? period.autoEnd : null);
+  return `
+    <div class="employee-period-row employee-period-row-readonly" data-source="${escapeHtml(period.source || 'auto')}">
+      <input type="date" class="form-input" value="${formatLifecycleDateInput(period.start)}" disabled>
+      <input type="date" class="form-input" value="${formatLifecycleDateInput(end)}" disabled>
+      <input class="form-input" value="${escapeHtml(label)}" disabled>
+      <span class="employee-period-lock">تلقائي</span>
+    </div>
+  `;
+}
+
+function buildEmployeePeriodsPanel(employee, canUpdate) {
+  const stored = getStoredEmploymentPeriods(employee);
+  const manual = stored.filter(period => period.source === 'manual');
+  const readonly = [
+    ...stored.filter(period => period.source !== 'manual'),
+    ...(getEmployeeTimesheetLifecycle(employee).periods || [])
+  ];
+  const readonlyRows = readonly.map(buildEmployeeReadonlyPeriodRow).join('');
+  const manualRows = manual.map(period => buildEmployeeManualPeriodRow(period, canUpdate)).join('');
+  return `
+    <div class="employee-periods-panel">
+      <div class="employee-periods-head">
+        <strong>فترات العمل</strong>
+        <button type="button" class="btn-small employee-period-add" onclick="addEmployeePeriodRow(this)" ${canUpdate ? '' : 'disabled'}>+</button>
+      </div>
+      <div class="employee-periods-labels"><span>مباشرة</span><span>انفكاك</span><span>مصدر/ملاحظة</span><span></span></div>
+      <div class="employee-periods-list">${readonlyRows}${manualRows || ''}</div>
+    </div>
+  `;
+}
+
+function addEmployeePeriodRow(button) {
+  const list = button?.closest('.employee-periods-panel')?.querySelector('.employee-periods-list');
+  if (!list) return;
+  list.insertAdjacentHTML('beforeend', buildEmployeeManualPeriodRow({ start: todayISO(), end: '', note: 'عودة للعمل' }, true));
+}
+
+function removeEmployeePeriodRow(button) {
+  button?.closest('.employee-period-row[data-source="manual"]')?.remove();
+}
+
+function collectEmployeeManualPeriods(body) {
+  return [...body.querySelectorAll('.employee-period-row[data-source="manual"]')]
+    .map(row => ({
+      id: row.dataset.id || makeId('PER'),
+      startDate: row.querySelector('.emp-period-start')?.value || '',
+      endDate: row.querySelector('.emp-period-end')?.value || '',
+      note: row.querySelector('.emp-period-note')?.value || '',
+      source: 'manual'
+    }))
+    .filter(period => period.startDate || period.endDate);
+}
+
+function openEmployeeDetailsOnOpen(body, emp, canUpdate) {
+  if (!canUpdate) return;
+  const shiftSelect = body.querySelector('#empDetailShift');
+  const infoLine = body.querySelector('#empShiftInfoLine');
+  const customToggle = body.querySelector('#empShiftCustomToggle');
+  const customFields = body.querySelector('#empShiftCustomFields');
+  const customStart = body.querySelector('#empShiftCustomStart');
+  const customEnd = body.querySelector('#empShiftCustomEnd');
+
+  const refreshShiftInfo = () => {
+    if (customToggle?.checked) {
+      const startMin = parseTime(customStart?.value) ?? 0;
+      let endMin = parseTime(customEnd?.value) ?? 0;
+      let durationMin = endMin - startMin;
+      if (durationMin <= 0) durationMin += 24 * 60;
+      if (infoLine) infoLine.textContent = buildEmployeeShiftInfoLine({ startMin, endMin, hours: durationMin / 60 });
+    } else {
+      const PS = getPayrollSettings();
+      const def = PS.shifts[shiftSelect?.value] || PS.shifts.morning;
+      if (infoLine) infoLine.textContent = buildEmployeeShiftInfoLine({ startMin: def.startMin, endMin: def.endMin, hours: (def.endMin - def.startMin) / 60 });
+      if (customStart) customStart.value = minutesToHHMM(def.startMin);
+      if (customEnd) customEnd.value = minutesToHHMM(def.endMin);
+    }
+  };
+  shiftSelect?.addEventListener('change', refreshShiftInfo);
+  customToggle?.addEventListener('change', () => {
+    if (customFields) customFields.style.display = customToggle.checked ? '' : 'none';
+    refreshShiftInfo();
+  });
+  customStart?.addEventListener('input', refreshShiftInfo);
+  customEnd?.addEventListener('input', refreshShiftInfo);
+
+  const activeCheckbox = body.querySelector('#empDetailActive');
+  const statusBtn = body.querySelector('#empStatusToggleBtn');
+  const statusLabel = body.querySelector('#empStatusToggleLabel');
+  const confirmBanner = body.querySelector('#empStatusConfirmBanner');
+  const confirmDaysEl = body.querySelector('#empStatusConfirmDays');
+
+  const paintStatus = (isActive) => {
+    if (activeCheckbox) activeCheckbox.checked = isActive;
+    if (statusBtn) statusBtn.classList.toggle('is-active', isActive);
+    if (statusBtn) statusBtn.classList.toggle('is-inactive', !isActive);
+    if (statusLabel) statusLabel.textContent = isActive ? 'يعمل' : 'مستقيل';
+  };
+
+  statusBtn?.addEventListener('click', () => {
+    const isActiveNow = !!activeCheckbox?.checked;
+    if (isActiveNow) {
+      const lastActivity = getLastAttendanceDate(emp);
+      const daysSince = lastActivity ? Math.floor((new Date() - lastActivity) / 86400000) : Infinity;
+      if (daysSince <= EMPLOYEE_AUTO_RESIGN_AFTER_DAYS) {
+        if (confirmDaysEl) confirmDaysEl.textContent = String(daysSince);
+        if (confirmBanner) confirmBanner.style.display = 'flex';
+        return;
+      }
+    }
+    paintStatus(!isActiveNow);
+  });
+  body.querySelector('#empStatusConfirmStay')?.addEventListener('click', () => {
+    if (confirmBanner) confirmBanner.style.display = 'none';
+  });
+  body.querySelector('#empStatusConfirmGo')?.addEventListener('click', () => {
+    if (confirmBanner) confirmBanner.style.display = 'none';
+    paintStatus(false);
+  });
+}
+
+async function openEmployeeDetails(empIdx) {
+  const emp = employees[empIdx];
+  if (!emp) return;
+  const cfg = getConfig();
+  const info = getEmployeeActivityInfo(emp, cfg);
+  const canUpdate = !window.PermissionService || window.PermissionService.check('employees', 'update');
+  const lastActivity = info.lastActivity
+    ? `${info.lastActivity.getFullYear()}-${String(info.lastActivity.getMonth() + 1).padStart(2, '0')}-${String(info.lastActivity.getDate()).padStart(2, '0')}`
+    : '-';
+  const lifecycle = getEmployeeLifecycle(emp);
+  const autoStartDate = lifecycle.start || lifecycle.timesheetLifecycle?.firstAttendance || null;
+  const autoEndDate = lifecycle.end || (info.status === 'inactive' ? lifecycle.timesheetLifecycle?.autoResignationDate : null);
+  const isOngoing = info.status === 'active' && !autoEndDate;
+  const durationLabel = formatEmployeeDurationLabel(autoStartDate, isOngoing ? null : autoEndDate);
+  const isActiveNow = isEmployeeFlagActive(emp);
+  // Button color/text must both come from the SAME source (the manual flag, which is what
+  // actually gets saved) — using the computed lifecycle status for one and the manual flag
+  // for the other let them contradict each other (e.g. green "active" showing "مستقيل").
+  const statusToggleLabel = isActiveNow ? 'يعمل' : 'مستقيل';
+  // Separate, non-interactive hint for the one case they can legitimately disagree: still
+  // manually flagged active, but the system auto-considers him inactive from stale attendance.
+  const staleDaysSince = info.lastActivity ? Math.floor((new Date() - info.lastActivity) / 86400000) : null;
+  const isStaleActive = isActiveNow && info.status === 'inactive';
+  const shift = getEmployeeShift(emp);
+  const hasCustomShift = emp.shiftStartMin != null || emp.shiftEndMin != null;
+  const html = `
+    <div class="employee-detail-modal">
+      <div class="employee-status-bar">
+        <button type="button" id="empStatusToggleBtn" class="employee-status-toggle ${isActiveNow ? 'is-active' : 'is-inactive'}" ${canUpdate ? '' : 'disabled'} title="${escapeHtml(info.lifecycle?.reason || '')}">
+          <span class="employee-status-dot"></span>
+          <span id="empStatusToggleLabel">${statusToggleLabel}</span>
+        </button>
+        <div class="employee-status-activity"><span>آخر نشاط</span><strong>${escapeHtml(lastActivity)}</strong></div>
+      </div>
+      ${isStaleActive ? `<div class="employee-status-stale-hint">⚠️ لا يوجد حضور منذ ${staleDaysSince} يوماً — يعتبره النظام غير نشط تلقائياً رغم أنه لا يزال مؤشَّراً «يعمل». اضغط الزر أعلاه لتأكيد الاستقالة إن لزم.</div>` : ''}
+      <input type="checkbox" id="empDetailActive" ${isActiveNow ? 'checked' : ''} style="display:none">
+      <div id="empStatusConfirmBanner" class="employee-status-confirm-banner" style="display:none">
+        <p>⚠️ آخر نشاط له كان قبل <strong id="empStatusConfirmDays">0</strong> يوم. هل تريد تأكيد أنه استقال؟</p>
+        <div class="employee-status-confirm-actions">
+          <button type="button" class="btn-secondary" id="empStatusConfirmStay">تراجع</button>
+          <button type="button" class="btn-primary" id="empStatusConfirmGo">نعم، استقال</button>
+        </div>
+      </div>
+      <div class="employee-detail-grid">
+        <label>اسم الموظف<input id="empDetailName" class="form-input" value="${escapeHtml(emp.name || '')}" ${canUpdate ? '' : 'disabled'}></label>
+        <label>الراتب الاسمي<input id="empDetailSalary" type="number" class="form-input" value="${getEmployeeNominalSalary(emp)}" ${canUpdate ? '' : 'disabled'}></label>
+        <label>الرصيد/السلفة السابقة<input id="empDetailBalance" type="number" class="form-input" value="${Number(emp.prevAdvance || 0)}" ${canUpdate ? '' : 'disabled'}></label>
+        <label>الشفت<select id="empDetailShift" class="form-input" ${canUpdate ? '' : 'disabled'}>${buildEmployeeShiftOptions(emp.shift)}</select></label>
+        <div class="employee-shift-panel">
+          <div class="employee-shift-info" id="empShiftInfoLine">${buildEmployeeShiftInfoLine(shift)}</div>
+          <label class="employee-shift-custom-toggle"><input type="checkbox" id="empShiftCustomToggle" ${hasCustomShift ? 'checked' : ''} ${canUpdate ? '' : 'disabled'}> تخصيص ساعات هذا الموظف (مختلفة عن باقي الفريق)</label>
+          <div class="employee-shift-custom-fields" id="empShiftCustomFields" style="${hasCustomShift ? '' : 'display:none'}">
+            <label>من<input type="time" id="empShiftCustomStart" class="form-input" value="${minutesToHHMM(shift.startMin)}" ${canUpdate ? '' : 'disabled'}></label>
+            <label>إلى<input type="time" id="empShiftCustomEnd" class="form-input" value="${minutesToHHMM(shift.endMin)}" ${canUpdate ? '' : 'disabled'}></label>
+          </div>
+        </div>
+        <label>بدأ العمل<input type="date" class="form-input" value="${formatLifecycleDateInput(autoStartDate)}" disabled></label>
+        <label>استمرارية العمل${isOngoing
+          ? '<div class="employee-continuity-chip">● مستمر</div>'
+          : `<input type="date" class="form-input" value="${formatLifecycleDateInput(autoEndDate)}" disabled>`}</label>
+        <div class="employee-duration-note">مدة العمل: <strong>${escapeHtml(durationLabel)}</strong></div>
+        <label class="employee-detail-notes">ملاحظات<textarea id="empDetailNotes" class="form-input" rows="3" ${canUpdate ? '' : 'disabled'}>${escapeHtml(emp.notes || '')}</textarea></label>
+      </div>
+      ${buildEmployeePeriodsPanel(emp, canUpdate)}
+      <p class="employee-detail-hint">المباشرة والانفكاك تلقائية من التايم شيت. إذا لم يوجد حضور لأكثر من 15 يوما يعتبر الموظف مستقيلا ولا يدخل التنبؤ.</p>
+    </div>
+  `;
+  const result = await showOmniModal(`تفاصيل ${emp.name || 'موظف'}`, html, (body) => {
+    if (!canUpdate) return true;
+    const name = body.querySelector('#empDetailName')?.value.trim();
+    if (!name) {
+      showToast('اسم الموظف مطلوب', 'error');
+      return false;
+    }
+    emp.name = name;
+    emp.salary = Number(body.querySelector('#empDetailSalary')?.value) || 0;
+    emp.prevAdvance = Number(body.querySelector('#empDetailBalance')?.value) || 0;
+    emp.shift = body.querySelector('#empDetailShift')?.value || emp.shift || 'morning';
+    if (body.querySelector('#empShiftCustomToggle')?.checked) {
+      emp.shiftStartMin = parseTime(body.querySelector('#empShiftCustomStart')?.value);
+      emp.shiftEndMin = parseTime(body.querySelector('#empShiftCustomEnd')?.value);
+    } else {
+      delete emp.shiftStartMin;
+      delete emp.shiftEndMin;
+    }
+    emp.is_active = !!body.querySelector('#empDetailActive')?.checked;
+    emp.status = emp.is_active ? 'active' : 'resigned';
+    emp.employmentPeriods = collectEmployeeManualPeriods(body);
+    emp.notes = body.querySelector('#empDetailNotes')?.value || '';
+    emp.updated_at = new Date().toISOString();
+    saveData();
+    return true;
+  }, (body) => openEmployeeDetailsOnOpen(body, emp, canUpdate));
+  if (result && canUpdate) {
+    renderEmployeesTable();
+    refreshCalcEmpDropdown();
+    if (currentPage === 'calendar') renderAttendanceCalendar();
+    if (currentPage === 'timesheet') renderTimesheet();
+    showToast('تم حفظ تفاصيل الموظف', 'success');
+  }
+}
+
+async function addEmployee() {
+  const cfg = getConfig();
+  const html = `
+    <div class="employee-detail-modal">
+      <div class="employee-detail-grid">
+        <label>اسم الموظف<input id="newEmpName" class="form-input" placeholder="اسم الموظف"></label>
+        <label>الراتب الاسمي<input id="newEmpSalary" type="number" class="form-input" value="${Number(cfg.nominalSalary || 0)}"></label>
+        <label>الرصيد/السلفة السابقة<input id="newEmpBalance" type="number" class="form-input" value="0"></label>
+        <label>الشفت<select id="newEmpShift" class="form-input">${buildEmployeeShiftOptions('morning')}</select></label>
+        <label class="employee-detail-toggle"><input id="newEmpActive" type="checkbox" checked> يعمل حاليا</label>
+        <label class="employee-detail-notes">ملاحظات<textarea id="newEmpNotes" class="form-input" rows="3"></textarea></label>
+      </div>
+      ${buildEmployeePeriodsPanel({ employmentPeriods: [{ startDate: todayISO(), note: 'بداية عمل', source: 'manual' }] }, true)}
+      <p class="employee-detail-hint">هذه البيانات ستستخدم مباشرة في forecast تقويم الدوام.</p>
+    </div>
+  `;
+  const payload = await showOmniModal('إضافة موظف', html, (body) => {
+    const name = body.querySelector('#newEmpName')?.value.trim();
+    if (!name) {
+      showToast('اسم الموظف مطلوب', 'error');
+      return false;
+    }
+    return {
+      name,
+      salary: Number(body.querySelector('#newEmpSalary')?.value) || 0,
+      prevAdvance: Number(body.querySelector('#newEmpBalance')?.value) || 0,
+      shift: body.querySelector('#newEmpShift')?.value || 'morning',
+      employmentPeriods: collectEmployeeManualPeriods(body),
+      is_active: !!body.querySelector('#newEmpActive')?.checked,
+      notes: body.querySelector('#newEmpNotes')?.value || ''
+    };
+  });
+  if (!payload) return;
+
+  const totalDays = getDaysInMonth(cfg.year, cfg.month);
+  const records = [];
+  for (let d = 1; d <= totalDays; d++) {
+    records.push({
+      day: d,
+      month: cfg.month,
+      year: cfg.year,
+      date: `${String(d).padStart(2, '0')}/${String(cfg.month).padStart(2, '0')}/${cfg.year}`,
+      checkIn: '',
+      checkOut: '',
+      checkInMin: null,
+      checkOutMin: null,
+      hours: 0,
+      status: isFriday(cfg.year, cfg.month, d) ? 'friday' : 'leave',
+      advance: 0,
+      penalty: 0,
+      bonus: 0,
+      damage: 0,
+      notes: ''
+    });
+  }
+
+  const data = { ...payload, status: payload.is_active ? 'active' : 'resigned', records };
+  try {
+    if (window.RecordService) {
+      const newEmp = await RecordService.create('employees', data);
+      employees.push(newEmp);
+    } else {
+      employees.push({ ...data, id: makeId('EMP') });
+      saveData();
+    }
+    selectedEmpIdx = employees.length - 1;
+    renderTimesheet();
+    renderReportTabs();
+    renderEmployeesTable();
+    refreshCalcEmpDropdown();
+    if (currentPage === 'calendar') renderAttendanceCalendar();
+    showToast(`تمت إضافة الموظف: ${payload.name}`, 'success');
+  } catch (e) {
+    console.error(e);
+    showToast(e.message || 'فشل إضافة الموظف', 'error');
+  }
 }
 
 // Pentagon V6 account.move finance tab override.
@@ -37462,6 +40550,7 @@ function renderAutomationEngine() {
 // ─── Dynamic HTML View Loader (View Split) ───
 window.ensurePageTemplateLoaded = async function (page) {
   const pageMap = {
+    home: 'pageHome',
     calculator: 'pageCalculator',
     import: 'pageImport',
     timesheet: 'pageTimesheet',
@@ -37599,6 +40688,7 @@ window.ensurePageTemplateLoaded = async function (page) {
 
 window.prefetchAllViews = function () {
   const pages = [
+    'home',
     'calculator', 'import', 'calendar', 'timesheet', 'report', 'employees',
     'finance', 'cashbox', 'expenses', 'income', 'customers', 'receipt',
     'employee_ui', 'workflow', 'kanban', 'task_manager', 'sop', 'command_center',

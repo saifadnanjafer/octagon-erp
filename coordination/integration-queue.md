@@ -10,3 +10,5 @@ LANE-A applies at session start/end, checks the box, commits.
 - [ ] (T3.1) server.js after `initializeDatabase();`: add `octagonScheduler = installOctagonScheduler({ sqliteDb: dbSync, loadDbForMutation, saveDb, makeId, sendJson, readRequestBody, requireRoleSession, isLocalRequest, createDatabaseBackup, backupStatusSnapshot, serverStatusSnapshot, routeStaticSnapshot, dbFile: DB_FILE, sqliteDbFile: SQLITE_DB_FILE, backupDir: BACKUP_DIR });`
 - [ ] (T3.1) server.js in `apiProtectionMatrix()`: add scheduler rows for `GET /api/cron/status`, `POST /api/cron/run`, and `POST /api/cron/alerts/dismiss` as local/system-admin protected scheduler endpoints.
 - [ ] (T3.1) index.html after `modules/work-orders.js`: add `<script src="modules/scheduled-alerts.js?v=20260712-t3.1-v1"></script>`
+- [ ] (T3.2) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/import-wizard.css?v=20260712-t3.2-v1">`
+- [ ] (T3.2) index.html after `app.js` in the additive module script block: add `<script src="modules/import-wizard.js?v=20260712-t3.2-v1"></script>`

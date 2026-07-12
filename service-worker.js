@@ -1,4 +1,4 @@
-const CACHE_NAME = 'octagon-pwa-v1';
+const CACHE_NAME = 'octagon-pwa-v2';
 
 // Static assets to precache on install
 const PRECACHE_ASSETS = [

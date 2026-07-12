@@ -2,7 +2,7 @@
 # Run with: powershell -ExecutionPolicy Bypass -File start.ps1
 # Then open: http://localhost:3000
 
-$Port = 3000
+$Port = 8080
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $listener = [System.Net.HttpListener]::new()

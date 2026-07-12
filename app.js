@@ -13323,6 +13323,20 @@ function saveData(skipAutomation = false) {
       selectedEmpIdx,
       reportEmpIdx
     };
+    // T1.2 (schema enforcement, choke-point 2): employees is the ONE
+    // protect:true collection in OctagonSchema — an empty-array write is
+    // ALWAYS rejected here, regardless of ENFORCE, formalizing the existing
+    // 3-layer employee-reload protection as schema law (this is a 4th,
+    // client-side, pre-POST layer, not a replacement for the other three).
+    // O(1) check (array length), never a full-DB scan.
+    if (window.OctagonSchema) {
+      const empCheck = window.OctagonSchema.validateCollection('employees', data.employees);
+      if (!empCheck.ok) {
+        window.OctagonSchema.logViolation('employees', empCheck);
+        console.error('[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).');
+        return;
+      }
+    }
     const cachedDb = window.PentagonDB?.getCached?.() || window.PentagonDB?.cache || {};
     [
       'journals',

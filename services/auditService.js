@@ -224,9 +224,47 @@
     },
     async mutate(mutator) {
       const db = await this.load();
+      const preSnapshot = this.cacheStr;
       const result = await mutator(db);
+      const rejection = this._checkSchemaViolations(db, preSnapshot);
+      if (rejection) throw rejection;
       await this.save(db);
       return result;
+    },
+    // T1.2 (schema enforcement, choke-point 1): cheap post-mutation check on
+    // the only pentagondb-layer collections OctagonSchema knows about
+    // (finance.accounts/customers/transactions, account_moves) — O(records
+    // in those specific arrays), never a full-DB scan. `db` here IS the live
+    // cache object (load() returns it by reference), so a rejected mutation
+    // must restore this.cache from cacheStr — skipping save() alone would
+    // leave the in-place mutation sitting in the cache for every subsequent
+    // load(). Any bug in this check itself must never block a legitimate
+    // save, hence the inner try/catch returning null (proceed) on error.
+    _checkSchemaViolations(db, preSnapshot) {
+      if (!window.OctagonSchema) return null;
+      try {
+        const violations = [];
+        ['finance.accounts', 'finance.customers', 'finance.transactions', 'account_moves'].forEach(key => {
+          const schema = window.OctagonSchema.collections[key];
+          if (!schema) return;
+          const parts = key.split('.');
+          let arr = db;
+          for (let i = 0; i < parts.length; i++) arr = arr ? arr[parts[i]] : undefined;
+          if (!Array.isArray(arr)) return;
+          const v = window.OctagonSchema.validateCollection(key, arr);
+          if (!v.ok) violations.push({ key, v });
+        });
+        if (!violations.length) return null;
+        violations.forEach(({ key, v }) => window.OctagonSchema.logViolation(key, v));
+        if (!window.OctagonSchema.ENFORCE) return null;
+        this.cache = preSnapshot ? JSON.parse(preSnapshot) : this.cache;
+        const msg = 'تم رفض حفظ غير صالح: ' + violations.map(x => x.key).join(', ');
+        if (typeof window.showToast === 'function') window.showToast(msg, 'error');
+        return new Error(msg);
+      } catch (e) {
+        console.warn('[OctagonSchema] validation wrapper error (non-fatal):', e);
+        return null;
+      }
     },
   };
   root.OctagonDB = DB;

@@ -16,3 +16,4 @@ LANE-A applies at session start/end, checks the box, commits.
 - [ ] (T3.3) server.js near startup: load `acl.json` server-side and expose a helper equivalent to `Acl.can(group, action, role)` using the request session role.
 - [ ] (T3.3) server.js in `/api/db`, `/api/collection`, and `/api/record` write paths: map touched collections to ACL groups from `acl.json`, reject or strip writes where the session role does not have `write`, and log the rejection with actor, collection, group, and endpoint.
 - [ ] (T3.3) server.js in `apiProtectionMatrix()`: add ACL enforcement notes for `/api/db`, `/api/collection`, and `/api/record`.
+- [ ] (T3.4) index.html after `modules/schema-registry.js` and before `app.js`: add `<script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>` so future modules can call `OctagonStates.transition()`.

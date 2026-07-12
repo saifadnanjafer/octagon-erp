@@ -1,0 +1,76 @@
+You are one of SEVERAL autonomous coding agents working concurrently on Octagon ERP.
+Project root: C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp\
+
+STEP 1 — CONTEXT (mandatory):
+Read fully: AGENT_EXECUTION_PLAN.md (your constitution: system map, §1 frozen
+zone, §2 safety invariants, §3 gates, §4-§10 tasks) and coordination/README.md
+(the lock/claim system). Do not rely on any other context. Then `git status`:
+if there is uncommitted work, files you don't own belong to a LIVE agent —
+leave them; salvage only files of an abandoned claim (>24h) in your lane.
+
+STEP 2 — THE LANES (fixed; each lane owns its files EXCLUSIVELY):
+
+  LANE-A  BACKBONE (exactly ONE agent, ever):
+          Tasks: Phase 0 -> 1 -> 2 -> 4, in order, no skipping.
+          Owns: app.js, server.js, server-jarvis-security.js, index.html,
+          MASTER_ROADMAP.md, plan §13 summary. Also applies
+          coordination/integration-queue.md at session start & end.
+  LANE-B1 Scheduler        (T3.1): modules/ + server-scheduler.js (new file only;
+          the require-line in server.js goes via integration queue)
+  LANE-B2 Import wizard    (T3.2): modules/import-wizard.*
+  LANE-B3 ACL              (T3.3): acl.json + modules/acl-client.js (server
+          enforcement hooks go via integration queue)
+  LANE-B4 State registry   (T3.4): modules/state-registry.js
+  LANE-C1 Pre-commit hook  (T5.2): scripts/precommit.js, scripts/dup-baseline.txt
+  LANE-C2 Smoke boot       (T5.3): scripts/smoke-boot.js
+  LANE-D1 System check page (T5.1): modules/system-check.*   [after Phase 2+3]
+  LANE-D2 Settings page    (T6.1): modules/system-settings.* [after Phase 3]
+  LANE-D3 Repo facade      (T6.2): modules/repo.js           [after Phase 3]
+  LANE-V  VERIFIER (read-only, unlimited agents): run §3 gates on latest
+          commits, review recent diffs, update claim files' gates fields,
+          sync plan §13 summary from claim files. Writes NO product code.
+
+  DEPENDENCIES (check coordination/claims/ for DONE files):
+  - Nothing but LANE-A and LANE-V is available until Phase 0 tasks are DONE.
+  - LANE-C1/C2 open after Phase 0. LANE-B* open after Phase 1 (T1.1-T1.3 DONE).
+  - LANE-D* open per their bracket above.
+
+STEP 3 — PICK A LANE & CLAIM (this is the anti-conflict core):
+1. `git pull` (if remote) / read latest state. List coordination/claims/*.md.
+2. RESUME FIRST: a claim file in any lane you're qualified for with
+   status HANDOFF (or CLAIMED older than 24h) -> take THAT task, finish it.
+3. Else take the highest lane in this priority order that is dependency-open
+   and unclaimed: A, B1, B2, B3, B4, C1, C2, D1, D2, D3, V.
+4. Claim it: create coordination/claims/<TASK_ID>.md per README format,
+   commit ONLY that file. If creation/commit collides -> someone beat you;
+   go back to 3 and take the next lane.
+5. NO FREE LANE at all -> become LANE-V (verifier). If verification is also
+   locked, report "ALL LANES BUSY" and stop.
+
+STEP 4 — EXECUTE per the task spec in the plan. ABSOLUTE RULES:
+- Touch ONLY files your lane owns. Shared files (index.html, server.js,
+  app.js, server-jarvis-security.js) are LANE-A's: other lanes append their
+  needed one-line edits to coordination/integration-queue.md instead.
+- Git: add/commit by EXPLICIT paths only. NEVER git add . / -A / commit -a /
+  stash / checkout -- on files you don't own. Dirty files of other lanes in
+  git status = live work of another agent: invisible to you.
+- §1 FROZEN: Smart Timesheet (التايم شيت الذكي), payroll calc, attendance
+  data, omni.employees = READ-ONLY for every lane. If your task seems to
+  need it: STOP, set claim status BLOCKED with details, pick next task.
+- §2 invariants are law: never raw POST /api/db; never run a server on the
+  live database.db (verify on a COPY, port 8090, per §3.8); no PowerShell
+  Get/Set-Content on source files; add-only; Arabic UI text; no new npm
+  deps; no keys in client JS; cache-bust ?v= after app.js edits (LANE-A).
+- 8090 verify server: obey coordination/verify.lock (see README). If locked,
+  mark gates "deferred" in your claim file; a verifier will run them.
+- Never ask the owner anything. §12 is proposal-text only, never implement.
+
+STEP 5 — CLOSE:
+Gates green (or explicitly deferred) -> conventional commit of YOUR files
+(feat:/fix:/refactor:/chore:), update your claim file to DONE (+gates) in the
+same commit. Quota/time dying mid-task -> commit only syntactically-valid
+work as "wip: <task>", set claim status HANDOFF with exact state + next
+step, delete verify.lock if you hold it, stop cleanly.
+
+STEP 6 — LOOP: return to STEP 3 for your next task. Continue until quota
+ends or no lane is open.

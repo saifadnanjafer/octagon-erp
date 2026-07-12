@@ -19568,9 +19568,19 @@ function getSelectedSpace() {
 }
 
 let taskManagerViewMode = 'tree';
-function toggleTaskManagerView() { taskManagerViewMode = taskManagerViewMode === 'tree' ? 'list' : 'tree'; renderTaskManager(); }
+// T0.4 dedup (2026-07-12): the ENTIRE block from here through findTaskById
+// below is "Task Manager V1" (simple space > department > section > type >
+// task hierarchy) — dead code, wholesale superseded by "Task Manager V2"
+// (see the "═══ TASK MANAGER V2 ═══" marker a few hundred lines down: richer
+// multi-view rendering, kanban/workflow/QC/SOP/machine/material linking,
+// dependencies, recurring tasks). Renamed each duplicate-named function to
+// satisfy Gate B; left the block's own non-duplicated helpers
+// (selectTaskSpace, findTaskDepartment/Section/Type/ById) untouched since
+// Gate B doesn't flag them — they simply become orphaned along with the
+// rest of this dead block. Kept per add-only rule.
+function toggleTaskManagerView_deprecated_dup1() { taskManagerViewMode = taskManagerViewMode === 'tree' ? 'list' : 'tree'; renderTaskManager(); }
 
-function renderTaskManager() {
+function renderTaskManager_deprecated_dup1() {
   ensureOmni();
   const tabs = document.getElementById('taskSpaceTabs');
   const body = document.getElementById('taskHierarchyBody');
@@ -19637,14 +19647,14 @@ function renderTaskManager() {
 }
 
 function selectTaskSpace(spaceId) { ensureOmni(); omni.taskManager.selectedSpaceId = spaceId; saveData(); renderTaskManager(); }
-async function addTaskSpace() { ensureOmni(); const name = await showOmniPrompt('اسم الفضاء:'); if (!name) return; omni.taskManager.spaces.push({ id: makeId('space'), name, departments: [] }); omni.taskManager.selectedSpaceId = omni.taskManager.spaces.at(-1).id; saveData(); renderTaskManager(); }
-async function addTaskDepartment() { const space = getSelectedSpace(); const name = await showOmniPrompt('اسم القسم:'); if (!name || !space) return; space.departments.push({ id: makeId('dep'), name, sections: [] }); saveData(); renderTaskManager(); }
-async function addTaskSection(spaceId, depId) { const dep = findTaskDepartment(spaceId, depId); const name = await showOmniPrompt('اسم المجموعة:'); if (!name || !dep) return; dep.sections.push({ id: makeId('sec'), name, taskTypes: [] }); saveData(); renderTaskManager(); }
-async function addTaskType(spaceId, depId, secId) { const sec = findTaskSection(spaceId, depId, secId); const name = await showOmniPrompt('اسم Task Type:'); if (!name || !sec) return; sec.taskTypes.push({ id: makeId('type'), name, tasks: [] }); saveData(); renderTaskManager(); }
-async function addClickupTask(spaceId, depId, secId, typeId) { const type = findTaskType(spaceId, depId, secId, typeId); const title = await showOmniPrompt('عنوان Task:'); if (!title || !type) return; type.tasks.push({ id: makeId('task'), title, status: 'Open', priority: 'Normal', owner: '', dueDate: todayISO(), subtasks: [] }); saveData(); renderTaskManager(); }
-function editClickupTask(taskId) { openInspector('task', taskId); }
+async function addTaskSpace_deprecated_dup1() { ensureOmni(); const name = await showOmniPrompt('اسم الفضاء:'); if (!name) return; omni.taskManager.spaces.push({ id: makeId('space'), name, departments: [] }); omni.taskManager.selectedSpaceId = omni.taskManager.spaces.at(-1).id; saveData(); renderTaskManager(); }
+async function addTaskDepartment_deprecated_dup1() { const space = getSelectedSpace(); const name = await showOmniPrompt('اسم القسم:'); if (!name || !space) return; space.departments.push({ id: makeId('dep'), name, sections: [] }); saveData(); renderTaskManager(); }
+async function addTaskSection_deprecated_dup1(spaceId, depId) { const dep = findTaskDepartment(spaceId, depId); const name = await showOmniPrompt('اسم المجموعة:'); if (!name || !dep) return; dep.sections.push({ id: makeId('sec'), name, taskTypes: [] }); saveData(); renderTaskManager(); }
+async function addTaskType_deprecated_dup1(spaceId, depId, secId) { const sec = findTaskSection(spaceId, depId, secId); const name = await showOmniPrompt('اسم Task Type:'); if (!name || !sec) return; sec.taskTypes.push({ id: makeId('type'), name, tasks: [] }); saveData(); renderTaskManager(); }
+async function addClickupTask_deprecated_dup1(spaceId, depId, secId, typeId) { const type = findTaskType(spaceId, depId, secId, typeId); const title = await showOmniPrompt('عنوان Task:'); if (!title || !type) return; type.tasks.push({ id: makeId('task'), title, status: 'Open', priority: 'Normal', owner: '', dueDate: todayISO(), subtasks: [] }); saveData(); renderTaskManager(); }
+function editClickupTask_deprecated_dup1(taskId) { openInspector('task', taskId); }
 
-function renderTaskInspectorTab(taskId, tabIdx = 0) {
+function renderTaskInspectorTab_deprecated_dup1(taskId, tabIdx = 0) {
   ensureOmni();
   const task = findTaskById(taskId);
   const panel = document.getElementById('inspectorPanel');
@@ -19731,7 +19741,7 @@ function renderTaskInspectorTab(taskId, tabIdx = 0) {
   }
 }
 
-function updateTaskField(taskId, field, value) {
+function updateTaskField_deprecated_dup1(taskId, field, value) {
   const task = findTaskById(taskId);
   if (!task) return;
   task[field] = value;
@@ -19741,7 +19751,7 @@ function updateTaskField(taskId, field, value) {
   renderTaskManager();
 }
 
-async function deleteClickupTask(taskId) {
+async function deleteClickupTask_deprecated_dup1(taskId) {
   const ok = await showOmniConfirm('حذف مهمة', 'هل أنت متأكد من حذف هذه المهمة؟', 'حذف', 'إلغاء');
   if(!ok) return;
   ensureOmni();
@@ -19764,7 +19774,7 @@ async function deleteClickupTask(taskId) {
   }
 }
 
-function deleteSubtask(taskId, subId) {
+function deleteSubtask_deprecated_dup1(taskId, subId) {
   const task = findTaskById(taskId);
   if(!task) return;
   const idx = (task.subtasks||[]).findIndex(st => st.id === subId);
@@ -19775,7 +19785,7 @@ function deleteSubtask(taskId, subId) {
   }
 }
 
-function updateSubtaskTitle(taskId, subId, newTitle) {
+function updateSubtaskTitle_deprecated_dup1(taskId, subId, newTitle) {
   const task = findTaskById(taskId);
   if(!task) return;
   const st = (task.subtasks||[]).find(s => s.id === subId);
@@ -19785,7 +19795,7 @@ function updateSubtaskTitle(taskId, subId, newTitle) {
   }
 }
 
-async function renameTaskManagerLevel(id) {
+async function renameTaskManagerLevel_deprecated_dup1(id) {
   ensureOmni();
   let target = null;
   for (const space of omni.taskManager.spaces) {
@@ -19813,8 +19823,8 @@ async function renameTaskManagerLevel(id) {
   }
 }
 
-async function addSubtask(taskId) { const task = findTaskById(taskId); const title = await showOmniPrompt('عنوان Subtask:'); if (!title || !task) return; task.subtasks = task.subtasks || []; task.subtasks.push({ id: makeId('sub'), title, done: false }); saveData(); renderTaskManager(); }
-function toggleSubtask(taskId, subId) { const task = findTaskById(taskId); const st = task?.subtasks?.find(s => s.id === subId); if (!st) return; st.done = !st.done; saveData(); }
+async function addSubtask_deprecated_dup1(taskId) { const task = findTaskById(taskId); const title = await showOmniPrompt('عنوان Subtask:'); if (!title || !task) return; task.subtasks = task.subtasks || []; task.subtasks.push({ id: makeId('sub'), title, done: false }); saveData(); renderTaskManager(); }
+function toggleSubtask_deprecated_dup1(taskId, subId) { const task = findTaskById(taskId); const st = task?.subtasks?.find(s => s.id === subId); if (!st) return; st.done = !st.done; saveData(); }
 function findTaskDepartment(spaceId, depId) { return omni.taskManager.spaces.find(s => s.id === spaceId)?.departments.find(d => d.id === depId); }
 function findTaskSection(spaceId, depId, secId) { return findTaskDepartment(spaceId, depId)?.sections.find(s => s.id === secId); }
 function findTaskType(spaceId, depId, secId, typeId) { return findTaskSection(spaceId, depId, secId)?.taskTypes.find(t => t.id === typeId); }

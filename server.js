@@ -107,6 +107,40 @@ const V5_PRESERVED_TOP_LEVEL_KEYS = [
   'audit_log',
 ];
 
+// T1.3 (AGENT_EXECUTION_PLAN.md Phase 1): the SERVER_TENANT_COLLECTIONS
+// protection below only runs when getOrgSettings().multiTenant is true
+// (tenantEnabledForWrite) — for a single-tenant deployment like this
+// workshop, that entire layer is a no-op, so finance/account_moves/
+// jobOrders currently have ZERO protection against a partial POST wiping
+// them (only employees has a dedicated unconditional check, below). This
+// list is intentionally tenant-INDEPENDENT: it always applies, regardless
+// of multiTenant mode. `path` is dot-notation resolved via getNestedPath/
+// setNestedPath (already defined above).
+const HARD_PROTECTED_COLLECTIONS = [
+  { path: 'employees', label: 'employees' },
+  { path: 'account_moves', label: 'account_moves' },
+  { path: 'finance.customers', label: 'finance.customers' },
+  { path: 'finance.transactions', label: 'finance.transactions' },
+  { path: 'finance.accounts', label: 'finance.accounts' },
+  { path: 'omni.jobOrders', label: 'omni.jobOrders' },
+];
+
+const WRITE_GUARD_LOG_FILE = path.join(__dirname, 'server-write-guard.log');
+function logWriteGuardRejection(reason, detail, req) {
+  try {
+    const line = JSON.stringify({
+      at: new Date().toISOString(),
+      reason,
+      detail,
+      remoteAddress: req?.socket?.remoteAddress || '',
+      userAgent: req?.headers?.['user-agent'] || '',
+    }) + '\n';
+    fs.appendFileSync(WRITE_GUARD_LOG_FILE, line);
+  } catch (e) {
+    console.warn('[write-guard] failed to write server-write-guard.log:', e.message);
+  }
+}
+
 const SERVER_TENANT_COLLECTIONS = new Set([
   'employees',
   'contacts',
@@ -1768,6 +1802,14 @@ const server = http.createServer((req, res) => {
   if (requestUrl.pathname === '/api/db' && req.method === 'POST') {
     const guard = requireAdminSession(req, res);
     if (!guard.ok) return;
+    // T1.3: a full-DB-replacement POST must explicitly declare intent. This
+    // alone bounces naive/scripted probes (e.g. a bare `curl -X POST
+    // /api/db -d '{"omni":{}}'`) before we even look at the payload — the
+    // real app's saveData()/PentagonDB.save() send this header.
+    if (req.headers['x-octagon-full-sync'] !== 'yes') {
+      logWriteGuardRejection('missing_full_sync_header', { path: '/api/db' }, req);
+      return sendJson(res, 409, { ok: false, error: 'يتطلب هذا المسار ترويسة X-Octagon-Full-Sync: yes للحفظ الكامل', collection: null });
+    }
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
@@ -1783,7 +1825,7 @@ const server = http.createServer((req, res) => {
             existing = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
           } catch (mergeError) {}
         }
-        
+
         if (existing) {
           V5_PRESERVED_TOP_LEVEL_KEYS.forEach(key => {
             if (parsed[key] === undefined && existing[key] !== undefined) {
@@ -1807,14 +1849,34 @@ const server = http.createServer((req, res) => {
               preservedMissingCollections: tenantResult.preservedMissingCollections,
             });
           }
+
+          // T1.3: SERVER_TENANT_COLLECTIONS protection above only runs when
+          // multiTenant is on (tenantEnabledForWrite) — for this
+          // single-tenant deployment that's a no-op, so account_moves/
+          // finance.*/omni.jobOrders currently have NO protection against a
+          // partial POST wiping them (only employees does, via the specific
+          // check above, and even that misses the "key entirely absent"
+          // case since Array.isArray(undefined) is false). This check is
+          // tenant-independent and runs unconditionally: reject (409, never
+          // silently repair) any payload that would replace a currently
+          // non-empty protected collection with an empty or missing one.
+          for (const { path: colPath, label } of HARD_PROTECTED_COLLECTIONS) {
+            const existingArr = getNestedPath(existing, colPath);
+            if (!Array.isArray(existingArr) || existingArr.length === 0) continue; // nothing to protect
+            const incomingArr = getNestedPath(parsed, colPath);
+            if (Array.isArray(incomingArr) && incomingArr.length > 0) continue; // fine
+            logWriteGuardRejection('protected_collection_emptied', { collection: label, existingCount: existingArr.length }, req);
+            console.warn(`[/api/db POST] REJECTED — payload would replace ${existingArr.length} existing "${label}" records with empty/missing.`);
+            return sendJson(res, 409, { ok: false, error: `تم رفض الحفظ: سيؤدي إلى فقدان بيانات "${label}"`, collection: label });
+          }
         }
-        
+
         if (dbSync) {
           saveDbToSqlite(dbSync, parsed);
         } else {
           safeSaveDb(parsed);
         }
-        
+
         res.setHeader("Content-Type", "application/json; charset=utf-8");
         res.writeHead(200);
         res.end(JSON.stringify({ success: true }));

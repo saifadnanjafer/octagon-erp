@@ -13362,7 +13362,10 @@ function saveData(skipAutomation = false) {
     // PRIMARY: Save to local file database.json — THIS is the source of truth
     fetch('/api/db', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // T1.3: server now requires this header on every full-DB POST /api/db
+      // (bounces naive/scripted probes that omit it) — this IS the real
+      // full-sync write, so declare it.
+      headers: { 'Content-Type': 'application/json', 'X-Octagon-Full-Sync': 'yes' },
       body: jsonPayload
     }).then(res => {
       if (res.ok) {

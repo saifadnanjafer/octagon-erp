@@ -208,7 +208,10 @@
       
       const res = await fetch('/api/db', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // T1.3: server now requires this header on every full-DB POST
+        // /api/db (bounces naive/scripted probes that omit it) — this IS
+        // the real full-sync write, so declare it.
+        headers: { 'Content-Type': 'application/json', 'X-Octagon-Full-Sync': 'yes' },
         body: JSON.stringify(db),
       });
       if (res.status === 401) {
@@ -216,6 +219,12 @@
         // failing silently forever (the client still LOOKS logged-in).
         if (typeof root.reconnectServerSession === 'function') root.reconnectServerSession('save-401');
         throw new Error('انتهت جلسة الدخول في السيرفر — أدخل كلمة المرور في نافذة إعادة الاتصال ثم أعد المحاولة');
+      }
+      if (res.status === 409) {
+        // T1.3 server write-guard rejection — surface which collection it was about.
+        let detail = null;
+        try { detail = await res.json(); } catch (_) {}
+        throw new Error((detail && detail.error) || 'تم رفض الحفظ من طرف السيرفر (فحص حماية البيانات)');
       }
       if (!res.ok) throw new Error('تعذر حفظ قاعدة البيانات');
       this.cacheStr = JSON.stringify(db);

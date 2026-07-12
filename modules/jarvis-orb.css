@@ -228,3 +228,133 @@ body.ai-cluster-enabled #jarvisOrb:not(.is-center):not(.is-side) {
   #jarvisOrb .jorb-core i,
   #jarvisOrb .jorb-ring { animation: none !important; }
 }
+
+/* ============================================================
+   GLASS ORB STYLE - settings-selectable alternative material
+   (Settings tab -> إعدادات الواجهة -> تصميم أومني الذكي).
+   Reverse-engineered frame-by-frame from a real reference render:
+   a deep indigo glass shell with a multi-lobed translucent ribbon
+   tumbling inside it in true 3D - NOT a spinning color wheel. Color
+   only ever appears as a thin dispersion fringe at each lobe's edge.
+   Hidden entirely unless body[data-orb-style="glass"] is set; the
+   classic conic-gradient ball above is untouched and stays default.
+   ============================================================ */
+
+#jarvisOrb .jorb-core { overflow: hidden; } /* clips glass lobes to the disc; no visible change for the classic ball */
+#jarvisOrb .jorb-glass { display: none; }
+
+body[data-orb-style="glass"] #jarvisOrb .jorb-core {
+  animation: none; /* classic spin/breathe keyframes don't apply to the glass shell */
+  background:
+    radial-gradient(ellipse 92% 40% at 50% 92%, rgba(255,255,255,.5), rgba(200,215,255,.14) 42%, transparent 72%),
+    radial-gradient(circle at 40% 34%, #4a5ce0 0%, #182468 45%, #05061a 78%, #000 100%);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset, 0 8px 22px -8px rgba(74,92,224,.55);
+}
+body[data-orb-style="glass"] #jarvisOrb .jorb-glass {
+  display: block;
+  position: absolute;
+  inset: 0;
+  perspective: 340px;
+}
+body[data-orb-style="glass"] #jarvisOrb .jorb-core i {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, .5));
+}
+
+/* one rotation axis per nested wrapper; three incommensurate durations
+   composited together read as an organic tumble that never visibly
+   repeats, instead of a single mechanical spin */
+.jgl-lobe, .jgl-ax, .jgl-ay, .jgl-az { position: absolute; inset: 0; transform-style: preserve-3d; }
+.jgl-ax { animation: jgl-spin-x linear infinite; }
+.jgl-ay { animation: jgl-spin-y linear infinite; }
+.jgl-az { animation: jgl-spin-z linear infinite; display: flex; align-items: center; justify-content: center; }
+@keyframes jgl-spin-x { to { transform: rotateX(360deg); } }
+@keyframes jgl-spin-y { to { transform: rotateY(360deg); } }
+@keyframes jgl-spin-z { to { transform: rotateZ(360deg); } }
+
+/* each lobe: a radially-lit ellipse (bright core fading to transparent
+   edge) with mix-blend-mode:screen so overlapping lobes ADD light like
+   real translucent glass, instead of muddying like flat opaque shapes */
+.jgl-face { border-radius: 50%; mix-blend-mode: screen; position: relative; }
+.jgl-face::before {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  /* thin dispersion fringe: a single-hue glow visible only at the rim,
+     where the bright core gradient has already faded to nothing */
+  background: radial-gradient(ellipse 70% 60% at 50% 74%, var(--jgl-fringe), transparent 62%);
+  mix-blend-mode: screen;
+  filter: blur(2px);
+  opacity: .4;
+}
+
+/* sizes are % of the core box so the same 4 lobes scale correctly across
+   the orb's idle (64px) / side (92px) / center (190px) states */
+.jgl-p1 .jgl-ax { animation-duration: 14s; }
+.jgl-p1 .jgl-ay { animation-duration: 21s; animation-direction: reverse; }
+.jgl-p1 .jgl-az { animation-duration: 33s; }
+.jgl-p1 .jgl-face {
+  width: 55%; height: 92%;
+  background: radial-gradient(ellipse 70% 55% at 50% 30%, #eef6ff 0%, #b9c9ff 22%, rgba(70, 90, 220, .5) 48%, rgba(20, 26, 80, .15) 74%, transparent 88%);
+  transform: rotate(12deg);
+  --jgl-fringe: #39e4ff;
+}
+
+.jgl-p2 .jgl-ax { animation-duration: 17s; animation-direction: reverse; }
+.jgl-p2 .jgl-ay { animation-duration: 26s; }
+.jgl-p2 .jgl-az { animation-duration: 38s; animation-direction: reverse; }
+.jgl-p2 .jgl-face {
+  width: 70%; height: 70%;
+  background: radial-gradient(ellipse 65% 65% at 42% 40%, #f5eaff 0%, #c9b8ff 24%, rgba(120, 80, 220, .48) 50%, rgba(30, 18, 70, .15) 76%, transparent 90%);
+  transform: rotate(-24deg);
+  --jgl-fringe: #ff49d6;
+}
+
+.jgl-p3 .jgl-ax { animation-duration: 12s; }
+.jgl-p3 .jgl-ay { animation-duration: 19s; }
+.jgl-p3 .jgl-az { animation-duration: 29s; animation-direction: reverse; }
+.jgl-p3 .jgl-face {
+  width: 48%; height: 98%;
+  background: radial-gradient(ellipse 70% 55% at 55% 28%, #eafff3 0%, #a9f2cf 22%, rgba(60, 180, 140, .4) 48%, rgba(10, 50, 40, .12) 74%, transparent 88%);
+  transform: rotate(58deg);
+  --jgl-fringe: #66ffb8;
+}
+
+.jgl-p4 .jgl-ax { animation-duration: 16s; animation-direction: reverse; }
+.jgl-p4 .jgl-ay { animation-duration: 24s; animation-direction: reverse; }
+.jgl-p4 .jgl-az { animation-duration: 36s; }
+.jgl-p4 .jgl-face {
+  width: 62%; height: 80%;
+  background: radial-gradient(ellipse 65% 55% at 48% 35%, #fff4e8 0%, #ffd9a8 22%, rgba(210, 140, 60, .4) 48%, rgba(60, 30, 10, .12) 74%, transparent 88%);
+  transform: rotate(-40deg);
+  --jgl-fringe: #ffb454;
+}
+
+/* bright convergence point where every lobe's core overlaps - matches the
+   single hot white pinch-point visible in every reference frame */
+.jgl-hot {
+  position: absolute;
+  width: 22%; height: 22%;
+  left: 50%; top: 50%;
+  margin: -11% 0 0 -11%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #dfe8ff 40%, transparent 75%);
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  animation: jgl-hot-pulse 5.4s ease-in-out infinite;
+}
+@keyframes jgl-hot-pulse { 0%, 100% { opacity: .75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* mode tints: brightness/saturation only - the tumble never changes speed,
+   it only glows brighter/cooler/warmer per mode, consistent with how
+   restrained the reference material's own motion is */
+body[data-orb-style="glass"] #jarvisOrb.mode-listening .jorb-glass { filter: saturate(1.1) brightness(1.08); }
+body[data-orb-style="glass"] #jarvisOrb.mode-thinking .jorb-glass  { filter: saturate(1.3) brightness(1.15); }
+body[data-orb-style="glass"] #jarvisOrb.mode-speaking .jorb-glass  { filter: saturate(1.35) brightness(1.2); }
+body[data-orb-style="glass"] #jarvisOrb.mode-executing .jorb-glass { filter: saturate(1.4) brightness(1.25) hue-rotate(-6deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .jgl-ax, .jgl-ay, .jgl-az, .jgl-hot { animation: none !important; }
+}

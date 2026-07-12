@@ -42,6 +42,20 @@
   }
   function isParked() { return el && !el.classList.contains('is-center') && !el.classList.contains('is-side'); }
 
+  // Markup for the alternative "glass" orb material (Settings -> تصميم أومني).
+  // Four lobes, each three nested wrappers deep (one CSS rotation axis per
+  // wrapper, see jarvis-orb.css) so they tumble in true 3D instead of a flat
+  // spin. Always rendered but display:none unless body[data-orb-style="glass"]
+  // is set - CSS alone switches between this and the classic conic ball,
+  // so no DOM rebuild is needed when the setting changes.
+  function jorbGlassMarkup() {
+    return ['jgl-p1', 'jgl-p2', 'jgl-p3', 'jgl-p4'].map(function (cls) {
+      return '<span class="jgl-lobe ' + cls + '"><span class="jgl-ax"><span class="jgl-ay"><span class="jgl-az">' +
+        '<span class="jgl-face"></span>' +
+        '</span></span></span></span>';
+    }).join('') + '<span class="jgl-hot"></span>';
+  }
+
   // Apply the saved idle position as inline styles (only meaningful while parked).
   function applyIdlePos() {
     if (!el) return;
@@ -124,7 +138,7 @@
       '<span class="jorb-ring"></span>' +
       '<span class="jorb-ring"></span>' +
       '<span class="jorb-ring"></span>' +
-      '<span class="jorb-core"><i class="fa-solid fa-microphone-lines"></i></span>' +
+      '<span class="jorb-core"><span class="jorb-glass" aria-hidden="true">' + jorbGlassMarkup() + '</span><i class="fa-solid fa-microphone-lines"></i></span>' +
       '<span class="jorb-lang" role="button" tabindex="0">AR</span>' +
       '<span class="jorb-caption"><span class="jorb-caption-kicker"></span><span class="jorb-caption-text"></span></span>';
     document.body.appendChild(el);

@@ -5412,7 +5412,12 @@ function financeRefreshAll() {
 
 // ── Sprint E: Finance V5 Tab Navigation ──────────────────────────────────────
 
-function switchFinanceTab(tab) {
+// T0.4 dedup (2026-07-12): dead copy (legacy journal_entries mirror, only
+// 5 finance sub-tabs), shadowed by the live v6/account_moves-native
+// definition further below (adds partner ledger, payments, invoices,
+// bills, statement, bank reconciliation, fiscal lock awareness). Kept per
+// add-only rule.
+function switchFinanceTab_deprecated_dup1(tab) {
   document.querySelectorAll('.finance-tab').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
@@ -5429,7 +5434,11 @@ function switchFinanceTab(tab) {
   setTimeout(enforceUIPermissions, 50);
 }
 
-function renderJournalEntryTab() {
+// T0.4 dedup (2026-07-12): dead copy (reads legacy db.journal_entries
+// mirror), shadowed by the live definition further below (reads
+// FinanceService.getMoves() against account_moves, the authoritative
+// source — see financeService.js). Kept per add-only rule.
+function renderJournalEntryTab_deprecated_dup1() {
   const el = document.getElementById('financeTab-journal');
   if (!el) return;
   PentagonDB.load().then(db => {
@@ -5508,7 +5517,9 @@ function renderJournalEntryTab() {
 // already does the right thing (FinanceService.createMove/postMove/cancelMove
 // against account_moves). Left in place rather than deleted per the add-only
 // convention — safe to remove in a future cleanup pass.
-function openNewJEModal() {
+// T0.4 dedup (2026-07-12): renamed to satisfy Gate B (duplicate top-level
+// function name), no behavior change — see the 2026-07-04 audit note above.
+function openNewJEModal_deprecated_dup1() {
   if (window.PermissionService && !window.PermissionService.check('journal_entries', 'create')) {
     return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
   }
@@ -5550,7 +5561,7 @@ function updateJEBalanceChip() {
   chip.className = `je-balance-chip ${balanced ? 'balanced' : 'unbalanced'}`;
 }
 
-function saveNewJE() {
+function saveNewJE_deprecated_dup1() {
   if (window.PermissionService && !window.PermissionService.check('journal_entries', 'create')) {
     return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
   }
@@ -5574,7 +5585,7 @@ function saveNewJE() {
     .catch(e => showToast(e.message || 'خطأ في حفظ القيد', 'error'));
 }
 
-function postJEFromUI(entryId) {
+function postJEFromUI_deprecated_dup1(entryId) {
   if (!window.FinanceService) return showToast('FinanceService غير محمّل', 'error');
   if (window.PermissionService && !window.PermissionService.check('journal_entries', 'update')) {
     return showToast('ليس لديك صلاحية ترحيل القيود', 'warning');
@@ -5584,7 +5595,7 @@ function postJEFromUI(entryId) {
     .catch(e => showToast(e.message || 'خطأ في الترحيل', 'error'));
 }
 
-function reverseJEFromUI(entryId) {
+function reverseJEFromUI_deprecated_dup1(entryId) {
   if (!window.FinanceService) return showToast('FinanceService غير محمّل', 'error');
   if (window.PermissionService && !window.PermissionService.check('journal_entries', 'update')) {
     return showToast('ليس لديك صلاحية عكس القيود', 'warning');

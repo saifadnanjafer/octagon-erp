@@ -20913,11 +20913,14 @@ window.setWoFilterState = function(state) {
   renderOpPacks();
 };
 
-function renderOpPacks() {
+// T0.4 dedup (2026-07-12): dead copy (no KPI strip, no priced-count),
+// shadowed by the richer live definition further below. Kept per add-only
+// rule.
+function renderOpPacks_deprecated_dup1() {
   ensureOmni();
   const el = document.getElementById('opPacksGrid');
   if (!el) return;
-  
+
   if (!window.mrpActiveTab) window.mrpActiveTab = 'packs';
   const activeTab = window.mrpActiveTab;
 
@@ -31710,13 +31713,18 @@ function runRuleSimulation(ruleId, eventType, mockData) {
 let automationSearchQuery = '';
 let automationEventFilter = 'all';
 
-function renderAutomationEngine() {
+// T0.4 dedup (2026-07-12): dead copy ("V4" hero, no template panel, no
+// governance-gated action count), shadowed by the live workshop-automation
+// definition further below (approval-gated templates, ptxRulePolicy —
+// matches the AI Governance / Workshop AI Operating Layer architecture).
+// Kept per add-only rule.
+function renderAutomationEngine_deprecated_dup1() {
   ensureOmni();
   normalizeAutomation();
-  
+
   const body = document.getElementById('automationBody');
   if (!body) return;
-  
+
   // KPIs
   const activeCount = omni.automationRules.filter(r => r.active).length;
   const pausedCount = omni.automationRules.filter(r => !r.active).length;
@@ -32756,7 +32764,17 @@ function renderWhatsAppGroupManagerPanel() {
 }
 
 // ─── WhatsApp Simulator Panel ─────────────────────────────────────────────────
-function renderWhatsAppSimulatorPanel() {
+// T0.4 dedup (2026-07-12): dead copy — FLAG for owner: this dead version has
+// 11 preset simulation messages (voice_leave, machine_defect, invoice_wood,
+// print_task, material_request, job_completed, delivery_done, new_order,
+// urgent_qc, attendance_late, machine_maintenance); the live version below
+// has only 4 (voice_leave, machine_defect, invoice_wood, print_task) — this
+// is NOT a simple "later=richer" case like every other rename in this
+// batch, the live one actually has fewer options. Preserving current live
+// behavior per T0.4's scope (mechanical dedup, not a product decision on
+// which preset list is correct) — NOT merged back in. Kept per add-only
+// rule.
+function renderWhatsAppSimulatorPanel_deprecated_dup1() {
   return `
     <div class="automation-panel" style="margin-top:20px;">
       <div class="automation-section-head">
@@ -32800,7 +32818,11 @@ function renderWhatsAppSimulatorPanel() {
 }
 
 // ─── WhatsApp Integration Main Page ──────────────────────────────────────────
-function renderWhatsAppIntegrationPage() {
+// T0.4 dedup (2026-07-12): dead copy (tab-based UI keyed off a hidden
+// #waActiveTab input), shadowed by the live thread/inbox-workspace
+// redesign further below (window.waWorkspaceMode, per-thread selection,
+// inbox/groups/analytics/api modes). Kept per add-only rule.
+function renderWhatsAppIntegrationPage_deprecated_dup1() {
   normalizeAiIntegrationData();
   const orgProfile = getActiveOrgProfile();
   const body = document.getElementById('whatsappBody');
@@ -32970,7 +32992,11 @@ function renderWhatsAppIntegrationPage() {
     </div>
   `;
 }
-function setWaTab(tab) {
+// T0.4 dedup (2026-07-12): dead copy, paired with the dead
+// renderWhatsAppIntegrationPage_deprecated_dup1 above (both use the old
+// #waActiveTab hidden-input pattern). Shadowed by the live definition
+// below (window.waWorkspaceMode). Kept per add-only rule.
+function setWaTab_deprecated_dup1(tab) {
   const active = ['inbox', 'analytics', 'groups'].includes(tab) ? tab : 'inbox';
   const hidden = document.getElementById('waActiveTab');
   if (hidden) hidden.value = active;

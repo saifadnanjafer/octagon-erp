@@ -64,7 +64,7 @@
                 <span class="stat-value" id="empStatOvertime" style="color: #fbbf24;">0 د.ع</span>
               </div>
               <div class="stat-mini-item">
-                <span class="stat-label">مجموع الغرامات:</span>
+                <span class="stat-label">إجمالي الاستقطاع:</span>
                 <span class="stat-value" id="empStatPenalties" style="color: #f87171;">0 د.ع</span>
               </div>
               <div class="stat-mini-item">
@@ -90,6 +90,12 @@
             </div>
             <div style="flex: 1;">
               <label style="font-size: 11px; margin-bottom: 6px; display: block; color: var(--text-muted); font-weight: bold;">مساعد الذكاء الاصطناعي الذكي (أوامر التعديل)</label>
+              <select id="timesheetAiProviderSelect" class="form-input" style="width: 100%; max-width: 340px; margin-bottom: 8px; border: 1px solid rgba(168, 85, 247, 0.3); background: rgba(0,0,0,0.2);">
+                <option value="gemini">Gemini Flash - /api/ai/gemini</option>
+                <option value="openrouter_deepseek">OpenRouter DeepSeek - /api/ai/chat</option>
+                <option value="openrouter_qwen">OpenRouter Qwen Coder - /api/ai/chat</option>
+                <option value="contactbox_sonnet">ContactBox Claude Sonnet - /api/ai/chat</option>
+              </select>
               <input type="text" id="aiCustomPrompt" class="form-input" placeholder="اكتب أمرك هنا... مثلاً: 'اجعل غيابات يوم الخميس إجازات'" style="width: 100%; border: 1px solid rgba(168, 85, 247, 0.3); background: rgba(0,0,0,0.2);">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">

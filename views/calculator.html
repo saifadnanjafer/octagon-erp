@@ -207,8 +207,8 @@
               <div class="form-group">
                 <label class="form-label">الرصيد السابق (سلف سابقة)</label>
                 <div class="input-with-unit">
-                  <input type="number" id="inpPreviousAdvance" class="form-input" value="0" min="0"
-                    onchange="recalculate()">
+                  <input type="number" id="inpPreviousAdvance" class="form-input" value="0"
+                    onchange="onCalcPrevAdvanceChange()">
                   <span class="input-unit">د.ع</span>
                 </div>
               </div>
@@ -316,13 +316,6 @@
                 <div class="result-card-content">
                   <span class="result-card-label">خصم التأخيرات</span>
                   <span class="result-card-value deduct-value" id="resLatenessDeduct">0</span>
-                </div>
-              </div>
-              <div class="result-card deduct-card">
-                <div class="result-card-icon">🏖️</div>
-                <div class="result-card-content">
-                  <span class="result-card-label">خصم الإجازات</span>
-                  <span class="result-card-value deduct-value" id="resLeaveDeduct">0</span>
                 </div>
               </div>
               <div class="result-card deduct-card">

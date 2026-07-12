@@ -141,11 +141,12 @@ If the live server (default port) is already running, do not start a duplicate o
 - **Steps:** `git status` in the repo → group changes into logical conventional commits (`fix: …`, `feat: …`, `chore: …`). Do NOT commit `.env`, `database.db`, `*.log`, backups, `coordination/verify.lock`. Add all of these to `.gitignore` if missing.
 - **Verify:** Gate G. `git log --oneline -10` shows clean history.
 
-### T0.2 — Server restart to activate WAL
+### T0.2 — Server restart to activate WAL — ✅ DONE 2026-07-12
 - **Goal:** WAL + `busy_timeout` were added 2026-07-05 but require a server restart to take effect.
-- **Steps:** Gracefully stop the running server (if any), restart via `start.ps1`, then confirm: `node -e "const db=require('better-sqlite3')('database.db',{readonly:true});console.log(db.pragma('journal_mode',{simple:true}))"` → expects `wal`. (Adapt to whatever sqlite driver `server.js` actually uses — read it first.)
+- **Steps:** Gracefully stop the running server (if any), restart via **`node server.js`** (correction: `start.ps1` and `start-all.ps1` are BOTH stale/legacy — `start.ps1` is a pre-SQLite plain-PowerShell static server with zero DB/WAL involvement, `start-all.ps1` launches the dead `erp-local/` experiment; the real launcher is documented in `README.md`/`docs/RELEASE_CANDIDATE_PILOT_CHECKLIST.md` as `node server.js`, port 8080), then confirm WAL via `node:sqlite`'s `DatabaseSync` (server.js's actual driver — NOT `better-sqlite3`):
+  `node -e "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync('database.db',{readOnly:true});console.log(db.prepare('PRAGMA journal_mode').get());"` → expects `wal`.
 - **Note:** In-memory Jarvis grants are voided by restart — that is expected.
-- **Verify:** Gate F.
+- **Verify:** Gate F. Confirmed 2026-07-12: journal_mode=wal, server boots clean, employees=26 intact, finance present.
 
 ### T0.3 — API key rotation — ⚠️ OWNER ACTION REQUIRED (the only other owner touchpoint besides §12)
 - **Goal:** `OPENROUTER_API_KEY`, `CONTACTBOX_API_KEY`, `GEMINI_API_KEY` were exposed in git history; rotation is manual and only the owner can do it in the provider dashboards.
@@ -453,6 +454,7 @@ The full mechanics live in `AGENT_PROMPT.txt` (lane list + claim algorithm) and 
 |---|---|---|---|---|---|---|
 | 2026-07-12 | plan authored (Fable 5) | — | Plan created | — | — | OWNER TODO: rotate 3 API keys (T0.3) |
 | 2026-07-12 | claude-sonnet-5 (LANE-A) | T0.1 | DONE | A pass, G pass; C/D/E/F deferred (no 8090 copy stood up) | ec0ed7f..b94997a (21 commits) | Zero uncommitted work remains. Archive move verified against ARCHIVE_MANIFEST.md before staging. FLAGS for owner: (1) new duplicate `renderAttendanceCalendar` in app.js beyond T0.4's 23-name list, confirmed independently by LANE-V codex's Gate B fail — fold into T0.4. (2) database.json shows payroll periods 2026-05/2026-06 reverted from posted/paid to draft with closings removed, replaced by a new 2026-04 draft calc — not modified, surfaced for owner review (§1). |
+| 2026-07-12 | claude-sonnet-5 (LANE-A) | T0.2 | DONE | F pass (journal_mode=wal confirmed, clean boot, employees=26 + finance intact) | — (no product-file diff; started server + fixed this file's stale launch instructions) | Corrected T0.2's own launch instructions (start.ps1 -> node server.js) and driver (better-sqlite3 -> node:sqlite) — see updated task text above. No server was running beforehand; started `node server.js`, left it running. |
 
 **BLOCKED format:** `| date | session | task | BLOCKED | gates | — | full error + what was tried |`
 

@@ -1951,6 +1951,8 @@
   <script src="custom-api-examples.js"></script>
   <!-- GO 16 de-monolith: static data providers MUST load before app.js (defines getDefaultAdminSettings, getOctagonPageTruthRegistry, etc.) -->
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
+  <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
+  <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
   <script src="app.js?v=20260709-grace-daily-display-v17"></script>
   <script>
     function loadOctagonAIAssistant() {

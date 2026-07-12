@@ -114,3 +114,32 @@
 #pageWorkshopLedger .ws-empty i { font-size: 2rem; display: block; margin-bottom: 10px; }
 #pageWorkshopLedger .ws-loading, #pageWorkshopLedger .ws-error { padding: 24px; text-align: center; color: var(--text-muted, #6b7280); }
 #pageWorkshopLedger .ws-error { color: #dc2626; }
+
+#pageWorkshopLedger .ws-payroll-detail-row td {
+  background: #f8fafc;
+  border-top: 0;
+}
+
+#pageWorkshopLedger .ws-payroll-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 7px 10px;
+  color: var(--text-muted, #475569);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+#pageWorkshopLedger .ws-payroll-detail-grid span {
+  background: #fff;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 7px;
+  padding: 6px 8px;
+}
+
+#pageWorkshopLedger .ws-payroll-detail-grid b {
+  color: var(--text-color, #111827);
+}
+
+@media (max-width: 1100px) {
+  #pageWorkshopLedger .ws-payroll-detail-grid { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
+}

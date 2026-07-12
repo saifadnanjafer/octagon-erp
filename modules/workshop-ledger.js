@@ -940,9 +940,9 @@
     const status = period ? period.status : 'draft';
     
     let closings = [];
-    if (period) {
+    if (period && period.status !== 'draft') {
       closings = db.employee_payroll_closings.filter(c => c.payrollPeriodId === period.id);
-    } else if (payrollPreviewCache && payrollPreviewCache.year === selectedPayrollYear && payrollPreviewCache.month === selectedPayrollMonth) {
+    } else if (payrollPreviewCache && (payrollPreviewCache.period === `${selectedPayrollYear}-${String(selectedPayrollMonth).padStart(2, '0')}`)) {
       closings = payrollPreviewCache.closings;
     }
 
@@ -1000,7 +1000,7 @@
     `;
 
     if (status === 'draft') {
-      if (payrollPreviewCache && payrollPreviewCache.year === selectedPayrollYear && payrollPreviewCache.month === selectedPayrollMonth) {
+      if (payrollPreviewCache && (payrollPreviewCache.period === `${selectedPayrollYear}-${String(selectedPayrollMonth).padStart(2, '0')}`)) {
         periodHeader += `
           <button class="ws-btn primary" onclick="wsClosePayrollPeriod()"><i class="fa-solid fa-lock"></i> إغلاق الشهر واعتماد الرواتب</button>
           <button class="ws-btn" style="background:#6b7280;" onclick="wsClearPayrollPreview()"><i class="fa-solid fa-xmark"></i> إلغاء المعاينة</button>
@@ -1079,6 +1079,21 @@
 
       const auditTrailBtn = `<button class="ws-mini" onclick="wsViewEmpPayrollAudit('${row.employeeId}', '${row.employeeNameSnapshot}')"><i class="fa-solid fa-magnifying-glass"></i> كشف</button>`;
 
+      const detailChips = [
+        ['إجمالي الاستحقاق', row.grossSalary],
+        ['خصومات الراتب', row.salaryDeductions],
+        ['المكافآت', row.bonuses],
+        ['العقوبات والغياب', row.penalties],
+        ['أضرار/استقطاعات أخرى', row.damageDeductions],
+        ['سلف رسمية من القاصة', row.advanceSettlementAmount],
+        ['سلف يدوية من التايم شيت', row.legacyTimesheetAdvancesSnapshot],
+        ['رصيد سابق بذمة الموظف', row.previousEmployeeDebt],
+        ['رصيد سابق لصالح الموظف', row.previousCompanyPayable],
+        ['إضافي', `${Number(row.overtimeHours || 0).toFixed(1)} ساعة`],
+        ['تأخير', `${Number(row.lateMinutes || 0)} دقيقة`],
+        ['جمع عملها', row.fridayWorkDays],
+      ].map(([label, value]) => `<span><b>${esc(label)}:</b> ${typeof value === 'number' ? fmt(value) : esc(value == null ? '' : value)}</span>`).join('');
+
       return `<tr>
         <td><strong>${esc(row.employeeNameSnapshot)}</strong></td>
         <td class="num">${fmt(row.baseSalarySnapshot)}</td>
@@ -1090,6 +1105,11 @@
         <td class="num" style="color:${remaining > 0 ? '#dc2626' : '#16a34a'}; font-weight:600;">${fmt(remaining)}</td>
         <td>${statusLabels[row.status] || row.status}</td>
         <td><div style="display:flex; gap:6px;">${payAction} ${auditTrailBtn}</div></td>
+      </tr>
+      <tr class="ws-payroll-detail-row">
+        <td colspan="10">
+          <div class="ws-payroll-detail-grid">${detailChips}</div>
+        </td>
       </tr>`;
     }).join('');
 

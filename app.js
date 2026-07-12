@@ -19122,7 +19122,9 @@ async function publishWorkflow() {
   renderWorkflowStudio();
 }
 
-function unpublishWorkflow() {
+// T0.4 dedup (2026-07-12): dead copy, shadowed by the live definition below
+// (adds a confirmation modal + audit event logging). Kept per add-only rule.
+function unpublishWorkflow_deprecated_dup1() {
   ensureOmni();
   omni.workflow.status = 'draft';
   omni.workflow.published = false;

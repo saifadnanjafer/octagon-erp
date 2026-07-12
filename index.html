@@ -21,11 +21,11 @@
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="stylesheet" href="style.css?v=20260704-timesheet-dashboard-v4">
+  <link rel="stylesheet" href="style.css?v=20260706-calc-from-timesheet-v11">
   <link rel="stylesheet" href="omni-ux-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-admin-crud-v2.css?v=20260609-octagon-recover-v1">
   <link rel="stylesheet" href="omni-language-fix.css?v=20260609-octagon-recover-v1">
-  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260703-omni-v6">
+  <link rel="stylesheet" href="omni-ai-assistant.css?v=20260707-restore-cluster-v2">
   <link rel="stylesheet" href="jarvis-visual-overlay.css">
   <link rel="stylesheet" href="modules/jarvis-orb.css?v=20260625-agent-cluster-v1">
   <link rel="stylesheet" href="modules/pilot-review-session.css?v=20260703-pilot-review-v7">
@@ -100,6 +100,9 @@
   <link rel="stylesheet" href="theme-shadcn.css?v=20260625-shadcn-v1">
   <link rel="stylesheet" href="theme-perspective.css?v=20260625-perspective-v1">
   <link rel="stylesheet" href="theme-switcher.css?v=20260625-switcher-v1">
+  <link rel="stylesheet" href="calendar-header-fix.css?v=20260707-cal-header-v1">
+  <link rel="stylesheet" href="calendar-opc-doclog.css?v=20260707-opc-doclog-v2">
+  <link rel="stylesheet" href="timesheet-forecast.css?v=20260708-ts-forecast-v2">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -885,6 +888,21 @@
       font-family: var(--font-en);
     }
 
+    /* Friday's weekly operating-cost rollup — deliberately distinct from the
+       regular daily stat cells so it reads as "this is different, it's the
+       week's total, not a daily figure." */
+    .cal-detail-stats .cal-weekly-opcost-stat {
+      background: rgba(129, 140, 248, 0.12);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      grid-column: span 2;
+    }
+    .cal-detail-stats .cal-weekly-opcost-stat span {
+      color: #a5b4fc;
+    }
+    .cal-detail-stats .cal-weekly-opcost-stat strong {
+      color: #c7d2fe;
+    }
+
     .cal-workers-list {
       display: grid;
       gap: 8px;
@@ -1073,11 +1091,10 @@
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-spinner">
-      <div class="spinner-ring"></div>
-      <div class="spinner-ring"></div>
-      <div class="spinner-ring"></div>
-      <p class="loading-text">جاري تحميل النظام...</p>
+    <div class="system-boot-logo" aria-label="جاري تحميل النظام">
+      <div class="system-boot-logo-mark">
+        <span>⬡</span>
+      </div>
     </div>
   </div>
   <script>
@@ -1136,7 +1153,12 @@
             <i class="fa-solid fa-chevron-down"></i>
           </button>
           <div class="nav-group-body" id="navGroupOctagon">
-        <button class="nav-btn active" data-page="calculator" id="navCalculator" onclick="switchPage('calculator')">
+        <button class="nav-btn active" data-page="home" id="navHome" onclick="switchPage('home')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">الرئيسية</span>
+          <span class="nav-indicator"></span>
+        </button>
+        <button class="nav-btn" data-page="calculator" id="navCalculator" onclick="switchPage('calculator')">
           <span class="nav-icon">🧮</span>
           <span class="nav-label">الحاسبة الذكية</span>
           <span class="nav-indicator"></span>
@@ -1916,7 +1938,7 @@
     };
   </script>
   <script src="glass-real.js"></script>
-  <script src="services/auditService.js?v=20260623-phase6d-v1"></script>
+  <script src="services/auditService.js?v=20260705-session-reconnect-v1"></script>
   <script src="services/tenantService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/recordService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/stateService.js?v=20260514c2"></script>
@@ -1928,8 +1950,8 @@
   <script src="custom-api-integration.js"></script>
   <script src="custom-api-examples.js"></script>
   <!-- GO 16 de-monolith: static data providers MUST load before app.js (defines getDefaultAdminSettings, getOctagonPageTruthRegistry, etc.) -->
-  <script src="modules/data-providers.js?v=20260608-modules-wire-v1"></script>
-  <script src="app.js?v=20260704-timesheet-dashboard-v4"></script>
+  <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
+  <script src="app.js?v=20260709-grace-daily-display-v17"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
@@ -1938,7 +1960,7 @@
       if (window.__octagonAIAssistantPromise) return window.__octagonAIAssistantPromise;
       window.__octagonAIAssistantPromise = new Promise(function (resolve, reject) {
         var script = document.createElement('script');
-        script.src = 'omni-ai-assistant.js?v=20260703-omni-v6';
+        script.src = 'omni-ai-assistant.js?v=20260707-restore-cluster-v2';
         script.async = true;
         script.onload = function () { resolve(window.octagonAIAssistant || null); };
         script.onerror = function () { reject(new Error('AI assistant failed to load')); };
@@ -1975,10 +1997,10 @@
 
   <!-- OMNI MODAL CONTAINER -->
   <div id="omniModalOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); z-index:30000; display:none; align-items:center; justify-content:center;">
-    <div id="omniModalBox" class="glass-card" style="width:400px; max-width:90vw; padding:25px; border-radius:15px; display:flex; flex-direction:column; gap:15px; box-shadow:0 15px 50px rgba(0,0,0,0.5);">
-      <h3 id="omniModalTitle" style="margin:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; font-size:18px;"></h3>
-      <div id="omniModalBody" style="display:flex; flex-direction:column; gap:12px;"></div>
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+    <div id="omniModalBox" class="glass-card" style="width:400px; max-width:90vw; max-height:85vh; padding:25px; border-radius:15px; display:flex; flex-direction:column; gap:15px; overflow:hidden; box-shadow:0 15px 50px rgba(0,0,0,0.5);">
+      <h3 id="omniModalTitle" style="margin:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; font-size:18px; flex:0 0 auto;"></h3>
+      <div id="omniModalBody" style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; flex:1 1 auto; min-height:0; padding-right:4px;"></div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px; flex:0 0 auto;">
         <button id="omniModalCancel" class="btn-secondary">إلغاء</button>
         <button id="omniModalConfirm" class="btn-primary">تأكيد</button>
       </div>
@@ -2077,7 +2099,7 @@
   <script src="modules/vertical-hotel.js?v=20260624-hotel-v2-activate"></script>
   <!-- Workshop Unified Execution Core + Route Health diagnostic -->
   <script src="modules/work-orders.js?v=20260614-route-hydrate-v1"></script>
-  <script src="modules/route-health.js?v=20260625-rh-parallel-v3"></script>
+  <script src="modules/route-health.js?v=20260709-rh-batched-yield-v4"></script>
   <!-- Workshop AI Operating Layer (load AFTER work-orders + route-health) -->
   <script src="modules/workshop-ai.js?v=20260703-omni-v1"></script>
   <script src="modules/workshop-frontline.js?v=20260611-ai-layer-v1"></script>

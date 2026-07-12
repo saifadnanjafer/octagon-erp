@@ -452,6 +452,7 @@ The full mechanics live in `AGENT_PROMPT.txt` (lane list + claim algorithm) and 
 | Date | Agent/session | Task | Result | Gates run | Commit | Notes |
 |---|---|---|---|---|---|---|
 | 2026-07-12 | plan authored (Fable 5) | — | Plan created | — | — | OWNER TODO: rotate 3 API keys (T0.3) |
+| 2026-07-12 | claude-sonnet-5 (LANE-A) | T0.1 | DONE | A pass, G pass; C/D/E/F deferred (no 8090 copy stood up) | ec0ed7f..b94997a (21 commits) | Zero uncommitted work remains. Archive move verified against ARCHIVE_MANIFEST.md before staging. FLAGS for owner: (1) new duplicate `renderAttendanceCalendar` in app.js beyond T0.4's 23-name list, confirmed independently by LANE-V codex's Gate B fail — fold into T0.4. (2) database.json shows payroll periods 2026-05/2026-06 reverted from posted/paid to draft with closings removed, replaced by a new 2026-04 draft calc — not modified, surfaced for owner review (§1). |
 
 **BLOCKED format:** `| date | session | task | BLOCKED | gates | — | full error + what was tried |`
 

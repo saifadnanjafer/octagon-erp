@@ -265,16 +265,24 @@
     routeHealthHydrationPromise = (async () => {
       if (typeof window.ensurePageTemplateLoaded !== 'function') return;
       const pages = navPageKeys();
-      // Load all templates in parallel, each guarded by its own timeout so one
-      // hanging loader can neither stall the others nor freeze the page render.
-      // (Sequential loading with per-item delays was slow/could wedge — parallel
-      // load of all 86 templates completes in well under a second locally.)
-      await Promise.all(pages.map(page =>
-        Promise.race([
-          Promise.resolve().then(() => window.ensurePageTemplateLoaded(page)),
-          delay(2500)
-        ]).catch(() => {})
-      ));
+      // Load templates in SMALL COOPERATIVE BATCHES with a frame-yield between each.
+      // Firing all ~86 loads at once (mass fetch + synchronous DOM injection of every
+      // view + observer callbacks, all in one burst) starved the event loop long enough
+      // that the whole app appeared frozen — and because the main thread was blocked, the
+      // per-item timers below could never even fire. Batching + `await delay(16)` lets the
+      // browser paint and flush observers between chunks, so the page can never hard-freeze
+      // and stays navigable throughout. Each item still has its own timeout guard.
+      const BATCH = 4;
+      for (let i = 0; i < pages.length; i += BATCH) {
+        const batch = pages.slice(i, i + BATCH);
+        await Promise.all(batch.map(page =>
+          Promise.race([
+            Promise.resolve().then(() => window.ensurePageTemplateLoaded(page)),
+            delay(2500)
+          ]).catch(() => {})
+        ));
+        await delay(16); // yield ~one frame between batches — keeps the UI responsive
+      }
       routeHealthViewsHydrated = true;
     })().finally(() => {
       routeHealthHydrationPromise = null;

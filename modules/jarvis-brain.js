@@ -1548,14 +1548,102 @@ ${snap}`;
 
   function extractJson(raw) {
     let text = String(raw || '').trim();
-    // strip code fences
+    
+    // 1. Strip markdown fences
     const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
     if (fence) text = fence[1].trim();
-    // grab first {...} block
-    const first = text.indexOf('{');
-    const last = text.lastIndexOf('}');
-    if (first !== -1 && last !== -1 && last > first) text = text.slice(first, last + 1);
-    try { return JSON.parse(text); } catch (_) { return null; }
+
+    // 2. Try parsing directly first
+    try {
+      return JSON.parse(text);
+    } catch (_) {}
+
+    // 3. Helper to sanitize typical LLM JSON format issues
+    function sanitize(jsonStr) {
+      // Smart quotes to normal quotes
+      jsonStr = jsonStr.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+      
+      // Remove trailing commas before closing braces/brackets
+      jsonStr = jsonStr.replace(/,(\s*[\]}])/g, '$1');
+
+      // Escape raw control characters (newlines/tabs) inside string values
+      let insideString = false;
+      let quoteChar = null;
+      let result = '';
+      for (let i = 0; i < jsonStr.length; i++) {
+        let char = jsonStr[i];
+        let prev = jsonStr[i - 1];
+
+        if ((char === '"' || char === "'") && prev !== '\\') {
+          if (!insideString) {
+            insideString = true;
+            quoteChar = char;
+          } else if (char === quoteChar) {
+            insideString = false;
+            quoteChar = null;
+          }
+        }
+
+        if (insideString) {
+          if (char === '\n') result += '\\n';
+          else if (char === '\r') result += '\\r';
+          else if (char === '\t') result += '\\t';
+          else result += char;
+        } else {
+          result += char;
+        }
+      }
+      jsonStr = result;
+
+      // Convert single quotes to double quotes for keys, values, and array items
+      jsonStr = jsonStr.replace(/(^|[{,\s])'([^'\\]*(?:\\.[^'\\]*)*)'\s*:/g, '$1"$2":');
+      jsonStr = jsonStr.replace(/(:\s*)'([^'\\]*(?:\\.[^'\\]*)*)'(?=\s*[,}])/g, '$1"$2"');
+      jsonStr = jsonStr.replace(/(^|[,\[\s])'([^'\\]*(?:\\.[^'\\]*)*)'(?=\s*[,\]])/g, '$1"$2"');
+      
+      return jsonStr;
+    }
+
+    // 4. Try parsing after sanitizing the whole block
+    try {
+      return JSON.parse(sanitize(text));
+    } catch (_) {}
+
+    // 5. Balanced brace scanning to extract a valid JSON object ignoring preambles/postambles
+    const sanitized = sanitize(text);
+    for (let i = 0; i < sanitized.length; i++) {
+      if (sanitized[i] === '{') {
+        let depth = 0;
+        let insideString = false;
+        let quoteChar = null;
+        for (let j = i; j < sanitized.length; j++) {
+          let c = sanitized[j];
+          let prev = sanitized[j - 1];
+          if ((c === '"' || c === "'") && prev !== '\\') {
+            if (!insideString) {
+              insideString = true;
+              quoteChar = c;
+            } else if (c === quoteChar) {
+              insideString = false;
+              quoteChar = null;
+            }
+          }
+          if (!insideString) {
+            if (c === '{') depth++;
+            else if (c === '}') {
+              depth--;
+              if (depth === 0) {
+                const candidate = sanitized.slice(i, j + 1);
+                try {
+                  return JSON.parse(candidate);
+                } catch (_) {}
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   async function plan(userText, serverSnap, kbContext) {

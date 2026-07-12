@@ -1862,14 +1862,103 @@ ${t('وضع أومني الصوتي مفعّل. المستخدم قد يطلب �
   function parseActions(raw) {
     let text = String(raw || '');
     let actions = [];
-    const match = text.match(/```json\s*([\s\S]*?)```/i) || text.match(/```\s*(\{[\s\S]*?"actions"[\s\S]*?\})\s*```/i);
-    if (match) {
-      try {
-        const obj = JSON.parse(match[1]);
-        if (Array.isArray(obj.actions)) actions = obj.actions.map(a => (typeof a === 'string' ? a : a?.title || '')).map(s => s.trim()).filter(Boolean).slice(0, 3);
-      } catch (_) {}
-      text = text.replace(match[0], '').trim();
+
+    // Sanitize typical LLM JSON format issues (smart quotes, trailing commas,
+    // raw control chars inside strings, single-quoted keys/values) before parsing.
+    // Pure text transform — no DOM/visual coupling. Kept from the reverted redesign
+    // because it hardens safe-action parsing and stands on its own.
+    function sanitize(jsonStr) {
+      jsonStr = jsonStr.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+      jsonStr = jsonStr.replace(/,(\s*[\]}])/g, '$1');
+
+      let insideString = false;
+      let quoteChar = null;
+      let result = '';
+      for (let i = 0; i < jsonStr.length; i++) {
+        let char = jsonStr[i];
+        let prev = jsonStr[i - 1];
+        if ((char === '"' || char === "'") && prev !== '\\') {
+          if (!insideString) { insideString = true; quoteChar = char; }
+          else if (char === quoteChar) { insideString = false; quoteChar = null; }
+        }
+        if (insideString) {
+          if (char === '\n') result += '\\n';
+          else if (char === '\r') result += '\\r';
+          else if (char === '\t') result += '\\t';
+          else result += char;
+        } else {
+          result += char;
+        }
+      }
+      jsonStr = result;
+
+      jsonStr = jsonStr.replace(/(^|[{,\s])'([^'\\]*(?:\\.[^'\\]*)*)'\s*:/g, '$1"$2":');
+      jsonStr = jsonStr.replace(/(:\s*)'([^'\\]*(?:\\.[^'\\]*)*)'(?=\s*[,}])/g, '$1"$2"');
+      jsonStr = jsonStr.replace(/(^|[,\[\s])'([^'\\]*(?:\\.[^'\\]*)*)'(?=\s*[,\]])/g, '$1"$2"');
+      return jsonStr;
     }
+
+    const match = text.match(/```(?:json)?\s*([\s\S]*?)```/i) || text.match(/```\s*(\{[\s\S]*?"actions"[\s\S]*?\})\s*```/i);
+    let matchedBlock = null;
+    let jsonBlock = null;
+
+    if (match) {
+      matchedBlock = match[0];
+      const rawCandidate = match[1].trim();
+      try {
+        jsonBlock = JSON.parse(rawCandidate);
+      } catch (_) {
+        try { jsonBlock = JSON.parse(sanitize(rawCandidate)); } catch (__) {}
+      }
+    }
+
+    // If no fenced block parsed, scan for a balanced {...} that contains "actions".
+    if (!jsonBlock) {
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] === '{') {
+          let depth = 0;
+          let insideString = false;
+          let quoteChar = null;
+          for (let j = i; j < text.length; j++) {
+            let c = text[j];
+            let prev = text[j - 1];
+            if ((c === '"' || c === "'") && prev !== '\\') {
+              if (!insideString) { insideString = true; quoteChar = c; }
+              else if (c === quoteChar) { insideString = false; quoteChar = null; }
+            }
+            if (!insideString) {
+              if (c === '{') depth++;
+              else if (c === '}') {
+                depth--;
+                if (depth === 0) {
+                  const candidate = text.slice(i, j + 1);
+                  if (candidate.includes('actions')) {
+                    try {
+                      jsonBlock = JSON.parse(candidate);
+                      matchedBlock = candidate;
+                    } catch (_) {
+                      try { jsonBlock = JSON.parse(sanitize(candidate)); matchedBlock = candidate; } catch (__) {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (jsonBlock && typeof jsonBlock === 'object') {
+      if (Array.isArray(jsonBlock.actions)) {
+        actions = jsonBlock.actions
+          .map(a => (typeof a === 'string' ? a : a?.title || ''))
+          .map(s => s.trim())
+          .filter(Boolean)
+          .slice(0, 3);
+      }
+      if (matchedBlock) text = text.replace(matchedBlock, '').trim();
+    }
+
     return { text, actions };
   }
 

@@ -211,6 +211,12 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(db),
       });
+      if (res.status === 401) {
+        // Dead server session — trigger the password-reconnect flow instead of
+        // failing silently forever (the client still LOOKS logged-in).
+        if (typeof root.reconnectServerSession === 'function') root.reconnectServerSession('save-401');
+        throw new Error('انتهت جلسة الدخول في السيرفر — أدخل كلمة المرور في نافذة إعادة الاتصال ثم أعد المحاولة');
+      }
       if (!res.ok) throw new Error('تعذر حفظ قاعدة البيانات');
       this.cacheStr = JSON.stringify(db);
       this.cache = db;

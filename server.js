@@ -45,6 +45,38 @@ const REVIEW_REPORT_DIR = process.env.OCTAGON_REVIEW_REPORT_DIR ? path.resolve(p
 const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const authSessions = new Map();
 const authFailures = new Map();
+
+// Session persistence (2026-07-05): authSessions used to live ONLY in this
+// in-memory Map, so every server restart silently invalidated all cookies —
+// the client still looked logged-in (localStorage user) but every protected
+// API call failed with 401 "Login session required" (bit Saif mid-payroll).
+// Sessions are now write-through mirrored to the SQLite `auth_sessions`
+// table and restored on boot. Best-effort: if SQLite is down we degrade to
+// the old in-memory behavior rather than blocking logins.
+function persistAuthSession(token, session) {
+  try {
+    if (dbSync) dbSync.prepare('INSERT OR REPLACE INTO auth_sessions (token, userId, createdAt, expiresAt) VALUES (?, ?, ?, ?)')
+      .run(token, session.userId || '', session.createdAt || Date.now(), session.expiresAt || 0);
+  } catch (_) {}
+}
+function deletePersistedAuthSession(token) {
+  try { if (dbSync) dbSync.prepare('DELETE FROM auth_sessions WHERE token = ?').run(token); } catch (_) {}
+}
+function restoreAuthSessionsFromDb() {
+  if (!dbSync) return;
+  try {
+    dbSync.prepare('DELETE FROM auth_sessions WHERE expiresAt <= ?').run(Date.now());
+    const rows = dbSync.prepare('SELECT token, userId, createdAt, expiresAt FROM auth_sessions').all();
+    rows.forEach(row => authSessions.set(row.token, {
+      userId: row.userId,
+      createdAt: Number(row.createdAt) || Date.now(),
+      expiresAt: Number(row.expiresAt) || 0,
+    }));
+    if (rows.length) console.log(`Auth: restored ${rows.length} login session(s) from SQLite (survive restarts)`);
+  } catch (e) {
+    console.warn('Auth: session restore failed:', e.message);
+  }
+}
 const V5_PRESERVED_TOP_LEVEL_KEYS = [
   '_schema_version',
   '_migrated_at',
@@ -591,16 +623,47 @@ function saveDbToSqlite(sqliteDb, db) {
   
   sqliteDb.exec("BEGIN TRANSACTION");
   try {
-    sqliteDb.exec("DELETE FROM metadata");
-    sqliteDb.exec("DELETE FROM collections");
+    // 1. Delta save metadata
+    const existingMetaRows = sqliteDb.prepare("SELECT key, value FROM metadata").all();
+    const existingMetaMap = new Map();
+    existingMetaRows.forEach(row => {
+      existingMetaMap.set(row.key, row.value);
+    });
 
     const insertMeta = sqliteDb.prepare("INSERT INTO metadata (key, value) VALUES (?, ?)");
+    const updateMeta = sqliteDb.prepare("UPDATE metadata SET value = ? WHERE key = ?");
+    const deleteMeta = sqliteDb.prepare("DELETE FROM metadata WHERE key = ?");
+
     for (const key in metadata) {
-      insertMeta.run(key, JSON.stringify(metadata[key]));
+      const valStr = JSON.stringify(metadata[key]);
+      if (existingMetaMap.has(key)) {
+        if (existingMetaMap.get(key) !== valStr) {
+          updateMeta.run(valStr, key);
+        }
+      } else {
+        insertMeta.run(key, valStr);
+      }
+    }
+    for (const key of existingMetaMap.keys()) {
+      if (!(key in metadata)) {
+        deleteMeta.run(key);
+      }
     }
 
+    // 2. Delta save collections
+    const existingColRows = sqliteDb.prepare("SELECT collection, id, data FROM collections").all();
+    const existingColMap = new Map();
+    existingColRows.forEach(row => {
+      existingColMap.set(`${row.collection}::${row.id}`, row.data);
+    });
+
     const insertCol = sqliteDb.prepare("INSERT INTO collections (collection, id, data) VALUES (?, ?, ?)");
+    const updateCol = sqliteDb.prepare("UPDATE collections SET data = ? WHERE collection = ? AND id = ?");
+    const deleteCol = sqliteDb.prepare("DELETE FROM collections WHERE collection = ? AND id = ?");
+
     const seen = new Set();
+    const incomingKeys = new Set();
+
     for (const colName in collections) {
       const arr = collections[colName];
       for (const rec of arr) {
@@ -617,9 +680,29 @@ function saveDbToSqlite(sqliteDb, db) {
         if (rec.id !== id) {
           rec.id = id;
         }
-        insertCol.run(colName, id, JSON.stringify(rec));
+
+        const dataStr = JSON.stringify(rec);
+        incomingKeys.add(key);
+
+        if (existingColMap.has(key)) {
+          if (existingColMap.get(key) !== dataStr) {
+            updateCol.run(dataStr, colName, id);
+          }
+        } else {
+          insertCol.run(colName, id, dataStr);
+        }
       }
     }
+
+    for (const key of existingColMap.keys()) {
+      if (!incomingKeys.has(key)) {
+        const parts = key.split('::');
+        const colName = parts[0];
+        const id = parts.slice(1).join('::');
+        deleteCol.run(colName, id);
+      }
+    }
+
     sqliteDb.exec("COMMIT");
   } catch (e) {
     sqliteDb.exec("ROLLBACK");
@@ -1088,6 +1171,7 @@ function authSessionFromRequest(req) {
   if (!session) return null;
   if (Date.now() > session.expiresAt) {
     authSessions.delete(token);
+    deletePersistedAuthSession(token);
     try {
       const db = loadDbForMutation();
       appendServerAudit(db, { action: 'session_expired', status: 'expired', actorId: session.userId || 'unknown', actorName: session.userId || 'unknown', payload: { userId: session.userId || '', expiredAt: new Date().toISOString() } });
@@ -1113,6 +1197,31 @@ function isDevMode() {
   return process.env.NODE_ENV !== 'production' && process.env.OCTAGON_PRODUCTION !== 'true';
 }
 
+// Strict loopback check for WRITE-trust: only the actual TCP socket address is
+// consulted — NOT the Host header, which the client fully controls. (A remote
+// attacker could send `Host: localhost` and pass the looser isLocalRequest();
+// that's harmless for the read-only endpoints that use it, but must never
+// grant writes.) A real remote client's remoteAddress is its LAN/public IP,
+// never loopback, so it can never be trusted here.
+function isLoopbackSocket(req) {
+  const addr = String(req.socket?.remoteAddress || '');
+  return ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(addr);
+}
+
+// The physical console (localhost) is the trusted operator machine, so it may
+// write even under NODE_ENV=production (2026-07-06). The pilot's production
+// hardening exists to protect NETWORK access — a browser on a *different* PC
+// pointed at this server is NOT loopback and still needs a real login session.
+// Before this, production mode required a live session for EVERY write, so a
+// dead session (server restart / 8h TTL expiry) silently rejected every save
+// with 401 — the operator kept editing advances/payroll/timesheet and nothing
+// persisted. Set OCTAGON_TRUST_LOCALHOST=false to require a session even on
+// the console.
+function isLocalWriteTrusted(req) {
+  const trustLocalhost = process.env.OCTAGON_TRUST_LOCALHOST !== 'false';
+  return (isDevMode() || trustLocalhost) && isLoopbackSocket(req);
+}
+
 function safeSessionInfo(req) {
   const active = authSessionFromRequest(req);
   if (!active) return null;
@@ -1131,8 +1240,8 @@ function sessionGroupsForUser(db, userId) {
 
 function requireSession(req, res, options = {}) {
   const allowLocalDev = options.allowLocalDev !== false;
-  if (allowLocalDev && isDevMode() && isLocalRequest(req)) {
-    return { ok: true, mode: 'local-dev', userId: 'local-dev', groups: ['system.admin', 'finance.manager'], user: null };
+  if (allowLocalDev && isLocalWriteTrusted(req)) {
+    return { ok: true, mode: isDevMode() ? 'local-dev' : 'local-trusted', userId: 'local-console', groups: ['system.admin', 'finance.manager'], user: null };
   }
   const active = authSessionFromRequest(req);
   if (!active) {
@@ -1144,6 +1253,7 @@ function requireSession(req, res, options = {}) {
     const user = userListFromDb(db).find(item => item.id === active.session.userId);
     if (!user) {
       authSessions.delete(active.token);
+      deletePersistedAuthSession(active.token);
       sendJson(res, 401, { success: false, error: 'Session user no longer exists' });
       return { ok: false };
     }
@@ -1159,7 +1269,7 @@ function requireRoleSession(req, res, groups, options = {}) {
   const session = requireSession(req, res, options);
   if (!session.ok) return session;
   const required = Array.isArray(groups) ? groups : [groups];
-  if (session.mode === 'local-dev') return session;
+  if (session.mode === 'local-dev' || session.mode === 'local-trusted') return session;
   if (!required.some(group => session.groups.includes(group))) {
     sendJson(res, 403, { success: false, error: 'Insufficient role for this API endpoint', required });
     return { ok: false };
@@ -1398,7 +1508,12 @@ const server = http.createServer((req, res) => {
 
   if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
     const active = authSessionFromRequest(req);
-    if (!active) return sendJson(res, 200, { authenticated: false, user: null });
+    // `enforced` tells the client whether protected APIs would actually reject
+    // it without a session — false when this request comes from the trusted
+    // localhost console, so the client only nags for re-login on network
+    // access where a session is genuinely required.
+    const enforced = !isLocalWriteTrusted(req);
+    if (!active) return sendJson(res, 200, { authenticated: false, user: null, enforced });
     try {
       const db = loadDbForMutation();
       const user = userListFromDb(db).find(item => item.id === active.session.userId);
@@ -1449,7 +1564,9 @@ const server = http.createServer((req, res) => {
       authFailures.delete(user.id);
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = Date.now() + AUTH_SESSION_TTL_MS;
-      authSessions.set(token, { userId: user.id, createdAt: Date.now(), expiresAt });
+      const sessionRecord = { userId: user.id, createdAt: Date.now(), expiresAt };
+      authSessions.set(token, sessionRecord);
+      persistAuthSession(token, sessionRecord);
       user.lastServerLoginAt = new Date().toISOString();
       appendServerAudit(db, { action: 'login_success', status: 'success', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id, expiresAt: new Date(expiresAt).toISOString() } });
       saveDb(db);
@@ -1461,7 +1578,10 @@ const server = http.createServer((req, res) => {
 
   if (requestUrl.pathname === '/api/auth/logout' && req.method === 'POST') {
     const active = authSessionFromRequest(req);
-    if (active) authSessions.delete(active.token);
+    if (active) {
+      authSessions.delete(active.token);
+      deletePersistedAuthSession(active.token);
+    }
     try {
       const db = loadDbForMutation();
       appendServerAudit(db, { action: 'logout_success', status: 'success', actorId: active?.session?.userId || 'unknown', actorName: active?.session?.userId || 'unknown', payload: { userId: active?.session?.userId || '' } });
@@ -2120,6 +2240,16 @@ function initializeDatabase() {
     console.log('Database Engine: SQLite Active');
     try {
       dbSync = new DatabaseSync(SQLITE_DB_FILE);
+      // WAL + busy_timeout (2026-07-05): with the default journal_mode=delete,
+      // ANY second process touching database.db (a verify server on another
+      // port, a script, a backup tool) makes concurrent writes throw
+      // SQLITE_BUSY immediately — which surfaced to users as failed saves and
+      // a misleading "operation in progress (undefined)" toast during payroll
+      // posting. WAL lets one writer + many readers coexist, and busy_timeout
+      // makes a contended write WAIT up to 5s instead of failing instantly.
+      dbSync.exec('PRAGMA journal_mode = WAL;');
+      dbSync.exec('PRAGMA busy_timeout = 5000;');
+      dbSync.exec('PRAGMA synchronous = NORMAL;');
       dbSync.exec(`
         CREATE TABLE IF NOT EXISTS metadata (
           key TEXT PRIMARY KEY,
@@ -2163,6 +2293,16 @@ function initializeDatabase() {
           errorMessage TEXT
         );
       `);
+      // Login sessions survive restarts (2026-07-05) — see persistAuthSession().
+      dbSync.exec(`
+        CREATE TABLE IF NOT EXISTS auth_sessions (
+          token TEXT PRIMARY KEY,
+          userId TEXT,
+          createdAt INTEGER,
+          expiresAt INTEGER
+        );
+      `);
+      restoreAuthSessionsFromDb();
 
       const rowCount = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
                        dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;

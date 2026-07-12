@@ -142,12 +142,19 @@ function getDefaultQcSettings() {
 }
 
 // --- moved from app.js (Phase 2): default workshop operating-cost items (pure literals) ---
+// keywords/accountId added (GO: monthly operating costs premium rebuild) for
+// auto-fetch matching against the expenses ledger and correct GL posting.
+// allocationBasis defaults to 'calendar_days' — fixed overhead like rent must
+// keep showing up across every day of the month, attendance or not, rather
+// than disappearing on days with zero recorded employees.
 function getDefaultWorkshopOperatingCostItems() {
   return [
-    { id: 'rent', name: 'إيجار الورشة', amount: 0, active: true },
-    { id: 'internet', name: 'اشتراك الإنترنت', amount: 0, active: true },
-    { id: 'electricity', name: 'اشتراك الكهرباء', amount: 0, active: true },
-    { id: 'water', name: 'اشتراك الماء', amount: 0, active: true }
+    { id: 'rent', name: 'إيجار الورشة', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'rent_expense', categoryId: 'cat_rent', keywords: ['ايجار', 'إيجار', 'rent'] },
+    { id: 'internet', name: 'اشتراك الإنترنت', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'utilities_expense', categoryId: 'cat_utilities', keywords: ['انترنت', 'إنترنت', 'نت', 'internet'] },
+    { id: 'electricity', name: 'اشتراك الكهرباء', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'utilities_expense', categoryId: 'cat_utilities', keywords: ['كهرباء', 'أمبير', 'امبير', 'electricity'] },
+    { id: 'water', name: 'اشتراك الماء', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'utilities_expense', categoryId: 'cat_utilities', keywords: ['ماء', 'مويه', 'مياه', 'water'] },
+    { id: 'diesel', name: 'كاز تشغيل المولد', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'transport_fuel_expense', categoryId: 'cat_fuel', keywords: ['كاز', 'ديزل', 'وقود', 'مولدة', 'مولد', 'diesel', 'fuel'] },
+    { id: 'chatgpt', name: 'اشتراك ChatGPT / الذكاء الاصطناعي', amount: 0, active: true, allocationBasis: 'calendar_days', accountId: 'expense_general', categoryId: 'cat_general', keywords: ['chatgpt', 'ذكاء اصطناعي', 'اشتراك برمجي', 'ai'] }
   ];
 }
 

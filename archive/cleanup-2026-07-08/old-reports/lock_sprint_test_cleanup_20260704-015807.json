@@ -1,0 +1,12 @@
+{
+  "dryRun": false,
+  "backup": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp\\database.db.backup-before-lock-sprint-cleanup-20260704-015807",
+  "rowsToDelete": 25,
+  "remainingMoveCount": 534,
+  "hashChainRecomputedCount": 534,
+  "totalDebitAfter": 69770816,
+  "totalCreditAfter": 69770816,
+  "balancedAfter": true,
+  "cashWorkshopBalanceAfter": -458420,
+  "applied": true
+}

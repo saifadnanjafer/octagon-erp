@@ -1,0 +1,907 @@
+{
+  "id": "pilot_calculator_mr8ntkkw",
+  "mode": "manual",
+  "page": "calculator",
+  "pageLabel": "الحاسبة الذكية",
+  "startedAt": "2026-07-06T03:27:53.457Z",
+  "updatedAt": "2026-07-06T03:27:53.458Z",
+  "status": "in_progress",
+  "scan": {
+    "version": "2026.07.02-phase1",
+    "page": "calculator",
+    "pageRootId": "pageCalculator",
+    "pageLabel": "الحاسبة الذكية",
+    "scannedAt": "2026-07-06T03:27:53.450Z",
+    "ok": true,
+    "selector": "button,[role=\"button\"],[role=\"tab\"],.tab,[data-tab],[data-bs-toggle=\"tab\"],input,select,textarea,a[href],a[onclick],[onclick],[data-action],[data-jarvis-action],[data-jarvis-field],[contenteditable=\"true\"],summary",
+    "totals": {
+      "elements": 26,
+      "visible": 26,
+      "hidden": 0,
+      "disabled": 0
+    },
+    "byType": {
+      "button": 6,
+      "select": 2,
+      "input": 18
+    },
+    "elements": [
+      {
+        "id": "pilot:calculator:button:988c95",
+        "page": "calculator",
+        "type": "button",
+        "label": "مراجعة الراتب بالذكاء الاصطناعي",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "button#btnVerifyCalcAI",
+        "domId": "btnVerifyCalcAI",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 221,
+          "y": 227,
+          "width": 254,
+          "height": 40
+        },
+        "reviewPrompts": [
+          "Is \"مراجعة الراتب بالذكاء الاصطناعي\" visible, understandable, and placed where you expect it?",
+          "Does \"مراجعة الراتب بالذكاء الاصطناعي\" behave correctly when used?",
+          "After pressing \"مراجعة الراتب بالذكاء الاصطناعي\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:12gbmig",
+        "page": "calculator",
+        "type": "button",
+        "label": "🖨️ طباعة الوصل",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div.page-header:nth-of-type(1) > div.page-header-actions:nth-of-type(2) > button.btn-primary:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 65,
+          "y": 227,
+          "width": 146,
+          "height": 40
+        },
+        "reviewPrompts": [
+          "Is \"🖨️ طباعة الوصل\" visible, understandable, and placed where you expect it?",
+          "Does \"🖨️ طباعة الوصل\" behave correctly when used?",
+          "After pressing \"🖨️ طباعة الوصل\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:select:1rpu5zq",
+        "page": "calculator",
+        "type": "select",
+        "label": "-1",
+        "tag": "select",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "select#calcEmpSelect",
+        "domId": "calcEmpSelect",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1869,
+          "y": 370,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"-1\" visible, understandable, and placed where you expect it?",
+          "Does \"-1\" behave correctly when used?",
+          "Can you change \"-1\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:select:87590p",
+        "page": "calculator",
+        "type": "select",
+        "label": "3",
+        "tag": "select",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "select#cfgMonth",
+        "domId": "cfgMonth",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1907,
+          "y": 464,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"3\" visible, understandable, and placed where you expect it?",
+          "Does \"3\" behave correctly when used?",
+          "Can you change \"3\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1k96c6o",
+        "page": "calculator",
+        "type": "input",
+        "label": "2026",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#cfgYear",
+        "domId": "cfgYear",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1707,
+          "y": 464,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"2026\" visible, understandable, and placed where you expect it?",
+          "Does \"2026\" behave correctly when used?",
+          "Can you change \"2026\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1odwgaf",
+        "page": "calculator",
+        "type": "input",
+        "label": "500000",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#cfgSalary",
+        "domId": "cfgSalary",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1507,
+          "y": 464,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"500000\" visible, understandable, and placed where you expect it?",
+          "Does \"500000\" behave correctly when used?",
+          "Can you change \"500000\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:59phl2",
+        "page": "calculator",
+        "type": "input",
+        "label": "50000",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#cfgTransport",
+        "domId": "cfgTransport",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1307,
+          "y": 464,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"50000\" visible, understandable, and placed where you expect it?",
+          "Does \"50000\" behave correctly when used?",
+          "Can you change \"50000\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1v8q6n9",
+        "page": "calculator",
+        "type": "input",
+        "label": "50000",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#cfgFood",
+        "domId": "cfgFood",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1107,
+          "y": 464,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"50000\" visible, understandable, and placed where you expect it?",
+          "Does \"50000\" behave correctly when used?",
+          "Can you change \"50000\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:8tedax",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpAttendance",
+        "domId": "inpAttendance",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1833,
+          "y": 778,
+          "width": 230,
+          "height": 48
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:tdfb86",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpFridayDays",
+        "domId": "inpFridayDays",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1589,
+          "y": 778,
+          "width": 230,
+          "height": 48
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1kubrbq",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpLeaves",
+        "domId": "inpLeaves",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1345,
+          "y": 778,
+          "width": 230,
+          "height": 48
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1wilzmj",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpAbsent",
+        "domId": "inpAbsent",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1101,
+          "y": 778,
+          "width": 230,
+          "height": 48
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1a2mrmp",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpOvertime",
+        "domId": "inpOvertime",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1663,
+          "y": 972,
+          "width": 400,
+          "height": 42
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:eygvhu",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpFridayOT",
+        "domId": "inpFridayOT",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1175,
+          "y": 972,
+          "width": 400,
+          "height": 42
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:sci599",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpLateness",
+        "domId": "inpLateness",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1663,
+          "y": 1069,
+          "width": 400,
+          "height": 42
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1p1bcku",
+        "page": "calculator",
+        "type": "input",
+        "label": "4",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpFridays",
+        "domId": "inpFridays",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1175,
+          "y": 1069,
+          "width": 400,
+          "height": 42
+        },
+        "reviewPrompts": [
+          "Is \"4\" visible, understandable, and placed where you expect it?",
+          "Does \"4\" behave correctly when used?",
+          "Can you change \"4\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1724m0z",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpCurrentAdvance",
+        "domId": "inpCurrentAdvance",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1933,
+          "y": 1256,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:cui3j3",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpPreviousAdvance",
+        "domId": "inpPreviousAdvance",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1445,
+          "y": 1256,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:j9ezl3",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpPenalty",
+        "domId": "inpPenalty",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1933,
+          "y": 1330,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:9k3ad9",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpBonus",
+        "domId": "inpBonus",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1445,
+          "y": 1330,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:s9lif",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpDamage",
+        "domId": "inpDamage",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1933,
+          "y": 1422,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:input:1nenivg",
+        "page": "calculator",
+        "type": "input",
+        "label": "0",
+        "tag": "input",
+        "role": "",
+        "inputType": "number",
+        "selectorHint": "input#inpPaymentAmount",
+        "domId": "inpPaymentAmount",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 502,
+          "y": 1028,
+          "width": 130,
+          "height": 38
+        },
+        "reviewPrompts": [
+          "Is \"0\" visible, understandable, and placed where you expect it?",
+          "Does \"0\" behave correctly when used?",
+          "Can you change \"0\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:cgew34",
+        "page": "calculator",
+        "type": "button",
+        "label": "+1,000",
+        "tag": "button",
+        "role": "",
+        "inputType": "button",
+        "selectorHint": "div.calc-results:nth-of-type(2) > div.payment-section.glass-card:nth-of-type(4) > div.payment-form:nth-of-type(1) > div:nth-of-type(1) > div.payment-quick-actions:nth-of-type(2) > button.btn-secondary:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 401,
+          "y": 1026,
+          "width": 70,
+          "height": 40
+        },
+        "reviewPrompts": [
+          "Is \"+1,000\" visible, understandable, and placed where you expect it?",
+          "Does \"+1,000\" behave correctly when used?",
+          "After pressing \"+1,000\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:1w6dvvy",
+        "page": "calculator",
+        "type": "button",
+        "label": "+5,000",
+        "tag": "button",
+        "role": "",
+        "inputType": "button",
+        "selectorHint": "div.calc-results:nth-of-type(2) > div.payment-section.glass-card:nth-of-type(4) > div.payment-form:nth-of-type(1) > div:nth-of-type(1) > div.payment-quick-actions:nth-of-type(2) > button.btn-secondary:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 323,
+          "y": 1026,
+          "width": 70,
+          "height": 40
+        },
+        "reviewPrompts": [
+          "Is \"+5,000\" visible, understandable, and placed where you expect it?",
+          "Does \"+5,000\" behave correctly when used?",
+          "After pressing \"+5,000\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:13oqyoo",
+        "page": "calculator",
+        "type": "button",
+        "label": "تقريب لـ 1,000",
+        "tag": "button",
+        "role": "",
+        "inputType": "button",
+        "selectorHint": "div.calc-results:nth-of-type(2) > div.payment-section.glass-card:nth-of-type(4) > div.payment-form:nth-of-type(1) > div:nth-of-type(1) > div.payment-quick-actions:nth-of-type(2) > button.btn-secondary:nth-of-type(3)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 214,
+          "y": 1026,
+          "width": 101,
+          "height": 40
+        },
+        "reviewPrompts": [
+          "Is \"تقريب لـ 1,000\" visible, understandable, and placed where you expect it?",
+          "Does \"تقريب لـ 1,000\" behave correctly when used?",
+          "After pressing \"تقريب لـ 1,000\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:8vua80",
+        "page": "calculator",
+        "type": "button",
+        "label": "✅ تسجيل الدفع",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "button#btnRegisterPayment",
+        "domId": "btnRegisterPayment",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 61,
+          "y": 1022,
+          "width": 143,
+          "height": 44
+        },
+        "reviewPrompts": [
+          "Is \"✅ تسجيل الدفع\" visible, understandable, and placed where you expect it?",
+          "Does \"✅ تسجيل الدفع\" behave correctly when used?",
+          "After pressing \"✅ تسجيل الدفع\", does the app give the right result, feedback, or approval gate?"
+        ]
+      }
+    ]
+  },
+  "selectedIndex": 0,
+  "elementReviews": {
+    "pilot:calculator:button:988c95": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:button:12gbmig": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:select:1rpu5zq": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:select:87590p": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1k96c6o": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1odwgaf": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:59phl2": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1v8q6n9": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:8tedax": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:tdfb86": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1kubrbq": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1wilzmj": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1a2mrmp": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:eygvhu": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:sci599": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1p1bcku": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1724m0z": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:cui3j3": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:j9ezl3": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:9k3ad9": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:s9lif": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:input:1nenivg": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:button:cgew34": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:button:1w6dvvy": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:button:13oqyoo": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:calculator:button:8vua80": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    }
+  },
+  "notes": [],
+  "transcript": [
+    {
+      "at": "2026-07-06T03:27:53.457Z",
+      "role": "system",
+      "text": "Pilot Review started for الحاسبة الذكية. Review every scanned control and mark pass, fail, or skip."
+    }
+  ],
+  "serverFile": "",
+  "savedBy": "local-review",
+  "savedAt": "2026-07-06T03:27:54.530Z",
+  "storage": {
+    "folder": "review-reports",
+    "file": "calculator-pilot_calculator_mr8ntkkw.json"
+  }
+}

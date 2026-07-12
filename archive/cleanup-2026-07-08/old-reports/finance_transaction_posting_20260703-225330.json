@@ -1,0 +1,17 @@
+{
+  "accountsAdded": 19,
+  "accountFieldsUpdated": 136,
+  "journalsAdded": 0,
+  "createdMoves": 526,
+  "skippedTransactions": 0,
+  "suspenseMoves": 17,
+  "totalAccountMoves": 526,
+  "totalJournalEntries": 526,
+  "postedCashNet": -954000,
+  "cashOpening": 997000,
+  "cashClosingFromPostedMoves": 43000,
+  "unbalancedMoves": [],
+  "db": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp\\database.json",
+  "sqlite": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp\\database.db",
+  "applied": false
+}

@@ -1,0 +1,21 @@
+{
+  "dryRun": true,
+  "errors": [],
+  "json": {
+    "errors": [
+      "Target move MOVE_OPENING_1783114061898 not found"
+    ]
+  },
+  "jsonSkippedReason": "database.json does not contain this move (stale fallback mirror, see reference_finance_db_paths memory) — no change needed there.",
+  "sqlite": {
+    "errors": [],
+    "fixedAccountLines": 1,
+    "assignedName": "GEN/2026/00001",
+    "hashChainRecomputedCount": 530,
+    "journalEntriesBefore": 531,
+    "journalEntriesAfter": 530,
+    "totalDebitAfter": 64121845,
+    "totalCreditAfter": 64121845,
+    "balancedAfter": true
+  }
+}

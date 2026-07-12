@@ -1,0 +1,5406 @@
+{
+  "finance": {
+    "cashOpening": 0,
+    "categories": {
+      "expense": [
+        {
+          "id": "cat_payroll",
+          "name": "رواتب",
+          "accountId": "expense_payroll"
+        },
+        {
+          "id": "cat_materials",
+          "name": "مواد",
+          "accountId": "expense_materials"
+        },
+        {
+          "id": "cat_tools",
+          "name": "صيانة وعدد",
+          "accountId": "expense_tools"
+        },
+        {
+          "id": "cat_transport",
+          "name": "نقل وتجهيز",
+          "accountId": "expense_general"
+        },
+        {
+          "id": "cat_general",
+          "name": "مصروف عام",
+          "accountId": "expense_general"
+        }
+      ],
+      "income": [
+        {
+          "id": "cat_sales",
+          "name": "وارد مبيعات",
+          "accountId": "income_sales"
+        },
+        {
+          "id": "cat_service",
+          "name": "خدمة/تصنيع",
+          "accountId": "income_sales"
+        },
+        {
+          "id": "cat_customer_payment",
+          "name": "تسديد عميل",
+          "accountId": "receivables_customers"
+        }
+      ]
+    },
+    "parties": [],
+    "transactions": [],
+    "receipts": [],
+    "accounts": [
+      {
+        "id": "cash_workshop",
+        "code": "1001",
+        "name": "قاصة الورشة",
+        "type": "asset",
+        "normal_side": "debit"
+      },
+      {
+        "id": "receivables_customers",
+        "code": "1101",
+        "name": "ذمم العملاء",
+        "type": "asset",
+        "normal_side": "debit"
+      },
+      {
+        "id": "inventory_stock",
+        "code": "1200",
+        "name": "مخزون مواد",
+        "type": "asset",
+        "normal_side": "debit"
+      },
+      {
+        "id": "accrued_payroll",
+        "code": "2100",
+        "name": "رواتب مستحقة",
+        "type": "liability",
+        "normal_side": "credit"
+      },
+      {
+        "id": "payables_people",
+        "code": "2101",
+        "name": "ذمم الأشخاص/الموظفين",
+        "type": "liability",
+        "normal_side": "credit"
+      },
+      {
+        "id": "income_sales",
+        "code": "4001",
+        "name": "واردات مبيعات/خدمات",
+        "type": "income",
+        "normal_side": "credit"
+      },
+      {
+        "id": "cogs_materials",
+        "code": "5000",
+        "name": "تكلفة المواد المباعة",
+        "type": "expense",
+        "normal_side": "debit"
+      },
+      {
+        "id": "expense_payroll",
+        "code": "5101",
+        "name": "رواتب وأجور",
+        "type": "expense",
+        "normal_side": "debit"
+      },
+      {
+        "id": "expense_materials",
+        "code": "5201",
+        "name": "مواد تشغيل",
+        "type": "expense",
+        "normal_side": "debit"
+      },
+      {
+        "id": "expense_tools",
+        "code": "5202",
+        "name": "عدد وصيانة",
+        "type": "expense",
+        "normal_side": "debit"
+      },
+      {
+        "id": "expense_general",
+        "code": "5299",
+        "name": "مصروفات عامة",
+        "type": "expense",
+        "normal_side": "debit"
+      },
+      {
+        "id": "vat_payable",
+        "code": "2200",
+        "name": "ضريبة القيمة المضافة المستحقة (VAT)",
+        "type": "liability",
+        "normal_side": "credit"
+      },
+      {
+        "id": "suspense",
+        "code": "9999",
+        "name": "حساب الاستيداع",
+        "type": "asset",
+        "normal_side": "debit"
+      }
+    ],
+    "departments": [
+      {
+        "id": "dept_workshop",
+        "name": "الورشة"
+      },
+      {
+        "id": "dept_projects",
+        "name": "المشاريع"
+      },
+      {
+        "id": "dept_sales",
+        "name": "المبيعات"
+      },
+      {
+        "id": "dept_admin",
+        "name": "الإدارة"
+      },
+      {
+        "id": "dept_payroll",
+        "name": "الرواتب"
+      }
+    ],
+    "customers": [
+      {
+        "id": "cust_demo",
+        "name": "عميل تجريبي",
+        "phone": "07700000000",
+        "companyName": "شركة التجربة والبرهان",
+        "shopName": "معرض التجربة والبرهان",
+        "openingBalance": 0,
+        "notes": "عميل افتراضي تجريبي لمحاكاة البوابة",
+        "balanceDirection": ""
+      }
+    ]
+  },
+  "omni": {
+    "kanban": {
+      "columns": [
+        {
+          "id": "kb_backlog",
+          "title": "Backlog",
+          "color": "#94a3b8",
+          "wip": 99
+        },
+        {
+          "id": "kb_ready",
+          "title": "جاهز للتنفيذ",
+          "color": "#38bdf8",
+          "wip": 8
+        },
+        {
+          "id": "kb_doing",
+          "title": "قيد التنفيذ",
+          "color": "#a78bfa",
+          "wip": 5
+        },
+        {
+          "id": "kb_review",
+          "title": "مراجعة وتسليم",
+          "color": "#f59e0b",
+          "wip": 4
+        },
+        {
+          "id": "kb_done",
+          "title": "مكتمل",
+          "color": "#10b981",
+          "wip": 99
+        }
+      ],
+      "cards": [
+        {
+          "id": "card_1",
+          "columnId": "kb_ready",
+          "title": "تجهيز قياسات مشروع الواجهة",
+          "owner": "فريق الورشة",
+          "priority": "High",
+          "dueDate": "2026-06-08",
+          "tags": [
+            "قياسات",
+            "تصميم"
+          ],
+          "description": "تدقيق القياسات وتحويلها للتنفيذ.",
+          "checklist": [
+            {
+              "text": "استلام القياسات",
+              "done": true
+            },
+            {
+              "text": "مراجعة التصميم",
+              "done": false
+            }
+          ],
+          "orderId": "",
+          "workflowId": "",
+          "operationPackId": "",
+          "operationPackStepId": "",
+          "sopIds": [],
+          "machineIds": [],
+          "materialRequirements": [],
+          "qcRecordIds": [],
+          "costEntries": [],
+          "dependencies": [],
+          "attachments": [],
+          "activityLog": [],
+          "comments": [],
+          "status": "",
+          "clientName": "",
+          "linkedOrderNum": "",
+          "color": "default",
+          "accentColor": "default",
+          "assigneeId": "",
+          "department": "",
+          "createdAt": "2026-06-08T17:36:32.414Z",
+          "workOrderId": "demo_wo_surface_1"
+        },
+        {
+          "id": "card_2",
+          "columnId": "kb_doing",
+          "title": "قص ليزر للطلبية الجديدة",
+          "owner": "قسم الليزر",
+          "priority": "Urgent",
+          "dueDate": "2026-06-08",
+          "tags": [
+            "ليزر"
+          ],
+          "description": "قص وتجهيز القطع حسب الملف المعتمد.",
+          "checklist": [
+            {
+              "text": "رفع ملف DXF",
+              "done": true
+            },
+            {
+              "text": "فحص أول قطعة",
+              "done": false
+            }
+          ],
+          "orderId": "",
+          "workflowId": "",
+          "operationPackId": "",
+          "operationPackStepId": "",
+          "sopIds": [],
+          "machineIds": [],
+          "materialRequirements": [],
+          "qcRecordIds": [],
+          "costEntries": [],
+          "dependencies": [],
+          "attachments": [],
+          "activityLog": [],
+          "comments": [],
+          "status": "",
+          "clientName": "",
+          "linkedOrderNum": "",
+          "color": "default",
+          "accentColor": "default",
+          "assigneeId": "",
+          "department": "",
+          "createdAt": "2026-06-08T17:36:32.414Z",
+          "workOrderId": "demo_wo_surface_2"
+        },
+        {
+          "id": "card_3",
+          "columnId": "kb_review",
+          "title": "فحص جودة نهائي",
+          "owner": "الجودة",
+          "priority": "Normal",
+          "dueDate": "2026-06-08",
+          "tags": [
+            "QC"
+          ],
+          "description": "مطابقة الأبعاد والتغليف.",
+          "checklist": [
+            {
+              "text": "فحص الحواف",
+              "done": false
+            }
+          ],
+          "orderId": "",
+          "workflowId": "",
+          "operationPackId": "",
+          "operationPackStepId": "",
+          "sopIds": [],
+          "machineIds": [],
+          "materialRequirements": [],
+          "qcRecordIds": [],
+          "costEntries": [],
+          "dependencies": [],
+          "attachments": [],
+          "activityLog": [],
+          "comments": [],
+          "status": "",
+          "clientName": "",
+          "linkedOrderNum": "",
+          "color": "default",
+          "accentColor": "default",
+          "assigneeId": "",
+          "department": "",
+          "createdAt": "2026-06-08T17:36:32.414Z",
+          "workOrderId": "demo_wo_surface_3"
+        }
+      ]
+    },
+    "workflow": {
+      "nodes": [
+        {
+          "id": "wf_start",
+          "type": "trigger",
+          "title": "استلام طلب",
+          "x": 80,
+          "y": 80,
+          "sop": "استلام الطلب",
+          "description": "نقطة بداية أي مشروع",
+          "linkedSopId": "",
+          "linkedMachineId": "",
+          "linkedOperationPackId": "",
+          "materialRequirements": [],
+          "assignedRole": "",
+          "estimatedMinutes": 0,
+          "costImpact": 0,
+          "successPath": "",
+          "failurePath": "",
+          "activityLog": [],
+          "linkedCardId": "",
+          "linkedTaskId": "",
+          "linkedQcRecordId": "",
+          "orderId": "",
+          "department": "",
+          "branch": "",
+          "linkedQcTemplateId": "",
+          "qcRequired": false,
+          "qcPassPath": "",
+          "qcFailPath": "",
+          "qcReworkPath": ""
+        },
+        {
+          "id": "wf_design",
+          "type": "action",
+          "title": "تصميم ومراجعة",
+          "x": 330,
+          "y": 80,
+          "sop": "اعتماد التصميم",
+          "description": "تحضير الملفات واعتمادها",
+          "linkedSopId": "",
+          "linkedMachineId": "",
+          "linkedOperationPackId": "",
+          "materialRequirements": [],
+          "assignedRole": "",
+          "estimatedMinutes": 0,
+          "costImpact": 0,
+          "successPath": "",
+          "failurePath": "",
+          "activityLog": [],
+          "linkedCardId": "",
+          "linkedTaskId": "",
+          "linkedQcRecordId": "",
+          "orderId": "",
+          "department": "",
+          "branch": "",
+          "linkedQcTemplateId": "",
+          "qcRequired": false,
+          "qcPassPath": "",
+          "qcFailPath": "",
+          "qcReworkPath": ""
+        },
+        {
+          "id": "wf_prod",
+          "type": "operation",
+          "title": "تنفيذ ورشة",
+          "x": 580,
+          "y": 190,
+          "sop": "تشغيل الإنتاج",
+          "description": "تحويل المهمة للكانبان",
+          "linkedSopId": "",
+          "linkedMachineId": "",
+          "linkedOperationPackId": "",
+          "materialRequirements": [],
+          "assignedRole": "",
+          "estimatedMinutes": 0,
+          "costImpact": 0,
+          "successPath": "",
+          "failurePath": "",
+          "activityLog": [],
+          "linkedCardId": "",
+          "linkedTaskId": "",
+          "linkedQcRecordId": "",
+          "orderId": "",
+          "department": "",
+          "branch": "",
+          "linkedQcTemplateId": "",
+          "qcRequired": false,
+          "qcPassPath": "",
+          "qcFailPath": "",
+          "qcReworkPath": ""
+        },
+        {
+          "id": "wf_qc",
+          "type": "approval",
+          "title": "فحص وتسليم",
+          "x": 830,
+          "y": 80,
+          "sop": "فحص الجودة",
+          "description": "مراجعة نهائية وتسليم",
+          "linkedSopId": "",
+          "linkedMachineId": "",
+          "linkedOperationPackId": "",
+          "materialRequirements": [],
+          "assignedRole": "",
+          "estimatedMinutes": 0,
+          "costImpact": 0,
+          "successPath": "",
+          "failurePath": "",
+          "activityLog": [],
+          "linkedCardId": "",
+          "linkedTaskId": "",
+          "linkedQcRecordId": "",
+          "orderId": "",
+          "department": "",
+          "branch": "",
+          "linkedQcTemplateId": "",
+          "qcRequired": false,
+          "qcPassPath": "",
+          "qcFailPath": "",
+          "qcReworkPath": ""
+        }
+      ],
+      "edges": [
+        {
+          "from": "wf_start",
+          "to": "wf_design",
+          "label": "مكتمل",
+          "id": "edge_1780940192414_ycwb1kd9mn",
+          "source": "wf_start",
+          "target": "wf_design",
+          "sourceNodeId": "wf_start",
+          "targetNodeId": "wf_design",
+          "sourcePort": "output",
+          "targetPort": "input",
+          "type": "normal",
+          "createdAt": "2026-06-08T17:36:32.414Z"
+        },
+        {
+          "from": "wf_design",
+          "to": "wf_prod",
+          "label": "معتمد",
+          "id": "edge_1780940192414_3c5ueu09skg",
+          "source": "wf_design",
+          "target": "wf_prod",
+          "sourceNodeId": "wf_design",
+          "targetNodeId": "wf_prod",
+          "sourcePort": "output",
+          "targetPort": "input",
+          "type": "normal",
+          "createdAt": "2026-06-08T17:36:32.414Z"
+        },
+        {
+          "from": "wf_prod",
+          "to": "wf_qc",
+          "label": "جاهز للفحص",
+          "id": "edge_1780940192414_ws8008bmbm",
+          "source": "wf_prod",
+          "target": "wf_qc",
+          "sourceNodeId": "wf_prod",
+          "targetNodeId": "wf_qc",
+          "sourcePort": "output",
+          "targetPort": "input",
+          "type": "normal",
+          "createdAt": "2026-06-08T17:36:32.414Z"
+        }
+      ],
+      "selectedFrom": null
+    },
+    "taskManager": {
+      "selectedSpaceId": "space_ops",
+      "spaces": [
+        {
+          "id": "space_1780940192418_01tj9w",
+          "name": "إعادة التدوير (Recycling)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_0hz9o9",
+              "name": "عمليات",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_cv7n0q",
+              "name": "جودة",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_yn5swl",
+          "name": "الإعلانات (Advertising)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_yc843w",
+              "name": "حملات",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_itv1kh",
+              "name": "تصميم",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_djvbsd",
+          "name": "الذكاء الصناعي (AI)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_4ytef9",
+              "name": "تطوير",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_5z7kch",
+          "name": "الطابعة (Printing)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_ukz6zt",
+              "name": "تحضير",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_8stal7",
+              "name": "طباعة",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_gaq70v",
+              "name": "تغليف",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_ce3bsm",
+          "name": "المجتمع (Community)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_vwn9t3",
+              "name": "مبادرات",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_4slb02",
+          "name": "المنتجات (Products)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_6jlo75",
+              "name": "أبحاث",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_hc0ugp",
+              "name": "تصنيع",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_0242kn",
+          "name": "الهندسي (Engineering)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_dnrk20",
+              "name": "تصميم CAD",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_sgj2uq",
+              "name": "تصنيع CNC",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_t2nlwg",
+          "name": "إدارة الورشة (Workshop Management)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_5v2qd9",
+              "name": "استراتيجية",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_z3xtws",
+              "name": "أرشيف",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_89n36g",
+          "name": "الأشخاص (People & HR)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_6t6k79",
+              "name": "موظفين",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_bysm8a",
+              "name": "شركاء",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_1780940192418_az3pyd",
+          "name": "مشاريع العملاء (Client Projects)",
+          "departments": [
+            {
+              "id": "dep_1780940192418_a18mz1",
+              "name": "نشط",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_8kz4ab",
+              "name": "مقترح",
+              "sections": []
+            },
+            {
+              "id": "dep_1780940192418_skz5f4",
+              "name": "مكتمل",
+              "sections": []
+            }
+          ]
+        },
+        {
+          "id": "space_ops",
+          "name": "Operations Space",
+          "departments": [
+            {
+              "id": "dep_workshop_ops",
+              "name": "Department: الورشة",
+              "sections": [
+                {
+                  "id": "sec_production",
+                  "name": "Section: الإنتاج",
+                  "taskTypes": [
+                    {
+                      "id": "type_job",
+                      "name": "Task Type: أمر تشغيل",
+                      "tasks": [
+                        {
+                          "id": "task_sample",
+                          "title": "تنفيذ واجهة محل",
+                          "status": "in_progress",
+                          "priority": "high",
+                          "owner": "فريق الورشة",
+                          "dueDate": "2026-06-08",
+                          "subtasks": [
+                            {
+                              "id": "sub_1",
+                              "title": "قص المواد",
+                              "done": true
+                            },
+                            {
+                              "id": "sub_2",
+                              "title": "تجميع وتركيب",
+                              "done": false
+                            }
+                          ],
+                          "orderId": "",
+                          "workflowId": "",
+                          "operationPackId": "",
+                          "operationPackStepId": "",
+                          "sopIds": [],
+                          "machineIds": [],
+                          "materialRequirements": [],
+                          "qcRecordIds": [],
+                          "costEntries": [],
+                          "dependencies": [],
+                          "attachments": [],
+                          "activityLog": [],
+                          "comments": [],
+                          "clientName": "",
+                          "linkedOrderNum": "",
+                          "description": "",
+                          "startDate": "",
+                          "completedAt": "",
+                          "assigneeId": "",
+                          "assignedTo": "فريق الورشة",
+                          "employeeId": "",
+                          "department": "Department: الورشة",
+                          "section": "Section: الإنتاج",
+                          "category": "Task Type: أمر تشغيل",
+                          "tags": [],
+                          "checklist": [],
+                          "kanbanCardId": "",
+                          "workflowNodeId": "",
+                          "sourceType": "task_manager",
+                          "sourceId": "task_sample",
+                          "estimatedMinutes": 0,
+                          "archived": false,
+                          "archivedAt": "",
+                          "deleted": false,
+                          "deletedAt": "",
+                          "recurring": {
+                            "enabled": false,
+                            "frequency": "weekly",
+                            "nextDate": "",
+                            "templateTaskId": ""
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "version": 4,
+    "adminSettings": {
+      "ui": {
+        "defaultTheme": "default",
+        "density": "comfortable",
+        "bigScreenMode": false,
+        "rtl": true,
+        "animations": true
+      },
+      "workflow": {
+        "snapToGrid": true,
+        "gridSize": 24,
+        "confirmBeforeDelete": true,
+        "quickEditEnabled": true,
+        "connectionMode": "ports"
+      },
+      "inventory": {
+        "showBatteryIndicator": true,
+        "lowStockPercent": 40,
+        "criticalStockPercent": 20,
+        "showReservedQty": true
+      },
+      "notifications": {
+        "soundEnabled": true
+      },
+      "finance": {
+        "expenseCategories": [],
+        "incomeSources": [],
+        "people": [],
+        "departments": []
+      },
+      "operationPacks": {
+        "previewBeforeExecute": true,
+        "reserveMaterialsOnExecute": true,
+        "addMachineQueueOnExecute": true
+      },
+      "kanban": {
+        "confirmBeforeDelete": true,
+        "showReadiness": true,
+        "showIndicators": true
+      },
+      "permissions": {
+        "adminMode": true,
+        "lockedPagesProtected": true,
+        "foundationOnly": true
+      },
+      "organization": {
+        "currency": "IQD",
+        "currencySymbol": "د.ع",
+        "country": "العراق",
+        "companies": [
+          {
+            "id": "co_1780940192413_tcb4fe",
+            "name": "",
+            "phone": "",
+            "address": "",
+            "logoEmoji": "🏭",
+            "founded": "",
+            "isPrimary": true,
+            "departments": []
+          }
+        ],
+        "activeCompanyId": "co_1780940192413_tcb4fe",
+        "supervisors": [],
+        "name": "",
+        "owner": "",
+        "phone": "",
+        "address": "",
+        "logoEmoji": "🏭",
+        "workStart": "09:00",
+        "workEnd": "17:00",
+        "dayOff": "friday",
+        "founded": ""
+      },
+      "supervisorRouting": {}
+    },
+    "permissions": {
+      "manager": [
+        "all"
+      ],
+      "employee": [
+        "employee_ui",
+        "create_request",
+        "view_own_requests"
+      ],
+      "operator": [
+        "kanban_view",
+        "task_update",
+        "qc_view"
+      ]
+    },
+    "qcSettings": {
+      "requireQcForDelivery": true,
+      "requireQcForOperationCards": true,
+      "requireQcForMachineCards": true,
+      "requireQcForHighPriority": true,
+      "requireQcForOpPackExecution": true,
+      "blockDeliveryOnFailedQc": true,
+      "autoCreateReworkOnFail": false
+    },
+    "companySeededV1": true,
+    "salesCrm": {
+      "leads": [],
+      "quotations": [],
+      "salesOrders": [],
+      "pipelineStages": [
+        {
+          "id": "stage_new",
+          "name": "جديد",
+          "color": "#818cf8",
+          "order": 0
+        },
+        {
+          "id": "stage_qualified",
+          "name": "مؤهل",
+          "color": "#38bdf8",
+          "order": 1
+        },
+        {
+          "id": "stage_proposal",
+          "name": "عرض سعر مرسل",
+          "color": "#facc15",
+          "order": 2
+        },
+        {
+          "id": "stage_negotiation",
+          "name": "مفاوضة",
+          "color": "#fb923c",
+          "order": 3
+        },
+        {
+          "id": "stage_won",
+          "name": "تم الفوز ✅",
+          "color": "#34d399",
+          "order": 4
+        },
+        {
+          "id": "stage_lost",
+          "name": "خسارة ❌",
+          "color": "#f87171",
+          "order": 5
+        }
+      ]
+    },
+    "aiControl": {
+      "provider": {
+        "enabled": false,
+        "provider": "openai",
+        "model": "gpt-4.1-mini",
+        "mode": "review_only",
+        "safetyLevel": "strict",
+        "apiKeyLabel": ""
+      },
+      "permissions": {
+        "payroll": "forbidden",
+        "finance": "forbidden",
+        "admin": "forbidden",
+        "task_manager": "approved_write",
+        "kanban": "approval_required",
+        "inventory": "approval_required",
+        "whatsapp": "approval_required",
+        "automation": "review_queue"
+      },
+      "actionQueue": [],
+      "runHistory": [],
+      "contextMap": []
+    },
+    "sops": [
+      {
+        "id": "sop_safety",
+        "title": "سلامة ماكينة الليزر",
+        "type": "إلزامي",
+        "owner": "الورشة",
+        "text": "قواعد السلامة الأساسية قبل التشغيل.",
+        "code": "SOP-SAFETY",
+        "department": "",
+        "section": "",
+        "purpose": "",
+        "description": "قواعد السلامة الأساسية قبل التشغيل.",
+        "machineIds": [],
+        "materialIds": [],
+        "taskTypes": [],
+        "requiredTools": [],
+        "requiredMaterials": [],
+        "safetyNotes": [],
+        "steps": [],
+        "checklist": [],
+        "qcCriteria": [],
+        "commonMistakes": [],
+        "estimatedMinutes": 0,
+        "requiredSkill": "",
+        "relatedWorkflowIds": [],
+        "relatedOperationPackIds": [],
+        "relatedTaskTemplateIds": [],
+        "version": 1,
+        "approvalStatus": "draft",
+        "approvedBy": "",
+        "lastReviewDate": "",
+        "attachments": [],
+        "activityLog": [],
+        "createdAt": "2026-06-08",
+        "updatedAt": ""
+      },
+      {
+        "id": "sop_qc",
+        "title": "خطوات فحص الجودة",
+        "type": "جودة",
+        "owner": "الجودة",
+        "text": "فحص الأبعاد والحواف والتغليف قبل التسليم.",
+        "code": "SOP-QC",
+        "department": "",
+        "section": "",
+        "purpose": "",
+        "description": "فحص الأبعاد والحواف والتغليف قبل التسليم.",
+        "machineIds": [],
+        "materialIds": [],
+        "taskTypes": [],
+        "requiredTools": [],
+        "requiredMaterials": [],
+        "safetyNotes": [],
+        "steps": [],
+        "checklist": [],
+        "qcCriteria": [],
+        "commonMistakes": [],
+        "estimatedMinutes": 0,
+        "requiredSkill": "",
+        "relatedWorkflowIds": [],
+        "relatedOperationPackIds": [],
+        "relatedTaskTemplateIds": [],
+        "version": 1,
+        "approvalStatus": "draft",
+        "approvedBy": "",
+        "lastReviewDate": "",
+        "attachments": [],
+        "activityLog": [],
+        "createdAt": "2026-06-08",
+        "updatedAt": ""
+      },
+      {
+        "id": "sop_1780940192418_zcgjog",
+        "title": "دليل هوية الورشة - Brand Guidelines",
+        "type": "Strategy",
+        "owner": "إدارة الورشة",
+        "text": "شعار الورشة، الألوان، الرؤية والرسالة.",
+        "code": "SOP-178094",
+        "department": "",
+        "section": "",
+        "purpose": "",
+        "description": "شعار الورشة، الألوان، الرؤية والرسالة.",
+        "machineIds": [],
+        "materialIds": [],
+        "taskTypes": [],
+        "requiredTools": [],
+        "requiredMaterials": [],
+        "safetyNotes": [],
+        "steps": [],
+        "checklist": [],
+        "qcCriteria": [],
+        "commonMistakes": [],
+        "estimatedMinutes": 0,
+        "requiredSkill": "",
+        "relatedWorkflowIds": [],
+        "relatedOperationPackIds": [],
+        "relatedTaskTemplateIds": [],
+        "version": 1,
+        "approvalStatus": "draft",
+        "approvedBy": "",
+        "lastReviewDate": "",
+        "attachments": [],
+        "activityLog": [],
+        "createdAt": "2026-06-08",
+        "updatedAt": ""
+      },
+      {
+        "id": "sop_1780940192418_lwo3j4",
+        "title": "دليل التشغيل للطباعة",
+        "type": "Operations",
+        "owner": "الطابعة",
+        "text": "خطوات ما قبل الطباعة (Pre-press)، إعداد الماكينة، والمراقبة.",
+        "code": "SOP-178094",
+        "department": "",
+        "section": "",
+        "purpose": "",
+        "description": "خطوات ما قبل الطباعة (Pre-press)، إعداد الماكينة، والمراقبة.",
+        "machineIds": [],
+        "materialIds": [],
+        "taskTypes": [],
+        "requiredTools": [],
+        "requiredMaterials": [],
+        "safetyNotes": [],
+        "steps": [],
+        "checklist": [],
+        "qcCriteria": [],
+        "commonMistakes": [],
+        "estimatedMinutes": 0,
+        "requiredSkill": "",
+        "relatedWorkflowIds": [],
+        "relatedOperationPackIds": [],
+        "relatedTaskTemplateIds": [],
+        "version": 1,
+        "approvalStatus": "draft",
+        "approvedBy": "",
+        "lastReviewDate": "",
+        "attachments": [],
+        "activityLog": [],
+        "createdAt": "2026-06-08",
+        "updatedAt": ""
+      },
+      {
+        "id": "sop_1780940192418_o6i70z",
+        "title": "دليل جودة التصنيع الهندسي",
+        "type": "Operations",
+        "owner": "الهندسي",
+        "text": "فحص الحواف، الأبعاد، والتجميع النهائي.",
+        "code": "SOP-178094",
+        "department": "",
+        "section": "",
+        "purpose": "",
+        "description": "فحص الحواف، الأبعاد، والتجميع النهائي.",
+        "machineIds": [],
+        "materialIds": [],
+        "taskTypes": [],
+        "requiredTools": [],
+        "requiredMaterials": [],
+        "safetyNotes": [],
+        "steps": [],
+        "checklist": [],
+        "qcCriteria": [],
+        "commonMistakes": [],
+        "estimatedMinutes": 0,
+        "requiredSkill": "",
+        "relatedWorkflowIds": [],
+        "relatedOperationPackIds": [],
+        "relatedTaskTemplateIds": [],
+        "version": 1,
+        "approvalStatus": "draft",
+        "approvedBy": "",
+        "lastReviewDate": "",
+        "attachments": [],
+        "activityLog": [],
+        "createdAt": "2026-06-08",
+        "updatedAt": ""
+      }
+    ],
+    "machines": [
+      {
+        "id": "mach_laser_120",
+        "name": "Laser 120×90",
+        "type": "laser",
+        "status": "operational",
+        "operator": "أحمد",
+        "queue": [],
+        "lastMaintenance": "2026-04-20",
+        "hoursTotal": 1840,
+        "downtime": 12,
+        "sopId": "sop_safety",
+        "jobsToday": 4,
+        "queueBacklogCount": 3,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 1750,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_laser_100",
+        "name": "Laser 100×80",
+        "type": "laser",
+        "status": "operational",
+        "operator": "علي",
+        "queue": [],
+        "lastMaintenance": "2026-05-01",
+        "hoursTotal": 920,
+        "downtime": 5,
+        "sopId": "",
+        "jobsToday": 2,
+        "queueBacklogCount": 1,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 750,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_laser_125",
+        "name": "Laser 125×250",
+        "type": "laser",
+        "status": "maintenance",
+        "operator": "-",
+        "queue": [],
+        "lastMaintenance": "2026-05-08",
+        "hoursTotal": 2100,
+        "downtime": 28,
+        "sopId": "",
+        "jobsToday": 0,
+        "queueBacklogCount": 0,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 2000,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_cnc",
+        "name": "CNC Router 125×250",
+        "type": "cnc",
+        "status": "operational",
+        "operator": "يوسف",
+        "queue": [],
+        "lastMaintenance": "2026-04-15",
+        "hoursTotal": 1560,
+        "downtime": 18,
+        "sopId": "",
+        "jobsToday": 3,
+        "queueBacklogCount": 2,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 1500,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_fiber",
+        "name": "Fiber Galvo Marker",
+        "type": "fiber",
+        "status": "idle",
+        "operator": "سيف",
+        "queue": [],
+        "lastMaintenance": "2026-05-05",
+        "hoursTotal": 480,
+        "downtime": 2,
+        "sopId": "",
+        "jobsToday": 0,
+        "queueBacklogCount": 0,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 250,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_3dprint",
+        "name": "3D Printer",
+        "type": "3d",
+        "status": "operational",
+        "operator": "أشرف",
+        "queue": [],
+        "lastMaintenance": "2026-04-28",
+        "hoursTotal": 620,
+        "downtime": 8,
+        "sopId": "",
+        "jobsToday": 1,
+        "queueBacklogCount": 1,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 500,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      },
+      {
+        "id": "mach_printer",
+        "name": "Large Format Printer",
+        "type": "print",
+        "status": "operational",
+        "operator": "علي",
+        "queue": [],
+        "lastMaintenance": "2026-05-03",
+        "hoursTotal": 1100,
+        "downtime": 6,
+        "sopId": "",
+        "jobsToday": 2,
+        "queueBacklogCount": 2,
+        "photoUrl": "",
+        "hourlyCost": 25000,
+        "costPerHour": 25000,
+        "maintenanceIntervalHours": 250,
+        "maintenanceIntervalDays": 30,
+        "lastMaintenanceHoursTotal": 1000,
+        "description": "",
+        "usageNotes": "",
+        "aiWorkspace": "",
+        "aiLastInstruction": "",
+        "model": "",
+        "maintenanceNotes": "",
+        "activityLog": []
+      }
+    ],
+    "materials": [
+      {
+        "id": "mat_acrylic",
+        "name": "أكريلك",
+        "unit": "لوح",
+        "stock": 45,
+        "reserved": 12,
+        "minimum": 10,
+        "cost": 15000,
+        "supplier": "مورد البلاستيك",
+        "category": "خام",
+        "supplierId": "sup_1780940192413_9sip8e",
+        "reservedQty": 12,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_mdf",
+        "name": "MDF",
+        "unit": "لوح",
+        "stock": 30,
+        "reserved": 8,
+        "minimum": 5,
+        "cost": 8000,
+        "supplier": "مورد الخشب",
+        "category": "خام",
+        "supplierId": "sup_1780940192413_bx4i6t",
+        "reservedQty": 8,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_foam",
+        "name": "فوم بورد",
+        "unit": "لوح",
+        "stock": 60,
+        "reserved": 5,
+        "minimum": 15,
+        "cost": 3000,
+        "supplier": "مورد البلاستيك",
+        "category": "خام",
+        "supplierId": "sup_1780940192413_9sip8e",
+        "reservedQty": 5,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_led",
+        "name": "شريط LED",
+        "unit": "متر",
+        "stock": 200,
+        "reserved": 50,
+        "minimum": 30,
+        "cost": 1500,
+        "supplier": "مورد الكهربائيات",
+        "category": "كهربائي",
+        "supplierId": "sup_1780940192413_vovcev",
+        "reservedQty": 50,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_power",
+        "name": "محول كهرباء",
+        "unit": "قطعة",
+        "stock": 15,
+        "reserved": 3,
+        "minimum": 5,
+        "cost": 12000,
+        "supplier": "مورد الكهربائيات",
+        "category": "كهربائي",
+        "supplierId": "sup_1780940192413_vovcev",
+        "reservedQty": 3,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_paint",
+        "name": "طلاء سبراي",
+        "unit": "علبة",
+        "stock": 25,
+        "reserved": 4,
+        "minimum": 10,
+        "cost": 5000,
+        "supplier": "مورد الدهانات",
+        "category": "تشطيب",
+        "supplierId": "sup_1780940192413_w2esyd",
+        "reservedQty": 4,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_adhesive",
+        "name": "لاصق صناعي",
+        "unit": "علبة",
+        "stock": 18,
+        "reserved": 2,
+        "minimum": 5,
+        "cost": 3500,
+        "supplier": "مورد عام",
+        "category": "تشطيب",
+        "supplierId": "sup_1780940192413_w425mj",
+        "reservedQty": 2,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      },
+      {
+        "id": "mat_vinyl",
+        "name": "فينايل طباعة",
+        "unit": "رول",
+        "stock": 8,
+        "reserved": 2,
+        "minimum": 3,
+        "cost": 25000,
+        "supplier": "مورد الطباعة",
+        "category": "طباعة",
+        "supplierId": "sup_1780940192413_2q40dk",
+        "reservedQty": 2,
+        "reservations": [],
+        "movements": [],
+        "photoUrl": "",
+        "tracking": "none",
+        "costingMethod": "avco"
+      }
+    ],
+    "opPacks": [
+      {
+        "id": "pack_acrylic_sign",
+        "name": "Acrylic LED Sign Production",
+        "icon": "💡",
+        "description": "باقة إنتاج لوحة أكريلك مضيئة من الطلب حتى التسليم",
+        "steps": [
+          {
+            "title": "استلام الطلب وفتح ملف",
+            "sopRef": "استلام الطلب",
+            "type": "task",
+            "id": "opstep_1780940192414_vi5llq",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسعير اللوحة",
+            "sopRef": "تسعير",
+            "type": "pricing",
+            "id": "opstep_1780940192414_6iyd8v",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تصميم ومراجعة",
+            "sopRef": "اعتماد التصميم",
+            "type": "design",
+            "id": "opstep_1780940192414_rlfsmo",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "موافقة العميل",
+            "sopRef": "",
+            "type": "approval",
+            "id": "opstep_1780940192414_73y1lt",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "حجز أكريلك + LED + محول",
+            "sopRef": "",
+            "type": "material",
+            "id": "opstep_1780940192414_mqseu0",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 32000,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "قص ليزر",
+            "sopRef": "تشغيل ليزر",
+            "type": "machine",
+            "machineRef": "mach_laser_120",
+            "id": "opstep_1780940192414_fcx1ew",
+            "sopId": "",
+            "machineId": "mach_laser_120",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تجميع وتركيب LED",
+            "sopRef": "",
+            "type": "assembly",
+            "id": "opstep_1780940192414_qp37fv",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص جودة",
+            "sopRef": "فحص الجودة",
+            "type": "qc",
+            "id": "opstep_1780940192414_8hpjkv",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تغليف وتسليم",
+            "sopRef": "",
+            "type": "delivery",
+            "id": "opstep_1780940192414_y2xscy",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تحديث الكلفة والربح",
+            "sopRef": "",
+            "type": "finance",
+            "id": "opstep_1780940192414_l6bdiz",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "أكريلك",
+          "LED",
+          "محول كهرباء",
+          "لاصق"
+        ],
+        "machines": [
+          "Laser 120×90"
+        ],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 32000,
+        "qcGates": [
+          "فحص الحواف",
+          "فحص الإضاءة",
+          "فحص الأبعاد"
+        ],
+        "failPoints": [
+          "تشقق الأكريلك",
+          "عدم تطابق الألوان",
+          "مشكلة كهربائية"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_mdf_router",
+        "name": "MDF Router Decoration",
+        "icon": "🪵",
+        "description": "باقة تشغيل CNC Router لقطع وتشكيل MDF",
+        "steps": [
+          {
+            "title": "مراجعة التصميم",
+            "sopRef": "",
+            "type": "design",
+            "id": "opstep_1780940192414_r5b7sf",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تأكيد سمك المادة",
+            "sopRef": "",
+            "type": "material",
+            "id": "opstep_1780940192414_mta3e8",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 16500,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تحضير Toolpath",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_emd3w8",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "حجز CNC Router",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_cnc",
+            "id": "opstep_1780940192414_nnagj1",
+            "sopId": "",
+            "machineId": "mach_cnc",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "اختيار بت القص",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_6fabd7",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تنفيذ القص",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_cnc",
+            "id": "opstep_1780940192414_adibft",
+            "sopId": "",
+            "machineId": "mach_cnc",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "صنفرة",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_wmgx4m",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "دهان",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_8z5tws",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تجميع",
+            "sopRef": "",
+            "type": "assembly",
+            "id": "opstep_1780940192414_pymfot",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص الأبعاد",
+            "sopRef": "",
+            "type": "qc",
+            "id": "opstep_1780940192414_dxii3u",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تغليف وتسليم",
+            "sopRef": "",
+            "type": "delivery",
+            "id": "opstep_1780940192414_fc1kzg",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "MDF",
+          "طلاء سبراي",
+          "لاصق صناعي"
+        ],
+        "machines": [
+          "CNC Router 125×250"
+        ],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 16500,
+        "qcGates": [
+          "فحص الأبعاد",
+          "فحص السطح",
+          "فحص التجميع"
+        ],
+        "failPoints": [
+          "كسر القطعة",
+          "عدم دقة القص",
+          "تقشر الدهان"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_3dprint",
+        "name": "3D Print Job",
+        "icon": "🖨️",
+        "description": "باقة طباعة ثلاثية الأبعاد كاملة",
+        "steps": [
+          {
+            "title": "مراجعة ملف STL",
+            "sopRef": "",
+            "type": "design",
+            "id": "opstep_1780940192414_3zjjqe",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تحضير Slice",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_cyrsei",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "حجز الطابعة",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_3dprint",
+            "id": "opstep_1780940192414_6x36us",
+            "sopId": "",
+            "machineId": "mach_3dprint",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "طباعة",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_3dprint",
+            "id": "opstep_1780940192414_ybbb48",
+            "sopId": "",
+            "machineId": "mach_3dprint",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "إزالة السبورت",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_phhei4",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "صنفرة وتشطيب",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_gh6yfe",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص جودة",
+            "sopRef": "",
+            "type": "qc",
+            "id": "opstep_1780940192414_6o93gu",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسليم",
+            "sopRef": "",
+            "type": "delivery",
+            "id": "opstep_1780940192414_b9yep9",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "فيلامنت PLA/ABS"
+        ],
+        "machines": [
+          "3D Printer"
+        ],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 0,
+        "qcGates": [
+          "فحص الأبعاد",
+          "فحص المتانة"
+        ],
+        "failPoints": [
+          "فشل الطبقات",
+          "انحراف الطباعة"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_fiber",
+        "name": "Fiber Marking Job",
+        "icon": "⚡",
+        "description": "باقة نقش بالفايبر على المعادن",
+        "steps": [
+          {
+            "title": "تحضير الملف",
+            "sopRef": "",
+            "type": "design",
+            "id": "opstep_1780940192414_4f9dzv",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "إعداد المعلمات",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_8qwyl1",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "حجز Fiber Galvo",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_fiber",
+            "id": "opstep_1780940192414_7s0fhd",
+            "sopId": "",
+            "machineId": "mach_fiber",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تنفيذ النقش",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_fiber",
+            "id": "opstep_1780940192414_e0spjz",
+            "sopId": "",
+            "machineId": "mach_fiber",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص جودة",
+            "sopRef": "",
+            "type": "qc",
+            "id": "opstep_1780940192414_6u4gyf",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسليم",
+            "sopRef": "",
+            "type": "delivery",
+            "id": "opstep_1780940192414_e8fljj",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "قطعة معدنية"
+        ],
+        "machines": [
+          "Fiber Galvo Marker"
+        ],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 0,
+        "qcGates": [
+          "وضوح النقش",
+          "عمق النقش"
+        ],
+        "failPoints": [
+          "نقش باهت",
+          "إعدادات خاطئة"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_print",
+        "name": "Large Format Printing",
+        "icon": "🎨",
+        "description": "باقة طباعة عريضة على فينايل أو بانر",
+        "steps": [
+          {
+            "title": "تحضير ملف الطباعة",
+            "sopRef": "",
+            "type": "design",
+            "id": "opstep_1780940192414_xk5aq8",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "اختيار المادة",
+            "sopRef": "",
+            "type": "material",
+            "id": "opstep_1780940192414_480mx2",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 25000,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "حجز الطابعة",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_printer",
+            "id": "opstep_1780940192414_4nlz2b",
+            "sopId": "",
+            "machineId": "mach_printer",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "طباعة",
+            "sopRef": "",
+            "type": "machine",
+            "machineRef": "mach_printer",
+            "id": "opstep_1780940192414_xj8uxi",
+            "sopId": "",
+            "machineId": "mach_printer",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تقطيع / لمنيشن",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_gcyntq",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص الألوان",
+            "sopRef": "",
+            "type": "qc",
+            "id": "opstep_1780940192414_rsmcoo",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسليم",
+            "sopRef": "",
+            "type": "delivery",
+            "id": "opstep_1780940192414_vvmo39",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "فينايل طباعة",
+          "حبر"
+        ],
+        "machines": [
+          "Large Format Printer"
+        ],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 25000,
+        "qcGates": [
+          "دقة الألوان",
+          "جودة الطباعة"
+        ],
+        "failPoints": [
+          "انسداد الرأس",
+          "ألوان باهتة"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_maintenance",
+        "name": "Maintenance Pack",
+        "icon": "🔧",
+        "description": "باقة صيانة دورية للمكائن",
+        "steps": [
+          {
+            "title": "فحص أولي",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_syuec6",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تنظيف العدسات/الرؤوس",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_z5mecx",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص الحركة والمحاور",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_swh4yx",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تشحيم",
+            "sopRef": "",
+            "type": "task",
+            "id": "opstep_1780940192414_3hdwby",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "اختبار تشغيل",
+            "sopRef": "",
+            "type": "qc",
+            "id": "opstep_1780940192414_x5alzt",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسجيل بالسجل",
+            "sopRef": "",
+            "type": "finance",
+            "id": "opstep_1780940192414_r3ka0k",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "estimatedMinutes": 0,
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "زيت تشحيم",
+          "قماش تنظيف"
+        ],
+        "machines": [],
+        "estimatedTime": "0 دقيقة",
+        "estimatedCost": 0,
+        "qcGates": [
+          "اختبار التشغيل"
+        ],
+        "failPoints": [
+          "قطع غيار غير متوفرة"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      },
+      {
+        "id": "pack_vinyl_wrap_car",
+        "name": "تغليف سيارة بالفينايل",
+        "icon": "🚗",
+        "description": "باقة تغليف سيارة كامل أو جزئي بالفينايل مع تركيب ميداني",
+        "steps": [
+          {
+            "title": "استلام السيارة وأخذ القياسات",
+            "type": "task",
+            "estimatedMinutes": 30,
+            "id": "opstep_1780940192414_bsym9z",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "مراجعة التصميم مع العميل",
+            "type": "design",
+            "estimatedMinutes": 30,
+            "id": "opstep_1780940192414_y85o96",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "طباعة الفينايل",
+            "type": "machine",
+            "estimatedMinutes": 90,
+            "machineRef": "mach_printer",
+            "id": "opstep_1780940192414_uy71ec",
+            "sopId": "",
+            "machineId": "mach_printer",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 37500,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "لمنيشن",
+            "type": "task",
+            "estimatedMinutes": 30,
+            "id": "opstep_1780940192414_57oqe6",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "غسل وتجفيف السيارة",
+            "type": "task",
+            "estimatedMinutes": 60,
+            "id": "opstep_1780940192414_phgq6y",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تركيب الفينايل",
+            "type": "task",
+            "estimatedMinutes": 240,
+            "id": "opstep_1780940192414_kbet4h",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تشطيب الزوايا والحواف",
+            "type": "task",
+            "estimatedMinutes": 60,
+            "id": "opstep_1780940192414_xh6yvj",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "فحص جودة التركيب",
+            "type": "qc",
+            "estimatedMinutes": 20,
+            "id": "opstep_1780940192414_s7qkmh",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": true,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          },
+          {
+            "title": "تسليم السيارة",
+            "type": "delivery",
+            "estimatedMinutes": 15,
+            "id": "opstep_1780940192414_34hx3k",
+            "sopId": "",
+            "machineId": "",
+            "materialRequirements": [],
+            "minutesPerUnit": 0,
+            "extraCostPerUnit": 0,
+            "costImpact": 0,
+            "requiresQc": false,
+            "qcTemplateId": "",
+            "qcCriteria": [],
+            "extraCost": 0
+          }
+        ],
+        "materials": [
+          "فينايل تغليف",
+          "لمنيشن"
+        ],
+        "machines": [
+          "Large Format Printer"
+        ],
+        "estimatedTime": "9.6 ساعة",
+        "estimatedCost": 37500,
+        "qcGates": [
+          "نظافة التركيب",
+          "سلامة الحواف"
+        ],
+        "failPoints": [
+          "فقاعات هواء",
+          "تقشير عند الحواف"
+        ],
+        "activityLog": [],
+        "unitType": "fixed",
+        "unitLabel": "كميات ثابتة",
+        "defaultSize": 1,
+        "pricing": {
+          "overheadPct": 0,
+          "logisticsFixed": 0,
+          "logisticsPerUnit": 0,
+          "profitMarginPct": 0
+        }
+      }
+    ],
+    "qcRecords": [
+      {
+        "id": "qc_rich_1",
+        "title": "فحص قص وتشكيل الهيكل المعدني",
+        "type": "laser",
+        "result": "pass",
+        "status": "pass",
+        "sourceType": "kanban_card",
+        "sourceId": "card_2",
+        "cardId": "card_2",
+        "taskRef": "card_2",
+        "sopId": "sop_safety",
+        "machineId": "m_laser_1",
+        "department": "قسم جودة المعادن",
+        "inspector": "المهندس علي سلمان (رئيس وحدة الجودة)",
+        "inspectedAt": "2026-06-08",
+        "createdAt": "2026-06-08",
+        "updatedAt": "2026-06-08",
+        "batchNumber": "B-2026-X01",
+        "batchSize": 50,
+        "sampleSize": 3,
+        "defectCount": 0,
+        "costImpact": 0,
+        "reworkCost": 0,
+        "laborCost": 0,
+        "materialCost": 0,
+        "machineCost": 0,
+        "estimatedReworkMinutes": 0,
+        "notes": "تم فحص عينات عشوائية من خط القص ليزر. تطابق تام للأبعاد مع ملف الـ CAD وسماحية قياس لا تتعدى 0.1 ملم. الحواف مصقولة ونظيفة بالكامل. تم السماح بعبور القطعة للمرحلة التالية.",
+        "checklist": [
+          {
+            "id": "qci_r1_1",
+            "text": "مطابقة الأبعاد مع ملف CAD الهندسي",
+            "required": true,
+            "passed": true,
+            "note": "تطابق كامل بنسبة 100%"
+          },
+          {
+            "id": "qci_r1_2",
+            "text": "خلو الحواف المعدنية من النتوءات والحروق الزائدة",
+            "required": true,
+            "passed": true,
+            "note": "تم الصقل والتنظيف"
+          },
+          {
+            "id": "qci_r1_3",
+            "text": "خلو القطع من الالتواءات أو تشوهات السطح",
+            "required": true,
+            "passed": true,
+            "note": "مستقيمة تماماً"
+          }
+        ],
+        "workflowNodeId": "",
+        "operationPackId": "",
+        "operationPackStepId": "",
+        "materialIds": [],
+        "orderId": "",
+        "criteria": [],
+        "failureReason": "",
+        "reason": "",
+        "severity": "medium",
+        "reworkCardId": "",
+        "reworkTaskId": "",
+        "reworkStatus": "none",
+        "photos": [],
+        "attachments": [],
+        "activityLog": []
+      },
+      {
+        "id": "qc_rich_2",
+        "title": "فحص جودة الطلاء الحراري للألواح",
+        "type": "finish",
+        "result": "fail",
+        "status": "rework_required",
+        "sourceType": "kanban_card",
+        "sourceId": "card_3",
+        "cardId": "card_3",
+        "taskRef": "card_3",
+        "sopId": "sop_qc",
+        "machineId": "m_oven_1",
+        "department": "قسم التشطيب والطلاء",
+        "inspector": "الأستاذ عمر الفاروق (مفتش التشطيب النهائي)",
+        "inspectedAt": "2026-06-08",
+        "createdAt": "2026-06-08",
+        "updatedAt": "2026-06-08",
+        "batchNumber": "B-2026-X02",
+        "batchSize": 20,
+        "sampleSize": 2,
+        "defectCount": 2,
+        "costImpact": 50000,
+        "reworkCost": 50000,
+        "laborCost": 15000,
+        "materialCost": 25000,
+        "machineCost": 10000,
+        "estimatedReworkMinutes": 180,
+        "notes": "رصد تقشير خفيف وفقاعات هواء في الجهة الخلفية للوحين رقم 4 و7. الخلل يعود لعدم كفاية الصنفرة الأولية قبل الطلاء. تم حجب البطاقة تلقائياً وإنشاء أمر إعادة عمل (Rework) لإعادة الصنفرة والطلاء مجدداً بناء على SOP الجودة.",
+        "failureReason": "وجود فقاعات هواء وتقشير خفيف في الطلاء الحراري نتيجة لضعف الصنفرة التمهيدية.",
+        "checklist": [
+          {
+            "id": "qci_r2_1",
+            "text": "تطابق تدرج لون الطلاء مع العينة المعتمدة",
+            "required": true,
+            "passed": true,
+            "note": "اللون متطابق"
+          },
+          {
+            "id": "qci_r2_2",
+            "text": "خلو السطح من فقاعات الهواء أو الرتوش السائلة",
+            "required": true,
+            "passed": false,
+            "note": "رصد فقاعات هواء واضحة"
+          },
+          {
+            "id": "qci_r2_3",
+            "text": "مقاومة الخدش والتماسك التام للطبقة الحرارية",
+            "required": true,
+            "passed": false,
+            "note": "تقشير خفيف عند الأطراف الحادة"
+          }
+        ],
+        "workflowNodeId": "",
+        "operationPackId": "",
+        "operationPackStepId": "",
+        "materialIds": [],
+        "orderId": "",
+        "criteria": [],
+        "reason": "وجود فقاعات هواء وتقشير خفيف في الطلاء الحراري نتيجة لضعف الصنفرة التمهيدية.",
+        "severity": "high",
+        "reworkCardId": "",
+        "reworkTaskId": "",
+        "reworkStatus": "none",
+        "photos": [],
+        "attachments": [],
+        "activityLog": []
+      },
+      {
+        "id": "qc_rich_3",
+        "title": "فحص تجميع وربط الأنظمة الكهربائية",
+        "type": "router",
+        "result": "pending",
+        "status": "pending",
+        "sourceType": "kanban_card",
+        "sourceId": "card_1",
+        "cardId": "card_1",
+        "taskRef": "card_1",
+        "sopId": "sop_qc",
+        "machineId": "",
+        "department": "قسم التجميع الفني",
+        "inspector": "المهندس ليث حيدر (مفتش البوابات الإنتاجية)",
+        "inspectedAt": "",
+        "createdAt": "2026-06-08",
+        "updatedAt": "2026-06-08",
+        "batchNumber": "B-2026-X03",
+        "batchSize": 10,
+        "sampleSize": 1,
+        "defectCount": 0,
+        "costImpact": 0,
+        "reworkCost": 0,
+        "laborCost": 0,
+        "materialCost": 0,
+        "machineCost": 0,
+        "estimatedReworkMinutes": 0,
+        "notes": "بانتظار انتهاء المهندسين الفنيين من تجميع لوحة التوزيع بالكامل والربط الكهربائي لإجراء فحص قياس الأمبيرية والمقاومة الأرضية وعمل محاكاة التشغيل الآمن قبل الإغلاق.",
+        "checklist": [
+          {
+            "id": "qci_r3_1",
+            "text": "مراجعة خريطة التوصيل الكهربائي والمقاطع العرضية للأسلاك",
+            "required": true,
+            "passed": false,
+            "note": "قيد الانتظار"
+          },
+          {
+            "id": "qci_r3_2",
+            "text": "إجراء فحص العزل والمقاومة الأرضية بأجهزة القياس",
+            "required": true,
+            "passed": false,
+            "note": "قيد الانتظار"
+          },
+          {
+            "id": "qci_r3_3",
+            "text": "سلامة ترتيب وتثبيت الكابلات داخل الهيكل الداخلي",
+            "required": true,
+            "passed": false,
+            "note": "قيد الانتظار"
+          }
+        ],
+        "workflowNodeId": "",
+        "operationPackId": "",
+        "operationPackStepId": "",
+        "materialIds": [],
+        "orderId": "",
+        "criteria": [],
+        "failureReason": "",
+        "reason": "",
+        "severity": "medium",
+        "reworkCardId": "",
+        "reworkTaskId": "",
+        "reworkStatus": "none",
+        "photos": [],
+        "attachments": [],
+        "activityLog": []
+      }
+    ],
+    "equipment": [
+      {
+        "id": "eq_bioread",
+        "name": "حبر بصمة اصبع",
+        "barcode": "EQ-IDAR-01",
+        "category": "أجهزة مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2101-010001-2101-010001"
+      },
+      {
+        "id": "eq_1780940192411_f0jz79",
+        "name": "حبر بصمة اصبع",
+        "barcode": "EQ-IDAR-01-02",
+        "category": "أجهزة مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2101-010002-2101-010002"
+      },
+      {
+        "id": "eq_calc_sm",
+        "name": "حاسبة صغيرة",
+        "barcode": "EQ-IDAR-02",
+        "category": "أجهزة مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2101-010003-2101-010003"
+      },
+      {
+        "id": "eq_1780940192411_fuqb67",
+        "name": "حاسبة صغيرة",
+        "barcode": "EQ-IDAR-02-02",
+        "category": "أجهزة مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2101-010004-2101-010004"
+      },
+      {
+        "id": "eq_punch_sm",
+        "name": "ثاقبة صغيرة",
+        "barcode": "EQ-IDAR-03",
+        "category": "أدوات مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "9901-010005-9901-010005"
+      },
+      {
+        "id": "eq_prn_520",
+        "name": "طابعة DCP-T52OW",
+        "barcode": "EQ-IDAR-04",
+        "category": "أجهزة مكتبية",
+        "location": "الادارة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2101-010006-2101-010006"
+      },
+      {
+        "id": "eq_fridge_beko",
+        "name": "ثلاجة سبلت جداري BEKO",
+        "barcode": "EQ-KITC-01",
+        "category": "أجهزة كهربائية",
+        "location": "المطبخ",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "لا توجد قطعة خارجية للسبلت",
+        "numericQR": "2202-010007-2202-010007"
+      },
+      {
+        "id": "eq_oven_4",
+        "name": "طباخ 4 عيون",
+        "barcode": "EQ-KITC-02",
+        "category": "أجهزة كهربائية",
+        "location": "المطبخ",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2202-010008-2202-010008"
+      },
+      {
+        "id": "eq_fryer",
+        "name": "قلاية كهربائية",
+        "barcode": "EQ-KITC-03",
+        "category": "أجهزة كهربائية",
+        "location": "المطبخ",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2202-010009-2202-010009"
+      },
+      {
+        "id": "eq_microwave",
+        "name": "مايكروويف",
+        "barcode": "EQ-KITC-04",
+        "category": "أجهزة كهربائية",
+        "location": "المطبخ",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2202-010010-2202-010010"
+      },
+      {
+        "id": "eq_prn_phoenix",
+        "name": "طابعة بوستر كبيرة PHOENIX",
+        "barcode": "EQ-PRNT-01",
+        "category": "طابعات ومكائن",
+        "location": "غرفة الطابعات",
+        "status": "maintenance",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "maintenance",
+        "notes": "يحتاج صيانة هيد",
+        "numericQR": "2303-030011-2303-030011"
+      },
+      {
+        "id": "eq_cnc_skyjt",
+        "name": "بلوتر قص CNC SKYJT",
+        "barcode": "EQ-PRNT-02",
+        "category": "طابعات ومكائن",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "حركه محمد",
+        "numericQR": "2303-010012-2303-010012"
+      },
+      {
+        "id": "eq_press_tuobang",
+        "name": "كابسة ملابس TUOBANG حمراء",
+        "barcode": "EQ-PRNT-03",
+        "category": "كوابس حرارية",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2403-010013-2403-010013"
+      },
+      {
+        "id": "eq_lam_laminator",
+        "name": "كابسة حرارية LAMLNATOR تغليف",
+        "barcode": "EQ-PRNT-04",
+        "category": "كوابس حرارية",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2403-010014-2403-010014"
+      },
+      {
+        "id": "eq_ring_press",
+        "name": "مكبس حلقات لون ازرق",
+        "barcode": "EQ-PRNT-05",
+        "category": "كوابس حرارية",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2403-010015-2403-010015"
+      },
+      {
+        "id": "eq_fiber_laser_20",
+        "name": "طابعة فايبر ليزر 20 واط",
+        "barcode": "EQ-PRNT-06",
+        "category": "طابعات ومكائن",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2303-010016-2303-010016"
+      },
+      {
+        "id": "eq_spiral_bright",
+        "name": "جهاز سبايرول BRIGHT OFFICE",
+        "barcode": "EQ-PRNT-07",
+        "category": "أجهزة مكتبية",
+        "location": "غرفة الطابعات",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2103-010017-2103-010017"
+      },
+      {
+        "id": "eq_book_press",
+        "name": "كابسة كتب كبيرة",
+        "barcode": "EQ-BIND-01",
+        "category": "كوابس",
+        "location": "غرفة لصق وتجليد",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1504-010018-1504-010018"
+      },
+      {
+        "id": "eq_paper_cutter",
+        "name": "قاطعة ورق",
+        "barcode": "EQ-BIND-02",
+        "category": "أدوات يدوية",
+        "location": "غرفة لصق وتجليد",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1104-010019-1104-010019"
+      },
+      {
+        "id": "eq_bender_90",
+        "name": "معواجة 90 سم",
+        "barcode": "EQ-BIND-03",
+        "category": "أدوات يدوية",
+        "location": "غرفة لصق وتجليد",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم معواجة يدوية",
+        "numericQR": "1104-010020-1104-010020"
+      },
+      {
+        "id": "eq_bender_heat",
+        "name": "معواجة حرارية",
+        "barcode": "EQ-BIND-04",
+        "category": "أدوات يدوية",
+        "location": "غرفة لصق وتجليد",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1104-010021-1104-010021"
+      },
+      {
+        "id": "eq_prn_canon_510",
+        "name": "طابعة CANON 510",
+        "barcode": "EQ-OFFC-01",
+        "category": "أجهزة مكتبية",
+        "location": "المكتب",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2105-010022-2105-010022"
+      },
+      {
+        "id": "eq_safe_box",
+        "name": "قاصة صغيرة",
+        "barcode": "EQ-OFFC-02",
+        "category": "أجهزة مكتبية",
+        "location": "المكتب",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "2105-010023-2105-010023"
+      },
+      {
+        "id": "eq_drill_hammer",
+        "name": "دريل همر",
+        "barcode": "EQ-WRKS-01",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم (1 عاطل تم عزله)",
+        "numericQR": "1207-010024-1207-010024"
+      },
+      {
+        "id": "eq_drill_normal",
+        "name": "دريل كهربائي عادي",
+        "barcode": "EQ-WRKS-02",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1207-010025-1207-010025"
+      },
+      {
+        "id": "eq_nail_gun",
+        "name": "مسدس مسمار",
+        "barcode": "EQ-WRKS-03",
+        "category": "أدوات هوائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1307-010026-1307-010026"
+      },
+      {
+        "id": "eq_rivet_gun",
+        "name": "مسدس برشام (لقمة)",
+        "barcode": "EQ-WRKS-04",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1107-010027-1107-010027"
+      },
+      {
+        "id": "eq_oxygen_jack",
+        "name": "عفريت اوكسجين",
+        "barcode": "EQ-WRKS-05",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1107-010028-1107-010028"
+      },
+      {
+        "id": "eq_vacuum_ac",
+        "name": "فاكيوم سبالت",
+        "barcode": "EQ-WRKS-06",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1207-010029-1207-010029"
+      },
+      {
+        "id": "eq_torch",
+        "name": "بريمز (شعلة فقط)",
+        "barcode": "EQ-WRKS-07",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1107-010030-1107-010030"
+      },
+      {
+        "id": "eq_gauge_ac",
+        "name": "كيج سبالت",
+        "barcode": "EQ-WRKS-08",
+        "category": "أدوات قياس",
+        "location": "ساحة الورشة",
+        "status": "broken",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "broken",
+        "notes": "عطل 1 وبحاجة استبدال",
+        "numericQR": "1407-040031-1407-040031"
+      },
+      {
+        "id": "eq_1780940192411_aw7hn8",
+        "name": "كيج سبالت",
+        "barcode": "EQ-WRKS-08-02",
+        "category": "أدوات قياس",
+        "location": "ساحة الورشة",
+        "status": "broken",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "broken",
+        "notes": "عطل 1 وبحاجة استبدال",
+        "numericQR": "1407-040032-1407-040032"
+      },
+      {
+        "id": "eq_grinder",
+        "name": "كوسرة بروش",
+        "barcode": "EQ-WRKS-09",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1207-010033-1207-010033"
+      },
+      {
+        "id": "eq_saw_wood_hand",
+        "name": "منشار خشبي يدوي",
+        "barcode": "EQ-WRKS-10",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1107-010034-1107-010034"
+      },
+      {
+        "id": "eq_saw_metal_hand",
+        "name": "منشار حديد يدوي",
+        "barcode": "EQ-WRKS-11",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1107-010035-1107-010035"
+      },
+      {
+        "id": "eq_router_hand",
+        "name": "فريزة يدوية",
+        "barcode": "EQ-WRKS-12",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1207-010036-1207-010036"
+      },
+      {
+        "id": "eq_wood_clamp",
+        "name": "كابسة خشب",
+        "barcode": "EQ-WRKS-13",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "maintenance",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "maintenance",
+        "notes": "بحاجة الى صيانة",
+        "numericQR": "1107-030037-1107-030037"
+      },
+      {
+        "id": "eq_shear_metal",
+        "name": "مقص حديد",
+        "barcode": "EQ-WRKS-14",
+        "category": "أدوات يدوية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "مستقر وسليم",
+        "numericQR": "1107-010038-1107-010038"
+      },
+      {
+        "id": "eq_saw_electric",
+        "name": "منشار كهربائي يدوي",
+        "barcode": "EQ-WRKS-15",
+        "category": "أدوات كهربائية",
+        "location": "ساحة الورشة",
+        "status": "operational",
+        "quantity": 1,
+        "lastAuditDate": "2026-05-15",
+        "lastAuditStatus": "operational",
+        "notes": "سليم",
+        "numericQR": "1207-010039-1207-010039"
+      }
+    ],
+    "migrationsApplied": [
+      "equipment_physical_assets_v1",
+      "admin_settings_v1",
+      "admin_org_multi_company_v1",
+      "omni_permissions_foundation_v1",
+      "omni_notifications_v1",
+      "omni_requests_v1",
+      "omni_system_log_v1",
+      "omni_history_ledger_v1",
+      "omni_purchase_orders_v2",
+      "omni_suppliers_v2",
+      "omni_departments_v1",
+      "linking_layer_v1",
+      "task_manager_v2",
+      "kanban_card_ux_v1",
+      "kanban_executive_board_v2",
+      "sop_library_v2",
+      "workflow_nodes_v2",
+      "workflow_designer_v2",
+      "operation_pack_steps_v1",
+      "operation_pack_activity_log_v1",
+      "operation_pack_step_editor_v1",
+      "machine_queue_v1",
+      "material_reservations_v1",
+      "material_movements_v1",
+      "qc_center_v2",
+      "qc_cost_batch_v1",
+      "sales_crm_v1",
+      "work_orders_v2",
+      "ai_whatsapp_integration_defaults_v1"
+    ],
+    "roles": [
+      {
+        "id": "manager",
+        "name": "مدير",
+        "permissions": [
+          "all"
+        ]
+      },
+      {
+        "id": "employee",
+        "name": "موظف",
+        "permissions": [
+          "employee_ui",
+          "create_request",
+          "view_own_requests"
+        ]
+      },
+      {
+        "id": "operator",
+        "name": "مشغل",
+        "permissions": [
+          "kanban_view",
+          "task_update",
+          "qc_view"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "id": "demo_req_surface_purchase",
+        "type": "purchase",
+        "title": "طلب شراء تجريبي: أكريلك ومستلزمات تشغيل",
+        "description": "مثال ظاهر للمراجعة في مركز القيادة حتى لا تكون صفحة الموافقات فارغة أثناء الفحص.",
+        "requesterName": "النظام التجريبي",
+        "requesterId": "system",
+        "sourcePage": "inventory",
+        "sourceType": "demo_seed",
+        "sourceId": "demo_inventory_request",
+        "priority": "high",
+        "status": "pending",
+        "payload": {
+          "demo": true,
+          "material": "Acrylic",
+          "qty": 12,
+          "unit": "لوح"
+        },
+        "createdAt": "2026-06-08T17:36:32.418Z",
+        "decidedAt": "",
+        "decidedBy": "",
+        "decisionNote": "",
+        "activityLog": [
+          {
+            "date": "2026-06-08T17:36:32.418Z",
+            "text": "Demo request seeded for surface review."
+          }
+        ]
+      }
+    ],
+    "suppliers": [
+      {
+        "id": "sup_1780940192413_9sip8e",
+        "name": "مورد البلاستيك",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_acrylic",
+          "mat_foam"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_acrylic",
+            "SKU": "SKU-ACRY",
+            "negotiatedPrice": 15000,
+            "leadTime": 3
+          },
+          {
+            "materialId": "mat_foam",
+            "SKU": "SKU-FOAM",
+            "negotiatedPrice": 3000,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      },
+      {
+        "id": "sup_1780940192413_bx4i6t",
+        "name": "مورد الخشب",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_mdf"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_mdf",
+            "SKU": "SKU-MDF",
+            "negotiatedPrice": 8000,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      },
+      {
+        "id": "sup_1780940192413_vovcev",
+        "name": "مورد الكهربائيات",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_led",
+          "mat_power"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_led",
+            "SKU": "SKU-LED",
+            "negotiatedPrice": 1500,
+            "leadTime": 3
+          },
+          {
+            "materialId": "mat_power",
+            "SKU": "SKU-POWE",
+            "negotiatedPrice": 12000,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      },
+      {
+        "id": "sup_1780940192413_w2esyd",
+        "name": "مورد الدهانات",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_paint"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_paint",
+            "SKU": "SKU-PAIN",
+            "negotiatedPrice": 5000,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      },
+      {
+        "id": "sup_1780940192413_w425mj",
+        "name": "مورد عام",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_adhesive"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_adhesive",
+            "SKU": "SKU-ADHE",
+            "negotiatedPrice": 3500,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      },
+      {
+        "id": "sup_1780940192413_2q40dk",
+        "name": "مورد الطباعة",
+        "phone": "",
+        "contact": "",
+        "notes": "",
+        "materials": [
+          "mat_vinyl"
+        ],
+        "catalog": [
+          {
+            "materialId": "mat_vinyl",
+            "SKU": "SKU-VINY",
+            "negotiatedPrice": 25000,
+            "leadTime": 3
+          }
+        ],
+        "priceHistory": [],
+        "lastReceiptAt": "",
+        "totalReceipts": 0,
+        "totalAmount": 0,
+        "createdAt": "2026-06-08T17:36:32.413Z"
+      }
+    ],
+    "departments": [
+      {
+        "id": "dept_1780940192413_pr9mce",
+        "name": "Octagon"
+      },
+      {
+        "id": "dept_1780940192413_9dv81q",
+        "name": "قسم الليزر"
+      },
+      {
+        "id": "dept_1780940192413_52ra4i",
+        "name": "قسم الراوتر"
+      },
+      {
+        "id": "dept_1780940192413_l2o0j3",
+        "name": "قسم الطباعة ثلاثية الأبعاد"
+      },
+      {
+        "id": "dept_1780940192413_aui662",
+        "name": "قسم الجودة"
+      },
+      {
+        "id": "dept_1780940192413_nlx8ke",
+        "name": "فريق الورشة"
+      },
+      {
+        "id": "dept_1780940192413_9xsnz8",
+        "name": "الإدارة"
+      }
+    ],
+    "qcTemplates": [
+      {
+        "id": "qct_1780940192416_qe1bem",
+        "title": "فحص قص ليزر",
+        "type": "laser",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "laser"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_p7lhn9",
+            "text": "مطابقة الأبعاد مع الملف",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_r8aq3l",
+            "text": "الحواف نظيفة بدون حرق زائد",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_k9cxmh",
+            "text": "القطعة مكتملة بدون كسر",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_0ied87",
+        "title": "فحص طباعة",
+        "type": "print",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "print"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_582o65",
+            "text": "الألوان مطابقة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_0973m9",
+            "text": "لا يوجد تمويج أو تقطيع",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_qgdnjy",
+            "text": "الخامة مثبتة بشكل صحيح",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_d7ccee",
+        "title": "فحص راوتر",
+        "type": "router",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "router"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_izqcu3",
+            "text": "المسار صحيح",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_9tort9",
+            "text": "العمق مطابق",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_elbuis",
+            "text": "التثبيت لم يترك أثر غير مقبول",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_2aa6go",
+        "title": "فحص طباعة ثلاثية الأبعاد",
+        "type": "3d",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "3d"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_64ywoz",
+            "text": "الطبقات متماسكة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_2cnmqf",
+            "text": "الأبعاد ضمن السماحية",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_7bfgdg",
+            "text": "الدعامات منظفة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_qruvzv",
+        "title": "فحص تغليف وتسليم",
+        "type": "delivery",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "delivery"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_7f7nka",
+            "text": "القطعة نظيفة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_7xdci2",
+            "text": "التغليف مناسب",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_4ncehk",
+            "text": "بيانات التسليم مكتملة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_yitwah",
+        "title": "فحص قياسات",
+        "type": "measure",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "measure"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_3mpcs9",
+            "text": "الطول والعرض ضمن السماحية",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_72svsc",
+            "text": "الزوايا صحيحة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_7ogd9w",
+            "text": "العدد مطابق",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      },
+      {
+        "id": "qct_1780940192416_za6k95",
+        "title": "فحص نظافة وتشطيب",
+        "type": "finish",
+        "department": "الجودة",
+        "sopId": "",
+        "machineType": "",
+        "requiredForTypes": [
+          "finish"
+        ],
+        "checklist": [
+          {
+            "id": "qci_1780940192416_eq52st",
+            "text": "لا توجد خدوش ظاهرة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_3ksnpf",
+            "text": "الحواف مشطبة",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          },
+          {
+            "id": "qci_1780940192416_0ixpy9",
+            "text": "السطح نظيف",
+            "required": true,
+            "expectedValue": "",
+            "tolerance": "",
+            "unit": ""
+          }
+        ],
+        "severityOnFail": "high",
+        "createdAt": "2026-06-08T17:36:32.416Z",
+        "updatedAt": "2026-06-08T17:36:32.416Z"
+      }
+    ],
+    "automationRules": [
+      {
+        "id": "rule_stuck_kanban",
+        "name": "تصعيد بطاقات الكانبان العالقة",
+        "event": "KANBAN_CARD_STUCK",
+        "conditions": [
+          {
+            "field": "priority",
+            "operator": "ne",
+            "value": "Urgent"
+          }
+        ],
+        "action": "flag_anomaly",
+        "actionValue": "بطاقة كانبان عالقة لأكثر من 24 ساعة في الإنتاج",
+        "active": true,
+        "successCount": 0,
+        "failCount": 0,
+        "consecutiveErrors": 0,
+        "lastFired": null,
+        "createdAt": "2026-06-08T17:36:32.418Z"
+      },
+      {
+        "id": "rule_low_stock",
+        "name": "تنبيه نقص المواد الخام في المخزن",
+        "event": "MATERIAL_LOW_STOCK",
+        "conditions": [
+          {
+            "field": "stock",
+            "operator": "lt",
+            "value": "minimum"
+          }
+        ],
+        "action": "notify",
+        "actionValue": "تحذير: نقص حرج في المواد الخام بالمخزن المالي",
+        "active": true,
+        "successCount": 0,
+        "failCount": 0,
+        "consecutiveErrors": 0,
+        "lastFired": null,
+        "createdAt": "2026-06-08T17:36:32.418Z"
+      },
+      {
+        "id": "rule_quote_created_task",
+        "name": "متابعة إعداد عرض سعر جديد",
+        "event": "QUOTE_CREATED",
+        "conditions": [],
+        "action": "create_task",
+        "actionValue": "متابعة إعداد وتدقيق تفاصيل عرض السعر الجديد وتجهيز الرسومات",
+        "active": true,
+        "successCount": 0,
+        "failCount": 0,
+        "consecutiveErrors": 0,
+        "lastFired": null,
+        "createdAt": "2026-06-08T17:36:32.418Z"
+      },
+      {
+        "id": "rule_machine_overload",
+        "name": "تنبيه الأحمال الزائدة على ماكينات CNC",
+        "event": "MACHINE_OVERLOADED",
+        "conditions": [
+          {
+            "field": "totalMinutes",
+            "operator": "gt",
+            "value": "240"
+          }
+        ],
+        "action": "notify_supervisor",
+        "actionValue": "تنبيه: حمل عمل الماكينة تجاوز 4 ساعات، يرجى إعادة توزيع المهام",
+        "active": true,
+        "successCount": 0,
+        "failCount": 0,
+        "consecutiveErrors": 0,
+        "lastFired": null,
+        "createdAt": "2026-06-08T17:36:32.418Z"
+      }
+    ],
+    "workOrders": [
+      {
+        "id": "demo_wo_surface_1",
+        "cardId": "card_1",
+        "opPackId": "pack_acrylic_sign",
+        "opPackStepId": "opstep_1780940192414_vi5llq",
+        "title": "مثال تشغيل: تجهيز قياسات مشروع الواجهة",
+        "machineId": "mach_laser_120",
+        "operatorId": "",
+        "operatorName": "فريق الورشة",
+        "status": "progress",
+        "plannedMinutes": 90,
+        "actualMinutes": 25,
+        "costPerHour": 25000,
+        "materialRequirements": [],
+        "scrapMaterials": [],
+        "qcRecordId": "",
+        "timeLogs": [
+          {
+            "startTime": "2026-06-08T17:11:32.419Z",
+            "endTime": "",
+            "pauseReason": "",
+            "operatorId": ""
+          }
+        ],
+        "createdAt": "2026-06-08T17:36:32.419Z",
+        "startedAt": "2026-06-08T17:11:32.419Z",
+        "completedAt": ""
+      },
+      {
+        "id": "demo_wo_surface_2",
+        "cardId": "card_2",
+        "opPackId": "pack_acrylic_sign",
+        "opPackStepId": "opstep_1780940192414_6iyd8v",
+        "title": "مثال تشغيل: قص ليزر للطلبية الجديدة",
+        "machineId": "mach_laser_120",
+        "operatorId": "",
+        "operatorName": "قسم الليزر",
+        "status": "ready",
+        "plannedMinutes": 90,
+        "actualMinutes": 0,
+        "costPerHour": 25000,
+        "materialRequirements": [],
+        "scrapMaterials": [],
+        "qcRecordId": "",
+        "timeLogs": [],
+        "createdAt": "2026-06-08T17:36:32.419Z",
+        "startedAt": "",
+        "completedAt": ""
+      },
+      {
+        "id": "demo_wo_surface_3",
+        "cardId": "card_3",
+        "opPackId": "pack_acrylic_sign",
+        "opPackStepId": "opstep_1780940192414_rlfsmo",
+        "title": "مثال تشغيل: فحص جودة نهائي",
+        "machineId": "mach_laser_120",
+        "operatorId": "",
+        "operatorName": "الجودة",
+        "status": "draft",
+        "plannedMinutes": 90,
+        "actualMinutes": 0,
+        "costPerHour": 25000,
+        "materialRequirements": [],
+        "scrapMaterials": [],
+        "qcRecordId": "",
+        "timeLogs": [],
+        "createdAt": "2026-06-08T17:36:32.419Z",
+        "startedAt": "",
+        "completedAt": ""
+      }
+    ],
+    "whatsappGroups": [
+      {
+        "id": "group_workshop",
+        "name": "Workshop WhatsApp",
+        "type": "workshop_general",
+        "emoji": "📡",
+        "members": [],
+        "active": true,
+        "createdAt": "2026-06-08T17:36:32.584Z"
+      }
+    ]
+  },
+  "config": {
+    "year": 2026,
+    "month": 3,
+    "nominalSalary": 500000,
+    "cfgTransport": 50000,
+    "cfgFood": 50000
+  },
+  "selectedEmpIdx": 0,
+  "reportEmpIdx": 0,
+  "_schema_version": "6.0",
+  "_migrated_at": "2026-05-17T00:41:02.362Z",
+  "_release_tag": "v5.0",
+  "_release_tagged_at": "2026-05-17T00:45:30.556Z",
+  "_lock_date": "2026-06-29",
+  "journals": [
+    {
+      "id": "j_gen",
+      "code": "GEN",
+      "name": "يومية عامة",
+      "type": "general",
+      "default_account_id": "",
+      "sequence_prefix": "JE",
+      "created_at": "2026-06-08T17:36:32.698Z",
+      "created_by": "system",
+      "updated_at": "2026-06-08T17:36:32.698Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "j_sale",
+      "code": "SALE",
+      "name": "يومية المبيعات",
+      "type": "sale",
+      "default_account_id": "receivables_customers",
+      "sequence_prefix": "SJ",
+      "created_at": "2026-06-08T17:36:32.698Z",
+      "created_by": "system",
+      "updated_at": "2026-06-08T17:36:32.698Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "j_purc",
+      "code": "PURC",
+      "name": "يومية المشتريات",
+      "type": "purchase",
+      "default_account_id": "payables_people",
+      "sequence_prefix": "PJ",
+      "created_at": "2026-06-08T17:36:32.698Z",
+      "created_by": "system",
+      "updated_at": "2026-06-08T17:36:32.698Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "j_bank",
+      "code": "BANK",
+      "name": "صندوق / بنك",
+      "type": "cash",
+      "default_account_id": "cash_workshop",
+      "sequence_prefix": "BJ",
+      "created_at": "2026-06-08T17:36:32.698Z",
+      "created_by": "system",
+      "updated_at": "2026-06-08T17:36:32.698Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "j_payroll",
+      "code": "PAY",
+      "name": "يومية الرواتب",
+      "type": "general",
+      "default_account_id": "accrued_payroll",
+      "sequence_prefix": "PAY",
+      "created_at": "2026-06-08T17:36:32.698Z",
+      "created_by": "system",
+      "updated_at": "2026-06-08T17:36:32.698Z",
+      "updated_by": "system",
+      "is_active": true
+    }
+  ],
+  "departments": [
+    {
+      "id": "DEPT_0001",
+      "name": "الورشة",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0002",
+      "name": "المشاريع",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0003",
+      "name": "المبيعات",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0004",
+      "name": "الإدارة",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0005",
+      "name": "الرواتب",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0006",
+      "name": "Octagon",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0007",
+      "name": "قسم الليزر",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0008",
+      "name": "قسم الراوتر",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0009",
+      "name": "قسم الطباعة ثلاثية الأبعاد",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0010",
+      "name": "قسم الجودة",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEPT_0011",
+      "name": "فريق الورشة",
+      "source": "v5_data_foundation",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    }
+  ],
+  "users": [
+    {
+      "id": "USR_SYSTEM_ADMIN",
+      "name": "مدير النظام",
+      "role": "system_admin",
+      "groups": [
+        "system.admin"
+      ],
+      "is_system": true,
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    }
+  ],
+  "locations": [
+    {
+      "id": "LOC_MAIN",
+      "name": "المخزن الرئيسي",
+      "type": "internal",
+      "parent_id": null,
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "LOC_WIP",
+      "name": "ورشة التنفيذ",
+      "type": "internal",
+      "parent_id": "LOC_MAIN",
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "LOC_SUPPLIERS",
+      "name": "الموردين",
+      "type": "supplier",
+      "parent_id": null,
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "LOC_CUSTOMERS",
+      "name": "العملاء",
+      "type": "customer",
+      "parent_id": null,
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "LOC_SCRAP",
+      "name": "التالف",
+      "type": "inventory",
+      "parent_id": null,
+      "created_at": "2026-05-16T23:07:47.514Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:07:47.514Z",
+      "updated_by": "system",
+      "is_active": true
+    }
+  ],
+  "journal_entries": [
+    {
+      "name": "JE/2026/000001",
+      "date": "2026-05-15",
+      "journal_id": "j_gen",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "JL_1778876750597_zld8do",
+          "sequence": 0,
+          "account_id": "accrued_payroll",
+          "label": "",
+          "debit": 500000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "JL_1778876750597_17sqlw",
+          "sequence": 1,
+          "account_id": "cash_workshop",
+          "label": "",
+          "debit": 0,
+          "credit": 500000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 500000,
+      "origin": "",
+      "hash": "117a316c-eyJpZCI6IkpP",
+      "prev_hash": "genesis",
+      "reversed_of": null,
+      "id": "JOURNAL_EN_1778876750605_sgrhkg",
+      "created_at": "2026-05-15T20:25:50.604Z",
+      "created_by": "system",
+      "updated_at": "2026-05-15T23:17:17.276Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEMO_8366575",
+      "name": "PAY/2026/000001",
+      "date": "2026-05-15",
+      "journal_id": "j_payroll",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "DJL_001",
+          "sequence": 0,
+          "account_id": "expense_payroll",
+          "label": "رواتب شهر 5/2026",
+          "debit": 3500000,
+          "credit": 0,
+          "reconciled": false
+        },
+        {
+          "id": "DJL_002",
+          "sequence": 1,
+          "account_id": "accrued_payroll",
+          "label": "رواتب مستحقة",
+          "debit": 0,
+          "credit": 3500000,
+          "reconciled": false
+        }
+      ],
+      "amount_total": 3500000,
+      "origin": "demo/payroll-may-2026",
+      "prev_hash": "117a316c-eyJpZCI6IkpP",
+      "reversed_of": null,
+      "is_active": true,
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "created_by": "system",
+      "updated_by": "system",
+      "hash": "106cdb3e-eyJpZCI6IkRF"
+    },
+    {
+      "id": "DEMO_8366576",
+      "name": "SJ/2026/000001",
+      "date": "2026-05-15",
+      "journal_id": "j_sale",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "DJL_003",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "وصل مبيعات: REC-001",
+          "debit": 1800000,
+          "credit": 0,
+          "reconciled": false
+        },
+        {
+          "id": "DJL_004",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "مبيعات: عميل 1",
+          "debit": 0,
+          "credit": 1800000,
+          "reconciled": false
+        }
+      ],
+      "amount_total": 1800000,
+      "origin": "demo/receipt-REC-001",
+      "prev_hash": "106cdb3e-eyJpZCI6IkRF",
+      "reversed_of": null,
+      "is_active": true,
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "created_by": "system",
+      "updated_by": "system",
+      "hash": "58e7d3aa-eyJpZCI6IkRF"
+    },
+    {
+      "id": "DEMO_8366577",
+      "name": "SJ/2026/000002",
+      "date": "2026-05-15",
+      "journal_id": "j_sale",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "DJL_009",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "وصل مبيعات: REC-002",
+          "debit": 950000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 850000
+        },
+        {
+          "id": "DJL_010",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "مبيعات: عميل 2",
+          "debit": 0,
+          "credit": 950000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 950000
+        }
+      ],
+      "amount_total": 950000,
+      "origin": "demo/receipt-REC-002",
+      "prev_hash": "6d3c6ac4fa5bfb95e8a39d1126de100423811e132d465e057556205760725086",
+      "reversed_of": null,
+      "is_active": true,
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "created_by": "system",
+      "updated_by": "system",
+      "hash": "bb385a10d37a3415a4b9427b4d7dab87d87b81ba00a60ec7ab7191e97d07eb77",
+      "previous_hash": "6d3c6ac4fa5bfb95e8a39d1126de100423811e132d465e057556205760725086",
+      "reversal_id": null,
+      "account_move_id": "DEMO_8366577_v6_03"
+    },
+    {
+      "id": "DEMO_8366577_dup1",
+      "name": "JE/2026/000001",
+      "date": "2026-05-15",
+      "journal_id": "j_gen",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "DJL_007",
+          "sequence": 0,
+          "account_id": "expense_general",
+          "label": "مصروفات عامة مايو",
+          "debit": 120000,
+          "credit": 0,
+          "reconciled": false
+        },
+        {
+          "id": "DJL_008",
+          "sequence": 1,
+          "account_id": "cash_workshop",
+          "label": "صرف نقدي",
+          "debit": 0,
+          "credit": 120000,
+          "reconciled": false
+        }
+      ],
+      "amount_total": 120000,
+      "origin": "demo/general-expenses-may",
+      "prev_hash": "9afd3e35-eyJpZCI6IkRF",
+      "reversed_of": null,
+      "is_active": true,
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "created_by": "system",
+      "updated_by": "system",
+      "hash": "fb6ad489-eyJpZCI6IkRF"
+    },
+    {
+      "id": "DEMO_8366577_dup2",
+      "name": "SJ/2026/000002",
+      "date": "2026-05-15",
+      "journal_id": "j_sale",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "DJL_009",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "وصل مبيعات: REC-002",
+          "debit": 950000,
+          "credit": 0,
+          "reconciled": false
+        },
+        {
+          "id": "DJL_010",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "مبيعات: عميل 2",
+          "debit": 0,
+          "credit": 950000,
+          "reconciled": false
+        }
+      ],
+      "amount_total": 950000,
+      "origin": "demo/receipt-REC-002",
+      "prev_hash": "fb6ad489-eyJpZCI6IkRF",
+      "reversed_of": null,
+      "is_active": true,
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "created_by": "system",
+      "updated_by": "system",
+      "hash": "f9ba8c8b-eyJpZCI6IkRF"
+    },
+    {
+      "name": "PJ/2026/000007",
+      "date": "2026-05-16",
+      "journal_id": "j_purc",
+      "partner_id": "",
+      "state": "draft",
+      "lines": [
+        {
+          "id": "JL_1778973302718_3eclqj",
+          "sequence": 0,
+          "account_id": "inventory_stock",
+          "label": "شراء: أكريلك",
+          "debit": 150000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "JL_1778973302718_e95pct",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "مورد: sup_1778966561807_ubzxiv",
+          "debit": 0,
+          "credit": 150000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 150000,
+      "origin": "po/po_1778973301853_fz5sdh/r/1",
+      "hash": null,
+      "prev_hash": null,
+      "reversed_of": null,
+      "id": "JOURNAL_EN_1778973302826_ypw1ts",
+      "created_at": "2026-05-16T23:15:02.824Z",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:15:02.824Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "name": "PJ/2026/000008",
+      "date": "2026-05-16",
+      "journal_id": "j_purc",
+      "partner_id": "",
+      "state": "draft",
+      "lines": [
+        {
+          "id": "JL_1778973302876_og9mqd",
+          "sequence": 0,
+          "account_id": "inventory_stock",
+          "label": "شراء: أكريلك",
+          "debit": 225000,
+          "credit": 0,
+          "amount_residual": 225000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "JL_1778973302876_09byph",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "مورد: sup_1778966561807_ubzxiv",
+          "debit": 0,
+          "credit": 225000,
+          "amount_residual": 225000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 225000,
+      "origin": "qa_draft_edit_20260517",
+      "hash": null,
+      "prev_hash": null,
+      "reversed_of": null,
+      "id": "JOURNAL_EN_1778973302877_0fxijs",
+      "created_at": "2026-05-16T23:15:02.877Z",
+      "created_by": "system",
+      "updated_at": "2026-05-17T15:56:26.257Z",
+      "updated_by": "mgr_finance",
+      "is_active": true,
+      "previous_hash": null,
+      "reversal_id": null,
+      "account_move_id": "JOURNAL_EN_1778973302877_0fxijs"
+    },
+    {
+      "id": "MOVE_1779015512122_486sw7",
+      "name": "BJ/2026/00001",
+      "date": "2026-05-17",
+      "journal_id": "j_bank",
+      "partner_id": "",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "AML_1779015512122_y7xo2v",
+          "sequence": 0,
+          "account_id": "cash_workshop",
+          "label": "استلام دفعة - SJ/2026/000002",
+          "debit": 100000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "AML_1779015512122_8vva5q",
+          "sequence": 1,
+          "account_id": "receivables_customers",
+          "label": "استلام دفعة - SJ/2026/000002",
+          "debit": 0,
+          "credit": 100000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": true,
+          "reconcile_id": null,
+          "amount_residual": 0
+        }
+      ],
+      "amount_total": 100000,
+      "origin": "payment/1779015512122",
+      "hash": "db3299e6-eyJpZCI6Ik1PVkVf",
+      "prev_hash": "4cfe2cb64ae4b5c97c12c84717fe247e73215904a8a67b90a0317c3b7964756d",
+      "previous_hash": "4cfe2cb64ae4b5c97c12c84717fe247e73215904a8a67b90a0317c3b7964756d",
+      "reversed_of": null,
+      "reversal_id": null,
+      "account_move_id": "MOVE_1779015512122_486sw7",
+      "created_at": "2026-05-17T10:58:32.122Z",
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T10:58:32.283Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    },
+    {
+      "id": "MOVE_1779016666926_f68xcx",
+      "name": "INV/2026/00001",
+      "date": "2026-05-17",
+      "journal_id": "j_sale",
+      "partner_id": "QA Customer V6",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "AML_1779016666926_2rhkfe",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "فاتورة عميل",
+          "debit": 1230000,
+          "credit": 0,
+          "amount_residual": 1230000,
+          "partner_id": "QA Customer V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "AML_1779016666926_c73z5z",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "فاتورة عميل",
+          "debit": 0,
+          "credit": 1230000,
+          "amount_residual": 1230000,
+          "partner_id": "QA Customer V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 1230000,
+      "origin": "customer_invoice/1779016666925",
+      "hash": "ffea4138-eyJpZCI6Ik1PVkVf",
+      "prev_hash": "8b56fe8c9c14bd4dbba7f0786e44d394b4d25bd14aaa891dfead0140de683f01",
+      "previous_hash": "8b56fe8c9c14bd4dbba7f0786e44d394b4d25bd14aaa891dfead0140de683f01",
+      "reversed_of": null,
+      "reversal_id": null,
+      "account_move_id": "MOVE_1779016666926_f68xcx",
+      "created_at": "2026-05-17T11:17:46.926Z",
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T11:17:47.095Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    },
+    {
+      "id": "MOVE_1779016703519_egc20l",
+      "name": "BILL/2026/00001",
+      "date": "2026-05-17",
+      "journal_id": "j_purc",
+      "partner_id": "QA Vendor V6",
+      "state": "posted",
+      "lines": [
+        {
+          "id": "AML_1779016703519_se5vbs",
+          "sequence": 0,
+          "account_id": "expense_general",
+          "label": "فاتورة مورد",
+          "debit": 770000,
+          "credit": 0,
+          "amount_residual": 770000,
+          "partner_id": "QA Vendor V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "AML_1779016703519_3u1vyl",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "فاتورة مورد",
+          "debit": 0,
+          "credit": 770000,
+          "amount_residual": 770000,
+          "partner_id": "QA Vendor V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 770000,
+      "origin": "vendor_bill/1779016703519",
+      "hash": "51fc7d5f-eyJpZCI6Ik1PVkVf",
+      "prev_hash": "ffea4138-eyJpZCI6Ik1PVkVf",
+      "previous_hash": "ffea4138-eyJpZCI6Ik1PVkVf",
+      "reversed_of": null,
+      "reversal_id": null,
+      "account_move_id": "MOVE_1779016703519_egc20l",
+      "created_at": "2026-05-17T11:18:23.519Z",
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T11:18:24.056Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    }
+  ],
+  "account_moves": [
+    {
+      "id": "JOURNAL_EN_1778876750605_sgrhkg",
+      "name": "JE/2026/000001",
+      "journal_id": "j_gen",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "",
+      "line_ids": [
+        {
+          "id": "JL_1778876750597_zld8do",
+          "sequence": 0,
+          "account_id": "accrued_payroll",
+          "label": "",
+          "debit": 500000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 500000
+        },
+        {
+          "id": "JL_1778876750597_17sqlw",
+          "sequence": 1,
+          "account_id": "cash_workshop",
+          "label": "",
+          "debit": 0,
+          "credit": 500000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 500000
+        }
+      ],
+      "amount_total": 500000,
+      "hash": "4cfe2cb64ae4b5c97c12c84717fe247e73215904a8a67b90a0317c3b7964756d",
+      "previous_hash": "22024a905f66d7170805e312990e98b71343dcc8d0e88035d13891b7799223a0",
+      "created_at": "2026-05-15T20:25:50.604Z",
+      "posted_at": "2026-05-15T23:17:17.276Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "JOURNAL_EN_1778876750605_sgrhkg",
+      "created_by": "system",
+      "updated_at": "2026-05-15T23:17:17.276Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEMO_8366575",
+      "name": "PAY/2026/000001",
+      "journal_id": "j_payroll",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "demo/payroll-may-2026",
+      "line_ids": [
+        {
+          "id": "DJL_001",
+          "sequence": 0,
+          "account_id": "expense_payroll",
+          "label": "رواتب شهر 5/2026",
+          "debit": 3500000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 3500000
+        },
+        {
+          "id": "DJL_002",
+          "sequence": 1,
+          "account_id": "accrued_payroll",
+          "label": "رواتب مستحقة",
+          "debit": 0,
+          "credit": 3500000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 3500000
+        }
+      ],
+      "amount_total": 3500000,
+      "hash": "354485e099aaeda0a089af1ca45da667fc887f327146ab00e753e1d3279069bc",
+      "previous_hash": "4cfe2cb64ae4b5c97c12c84717fe247e73215904a8a67b90a0317c3b7964756d",
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "posted_at": "2026-05-15T12:00:00.000Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "DEMO_8366575",
+      "created_by": "system",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEMO_8366576",
+      "name": "SJ/2026/000001",
+      "journal_id": "j_sale",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "demo/receipt-REC-001",
+      "line_ids": [
+        {
+          "id": "DJL_003",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "وصل مبيعات: REC-001",
+          "debit": 1800000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 1800000
+        },
+        {
+          "id": "DJL_004",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "مبيعات: عميل 1",
+          "debit": 0,
+          "credit": 1800000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 1800000
+        }
+      ],
+      "amount_total": 1800000,
+      "hash": "6d3c6ac4fa5bfb95e8a39d1126de100423811e132d465e057556205760725086",
+      "previous_hash": "7b29a42fba40c8feb81dee8f6bc172f9f861f78f80b0a37df8698b7377e0c6c9",
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "posted_at": "2026-05-15T12:00:00.000Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "DEMO_8366576",
+      "created_by": "system",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEMO_8366577",
+      "name": "PJ/2026/000001",
+      "journal_id": "j_purc",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "demo/po-PO-001",
+      "line_ids": [
+        {
+          "id": "DJL_005",
+          "sequence": 0,
+          "account_id": "inventory_stock",
+          "label": "شراء: أكريلك",
+          "debit": 650000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 650000
+        },
+        {
+          "id": "DJL_006",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "مورد: مورد عام",
+          "debit": 0,
+          "credit": 650000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 650000
+        }
+      ],
+      "amount_total": 650000,
+      "hash": "7b29a42fba40c8feb81dee8f6bc172f9f861f78f80b0a37df8698b7377e0c6c9",
+      "previous_hash": "354485e099aaeda0a089af1ca45da667fc887f327146ab00e753e1d3279069bc",
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "posted_at": "2026-05-15T12:00:00.000Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "DEMO_8366577",
+      "created_by": "system",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "DEMO_8366577_v6_02",
+      "name": "JE/2026/000001",
+      "journal_id": "j_gen",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "demo/general-expenses-may",
+      "line_ids": [
+        {
+          "id": "DJL_007",
+          "sequence": 0,
+          "account_id": "expense_general",
+          "label": "مصروفات عامة مايو",
+          "debit": 120000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 120000
+        },
+        {
+          "id": "DJL_008",
+          "sequence": 1,
+          "account_id": "cash_workshop",
+          "label": "صرف نقدي",
+          "debit": 0,
+          "credit": 120000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 120000
+        }
+      ],
+      "amount_total": 120000,
+      "hash": "22024a905f66d7170805e312990e98b71343dcc8d0e88035d13891b7799223a0",
+      "previous_hash": "genesis",
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "posted_at": "2026-05-15T12:00:00.000Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "DEMO_8366577",
+      "created_by": "system",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "updated_by": "system",
+      "is_active": true,
+      "legacy_duplicate_of": "DEMO_8366577"
+    },
+    {
+      "id": "DEMO_8366577_v6_03",
+      "name": "SJ/2026/000002",
+      "journal_id": "j_sale",
+      "date": "2026-05-15",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "demo/receipt-REC-002",
+      "line_ids": [
+        {
+          "id": "DJL_009",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "وصل مبيعات: REC-002",
+          "debit": 950000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 850000
+        },
+        {
+          "id": "DJL_010",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "مبيعات: عميل 2",
+          "debit": 0,
+          "credit": 950000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 950000
+        }
+      ],
+      "amount_total": 950000,
+      "hash": "bb385a10d37a3415a4b9427b4d7dab87d87b81ba00a60ec7ab7191e97d07eb77",
+      "previous_hash": "6d3c6ac4fa5bfb95e8a39d1126de100423811e132d465e057556205760725086",
+      "created_at": "2026-05-15T12:00:00.000Z",
+      "posted_at": "2026-05-15T12:00:00.000Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "DEMO_8366577",
+      "created_by": "system",
+      "updated_at": "2026-05-15T12:00:00.000Z",
+      "updated_by": "system",
+      "is_active": true,
+      "legacy_duplicate_of": "DEMO_8366577"
+    },
+    {
+      "id": "JOURNAL_EN_1778973302826_ypw1ts",
+      "name": "PJ/2026/000007",
+      "journal_id": "j_purc",
+      "date": "2026-05-16",
+      "move_type": "entry",
+      "state": "draft",
+      "partner_id": "",
+      "origin": "po/po_1778973301853_fz5sdh/r/1",
+      "line_ids": [
+        {
+          "id": "JL_1778973302718_3eclqj",
+          "sequence": 0,
+          "account_id": "inventory_stock",
+          "label": "شراء: أكريلك",
+          "debit": 150000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 150000
+        },
+        {
+          "id": "JL_1778973302718_e95pct",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "مورد: sup_1778966561807_ubzxiv",
+          "debit": 0,
+          "credit": 150000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 150000
+        }
+      ],
+      "amount_total": 150000,
+      "hash": null,
+      "previous_hash": null,
+      "created_at": "2026-05-16T23:15:02.824Z",
+      "posted_at": null,
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "JOURNAL_EN_1778973302826_ypw1ts",
+      "created_by": "system",
+      "updated_at": "2026-05-16T23:15:02.824Z",
+      "updated_by": "system",
+      "is_active": true
+    },
+    {
+      "id": "JOURNAL_EN_1778973302877_0fxijs",
+      "name": "PJ/2026/000008",
+      "journal_id": "j_purc",
+      "date": "2026-05-16",
+      "move_type": "entry",
+      "state": "draft",
+      "partner_id": "",
+      "origin": "qa_draft_edit_20260517",
+      "line_ids": [
+        {
+          "id": "JL_1778973302876_og9mqd",
+          "sequence": 0,
+          "account_id": "inventory_stock",
+          "label": "شراء: أكريلك",
+          "debit": 225000,
+          "credit": 0,
+          "amount_residual": 225000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "JL_1778973302876_09byph",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "مورد: sup_1778966561807_ubzxiv",
+          "debit": 0,
+          "credit": 225000,
+          "amount_residual": 225000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 225000,
+      "hash": null,
+      "previous_hash": null,
+      "created_at": "2026-05-16T23:15:02.877Z",
+      "posted_at": null,
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "legacy_journal_entry_id": "JOURNAL_EN_1778973302877_0fxijs",
+      "created_by": "system",
+      "updated_at": "2026-05-17T15:56:26.257Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    },
+    {
+      "id": "MOVE_1779015512122_486sw7",
+      "name": "BJ/2026/00001",
+      "journal_id": "j_bank",
+      "date": "2026-05-17",
+      "move_type": "entry",
+      "state": "posted",
+      "partner_id": "",
+      "origin": "payment/1779015512122",
+      "line_ids": [
+        {
+          "id": "AML_1779015512122_y7xo2v",
+          "sequence": 0,
+          "account_id": "cash_workshop",
+          "label": "استلام دفعة - SJ/2026/000002",
+          "debit": 100000,
+          "credit": 0,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null,
+          "amount_residual": 100000
+        },
+        {
+          "id": "AML_1779015512122_8vva5q",
+          "sequence": 1,
+          "account_id": "receivables_customers",
+          "label": "استلام دفعة - SJ/2026/000002",
+          "debit": 0,
+          "credit": 100000,
+          "partner_id": "",
+          "department_id": "",
+          "reconciled": true,
+          "reconcile_id": null,
+          "amount_residual": 0
+        }
+      ],
+      "amount_total": 100000,
+      "hash": "a67ee264a4a7ee7638c425e5bbfd09050ef883808817913e9592ea2570f2f6a6",
+      "previous_hash": "b4ed808f085e14ee8638681cdaaa448c9a5399cd1340767694455ea77ffacbae",
+      "created_at": "2026-05-17T10:58:32.122Z",
+      "posted_at": "2026-05-17T10:58:32.283Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T10:58:32.283Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    },
+    {
+      "id": "MOVE_1779016666926_f68xcx",
+      "name": "INV/2026/00001",
+      "journal_id": "j_sale",
+      "date": "2026-05-17",
+      "move_type": "out_invoice",
+      "state": "posted",
+      "partner_id": "QA Customer V6",
+      "origin": "customer_invoice/1779016666925",
+      "line_ids": [
+        {
+          "id": "AML_1779016666926_2rhkfe",
+          "sequence": 0,
+          "account_id": "receivables_customers",
+          "label": "فاتورة عميل",
+          "debit": 1230000,
+          "credit": 0,
+          "amount_residual": 1230000,
+          "partner_id": "QA Customer V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "AML_1779016666926_c73z5z",
+          "sequence": 1,
+          "account_id": "income_sales",
+          "label": "فاتورة عميل",
+          "debit": 0,
+          "credit": 1230000,
+          "amount_residual": 1230000,
+          "partner_id": "QA Customer V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 1230000,
+      "hash": "d71cbec2a7505231d3d1f06fa2cd59c9f9deb3da4e5e2a79811e7107d6d174eb",
+      "previous_hash": "a67ee264a4a7ee7638c425e5bbfd09050ef883808817913e9592ea2570f2f6a6",
+      "created_at": "2026-05-17T11:17:46.926Z",
+      "posted_at": "2026-05-17T11:17:47.095Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T11:17:47.095Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    },
+    {
+      "id": "MOVE_1779016703519_egc20l",
+      "name": "BILL/2026/00001",
+      "journal_id": "j_purc",
+      "date": "2026-05-17",
+      "move_type": "in_invoice",
+      "state": "posted",
+      "partner_id": "QA Vendor V6",
+      "origin": "vendor_bill/1779016703519",
+      "line_ids": [
+        {
+          "id": "AML_1779016703519_se5vbs",
+          "sequence": 0,
+          "account_id": "expense_general",
+          "label": "فاتورة مورد",
+          "debit": 770000,
+          "credit": 0,
+          "amount_residual": 770000,
+          "partner_id": "QA Vendor V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        },
+        {
+          "id": "AML_1779016703519_3u1vyl",
+          "sequence": 1,
+          "account_id": "payables_people",
+          "label": "فاتورة مورد",
+          "debit": 0,
+          "credit": 770000,
+          "amount_residual": 770000,
+          "partner_id": "QA Vendor V6",
+          "department_id": "",
+          "reconciled": false,
+          "reconcile_id": null
+        }
+      ],
+      "amount_total": 770000,
+      "hash": "b4ed808f085e14ee8638681cdaaa448c9a5399cd1340767694455ea77ffacbae",
+      "previous_hash": "bb385a10d37a3415a4b9427b4d7dab87d87b81ba00a60ec7ab7191e97d07eb77",
+      "created_at": "2026-05-17T11:18:23.519Z",
+      "posted_at": "2026-05-17T11:18:24.056Z",
+      "cancelled_at": null,
+      "reversed_of": null,
+      "reversal_id": null,
+      "created_by": "mgr_finance",
+      "updated_at": "2026-05-17T11:18:24.056Z",
+      "updated_by": "mgr_finance",
+      "is_active": true
+    }
+  ]
+}

@@ -1,0 +1,477 @@
+{
+  "id": "pilot_documents_mr451rdc",
+  "mode": "manual",
+  "page": "documents",
+  "pageLabel": "🗂️ الوثائق",
+  "startedAt": "2026-07-02T23:31:18.096Z",
+  "updatedAt": "2026-07-02T23:31:18.096Z",
+  "status": "in_progress",
+  "scan": {
+    "version": "2026.07.02-phase1",
+    "page": "documents",
+    "pageRootId": "pageKnowledge",
+    "pageLabel": "🗂️ الوثائق",
+    "scannedAt": "2026-07-02T23:31:18.094Z",
+    "ok": true,
+    "selector": "button,[role=\"button\"],[role=\"tab\"],.tab,[data-tab],[data-bs-toggle=\"tab\"],input,select,textarea,a[href],a[onclick],[onclick],[data-action],[data-jarvis-action],[data-jarvis-field],[contenteditable=\"true\"],summary",
+    "totals": {
+      "elements": 13,
+      "visible": 13,
+      "hidden": 0,
+      "disabled": 0
+    },
+    "byType": {
+      "button": 3,
+      "input": 1,
+      "action": 9
+    },
+    "elements": [
+      {
+        "id": "pilot:documents:button:41n6ng",
+        "page": "documents",
+        "type": "button",
+        "label": "نظرة عامة",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-tabs:nth-of-type(2) > button.kb-tab.active:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1510,
+          "y": 423,
+          "width": 104,
+          "height": 36
+        },
+        "reviewPrompts": [
+          "Is \"نظرة عامة\" visible, understandable, and placed where you expect it?",
+          "Does \"نظرة عامة\" behave correctly when used?",
+          "After pressing \"نظرة عامة\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:button:1her2qe",
+        "page": "documents",
+        "type": "button",
+        "label": "تصفّح المقالات",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-tabs:nth-of-type(2) > button.kb-tab:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1377,
+          "y": 423,
+          "width": 124,
+          "height": 36
+        },
+        "reviewPrompts": [
+          "Is \"تصفّح المقالات\" visible, understandable, and placed where you expect it?",
+          "Does \"تصفّح المقالات\" behave correctly when used?",
+          "After pressing \"تصفّح المقالات\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:button:yilbhe",
+        "page": "documents",
+        "type": "button",
+        "label": "مقال جديد",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-tabs:nth-of-type(2) > button.kb-tab.kb-tab-cta:nth-of-type(3)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 40,
+          "y": 423,
+          "width": 99,
+          "height": 36
+        },
+        "reviewPrompts": [
+          "Is \"مقال جديد\" visible, understandable, and placed where you expect it?",
+          "Does \"مقال جديد\" behave correctly when used?",
+          "After pressing \"مقال جديد\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:input:11uwts8",
+        "page": "documents",
+        "type": "input",
+        "label": "🔎 ابحث في قاعدة المعرفة…",
+        "tag": "input",
+        "role": "",
+        "inputType": "text",
+        "selectorHint": "input#kbSearchInput",
+        "domId": "kbSearchInput",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 63,
+          "y": 498,
+          "width": 1528,
+          "height": 45
+        },
+        "reviewPrompts": [
+          "Is \"🔎 ابحث في قاعدة المعرفة…\" visible, understandable, and placed where you expect it?",
+          "Does \"🔎 ابحث في قاعدة المعرفة…\" behave correctly when used?",
+          "Can you change \"🔎 ابحث في قاعدة المعرفة…\" and does the page keep or use the value correctly?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:4cshwm",
+        "page": "documents",
+        "type": "action",
+        "label": "البدء والإعداد 1",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-search-hero:nth-of-type(1) > div.kb-cat-row > div.kb-cat-chip:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1441,
+          "y": 557,
+          "width": 150,
+          "height": 35
+        },
+        "reviewPrompts": [
+          "Is \"البدء والإعداد 1\" visible, understandable, and placed where you expect it?",
+          "Does \"البدء والإعداد 1\" behave correctly when used?",
+          "After pressing \"البدء والإعداد 1\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:4hwa9j",
+        "page": "documents",
+        "type": "action",
+        "label": "الأسئلة الشائعة 1",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-search-hero:nth-of-type(1) > div.kb-cat-row > div.kb-cat-chip:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1262,
+          "y": 557,
+          "width": 169,
+          "height": 35
+        },
+        "reviewPrompts": [
+          "Is \"الأسئلة الشائعة 1\" visible, understandable, and placed where you expect it?",
+          "Does \"الأسئلة الشائعة 1\" behave correctly when used?",
+          "After pressing \"الأسئلة الشائعة 1\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:uz08jp",
+        "page": "documents",
+        "type": "action",
+        "label": "العمليات والتشغيل 0",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-search-hero:nth-of-type(1) > div.kb-cat-row > div.kb-cat-chip:nth-of-type(3)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 1058,
+          "y": 557,
+          "width": 194,
+          "height": 35
+        },
+        "reviewPrompts": [
+          "Is \"العمليات والتشغيل 0\" visible, understandable, and placed where you expect it?",
+          "Does \"العمليات والتشغيل 0\" behave correctly when used?",
+          "After pressing \"العمليات والتشغيل 0\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:1vl2tsf",
+        "page": "documents",
+        "type": "action",
+        "label": "استكشاف الأخطاء 1",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-search-hero:nth-of-type(1) > div.kb-cat-row > div.kb-cat-chip:nth-of-type(4)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 865,
+          "y": 557,
+          "width": 183,
+          "height": 35
+        },
+        "reviewPrompts": [
+          "Is \"استكشاف الأخطاء 1\" visible, understandable, and placed where you expect it?",
+          "Does \"استكشاف الأخطاء 1\" behave correctly when used?",
+          "After pressing \"استكشاف الأخطاء 1\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:17t3jl4",
+        "page": "documents",
+        "type": "action",
+        "label": "كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-two-col:nth-of-type(2) > div.kb-panel:nth-of-type(1) > div.kb-art-item:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 852,
+          "y": 682,
+          "width": 745,
+          "height": 63
+        },
+        "reviewPrompts": [
+          "Is \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\" visible, understandable, and placed where you expect it?",
+          "Does \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\" behave correctly when used?",
+          "After pressing \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:124u4z9",
+        "page": "documents",
+        "type": "action",
+        "label": "كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-two-col:nth-of-type(2) > div.kb-panel:nth-of-type(1) > div.kb-art-item:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 852,
+          "y": 745,
+          "width": 745,
+          "height": 63
+        },
+        "reviewPrompts": [
+          "Is \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\" visible, understandable, and placed where you expect it?",
+          "Does \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\" behave correctly when used?",
+          "After pressing \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:lypjsh",
+        "page": "documents",
+        "type": "action",
+        "label": "الصفحة لا تظهر — ماذا أفعل؟ استكشاف الأخطاء · 3 مشاهدة مسودة",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-two-col:nth-of-type(2) > div.kb-panel:nth-of-type(2) > div.kb-art-item:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 57,
+          "y": 682,
+          "width": 745,
+          "height": 63
+        },
+        "reviewPrompts": [
+          "Is \"الصفحة لا تظهر — ماذا أفعل؟ استكشاف الأخطاء · 3 مشاهدة مسودة\" visible, understandable, and placed where you expect it?",
+          "Does \"الصفحة لا تظهر — ماذا أفعل؟ استكشاف الأخطاء · 3 مشاهدة مسودة\" behave correctly when used?",
+          "After pressing \"الصفحة لا تظهر — ماذا أفعل؟ استكشاف الأخطاء · 3 مشاهدة مسودة\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:tgcn98",
+        "page": "documents",
+        "type": "action",
+        "label": "كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-two-col:nth-of-type(2) > div.kb-panel:nth-of-type(2) > div.kb-art-item:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 57,
+          "y": 745,
+          "width": 745,
+          "height": 63
+        },
+        "reviewPrompts": [
+          "Is \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\" visible, understandable, and placed where you expect it?",
+          "Does \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\" behave correctly when used?",
+          "After pressing \"كيف أبدأ استخدام النظام؟ البدء والإعداد · 42 مشاهدة منشور\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:documents:action:j9lwtl",
+        "page": "documents",
+        "type": "action",
+        "label": "كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور",
+        "tag": "div",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#knowledgeBody > div.kb-content:nth-of-type(3) > div.kb-two-col:nth-of-type(2) > div.kb-panel:nth-of-type(2) > div.kb-art-item:nth-of-type(3)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 57,
+          "y": 808,
+          "width": 745,
+          "height": 63
+        },
+        "reviewPrompts": [
+          "Is \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\" visible, understandable, and placed where you expect it?",
+          "Does \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\" behave correctly when used?",
+          "After pressing \"كيف أنشئ نسخة احتياطية؟ الأسئلة الشائعة · 27 مشاهدة منشور\", does the app give the right result, feedback, or approval gate?"
+        ]
+      }
+    ]
+  },
+  "elementReviews": {
+    "pilot:documents:button:41n6ng": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:button:1her2qe": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:button:yilbhe": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:input:11uwts8": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:4cshwm": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:4hwa9j": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:uz08jp": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:1vl2tsf": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:17t3jl4": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:124u4z9": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:lypjsh": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:tgcn98": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    },
+    "pilot:documents:action:j9lwtl": {
+      "status": "pending",
+      "notes": [],
+      "updatedAt": ""
+    }
+  },
+  "notes": [],
+  "transcript": [
+    {
+      "at": "2026-07-02T23:31:18.096Z",
+      "role": "system",
+      "text": "Pilot Review started for 🗂️ الوثائق. Review every scanned control and mark pass, fail, or skip."
+    }
+  ],
+  "serverFile": "",
+  "savedBy": "local-review",
+  "savedAt": "2026-07-02T23:31:18.562Z",
+  "storage": {
+    "folder": "review-reports",
+    "file": "documents-pilot_documents_mr451rdc.json"
+  }
+}

@@ -1,0 +1,404 @@
+{
+  "id": "pilot_calculator_mr5ed5l0",
+  "mode": "manual",
+  "page": "calculator",
+  "pageLabel": "الحاسبة الذكية",
+  "startedAt": "2026-07-03T20:39:52.452Z",
+  "updatedAt": "2026-07-03T20:43:30.135Z",
+  "status": "ended",
+  "scan": {
+    "version": "2026.07.02-phase1",
+    "page": "calculator",
+    "pageRootId": "pageWorkshopLedger",
+    "pageLabel": "الحاسبة الذكية",
+    "scannedAt": "2026-07-03T20:39:52.449Z",
+    "ok": true,
+    "selector": "button,[role=\"button\"],[role=\"tab\"],.tab,[data-tab],[data-bs-toggle=\"tab\"],input,select,textarea,a[href],a[onclick],[onclick],[data-action],[data-jarvis-action],[data-jarvis-field],[contenteditable=\"true\"],summary",
+    "totals": {
+      "elements": 9,
+      "visible": 9,
+      "hidden": 0,
+      "disabled": 0
+    },
+    "byType": {
+      "button": 9
+    },
+    "elements": [
+      {
+        "id": "pilot:calculator:button:1i4d6yr",
+        "page": "calculator",
+        "type": "button",
+        "label": "استيراد البيانات",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(1)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 871,
+          "y": 89,
+          "width": 109,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"استيراد البيانات\" visible, understandable, and placed where you expect it?",
+          "Does \"استيراد البيانات\" behave correctly when used?",
+          "After pressing \"استيراد البيانات\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:n9ctmc",
+        "page": "calculator",
+        "type": "button",
+        "label": "الحركات المالية",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(2)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 757,
+          "y": 89,
+          "width": 108,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"الحركات المالية\" visible, understandable, and placed where you expect it?",
+          "Does \"الحركات المالية\" behave correctly when used?",
+          "After pressing \"الحركات المالية\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:1dsyar1",
+        "page": "calculator",
+        "type": "button",
+        "label": "القاصة",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(3)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 678,
+          "y": 89,
+          "width": 73,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"القاصة\" visible, understandable, and placed where you expect it?",
+          "Does \"القاصة\" behave correctly when used?",
+          "After pressing \"القاصة\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:843zqg",
+        "page": "calculator",
+        "type": "button",
+        "label": "السلف",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(4)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 599,
+          "y": 89,
+          "width": 73,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"السلف\" visible, understandable, and placed where you expect it?",
+          "Does \"السلف\" behave correctly when used?",
+          "After pressing \"السلف\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:mtujxk",
+        "page": "calculator",
+        "type": "button",
+        "label": "التايم شيت",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(5)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 505,
+          "y": 89,
+          "width": 88,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"التايم شيت\" visible, understandable, and placed where you expect it?",
+          "Does \"التايم شيت\" behave correctly when used?",
+          "After pressing \"التايم شيت\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:15ci043",
+        "page": "calculator",
+        "type": "button",
+        "label": "دورات الرواتب",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(6)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 396,
+          "y": 89,
+          "width": 103,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"دورات الرواتب\" visible, understandable, and placed where you expect it?",
+          "Does \"دورات الرواتب\" behave correctly when used?",
+          "After pressing \"دورات الرواتب\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:i3m1u8",
+        "page": "calculator",
+        "type": "button",
+        "label": "فروقات حسين",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(7)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 283,
+          "y": 89,
+          "width": 107,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"فروقات حسين\" visible, understandable, and placed where you expect it?",
+          "Does \"فروقات حسين\" behave correctly when used?",
+          "After pressing \"فروقات حسين\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:6ok8fq",
+        "page": "calculator",
+        "type": "button",
+        "label": "اختبارات القبول",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab.active:nth-of-type(8)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 172,
+          "y": 89,
+          "width": 106,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"اختبارات القبول\" visible, understandable, and placed where you expect it?",
+          "Does \"اختبارات القبول\" behave correctly when used?",
+          "After pressing \"اختبارات القبول\", does the app give the right result, feedback, or approval gate?"
+        ]
+      },
+      {
+        "id": "pilot:calculator:button:m3m69y",
+        "page": "calculator",
+        "type": "button",
+        "label": "سجل التعديلات",
+        "tag": "button",
+        "role": "",
+        "inputType": "",
+        "selectorHint": "div#wsLedgerBody > div.ws-tabs:nth-of-type(2) > button.ws-tab:nth-of-type(9)",
+        "domId": "",
+        "name": "",
+        "action": "",
+        "field": "",
+        "disabled": false,
+        "required": false,
+        "visible": true,
+        "viewport": {
+          "x": 60,
+          "y": 89,
+          "width": 105,
+          "height": 32
+        },
+        "reviewPrompts": [
+          "Is \"سجل التعديلات\" visible, understandable, and placed where you expect it?",
+          "Does \"سجل التعديلات\" behave correctly when used?",
+          "After pressing \"سجل التعديلات\", does the app give the right result, feedback, or approval gate?"
+        ]
+      }
+    ]
+  },
+  "selectedIndex": 8,
+  "elementReviews": {
+    "pilot:calculator:button:1i4d6yr": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.192Z"
+    },
+    "pilot:calculator:button:n9ctmc": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.317Z"
+    },
+    "pilot:calculator:button:1dsyar1": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.439Z"
+    },
+    "pilot:calculator:button:843zqg": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.546Z"
+    },
+    "pilot:calculator:button:mtujxk": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.666Z"
+    },
+    "pilot:calculator:button:15ci043": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.779Z"
+    },
+    "pilot:calculator:button:i3m1u8": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:42.895Z"
+    },
+    "pilot:calculator:button:6ok8fq": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:43.004Z"
+    },
+    "pilot:calculator:button:m3m69y": {
+      "status": "pass",
+      "notes": [],
+      "updatedAt": "2026-07-03T20:42:43.113Z"
+    }
+  },
+  "notes": [],
+  "transcript": [
+    {
+      "at": "2026-07-03T20:39:52.452Z",
+      "role": "system",
+      "text": "Pilot Review started for الحاسبة الذكية. Review every scanned control and mark pass, fail, or skip."
+    },
+    {
+      "at": "2026-07-03T20:42:42.192Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:1i4d6yr",
+      "text": "Step 1: \"استيراد البيانات\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.317Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:n9ctmc",
+      "text": "Step 2: \"الحركات المالية\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.439Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:1dsyar1",
+      "text": "Step 3: \"القاصة\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.546Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:843zqg",
+      "text": "Step 4: \"السلف\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.666Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:mtujxk",
+      "text": "Step 5: \"التايم شيت\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.779Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:15ci043",
+      "text": "Step 6: \"دورات الرواتب\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:42.895Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:i3m1u8",
+      "text": "Step 7: \"فروقات حسين\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:43.004Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:6ok8fq",
+      "text": "Step 8: \"اختبارات القبول\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:42:43.113Z",
+      "role": "reviewer",
+      "elementId": "pilot:calculator:button:m3m69y",
+      "text": "Step 9: \"سجل التعديلات\" = pass."
+    },
+    {
+      "at": "2026-07-03T20:43:30.135Z",
+      "role": "system",
+      "elementId": "",
+      "text": "Pilot Review ended."
+    }
+  ],
+  "serverFile": "calculator-pilot_calculator_mr5ed5l0.json",
+  "savedBy": "local-review",
+  "savedAt": "2026-07-03T20:43:30.594Z",
+  "storage": {
+    "folder": "review-reports",
+    "file": "calculator-pilot_calculator_mr5ed5l0.json"
+  }
+}

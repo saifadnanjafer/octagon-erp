@@ -674,7 +674,10 @@ function translateMachineStatus(s) {
 function translateHrCardType(t) {
   return ({payroll_anomaly:'شذوذ رواتب',timesheet_consistency:'اتساق الدوام',employee_request:'طلب موظف',overtime:'وقت إضافي',advance:'سلفة'})[String(t||'').toLowerCase()] || t;
 }
-function escapeHtml(value) {
+// T0.4 dedup (2026-07-12): dead copy, shadowed by the later definition at
+// line ~14808 (equivalent behavior — same 5-char HTML-entity escaping,
+// verified identical output). Kept per add-only rule, never called.
+function escapeHtml_deprecated_dup1(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -4731,7 +4734,15 @@ function getEmployeeActivityInfo(employee, cfg) {
   return { lastActivity, liveBalance, status, lifecycle };
 }
 
-function getEmployeeStatusLabel(status) {
+// T0.4 dedup (2026-07-12): dead copy, shadowed by the later definition below.
+// FLAG for owner: this dead version has a 3-way contract (active/pending/else)
+// matching what both call sites actually pass (info.status from
+// getEmployeeTimesheetLifecycle, which can be 'pending') — the live version
+// below only handles 2 ways, so a 'pending' employee currently renders as
+// "مستقيل" (resigned) instead of a pending-balance state. Not corrected here
+// (T0.4 preserves current live behavior; this is a business-logic call for
+// the owner, not a mechanical de-dup). Kept per add-only rule, never called.
+function getEmployeeStatusLabel_deprecated_dup1(status) {
   if (status === 'active') return '✅ فعال';
   if (status === 'pending') return '⚠️ رصيد معلق';
   return '❌ غير فعال';

@@ -40746,7 +40746,14 @@ window.ensurePageTemplateLoaded = async function (page) {
     ai_status: 'pageAiStatus',
     deploy_ready:'pageDeployReady',
     manager_approvals:'pageManagerApprovals',
-    mobile_inventory_count:'pageMobileInventoryCount'
+    mobile_inventory_count:'pageMobileInventoryCount',
+    // T3.2: import-wizard.js builds its own shell (id=pageImportCenter) via
+    // JS rather than a views/*.html template — without this entry, the id
+    // fallback (pageMap[page] || page) checks for an element literally
+    // named "import_center" (which never exists), so the existence guard
+    // below always misses and this fires a doomed template fetch (404) on
+    // every navigation to the page.
+    import_center: 'pageImportCenter'
   };
 
   const id = pageMap[page] || page;

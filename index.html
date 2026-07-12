@@ -103,6 +103,8 @@
   <link rel="stylesheet" href="calendar-header-fix.css?v=20260707-cal-header-v1">
   <link rel="stylesheet" href="calendar-opc-doclog.css?v=20260707-opc-doclog-v2">
   <link rel="stylesheet" href="timesheet-forecast.css?v=20260708-ts-forecast-v2">
+  <!-- T3.2 -->
+  <link rel="stylesheet" href="modules/import-wizard.css?v=20260712-t3.2-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -1953,7 +1955,11 @@
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
   <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
   <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
-  <script src="app.js?v=20260709-grace-daily-display-v17"></script>
+  <!-- T3.3: Acl.can() coarse role x collection checks (client-side, cosmetic — server enforces) -->
+  <script src="modules/acl-client.js?v=20260712-t3.3-v1"></script>
+  <!-- T3.4: unified document-state registry (OctagonStates.transition()) -->
+  <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
+  <script src="app.js?v=20260712-import-center-pagemap-v18"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
@@ -2101,6 +2107,8 @@
   <script src="modules/vertical-hotel.js?v=20260624-hotel-v2-activate"></script>
   <!-- Workshop Unified Execution Core + Route Health diagnostic -->
   <script src="modules/work-orders.js?v=20260614-route-hydrate-v1"></script>
+  <!-- T3.1: read-only scheduled alerts panel (server-scheduler.js is the server half) -->
+  <script src="modules/scheduled-alerts.js?v=20260712-t3.1-v1"></script>
   <script src="modules/route-health.js?v=20260709-rh-batched-yield-v4"></script>
   <!-- Workshop AI Operating Layer (load AFTER work-orders + route-health) -->
   <script src="modules/workshop-ai.js?v=20260703-omni-v1"></script>
@@ -2163,6 +2171,8 @@
   <script src="modules/phase6a-core.js?v=20260624-arabic-v2"></script>
   <script src="modules/phase6c-security-matrix.js?v=20260623-phase6d-v1"></script>
   <script src="modules/phase7a-stabilization.js?v=20260626-phase7a-v1"></script>
+  <!-- T3.2: universal CSV/Excel import wizard (import_center page) -->
+  <script src="modules/import-wizard.js?v=20260712-t3.2-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

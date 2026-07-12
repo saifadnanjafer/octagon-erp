@@ -8,8 +8,33 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const net = require('net');
+
+// Reliability hardening (2026-07-12): this process has no supervisor
+// (no PM2/systemd auto-restart) — before this handler, ANY unhandled
+// exception in ANY request path (a double res.writeHead from a slow
+// static-file read racing a client abort, a bug in a future module, etc.)
+// killed the entire Node process, taking the whole app down for every
+// user until someone noticed and manually restarted it. Observed live
+// during this session: an ERR_HTTP_HEADERS_SENT in the static-file
+// fs.readFile callback crashed the server outright. Log and keep serving
+// — a single malformed HTTP response is recoverable; a dead process
+// serving nobody is strictly worse for a live single-tenant workshop app.
+const CRASH_LOG_FILE = path.join(__dirname, 'server-crash.log');
+function logUnhandledError(kind, error) {
+  const detail = error instanceof Error ? (error.stack || error.message) : String(error);
+  console.error(`[${kind}] `, detail);
+  try {
+    fs.appendFileSync(CRASH_LOG_FILE, JSON.stringify({ at: new Date().toISOString(), kind, detail }) + '\n');
+  } catch (_) { /* logging must never itself throw */ }
+}
+process.on('uncaughtException', error => logUnhandledError('uncaughtException', error));
+process.on('unhandledRejection', reason => logUnhandledError('unhandledRejection', reason));
 // Security hardening 2026-07-05: server-side Jarvis tool gate + AI key proxy.
 const jarvisSecurity = require('./server-jarvis-security');
+// T3.1: server-side scheduler (ir.cron equivalent) — read-only notification
+// generators only, never posts finance/payroll directly (AI-governance
+// philosophy: deterministic-first, approval-gated writes).
+const { installOctagonScheduler } = require('./server-scheduler');
 
 let DatabaseSync;
 try {
@@ -1517,6 +1542,9 @@ function apiProtectionMatrix() {
     { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'system admin/finance manager or local-dev only' },
     { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'system admin plus typed confirmation and pre-restore backup' },
     { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'verify token/signature/rate limit preserved' },
+    { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'localhost or system admin/finance manager only' },
+    { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'localhost or system admin/finance manager only' },
+    { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'localhost or system admin/finance manager only' },
   ];
 }
 
@@ -1533,12 +1561,17 @@ jarvisSecurity.init({
   makeId,
 });
 
+let octagonScheduler = null;
+
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
   // Security hardening 2026-07-05: /api/jarvis/* (server-side tool gate,
   // approvals, grants) and /api/ai/* (provider proxy — keys stay in .env).
   if (jarvisSecurity.handle(req, res, requestUrl)) return;
+
+  // T3.1: /api/cron/* — server-side scheduler status/force-run/dismiss.
+  if (octagonScheduler && octagonScheduler.handle(req, res, requestUrl)) return;
 
   if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
     const active = authSessionFromRequest(req);
@@ -2263,6 +2296,11 @@ const server = http.createServer((req, res) => {
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
   fs.readFile(filePath, (err, data) => {
+    // Defense in depth alongside the global uncaughtException handler above:
+    // if the client already disconnected/aborted (or anything upstream
+    // already responded on this `res`) by the time this async read
+    // completes, writing headers again throws ERR_HTTP_HEADERS_SENT.
+    if (res.headersSent || res.writableEnded) return;
     if (err) {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.writeHead(404);
@@ -2401,6 +2439,27 @@ function initializeDatabase() {
 }
 
 initializeDatabase();
+
+// T3.1: install after initializeDatabase() so dbSync (if SQLite is active)
+// is already set. Read-only notification generators only — see
+// server-scheduler.js's own header comment.
+octagonScheduler = installOctagonScheduler({
+  sqliteDb: dbSync,
+  loadDbForMutation,
+  saveDb,
+  makeId,
+  sendJson,
+  readRequestBody,
+  requireRoleSession,
+  isLocalRequest,
+  createDatabaseBackup,
+  backupStatusSnapshot,
+  serverStatusSnapshot,
+  routeStaticSnapshot,
+  dbFile: DB_FILE,
+  sqliteDbFile: SQLITE_DB_FILE,
+  backupDir: BACKUP_DIR,
+});
 
 probeDefaultPort();
 

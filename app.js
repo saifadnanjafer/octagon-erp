@@ -23937,7 +23937,10 @@ function updateActiveCompany(companyId) {
   showToast('تم تغيير الشركة النشطة للمستندات والتقارير', 'success');
 }
 
-function getAdminWireUpRows() {
+// T0.4 dedup (2026-07-12): dead copy, shadowed by the live definition below
+// (which also tracks shift-based supervisor routing, not just direct
+// routing). Kept per add-only rule.
+function getAdminWireUpRows_deprecated_dup1() {
   const profile = getActiveOrgProfile();
   const org = omni.adminSettings?.organization || {};
   const companies = getOrgCompanies();
@@ -23954,7 +23957,11 @@ function getAdminWireUpRows() {
   ];
 }
 
-function renderAdminTabWireUp() {
+// T0.4 dedup (2026-07-12): dead copy (1 of the original "×3, worst" case
+// flagged by the 2026-07-02 audit), shadowed by the fullest live definition
+// further below (adds the consumer-preview grid + live button/permission
+// audit panel). Kept per add-only rule.
+function renderAdminTabWireUp_deprecated_dup1() {
   const rows = getAdminWireUpRows();
   const wiredCount = rows.filter(row => row.status === 'wired').length;
   const profile = getActiveOrgProfile();
@@ -24034,7 +24041,10 @@ function getAdminConsumerPreviewRows() {
   ];
 }
 
-function renderAdminTabWireUp() {
+// T0.4 dedup (2026-07-12): dead copy (2 of the original "×3, worst" case),
+// shadowed by the fullest live definition further below (adds the live
+// button/permission audit panel). Kept per add-only rule.
+function renderAdminTabWireUp_deprecated_dup2() {
   const rows = getAdminWireUpRows();
   const previews = getAdminConsumerPreviewRows();
   const wiredCount = rows.filter(row => row.status === 'wired').length;

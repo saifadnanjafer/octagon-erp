@@ -105,6 +105,8 @@
   <link rel="stylesheet" href="timesheet-forecast.css?v=20260708-ts-forecast-v2">
   <!-- T3.2 -->
   <link rel="stylesheet" href="modules/import-wizard.css?v=20260712-t3.2-v1">
+  <!-- T6.1 -->
+  <link rel="stylesheet" href="modules/system-settings.css?v=20260713-t6.1-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -1959,7 +1961,9 @@
   <script src="modules/acl-client.js?v=20260712-t3.3-v1"></script>
   <!-- T3.4: unified document-state registry (OctagonStates.transition()) -->
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
-  <script src="app.js?v=20260712-import-center-pagemap-v18"></script>
+  <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
+  <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
+  <script src="app.js?v=20260713-integ-t6-v19"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
@@ -2173,6 +2177,8 @@
   <script src="modules/phase7a-stabilization.js?v=20260626-phase7a-v1"></script>
   <!-- T3.2: universal CSV/Excel import wizard (import_center page) -->
   <script src="modules/import-wizard.js?v=20260712-t3.2-v1"></script>
+  <!-- T6.1: unified System Settings page (system_settings) -->
+  <script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

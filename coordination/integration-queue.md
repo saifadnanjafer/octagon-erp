@@ -27,6 +27,12 @@ LANE-A applies at session start/end, checks the box, commits.
      resolve onto acl.json's generic role-alias system, which would have
      silently downgraded them to defaultRole "viewer" — added an explicit
      per-user override map in server.js keyed on the known seed user ids. -->
-- [ ] (T6.1) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/system-settings.css?v=20260713-t6.1-v1">`
-- [ ] (T6.1) index.html after `modules/import-wizard.js`: add `<script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>`
-- [ ] (T6.2) index.html after `modules/state-registry.js` and before `app.js`: add `<script src="modules/repo.js?v=20260713-t6.2-v1"></script>`
+- [x] (T6.1) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/system-settings.css?v=20260713-t6.1-v1">`
+- [x] (T6.1) index.html after `modules/import-wizard.js`: add `<script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>`
+- [x] (T6.2) index.html after `modules/state-registry.js` and before `app.js`: add `<script src="modules/repo.js?v=20260713-t6.2-v1"></script>`
+
+<!-- All T6.1/T6.2 index.html wiring applied by LANE-A 2026-07-13 (claude-opus-4-8);
+     app.js ?v= bumped to 20260713-integ-t6-v19 in the same edit. -->
+
+<!-- Integration queue empty as of 2026-07-13. -->
+

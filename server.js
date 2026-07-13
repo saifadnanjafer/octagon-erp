@@ -348,6 +348,77 @@ function sendJson(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
+// T1.4 — unified document numbering (Odoo `ir.sequence`).
+// Known codes and their default prefix/padding. Unknown codes are still
+// honoured: prefix falls back to code.toUpperCase(), padding to 4. Callers may
+// override prefix/padding on first use via the request body; once a row exists
+// its stored prefix/padding win (so numbering stays stable).
+const SEQUENCE_DEFAULTS = {
+  inv:     { prefix: 'INV', padding: 5 },
+  bill:    { prefix: 'BILL', padding: 5 },
+  job:     { prefix: 'JOB', padding: 4 },
+  tkt:     { prefix: 'TKT', padding: 4 },
+  sr:      { prefix: 'SR', padding: 4 },
+  po:      { prefix: 'PO', padding: 4 },
+  so:      { prefix: 'SO', padding: 4 },
+  badge:   { prefix: 'BADGE', padding: 4 },
+  quote:   { prefix: 'QT', padding: 4 },
+  sub:     { prefix: 'SUB', padding: 4 },
+};
+
+function normalizeSequenceCode(code) {
+  return String(code || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+}
+
+// Issues the next number for `code` atomically. Returns { code, number, prefix,
+// padding, sequence, year }. Throws if SQLite is unavailable (caller decides the
+// HTTP status / lets the client fall back to its OFFLINE- counter).
+function issueNextSequence(code, opts = {}) {
+  if (!dbSync) {
+    const err = new Error('Sequence store unavailable (SQLite inactive)');
+    err.statusCode = 503;
+    throw err;
+  }
+  const normCode = normalizeSequenceCode(code);
+  if (!normCode) {
+    const err = new Error('Sequence code is required');
+    err.statusCode = 400;
+    throw err;
+  }
+  const year = new Date().getFullYear();
+  dbSync.exec('BEGIN IMMEDIATE TRANSACTION');
+  try {
+    const existing = dbSync.prepare('SELECT code, prefix, padding, next_number, year FROM sequences WHERE code = ?').get(normCode);
+    const fallback = SEQUENCE_DEFAULTS[normCode] || { prefix: normCode.toUpperCase(), padding: 4 };
+    let prefix = existing ? existing.prefix : (opts.prefix != null ? String(opts.prefix) : fallback.prefix);
+    let padding = existing ? existing.padding : (Number.isFinite(+opts.padding) && +opts.padding > 0 ? Math.min(12, Math.floor(+opts.padding)) : fallback.padding);
+    if (!prefix) prefix = fallback.prefix;
+    if (!(padding > 0)) padding = fallback.padding;
+
+    let current;
+    if (!existing) {
+      current = 1;
+      dbSync.prepare('INSERT INTO sequences (code, prefix, padding, next_number, year) VALUES (?, ?, ?, ?, ?)')
+        .run(normCode, prefix, padding, current + 1, year);
+    } else if (existing.year !== year) {
+      // Yearly reset — new year starts back at 1.
+      current = 1;
+      dbSync.prepare('UPDATE sequences SET next_number = ?, year = ? WHERE code = ?')
+        .run(current + 1, year, normCode);
+    } else {
+      current = existing.next_number;
+      dbSync.prepare('UPDATE sequences SET next_number = ? WHERE code = ?')
+        .run(current + 1, normCode);
+    }
+    dbSync.exec('COMMIT');
+    const sequence = `${prefix}-${year}-${String(current).padStart(padding, '0')}`;
+    return { code: normCode, number: current, prefix, padding, year, sequence };
+  } catch (error) {
+    try { dbSync.exec('ROLLBACK'); } catch (_) {}
+    throw error;
+  }
+}
+
 function geminiTtsApiKey() {
   return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_TTS_API_KEY || '';
 }
@@ -1622,6 +1693,8 @@ function apiProtectionMatrix() {
     { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'localhost or system admin/finance manager only' },
     { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'localhost or system admin/finance manager only' },
     { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'localhost or system admin/finance manager only' },
+    { endpoint: 'POST /api/sequence/next', classification: 'document numbering (T1.4)', protection: 'open utility; issues next number from dedicated sequences table only (no business data touched), race-safe transaction' },
+    { endpoint: 'GET /api/sequence/peek', classification: 'document numbering read (T1.4)', protection: 'open read-only; returns next number without consuming it' },
   ];
 }
 
@@ -1649,6 +1722,37 @@ const server = http.createServer((req, res) => {
 
   // T3.1: /api/cron/* — server-side scheduler status/force-run/dismiss.
   if (octagonScheduler && octagonScheduler.handle(req, res, requestUrl)) return;
+
+  // T1.4: unified document numbering. POST /api/sequence/next {code, prefix?, padding?}
+  // -> { ok, data:{ sequence, number, ... } }. Race-safe (transaction). The
+  // client (OctagonSeq) falls back to a local OFFLINE- counter on any non-200.
+  if (requestUrl.pathname === '/api/sequence/next' && req.method === 'POST') {
+    readRequestBody(req).then(body => {
+      let parsed = {};
+      try { parsed = body ? JSON.parse(body) : {}; } catch (_) { return sendJson(res, 400, { ok: false, data: null, error: 'Invalid JSON' }); }
+      try {
+        const result = issueNextSequence(parsed.code, { prefix: parsed.prefix, padding: parsed.padding });
+        return sendJson(res, 200, { ok: true, data: result, error: null });
+      } catch (error) {
+        return sendJson(res, error.statusCode || 500, { ok: false, data: null, error: error.message || 'Sequence issue failed' });
+      }
+    }).catch(error => sendJson(res, 500, { ok: false, data: null, error: error.message || 'Sequence request failed' }));
+    return;
+  }
+
+  // T1.4: GET /api/sequence/peek?code=inv — read the NEXT number without
+  // consuming it (diagnostics / settings display; never used for issuing).
+  if (requestUrl.pathname === '/api/sequence/peek' && req.method === 'GET') {
+    try {
+      const code = normalizeSequenceCode(requestUrl.searchParams.get('code'));
+      if (!code) return sendJson(res, 400, { ok: false, data: null, error: 'code is required' });
+      if (!dbSync) return sendJson(res, 503, { ok: false, data: null, error: 'Sequence store unavailable' });
+      const row = dbSync.prepare('SELECT code, prefix, padding, next_number, year FROM sequences WHERE code = ?').get(code);
+      return sendJson(res, 200, { ok: true, data: row || null, error: null });
+    } catch (error) {
+      return sendJson(res, 500, { ok: false, data: null, error: error.message || 'Sequence peek failed' });
+    }
+  }
 
   if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
     const active = authSessionFromRequest(req);
@@ -2527,6 +2631,19 @@ function initializeDatabase() {
           userId TEXT,
           createdAt INTEGER,
           expiresAt INTEGER
+        );
+      `);
+      // T1.4: unified document numbering (Odoo ir.sequence equivalent). One row
+      // per code; next_number is issued and incremented inside a transaction so
+      // two concurrent acquire requests can never receive the same number. year
+      // enables a yearly reset (INV-2026-00042 -> INV-2027-00001).
+      dbSync.exec(`
+        CREATE TABLE IF NOT EXISTS sequences (
+          code TEXT PRIMARY KEY,
+          prefix TEXT,
+          padding INTEGER,
+          next_number INTEGER,
+          year INTEGER
         );
       `);
       restoreAuthSessionsFromDb();

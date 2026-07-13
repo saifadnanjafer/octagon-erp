@@ -1957,13 +1957,15 @@
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
   <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
   <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
+  <!-- T1.4: unified document numbering (OctagonSeq.next('inv') -> INV-2026-00042) -->
+  <script src="modules/sequence-service.js?v=20260713-t1.4-v1"></script>
   <!-- T3.3: Acl.can() coarse role x collection checks (client-side, cosmetic — server enforces) -->
   <script src="modules/acl-client.js?v=20260712-t3.3-v1"></script>
   <!-- T3.4: unified document-state registry (OctagonStates.transition()) -->
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260713-integ-t6-v19"></script>
+  <script src="app.js?v=20260713-t1.4-seq-v21"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {

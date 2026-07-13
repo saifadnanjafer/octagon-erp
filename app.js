@@ -40753,8 +40753,19 @@ window.ensurePageTemplateLoaded = async function (page) {
     // named "import_center" (which never exists), so the existence guard
     // below always misses and this fires a doomed template fetch (404) on
     // every navigation to the page.
-    import_center: 'pageImportCenter'
+    import_center: 'pageImportCenter',
+    // T6.1: system-settings.js self-renders its shell (id=pageSystemSettings).
+    system_settings: 'pageSystemSettings'
   };
+
+  // Pages whose DOM is built entirely by their own JS module (no views/*.html
+  // template). Their shell may not exist yet on the first navigation/prefetch —
+  // if we let the fetch below run before the module has appended its section it
+  // 404s on /views/<page>.html every time (the module renders correctly anyway,
+  // but the console fills with false errors). Skip the fetch for them outright;
+  // the owning module is responsible for building its own section.
+  const JS_RENDERED_PAGES = new Set(['import_center', 'system_settings']);
+  if (JS_RENDERED_PAGES.has(page)) return;
 
   const id = pageMap[page] || page;
   if (document.getElementById(id)) return;

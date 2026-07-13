@@ -65,6 +65,11 @@ const BACKUP_KEEP = 30;
 const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per hour of activity
 let lastAutoBackupMs = 0;
 const BACKUP_TAG_RE = /[^a-z0-9_]/gi;
+// T1.5: nightly backup cycle keeps the last 14 SCHEDULER-tagged snapshots and
+// logs each run to server-backup.log. Kept tag-scoped so it never trims the
+// hourly auto-backup set (keep 30) or manual snapshots.
+const NIGHTLY_BACKUP_KEEP = 14;
+const BACKUP_LOG_FILE = process.env.OCTAGON_BACKUP_LOG ? path.resolve(process.env.OCTAGON_BACKUP_LOG) : path.join(__dirname, 'server-backup.log');
 const BACKUP_DIR = process.env.OCTAGON_BACKUP_DIR ? path.resolve(process.env.OCTAGON_BACKUP_DIR) : __dirname;
 const REVIEW_REPORT_DIR = process.env.OCTAGON_REVIEW_REPORT_DIR ? path.resolve(process.env.OCTAGON_REVIEW_REPORT_DIR) : path.join(__dirname, 'review-reports');
 const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
@@ -1312,6 +1317,54 @@ function createDatabaseBackup(tag = 'manual') {
     file: backupName,
     bytes: fs.statSync(backupPath).size,
   };
+}
+
+// T1.5 — append a single audit line to server-backup.log. Best-effort; never
+// throws (a logging failure must not fail a good backup).
+function appendBackupLog(line) {
+  try {
+    fs.appendFileSync(BACKUP_LOG_FILE, `[${new Date().toISOString()}] ${line}\n`, 'utf8');
+  } catch (_) {}
+}
+
+// T1.5 — prune only backups carrying `tag`, keeping the newest `keep`. Scoped by
+// tag on purpose so the nightly cycle can enforce its own retention without
+// touching the hourly auto-backup set (pruneOldBackups(BACKUP_KEEP)) or manual
+// snapshots. Returns the number of files removed.
+function pruneBackupsByTag(tag, keep) {
+  try {
+    const safeTag = String(tag || '').replace(BACKUP_TAG_RE, '_');
+    const re = new RegExp(`^database\\.backup\\.${safeTag}\\..+\\.json$`);
+    const files = fs.readdirSync(BACKUP_DIR)
+      .filter(f => re.test(f))
+      .map(f => ({ f, t: fs.statSync(path.join(BACKUP_DIR, f)).mtimeMs }))
+      .sort((a, b) => b.t - a.t);
+    const removed = files.slice(keep);
+    removed.forEach(item => { try { fs.unlinkSync(path.join(BACKUP_DIR, item.f)); } catch (_) {} });
+    return removed.length;
+  } catch (e) {
+    return 0;
+  }
+}
+
+// T1.5 — nightly create -> verify -> prune(keep 14) -> log cycle.
+// createDatabaseBackup() already CREATES and VERIFIES (verifyBackupAgainstLive
+// throws + deletes the file on any live-vs-backup mismatch), so this wrapper
+// only adds tag-scoped pruning and the server-backup.log audit line. Passed into
+// the Phase-3 scheduler's ctx as `createDatabaseBackup`, so the existing
+// nightly_backup_verify job runs the full cycle with no scheduler-side change.
+// Returns the createDatabaseBackup result augmented with { verified, pruned, kept }.
+function runNightlyBackupCycle(tag = 'scheduler') {
+  const safeTag = String(tag || 'scheduler').replace(BACKUP_TAG_RE, '_') || 'scheduler';
+  try {
+    const result = createDatabaseBackup(safeTag);
+    const pruned = pruneBackupsByTag(safeTag, NIGHTLY_BACKUP_KEEP);
+    appendBackupLog(`OK tag=${safeTag} file=${result.file} bytes=${result.bytes} verified=true pruned=${pruned} keep=${NIGHTLY_BACKUP_KEEP}`);
+    return { ...result, verified: true, pruned, kept: NIGHTLY_BACKUP_KEEP };
+  } catch (error) {
+    appendBackupLog(`FAIL tag=${safeTag} error=${error.message || error}`);
+    throw error;
+  }
 }
 
 function userListFromDb(db) {
@@ -2696,7 +2749,10 @@ octagonScheduler = installOctagonScheduler({
   readRequestBody,
   requireRoleSession,
   isLocalRequest,
-  createDatabaseBackup,
+  // T1.5: the scheduler's nightly_backup_verify job calls ctx.createDatabaseBackup('scheduler');
+  // hand it the full create -> verify -> prune(14) -> log cycle instead of the raw
+  // create, so the nightly job satisfies T1.5 without any scheduler-side change.
+  createDatabaseBackup: runNightlyBackupCycle,
   backupStatusSnapshot,
   serverStatusSnapshot,
   routeStaticSnapshot,

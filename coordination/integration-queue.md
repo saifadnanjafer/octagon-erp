@@ -29,3 +29,4 @@ LANE-A applies at session start/end, checks the box, commits.
      per-user override map in server.js keyed on the known seed user ids. -->
 - [ ] (T6.1) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/system-settings.css?v=20260713-t6.1-v1">`
 - [ ] (T6.1) index.html after `modules/import-wizard.js`: add `<script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>`
+- [ ] (T6.2) index.html after `modules/state-registry.js` and before `app.js`: add `<script src="modules/repo.js?v=20260713-t6.2-v1"></script>`

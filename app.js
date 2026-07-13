@@ -29731,6 +29731,7 @@ function renderJournalEntryTab(selectedMoveId = '') {
             <button class="btn-secondary btn-sm" onclick="saveFinanceLockDate()">حفظ الإقفال</button>
             <button class="btn-secondary btn-sm" onclick="closeFinanceSelectedMonth()">إقفال الفترة</button>
             <button class="btn-secondary btn-sm" onclick="reopenFinancePeriod()">فتح الفترة المغلقة</button>
+            <button class="btn-secondary btn-sm" onclick="runCustomerChargeRepair()" title="إصلاح قيود العملاء المُرحّلة بيومية خاطئة (T2.2)">إصلاح قيود العملاء</button>
             ${canCreate ? '<button class="btn-primary btn-sm" onclick="openNewJEModal()">قيد يدوي</button>' : ''}
           </div>
         </div>
@@ -39819,10 +39820,93 @@ async function syncLegacyTransactionToV6(tx) {
   }
 }
 
+// T2.2 — idempotent, MANUAL repair for historical customer_charge v6 moves that
+// were mis-journaled (booked through j_purc/expense) BEFORE syncLegacyTransactionToV6
+// was corrected to route customer_charge to j_sale (debit receivables_customers,
+// credit income_sales). For each wrong move it reverses via FinanceService.cancelMove
+// (a dated reversal — never mutating a posted move in place) then re-posts a correct
+// receivable move and relinks the legacy tx's v6_move_id. Safe to run repeatedly: a
+// repaired original ends up state 'cancel' (skipped next run) and its replacement is
+// j_sale/AR (never re-flagged). Locked-period moves are reported as skipped, not
+// forced (unlocking is an owner decision — see T2.1). Pass { dryRun:true } to preview.
+async function repairCustomerChargeMoves(options = {}) {
+  const dryRun = !!options.dryRun;
+  if (!window.FinanceService || !window.PentagonDB) throw new Error('FinanceService غير جاهز');
+  const db = await window.PentagonDB.load({ force: true });
+  const moves = db.account_moves || [];
+  const legacy = (typeof getFinanceTransactions === 'function') ? getFinanceTransactions() : [];
+  const ccById = {};
+  legacy.forEach(t => { if (t && t.type === 'customer_charge') ccById[t.id] = t; });
+
+  const candidates = moves.filter(m => {
+    if (m.state !== 'posted') return false;
+    const o = String(m.origin || '');
+    if (!o.startsWith('legacy_sync/')) return false;
+    const tx = ccById[o.slice('legacy_sync/'.length)];
+    if (!tx) return false;
+    const debitsAR = (m.line_ids || []).some(l => l.account_id === 'receivables_customers' && Number(l.debit || 0) > 0);
+    return !(m.journal_id === 'j_sale' && debitsAR); // mis-journaled = not (j_sale AND debits AR)
+  });
+
+  const result = { scanned: moves.length, candidates: candidates.length, repaired: 0, skipped: 0, details: [] };
+  if (dryRun) {
+    result.details = candidates.map(m => ({ id: m.id, journal: m.journal_id, date: m.date, action: 'would-repair' }));
+    return result;
+  }
+
+  let relinked = false;
+  for (const m of candidates) {
+    const tx = ccById[String(m.origin || '').slice('legacy_sync/'.length)];
+    const amount = Number(tx.amount || 0);
+    try {
+      await FinanceService.cancelMove(m.id, { skip_backup: true, reason: 'T2.2 customer_charge journal repair' });
+      const partnerId = tx.customerId || tx.partyName || 'شريك عام';
+      const label = tx.description || 'مطالبة على عميل';
+      const fixed = await FinanceService.createMove({
+        journal_id: 'j_sale', move_type: 'entry', date: tx.date, partner_id: partnerId,
+        origin: `legacy_sync/${tx.id}`, companyId: tx.companyId || '', skip_backup: true,
+        line_ids: [
+          { account_id: (tx.accountId || 'receivables_customers'), debit: amount, credit: 0, label, partner_id: partnerId },
+          { account_id: 'income_sales', debit: 0, credit: amount, label, partner_id: partnerId },
+        ],
+      });
+      const posted = await FinanceService.postMove(fixed.id, { skip_backup: true });
+      tx.v6_move_id = posted.id; // live ref from finance.transactions — persisted by saveData below
+      relinked = true;
+      result.repaired++;
+      result.details.push({ old: m.id, new: posted.id, date: tx.date });
+    } catch (err) {
+      result.skipped++;
+      result.details.push({ id: m.id, skipped: true, reason: (err.message || String(err)).slice(0, 90) });
+    }
+  }
+  if (relinked && typeof saveData === 'function') { try { saveData(); } catch (_) {} }
+  return result;
+}
+
+// Confirm-gated UI handler (finance journal-entries tab). Manual maintenance action.
+async function runCustomerChargeRepair() {
+  try {
+    const preview = await repairCustomerChargeMoves({ dryRun: true });
+    if (!preview.candidates) {
+      if (typeof showToast === 'function') showToast('لا توجد قيود عملاء بحاجة إلى إصلاح', 'success');
+      return;
+    }
+    if (!confirm(`سيتم إصلاح ${preview.candidates} قيد عميل مُرحّل بيومية خاطئة (عكس + إعادة ترحيل صحيح). متابعة؟`)) return;
+    const res = await repairCustomerChargeMoves();
+    if (typeof showToast === 'function') showToast(`تم إصلاح ${res.repaired} قيد، وتخطّي ${res.skipped}`, res.skipped ? 'warning' : 'success');
+    if (typeof renderJournalEntryTab === 'function') renderJournalEntryTab();
+  } catch (err) {
+    if (typeof showToast === 'function') showToast(`تعذر الإصلاح: ${err.message || err}`, 'error');
+  }
+}
+
 // Expose functions to window for DOM onclick events
 window.reopenFinancePeriod = reopenFinancePeriod;
 window.openCashboxTransactionModal = openCashboxTransactionModal;
 window.syncLegacyTransactionToV6 = syncLegacyTransactionToV6;
+window.repairCustomerChargeMoves = repairCustomerChargeMoves;
+window.runCustomerChargeRepair = runCustomerChargeRepair;
 window.calculatePayrollPeriod = calculatePayrollPeriod;
 window.closePayrollPeriod = closePayrollPeriod;
 window.postPayrollAccrual = postPayrollAccrual;

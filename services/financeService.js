@@ -591,6 +591,8 @@
         moves.push(move);
         upsertLegacyJournalEntry(db, move);
         created = clone(move);
+        // T2.3: chatter-lite history, persisted in this same mutate txn.
+        if (root.TrackChanges) root.TrackChanges.recordInto(db, 'account_moves', move.id, { _event: 'created', name: move.name || '/', journal: move.journal_id, date: move.date, amount: move.amount_total });
       });
       await root.AuditService.createEvent('account_moves.created', created.id, { total: created.amount_total, move_type: created.move_type });
       return created;
@@ -607,6 +609,7 @@
         if (!move) throw new Error('القيد غير موجود');
         if (move.state !== 'draft') throw new Error('يمكن تعديل المسودة فقط');
         assertNotLocked(db, move.date, 'تعديل');
+        const beforeSnapshot = clone(move); // T2.3: pre-image for the field diff
         const date = changes.date || move.date;
         assertNotLocked(db, date, 'تعديل');
         const nextLines = changes.line_ids || changes.lines;
@@ -622,6 +625,8 @@
         move.updated_by = root.PentagonAuth?.getCurrentUser?.()?.id || 'system';
         upsertLegacyJournalEntry(db, move);
         updated = clone(move);
+        // T2.3: record the field-level diff, persisted in this same mutate txn.
+        if (root.TrackChanges) root.TrackChanges.recordDiff('account_moves', move.id, beforeSnapshot, move, undefined, db);
       });
       await root.AuditService.createEvent('account_moves.updated', updated.id, { total: updated.amount_total });
       return updated;
@@ -646,6 +651,8 @@
         move.updated_by = root.PentagonAuth?.getCurrentUser?.()?.id || 'system';
         recomputePostedHashChain(db);
         posted = clone(move);
+        // T2.3: record the post event in this same mutate txn.
+        if (root.TrackChanges) root.TrackChanges.recordInto(db, 'account_moves', move.id, { _event: 'posted', name: move.name });
       });
       await root.AuditService.createEvent('account_moves.posted', posted.id, { name: posted.name, hash: posted.hash });
       return posted;
@@ -693,6 +700,8 @@
         move.updated_by = root.PentagonAuth?.getCurrentUser?.()?.id || 'system';
         upsertLegacyJournalEntry(mutateDb, move);
         cancelled = clone(move);
+        // T2.3: record the cancel event in this same mutate txn.
+        if (root.TrackChanges) root.TrackChanges.recordInto(mutateDb, 'account_moves', original.id, { _event: 'cancelled', reversal_id: postedReversal.id });
       });
       await root.AuditService.createEvent('account_moves.cancelled', original.id, { reversal_id: postedReversal.id });
       return { cancelled, reversal: postedReversal };

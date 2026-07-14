@@ -1948,7 +1948,7 @@
   <script src="services/stateService.js?v=20260514c2"></script>
   <script src="services/permissionService.js?v=20260623-phase6d-v1"></script>
   <script src="services/stockService.js?v=20260614-tenant-service-v1"></script>
-  <script src="services/financeService.js?v=20260614-tenant-service-v1"></script>
+  <script src="services/financeService.js?v=20260713-t2.3-chatter-v1"></script>
   <script src="services/index.js?v=20260614-tenant-service-v1"></script>
   <!-- Custom API Integration for ContactBox Tools -->
   <script src="custom-api-integration.js"></script>
@@ -1961,13 +1961,15 @@
   <script src="modules/sequence-service.js?v=20260713-t1.4-v1"></script>
   <!-- T2.4: read-only trial-balance assertion (window.runTrialBalanceCheck) -->
   <script src="modules/finance-selftest.js?v=20260713-t2.4-v1"></script>
+  <!-- T2.3: chatter-lite change history (TrackChanges.record / openDrawer) -->
+  <script src="modules/change-tracker.js?v=20260713-t2.3-v2"></script>
   <!-- T3.3: Acl.can() coarse role x collection checks (client-side, cosmetic — server enforces) -->
   <script src="modules/acl-client.js?v=20260712-t3.3-v1"></script>
   <!-- T3.4: unified document-state registry (OctagonStates.transition()) -->
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260713-t2.2-ccrepair-v22"></script>
+  <script src="app.js?v=20260713-t2.3-chatter-v23"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
@@ -2114,7 +2116,7 @@
   <script src="modules/vertical-real-estate.js?v=20260624-realestate-v2-activate"></script>
   <script src="modules/vertical-hotel.js?v=20260624-hotel-v2-activate"></script>
   <!-- Workshop Unified Execution Core + Route Health diagnostic -->
-  <script src="modules/work-orders.js?v=20260614-route-hydrate-v1"></script>
+  <script src="modules/work-orders.js?v=20260713-t2.3-chatter-v1"></script>
   <!-- T3.1: read-only scheduled alerts panel (server-scheduler.js is the server half) -->
   <script src="modules/scheduled-alerts.js?v=20260712-t3.1-v1"></script>
   <script src="modules/route-health.js?v=20260709-rh-batched-yield-v4"></script>

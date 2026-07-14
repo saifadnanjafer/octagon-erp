@@ -250,6 +250,8 @@
 
     const from = wo.state;
     wo.state = to; touch(wo);
+    // T2.3: chatter-lite state history (persisted by save() below).
+    if (window.TrackChanges) window.TrackChanges.record('jobOrders', wo.id, { state: { from: STATE_AR[from] || from, to: STATE_AR[to] || to }, ref: wo.ref });
     if (to === 'cancelled') releaseReservations(wo, 'إلغاء أمر العمل');
     if (to === 'delivered') { wo.deliveredAt = nowIso(); notify('تم التسليم', wo.ref + ' — ' + wo.title + ' سُلّم للزبون', 'success', wo.id); }
     if (to === 'in_production' && !wo.productionStartedAt) wo.productionStartedAt = nowIso();

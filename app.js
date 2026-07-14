@@ -30994,6 +30994,7 @@ function renderAccountMoveDetail(move, journals, db, canUpdate) {
         <button class="btn-xs btn-primary" onclick="postJEFromUI('${escapeHtml(move.id)}')" ${canPost ? '' : lockedTip || 'disabled'}>ترحيل</button>
         <button class="btn-xs btn-secondary" onclick="unpostMoveFromUI('${escapeHtml(move.id)}')" ${canUnpost ? '' : lockedTip || 'disabled'}>إرجاع</button>
         <button class="btn-xs btn-danger" onclick="cancelMoveFromUI('${escapeHtml(move.id)}')" ${canCancel ? '' : lockedTip || 'disabled'}>إلغاء</button>
+        <button class="btn-xs btn-secondary" onclick="if(window.TrackChanges)TrackChanges.openDrawer('account_moves','${escapeHtml(move.id)}','${escapeHtml(move.name || move.id)}')" title="سجل التغييرات">📝 السجل</button>
       </div>
     </div>
     <table class="data-table tb-table">

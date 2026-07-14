@@ -1957,6 +1957,8 @@
   <script src="custom-api-examples.js"></script>
   <!-- GO 16 de-monolith: static data providers MUST load before app.js (defines getDefaultAdminSettings, getOctagonPageTruthRegistry, etc.) -->
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
+  <!-- T4.4: Equipment Management cluster; loads before app.js because ensureOmni() calls normalizeEquipment(). -->
+  <script src="modules/equipment-management.js?v=20260714-t4.4-v1"></script>
   <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
   <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
   <!-- T1.4: unified document numbering (OctagonSeq.next('inv') -> INV-2026-00042) -->
@@ -1973,7 +1975,7 @@
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260714-t4.3-analytics-v27"></script>
+  <script src="app.js?v=20260714-t4.4-equipment-v28"></script>
   <!-- T4.2 (Phase 4): Command Center cluster, moved verbatim out of app.js.
        Loads immediately AFTER app.js and BEFORE modules that wrap renderCommandCenter. -->
   <script src="modules/command-center.js?v=20260714-t4.2-v2"></script>

@@ -139,6 +139,7 @@
   };
   
   const PAGE_METADATA = {
+    home: { sensitivity: 'system/home', riskLevel: 'low', phase: 'core', label: 'Home dashboard' },
     finance: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Finance dashboard' },
     cashbox: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Cashbox' },
     expenses: { sensitivity: 'finance', riskLevel: 'high', phase: 'core', label: 'Expenses' },
@@ -176,6 +177,7 @@
     security_center: { sensitivity: 'admin/security', riskLevel: 'critical', phase: 'phase6e', label: 'Security center' },
     data_quality: { sensitivity: 'admin/data', riskLevel: 'high', phase: 'phase6e', label: 'Data quality' },
     route_health: { sensitivity: 'system/diagnostic', riskLevel: 'medium', phase: 'phase6e', label: 'Route health' },
+    system_check: { sensitivity: 'system/diagnostic', riskLevel: 'medium', phase: 'phase5', label: 'System check' },
     scenario_planner: { sensitivity: 'manager/planning', riskLevel: 'medium', phase: 'phase6e', label: 'Scenario planner' },
     device_center: { sensitivity: 'admin/device', riskLevel: 'high', phase: 'phase6e', label: 'Device center' },
     training_lms: { sensitivity: 'hr/training', riskLevel: 'medium', phase: 'phase6e', label: 'Training LMS' },
@@ -238,6 +240,7 @@
   };
 
   const PAGE_PERMISSIONS = {
+    home: [],
     finance: ['finance.user'],
     cashbox: ['finance.user'],
     expenses: ['finance.user'],
@@ -293,6 +296,7 @@
     security_center: ['system.admin'],
     data_quality: ['system.admin'],
     route_health: ['system.admin', 'workshop.manager', 'finance.manager'],
+    system_check: ['system.admin', 'workshop.manager', 'finance.manager'],
     scenario_planner: ['workshop.manager', 'finance.manager'],
     device_center: ['system.admin', 'workshop.manager'],
     training_lms: ['workshop.manager'],

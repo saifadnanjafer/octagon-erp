@@ -41,7 +41,7 @@ Done = feature-complete across all phases below. **We build everything first, th
 - AI: Gemini (`callOctagonAi`) + provider layer (`modules/ai-providers.js`, default OpenRouter/DeepSeek) + `modules/jarvis-brain.js` (LLM-as-controller with tool registry).
 
 **Modules already extracted to `modules/*.js`:** ai-providers, command-palette, command-center, data-providers,
-equipment-management, analytics-dashboard, jarvis-brain, mrp, multi-entity, nl-reporting, page-help-manual,
+equipment-management, analytics-dashboard, machine-management, jarvis-brain, mrp, multi-entity, nl-reporting, page-help-manual,
 page-qc, page-sop, tax-compliance.
 
 **Services (`services/*.js`):** auditService, financeService, permissionService, recordService, stateService, stockService, index.

@@ -36,5 +36,8 @@ LANE-A applies at session start/end, checks the box, commits.
 
 <!-- Integration queue empty as of 2026-07-13. -->
 
-- [ ] (T5.1) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">`
-- [ ] (T5.1) index.html after `modules/finance-selftest.js`: add `<script src="modules/system-check.js?v=20260714-t5.1-v1"></script>`
+- [x] (T5.1) index.html in `<head>` with the other module stylesheets: add `<link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">`
+- [x] (T5.1) index.html after `modules/finance-selftest.js`: add `<script src="modules/system-check.js?v=20260714-t5.1-v1"></script>`
+
+<!-- T5.1 wiring applied by LANE-A 2026-07-14 (claude-opus-4-8). Queue empty. -->
+

@@ -42,13 +42,13 @@ function debounceSave() {
 function updateHeaderClock() {
   const now = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  
+
   const clockEl = document.getElementById('globalClock');
   const dateEl = document.getElementById('globalDate');
-  
+
   if(clockEl) clockEl.textContent = now.toLocaleTimeString('en-GB');
   if(dateEl) dateEl.textContent = now.toLocaleDateString('ar-IQ', options);
-  
+
   if (typeof runManualAuditScanSilent === 'function') {
     try {
       window.stuckCardsCheckTimer = (window.stuckCardsCheckTimer || 0) + 1;
@@ -3267,7 +3267,7 @@ async function switchAuthUser(userId, force) {
 
   // Dev Mode flag
   const devMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
-  
+
   // Current user admin check
   const currentUser = window.PentagonAuth.getCurrentUser();
   const isAdmin = currentUser && Array.isArray(currentUser.groups) && currentUser.groups.includes('system.admin');
@@ -3330,7 +3330,7 @@ function refreshAuthUserSwitcher() {
     if (ra !== rb) return ra - rb;
     return String(a.id).localeCompare(String(b.id), 'en');
   });
-  
+
   // 1. Sidebar Switcher
   sel.innerHTML = sorted
     .map(u => {
@@ -3528,7 +3528,7 @@ async function performLogin(userId) {
       omni.users.push(userObj);
       saveData();
     }
-    
+
     if (!userObj.passwordHash) {
       const password = await showFirstTimePasswordSetup(userObj.displayName || userObj.name || userId);
       if (password === null) return; // User cancelled
@@ -3540,7 +3540,7 @@ async function performLogin(userId) {
       userObj.mustChangePassword = false;
       saveData();
       await syncServerAuthSession(userId, password);
-      
+
       if (typeof recordOmniHistoryEvent === 'function') {
         recordOmniHistoryEvent({
           module: 'auth',
@@ -3575,7 +3575,7 @@ async function performLogin(userId) {
         return;
       }
       await syncServerAuthSession(userId, password);
-      
+
       if (typeof recordOmniHistoryEvent === 'function') {
         recordOmniHistoryEvent({
           module: 'auth',
@@ -3589,10 +3589,10 @@ async function performLogin(userId) {
         });
       }
     }
-    
+
     showToast("تم تسجيل الدخول بنجاح.", "success");
     userObj.sessionStartedAt = new Date().toISOString();
-    
+
     switchAuthUser(userId, true);
     const overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.style.display = 'none';
@@ -3672,7 +3672,7 @@ function bindSidebarNavigation() {
 function enforceUIPermissions() {
   if (!window.PermissionService) return;
   const user = window.PentagonAuth.getCurrentUser();
-  
+
   // 1. Sidebar Nav
   document.querySelectorAll('.nav-btn').forEach(btn => {
     const page = btn.getAttribute('onclick')?.match(/switchPage\('([^']+)'\)/)?.[1];
@@ -3689,7 +3689,7 @@ function enforceUIPermissions() {
     document.querySelectorAll('.btn-post-je').forEach(btn => {
       btn.style.display = canPost ? '' : 'none';
     });
-    
+
     const canCreate = window.PermissionService.check('account_moves', 'create');
     const newBtn = document.querySelector('[onclick="openNewJEModal()"]');
     if (newBtn) newBtn.style.display = canCreate ? '' : 'none';
@@ -4473,7 +4473,7 @@ function recalculate() {
   if (inpPayAmountEl && !window.paymentAmountManuallyEdited) {
     inpPayAmountEl.value = Math.max(0, Math.round(result.finalSalary || 0));
   }
-  
+
   // Update the change carry-over labels
   if (typeof updatePaymentChangeDisplay === 'function') {
     updatePaymentChangeDisplay();
@@ -4481,7 +4481,7 @@ function recalculate() {
 
   // Save config
   saveData();
-  
+
   // Hide AI Response if it was shown previously for an older calculation
   const aiContainer = document.getElementById('calcAIResponseContainer');
   if (aiContainer) aiContainer.style.display = 'none';
@@ -4491,7 +4491,7 @@ async function verifyCalculatorWithAI() {
   const result = window.lastCalcResult;
   if (!result) return;
   const cfg = getConfig();
-  
+
   const btn = document.getElementById('btnVerifyCalcAI');
   const originalHtml = btn.innerHTML;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري المراجعة...';
@@ -4527,19 +4527,19 @@ ${JSON.stringify(result, null, 2)}
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    
+
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "لا يوجد رد من الذكاء الاصطناعي.";
-    
+
     const container = document.getElementById('calcAIResponseContainer');
     const responseText = document.getElementById('calcAIResponseText');
     if (container && responseText) {
       container.style.display = 'flex';
       // Format text with line breaks
       responseText.innerHTML = text.replace(/\\n/g, '<br>');
-      
+
       container.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    
+
     showToast('✨ اكتملت مراجعة الذكاء الاصطناعي', 'success');
   } catch(err) {
     console.error('AI Error:', err);
@@ -4668,15 +4668,15 @@ function updatePaymentChangeDisplay() {
   const input = document.getElementById('inpPaymentAmount');
   const lblNet = document.getElementById('lblNetRequired');
   const lblChange = document.getElementById('lblChangeCarryOver');
-  
+
   if (!result || !input) return;
-  
+
   const required = Math.round(result.finalSalary || 0);
   const paid = parseFloat(input.value) || 0;
   const change = Math.round(paid - required);
-  
+
   if (lblNet) lblNet.textContent = formatNum(required) + ' د.ع';
-  
+
   if (lblChange) {
     if (change > 0) {
       lblChange.textContent = `+${formatNum(change)} د.ع (ستُرحل كخصم/سلفة للشهر القادم)`;
@@ -4699,10 +4699,10 @@ window.updatePaymentChangeDisplay = updatePaymentChangeDisplay;
 function getLastAttendanceDate(employee) {
   if (!employee.records || employee.records.length === 0) return null;
   const attendanceStatuses = ['normal', 'permission', 'night_shift', 'holiday', 'friday_work'];
-  
+
   let allAttends = employee.records.filter(r => attendanceStatuses.includes(normalizeStatus(r.status)));
   if (allAttends.length === 0) return null;
-  
+
   // Sort descending
   allAttends.sort((a, b) => {
     if (a.year !== b.year) return b.year - a.year;
@@ -4824,7 +4824,7 @@ function renderEmployeesTableLegacyDisabled() {
     const canSeeSalary = !window.PermissionService || window.PermissionService.checkField('employees', 'salary');
     const canSeeBalance = !window.PermissionService || window.PermissionService.checkField('employees', 'prevAdvance');
     const canUpdateEmployees = !window.PermissionService || window.PermissionService.check('employees', 'update');
-    const salaryHtml = canSeeSalary 
+    const salaryHtml = canSeeSalary
       ? `<td><div class="input-with-unit" style="max-width: 150px; margin: 0 auto;"><input type="number" class="salary-input form-input" id="salary_${idx}" value="${getEmployeeNominalSalary(emp)}" ${canUpdateEmployees ? '' : 'disabled'}></div></td>`
       : `<td><div style="color:var(--text-muted); font-size:11px; text-align:center;">🔒 مخفي</div></td>`;
 
@@ -4863,10 +4863,10 @@ function saveEmployeeDataLegacyDisabled(empIdx) {
 
   const newBalance = parseFloat(balanceInput.value) || 0;
   const newSalary = parseFloat(salaryInput.value) || 0;
-  
+
   employees[empIdx].prevAdvance = newBalance;
   employees[empIdx].salary = newSalary;
-  
+
   saveData();
   renderEmployeesTable();
   showToast(`تم حفظ بيانات ${employees[empIdx].name} بنجاح`, 'success');
@@ -4930,152 +4930,7 @@ function onExpenseSourceChange() {
   if (wrap) wrap.style.display = source === 'person_pocket' ? 'block' : 'none';
 }
 
-function renderFinanceDashboard() {
-  ensureFinance();
-  setFinanceDefaultsInForms();
-  const todayCash = getCashSummaryForDate(todayISO());
-  const payrollPaid = finance.transactions.filter(tx => tx.type === 'salary_payment').reduce((sum, tx) => sum + asMoney(tx.amount), 0);
-  const customerBalances = finance.customers.reduce((sum, c) => sum + Math.max(0, getCustomerBalance(c)), 0);
-  const workshopExpenses = finance.transactions.filter(tx => (tx.type === 'expense' || tx.type === 'salary_payment') && (tx.departmentId === 'dept_workshop' || tx.departmentId === 'dept_payroll')).reduce((sum, tx) => sum + asMoney(tx.amount), 0);
-  const symbol = getAdminCurrencySymbol();
-  updateValue('financeCashBalance', `${formatNum(getCashBalance())} ${symbol}`);
-  updateValue('financeIncomeTotal', `${formatNum(getIncomeTotal())} ${symbol}`);
-  updateValue('financeExpenseTotal', `${formatNum(getExpenseTotal())} ${symbol}`);
-  updateValue('financeTodayNet', `${formatNum(todayCash.in - todayCash.out)} ${symbol}`);
-  updateValue('financePayrollPaid', `${formatNum(payrollPaid)} ${symbol}`);
-  updateValue('financeCustomerBalances', `${formatNum(customerBalances)} ${symbol}`);
-  updateValue('financeWorkshopExpenses', `${formatNum(workshopExpenses)} ${symbol}`);
-  updateValue('financeNetBalance', `${formatNum(getIncomeTotal() - getExpenseTotal())} ${symbol}`);
-
-  const tbody = document.getElementById('financeRecentBody');
-  if (tbody) {
-    const rows = getFinanceTransactions().slice(0, 8);
-    tbody.innerHTML = rows.length ? rows.map(tx => `
-      <tr>
-        <td>${tx.date}</td>
-        <td>${tx.direction === 'in' ? 'داخل' : tx.direction === 'out' ? 'خارج' : 'تسوية'}</td>
-        <td>${tx.description || getCategoryName(tx.type === 'income' ? 'income' : 'expense', tx.categoryId)}</td>
-        <td>${getDepartmentName(tx.departmentId)}</td>
-        <td>${tx.partyName || tx.paidByName || '-'}</td>
-        <td class="${tx.direction === 'in' ? 'finance-in' : 'finance-out'}">${formatNum(tx.amount)}</td>
-      </tr>
-    `).join('') : '<tr><td colspan="6" class="empty-cell">لا توجد حركات مالية بعد</td></tr>';
-  }
-
-  const accounts = document.getElementById('chartAccountsList');
-  if (accounts) {
-    const db = window.PentagonDB ? window.PentagonDB.getCached() : null;
-    const moves = db && Array.isArray(db.account_moves) ? db.account_moves.filter(m => m.state === 'posted') : [];
-    const balances = {};
-    finance.accounts.forEach(acc => { balances[acc.id] = 0; });
-    moves.forEach(move => {
-      (move.line_ids || []).forEach(line => {
-        if (balances[line.account_id] !== undefined) {
-          balances[line.account_id] += Number(line.debit || 0) - Number(line.credit || 0);
-        }
-      });
-    });
-    const symbol = getAdminCurrencySymbol();
-    accounts.innerHTML = finance.accounts.map(acc => {
-      const balance = balances[acc.id] || 0;
-      const formattedBalance = formatNum(Math.abs(balance));
-      const sideLabel = balance > 0 ? 'مدين' : balance < 0 ? 'دائن' : '';
-      const balanceClass = balance > 0 ? 'finance-in' : balance < 0 ? 'finance-out' : 'text-muted';
-      return `
-        <div class="account-row" style="display:flex; justify-content:space-between; align-items:center; padding: 6px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
-          <div style="display:flex; gap:8px; align-items:center">
-            <span class="account-code" style="background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; font-size:11px">${acc.code}</span>
-            <span>${acc.name}</span>
-          </div>
-          <div style="text-align:left">
-            <strong class="${balanceClass}" style="font-size:13px">${formattedBalance} ${symbol}</strong>
-            <small style="font-size:9px; color:var(--text-muted); display:block">${sideLabel}</small>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  const peopleBalances = document.getElementById('peopleBalancesList');
-  if (peopleBalances) {
-    const names = [...new Set([
-      ...employees.map(e => e.name).filter(Boolean),
-      ...finance.parties.filter(p => p.type === 'person').map(p => p.name).filter(Boolean)
-    ])];
-    const rows = names.map(name => ({ name, balance: getPersonBalance(name) })).filter(row => row.balance !== 0);
-    peopleBalances.innerHTML = rows.length ? rows.map(row => `
-      <div class="account-row">
-        <span class="account-code">ذمة</span>
-        <span>${row.name}</span>
-        <small class="finance-out">${formatNum(row.balance)}</small>
-      </div>
-    `).join('') : '<div class="empty-cell">لا توجد مبالغ مدفوعة من جيب الأشخاص</div>';
-  }
-
-  const deptSummary = document.getElementById('departmentSummaryList');
-  if (deptSummary) {
-    const rows = finance.departments.map(dept => {
-      const totals = finance.transactions.reduce((acc, tx) => {
-        if (tx.departmentId !== dept.id) return acc;
-        if (tx.direction === 'in') acc.in += asMoney(tx.amount);
-        if (tx.direction === 'out') acc.out += asMoney(tx.amount);
-        return acc;
-      }, { in: 0, out: 0 });
-      return { ...dept, ...totals };
-    }).filter(row => row.in || row.out);
-    deptSummary.innerHTML = rows.length ? rows.map(row => `
-      <div class="department-row">
-        <span>${row.name}</span>
-        <small class="finance-in">داخل ${formatNum(row.in)}</small>
-        <small class="finance-out">خارج ${formatNum(row.out)}</small>
-      </div>
-    `).join('') : '<div class="empty-cell">لا توجد حركة موزعة على الأقسام بعد</div>';
-  }
-  renderV6FinanceOverview();
-}
-
-function renderV6FinanceOverview() {
-  const dashboard = document.getElementById('financeTab-dashboard');
-  if (!dashboard || !window.FinanceService || !window.PentagonDB) return;
-  let overview = document.getElementById('v6FinanceOverview');
-  if (!overview) {
-    overview = document.createElement('div');
-    overview.id = 'v6FinanceOverview';
-    dashboard.prepend(overview);
-  }
-  overview.innerHTML = '<div class="glass-card" style="margin:16px 0;padding:16px;color:var(--text-muted)">جاري تحميل ملخص المحاسبة V6...</div>';
-  Promise.all([
-    FinanceService.getMoves(),
-    FinanceService.getReconciliationSummary(),
-    PentagonDB.load({ force: true }),
-  ]).then(([moves, recon, db]) => {
-    const posted = moves.filter(move => move.state === 'posted').length;
-    const draft = moves.filter(move => move.state === 'draft').length;
-    const cancelled = moves.filter(move => move.state === 'cancel').length;
-    overview.innerHTML = `
-      <div class="glass-card" style="margin:16px 0">
-        <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0">المالية V6</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">محرك القيود المحاسبية نشط · المخطط ${escapeHtml(db._schema_version || '-')} · الإصدار ${escapeHtml(db._release_tag || '-')}</div>
-          </div>
-        </div>
-        <div class="stats-grid" style="margin-bottom:12px">
-          <div class="stat-card"><span class="stat-label">القيود</span><strong>${moves.length}</strong><small>مرحّل ${posted} · مسودة ${draft} · ملغي ${cancelled}</small></div>
-          <div class="stat-card"><span class="stat-label">ذمم العملاء</span><strong>${formatNum(recon.totals?.receivables || 0)}</strong><small>${(recon.openItems || []).filter(item => item.account_id === 'receivables_customers').length} بند مفتوح</small></div>
-          <div class="stat-card"><span class="stat-label">ذمم الموردين/الرواتب</span><strong>${formatNum(recon.totals?.payables || 0)}</strong><small>${(recon.openItems || []).filter(item => item.account_id !== 'receivables_customers').length} بند مفتوح</small></div>
-          <div class="stat-card"><span class="stat-label">الدفعات والمطابقة</span><strong>${(recon.payments || []).length} / ${(recon.partials || []).length}</strong><small>دفعات / مطابقات</small></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;color:var(--text-muted);font-size:12px">
-          <span class="je-balance-chip">تاريخ الإقفال: ${escapeHtml(db._lock_date || 'غير محدد')}</span>
-          <span class="je-balance-chip">الحركات القديمة محفوظة: ${(db.journal_entries || []).length}</span>
-          <span class="je-balance-chip">القيود: ${(db.account_moves || []).length}</span>
-        </div>
-      </div>`;
-  }).catch(error => {
-    overview.innerHTML = `<div class="glass-card" style="margin:16px 0;color:var(--danger)">تعذر تحميل ملخص V6: ${escapeHtml(error.message || '')}</div>`;
-  });
-}
+// T4.6 de-monolith: renderFinanceDashboard and renderV6FinanceOverview moved to modules/finance-ui.js
 
 function renderCashbox() {
   ensureFinance();
@@ -5379,357 +5234,7 @@ function renderCustomersPage() {
   }).join('') : '<tr><td colspan="8" class="empty-cell">لا توجد أرصدة عملاء بعد</td></tr>';
 }
 
-function addFinanceDemoData(scope = 'all') {
-  ensureFinance();
-  if (!confirm('إضافة أمثلة تجريبية واضحة؟ لن يتم حذف أو استبدال أي بيانات حالية.')) return;
-  const demoTag = `demo_${scope}_${Date.now()}`;
-  let customer = finance.customers.find(c => c.name === 'عميل تجريبي');
-  if (!customer) {
-    customer = { id: makeId('cust'), name: 'عميل تجريبي', phone: '000', openingBalance: 0, notes: 'Demo record' };
-    finance.customers.push(customer);
-  }
-  const txs = [
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 250000, categoryId: 'cat_sales', departmentId: 'dept_sales', description: 'DEMO - قبض بيع نقدي', partyName: customer.name, customerId: customer.id },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 75000, categoryId: 'cat_materials', departmentId: 'dept_workshop', description: 'DEMO - شراء مواد', partyName: 'مورد تجريبي' },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 40000, categoryId: 'cat_maintenance', departmentId: 'dept_workshop', description: 'DEMO - صيانة معدات', partyName: 'فني تجريبي' },
-    { type: 'customer_charge', direction: 'neutral', sourceType: 'ledger', amount: 180000, departmentId: 'dept_projects', description: 'DEMO - مطالبة مبيعات آجلة', partyName: customer.name, customerId: customer.id },
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 90000, categoryId: 'cat_customer_payment', departmentId: 'dept_sales', description: 'DEMO - تسديد عميل', partyName: customer.name, customerId: customer.id }
-  ];
-  txs.forEach((tx, idx) => addFinanceTransaction({ ...tx, date: todayISO(), sourceId: `${demoTag}_${idx}`, receiptNo: `DEMO-${idx + 1}`, paymentMethod: tx.sourceType === 'cashbox' ? 'cash' : 'ledger' }, { skipSave: true }));
-  saveData();
-  financeRefreshAll();
-  showToast('تمت إضافة البيانات التجريبية وربطها بالداشبورد والقاصة والعملاء', 'success');
-}
-
-function financeRefreshAll() {
-  renderFinanceDashboard();
-  renderCashbox();
-  renderExpensesPage();
-  renderIncomePage();
-  renderCustomersPage();
-  renderReceiptPage();
-}
-
-// ── Sprint E: Finance V5 Tab Navigation ──────────────────────────────────────
-
-// T0.4 dedup (2026-07-12): dead copy (legacy journal_entries mirror, only
-// 5 finance sub-tabs), shadowed by the live v6/account_moves-native
-// definition further below (adds partner ledger, payments, invoices,
-// bills, statement, bank reconciliation, fiscal lock awareness). Kept per
-// add-only rule.
-function switchFinanceTab_deprecated_dup1(tab) {
-  document.querySelectorAll('.finance-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  ['dashboard', 'journal', 'trial_balance', 'pl', 'ledger'].forEach(t => {
-    const el = document.getElementById(`financeTab-${t}`);
-    if (el) el.style.display = t === tab ? '' : 'none';
-  });
-  if (tab === 'journal')        renderJournalEntryTab();
-  else if (tab === 'trial_balance') renderTrialBalanceTab();
-  else if (tab === 'pl')        renderPLTab();
-  else if (tab === 'ledger')    renderLedgerTab();
-
-  // Ensure buttons are hidden based on permissions after tab content is prepared
-  setTimeout(enforceUIPermissions, 50);
-}
-
-// T0.4 dedup (2026-07-12): dead copy (reads legacy db.journal_entries
-// mirror), shadowed by the live definition further below (reads
-// FinanceService.getMoves() against account_moves, the authoritative
-// source — see financeService.js). Kept per add-only rule.
-function renderJournalEntryTab_deprecated_dup1() {
-  const el = document.getElementById('financeTab-journal');
-  if (!el) return;
-  PentagonDB.load().then(db => {
-    const entries = (db.journal_entries || []).slice().reverse();
-    const journals = (db.journals || []);
-    const journalOpts = journals.map(j => `<option value="${escapeHtml(j.id)}">${escapeHtml(j.name)}</option>`).join('');
-    const accounts = (finance?.accounts || []);
-    const accountOpts = accounts.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.code)} - ${escapeHtml(a.name)}</option>`).join('');
-
-    const reversedIds = new Set((db.journal_entries || []).map(e => e.reversed_of).filter(Boolean));
-    const canReverse = !window.PermissionService || window.PermissionService.check('journal_entries', 'update');
-    const rows = entries.slice(0, 50).map(e => {
-      const stateCls = e.state === 'posted' ? 'je-state-posted' : e.state === 'cancel' ? 'je-state-cancel' : 'je-state-draft';
-      const stateLabel = e.state === 'posted' ? 'مرحّل' : e.state === 'cancel' ? 'ملغي' : 'مسودة';
-      const isReversal = !!e.reversed_of;
-      const isReversed = reversedIds.has(e.id);
-      const showReverseBtn = e.state === 'posted' && canReverse && !isReversal && !isReversed;
-      const reversedNote = isReversed ? '<span class="je-reversed-note" style="font-size:11px;color:var(--text-muted)">معكوس</span>' : '';
-      const reversalNote = isReversal ? '<span class="je-reversal-note" style="font-size:11px;color:var(--text-muted)">قيد عكس</span>' : '';
-      return `<tr>
-        <td>${escapeHtml(e.date || '')}</td>
-        <td>${escapeHtml(e.name || '')} ${reversalNote}${reversedNote}</td>
-        <td>${escapeHtml((journals.find(j => j.id === e.journal_id) || {}).name || e.journal_id || '')}</td>
-        <td>${formatNum(e.amount_total || 0)}</td>
-        <td><span class="je-state-badge ${stateCls}">${stateLabel}</span></td>
-        <td>${e.state === 'draft' ? `<button class="btn-xs btn-primary btn-post-je" onclick="postJEFromUI('${escapeHtml(e.id)}')">ترحيل</button>` : ''}
-            ${showReverseBtn ? `<button class="btn-xs btn-secondary btn-reverse-je" onclick="reverseJEFromUI('${escapeHtml(e.id)}')">عكس</button>` : ''}</td>
-      </tr>`;
-    }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">لا توجد قيود بعد</td></tr>`;
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <h3 class="section-title" style="margin:0">القيود اليومية</h3>
-          <button class="btn-primary btn-sm" onclick="openNewJEModal()">+ قيد جديد</button>
-        </div>
-        <table class="data-table je-table">
-          <thead><tr><th>التاريخ</th><th>الاسم</th><th>اليومية</th><th>المبلغ</th><th>الحالة</th><th>إجراء</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      <div id="newJEForm" style="display:none" class="glass-card je-form-card">
-        <h3 class="section-title">قيد جديد</h3>
-        <div class="je-form-row">
-          <label>اليومية<select id="jeJournal" class="form-input">${journalOpts}</select></label>
-          <label>التاريخ<input id="jeDate" type="date" class="form-input" value="${todayISO()}"></label>
-          <label>المرجع<input id="jeOrigin" type="text" class="form-input" placeholder="اختياري"></label>
-        </div>
-        <div id="jeLinesContainer">
-          <div class="je-lines-grid je-lines-header"><span>#</span><span>الحساب</span><span>البيان</span><span>مدين</span><span>دائن</span><span></span></div>
-          <div id="jeLines"></div>
-        </div>
-        <button class="btn-secondary btn-sm" onclick="addJELine('${accountOpts.replace(/'/g,"\\'")}')">+ سطر</button>
-        <div class="je-footer-row">
-          <div id="jeBalanceChip" class="je-balance-chip">—</div>
-          <div>
-            <button class="btn-secondary btn-sm" onclick="document.getElementById('newJEForm').style.display='none'">إلغاء</button>
-            <button class="btn-primary btn-sm" onclick="saveNewJE()">حفظ مسودة</button>
-          </div>
-        </div>
-      </div>`;
-    enforceUIPermissions();
-  }).catch(() => { el.innerHTML = '<p style="color:var(--danger)">خطأ في تحميل القيود</p>'; });
-}
-
-// DEPRECATED / DEAD CODE (confirmed during the 2026-07-04 audit): this is the
-// FIRST of two top-level definitions of openNewJEModal/saveNewJE/postJEFromUI/
-// reverseJEFromUI in this file. JavaScript's "last function declaration wins"
-// means the SECOND set (further down, around line 26770+) is what actually
-// runs in the browser — this block is unreachable. It happens to be safe even
-// if it were reachable (FinanceService.createJournalEntry/postJournalEntry are
-// thin aliases for createMove/postMove, so it never bypassed account_moves),
-// but per the source-of-truth rule (account_moves is authoritative,
-// journal_entries is legacy/mirror only — see financeService.js) this dead
-// copy should not be extended or used as a reference; the live version below
-// already does the right thing (FinanceService.createMove/postMove/cancelMove
-// against account_moves). Left in place rather than deleted per the add-only
-// convention — safe to remove in a future cleanup pass.
-// T0.4 dedup (2026-07-12): renamed to satisfy Gate B (duplicate top-level
-// function name), no behavior change — see the 2026-07-04 audit note above.
-function openNewJEModal_deprecated_dup1() {
-  if (window.PermissionService && !window.PermissionService.check('journal_entries', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
-  }
-  const form = document.getElementById('newJEForm');
-  if (!form) return;
-  form.style.display = '';
-  document.getElementById('jeLines').innerHTML = '';
-  const accountOpts = (finance?.accounts || []).map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.code)} - ${escapeHtml(a.name)}</option>`).join('');
-  addJELine(accountOpts);
-  addJELine(accountOpts);
-  updateJEBalanceChip();
-}
-
-function addJELine(accountOpts) {
-  const container = document.getElementById('jeLines');
-  if (!container) return;
-  const idx = container.children.length;
-  const div = document.createElement('div');
-  div.className = 'je-lines-grid je-line-row';
-  div.innerHTML = `<span>${idx + 1}</span>
-    <select class="form-input je-account" onchange="updateJEBalanceChip()">${accountOpts}</select>
-    <input type="text" class="form-input je-label" placeholder="البيان">
-    <input type="number" class="form-input je-debit"  min="0" value="0" oninput="if(+this.value>0)this.closest('.je-line-row').querySelector('.je-credit').value=0;updateJEBalanceChip()">
-    <input type="number" class="form-input je-credit" min="0" value="0" oninput="if(+this.value>0)this.closest('.je-line-row').querySelector('.je-debit').value=0;updateJEBalanceChip()">
-    <button class="btn-xs btn-danger" onclick="this.closest('.je-line-row').remove();updateJEBalanceChip()">×</button>`;
-  container.appendChild(div);
-}
-
-function updateJEBalanceChip() {
-  const chip = document.getElementById('jeBalanceChip');
-  if (!chip) return;
-  let debit = 0, credit = 0;
-  document.querySelectorAll('#jeLines .je-line-row').forEach(row => {
-    debit  += Number(row.querySelector('.je-debit')?.value  || 0);
-    credit += Number(row.querySelector('.je-credit')?.value || 0);
-  });
-  const balanced = debit > 0 && Math.abs(debit - credit) < 0.01;
-  chip.textContent = balanced ? `✅ متوازن — ${formatNum(debit)} د.ع` : `❌ غير متوازن: مدين ${formatNum(debit)} — دائن ${formatNum(credit)}`;
-  chip.className = `je-balance-chip ${balanced ? 'balanced' : 'unbalanced'}`;
-}
-
-function saveNewJE_deprecated_dup1() {
-  if (window.PermissionService && !window.PermissionService.check('journal_entries', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
-  }
-  const journalId = document.getElementById('jeJournal')?.value;
-  const date      = document.getElementById('jeDate')?.value || todayISO();
-  const origin    = document.getElementById('jeOrigin')?.value.trim() || '';
-  const lines = [];
-  document.querySelectorAll('#jeLines .je-line-row').forEach(row => {
-    lines.push({
-      account_id: row.querySelector('.je-account')?.value || '',
-      label:      row.querySelector('.je-label')?.value  || '',
-      debit:      Number(row.querySelector('.je-debit')?.value  || 0),
-      credit:     Number(row.querySelector('.je-credit')?.value || 0),
-    });
-  });
-  if (!window.FinanceService) return showToast('FinanceService غير محمّل', 'error');
-  if (lines.length < 2) return showToast('القيد يحتاج سطرين على الأقل', 'warning');
-  if (lines.some(l => !l.account_id)) return showToast('اختر حساباً لكل سطر', 'warning');
-  FinanceService.createJournalEntry({ journal_id: journalId, date, origin, lines })
-    .then(() => { showToast('تم حفظ القيد كمسودة', 'success'); document.getElementById('newJEForm').style.display = 'none'; renderJournalEntryTab(); })
-    .catch(e => showToast(e.message || 'خطأ في حفظ القيد', 'error'));
-}
-
-function postJEFromUI_deprecated_dup1(entryId) {
-  if (!window.FinanceService) return showToast('FinanceService غير محمّل', 'error');
-  if (window.PermissionService && !window.PermissionService.check('journal_entries', 'update')) {
-    return showToast('ليس لديك صلاحية ترحيل القيود', 'warning');
-  }
-  FinanceService.postJournalEntry(entryId)
-    .then(() => { showToast('تم ترحيل القيد', 'success'); renderJournalEntryTab(); })
-    .catch(e => showToast(e.message || 'خطأ في الترحيل', 'error'));
-}
-
-function reverseJEFromUI_deprecated_dup1(entryId) {
-  if (!window.FinanceService) return showToast('FinanceService غير محمّل', 'error');
-  if (window.PermissionService && !window.PermissionService.check('journal_entries', 'update')) {
-    return showToast('ليس لديك صلاحية عكس القيود', 'warning');
-  }
-  if (!window.confirm('سيتم إنشاء قيد عكس مرحّل لهذا القيد. هل تريد المتابعة؟')) return;
-  FinanceService.reverseEntry(entryId)
-    .then(() => { showToast('تم إنشاء قيد العكس وترحيله', 'success'); renderJournalEntryTab(); })
-    .catch(e => showToast(e.message || 'خطأ في العكس', 'error'));
-}
-
-function renderTrialBalanceTab() {
-  const el = document.getElementById('financeTab-trial_balance');
-  if (!el) return;
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري التحميل...</div>';
-  const dateFrom = '';
-  const dateTo   = '';
-  if (!window.FinanceService) { el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>'; return; }
-  FinanceService.getTrialBalance({ dateFrom, dateTo }).then(tb => {
-    if (!tb.length) { el.innerHTML = '<div class="glass-card" style="padding:24px;margin-top:16px;color:var(--text-muted)">لا توجد قيود مرحّلة بعد</div>'; return; }
-    const totalD = tb.reduce((s, r) => s + r.total_debit, 0);
-    const totalC = tb.reduce((s, r) => s + r.total_credit, 0);
-    const balanced = Math.abs(totalD - totalC) < 0.01;
-    const rows = tb.map(r => `<tr style="cursor:pointer" title="انقر لعرض الأستاذ" onclick="switchFinanceTab('ledger');setTimeout(()=>{const s=document.getElementById('ledgerAccount');if(s){s.value='${escapeHtml(r.account_id)}';loadLedgerData();}},50)">
-      <td>${escapeHtml(r.code)}</td>
-      <td>${escapeHtml(r.name)}</td>
-      <td class="num-cell">${formatNum(r.total_debit)}</td>
-      <td class="num-cell">${formatNum(r.total_credit)}</td>
-      <td class="num-cell ${r.balance >= 0 ? 'finance-in' : 'finance-out'}">${formatNum(Math.abs(r.balance))} ${r.balance >= 0 ? 'مدين' : 'دائن'}</td>
-    </tr>`).join('');
-    el.innerHTML = `<div class="glass-card" style="margin-top:16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h3 class="section-title" style="margin:0">ميزان المراجعة</h3>
-        ${!balanced ? '<span style="color:var(--danger);font-weight:600">⚠️ الميزان غير صفري</span>' : '<span style="color:var(--success)">✅ متوازن</span>'}
-      </div>
-      <table class="data-table tb-table">
-        <thead><tr><th>الكود</th><th>الحساب</th><th class="num-cell">مدين</th><th class="num-cell">دائن</th><th class="num-cell">الرصيد</th></tr></thead>
-        <tbody>${rows}</tbody>
-        <tfoot><tr><td colspan="2"><strong>المجموع</strong></td><td class="num-cell"><strong>${formatNum(totalD)}</strong></td><td class="num-cell"><strong>${formatNum(totalC)}</strong></td><td></td></tr></tfoot>
-      </table>
-    </div>`;
-  }).catch(() => { el.innerHTML = '<p style="color:var(--danger)">خطأ في تحميل الميزان</p>'; });
-}
-
-function renderPLTab() {
-  const el = document.getElementById('financeTab-pl');
-  if (!el) return;
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري التحميل...</div>';
-  if (!window.FinanceService) { el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>'; return; }
-  FinanceService.getProfitAndLoss().then(pl => {
-    const incRows = pl.income.map(r => `<div class="pl-row"><span>${escapeHtml(r.name)}</span><span class="num-cell finance-in">${formatNum(r.amount)}</span></div>`).join('') || '<div class="pl-row" style="color:var(--text-muted)">لا إيرادات</div>';
-    const expRows = pl.expense.map(r => `<div class="pl-row"><span>${escapeHtml(r.name)}</span><span class="num-cell finance-out">${formatNum(r.amount)}</span></div>`).join('') || '<div class="pl-row" style="color:var(--text-muted)">لا مصروفات</div>';
-    const netCls  = pl.net >= 0 ? 'finance-in' : 'finance-out';
-    el.innerHTML = `<div class="glass-card pl-section" style="margin-top:16px">
-      <h3 class="section-title">الأرباح والخسائر</h3>
-      <div class="pl-section-title">الإيرادات</div>
-      ${incRows}
-      <div class="pl-row pl-subtotal"><span>إجمالي الإيرادات</span><span class="num-cell finance-in">${formatNum(pl.totalIncome)}</span></div>
-      <div class="pl-section-title" style="margin-top:16px">المصروفات</div>
-      ${expRows}
-      <div class="pl-row pl-subtotal"><span>إجمالي المصروفات</span><span class="num-cell finance-out">${formatNum(pl.totalExpense)}</span></div>
-      <div class="pl-row pl-net-row"><span>صافي الربح / (الخسارة)</span><span class="num-cell ${netCls}">${formatNum(Math.abs(pl.net))} ${pl.net >= 0 ? '(ربح)' : '(خسارة)'}</span></div>
-    </div>`;
-  }).catch(() => { el.innerHTML = '<p style="color:var(--danger)">خطأ في تحميل قائمة الأرباح</p>'; });
-}
-
-function renderLedgerTab() {
-  const el = document.getElementById('financeTab-ledger');
-  if (!el) return;
-  const accounts = (finance?.accounts || []);
-  const accountOpts = accounts.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.code)} - ${escapeHtml(a.name)}</option>`).join('');
-  el.innerHTML = `<div class="glass-card" style="margin-top:16px">
-    <h3 class="section-title">دفتر الأستاذ</h3>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end">
-      <label style="flex:1;min-width:200px">الحساب<select id="ledgerAccount" class="form-input" onchange="loadLedgerData()">${accountOpts}</select></label>
-      <label>من<input id="ledgerFrom" type="date" class="form-input" onchange="loadLedgerData()"></label>
-      <label>إلى<input id="ledgerTo" type="date" class="form-input" onchange="loadLedgerData()"></label>
-      <button class="btn-primary btn-sm" onclick="loadLedgerData()">عرض</button>
-    </div>
-    <div id="ledgerTableContainer"></div>
-  </div>`;
-  setTimeout(loadLedgerData, 50);
-}
-
-function loadLedgerData() {
-  const accountId = document.getElementById('ledgerAccount')?.value;
-  const dateFrom  = document.getElementById('ledgerFrom')?.value || '';
-  const dateTo    = document.getElementById('ledgerTo')?.value   || '';
-  const container = document.getElementById('ledgerTableContainer');
-  if (!container || !accountId) return;
-  container.innerHTML = '<div style="color:var(--text-muted)">جاري التحميل...</div>';
-  if (!window.FinanceService) { container.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>'; return; }
-  FinanceService.getLedger(accountId, { dateFrom, dateTo }).then(({ account, rows }) => {
-    if (!rows.length) { container.innerHTML = '<div style="color:var(--text-muted);padding:12px">لا حركات لهذا الحساب</div>'; return; }
-    
-    // Calculate total debit, total credit, and final balance
-    const totalDebit = rows.reduce((sum, r) => sum + Number(r.debit || 0), 0);
-    const totalCredit = rows.reduce((sum, r) => sum + Number(r.credit || 0), 0);
-    const endingBalance = rows.length ? rows[rows.length - 1].running_balance : 0;
-    const symbol = getAdminCurrencySymbol();
-    
-    const summaryCards = `
-      <div class="stats-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px;">
-        <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-          <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">إجمالي مدين (+)</span>
-          <strong style="font-size: 16px; color: #34d399;">${formatNum(totalDebit)} <small>${symbol}</small></strong>
-        </div>
-        <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-          <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">إجمالي دائن (-)</span>
-          <strong style="font-size: 16px; color: #f87171;">${formatNum(totalCredit)} <small>${symbol}</small></strong>
-        </div>
-        <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-          <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">الرصيد الختامي</span>
-          <strong style="font-size: 16px; color: ${endingBalance >= 0 ? '#38bdf8' : '#fb923c'};">${formatNum(endingBalance)} <small>${symbol}</small></strong>
-        </div>
-      </div>
-    `;
-
-    const trs = rows.map(r => `<tr>
-      <td>${escapeHtml(r.entry_date || '')}</td>
-      <td>${escapeHtml(r.entry_name || '')}</td>
-      <td>${escapeHtml(r.label || '')}</td>
-      <td class="num-cell">${r.debit  > 0 ? formatNum(r.debit)  : ''}</td>
-      <td class="num-cell">${r.credit > 0 ? formatNum(r.credit) : ''}</td>
-      <td class="num-cell ${r.running_balance >= 0 ? 'finance-in' : 'finance-out'}">${formatNum(r.running_balance)}</td>
-    </tr>`).join('');
-    
-    container.innerHTML = `
-      ${summaryCards}
-      <table class="data-table tb-table">
-        <thead><tr><th>التاريخ</th><th>القيد</th><th>البيان</th><th class="num-cell">مدين</th><th class="num-cell">دائن</th><th class="num-cell">الرصيد الجاري</th></tr></thead>
-        <tbody>${trs}</tbody>
-      </table>`;
-  }).catch(() => { container.innerHTML = '<p style="color:var(--danger)">خطأ في تحميل الأستاذ</p>'; });
-}
+// T4.6 de-monolith: Demo Data, Refresher, Deprecated V5 Move Tab / Form Handlers, and Reports moved to modules/finance-ui.js
 
 function defaultOmniState() {
   return {
@@ -6048,7 +5553,7 @@ function resetSurfaceViewStateForExamples() {
 
 function seedCompanyStructure() {
   if (omni.companySeededV1) return;
-  
+
   // 1. Task Manager Spaces
   const newSpaces = [
     { id: makeId('space'), name: 'إعادة التدوير', departments: [{ id: makeId('dep'), name: 'عمليات', sections: []}, { id: makeId('dep'), name: 'جودة', sections: []}] },
@@ -6062,13 +5567,13 @@ function seedCompanyStructure() {
     { id: makeId('space'), name: 'الأشخاص والموارد البشرية', departments: [{ id: makeId('dep'), name: 'موظفين', sections: []}, { id: makeId('dep'), name: 'شركاء', sections: []}] },
     { id: makeId('space'), name: 'مشاريع العملاء', departments: [{ id: makeId('dep'), name: 'نشط', sections: []}, { id: makeId('dep'), name: 'مقترح', sections: []}, { id: makeId('dep'), name: 'مكتمل', sections: []}] }
   ];
-  
+
   if (!omni.taskManager) omni.taskManager = { spaces: [] };
   // Prepend to spaces if they don't already exist to avoid duplication
   const existingSpaceNames = omni.taskManager.spaces.map(s => s.name);
   const spacesToAdd = newSpaces.filter(s => !existingSpaceNames.includes(s.name));
   omni.taskManager.spaces = [...spacesToAdd, ...(omni.taskManager.spaces || [])];
-  
+
   // 2. SOP Hub stubs
   const newSops = [
     { id: makeId('sop'), title: 'دليل هوية الورشة', type: 'Strategy', owner: 'إدارة الورشة', text: 'شعار الورشة، الألوان، الرؤية والرسالة.' },
@@ -6077,7 +5582,7 @@ function seedCompanyStructure() {
   ];
   if (!omni.sops) omni.sops = [];
   omni.sops.push(...newSops);
-  
+
   // 3. Workflow Templates for specific lines
   if (!omni.workflow) omni.workflow = { nodes: [], edges: [], version: 1 };
   if (omni.workflow.nodes.length === 0) {
@@ -6411,7 +5916,7 @@ function normalizeOmniPurchaseOrders() {
   omni.purchaseOrders.forEach(po => {
     if (!po.id) po.id = makeId('po');
     if (po.requestId === undefined) po.requestId = '';
-    
+
     // Support multi-line items. If missing, initialize from single-line properties
     if (!Array.isArray(po.items)) {
       po.items = [{
@@ -6423,7 +5928,7 @@ function normalizeOmniPurchaseOrders() {
         unitCost: Number(po.unitCost ?? 0) || 0
       }];
     }
-    
+
     // Normalize items
     po.items.forEach(item => {
       if (item.materialId === undefined) item.materialId = '';
@@ -6505,7 +6010,7 @@ function normalizeOmniSuppliers() {
     const linked = (omni.materials || []).filter(m => String(m.supplier || '').trim() === s.name);
     linked.forEach(m => { if (!m.supplierId) m.supplierId = s.id; });
     s.materials = Array.from(new Set([...(s.materials || []), ...linked.map(m => m.id)]));
-    
+
     // Build and sync catalog
     s.catalog = s.catalog || [];
     s.materials.forEach(matId => {
@@ -6919,19 +6424,19 @@ function getSupervisorForEmployee(empIdentifier) {
   ensureOmni();
   if (empIdentifier === undefined || empIdentifier === null || String(empIdentifier).trim() === '') return null;
   const routing = omni.adminSettings?.supervisorRouting || {};
-  
+
   const empIdx = (employees || []).findIndex((e, idx) => {
-    return String(idx) === String(empIdentifier) || 
-           (e && String(e.id || '') === String(empIdentifier)) || 
+    return String(idx) === String(empIdentifier) ||
+           (e && String(e.id || '') === String(empIdentifier)) ||
            (e && String(e.name || '').trim() === String(empIdentifier).trim());
   });
-  
+
   const emp = (employees || [])[empIdx];
   if (!emp) return null;
-  
+
   const supervisorId = routing[emp.id] || routing[emp.name] || routing[empIdx];
   if (!supervisorId) return null;
-  
+
   const supervisors = getOrgSupervisors();
   const supervisor = supervisors.find(s => s && (String(s.id) === String(supervisorId) || String(s.name) === String(supervisorId)));
   return supervisor || null;
@@ -7103,58 +6608,58 @@ function requestMatchesCategory(req, category) {
 
 function getRequestBadgeAndIcon(req) {
   if (req.sourceType === 'whatsapp' || req.type === 'whatsapp') {
-    return { 
-      label: 'رسالة WhatsApp', 
-      icon: 'fa-whatsapp', 
-      color: '#10b981', 
-      bg: 'rgba(16, 185, 129, 0.15)' 
+    return {
+      label: 'رسالة WhatsApp',
+      icon: 'fa-whatsapp',
+      color: '#10b981',
+      bg: 'rgba(16, 185, 129, 0.15)'
     };
   }
   if (req.type === 'ai_proposal' || req.type === 'ai_analysis' || req.sourceType === 'ai_control') {
-    return { 
-      label: 'مقترح ذكي AI', 
-      icon: 'fa-robot', 
-      color: '#38bdf8', 
-      bg: 'rgba(56, 189, 248, 0.15)' 
+    return {
+      label: 'مقترح ذكي AI',
+      icon: 'fa-robot',
+      color: '#38bdf8',
+      bg: 'rgba(56, 189, 248, 0.15)'
     };
   }
   if (req.type === 'purchase') {
-    return { 
-      label: 'طلب شراء', 
-      icon: 'fa-cart-shopping', 
-      color: '#fbbf24', 
-      bg: 'rgba(251, 191, 36, 0.15)' 
+    return {
+      label: 'طلب شراء',
+      icon: 'fa-cart-shopping',
+      color: '#fbbf24',
+      bg: 'rgba(251, 191, 36, 0.15)'
     };
   }
   if (req.type === 'leave') {
-    return { 
-      label: 'طلب إجازة', 
-      icon: 'fa-calendar-minus', 
-      color: '#a855f7', 
-      bg: 'rgba(168, 85, 247, 0.15)' 
+    return {
+      label: 'طلب إجازة',
+      icon: 'fa-calendar-minus',
+      color: '#a855f7',
+      bg: 'rgba(168, 85, 247, 0.15)'
     };
   }
   if (req.type === 'advance') {
-    return { 
-      label: 'طلب سلفة', 
-      icon: 'fa-hand-holding-dollar', 
-      color: '#22d3ee', 
-      bg: 'rgba(34, 211, 238, 0.15)' 
+    return {
+      label: 'طلب سلفة',
+      icon: 'fa-hand-holding-dollar',
+      color: '#22d3ee',
+      bg: 'rgba(34, 211, 238, 0.15)'
     };
   }
   if (req.type === 'attendance_correction') {
-    return { 
-      label: 'تصحيح بصمة', 
-      icon: 'fa-fingerprint', 
-      color: '#f43f5e', 
-      bg: 'rgba(244, 63, 94, 0.15)' 
+    return {
+      label: 'تصحيح بصمة',
+      icon: 'fa-fingerprint',
+      color: '#f43f5e',
+      bg: 'rgba(244, 63, 94, 0.15)'
     };
   }
-  return { 
-    label: getOmniRequestTypeLabel(req.type), 
-    icon: 'fa-clipboard-question', 
-    color: '#94a3b8', 
-    bg: 'rgba(148, 163, 184, 0.15)' 
+  return {
+    label: getOmniRequestTypeLabel(req.type),
+    icon: 'fa-clipboard-question',
+    color: '#94a3b8',
+    bg: 'rgba(148, 163, 184, 0.15)'
   };
 }
 
@@ -7175,17 +6680,17 @@ function setRequestSupervisorFilter(supId) {
 
 function renderCommandCenterRequests(activeType = 'all') {
   ensureOmni();
-  
+
   if (activeType !== 'all' && activeRequestCategory === 'all') {
     activeRequestCategory = activeType;
   }
-  
+
   const allReqs = omni.requests || [];
-  
+
   // Counts
   const pendingCount = allReqs.filter(req => req.status === 'pending').length;
   const historyCount = allReqs.filter(req => req.status === 'approved' || req.status === 'rejected').length;
-  
+
   // Section filter
   let sectionFiltered = [];
   if (activeRequestSection === 'pending') {
@@ -7193,20 +6698,20 @@ function renderCommandCenterRequests(activeType = 'all') {
   } else {
     sectionFiltered = allReqs.filter(req => req.status === 'approved' || req.status === 'rejected');
   }
-  
+
   // Supervisor filter (only for pending)
   if (activeRequestSection === 'pending' && routedSupervisorFilter) {
     sectionFiltered = sectionFiltered.filter(req => String(req.routedSupervisorId) === String(routedSupervisorFilter));
   }
-  
+
   // Category filter
   const categoryFiltered = sectionFiltered.filter(req => requestMatchesCategory(req, activeRequestCategory));
-  
+
   const getTabCount = (cat) => {
-    let items = activeRequestSection === 'pending' 
+    let items = activeRequestSection === 'pending'
       ? allReqs.filter(req => req.status === 'pending')
       : allReqs.filter(req => req.status === 'approved' || req.status === 'rejected');
-      
+
     if (activeRequestSection === 'pending' && routedSupervisorFilter) {
       items = items.filter(req => String(req.routedSupervisorId) === String(routedSupervisorFilter));
     }
@@ -7254,7 +6759,7 @@ function renderCommandCenterRequests(activeType = 'all') {
           <i class="fa-solid fa-tag" style="font-size: 9px;"></i> ${escapeHtml(typeLabel)}: ${escapeHtml(ent.value || ent.name || ent)}
         </span>`;
       }).join('');
-      
+
       const attachments = (req.payload?.attachmentPlaceholders || []).map(att => {
         if (att.type === 'voice' || att.type === 'audio') {
           return `<div class="cc-voice-attachment" style="margin-top: 8px;">
@@ -7447,7 +6952,7 @@ function renderCommandCenterRequests(activeType = 'all') {
           </div>
           <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 600; color: var(--text-main);">${escapeHtml(req.title)}</h4>
           <p style="margin: 0; font-size: 13px; color: var(--text-body); line-height: 1.5;">${escapeHtml(req.description || '')}</p>
-          
+
           ${renderCardDetails(req)}
           ${decisionNotesHtml}
 
@@ -7500,9 +7005,9 @@ function renderCommandCenterRequests(activeType = 'all') {
           </button>
         </div>
       </div>
-      
+
       ${supervisorFilterHtml}
-      
+
       <div class="cc-request-tabs">
         ${tabsHtml}
       </div>
@@ -7878,7 +7383,7 @@ async function receivePurchaseOrder(poId) {
   po.receipts = po.receipts || [];
   const receiptNumber = po.receipts.length + 1;
   const receiptDate = new Date().toISOString();
-  
+
   let totalReceiptValue = 0;
   let allLinesReceived = true;
 
@@ -8073,7 +7578,7 @@ function confirmPurchaseOrder(poId) {
   ensureOmni();
   const po = (omni.purchaseOrders || []).find(p => p.id === poId);
   if (!po || !['draft', 'sent'].includes(po.status)) return;
-  
+
   // If user is Admin or supervisor routing bypassed, approve immediately. Otherwise, it could require approval.
   // In our simplified workshop workflow, we confirm and approve directly but log it.
   po.status = 'approved';
@@ -8081,7 +7586,7 @@ function confirmPurchaseOrder(poId) {
   po.approvedBy = 'المدير';
   po.activityLog = po.activityLog || [];
   po.activityLog.unshift({ date: po.approvedAt, text: 'تم اعتماد طلب الشراء وتحويله لأمر شراء رسمي (PO)' });
-  
+
   // Create Kanban Card
   const card = {
     id: makeId('card'),
@@ -8102,7 +7607,7 @@ function confirmPurchaseOrder(poId) {
 
   addOmniSystemLog({ action: 'purchase_order_approved', message: `تم اعتماد أمر الشراء ${po.id} لـ ${po.supplierName}`, page: 'inventory', entityType: 'purchase_order', entityId: po.id, severity: 'success' });
   createOmniNotification({ type: 'purchase', title: 'تم اعتماد أمر الشراء', message: `أمر الشراء ${po.id} جاهز للتوريد`, sourcePage: 'inventory', sourceType: 'purchase_order', sourceId: po.id, severity: 'success', actionPage: 'inventory' });
-  
+
   saveData();
   showToast('تم اعتماد أمر الشراء (PO) وتوليد بطاقة كانبان', 'success');
   if (currentPage === 'inventory') renderInventoryPage();
@@ -8117,7 +7622,7 @@ function cancelPurchaseOrder(poId) {
   po.cancelledAt = new Date().toISOString();
   po.activityLog = po.activityLog || [];
   po.activityLog.unshift({ date: po.cancelledAt, text: 'تم إلغاء أمر الشراء' });
-  
+
   // Archive kanban card if exists
   if (po.cardId) {
     const card = (omni.kanban.cards || []).find(c => c.id === po.cardId);
@@ -8184,7 +7689,7 @@ function createMultiLineRFQ(supplierId, supplierName, items, notes = '') {
     receipts: [],
     activityLog: [{ date: new Date().toISOString(), text: 'تم إنشاء طلب عرض سعر (RFQ) كمسودة تلقائية' }]
   };
-  
+
   if (po.items.length > 0) {
     po.materialId = po.items[0].materialId;
     po.materialName = po.items[0].materialName;
@@ -8226,7 +7731,7 @@ function addMaterialToSupplierCatalog(supplierId, materialId, negotiatedPrice, S
   sup.catalog = sup.catalog || [];
   const exists = sup.catalog.some(c => c.materialId === materialId);
   if (exists) return false;
-  
+
   const mat = getMaterialById(materialId);
   sup.catalog.push({
     materialId,
@@ -8235,7 +7740,7 @@ function addMaterialToSupplierCatalog(supplierId, materialId, negotiatedPrice, S
     leadTime: Number(leadTime) || 3
   });
   if (!sup.materials.includes(materialId)) sup.materials.push(materialId);
-  
+
   saveData();
   return true;
 }
@@ -9352,10 +8857,10 @@ function moveWorkflowNodePointer(event) {
     workflowInteractionState.mode = 'drag';
     closeWorkflowNodeQuickMenu();
   }
-  
+
   node.x = Math.max(10, Math.round(workflowInteractionState.nodeStartX + dx));
   node.y = Math.max(10, Math.round(workflowInteractionState.nodeStartY + dy));
-  
+
   const el = document.querySelector(`[data-workflow-node-id="${CSS.escape(nodeId)}"]`);
   if (el) {
     el.style.left = `${node.x}px`;
@@ -9370,7 +8875,7 @@ function endWorkflowNodePointer() {
   if (node && workflowInteractionState.didDrag) {
     node.x = Math.max(10, snapWorkflowPoint(node.x));
     node.y = Math.max(10, snapWorkflowPoint(node.y));
-    
+
     addWorkflowNodeActivity(nodeId, 'تم نقل الخطوة على لوحة العملية');
     saveData();
     renderWorkflowStudio();
@@ -9899,7 +9404,7 @@ function localizeWorkflowPage() {
     const publishButton = isPublished
       ? `<button class="btn-primary" style="background:#ef4444" onclick="unpublishWorkflow()"><i class="fa-solid fa-ban"></i> إلغاء النشر</button>`
       : `<button class="btn-primary" style="background:var(--accent-green)" onclick="publishWorkflow()"><i class="fa-solid fa-check-circle"></i> نشر العملية</button>`;
-      
+
     actions.innerHTML = `
       <div class="workflow-header-summary" id="workflowSummary"></div>
       <button class="btn-primary" onclick="runWorkflowSimulation()"><i class="fa-solid fa-vial"></i> اختبار وفحص العملية</button>
@@ -10585,7 +10090,7 @@ function updateReceiptPreview() {
   const date = document.getElementById('receiptDate')?.value || todayISO();
   const itemsTotal = getReceiptLineItemsTotal();
   const amount = itemsTotal > 0 ? itemsTotal : asMoney(document.getElementById('receiptAmount')?.value);
-  
+
   const paidInput = document.getElementById('receiptPaidAmount');
   if (paidInput) {
     const parentFormGroup = paidInput.closest('.form-group');
@@ -10608,7 +10113,7 @@ function updateReceiptPreview() {
     if (amountInput) amountInput.value = Math.round(itemsTotal);
   }
   renderReceiptLineItems();
-  
+
   const paidRow = kind === 'sales' ? `<div class="receipt-line"><b>المدفوع:</b> ${formatNum(paidAmount)} ${escapeHtml(currency)}</div>` : '';
   const remainingRow = kind === 'sales' ? `<div class="receipt-line"><b>المتبقي:</b> ${formatNum(remainingAmount)} ${escapeHtml(currency)}</div>` : '';
 
@@ -10714,7 +10219,7 @@ async function addEmployee() {
   }
 
   const data = { name: name.trim(), salary: cfg.nominalSalary, records, is_active: true };
-  
+
   try {
     if (window.RecordService) {
       const newEmp = await RecordService.create('employees', data);
@@ -10723,7 +10228,7 @@ async function addEmployee() {
       employees.push({ ...data, id: makeId('EMP') });
       saveData();
     }
-    
+
     selectedEmpIdx = employees.length - 1;
     renderTimesheet();
     renderReportTabs();
@@ -10739,16 +10244,16 @@ async function deleteEmployee(idx) {
   const emp = employees[idx];
   if (!emp) return;
   if (!confirm(`هل تريد حذف الموظف: ${emp.name}؟`)) return;
-  
+
   try {
     if (window.RecordService && emp.id) {
       await RecordService.archive('employees', emp.id);
     }
-    
+
     employees.splice(idx, 1);
     if (selectedEmpIdx >= employees.length) selectedEmpIdx = Math.max(0, employees.length - 1);
     if (reportEmpIdx >= employees.length) reportEmpIdx = Math.max(0, employees.length - 1);
-    
+
     renderTimesheet();
     renderReportTabs();
     refreshCalcEmpDropdown();
@@ -10796,7 +10301,7 @@ function renderMonthButtons(currentMonth) {
   container.innerHTML = '';
   const cfg = getConfig();
   const selectedMonths = getTimesheetSelectedMonths(cfg.year);
-  
+
   const activeMonths = new Set();
   employees.forEach(emp => {
     if (!emp || !emp.records) return;
@@ -10809,14 +10314,14 @@ function renderMonthButtons(currentMonth) {
   for (let m = 1; m <= 12; m++) {
     const btn = document.createElement('button');
     btn.textContent = MONTHS_AR[m - 1];
-    
+
     btn.style.padding = '8px 16px';
     btn.style.borderRadius = '8px';
     btn.style.border = 'none';
     btn.style.fontWeight = 'bold';
     btn.style.cursor = 'pointer';
     btn.style.transition = 'all 0.3s ease';
-    
+
     if (selectedMonths.includes(m)) {
       btn.style.background = 'var(--accent-blue)';
       btn.style.color = '#fff';
@@ -10830,7 +10335,7 @@ function renderMonthButtons(currentMonth) {
       btn.style.color = 'var(--text-muted)';
       btn.style.border = '1px solid var(--border-glass)';
     }
-    
+
     btn.title = selectedMonths.includes(m) ? 'اضغط لإزالة هذا الشهر من العرض' : 'اضغط لإضافة هذا الشهر للعرض';
     btn.onclick = () => toggleTimesheetMonth(m);
     container.appendChild(btn);
@@ -11468,8 +10973,8 @@ function renderWarningIcon(rec, ri) {
 
   const remaining = 3 - clicks;
   return `
-    <span class="verify-badge pending" 
-          title="بيانات ناقصة! انقر ${remaining} مرات متتالية للتوثيق" 
+    <span class="verify-badge pending"
+          title="بيانات ناقصة! انقر ${remaining} مرات متتالية للتوثيق"
           style="color: #f59e0b; margin-left: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; position: relative;"
           onclick="handleWarningClick(event, ${selectedEmpIdx}, ${ri})">
       <i class="fa-solid fa-circle-exclamation"></i>
@@ -11500,7 +11005,7 @@ window.handleWarningClick = function(event, empIdx, ri) {
 function populateYearFilterDropdown() {
   const select = document.getElementById('yearFilterSelect');
   if (!select) return;
-  
+
   const years = new Set();
   years.add(new Date().getFullYear());
   employees.forEach(emp => {
@@ -11510,7 +11015,7 @@ function populateYearFilterDropdown() {
       });
     }
   });
-  
+
   const sortedYears = Array.from(years).sort((a, b) => b - a);
   select.innerHTML = '';
   sortedYears.forEach(y => {
@@ -11808,12 +11313,12 @@ function renderTimesheet() {
     const dayName = DAY_NAMES[dayOfWeek];
     const isFri = dayOfWeek === 5;
     const calc = getDailyCalc(rec, emp, recCfg);
-    const defaultCalc = getDailyCalc({ 
-      ...rec, 
-      allowanceOverride: null, 
-      otHoursOverride: null, 
-      lateOverride: null, 
-      earlyDeductionOverride: null 
+    const defaultCalc = getDailyCalc({
+      ...rec,
+      allowanceOverride: null,
+      otHoursOverride: null,
+      lateOverride: null,
+      earlyDeductionOverride: null
     }, emp, recCfg);
 
     const tr = document.createElement('tr');
@@ -11821,14 +11326,14 @@ function renderTimesheet() {
     if (isFri) tr.style.background = 'rgba(167, 139, 250, 0.05)';
 
     const statusObj = STATUS_OPTIONS.find(s => s.val === rec.status) || STATUS_OPTIONS.find(s => s.val === 'normal');
-    
+
     let optionsHtml = '';
     STATUS_OPTIONS.forEach(opt => {
       optionsHtml += `<option value="${opt.val}" style="background: #1e293b; color: white;" ${rec.status === opt.val ? 'selected' : ''}>${opt.label}</option>`;
     });
 
     const statusDropdown = `
-      <select class="status-select-pro" 
+      <select class="status-select-pro"
               style="background: ${statusObj.color}20; color: ${statusObj.color}; border: 1px solid ${statusObj.color}80; padding: 6px; border-radius: 6px; font-weight: bold; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; min-width: 90px;"
               onchange="updateRecord(${selectedEmpIdx}, ${ri}, 'status', this.value); renderTimesheet();">
         ${optionsHtml}
@@ -12291,7 +11796,7 @@ function renderReport() {
         <hr style="border:1px solid #000; margin:15px 0;">
     </div>
   `;
-  
+
   const printBtnHtml = `
     <div id="reportPrintBtn" class="report-actions-row" style="text-align: left; margin-bottom: 15px;">
         <button class="btn-icon" onclick="window.print()" style="background:var(--accent-purple); color:white; padding:10px 20px; border-radius:10px; width:auto; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);">
@@ -12315,7 +11820,7 @@ function renderReport() {
       </div>
     </div>
   `;
-  
+
   reportContent.insertAdjacentHTML('afterbegin', reportPrintHeader);
   reportContent.insertAdjacentHTML('afterbegin', printBtnHtml);
   reportContent.insertAdjacentHTML('afterbegin', paymentPanelHtml);
@@ -12899,7 +12404,7 @@ function runOmniAutomationTick() {
   isAutomationRunning = true;
   let didChange = false;
   ensureOmni();
-  
+
   // Rule 1: Auto-escalate stuck Kanban cards
   const now = new Date();
   const inProgressColId = (omni.kanban.columns.find(c => c.title.toLowerCase().includes('progress') || c.title.includes('عمل') || c.title.includes('قيد')) || {}).id;
@@ -12920,7 +12425,7 @@ function runOmniAutomationTick() {
       }
     });
   }
-  
+
   if (didChange) {
     saveData(true);
     if (document.getElementById('omniKanbanBoard')) renderKanbanBoard();
@@ -12988,7 +12493,7 @@ function saveData(skipAutomation = false) {
     });
     sanitizePersistedArabicText(data);
     const jsonPayload = JSON.stringify(data);
-    
+
     // PRIMARY: Save to local file database.json — THIS is the source of truth
     fetch('/api/db', {
       method: 'POST',
@@ -13103,7 +12608,7 @@ async function loadData() {
         loadedFromFile = true;
         _serverDownWarned = false;
         refreshAuthUserSwitcher();
-        
+
         // Sync to localStorage as a backup cache
         try { localStorage.setItem('octagon_payroll', JSON.stringify(data)); } catch(e) {}
         return;
@@ -13321,7 +12826,7 @@ function printReceipt() {
         <h1>وصل استلام راتب</h1>
         <p>${escapeHtml(periodLabel)}</p>
       </div>
-      
+
       <div class="info-grid">
         <div class="info-item"><span class="info-label">اسم الموظف:</span> <span class="info-value">${empName}</span></div>
         <div class="info-item"><span class="info-label">الراتب الاسمي:</span> <span class="info-value">${formatNum(cfg.nominalSalary)} د.ع</span></div>
@@ -13342,7 +12847,7 @@ function printReceipt() {
           <tr><td>تعويض الجمعة (${res.eligibleFridays || (isCalcPage ? document.getElementById('inpFridays').value : 0)} أيام)</td><td class="val-earn" style="text-align: left;">${formatNum(res.fridayCompensation)}</td></tr>
           <tr><td>العمل الإضافي (${formatNum(res.totalOvertime || (isCalcPage ? document.getElementById('inpOvertime').value : 0))} ساعة)</td><td class="val-earn" style="text-align: left;">${formatNum(res.totalOvertimeValue)}</td></tr>
           <tr><td>المكافآت</td><td class="val-earn" style="text-align: left;">${formatNum(res.bonus || (isCalcPage ? document.getElementById('inpBonus').value : 0))}</td></tr>
-          
+
           <tr style="background:#fef2f2;"><td>خصم التأخيرات (${formatNum(res.totalLatenessHours || (isCalcPage ? document.getElementById('inpLateness').value : 0))} ساعة)</td><td class="val-deduct" style="text-align: left;">-${formatNum(res.latenessDeduction)}</td></tr>
           <tr style="background:#fef2f2;"><td>خصم الإجازات</td><td class="val-deduct" style="text-align: left;">-${formatNum(res.leaveDeduction)}</td></tr>
           <tr style="background:#fef2f2;"><td>خصم الغيابات</td><td class="val-deduct" style="text-align: left;">-${formatNum(res.absenceDeduction)}</td></tr>
@@ -13394,7 +12899,7 @@ async function uploadTimesheet() {
   const fileInput = document.getElementById('timesheetFile');
   const file = fileInput?.files?.[0];
   if (!file) { showToast('⚠️ اختر ملف أولاً', 'warning'); return; }
-  
+
   try {
     await ensureOctagonLibrary('xlsx', 'XLSX', 'Excel import library unavailable');
   } catch (err) {
@@ -13408,7 +12913,7 @@ async function uploadTimesheet() {
     nameArea.textContent = `الملف المختار: ${file.name}`;
     document.getElementById('fileInfoArea').style.display = 'block';
   }
-  
+
   const reader = new FileReader();
   if (file.name.endsWith('.csv')) {
     reader.onload = async (e) => {
@@ -13521,7 +13026,7 @@ async function processExcelWorkbook(workbook) {
         const p = firstRow.date.split('/');
         document.getElementById('monthFilter').value = String(p[1]).padStart(2, '0');
       }
-      
+
       window.tempImportedData = dataRows;
       document.getElementById('importedDataContainer').style.display = 'block';
       renderImportedTable(dataRows);
@@ -13705,13 +13210,13 @@ async function processMasterWorkbook(workbook) {
           const year = parseInt(dateParts[0]), month = parseInt(dateParts[1]), day = parseInt(dateParts[2]);
           let rec = emp.records.find(x => x.day === day && x.month === month && x.year === year);
           if (!rec) {
-            rec = { 
-              day, month, year, 
-              date: fmtDate(r['التاريخ']) || `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`, 
+            rec = {
+              day, month, year,
+              date: fmtDate(r['التاريخ']) || `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`,
               bonus: 0, damage: 0, advance: 0, penalty: 0,
               status: isFriday(year, month, day) ? 'friday' : 'absent'
-            }; 
-            emp.records.push(rec); 
+            };
+            emp.records.push(rec);
           }
           rec.advance = (rec.advance || 0) + amount;
         }
@@ -13899,10 +13404,10 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    
+
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     text = text.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
-    
+
     const parsed = JSON.parse(text);
     if (!parsed || !parsed.sheets) throw new Error("صيغة الاستجابة من الذكاء الاصطناعي غير صحيحة");
 
@@ -13919,7 +13424,7 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
 
       mappingPreviews.push({ sheetName, mapping });
 
-      function excelDateToJSDate(v) { 
+      function excelDateToJSDate(v) {
         if (v instanceof Date) return v;
         if (typeof v !== 'number') {
           const s = String(v).trim();
@@ -13928,22 +13433,22 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
           m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
           if (m) return new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
           return new Date(s);
-        } 
-        return new Date(new Date(1899, 11, 30).getTime() + v * 86400000); 
+        }
+        return new Date(new Date(1899, 11, 30).getTime() + v * 86400000);
       }
-      function formatDate(dObj) { 
-        try { 
-          const d = dObj instanceof Date ? dObj : excelDateToJSDate(dObj); 
-          return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; 
-        } catch { 
-          return '-'; 
-        } 
+      function formatDate(dObj) {
+        try {
+          const d = dObj instanceof Date ? dObj : excelDateToJSDate(dObj);
+          return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        } catch {
+          return '-';
+        }
       }
 
       function cleanAndExtractTimes(row, map) {
         let entryTime = '';
         let exitTime = '';
-        
+
         const type = map.timeFormatType;
         const entryIdx = map.entryColumnIndex;
         const exitIdx = map.exitColumnIndex;
@@ -13988,10 +13493,10 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
 
         const dateObj = excelDateToJSDate(rawDate);
         const date = Number.isNaN(dateObj.getTime()) ? String(rawDate) : formatDate(dateObj);
-        
+
         const times = cleanAndExtractTimes(row, mapping);
         const name = mapping.nameColumnIndex >= 0 ? String(row[mapping.nameColumnIndex] || sheetName).trim() : sheetName.trim();
-        
+
         dataRows.push({
           name,
           date,
@@ -14019,10 +13524,10 @@ ${aiInstructions ? `\nتعليمات خاصة من المستخدم يجب اح�
     if (preview) {
       preview.style.display = 'block';
       preview.innerHTML = `<h3>معاينة المطابقة الذكية بالذكاء الاصطناعي (Gemini)</h3>
-        ${mappingPreviews.map(p => `<div><b>${escapeHtml(p.sheetName)}</b>: 
-          التاريخ → عمود ${p.mapping.dateColumnIndex} | 
-          الحساب → نمط ${escapeHtml(p.mapping.timeFormatType)} | 
-          السلفة → ${p.mapping.advanceColumnIndex >= 0 ? 'عمود ' + p.mapping.advanceColumnIndex : 'غير موجود'} | 
+        ${mappingPreviews.map(p => `<div><b>${escapeHtml(p.sheetName)}</b>:
+          التاريخ → عمود ${p.mapping.dateColumnIndex} |
+          الحساب → نمط ${escapeHtml(p.mapping.timeFormatType)} |
+          السلفة → ${p.mapping.advanceColumnIndex >= 0 ? 'عمود ' + p.mapping.advanceColumnIndex : 'غير موجود'} |
           الخصم → ${p.mapping.penaltyColumnIndex >= 0 ? 'عمود ' + p.mapping.penaltyColumnIndex : 'غير موجود'}
         </div>`).join('')}
         <p>تم استخراج ${finalRows.length} سجل حضور وسلف بنجاح. راجع الجدول أدناه ثم اضغط حفظ.</p>
@@ -14156,7 +13661,7 @@ function saveImportedData() {
 
   refreshCalcEmpDropdown();
   saveData();
-  
+
   showToast(`✅ تم الحفظ والتحويل للتايم شيت الذكي بنجاح`, 'success');
   window.tempImportedData = [];
   document.getElementById('importedDataContainer').style.display = 'none';
@@ -14166,7 +13671,7 @@ function saveImportedData() {
 async function processTimesheetWithAI() {
   const emp = employees[selectedEmpIdx];
   if (!emp || !emp.records || emp.records.length === 0) return;
-  
+
   const customPrompt = document.getElementById('aiCustomPrompt').value.trim();
   if (!customPrompt) {
     showToast('الرجاء كتابة الأمر أولاً', 'warning');
@@ -14254,12 +13759,12 @@ ${JSON.stringify(simplifiedRecords)}
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    
+
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    
+
     const parsed = JSON.parse(text);
-    
+
     if (parsed && parsed.records && Array.isArray(parsed.records)) {
       // Only accept edits to dates inside the displayed scope, so a stray date from the
       // model can't leak back into a month the user isn't looking at.
@@ -14280,10 +13785,10 @@ ${JSON.stringify(simplifiedRecords)}
       });
       // Re-apply deterministic payroll rules for every displayed month, not just the primary one.
       selectedMonths.forEach(m => applySystemPayrollRules(emp, cfg.year, m, true));
-      
+
       saveData();
       renderTimesheet();
-      
+
       // Show AI Chat Response
       const responseBox = document.getElementById('aiResponseBox');
       const responseText = document.getElementById('aiResponseText');
@@ -14291,7 +13796,7 @@ ${JSON.stringify(simplifiedRecords)}
         responseBox.style.display = 'block';
         responseText.textContent = parsed.message || 'تم تنفيذ التعديل بنجاح.';
       }
-      
+
       document.getElementById('aiCustomPrompt').value = '';
     } else {
       throw new Error('الرد لم يكن بصيغة صحيحة من الذكاء الاصطناعي');
@@ -14348,7 +13853,7 @@ async function applyComplexRulesWithAI() {
   }
   const emp = employees[selectedEmpIdx];
   const cfg = getConfig();
-  
+
   const simplifiedRecords = emp.records.filter(r => r.month === cfg.month && r.year === cfg.year).map(r => ({
     date: r.date,
     day: r.day,
@@ -14372,7 +13877,7 @@ async function applyComplexRulesWithAI() {
 أنت المساعد الذكي الخاص بنظام OCTAGON ERP للرواتب. مهمتك مراجعة هذا السجل الشهري بدقة وتطبيق قوانين الرواتب المعقدة التالية:
 
 ### القوانين التي يجب فحصها وتطبيقها:
-1. **الدوام الليلي (Night Shift):** إذا كان الموظف لديه شفت ليلي 'night_shift' في يوم معين، فإن اليوم الذي يليه مباشرة يُمنح له "سماحية تأخير". كما أن يوم الدوام الليلي يُحسب ابتداءً من وقت الحضور، وبعد أن يغطي 9 ساعات كاملة، يُحسب الباقي كـ Overtime. 
+1. **الدوام الليلي (Night Shift):** إذا كان الموظف لديه شفت ليلي 'night_shift' في يوم معين، فإن اليوم الذي يليه مباشرة يُمنح له "سماحية تأخير". كما أن يوم الدوام الليلي يُحسب ابتداءً من وقت الحضور، وبعد أن يغطي 9 ساعات كاملة، يُحسب الباقي كـ Overtime.
 2. **العمل يوم الجمعة (Friday Work):** إذا كان الموظف لديه يوم عمل 'friday_work' في يوم الجمعة، يتم تحويل حالته إلى 'normal' (دوام عادي) وإلغاء حافز الجمعة **فقط إذا** كان الموظف لديه أي غياب ('absent') أو إجازة ('leave') خلال أيام الأسبوع التي تسبق تلك الجمعة. وإلا يبقى دوام جمعة بإضافيات جمعة.
 3. **مغادر مبكر معذور (Early Excused):** إذا كانت حالة اليوم 'early_excused'، يتم احتساب اليوم كحضور كامل ولا يتم خصم أي مبالغ للمغادرة المبكرة، مع إبقاء التأخير أو الإضافي إن وُجد.
 4. **غرامة الجمع التلقائية:** كل 6 أيام غياب أو إجازة في هذا الشهر تُسقط جمعة واحدة من المستحقات. (قم بإضافة ملاحظة بذلك أو تعديل الغرامات).
@@ -14400,12 +13905,12 @@ ${JSON.stringify(simplifiedRecords)}
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    
+
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    
+
     const parsed = JSON.parse(text);
-    
+
     if (parsed && parsed.records && Array.isArray(parsed.records)) {
       parsed.records.forEach(p => {
         const rec = emp.records.find(r => r.date === p.date);
@@ -14418,17 +13923,17 @@ ${JSON.stringify(simplifiedRecords)}
         }
       });
       applySystemPayrollRules(emp, cfg.year, cfg.month, true);
-      
+
       saveData();
       renderTimesheet();
-      
+
       const responseBox = document.getElementById('aiResponseBox');
       const responseText = document.getElementById('aiResponseText');
       if (responseBox && responseText) {
         responseBox.style.display = 'block';
         responseText.innerHTML = (parsed.message || 'تم فحص القوانين وتطبيقها.').replace(/\\n/g, '<br>');
       }
-      
+
       showToast('✨ تم تطبيق القوانين الشاملة بنجاح', 'success');
     } else {
       throw new Error('الرد لم يكن بصيغة صحيحة');
@@ -14450,7 +13955,7 @@ function renderImportedTable(rows) {
   tbody.innerHTML = '';
   rows.forEach(r => {
     const tr = document.createElement('tr');
-    
+
     // Determine status text
     let statusText = r.entry ? 'دوام' : 'غياب';
     if (r.status) {
@@ -16335,7 +15840,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   refreshCalcEmpDropdown();
   refreshEmpFilterDropdown();
-  
+
   // 3.5 Land on the boot page. Resolve it here (PermissionService is ready by now)
   // so we can "resume where you left off". A ?customer= deep-link takes priority.
   // Use window.switchPage (the template-loading guard) so the landing view is
@@ -16979,9 +16484,9 @@ function renderKanbanBoardView() {
   const shellClasses = ['kanban-executive-board', getKanbanBigScreenMode() ? 'kanban-bigscreen-mode' : '', `kanban-density-${getKanbanDensity()}`].join(' ');
   const totalFiltered = getFilteredKanbanCards(omni.kanban.cards || []).length;
   board.className = 'omni-kanban-board kanban-board-shell';
-  
+
   let boardContentHtml = '';
-  
+
   if (kanbanGroupBy === 'none') {
     boardContentHtml = `
       <div class="kanban-board-grid">
@@ -17060,7 +16565,7 @@ function renderKanbanBoardView() {
             </div>
             <span style="font-size: 0.8rem; background: rgba(34, 211, 238, 0.1); color: #22d3ee; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(34, 211, 238, 0.15);">${groupCards.length} بطاقة</span>
           </div>
-          
+
           <div class="kanban-board-grid" style="min-height: auto; padding-bottom: 10px;">
             ${(omni.kanban.columns || []).map(col => {
               const colCards = groupCards.filter(card => card.columnId === col.id);
@@ -17213,7 +16718,7 @@ function omniDropCard(ev, columnId) {
   const card = omni.kanban.cards.find(c => c.id === cardId);
   if (!card) return;
   const col = omni.kanban.columns.find(c => c.id === columnId);
-  
+
   if (col && (col.title === 'مكتمل' || col.title === 'Done' || col.title.toLowerCase().includes('done'))) {
     if (card.blockedBy && card.blockedBy.length > 0) {
       const blockers = omni.kanban.cards.filter(c => card.blockedBy.includes(c.id));
@@ -18180,7 +17685,7 @@ function selectWorkflowNode(nodeId, event) {
     workflowInteractionState.didDrag = false;
     return;
   }
-  
+
   if (workflowPortLink && workflowInteractionState.mode === 'connect') {
     if (workflowPortLink.nodeId !== nodeId) {
       completeWorkflowPortLink(nodeId, 'input');
@@ -18651,13 +18156,13 @@ function renderWorkflowExecutionPreview(preview) {
         <div><b>${preview.expectedCards.length}</b><span>بطاقات متوقعة</span></div>
       </div>
       <div class="insp-section"><h4>الخطوات المرتبة</h4>${preview.steps.map((n, i) => `<div class="insp-linked-item"><b>${i + 1}. ${escapeHtml(n.title)}</b><small>${escapeHtml(getWorkflowNodeLabel(n.type))} · ${Number(n.estimatedMinutes) || 0} دقيقة</small></div>`).join('') || '<p>لا توجد خطوات</p>'}</div>
-      
+
       <div class="insp-section">
         <h4>البطاقات والمهام المتوقع توليدها في الكانبان</h4>
         ${preview.steps.map((n, i) => {
           const colName = i === 0 ? 'جاهز للتنفيذ (kb_ready)' : 'قائمة الانتظار (kb_backlog)';
-          const priorityHtml = i === 0 
-            ? '<span style="color:#ef4444; font-weight:bold; font-size:11px; background:rgba(239,68,68,0.1); padding:2px 6px; border-radius:4px;">عالي Priority</span>' 
+          const priorityHtml = i === 0
+            ? '<span style="color:#ef4444; font-weight:bold; font-size:11px; background:rgba(239,68,68,0.1); padding:2px 6px; border-radius:4px;">عالي Priority</span>'
             : '<span style="color:var(--text-muted); font-size:11px; background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">عادي Priority</span>';
           return `
             <div class="insp-linked-item" style="border-inline-start: 3px solid ${i === 0 ? '#ef4444' : 'var(--primary)'}; padding-inline-start:12px; display:block; text-align:right;">
@@ -18715,13 +18220,13 @@ function runWorkflowSimulation() {
         ${validation.readyToPublish ? `<button class="btn-primary" style="background:#10b981;" onclick="publishWorkflow()"><i class="fa-solid fa-rocket"></i> نشر العملية</button>` : ''}
       </div>
     </div>`;
-  
+
   const panel = document.getElementById('inspectorPanel');
   const overlay = document.getElementById('inspectorOverlay');
   const title = document.getElementById('inspectorTitle');
   const tabs = document.getElementById('inspectorTabs');
   const body = document.getElementById('inspectorBody');
-  
+
   if (panel && body) {
     title.textContent = 'اختبار وفحص العملية';
     tabs.innerHTML = '';
@@ -18742,18 +18247,18 @@ async function publishWorkflow() {
     const ok = await showOmniModal('نشر مع تحذيرات', `<p>توجد ${validation.warnings.length} تحذيرات. هل تريد نشر العملية رغم ذلك؟</p>`, () => true);
     if (!ok) return;
   }
-  
+
   if (!Array.isArray(omni.workflowHistory)) {
     omni.workflowHistory = [];
   }
-  
+
   const newVersion = Number(omni.workflow.version || 0) + 1;
   omni.workflow.version = newVersion;
   omni.workflow.published = true;
   omni.workflow.publishedAt = new Date().toISOString();
   omni.workflow.publishedBy = 'System';
   omni.workflow.status = 'published';
-  
+
   omni.workflowHistory.push({
     version: newVersion,
     nodes: JSON.parse(JSON.stringify(omni.workflow.nodes || [])),
@@ -18762,7 +18267,7 @@ async function publishWorkflow() {
     publishedBy: omni.workflow.publishedBy,
     note: `نشر تلقائي للإصدار ${newVersion}`
   });
-  
+
   saveData();
   closeInspector();
   showToast('تم نشر العملية بنجاح! الإصدار ' + omni.workflow.version, 'success');
@@ -18789,14 +18294,14 @@ async function triggerWorkflowExecution() {
   if (omni.workflow.status !== 'published') return showToast('يجب نشر سير العمل أولاً قبل التنفيذ', 'warning');
   const client = await showOmniPrompt('اسم المشروع / الطلب لتوليد مهام Kanban:', '');
   if(!client) return;
-  
+
   // Sort nodes left-to-right to generate cards in sequence
   const sortedNodes = [...omni.workflow.nodes].sort((a,b) => a.x - b.x);
   sortedNodes.forEach((node, i) => {
     const card = {
       id: makeId('card'), columnId: i === 0 ? 'kb_ready' : 'kb_backlog',
-      title: `${client}: ${node.title}`, 
-      owner: node.assignedRole || 'System', 
+      title: `${client}: ${node.title}`,
+      owner: node.assignedRole || 'System',
       assigneeId: node.assignedRole || '', // Auto assignment by role
       priority: i === 0 ? 'High' : 'Normal',
       dueDate: todayISO(), tags: ['Workflow'],
@@ -18810,7 +18315,7 @@ async function triggerWorkflowExecution() {
       activityLog: [{ date: new Date().toISOString(), text: `Generated by Workflow Execution for ${client}` }]
     };
     omni.kanban.cards.push(card);
-    
+
     // reserve materials
     (node.materialRequirements||[]).forEach(req => reserveMaterial(req.materialId, getMaterialRequirementQty(req), 'workflow', 'wf_run', `${client}: ${node.title}`));
   });
@@ -19083,7 +18588,7 @@ async function applyWorkflowTemplate(templateId, mode = 'append') {
 function openWorkflowVersionHistoryModal() {
   ensureOmni();
   if (!Array.isArray(omni.workflowHistory)) omni.workflowHistory = [];
-  
+
   let historyRowsHtml = '';
   if (omni.workflowHistory.length === 0) {
     historyRowsHtml = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-muted);">لا يوجد سجل إصدارات منشور بعد</td></tr>`;
@@ -19104,7 +18609,7 @@ function openWorkflowVersionHistoryModal() {
       `;
     }).join('');
   }
-  
+
   const contentHtml = `
     <div style="padding: 16px; direction: rtl; text-align: right;">
       <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">عند نشر سير عمل، يتم حفظ نسخة غير قابلة للتعديل تلقائياً. يمكنك استعادة أي نسخة سابقة للعودة إليها كمسودة نشطة.</p>
@@ -19128,13 +18633,13 @@ function openWorkflowVersionHistoryModal() {
       </div>
     </div>
   `;
-  
+
   const panel = document.getElementById('inspectorPanel');
   const overlay = document.getElementById('inspectorOverlay');
   const title = document.getElementById('inspectorTitle');
   const tabs = document.getElementById('inspectorTabs');
   const body = document.getElementById('inspectorBody');
-  
+
   if (panel && body) {
     title.textContent = 'سجل الإصدارات والنسخ الاحتياطية';
     tabs.innerHTML = '';
@@ -19148,22 +18653,22 @@ async function rollbackWorkflowToVersion(versionNum) {
   ensureOmni();
   const historyItem = (omni.workflowHistory || []).find(h => h.version === versionNum);
   if (!historyItem) return showToast('الإصدار غير موجود', 'error');
-  
+
   const ok = await showOmniModal('تأكيد استعادة النسخة', `<p>هل أنت متأكد من استعادة النسخة رقم ${versionNum}؟ سيتم استبدال المسودة الحالية.</p>`, () => true);
   if (!ok) return;
-  
+
   omni.workflow.nodes = JSON.parse(JSON.stringify(historyItem.nodes || []));
   omni.workflow.edges = JSON.parse(JSON.stringify(historyItem.edges || []));
   omni.workflow.status = 'draft';
   omni.workflow.published = false;
-  
+
   recordAuditEvent({
     event_type: 'WORKFLOW_ROLLBACK',
     record_id: 'workflow',
     data: { note: `تم استعادة نسخة سير العمل إلى الإصدار ${versionNum}` },
     source: 'مصمم العمليات'
   });
-  
+
   saveData();
   showToast(`تمت استعادة الإصدار ${versionNum} كمسودة بنجاح!`, 'success');
   closeInspector();
@@ -19174,10 +18679,10 @@ function previewWorkflowHistoryVersion(versionNum) {
   ensureOmni();
   const historyItem = (omni.workflowHistory || []).find(h => h.version === versionNum);
   if (!historyItem) return showToast('الإصدار غير موجود', 'error');
-  
+
   const preview = buildWorkflowExecutionPreview(historyItem);
   const resultHtml = renderWorkflowExecutionPreview(preview);
-  
+
   showOmniModal(`معاينة الإصدار ${versionNum}`, `
     <div style="padding: 16px; direction: rtl; text-align: right;">
       <h3 style="margin-top:0; color:var(--primary); margin-bottom:8px;"><i class="fa-solid fa-eye"></i> معاينة الإصدار المنشور رقم ${versionNum}</h3>
@@ -19191,21 +18696,21 @@ async function unpublishWorkflow() {
   ensureOmni();
   const ok = await showOmniModal('إلغاء النشر', '<p>هل أنت متأكد من إلغاء نشر العملية وإعادتها لحالة المسودة؟ سيمكنك تعديلها مجدداً.</p>', () => true);
   if (!ok) return;
-  
+
   omni.workflow.status = 'draft';
   omni.workflow.published = false;
-  
+
   recordAuditEvent({
     event_type: 'WORKFLOW_UNPUBLISH',
     record_id: 'workflow',
     data: { note: 'تم إلغاء نشر سير العمل وإعادته كمسودة للتعديل عليها' },
     source: 'مصمم العمليات'
   });
-  
+
   saveData();
   showToast('تم إلغاء النشر بنجاح وإعادة العملية إلى مسودة.', 'info');
   renderWorkflowStudio();
-} 
+}
 
 function generateTemplateWorkflow() {
   applyWorkflowTemplate('general_order', 'replace');
@@ -19314,7 +18819,7 @@ function renderTaskInspectorTab_deprecated_dup1(taskId, tabIdx = 0) {
   title.textContent = task.title;
   const tabList = ['نظرة عامة', 'المهام الفرعية', 'روابط', 'سجل النشاط'];
   tabs.innerHTML = tabList.map((t,i) => `<button class="insp-tab ${i===tabIdx?'active':''}" onclick="renderTaskInspectorTab('${taskId}', ${i})">${t}</button>`).join('');
-  
+
   if (tabIdx === 0) {
     body.innerHTML = `
       <div class="insp-section">
@@ -19587,15 +19092,15 @@ function normalizeTaskManagerV2() {
 }
 function autoGenerateMaintenanceTasks() {
   ensureOmni();
-  
+
   if (window.__inMaintenanceGeneration) return;
   window.__inMaintenanceGeneration = true;
-  
+
   try {
     const allTasks = getAllTaskManagerTasks(true).map(x => x.task);
     let generatedCount = 0;
     const today = todayISO();
-    
+
     const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
     const addDays = (iso, n) => {
       const d = new Date(iso);
@@ -19610,12 +19115,12 @@ function autoGenerateMaintenanceTasks() {
         if (a.is_active === false) return;
         const interval = Math.round(Number(a.maintenanceIntervalDays) || 0);
         if (!interval) return;
-        
+
         const base = a.lastMaintenanceDate || a.acquisitionDate || today;
         const nextDate = addDays(base, interval);
         const days = daysBetween(today, nextDate);
         const isDueOrOverdue = days <= 7;
-        
+
         if (isDueOrOverdue) {
           const exists = allTasks.some(t => t.linkedAssetId === a.id && t.dueDate === nextDate);
           if (!exists) {
@@ -19632,7 +19137,7 @@ function autoGenerateMaintenanceTasks() {
         }
       });
     }
-    
+
     // 2. Equipment Maintenance / Repair Tasks
     if (Array.isArray(omni.equipment)) {
       omni.equipment.forEach(eq => {
@@ -19652,7 +19157,7 @@ function autoGenerateMaintenanceTasks() {
         }
       });
     }
-    
+
     if (generatedCount > 0) {
       saveData();
       console.log(`Auto-generated ${generatedCount} maintenance tasks in Task Manager.`);
@@ -19696,10 +19201,10 @@ function taskMatchesTaskManagerFilters(task, filters = taskManagerFilters) {
   if (filters.linked === 'sop' && !(task.sopIds || []).length) return false;
   if (filters.linked === 'qc' && !(task.qcRecordIds || []).length) return false;
   if (filters.linked === 'op_pack' && !task.operationPackId) return false;
-  
+
   if (filters.source !== 'all' && getTaskSourceType(task) !== filters.source) return false;
   if (filters.source === 'op_pack' && filters.opPackId !== 'all' && task.operationPackId !== filters.opPackId) return false;
-  
+
   return true;
 }
 function getFilteredTaskManagerTasks() { return getAllTaskManagerTasks(false).filter(ctx => taskMatchesTaskManagerFilters(ctx.task)); }
@@ -19909,12 +19414,12 @@ function renderTaskManagerRelationsTab(task) {
   const qcRec = (task.qcRecordIds || []).length > 0 ? getQcRecordById(task.qcRecordIds[0]) : null;
   const srcType = getTaskSourceType(task);
   const srcMeta = TASK_SOURCE_METADATA[srcType] || TASK_SOURCE_METADATA.manual;
-  
+
   let sourceContextHtml = '';
   if (srcType !== 'manual') {
     let detailsHtml = '';
     let actionButtonsHtml = '';
-    
+
     if (srcType === 'op_pack' && pack) {
       detailsHtml = `<div><span>باقة العمليات</span><b>${escapeHtml(pack.name)}</b></div><div><span>رقم الخطوة</span><b>${escapeHtml(task.operationPackStepId || 'غير محدد')}</b></div>`;
       actionButtonsHtml = `<button class="btn-secondary" style="font-size:11px;" onclick="openOmniEntity('operation_pack', '${pack.id}')"><i class="fa-solid fa-external-link"></i> فتح الباقة</button>`;
@@ -19930,7 +19435,7 @@ function renderTaskManagerRelationsTab(task) {
     } else if (srcType === 'recurring') {
       detailsHtml = `<div><span>جدول التكرار</span><b>نشط</b></div><div><span>تكرار كل</span><b>${escapeHtml(task.recurring.frequency || 'أسبوعياً')}</b></div>`;
     }
-    
+
     sourceContextHtml = `<div class="task-source-context" style="--source-color: ${srcMeta.color}">
       <div class="task-source-context-head">
         <span>سياق المصدر التشغيلي</span>
@@ -19942,7 +19447,7 @@ function renderTaskManagerRelationsTab(task) {
       ${actionButtonsHtml ? `<div class="task-source-actions">${actionButtonsHtml}</div>` : ''}
     </div>`;
   }
-  
+
   return `<div class="insp-section">
     ${sourceContextHtml}
     <h4>الروابط والاتصالات</h4>
@@ -20082,7 +19587,7 @@ function getSimpleTextDiff(oldText, newText) {
 function getArrayDiff(oldArr, newArr) {
   const oldItems = (oldArr || []).map(x => typeof x === 'string' ? x : (x.title || x.text || ''));
   const newItems = (newArr || []).map(x => typeof x === 'string' ? x : (x.title || x.text || ''));
-  
+
   let html = '';
   oldItems.forEach(item => {
     if (!newItems.includes(item)) {
@@ -20288,7 +19793,7 @@ function renderOpPacks_deprecated_dup1() {
       </div>
     `;
     }).join('');
-    
+
     el.innerHTML = `
       ${tabSelectors}
       ${renderOperationPackTracePanel()}
@@ -20796,7 +20301,7 @@ async function executeOperationPackWithLinks(packId) {
         activityLog: [{ date: new Date().toISOString(), text: `Created from Operation Pack: ${pack.name}${isOpPackUnitVariable(pack) ? ` (size: ${jobSize} ${unitShort})` : ''}` }]
       };
       omni.kanban.cards.push(card);
-      
+
       const machine = getMachineById(machineId);
       const wo = {
         id: makeId('wo'),
@@ -21149,7 +20654,7 @@ function renderOpPackInspectorTab(packId, _legacyTabIdx) {
             const extraCost = Number(step.extraCost !== undefined ? step.extraCost : (step.costImpact || 0)) || 0;
             const effectiveExtra = resolveStepExtraCost(step, pack, previewJobSize);
             const totalStepCost = Math.round(laborCost + materialCost + effectiveExtra);
-            
+
             return `
               <div class="op-pack-step-row-v2">
                 <!-- Step Header -->
@@ -21167,7 +20672,7 @@ function renderOpPackInspectorTab(packId, _legacyTabIdx) {
                     </button>
                   </div>
                 </div>
-                
+
                 <!-- Inputs Grid -->
                 <div class="op-step-grid-v2">
                   <div class="op-step-input-group">
@@ -21211,7 +20716,7 @@ function renderOpPackInspectorTab(packId, _legacyTabIdx) {
                   </div>
                   ` : ''}
                 </div>
-                
+
                 <!-- Materials Requirement Section -->
                 <div class="op-materials-section">
                   <div class="op-materials-header">
@@ -21221,7 +20726,7 @@ function renderOpPackInspectorTab(packId, _legacyTabIdx) {
                       ${(omni.materials||[]).map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('')}
                     </select>
                   </div>
-                  
+
                   ${(step.materialRequirements || []).length === 0 ? '<p style="font-size:11px;color:#64748b;margin:4px 0 0 0;">لم يتم تحديد أي متطلبات مواد لهذه الخطوة.</p>' : `
                     <table class="op-materials-table">
                       ${step.materialRequirements.map(req => {
@@ -21258,7 +20763,7 @@ function renderOpPackInspectorTab(packId, _legacyTabIdx) {
                     </table>
                   `}
                 </div>
-                
+
                 <!-- Cost Breakdown Panel -->
                 <div class="op-step-cost-breakdown">
                   <div class="cost-tag-group">
@@ -21546,7 +21051,7 @@ function renderProcurementTab() {
   const filter = window.rfqFilterState || 'all';
   const pos = omni.purchaseOrders || [];
   const filtered = pos.filter(po => filter === 'all' ? true : po.status === filter);
-  
+
   const filterBtns = [
     ['all', 'الكل'],
     ['draft', 'مسودة RFQ'],
@@ -21556,7 +21061,7 @@ function renderProcurementTab() {
     ['received', 'مُستلم'],
     ['cancelled', 'ملغى']
   ];
-  
+
   const filterHtml = `
     <div class="cc-request-tabs" style="margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
       ${filterBtns.map(([key, label]) => `<button class="btn-tab-filter ${filter === key ? 'active' : ''}" style="background: ${filter === key ? 'var(--accent-blue)' : 'rgba(255,255,255,0.05)'}; color: var(--text-primary); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size:12px;" onclick="window.switchRfqFilter('${key}')">${label}</button>`).join('')}
@@ -21648,7 +21153,7 @@ window.switchRfqFilter = function(filter) {
 function renderProposalsTab() {
   ensureOmni();
   const proposals = getAutoProcurementProposals();
-  
+
   let rowsHtml = '';
   proposals.forEach(p => {
     rowsHtml += `
@@ -21676,7 +21181,7 @@ function renderProposalsTab() {
       </div>
       <button class="btn-primary" style="height:32px; padding: 0 12px; font-size:12px;" onclick="window.consolidateProposalsToRFQs()"><i class="fa-solid fa-object-group"></i> دمج وإنشاء طلبات RFQ مجمعة</button>
     </div>
-    
+
     <div class="inv-table-wrap" style="max-height: 400px; overflow-y: auto;">
       <table class="inv-table">
         <thead>
@@ -21728,7 +21233,7 @@ window.consolidateProposalsToRFQs = function() {
   Object.keys(groups).forEach(key => {
     const propsList = groups[key];
     const first = propsList[0];
-    
+
     const items = propsList.map(p => ({
       materialId: p.materialId,
       materialName: p.materialName,
@@ -21740,7 +21245,7 @@ window.consolidateProposalsToRFQs = function() {
     // Find supplier ID and name
     let supId = first.supplierId;
     let supName = first.supplierName;
-    
+
     // Grouping by unassigned might not match a supplier, try to resolve by name
     if (key === 'unassigned' || !supId) {
       const foundSup = (omni.suppliers || []).find(s => s.name === supName);
@@ -21757,9 +21262,9 @@ window.consolidateProposalsToRFQs = function() {
 
 async function showCreateRfqModal() {
   ensureOmni();
-  
+
   const supOpts = (omni.suppliers || []).map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
-  
+
   const modalHtml = `
     <div style="font-size: 13px;">
       <div style="margin-bottom: 12px;">
@@ -21769,7 +21274,7 @@ async function showCreateRfqModal() {
           ${supOpts}
         </select>
       </div>
-      
+
       <h5 style="margin: 12px 0 6px 0;">مواد أمر الشراء</h5>
       <table id="rfqItemsTable" class="inv-table" style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
         <thead>
@@ -21785,9 +21290,9 @@ async function showCreateRfqModal() {
           <!-- Dynamic lines added here -->
         </tbody>
       </table>
-      
+
       <button class="btn-secondary" type="button" style="margin-bottom: 12px; padding: 2px 6px; font-size: 11px; height: 26px;" onclick="window.addRfqItemRow()"><i class="fa-solid fa-plus"></i> إضافة سطر جديد</button>
-      
+
       <div>
         <label>شروط أو ملاحظات الشراء</label>
         <textarea id="rfqNotes" class="form-input" style="height: 50px; padding: 4px;" placeholder="ملاحظات اختيارية للمورد..."></textarea>
@@ -21832,10 +21337,10 @@ async function showCreateRfqModal() {
     if (!tr || !opt) return;
     const unitSpan = tr.querySelector('.rfq-item-unit');
     const costInput = tr.querySelector('.rfq-item-cost');
-    
+
     const matId = selectEl.value;
     unitSpan.textContent = opt.dataset.unit || '';
-    
+
     // Auto-populate negotiated price from supplier catalog if selected
     const supplierId = document.getElementById('rfqSupplierSelect')?.value;
     let price = Number(opt.dataset.cost) || 0;
@@ -21863,7 +21368,7 @@ async function showCreateRfqModal() {
     const supplierSelect = body.querySelector('#rfqSupplierSelect');
     const notesEl = body.querySelector('#rfqNotes');
     const rows = body.querySelectorAll('#rfqItemsTable tbody tr');
-    
+
     const selectedSupplierId = supplierSelect?.value;
     if (!selectedSupplierId) {
       showToast('يرجى اختيار المورد أولاً', 'warning');
@@ -21875,11 +21380,11 @@ async function showCreateRfqModal() {
       const matSelect = row.querySelector('.rfq-item-select');
       const qtyInput = row.querySelector('.rfq-item-qty');
       const costInput = row.querySelector('.cost-intake || .rfq-item-cost');
-      
+
       const matId = matSelect?.value;
       const qty = Number(qtyInput?.value) || 0;
       const unitCost = Number(costInput?.value) || 0;
-      
+
       if (matId && qty > 0) {
         const mat = getMaterialById(matId);
         items.push({
@@ -21907,7 +21412,7 @@ async function showCreateRfqModal() {
   });
 
   if (!result) return;
-  
+
   const sup = (omni.suppliers || []).find(s => s.id === result.supplierId);
   const po = createMultiLineRFQ(result.supplierId, sup ? sup.name : '', result.items, result.notes);
   showToast(`تم إنشاء طلب عرض السعر بنجاح: ${po.id}`, 'success');
@@ -21918,17 +21423,17 @@ async function renderInventoryPage() {
   ensureOmni();
   const el = document.getElementById('inventoryBody');
   if (!el) return;
-  
+
   if (!window.inventoryActiveTab) window.inventoryActiveTab = 'materials';
   const activeTab = window.inventoryActiveTab;
-  
+
   const allMats = typeof window.scoped === 'function' ? window.scoped(omni.materials || []) : (omni.materials || []);
   const kpis = getInventoryKpis(allMats);
   const categories = getInventoryCategories(allMats);
   const mats = filterInventoryMats(allMats);
   const showReserved = omni.adminSettings?.inventory?.showReservedQty !== false;
   const orgSymbol = omni.adminSettings?.organization?.currencySymbol || 'د.ع';
-  
+
   // Tab selectors html
   const tabSelectorsHtml = `
     <div class="procurement-tabs" style="display: flex; gap: 8px; border-bottom: 2px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 16px; flex-wrap: wrap;">
@@ -22189,7 +21694,7 @@ function buildSupplierModalHtml(supplierId, activeTab = 'info') {
           <td style="padding: 6px;"><b>${escapeHtml(mat?.name || 'غير معروف')}</b></td>
           <td style="padding: 6px; text-align: center;"><small class="muted">${escapeHtml(item.SKU || '-')}</small></td>
           <td style="padding: 6px; text-align: center;">
-            <input type="number" class="form-input" style="width: 100px; text-align: center; margin: 0; padding: 2px 4px;" value="${item.negotiatedPrice || 0}" 
+            <input type="number" class="form-input" style="width: 100px; text-align: center; margin: 0; padding: 2px 4px;" value="${item.negotiatedPrice || 0}"
               onchange="window.updateSupplierCatalogPriceInline('${supplierId}', '${item.materialId}', this.value)">
           </td>
           <td style="padding: 6px; text-align: center;">${item.leadTime || 3} أيام</td>
@@ -22223,7 +21728,7 @@ function buildSupplierModalHtml(supplierId, activeTab = 'info') {
           </tbody>
         </table>
       </div>
-      
+
       <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
         <h5 style="margin: 0 0 8px 0;"><i class="fa-solid fa-plus"></i> إضافة مادة لكتالوج المورد</h5>
         <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 8px; align-items: flex-end;">
@@ -22344,9 +21849,9 @@ window.addMaterialToSupplierCatalogInline = function(supplierId) {
   const price = Number(document.getElementById('newCatPrice')?.value) || 0;
   const SKU = document.getElementById('newCatSKU')?.value.trim() || '';
   const lead = Number(document.getElementById('newCatLead')?.value) || 3;
-  
+
   if (!matId) return showToast('يرجى اختيار المادة', 'warning');
-  
+
   const ok = addMaterialToSupplierCatalog(supplierId, matId, price, SKU, lead);
   if (ok) {
     showToast('تمت إضافة المادة للكتالوج بنجاح', 'success');
@@ -23713,7 +23218,7 @@ function renderAdminTabRouting() {
     rowsHtml = employees.map((emp, idx) => {
       const empId = emp.id || String(idx);
       const activeSupId = routing[empId] || routing[emp.name] || routing[idx] || '';
-      
+
       const optionsHtml = [
         `<option value="">-- بدون مشرف (توجيه للمدير) --</option>`,
         ...supervisors.map(sup => `
@@ -23744,7 +23249,7 @@ function renderAdminTabRouting() {
         <h3 style="margin:0;"><i class="fa-solid fa-sitemap"></i> جدول توجيه الموظفين للمشرفين</h3>
       </div>
       <p class="admin-note">قم بتعيين مشرف لكل موظف. الطلبات المقدمة من الموظف سيتم توجيهها تلقائياً للمشرف المحدد في مركز القيادة.</p>
-      
+
       <div class="backup-table-wrapper" style="margin-top:15px; overflow-x:auto;">
         <table class="backup-table" style="width:100%;">
           <thead>
@@ -23795,7 +23300,7 @@ function renderAdminTabUsers() {
           </div>
         </div>
         <p class="admin-note">يمكنك هنا إدارة مستخدمي النظام بالكامل، وتعيين أدوارهم أو تحديد صلاحيات مخصصة لكل دور من الأدوار الأمنية في الورشة.</p>
-        
+
         <div style="display:grid; grid-template-columns: 3fr 2fr; gap:20px; align-items:start;">
           <!-- Active Users Table -->
           <div class="backup-table-wrapper" style="margin:0;">
@@ -23835,7 +23340,7 @@ function renderAdminTabUsers() {
               </tbody>
             </table>
           </div>
-          
+
           <!-- System Roles List -->
           <div class="admin-role-grid" style="display:flex; flex-direction:column; gap:10px;">
             ${(omni.roles || []).map(role => `
@@ -23877,7 +23382,7 @@ function renderAdminTabBackups() {
             <button class="btn btn-secondary" onclick="triggerCreateBackup()"><i class="fa-solid fa-plus"></i> إنشاء نسخة احتياطية جديدة</button>
           </div>
         </div>
-        
+
         <div class="backup-table-wrapper">
           <table class="backup-table">
             <thead>
@@ -23907,7 +23412,7 @@ function renderQcDashboard() {
   const passed = records.filter(q => q.result === 'pass' || q.status === 'pass');
 
   const toggleBtn = `<button class="btn-secondary" style="font-size: 12.5px; padding: 6px 12px; height: 32px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.08);" onclick="toggleQcSimulator()">
-    <i class="fa-solid fa-map-signs" style="color: var(--text-link);"></i> 
+    <i class="fa-solid fa-map-signs" style="color: var(--text-link);"></i>
     ${omniShowQcSimulator ? 'إخفاء المحاكي التعليمي' : 'عرض المحاكي التعليمي'}
   </button>`;
 
@@ -23917,7 +23422,7 @@ function renderQcDashboard() {
         <h3 style="margin: 0; font-size: 16px; color: var(--text-normal);"><i class="fa-solid fa-chart-line"></i> نظرة عامة على حالة بوابات الجودة</h3>
         ${toggleBtn}
       </div>
-      
+
       <div class="qc-section-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; width: 100%;">
         <section style="background: rgba(15, 23, 42, 0.3); border: 1px solid rgba(248, 113, 113, 0.15); border-top: 4px solid #f87171; border-radius: 8px; padding: 16px;">
           <h3 class="qc-dashboard-sec-title" style="margin: 0 0 16px 0; font-size: 14.5px; color: #f87171;"><i class="fa-solid fa-triangle-exclamation"></i> فحوصات تحتاج إجراء (فاشلة / إعادة عمل)</h3>
@@ -23925,14 +23430,14 @@ function renderQcDashboard() {
             ${failures.slice(0, 5).map(renderQcRecordCard).join('') || '<div class="qc-empty-state" style="padding: 24px; border-radius: 6px; background: rgba(0,0,0,0.15);">لا توجد فحوصات جودة تحتاج إجراء حالياً</div>'}
           </div>
         </section>
-        
+
         <section style="background: rgba(15, 23, 42, 0.3); border: 1px solid rgba(251, 191, 36, 0.15); border-top: 4px solid #fbbf24; border-radius: 8px; padding: 16px;">
           <h3 class="qc-dashboard-sec-title" style="margin: 0 0 16px 0; font-size: 14.5px; color: #fbbf24;"><i class="fa-solid fa-spinner fa-spin-slow"></i> قيد الفحص (بوابات جارية)</h3>
           <div class="qc-dashboard-cards-wrap" style="display: flex; flex-direction: column; gap: 10px;">
             ${pending.slice(0, 5).map(renderQcRecordCard).join('') || '<div class="qc-empty-state" style="padding: 24px; border-radius: 6px; background: rgba(0,0,0,0.15);">لا توجد فحوصات قيد الانتظار حالياً</div>'}
           </div>
         </section>
-        
+
         <section style="background: rgba(15, 23, 42, 0.3); border: 1px solid rgba(52, 211, 153, 0.15); border-top: 4px solid #34d399; border-radius: 8px; padding: 16px;">
           <h3 class="qc-dashboard-sec-title" style="margin: 0 0 16px 0; font-size: 14.5px; color: #34d399;"><i class="fa-solid fa-circle-check"></i> فحوصات ناجحة ومكتملة (مغلقة)</h3>
           <div class="qc-dashboard-cards-wrap" style="display: flex; flex-direction: column; gap: 10px;">
@@ -23966,7 +23471,7 @@ function renderQcDashboard() {
         </section>
       </div>
     </div>
-    
+
     <!-- Right Column: Interactive Process Flow Simulator -->
     <div class="qc-dashboard-right">
       <div class="qc-simulator-widget">
@@ -23974,7 +23479,7 @@ function renderQcDashboard() {
           <h4><i class="fa-solid fa-map-signs"></i> محاكي بوابات الجودة التفاعلي</h4>
           <p>اضغط على أي مسار بالأسفل لتتبع دورة حياة منتجك ومسؤول الجودة في كل مرحلة!</p>
         </header>
-        
+
         <!-- Simulation Controls -->
         <div class="qc-sim-controls">
           <button id="simBtnPass" class="qc-sim-btn active" onclick="triggerQcSimulation('pass')">
@@ -23987,12 +23492,12 @@ function renderQcDashboard() {
             <i class="fa-solid fa-network-wired" style="color: #60a5fa;"></i> بوابات متعددة
           </button>
         </div>
-        
+
         <!-- Visual Flowchart Area -->
         <div class="qc-sim-flowchart" id="qcSimFlowchart">
           <!-- Flowchart nodes lit dynamically by JS -->
         </div>
-        
+
         <!-- Simulation Explanations Details -->
         <div class="qc-sim-details-card" id="qcSimDetails">
           <!-- Rich descriptions populated dynamically by JS -->
@@ -24618,12 +24123,12 @@ function formatBackupDate(ts) {
 async function loadAdminBackups() {
   const container = document.getElementById('adminBackupListContainer');
   if (!container) return;
-  
+
   try {
     const res = await fetch('/api/backups');
     if (!res.ok) throw new Error('فشل جلب النسخ الاحتياطية');
     const backups = await res.json();
-    
+
     if (!backups || backups.length === 0) {
       container.innerHTML = `
         <tr>
@@ -24634,14 +24139,14 @@ async function loadAdminBackups() {
       `;
       return;
     }
-    
+
     container.innerHTML = backups.map(b => {
       const sizeStr = formatBytes(b.bytes);
       const tagClass = getBackupTagClass(b.tag);
       const dateStr = formatBackupDate(b.created || b.timestamp);
       const escapedFile = escapeHtml(b.file);
       const escapedTag = escapeHtml(b.tag);
-      
+
       return `
         <tr class="backup-row">
           <td><i class="fa-regular fa-clock" style="margin-left: 5px; opacity: 0.7;"></i> ${dateStr}</td>
@@ -24683,7 +24188,7 @@ function downloadBackupFile(filename) {
 async function triggerCreateBackup() {
   const tag = await showOmniPrompt('أدخل وسماً (Tag) لهذه النسخة الاحتياطية (اختياري)', 'manual');
   if (tag === null) return;
-  
+
   try {
     const res = await fetch('/api/backup', {
       method: 'POST',
@@ -24711,7 +24216,7 @@ async function restoreBackupConfirm(filename) {
     'إلغاء'
   );
   if (!confirm) return;
-  
+
   try {
     const res = await fetch('/api/restore', {
       method: 'POST',
@@ -24757,14 +24262,14 @@ async function addAdminUser() {
     { id: 'workflows_full', name: 'تصميم مسارات العمل' },
     { id: 'admin_full', name: 'إدارة النظام الكاملة' }
   ];
-  
+
   const permissionsCheckboxes = permissions.map(p => `
     <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer;">
       <input type="checkbox" name="adminUserPerm" value="${p.id}">
       <span>${escapeHtml(p.name)}</span>
     </label>
   `).join('');
-  
+
   const html = `
     <div style="display:flex; flex-direction:column; gap:12px;">
       <div class="form-group">
@@ -24792,23 +24297,23 @@ async function addAdminUser() {
       </div>
     </div>
   `;
-  
+
   const result = await showOmniModal('إضافة مستخدم جديد', html, (body) => {
     const name = body.querySelector('#adminUserNewName').value.trim();
     const roleId = body.querySelector('#adminUserNewRole').value;
     const status = body.querySelector('#adminUserNewStatus').value;
     const checkedCheckboxes = body.querySelectorAll('input[name="adminUserPerm"]:checked');
     const userPerms = Array.from(checkedCheckboxes).map(cb => cb.value);
-    
+
     if (!name) {
       showToast('يرجى إدخال اسم المستخدم', 'error');
       return false;
     }
     return { name, roleId, status, permissions: userPerms };
   });
-  
+
   if (!result) return;
-  
+
   const newUser = {
     id: makeId('user'),
     name: result.name,
@@ -24827,7 +24332,7 @@ async function editAdminUser(userId) {
   ensureOmni();
   const user = omni.users.find(u => u.id === userId);
   if (!user) return;
-  
+
   const rolesOptions = (omni.roles || []).map(r => `<option value="${r.id}" ${user.roleId === r.id ? 'selected' : ''}>${escapeHtml(r.name)}</option>`).join('');
   const permissions = [
     { id: 'all', name: 'كامل الصلاحيات (All)' },
@@ -24840,7 +24345,7 @@ async function editAdminUser(userId) {
     { id: 'workflows_full', name: 'تصميم مسارات العمل' },
     { id: 'admin_full', name: 'إدارة النظام الكاملة' }
   ];
-  
+
   const permissionsCheckboxes = permissions.map(p => {
     const isChecked = (user.permissions || []).includes(p.id) ? 'checked' : '';
     return `
@@ -24850,7 +24355,7 @@ async function editAdminUser(userId) {
       </label>
     `;
   }).join('');
-  
+
   const html = `
     <div style="display:flex; flex-direction:column; gap:12px;">
       <div class="form-group">
@@ -24882,7 +24387,7 @@ async function editAdminUser(userId) {
       </div>
     </div>
   `;
-  
+
   const result = await showOmniModal(`تعديل المستخدم: ${user.name}`, html, (body) => {
     const name = body.querySelector('#adminUserEditName').value.trim();
     const roleId = body.querySelector('#adminUserEditRole').value;
@@ -24890,28 +24395,28 @@ async function editAdminUser(userId) {
     const checkedCheckboxes = body.querySelectorAll('input[name="adminUserPerm"]:checked');
     const userPerms = Array.from(checkedCheckboxes).map(cb => cb.value);
     const resetPassword = body.querySelector('#adminUserResetPassword').checked;
-    
+
     if (!name) {
       showToast('يرجى إدخال اسم المستخدم', 'error');
       return false;
     }
     return { name, roleId, status, permissions: userPerms, resetPassword };
   });
-  
+
   if (!result) return;
-  
+
   user.name = result.name;
   user.roleId = result.roleId;
   user.status = result.status;
   user.permissions = result.permissions;
-  
+
   if (result.resetPassword) {
     delete user.passwordHash;
     delete user.passwordSalt;
     user.mustChangePassword = true;
     showToast('تمت إعادة تعيين كلمة مرور المستخدم. سيُطلب منه تعيين كلمة مرور جديدة عند تسجيل الدخول القادم.', 'info');
   }
-  
+
   addSystemLog('system', `تم تعديل مستخدم: ${user.name} بدور: ${user.roleId}`, 'info', 'admin_panel', user.id);
   saveData();
   renderAdminPanel();
@@ -24923,10 +24428,10 @@ async function deleteAdminUser(userId) {
   const idx = omni.users.findIndex(u => u.id === userId);
   if (idx === -1) return;
   const user = omni.users[idx];
-  
+
   const ok = await showOmniConfirm('حذف مستخدم', `هل أنت متأكد من حذف حساب المستخدم "${user.name}" نهائياً من الورشة؟`, 'حذف المستخدم', 'إلغاء');
   if (!ok) return;
-  
+
   omni.users.splice(idx, 1);
   addSystemLog('system', `تم حذف مستخدم: ${user.name}`, 'warning', 'admin_panel', userId);
   saveData();
@@ -24948,14 +24453,14 @@ async function addAdminRole() {
     { id: 'workflows_full', name: 'تصميم مسارات العمل' },
     { id: 'admin_full', name: 'إدارة النظام الكاملة' }
   ];
-  
+
   const permissionsCheckboxes = permissions.map(p => `
     <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer;">
       <input type="checkbox" name="adminRolePerm" value="${p.id}">
       <span>${escapeHtml(p.name)}</span>
     </label>
   `).join('');
-  
+
   const html = `
     <div style="display:flex; flex-direction:column; gap:12px;">
       <div class="form-group">
@@ -24974,13 +24479,13 @@ async function addAdminRole() {
       </div>
     </div>
   `;
-  
+
   const result = await showOmniModal('إضافة دور أمني مخصص', html, (body) => {
     const id = body.querySelector('#adminRoleNewId').value.trim().toLowerCase();
     const name = body.querySelector('#adminRoleNewName').value.trim();
     const checkedCheckboxes = body.querySelectorAll('input[name="adminRolePerm"]:checked');
     const rolePerms = Array.from(checkedCheckboxes).map(cb => cb.value);
-    
+
     if (!id || !/^[a-z0-9_]+$/.test(id)) {
       showToast('يرجى إدخال معرف أمني صالح بالإنجليزية وبدون فراغات', 'error');
       return false;
@@ -24995,9 +24500,9 @@ async function addAdminRole() {
     }
     return { id, name, permissions: rolePerms };
   });
-  
+
   if (!result) return;
-  
+
   const newRole = {
     id: result.id,
     name: result.name,
@@ -25006,7 +24511,7 @@ async function addAdminRole() {
   omni.roles.push(newRole);
   if (!omni.permissions) omni.permissions = {};
   omni.permissions[newRole.id] = newRole.permissions;
-  
+
   addSystemLog('system', `تمت إضافة دور أمني جديد: ${newRole.name} (${newRole.id})`, 'info', 'admin_panel', newRole.id);
   saveData();
   renderAdminPanel();
@@ -25017,7 +24522,7 @@ async function editAdminRolePermissions(roleId) {
   ensureOmni();
   const role = omni.roles.find(r => r.id === roleId);
   if (!role) return;
-  
+
   const permissions = [
     { id: 'all', name: 'كامل الصلاحيات (All)' },
     { id: 'financial_full', name: 'إدارة المالية الكاملة' },
@@ -25029,7 +24534,7 @@ async function editAdminRolePermissions(roleId) {
     { id: 'workflows_full', name: 'تصميم مسارات العمل' },
     { id: 'admin_full', name: 'إدارة النظام الكاملة' }
   ];
-  
+
   const permissionsCheckboxes = permissions.map(p => {
     const isChecked = (role.permissions || []).includes(p.id) ? 'checked' : '';
     return `
@@ -25039,7 +24544,7 @@ async function editAdminRolePermissions(roleId) {
       </label>
     `;
   }).join('');
-  
+
   const html = `
     <div style="display:flex; flex-direction:column; gap:12px;">
       <p style="font-size:13px; color:#cbd5e1; margin-bottom:8px;">تعديل مصفوفة الصلاحيات الممنوحة للدور الأمني <b>"${role.name}"</b>:</p>
@@ -25055,26 +24560,26 @@ async function editAdminRolePermissions(roleId) {
       </div>
     </div>
   `;
-  
+
   const result = await showOmniModal(`تعديل صلاحيات الدور: ${role.name}`, html, (body) => {
     const name = body.querySelector('#adminRoleEditName').value.trim();
     const checkedCheckboxes = body.querySelectorAll('input[name="adminRolePerm"]:checked');
     const rolePerms = Array.from(checkedCheckboxes).map(cb => cb.value);
-    
+
     if (!name) {
       showToast('يرجى إدخال اسم الدور', 'error');
       return false;
     }
     return { name, permissions: rolePerms };
   });
-  
+
   if (!result) return;
-  
+
   role.name = result.name;
   role.permissions = result.permissions;
   if (!omni.permissions) omni.permissions = {};
   omni.permissions[role.id] = role.permissions;
-  
+
   addSystemLog('system', `تم تحديث صلاحيات الدور: ${role.name} (${role.id})`, 'info', 'admin_panel', role.id);
   saveData();
   renderAdminPanel();
@@ -25087,24 +24592,24 @@ async function deleteAdminRole(roleId) {
     showToast('لا يمكن حذف الأدوار الافتراضية للنظام', 'error');
     return;
   }
-  
+
   const idx = omni.roles.findIndex(r => r.id === roleId);
   if (idx === -1) return;
   const role = omni.roles[idx];
-  
+
   const ok = await showOmniConfirm('حذف دور أمني', `هل أنت متأكد من حذف الدور الأمني "${role.name}"؟ سيتم إلغاء تعيين هذا الدور من أي مستخدمين مرتبطين به.`, 'حذف الدور', 'إلغاء');
   if (!ok) return;
-  
+
   omni.roles.splice(idx, 1);
   if (omni.permissions) delete omni.permissions[roleId];
-  
+
   // Clean up user assignments
   omni.users.forEach(u => {
     if (u.roleId === roleId) {
       u.roleId = 'employee';
     }
   });
-  
+
   addSystemLog('system', `تم حذف دور أمني: ${role.name}`, 'warning', 'admin_panel', roleId);
   saveData();
   renderAdminPanel();
@@ -25116,7 +24621,7 @@ async function manageAdminFinanceSetup(type) {
   ensureFinance();
   let title = '';
   let items = [];
-  
+
   if (type === 'dept') {
     title = 'إدارة الأقسام المالية';
     items = finance.departments || [];
@@ -25130,7 +24635,7 @@ async function manageAdminFinanceSetup(type) {
     title = 'إدارة مصادر الواردات';
     items = finance.categories?.income || [];
   }
-  
+
   const tableRows = items.map(item => {
     let subDetails = '';
     if (type === 'party') {
@@ -25141,10 +24646,10 @@ async function manageAdminFinanceSetup(type) {
     } else {
       subDetails = `<small style="color:var(--text-muted);">${item.id}</small>`;
     }
-    
+
     const escapedName = escapeHtml(item.name || item.title || item.id || item);
     const idValue = item.id || item;
-    
+
     return `
       <tr class="backup-row">
         <td style="font-weight:600; color:#f1f5f9;">${escapedName}</td>
@@ -25156,7 +24661,7 @@ async function manageAdminFinanceSetup(type) {
       </tr>
     `;
   }).join('') || `<tr><td colspan="3" style="text-align:center; padding:16px; color:var(--text-muted);">لا توجد عناصر مضافة بعد</td></tr>`;
-  
+
   const modalHtml = `
     <div style="display:flex; flex-direction:column; gap:12px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -25165,7 +24670,7 @@ async function manageAdminFinanceSetup(type) {
           <i class="fa-solid fa-plus"></i> إضافة عنصر جديد
         </button>
       </div>
-      
+
       <div class="backup-table-wrapper" style="margin:0; max-height:300px; overflow-y:auto;">
         <table class="backup-table" style="width:100%;">
           <thead>
@@ -25182,7 +24687,7 @@ async function manageAdminFinanceSetup(type) {
       </div>
     </div>
   `;
-  
+
   await showOmniModal(title, modalHtml, () => true);
 }
 
@@ -25190,7 +24695,7 @@ async function addAdminFinanceSetupItem(type) {
   ensureFinance();
   let title = '';
   let fieldsHtml = '';
-  
+
   if (type === 'dept') {
     title = 'إضافة قسم مالي جديد';
     fieldsHtml = `
@@ -25231,7 +24736,7 @@ async function addAdminFinanceSetupItem(type) {
       </div>
     `;
   }
-  
+
   const result = await showOmniModal(title, fieldsHtml, (body) => {
     const name = body.querySelector('#addFinSetupName').value.trim();
     if (!name) {
@@ -25242,9 +24747,9 @@ async function addAdminFinanceSetupItem(type) {
     const accountId = body.querySelector('#addFinSetupAccount')?.value || '';
     return { name, partyType, accountId };
   });
-  
+
   if (!result) return;
-  
+
   if (type === 'dept') {
     const newItem = { id: makeId('dept'), name: result.name };
     finance.departments.push(newItem);
@@ -25266,7 +24771,7 @@ async function addAdminFinanceSetupItem(type) {
     finance.categories.income.push(newItem);
     showToast('تمت إضافة مصدر الإيرادات بنجاح', 'success');
   }
-  
+
   saveData();
   renderAdminPanel();
   // Re-open list modal for smooth UX
@@ -25280,7 +24785,7 @@ async function editAdminFinanceSetupItem(type, itemId) {
   let title = '';
   let item = null;
   let fieldsHtml = '';
-  
+
   if (type === 'dept') {
     item = finance.departments.find(d => d.id === itemId || d.name === itemId);
     if (!item) return;
@@ -25328,7 +24833,7 @@ async function editAdminFinanceSetupItem(type, itemId) {
       </div>
     `;
   }
-  
+
   const result = await showOmniModal(title, fieldsHtml, (body) => {
     const name = body.querySelector('#editFinSetupName').value.trim();
     if (!name) {
@@ -25339,16 +24844,16 @@ async function editAdminFinanceSetupItem(type, itemId) {
     const accountId = body.querySelector('#editFinSetupAccount')?.value || '';
     return { name, partyType, accountId };
   });
-  
+
   if (!result) return;
-  
+
   item.name = result.name;
   if (type === 'party') {
     item.type = result.partyType;
   } else if (type === 'exp_cat' || type === 'inc_cat') {
     item.accountId = result.accountId;
   }
-  
+
   saveData();
   renderAdminPanel();
   showToast('تم حفظ التعديلات بنجاح', 'success');
@@ -25363,7 +24868,7 @@ async function deleteAdminFinanceSetupItem(type, itemId) {
   let list = [];
   let itemIndex = -1;
   let label = '';
-  
+
   if (type === 'dept') {
     list = finance.departments;
     itemIndex = list.findIndex(d => d.id === itemId || d.name === itemId);
@@ -25381,12 +24886,12 @@ async function deleteAdminFinanceSetupItem(type, itemId) {
     itemIndex = list.findIndex(c => c.id === itemId || c.name === itemId);
     label = list[itemIndex]?.name || itemId;
   }
-  
+
   if (itemIndex === -1) return;
-  
+
   const ok = await showOmniConfirm('تأكيد الحذف المالي', `هل أنت متأكد من حذف "${label}"؟ قد يؤثر الحذف على سجلات الحسابات الحالية.`, 'حذف العنصر', 'إلغاء');
   if (!ok) return;
-  
+
   list.splice(itemIndex, 1);
   saveData();
   renderAdminPanel();
@@ -26108,7 +25613,7 @@ document.addEventListener('DOMContentLoaded', () => {
     columns.forEach(col => {
       col.setAttribute('ondragover', 'allowDrop(event)');
       col.setAttribute('ondrop', 'dropCanvas(event, this)');
-      
+
       Array.from(col.children).forEach(child => {
         if(child.classList.contains('kanban-item')) {
           child.setAttribute('draggable', 'true');
@@ -26123,7 +25628,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Workflow setup
   const wfSidebar = document.querySelector('#pageWorkflow .glass-card[style*="width:250px"]');
   const wfCanvas = document.querySelector('#pageWorkflow .glass-card[style*="flex:1"]');
-  
+
   if (wfSidebar) {
     Array.from(wfSidebar.children).forEach(child => {
       if(child.tagName === 'DIV' && child.style.cursor === 'move') {
@@ -26137,7 +25642,7 @@ document.addEventListener('DOMContentLoaded', () => {
     wfCanvas.setAttribute('ondragover', 'allowDrop(event)');
     wfCanvas.setAttribute('ondrop', 'dropWorkflow(event, this)');
   }
-  
+
   // SOP Hub Search Filtering
   const searchInput = document.querySelector('#pageSop input[type="text"]');
   if (searchInput) {
@@ -26197,7 +25702,7 @@ window.dropWorkflow = function(ev, canvas) {
     nodeCopy.id = "wf-node-" + Math.random().toString(36).substr(2, 9);
     nodeCopy.removeAttribute('draggable');
     nodeCopy.removeAttribute('ondragstart');
-    
+
     // Style as absolute block
     nodeCopy.style.position = 'absolute';
     // Center it on drop
@@ -26211,7 +25716,7 @@ window.dropWorkflow = function(ev, canvas) {
     nodeCopy.style.background = 'white';
     nodeCopy.style.color = 'black';
     nodeCopy.style.textAlign = 'center';
-    
+
     canvas.appendChild(nodeCopy);
     draggedWorkflowItem = null;
     showToast('تم إضافة عقدة للعملية', 'success');
@@ -27092,7 +26597,7 @@ function renderEmployeePortal() {
 function processOmniBotCommand(text, chatBody) {
   ensureOmni();
   const lowerText = text.toLowerCase();
-  
+
   function reply(msgHtml) {
     const r = document.createElement('div');
     r.className = 'ai-msg';
@@ -27118,7 +26623,7 @@ function processOmniBotCommand(text, chatBody) {
   if (lowerText.includes('ناقص') || lowerText.includes('مخزون') || lowerText.includes('مواد') || lowerText.includes('جرد')) {
     const lowStock = (omni.materials || []).filter(m => getMaterialAvailableQty(m) <= m.minimum);
     if (lowStock.length > 0) {
-      reply(`هناك <b>${lowStock.length}</b> مواد وصلت للحد الأدنى:<br>` + 
+      reply(`هناك <b>${lowStock.length}</b> مواد وصلت للحد الأدنى:<br>` +
             lowStock.map(m => `- ${m.name} (${getMaterialAvailableQty(m)} ${m.unit})`).join('<br>') +
             `<br><br><button class="btn-primary" onclick="switchPage('inventory')" style="font-size:11px;padding:2px 6px;">فتح قسم المخزون</button>`);
     } else {
@@ -27131,7 +26636,7 @@ function processOmniBotCommand(text, chatBody) {
   if (lowerText.includes('مكائن') || lowerText.includes('ماكينة') || lowerText.includes('الة') || lowerText.includes('آلة')) {
     const down = (omni.machines || []).filter(m => m.status === 'maintenance');
     const operational = (omni.machines || []).filter(m => m.status === 'operational');
-    reply(`لدينا <b>${operational.length}</b> مكائن تعمل حالياً.<br>` + 
+    reply(`لدينا <b>${operational.length}</b> مكائن تعمل حالياً.<br>` +
           (down.length > 0 ? `<span style="color:var(--danger)">وهناك ${down.length} مكائن في الصيانة: ${down.map(m=>m.name).join('، ')}</span>` : 'لا توجد مكائن معطلة.') +
           `<br><br><button class="btn-primary" onclick="switchPage('machines')" style="font-size:11px;padding:2px 6px;">فتح إدارة المكائن</button>`);
     return;
@@ -27622,1704 +27127,7 @@ async function addEmployee() {
   }
 }
 
-// Pentagon V6 account.move finance tab override.
-function ensureV6FinanceWorkspace() {
-  const tabBar = document.querySelector('.finance-tab-bar');
-  if (!tabBar) return;
-
-  const tabs = [
-    ['dashboard', 'لوحة التحكم'],
-    ['partner_ledger', 'أعمار ديون العملاء والموردين'],
-    ['journal', 'القيود المحاسبية'],
-    ['payments', 'الدفعات'],
-    ['customer_invoices', 'فواتير العملاء'],
-    ['vendor_bills', 'فواتير الموردين'],
-    ['statement', 'كشف حساب'],
-    ['bank_reco', 'مطابقة البنك'],
-    ['trial_balance', 'ميزان المراجعة'],
-    ['pl', 'الأرباح والخسائر'],
-    ['ledger', 'دفتر الأستاذ'],
-  ];
-
-  tabs.forEach(([id, label]) => {
-    let btn = tabBar.querySelector(`.finance-tab[data-tab="${id}"]`);
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.className = 'finance-tab';
-      btn.dataset.tab = id;
-      btn.type = 'button';
-      btn.onclick = () => switchFinanceTab(id);
-      tabBar.appendChild(btn);
-    }
-    btn.textContent = label;
-    tabBar.appendChild(btn);
-  });
-
-  const host = document.querySelector('.finance-page') || document.getElementById('financeTab-dashboard')?.parentElement;
-  if (!host) return;
-  tabs.forEach(([id]) => {
-    if (!document.getElementById(`financeTab-${id}`)) {
-      const panel = document.createElement('div');
-      panel.id = `financeTab-${id}`;
-      panel.style.display = 'none';
-      host.appendChild(panel);
-    }
-  });
-}
-
-function switchFinanceTab(tab) {
-  ensureV6FinanceWorkspace();
-  document.querySelectorAll('.finance-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  ['dashboard', 'partner_ledger', 'journal', 'payments', 'customer_invoices', 'vendor_bills', 'statement', 'bank_reco', 'trial_balance', 'pl', 'ledger'].forEach(t => {
-    const el = document.getElementById(`financeTab-${t}`);
-    if (el) el.style.display = t === tab ? '' : 'none';
-  });
-  if (tab === 'dashboard') renderFinanceDashboard();
-  else if (tab === 'partner_ledger') renderPartnerLedgerTab();
-  else if (tab === 'journal') renderJournalEntryTab();
-  else if (tab === 'payments') renderPaymentsTab();
-  else if (tab === 'customer_invoices') renderCustomerInvoicesTab();
-  else if (tab === 'vendor_bills') renderVendorBillsTab();
-  else if (tab === 'statement') renderPartnerStatementTab();
-  else if (tab === 'bank_reco') renderBankReconciliationTab();
-  else if (tab === 'trial_balance') renderTrialBalanceTab();
-  else if (tab === 'pl') renderPLTab();
-  else if (tab === 'ledger') renderLedgerTab();
-  setTimeout(enforceUIPermissions, 50);
-}
-
-function getMoveStateLabel(state) {
-  return { draft: 'مسودة', posted: 'مرحّل', cancel: 'ملغي' }[state] || state || '';
-}
-
-function getMoveStateClass(state) {
-  return state === 'posted' ? 'je-state-posted' : state === 'cancel' ? 'je-state-cancel' : 'je-state-draft';
-}
-
-function isMoveLocked(move, db) {
-  return !!db?._lock_date && !!move?.date && String(move.date) <= String(db._lock_date);
-}
-
-function getJournalLabel(journals, journalId) {
-  const journal = (journals || []).find(j => j.id === journalId);
-  return journal?.name || journal?.code || journalId || '';
-}
-
-function renderJournalEntryTab(selectedMoveId = '') {
-  const el = document.getElementById('financeTab-journal');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  PentagonDB.load({ force: true }).then(async db => {
-    const moves = await FinanceService.getMoves();
-    const journals = db.journals || [];
-    const canCreate = !window.PermissionService || window.PermissionService.check('account_moves', 'create');
-    const canUpdate = !window.PermissionService || window.PermissionService.check('account_moves', 'update');
-    const lockDate = db._lock_date || '';
-    const selected = selectedMoveId ? moves.find(move => move.id === selectedMoveId) : null;
-    const rows = moves.slice(0, 80).map(move => {
-      const total = (move.line_ids || []).reduce((sum, line) => sum + Number(line.debit || 0), 0);
-      const locked = isMoveLocked(move, db);
-      return `<tr onclick="renderJournalEntryTab('${escapeHtml(move.id)}')" style="cursor:pointer">
-        <td>${locked ? '<span title="الفترة مقفلة">🔒</span> ' : ''}${escapeHtml(move.date || '')}</td>
-        <td>${escapeHtml(move.name || '/')}</td>
-        <td>${escapeHtml(getJournalLabel(journals, move.journal_id))}</td>
-        <td>${escapeHtml(move.partner_id || '-')}</td>
-        <td class="num-cell">${formatNum(total)}</td>
-        <td><span class="je-state-badge ${getMoveStateClass(move.state)}">${getMoveStateLabel(move.state)}</span></td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">لا توجد قيود محاسبية</td></tr>';
-
-    const recon = await FinanceService.getReconciliationSummary();
-    const canCreatePayment = !window.PermissionService || window.PermissionService.check('account_payments', 'create');
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
-          <div>
-            <h3 class="section-title" style="margin:0">القيود المحاسبية</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">قيود موحدة · ${moves.length} حركة</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
-            <label style="font-size:12px;color:var(--text-muted)">تاريخ الإقفال
-              <input id="financeLockDate" type="date" class="form-input" value="${escapeHtml(lockDate)}" style="min-width:150px">
-            </label>
-            <button class="btn-secondary btn-sm" onclick="saveFinanceLockDate()">حفظ الإقفال</button>
-            <button class="btn-secondary btn-sm" onclick="closeFinanceSelectedMonth()">إقفال الفترة</button>
-            <button class="btn-secondary btn-sm" onclick="reopenFinancePeriod()">فتح الفترة المغلقة</button>
-            <button class="btn-secondary btn-sm" onclick="runCustomerChargeRepair()" title="إصلاح قيود العملاء المُرحّلة بيومية خاطئة (T2.2)">إصلاح قيود العملاء</button>
-            ${canCreate ? '<button class="btn-primary btn-sm" onclick="openNewJEModal()">قيد يدوي</button>' : ''}
-          </div>
-        </div>
-        <table class="data-table je-table">
-          <thead><tr><th>التاريخ</th><th>الرقم</th><th>اليومية</th><th>الطرف</th><th class="num-cell">إجمالي المدين</th><th>الحالة</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${renderReconciliationPanel(recon, canCreatePayment)}
-      <div id="accountMoveDetail" class="glass-card" style="margin-top:16px">${selected ? renderAccountMoveDetail(selected, journals, db, canUpdate) : '<div style="color:var(--text-muted);padding:8px">اختر قيداً لعرض التفاصيل.</div>'}</div>
-      <div id="newJEForm" style="display:none" class="glass-card je-form-card"></div>
-    `;
-    enforceUIPermissions();
-  }).catch(error => {
-    el.innerHTML = `<p style="color:var(--danger)">خطأ في تحميل القيود: ${escapeHtml(error.message || '')}</p>`;
-  });
-}
-
-function renderReconciliationPanel(recon, canCreatePayment = false) {
-  const open = recon.openItems || [];
-  const rows = open.slice(0, 12).map(item => `<tr>
-    <td>${escapeHtml(item.move_date || '')}</td>
-    <td>${escapeHtml(item.move_name || '')}</td>
-    <td>${escapeHtml(item.account_id || '')}</td>
-    <td>${escapeHtml(item.partner_id || '-')}</td>
-    <td>${escapeHtml(item.side === 'debit' ? 'مدين مفتوح' : 'دائن مفتوح')}</td>
-    <td class="num-cell">${formatNum(item.open_amount || 0)}</td>
-    <td>${canCreatePayment ? `<button class="btn-xs btn-primary" onclick="openPaymentForOpenItem('${escapeHtml(item.move_id)}','${escapeHtml(item.line_id)}')">تسجيل دفعة</button>` : '<span style="color:var(--text-muted);font-size:11px">عرض فقط</span>'}</td>
-  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">لا توجد أرصدة مفتوحة للمطابقة</td></tr>';
-  return `<div class="glass-card" style="margin-top:16px">
-    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-      <div>
-        <h3 class="section-title" style="margin:0">الدفعات والمطابقة</h3>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">دفعات ومطابقة الحركات المحاسبية</div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <span class="je-balance-chip">ذمم العملاء: ${formatNum(recon.totals?.receivables || 0)}</span>
-        <span class="je-balance-chip">ذمم الموردين: ${formatNum(recon.totals?.payables || 0)}</span>
-        <span class="je-balance-chip">دفعات: ${(recon.payments || []).length}</span>
-        <span class="je-balance-chip">مطابقات: ${(recon.partials || []).length}</span>
-      </div>
-    </div>
-    <table class="data-table tb-table">
-      <thead><tr><th>التاريخ</th><th>القيد</th><th>الحساب</th><th>الطرف</th><th>النوع</th><th class="num-cell">المفتوح</th><th>إجراء</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-}
-
-function getFinanceOpenItemKind(item) {
-  if (item.account_id === 'receivables_customers') return 'عميل';
-  if (item.account_id === 'payables_people') return 'مورد/شخص';
-  if (item.account_id === 'accrued_payroll') return 'رواتب';
-  return 'طرف';
-}
-
-function getFinanceOpenItemDirectionLabel(item) {
-  return item.side === 'debit' ? 'مطلوب تحصيله' : 'مطلوب دفعه';
-}
-
-function getFinanceOpenItemAccountLabel(item) {
-  const labels = {
-    receivables_customers: 'ذمم عملاء',
-    payables_people: 'ذمم موردين/أشخاص',
-    accrued_payroll: 'رواتب مستحقة',
-  };
-  return labels[item.account_id] || item.account_id || '';
-}
-
-function getFinanceMoveLineResidual(db, move, line) {
-  const reconcilable = ['receivables_customers', 'payables_people', 'accrued_payroll'].includes(line.account_id);
-  if (!reconcilable) return { reconcilable: false, openAmount: 0 };
-  const debitBase = Math.max(0, Number(line.debit || 0) - Number(line.credit || 0));
-  const creditBase = Math.max(0, Number(line.credit || 0) - Number(line.debit || 0));
-  const partials = db?.account_partial_reconciles || [];
-  const matchedDebit = partials
-    .filter(partial => partial.debit_move_id === move.id && partial.debit_line_id === line.id && partial.is_active !== false)
-    .reduce((sum, partial) => sum + Number(partial.amount || 0), 0);
-  const matchedCredit = partials
-    .filter(partial => partial.credit_move_id === move.id && partial.credit_line_id === line.id && partial.is_active !== false)
-    .reduce((sum, partial) => sum + Number(partial.amount || 0), 0);
-  return {
-    reconcilable: true,
-    openAmount: Math.max(0, debitBase - matchedDebit) || Math.max(0, creditBase - matchedCredit),
-  };
-}
-
-function getFinanceOpenItemAgeDays(item) {
-  const today = new Date(`${todayISO()}T00:00:00`);
-  const date = new Date(`${item.move_date || todayISO()}T00:00:00`);
-  return Math.max(0, Math.floor((today - date) / 86400000));
-}
-
-function getFinancePaymentFilterValues() {
-  return {
-    kind: document.getElementById('paymentOpenKind')?.value || 'all',
-    direction: document.getElementById('paymentOpenDirection')?.value || 'all',
-    partner: document.getElementById('paymentOpenPartner')?.value || 'all',
-    aging: document.getElementById('paymentOpenAging')?.value || 'all',
-    search: (document.getElementById('paymentOpenSearch')?.value || '').trim().toLowerCase(),
-    minAmount: Number(document.getElementById('paymentOpenMinAmount')?.value || 0),
-  };
-}
-
-function getFinancePaymentHistoryFilterValues() {
-  return {
-    type: document.getElementById('paymentHistoryType')?.value || 'all',
-    status: document.getElementById('paymentHistoryStatus')?.value || 'all',
-    partner: document.getElementById('paymentHistoryPartner')?.value || 'all',
-    search: (document.getElementById('paymentHistorySearch')?.value || '').trim().toLowerCase(),
-  };
-}
-
-function clearFinancePaymentHistoryFilters() {
-  ['paymentHistoryType', 'paymentHistoryStatus', 'paymentHistoryPartner'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = 'all';
-  });
-  const search = document.getElementById('paymentHistorySearch');
-  if (search) search.value = '';
-  renderPaymentsTab();
-}
-
-function clearPartnerStatementFilters() {
-  const account = document.getElementById('statementAccountFilter');
-  const direction = document.getElementById('statementDirectionFilter');
-  const search = document.getElementById('statementSearch');
-  if (account) account.value = 'all';
-  if (direction) direction.value = 'all';
-  if (search) search.value = '';
-  renderPartnerStatementTab();
-}
-
-function filterFinancePaymentOpenItems(items, filters) {
-  return (items || []).filter(item => {
-    const kindOk = filters.kind === 'all'
-      || (filters.kind === 'receivable' && item.account_id === 'receivables_customers')
-      || (filters.kind === 'payable' && item.account_id === 'payables_people')
-      || (filters.kind === 'payroll' && item.account_id === 'accrued_payroll');
-    if (!kindOk) return false;
-    if (filters.direction !== 'all' && item.side !== filters.direction) return false;
-    if (filters.partner !== 'all' && (item.partner_id || 'بدون طرف') !== filters.partner) return false;
-    if (filters.minAmount > 0 && Number(item.open_amount || 0) < filters.minAmount) return false;
-    const age = getFinanceOpenItemAgeDays(item);
-    if (filters.aging === 'current' && age > 30) return false;
-    if (filters.aging === 'mid' && (age <= 30 || age > 60)) return false;
-    if (filters.aging === 'old' && age <= 60) return false;
-    const haystack = `${item.move_name || ''} ${item.move_origin || ''} ${item.partner_id || ''} ${item.account_id || ''} ${item.label || ''} ${getFinanceOpenItemKind(item)} ${getFinanceOpenItemDirectionLabel(item)}`.toLowerCase();
-    return !filters.search || haystack.includes(filters.search);
-  });
-}
-
-function renderFinancePaymentPartnerOptions(items, selected) {
-  const partners = [...new Set((items || []).map(item => item.partner_id || 'بدون طرف'))].sort();
-  return `<option value="all" ${selected === 'all' ? 'selected' : ''}>الكل</option>` + partners.map(partner => `<option value="${escapeHtml(partner)}" ${partner === selected ? 'selected' : ''}>${escapeHtml(partner)}</option>`).join('');
-}
-
-function getFinanceAgingSummary(items) {
-  const today = new Date(`${todayISO()}T00:00:00`);
-  return (items || []).reduce((acc, item) => {
-    const date = new Date(`${item.move_date || todayISO()}T00:00:00`);
-    const age = Math.max(0, Math.floor((today - date) / 86400000));
-    const amount = Number(item.open_amount || 0);
-    if (age <= 30) acc.current += amount;
-    else if (age <= 60) acc.mid += amount;
-    else acc.old += amount;
-    return acc;
-  }, { current: 0, mid: 0, old: 0 });
-}
-
-async function renderPaymentsTab() {
-  const el = document.getElementById('financeTab-payments');
-  if (!el) return;
-  const preservedFilters = getFinancePaymentFilterValues();
-  const preservedHistoryFilters = getFinancePaymentHistoryFilterValues();
-  if (!window.FinanceService) {
-  el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل الدفعات...</div>';
-  try {
-    const recon = await FinanceService.getReconciliationSummary();
-    const canCreatePayment = !window.PermissionService || window.PermissionService.check('account_payments', 'create');
-    const partials = recon.partials || [];
-    const historyFilters = preservedHistoryFilters;
-    const paymentPartners = [...new Set((recon.payments || []).map(payment => payment.partner_id || 'بدون طرف'))].sort();
-    const paymentPartnerOptions = `<option value="all" ${historyFilters.partner === 'all' ? 'selected' : ''}>الكل</option>` + paymentPartners.map(partner => `<option value="${escapeHtml(partner)}" ${historyFilters.partner === partner ? 'selected' : ''}>${escapeHtml(partner)}</option>`).join('');
-    const filteredPayments = (recon.payments || []).filter(payment => {
-      if (historyFilters.type !== 'all' && payment.payment_type !== historyFilters.type) return false;
-      if (historyFilters.status === 'reconciled' && !payment.is_reconciled) return false;
-      if (historyFilters.status === 'open' && payment.is_reconciled) return false;
-      if (historyFilters.partner !== 'all' && (payment.partner_id || 'بدون طرف') !== historyFilters.partner) return false;
-      if (historyFilters.search) {
-        const haystack = `${payment.name || ''} ${payment.id || ''} ${payment.partner_id || ''} ${payment.memo || ''} ${payment.move_id || ''}`.toLowerCase();
-        if (!haystack.includes(historyFilters.search)) return false;
-      }
-      return true;
-    });
-    const paymentRows = filteredPayments.slice().reverse().map(payment => {
-      const linkedPartials = partials.filter(partial => partial.payment_id === payment.id);
-      const matchedAmount = linkedPartials.reduce((sum, partial) => sum + Number(partial.amount || 0), 0);
-      const linkedMoveNames = linkedPartials.map(partial => {
-        const targetId = partial.debit_move_id === payment.move_id ? partial.credit_move_id : partial.debit_move_id;
-        const target = (recon.openItems || []).find(item => item.move_id === targetId);
-        return target?.move_name || targetId || '';
-      }).filter(Boolean);
-      return `<tr>
-      <td>${escapeHtml(payment.date || '')}</td>
-      <td>${escapeHtml(payment.name || payment.id || '')}</td>
-      <td>${escapeHtml(payment.payment_type === 'outbound' ? 'دفع' : 'استلام')}</td>
-      <td>${escapeHtml(payment.partner_type || '-')}</td>
-      <td>${escapeHtml(payment.partner_id || '-')}</td>
-      <td class="num-cell">${formatNum(payment.amount || 0)}</td>
-      <td class="num-cell">${formatNum(matchedAmount)}</td>
-      <td>${payment.is_reconciled ? 'مطابق' : 'غير مطابق'}</td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn-xs btn-secondary" onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(payment.move_id)}'),50)">قيد الدفع</button>
-        ${linkedMoveNames.length ? `<span class="je-balance-chip" title="${escapeHtml(linkedMoveNames.join(', '))}">${linkedMoveNames.length} ربط</span>` : ''}
-      </td>
-    </tr>`;
-    }).join('') || '<tr><td colspan="9" class="empty-cell">لا توجد دفعات مسجلة بعد</td></tr>';
-
-    const filters = preservedFilters;
-    const filteredOpenItems = filterFinancePaymentOpenItems(recon.openItems || [], filters);
-    const filteredTotal = filteredOpenItems.reduce((sum, item) => sum + Number(item.open_amount || 0), 0);
-    const openRows = filteredOpenItems.slice(0, 30).map(item => `<tr>
-      <td>${escapeHtml(item.move_date || '')}</td>
-      <td>${escapeHtml(item.move_name || '')}</td>
-      <td>${escapeHtml(getFinanceOpenItemKind(item))}</td>
-      <td>${escapeHtml(item.partner_id || '-')}</td>
-      <td>${escapeHtml(getFinanceOpenItemDirectionLabel(item))}</td>
-      <td class="num-cell">${formatNum(item.open_amount || 0)}</td>
-      <td>${canCreatePayment ? `<button class="btn-xs btn-primary" onclick="openPaymentForOpenItem('${escapeHtml(item.move_id)}','${escapeHtml(item.line_id)}')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1583;&#1601;&#1593;&#1577;</button>` : '<span style="color:var(--text-muted);font-size:11px">&#1593;&#1585;&#1590; &#1601;&#1602;&#1591;</span>'}</td>
-    </tr>`).join('') || '<tr><td colspan="7" class="empty-cell">&#1604;&#1575; &#1578;&#1608;&#1580;&#1583; &#1576;&#1606;&#1608;&#1583; &#1605;&#1591;&#1575;&#1576;&#1602;&#1577; &#1604;&#1604;&#1601;&#1604;&#1578;&#1585;</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0">الدفعات</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">استلامات العملاء ومدفوعات الموردين مرتبطة مباشرة بالقيود المفتوحة</div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <span class="je-balance-chip">دفعات: ${(recon.payments || []).length}</span>
-            <span class="je-balance-chip">المعروض: ${filteredPayments.length}</span>
-            <span class="je-balance-chip">مطابقات: ${(recon.partials || []).length}</span>
-            <span class="je-balance-chip">بنود مفتوحة: ${(recon.openItems || []).length}</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
-          <label style="font-size:12px;color:var(--text-muted)">النوع
-            <select id="paymentHistoryType" class="form-input" onchange="renderPaymentsTab()">
-              <option value="all" ${historyFilters.type === 'all' ? 'selected' : ''}>الكل</option>
-              <option value="inbound" ${historyFilters.type === 'inbound' ? 'selected' : ''}>استلام</option>
-              <option value="outbound" ${historyFilters.type === 'outbound' ? 'selected' : ''}>دفع</option>
-            </select>
-          </label>
-          <label style="font-size:12px;color:var(--text-muted)">المطابقة
-            <select id="paymentHistoryStatus" class="form-input" onchange="renderPaymentsTab()">
-              <option value="all" ${historyFilters.status === 'all' ? 'selected' : ''}>الكل</option>
-              <option value="reconciled" ${historyFilters.status === 'reconciled' ? 'selected' : ''}>مطابق</option>
-              <option value="open" ${historyFilters.status === 'open' ? 'selected' : ''}>غير مطابق</option>
-            </select>
-          </label>
-          <label style="font-size:12px;color:var(--text-muted)">الطرف
-            <select id="paymentHistoryPartner" class="form-input" onchange="renderPaymentsTab()">${paymentPartnerOptions}</select>
-          </label>
-          <label style="font-size:12px;color:var(--text-muted);min-width:220px">بحث
-            <input id="paymentHistorySearch" class="form-input" value="${escapeHtml(historyFilters.search)}" placeholder="رقم الدفع أو الطرف أو البيان" oninput="clearTimeout(window.__paymentHistoryFilterTimer);window.__paymentHistoryFilterTimer=setTimeout(renderPaymentsTab,250)">
-          </label>
-          <button class="btn-secondary btn-sm" onclick="clearFinancePaymentHistoryFilters()">مسح فلتر الدفعات</button>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>الرقم</th><th>النوع</th><th>تصنيف الطرف</th><th>الطرف</th><th class="num-cell">المبلغ</th><th class="num-cell">المطابق</th><th>المطابقة</th><th>تفاصيل</th></tr></thead>
-          <tbody>${paymentRows}</tbody>
-        </table>
-      </div>
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
-          <div>
-            <h3 class="section-title" style="margin:0">بنود بانتظار الدفع أو التحصيل</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">المعروض ${filteredOpenItems.length} من ${(recon.openItems || []).length} بند مفتوح</div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-            <label style="font-size:12px;color:var(--text-muted)">&#1575;&#1604;&#1606;&#1608;&#1593;
-              <select id="paymentOpenKind" class="form-input" onchange="renderPaymentsTab()">
-                <option value="all" ${filters.kind === 'all' ? 'selected' : ''}>&#1575;&#1604;&#1603;&#1604;</option>
-                <option value="receivable" ${filters.kind === 'receivable' ? 'selected' : ''}>&#1593;&#1605;&#1604;&#1575;&#1569;</option>
-                <option value="payable" ${filters.kind === 'payable' ? 'selected' : ''}>&#1605;&#1608;&#1585;&#1583;&#1610;&#1606;/&#1571;&#1588;&#1582;&#1575;&#1589;</option>
-                <option value="payroll" ${filters.kind === 'payroll' ? 'selected' : ''}>&#1585;&#1608;&#1575;&#1578;&#1576;</option>
-              </select>
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">&#1575;&#1604;&#1575;&#1578;&#1580;&#1575;&#1607;
-              <select id="paymentOpenDirection" class="form-input" onchange="renderPaymentsTab()">
-                <option value="all" ${filters.direction === 'all' ? 'selected' : ''}>&#1575;&#1604;&#1603;&#1604;</option>
-                <option value="debit" ${filters.direction === 'debit' ? 'selected' : ''}>&#1578;&#1581;&#1589;&#1610;&#1604;</option>
-                <option value="credit" ${filters.direction === 'credit' ? 'selected' : ''}>&#1583;&#1601;&#1593;</option>
-              </select>
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">&#1575;&#1604;&#1591;&#1585;&#1601;
-              <select id="paymentOpenPartner" class="form-input" onchange="renderPaymentsTab()">${renderFinancePaymentPartnerOptions(recon.openItems || [], filters.partner)}</select>
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">&#1575;&#1604;&#1593;&#1605;&#1585;
-              <select id="paymentOpenAging" class="form-input" onchange="renderPaymentsTab()">
-                <option value="all" ${filters.aging === 'all' ? 'selected' : ''}>&#1575;&#1604;&#1603;&#1604;</option>
-                <option value="current" ${filters.aging === 'current' ? 'selected' : ''}>0-30</option>
-                <option value="mid" ${filters.aging === 'mid' ? 'selected' : ''}>31-60</option>
-                <option value="old" ${filters.aging === 'old' ? 'selected' : ''}>+60</option>
-              </select>
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">&#1581;&#1583; &#1571;&#1583;&#1606;&#1609;
-              <input id="paymentOpenMinAmount" type="number" min="0" class="form-input" value="${filters.minAmount || ''}" oninput="clearTimeout(window.__paymentFilterTimer);window.__paymentFilterTimer=setTimeout(renderPaymentsTab,250)" style="max-width:120px">
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">&#1576;&#1581;&#1579;
-              <input id="paymentOpenSearch" class="form-input" value="${escapeHtml(filters.search)}" placeholder="&#1585;&#1602;&#1605; &#1575;&#1604;&#1602;&#1610;&#1583; &#1571;&#1608; &#1575;&#1604;&#1591;&#1585;&#1601;" oninput="clearTimeout(window.__paymentFilterTimer);window.__paymentFilterTimer=setTimeout(renderPaymentsTab,250)">
-            </label>
-            <span class="je-balance-chip">&#1605;&#1580;&#1605;&#1608;&#1593; &#1575;&#1604;&#1601;&#1604;&#1578;&#1585;: ${formatNum(filteredTotal)}</span>
-          </div>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>القيد</th><th>النوع</th><th>الطرف</th><th>الاتجاه</th><th class="num-cell">المفتوح</th><th>إجراء</th></tr></thead>
-          <tbody>${openRows}</tbody>
-        </table>
-      </div>`;
-    enforceUIPermissions();
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل الدفعات: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-async function renderCustomerInvoicesTab() {
-  const el = document.getElementById('financeTab-customer_invoices');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  const invoiceStateFilter = document.getElementById('customerInvoiceStateFilter')?.value || '';
-  const invoicePartnerFilter = (document.getElementById('customerInvoicePartnerFilter')?.value || '').trim().toLowerCase();
-  const customerInvoiceSearch = (document.getElementById('customerInvoiceSearch')?.value || '').trim().toLowerCase();
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل فواتير العملاء...</div>';
-  try {
-    const [moves, recon] = await Promise.all([FinanceService.getMoves(), FinanceService.getReconciliationSummary()]);
-    const canCreateInvoice = !window.PermissionService || window.PermissionService.check('account_moves', 'create');
-    const canCreatePayment = !window.PermissionService || window.PermissionService.check('account_payments', 'create');
-    const allInvoices = moves.filter(move => ['out_invoice', 'out_refund'].includes(move.move_type));
-    const invoicePostedCount = allInvoices.filter(move => move.state === 'posted').length;
-    const invoiceDraftCount = allInvoices.filter(move => move.state === 'draft').length;
-    const invoices = allInvoices.filter(move => {
-      if (invoiceStateFilter && move.state !== invoiceStateFilter) return false;
-      if (invoicePartnerFilter && !(move.partner_id || '').toLowerCase().includes(invoicePartnerFilter)) return false;
-      return true;
-    });
-    const invoicePartners = [...new Set(allInvoices.map(m => m.partner_id).filter(Boolean))];
-    const invoiceRows = invoices.map(move => {
-      const total = (move.line_ids || []).reduce((sum, line) => sum + Number(line.debit || 0), 0);
-      return `<tr onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(move.id)}'),50)" style="cursor:pointer">
-        <td>${escapeHtml(move.date || '')}</td>
-        <td>${escapeHtml(move.name || '/')}</td>
-        <td>${escapeHtml(move.move_type === 'out_refund' ? 'إشعار دائن' : 'فاتورة عميل')}</td>
-        <td>${escapeHtml(move.partner_id || '-')}</td>
-        <td class="num-cell">${formatNum(total)}</td>
-        <td><span class="je-state-badge ${getMoveStateClass(move.state)}">${getMoveStateLabel(move.state)}</span></td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="6" class="empty-cell">لا توجد فواتير عملاء بعد. المرحلة الحالية تعرض الذمم الناتجة من القيود فقط.</td></tr>';
-
-    const openReceivables = (recon.openItems || []).filter(item => item.account_id === 'receivables_customers');
-    const filteredReceivables = openReceivables.filter(item => {
-      const haystack = `${item.move_name || ''} ${item.partner_id || ''} ${item.account_id || ''}`.toLowerCase();
-      return !customerInvoiceSearch || haystack.includes(customerInvoiceSearch);
-    });
-    const receivableAging = getFinanceAgingSummary(openReceivables);
-    const receivableRows = filteredReceivables.map(item => {
-      const paymentButton = canCreatePayment
-        ? `<button class="btn-xs btn-primary" onclick="openPaymentForOpenItem('${escapeHtml(item.move_id)}','${escapeHtml(item.line_id)}')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1578;&#1581;&#1589;&#1610;&#1604;</button>`
-        : '';
-      return `<tr>
-      <td>${escapeHtml(item.move_date || '')}</td>
-      <td>${escapeHtml(item.move_name || '')}</td>
-      <td>${escapeHtml(item.partner_id || '-')}</td>
-      <td class="num-cell">${formatNum(item.open_amount || 0)}</td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
-        ${paymentButton}
-        <button class="btn-xs btn-secondary" onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(item.move_id)}'),50)">عرض القيد</button>
-      </td>
-    </tr>`;
-    }).join('') || '<tr><td colspan="5" class="empty-cell">لا توجد ذمم عملاء مفتوحة</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0">فواتير العملاء</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">المعروض ${invoices.length} من ${allInvoices.length}</div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <select id="customerInvoiceStateFilter" class="form-input" style="max-width:130px" onchange="renderCustomerInvoicesTab()">
-              <option value="">كل الحالات</option>
-              <option value="posted" ${invoiceStateFilter==='posted'?'selected':''}>مرحّل</option>
-              <option value="draft" ${invoiceStateFilter==='draft'?'selected':''}>مسودة</option>
-              <option value="cancel" ${invoiceStateFilter==='cancel'?'selected':''}>ملغي</option>
-            </select>
-            <input id="customerInvoicePartnerFilter" class="form-input" style="max-width:160px" placeholder="فلتر العميل" value="${escapeHtml(invoicePartnerFilter)}" oninput="clearTimeout(window.__customerInvoiceFilterTimer);window.__customerInvoiceFilterTimer=setTimeout(renderCustomerInvoicesTab,250)">
-            <span class="je-balance-chip">فواتير: ${allInvoices.length}</span>
-            <span class="je-balance-chip">مرحّل: ${invoicePostedCount}</span>
-            <span class="je-balance-chip">مسودة: ${invoiceDraftCount}</span>
-            <span class="je-balance-chip">ذمم مفتوحة: ${formatNum(recon.totals?.receivables || 0)}</span>
-            <span class="je-balance-chip">0-30 يوم: ${formatNum(receivableAging.current)}</span>
-            <span class="je-balance-chip">31-60 يوم: ${formatNum(receivableAging.mid)}</span>
-            <span class="je-balance-chip">+60 يوم: ${formatNum(receivableAging.old)}</span>
-            ${canCreateInvoice ? '<button class="btn-primary btn-sm" onclick="openCustomerInvoiceModal()">&#1601;&#1575;&#1578;&#1608;&#1585;&#1577; &#1593;&#1605;&#1610;&#1604; &#1580;&#1583;&#1610;&#1583;&#1577;</button>' : ''}
-          </div>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>الرقم</th><th>النوع</th><th>العميل</th><th class="num-cell">الإجمالي</th><th>الحالة</th></tr></thead>
-          <tbody>${invoiceRows}</tbody>
-        </table>
-      </div>
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
-          <div>
-            <h3 class="section-title" style="margin:0">ذمم العملاء المفتوحة</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">المعروض ${filteredReceivables.length} من ${openReceivables.length}</div>
-          </div>
-          <label style="font-size:12px;color:var(--text-muted)">بحث
-            <input id="customerInvoiceSearch" class="form-input" value="${escapeHtml(customerInvoiceSearch)}" placeholder="رقم القيد أو العميل" oninput="clearTimeout(window.__customerInvoiceFilterTimer);window.__customerInvoiceFilterTimer=setTimeout(renderCustomerInvoicesTab,250)">
-          </label>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>القيد</th><th>العميل</th><th class="num-cell">المتبقي</th><th>إجراء</th></tr></thead>
-          <tbody>${receivableRows}</tbody>
-        </table>
-      </div>`;
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل فواتير العملاء: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-async function renderVendorBillsTab() {
-  const el = document.getElementById('financeTab-vendor_bills');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  const billStateFilter = document.getElementById('vendorBillStateFilter')?.value || '';
-  const billPartnerFilter = (document.getElementById('vendorBillPartnerFilter')?.value || '').trim().toLowerCase();
-  const vendorBillSearch = (document.getElementById('vendorBillSearch')?.value || '').trim().toLowerCase();
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل فواتير الموردين...</div>';
-  try {
-    const [moves, recon] = await Promise.all([FinanceService.getMoves(), FinanceService.getReconciliationSummary()]);
-    const canCreateBill = !window.PermissionService || window.PermissionService.check('account_moves', 'create');
-    const canCreatePayment = !window.PermissionService || window.PermissionService.check('account_payments', 'create');
-    const allBills = moves.filter(move => ['in_invoice', 'in_refund'].includes(move.move_type));
-    const billPostedCount = allBills.filter(move => move.state === 'posted').length;
-    const billDraftCount = allBills.filter(move => move.state === 'draft').length;
-    const bills = allBills.filter(move => {
-      if (billStateFilter && move.state !== billStateFilter) return false;
-      if (billPartnerFilter && !(move.partner_id || '').toLowerCase().includes(billPartnerFilter)) return false;
-      return true;
-    });
-    const billPartners = [...new Set(allBills.map(m => m.partner_id).filter(Boolean))];
-    const billRows = bills.map(move => {
-      const total = (move.line_ids || []).reduce((sum, line) => sum + Number(line.credit || 0), 0);
-      return `<tr onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(move.id)}'),50)" style="cursor:pointer">
-        <td>${escapeHtml(move.date || '')}</td>
-        <td>${escapeHtml(move.name || '/')}</td>
-        <td>${escapeHtml(move.move_type === 'in_refund' ? 'إشعار مورد' : 'فاتورة مورد')}</td>
-        <td>${escapeHtml(move.partner_id || '-')}</td>
-        <td class="num-cell">${formatNum(total)}</td>
-        <td><span class="je-state-badge ${getMoveStateClass(move.state)}">${getMoveStateLabel(move.state)}</span></td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="6" class="empty-cell">لا توجد فواتير موردين بعد. المرحلة الحالية تعرض الذمم الناتجة من القيود والمشتريات فقط.</td></tr>';
-
-    const openPayables = (recon.openItems || []).filter(item => item.account_id === 'payables_people' || item.account_id === 'accrued_payroll');
-    const filteredPayables = openPayables.filter(item => {
-      const haystack = `${item.move_name || ''} ${item.partner_id || ''} ${item.account_id || ''} ${getFinanceOpenItemKind(item)}`.toLowerCase();
-      return !vendorBillSearch || haystack.includes(vendorBillSearch);
-    });
-    const payableAging = getFinanceAgingSummary(openPayables);
-    const payableRows = filteredPayables.map(item => {
-      const paymentButton = canCreatePayment
-        ? `<button class="btn-xs btn-primary" onclick="openPaymentForOpenItem('${escapeHtml(item.move_id)}','${escapeHtml(item.line_id)}')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1578;&#1581;&#1589;&#1610;&#1604;</button>`
-        : '';
-      return `<tr>
-      <td>${escapeHtml(item.move_date || '')}</td>
-      <td>${escapeHtml(item.move_name || '')}</td>
-      <td>${escapeHtml(getFinanceOpenItemKind(item))}</td>
-      <td>${escapeHtml(item.partner_id || '-')}</td>
-      <td class="num-cell">${formatNum(item.open_amount || 0)}</td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
-        ${paymentButton}
-        <button class="btn-xs btn-secondary" onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(item.move_id)}'),50)">عرض القيد</button>
-      </td>
-    </tr>`;
-    }).join('') || '<tr><td colspan="6" class="empty-cell">لا توجد ذمم موردين أو رواتب مفتوحة</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0">فواتير الموردين</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">المعروض ${bills.length} من ${allBills.length}</div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-            <select id="vendorBillStateFilter" class="form-input" style="max-width:130px" onchange="renderVendorBillsTab()">
-              <option value="">كل الحالات</option>
-              <option value="posted" ${billStateFilter==='posted'?'selected':''}>مرحّل</option>
-              <option value="draft" ${billStateFilter==='draft'?'selected':''}>مسودة</option>
-              <option value="cancel" ${billStateFilter==='cancel'?'selected':''}>ملغي</option>
-            </select>
-            <input id="vendorBillPartnerFilter" class="form-input" style="max-width:160px" placeholder="فلتر المورد" value="${escapeHtml(billPartnerFilter)}" oninput="clearTimeout(window.__vendorBillFilterTimer);window.__vendorBillFilterTimer=setTimeout(renderVendorBillsTab,250)">
-            <span class="je-balance-chip">فواتير: ${allBills.length}</span>
-            <span class="je-balance-chip">مرحّل: ${billPostedCount}</span>
-            <span class="je-balance-chip">مسودة: ${billDraftCount}</span>
-            <span class="je-balance-chip">ذمم مفتوحة: ${formatNum(recon.totals?.payables || 0)}</span>
-            <span class="je-balance-chip">0-30 يوم: ${formatNum(payableAging.current)}</span>
-            <span class="je-balance-chip">31-60 يوم: ${formatNum(payableAging.mid)}</span>
-            <span class="je-balance-chip">+60 يوم: ${formatNum(payableAging.old)}</span>
-            ${canCreateBill ? '<button class="btn-primary btn-sm" onclick="openVendorBillModal()">&#1601;&#1575;&#1578;&#1608;&#1585;&#1577; &#1605;&#1608;&#1585;&#1583; &#1580;&#1583;&#1610;&#1583;&#1577;</button>' : ''}
-          </div>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>الرقم</th><th>النوع</th><th>المورد</th><th class="num-cell">الإجمالي</th><th>الحالة</th></tr></thead>
-          <tbody>${billRows}</tbody>
-        </table>
-      </div>
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
-          <div>
-            <h3 class="section-title" style="margin:0">ذمم الموردين والرواتب المفتوحة</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">المعروض ${filteredPayables.length} من ${openPayables.length}</div>
-          </div>
-          <label style="font-size:12px;color:var(--text-muted)">بحث
-            <input id="vendorBillSearch" class="form-input" value="${escapeHtml(vendorBillSearch)}" placeholder="رقم القيد أو الطرف" oninput="clearTimeout(window.__vendorBillFilterTimer);window.__vendorBillFilterTimer=setTimeout(renderVendorBillsTab,250)">
-          </label>
-        </div>
-        <table class="data-table tb-table">
-          <thead><tr><th>التاريخ</th><th>القيد</th><th>النوع</th><th>الطرف</th><th class="num-cell">المتبقي</th><th>إجراء</th></tr></thead>
-          <tbody>${payableRows}</tbody>
-        </table>
-      </div>`;
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل فواتير الموردين: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-function renderFinanceAccountOptionsByType(type, selectedId) {
-  ensureFinance();
-  return (finance.accounts || [])
-    .filter(account => !type || account.type === type)
-    .map(account => `<option value="${escapeHtml(account.id)}" ${account.id === selectedId ? 'selected' : ''}>${escapeHtml(account.code || '')} - ${escapeHtml(account.name || account.id)}</option>`)
-    .join('');
-}
-
-function parseFinanceAmountInput(value) {
-  return Number(String(value || '').replace(/[^\d.-]/g, '')) || 0;
-}
-
-function renderFinancePartnerDatalistOptions(kind) {
-  ensureFinance();
-  const names = new Set();
-  if (kind === 'customer') {
-    (finance.customers || []).forEach(customer => { if (customer?.name) names.add(customer.name); });
-  }
-  if (kind === 'vendor') {
-    (omni?.suppliers || []).forEach(supplier => { if (supplier?.name) names.add(supplier.name); });
-  }
-  (PentagonDB.getCached()?.account_moves || []).forEach(move => {
-    if (move.partner_id) names.add(move.partner_id);
-  });
-  return [...names].sort().map(name => `<option value="${escapeHtml(name)}"></option>`).join('');
-}
-
-async function openCustomerInvoiceModal() {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء فواتير العملاء', 'warning');
-  }
-  const incomeOptions = renderFinanceAccountOptionsByType('income', 'income_sales');
-  const partnerOptions = renderFinancePartnerDatalistOptions('customer');
-  const form = await showOmniModal('فاتورة عميل جديدة', `
-    <datalist id="customerInvoicePartnerOptions">${partnerOptions}</datalist>
-    <div class="je-form-row">
-      <label>التاريخ<input id="customerInvoiceDate" type="date" class="form-input" value="${todayISO()}"></label>
-      <label>العميل<input id="customerInvoicePartner" list="customerInvoicePartnerOptions" class="form-input" placeholder="اسم العميل أو كوده"></label>
-      <label>المبلغ<input id="customerInvoiceAmount" inputmode="numeric" class="form-input" placeholder="0"></label>
-    </div>
-    <div class="je-form-row">
-      <label>حساب الإيراد<select id="customerInvoiceIncomeAccount" class="form-input">${incomeOptions}</select></label>
-      <label>الحالة<select id="customerInvoicePostMode" class="form-input"><option value="post">ترحيل الآن</option><option value="draft">حفظ كمسودة</option></select></label>
-      <label>البيان<input id="customerInvoiceMemo" class="form-input" value="فاتورة عميل"></label>
-    </div>
-    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:12px;color:var(--text-muted)">
-      <input id="customerInvoiceReviewed" type="checkbox" style="margin-top:3px">
-      <span>راجعت العميل والمبلغ وأفهم أن النظام سيأخذ نسخة احتياطية قبل ترحيل الفاتورة.</span>
-    </label>
-  `, body => {
-    const amount = parseFinanceAmountInput(body.querySelector('#customerInvoiceAmount')?.value);
-    const partner = body.querySelector('#customerInvoicePartner')?.value.trim() || '';
-    const reviewed = !!body.querySelector('#customerInvoiceReviewed')?.checked;
-    if (!partner) {
-      showToast('أدخل اسم العميل قبل الحفظ', 'warning');
-      return false;
-    }
-    if (amount <= 0) {
-      showToast('مبلغ الفاتورة يجب أن يكون أكبر من صفر', 'warning');
-      return false;
-    }
-    if (!reviewed) {
-      showToast('راجع الفاتورة وفعّل التأكيد قبل الحفظ', 'warning');
-      return false;
-    }
-    return {
-      date: body.querySelector('#customerInvoiceDate')?.value || todayISO(),
-      partner_id: partner,
-      amount,
-      income_account_id: body.querySelector('#customerInvoiceIncomeAccount')?.value || 'income_sales',
-      memo: body.querySelector('#customerInvoiceMemo')?.value.trim() || 'فاتورة عميل',
-      post: body.querySelector('#customerInvoicePostMode')?.value !== 'draft',
-    };
-  });
-  if (!form) return null;
-  const confirmed = await showOmniModal('مراجعة أخيرة قبل ترحيل فاتورة العميل', `
-    <div style="display:grid;gap:8px;font-size:13px">
-      <div><strong>العميل:</strong> ${escapeHtml(form.partner_id)}</div>
-      <div><strong>التاريخ:</strong> ${escapeHtml(form.date)}</div>
-      <div><strong>المبلغ:</strong> ${formatNum(form.amount)}</div>
-      <div><strong>الحساب:</strong> ${escapeHtml(form.income_account_id)}</div>
-      <div><strong>الحالة:</strong> ${form.post ? 'ترحيل الآن' : 'مسودة'}</div>
-      <div style="color:var(--text-muted);margin-top:8px">سيتم إنشاء نسخة احتياطية مؤكدة قبل أي تعديل، ثم ${form.post ? 'ترحيل فاتورة عميل مدينة على ذمم العملاء' : 'حفظ فاتورة العميل كمسودة'}.</div>
-    </div>
-  `, () => true);
-  if (!confirmed) return null;
-  try {
-    const result = await FinanceService.createCustomerInvoice({ ...form, backup_tag: 'pre_customer_invoice' });
-    await PentagonDB.load({ force: true });
-    showToast(`${form.post ? 'تم ترحيل' : 'تم حفظ'} فاتورة العميل ${result.move?.name || ''}`, 'success');
-    renderCustomerInvoicesTab();
-    renderFinanceDashboard();
-    return result;
-  } catch (error) {
-    showToast(error.message || 'تعذر إنشاء فاتورة العميل', 'error');
-    return null;
-  }
-}
-
-async function openVendorBillModal() {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء فواتير الموردين', 'warning');
-  }
-  const expenseOptions = renderFinanceAccountOptionsByType('expense', 'expense_general');
-  const partnerOptions = renderFinancePartnerDatalistOptions('vendor');
-  const form = await showOmniModal('فاتورة مورد جديدة', `
-    <datalist id="vendorBillPartnerOptions">${partnerOptions}</datalist>
-    <div class="je-form-row">
-      <label>التاريخ<input id="vendorBillDate" type="date" class="form-input" value="${todayISO()}"></label>
-      <label>المورد<input id="vendorBillPartner" list="vendorBillPartnerOptions" class="form-input" placeholder="اسم المورد أو كوده"></label>
-      <label>المبلغ<input id="vendorBillAmount" inputmode="numeric" class="form-input" placeholder="0"></label>
-    </div>
-    <div class="je-form-row">
-      <label>حساب المصروف<select id="vendorBillExpenseAccount" class="form-input">${expenseOptions}</select></label>
-      <label>الحالة<select id="vendorBillPostMode" class="form-input"><option value="post">ترحيل الآن</option><option value="draft">حفظ كمسودة</option></select></label>
-      <label>البيان<input id="vendorBillMemo" class="form-input" value="فاتورة مورد"></label>
-    </div>
-    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:12px;color:var(--text-muted)">
-      <input id="vendorBillReviewed" type="checkbox" style="margin-top:3px">
-      <span>راجعت المورد والمبلغ وأفهم أن النظام سيأخذ نسخة احتياطية قبل ترحيل الفاتورة.</span>
-    </label>
-  `, body => {
-    const amount = parseFinanceAmountInput(body.querySelector('#vendorBillAmount')?.value);
-    const partner = body.querySelector('#vendorBillPartner')?.value.trim() || '';
-    const reviewed = !!body.querySelector('#vendorBillReviewed')?.checked;
-    if (!partner) {
-      showToast('أدخل اسم المورد قبل الحفظ', 'warning');
-      return false;
-    }
-    if (amount <= 0) {
-      showToast('مبلغ فاتورة المورد يجب أن يكون أكبر من صفر', 'warning');
-      return false;
-    }
-    if (!reviewed) {
-      showToast('راجع الفاتورة وفعّل التأكيد قبل الحفظ', 'warning');
-      return false;
-    }
-    return {
-      date: body.querySelector('#vendorBillDate')?.value || todayISO(),
-      partner_id: partner,
-      amount,
-      expense_account_id: body.querySelector('#vendorBillExpenseAccount')?.value || 'expense_general',
-      memo: body.querySelector('#vendorBillMemo')?.value.trim() || 'فاتورة مورد',
-      post: body.querySelector('#vendorBillPostMode')?.value !== 'draft',
-    };
-  });
-  if (!form) return null;
-  const confirmed = await showOmniModal('مراجعة أخيرة قبل ترحيل فاتورة المورد', `
-    <div style="display:grid;gap:8px;font-size:13px">
-      <div><strong>المورد:</strong> ${escapeHtml(form.partner_id)}</div>
-      <div><strong>التاريخ:</strong> ${escapeHtml(form.date)}</div>
-      <div><strong>المبلغ:</strong> ${formatNum(form.amount)}</div>
-      <div><strong>الحساب:</strong> ${escapeHtml(form.expense_account_id)}</div>
-      <div><strong>الحالة:</strong> ${form.post ? 'ترحيل الآن' : 'مسودة'}</div>
-      <div style="color:var(--text-muted);margin-top:8px">سيتم إنشاء نسخة احتياطية مؤكدة قبل أي تعديل، ثم ${form.post ? 'ترحيل فاتورة مورد دائنة على ذمم الموردين' : 'حفظ فاتورة المورد كمسودة'}.</div>
-    </div>
-  `, () => true);
-  if (!confirmed) return null;
-  try {
-    const result = await FinanceService.createVendorBill({ ...form, backup_tag: 'pre_vendor_bill' });
-    await PentagonDB.load({ force: true });
-    showToast(`${form.post ? 'تم ترحيل' : 'تم حفظ'} فاتورة المورد ${result.move?.name || ''}`, 'success');
-    renderVendorBillsTab();
-    renderFinanceDashboard();
-    return result;
-  } catch (error) {
-    showToast(error.message || 'تعذر إنشاء فاتورة المورد', 'error');
-    return null;
-  }
-}
-
-async function renderPartnerStatementTab() {
-  const el = document.getElementById('financeTab-statement');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  
-  // Read inputs from DOM BEFORE clearing innerHTML
-  const preservedPartner = document.getElementById('statementPartner')?.value;
-  const preservedStartDate = document.getElementById('statementStartDate')?.value || '';
-  const preservedEndDate = document.getElementById('statementEndDate')?.value || '';
-  const preservedSearch = (document.getElementById('statementSearch')?.value || '').trim().toLowerCase();
-
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل كشف الحساب...</div>';
-  try {
-    const recon = await FinanceService.getReconciliationSummary();
-    const partners = [...new Set((recon.openItems || []).map(item => item.partner_id || 'بدون طرف'))];
-    
-    const db = await PentagonDB.load();
-    const allMoves = db.account_moves || [];
-    allMoves.forEach(move => {
-      if (move.partner_id) partners.push(move.partner_id);
-      (move.line_ids || []).forEach(line => {
-        if (line.partner_id) partners.push(line.partner_id);
-      });
-    });
-    const uniquePartners = [...new Set(partners)].filter(Boolean).sort();
-
-    const selected = preservedPartner || uniquePartners[0] || '';
-    const startDate = preservedStartDate;
-    const endDate = preservedEndDate;
-    const statementSearch = preservedSearch;
-    
-    const partnerOptions = uniquePartners.map(name => `<option value="${escapeHtml(name)}" ${name === selected ? 'selected' : ''}>${escapeHtml(name)}</option>`).join('');
-    
-    const stmt = await FinanceService.getPartnerStatement(selected, startDate, endDate);
-    
-    const filteredRows = stmt.rows.filter(row => {
-      if (statementSearch) {
-        const haystack = `${row.move_name || ''} ${row.account_id || ''} ${row.label || ''}`.toLowerCase();
-        if (!haystack.includes(statementSearch)) return false;
-      }
-      return true;
-    });
-
-    const currency = omni.adminSettings?.organization?.currencySymbol || 'د.ع';
-
-    const rowsHtml = filteredRows.map(row => {
-      return `<tr>
-        <td>${escapeHtml(row.date)}</td>
-        <td>${escapeHtml(row.move_name)}</td>
-        <td>${escapeHtml(row.label)}</td>
-        <td class="num-cell">${row.debit > 0 ? formatNum(row.debit) : '-'}</td>
-        <td class="num-cell">${row.credit > 0 ? formatNum(row.credit) : '-'}</td>
-        <td class="num-cell" style="font-weight: 600; color: ${row.running_balance >= 0 ? '#34d399' : '#f87171'}">${formatNum(row.running_balance)}</td>
-        <td>
-          <button class="btn-xs btn-secondary" onclick="switchFinanceTab('journal');setTimeout(()=>renderJournalEntryTab('${escapeHtml(row.move_id)}'),50)"><i class="fa-solid fa-file-invoice"></i> عرض القيد</button>
-        </td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="7" class="empty-cell">لا توجد حركة في هذه الفترة لهذا الطرف</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0"><i class="fa-solid fa-file-invoice-dollar"></i> كشف الحساب التفصيلي (Statement)</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">كشف حساب مالي بالرصيد الافتتاحي والجاري والختامي للشريك</div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-secondary btn-sm" onclick="printPartnerStatement('${escapeHtml(selected)}', '${escapeHtml(startDate)}', '${escapeHtml(endDate)}')">
-              <i class="fa-solid fa-print"></i> طباعة كشف الحساب
-            </button>
-          </div>
-        </div>
-
-        <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px;align-items:flex-end;">
-            <label style="font-size:12px;color:var(--text-muted)">اختر الشريك (العميل/المورد)
-              <select id="statementPartner" class="form-input" onchange="renderPartnerStatementTab()">${partnerOptions}</select>
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">من تاريخ
-              <input id="statementStartDate" type="date" class="form-input" value="${escapeHtml(startDate)}" onchange="renderPartnerStatementTab()">
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">إلى تاريخ
-              <input id="statementEndDate" type="date" class="form-input" value="${escapeHtml(endDate)}" onchange="renderPartnerStatementTab()">
-            </label>
-            <label style="font-size:12px;color:var(--text-muted)">بحث في الحركات
-              <input id="statementSearch" class="form-input" value="${escapeHtml(statementSearch)}" placeholder="القيد أو البيان" oninput="clearTimeout(window.__statementFilterTimer);window.__statementFilterTimer=setTimeout(renderPartnerStatementTab,250)">
-            </label>
-          </div>
-        </div>
-
-        <div class="stats-grid" style="margin-bottom:16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
-          <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-            <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">الرصيد الافتتاحي</span>
-            <strong style="font-size: 16px; color: #e2e8f0;">${formatNum(stmt.startingBalance)} <small>${currency}</small></strong>
-          </div>
-          <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-            <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">صافي حركة الفترة</span>
-            <strong style="font-size: 16px; color: #38bdf8;">${formatNum(stmt.endingBalance - stmt.startingBalance)} <small>${currency}</small></strong>
-          </div>
-          <div class="stat-card" style="padding: 10px; background: rgba(255,255,255,0.01); border-radius: 6px;">
-            <span class="stat-label" style="font-size: 11px; color: var(--text-muted);">الرصيد الختامي</span>
-            <strong style="font-size: 16px; color: #34d399;">${formatNum(stmt.endingBalance)} <small>${currency}</small></strong>
-          </div>
-        </div>
-
-        <table class="data-table tb-table">
-          <thead>
-            <tr>
-              <th>التاريخ</th>
-              <th>رقم القيد</th>
-              <th>البيان</th>
-              <th class="num-cell">مدين (+)</th>
-              <th class="num-cell">دائن (-)</th>
-              <th class="num-cell">الرصيد الجاري</th>
-              <th>الخيارات</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-      </div>`;
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل كشف الحساب: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-async function printPartnerStatement(partnerId, startDate, endDate) {
-  if (!window.FinanceService) return;
-  const stmt = await FinanceService.getPartnerStatement(partnerId, startDate, endDate);
-  const win = window.open('', '_blank');
-  const org = omni.adminSettings?.organization || { name: 'ورشة بينتاجون', phone: '' };
-  const cur = org.currencySymbol || 'د.ع';
-  
-  let rowsHtml = stmt.rows.map(r => `
-    <tr>
-      <td>${escapeHtml(r.date)}</td>
-      <td>${escapeHtml(r.move_name)}</td>
-      <td>${escapeHtml(r.label)}</td>
-      <td class="num">${r.debit > 0 ? formatNum(r.debit) : '-'}</td>
-      <td class="num">${r.credit > 0 ? formatNum(r.credit) : '-'}</td>
-      <td class="num">${formatNum(r.running_balance)}</td>
-    </tr>
-  `).join('') || '<tr><td colspan="6" style="text-align:center">لا توجد حركة في هذه الفترة</td></tr>';
-
-  win.document.write(`
-    <!DOCTYPE html>
-    <html dir="rtl" lang="ar">
-    <head>
-      <meta charset="utf-8">
-      <title>كشف حساب - ${escapeHtml(partnerId)}</title>
-      <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; margin: 40px; }
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header-info { text-align: left; font-size: 14px; }
-        .title { text-align: center; margin-bottom: 30px; }
-        .title h2 { margin: 0; font-size: 20px; color: #1e3a8a; }
-        .title p { margin: 5px 0 0 0; font-size: 13px; color: #666; }
-        .summary-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .summary-item { text-align: center; }
-        .summary-item label { display: block; font-size: 12px; color: #64748b; margin-bottom: 5px; }
-        .summary-item val { font-size: 16px; font-weight: bold; color: #0f172a; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: right; font-size: 13px; }
-        th { background: #f1f5f9; font-weight: 600; }
-        .num { text-align: left; font-family: monospace; }
-        .footer { text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 40px; }
-        @media print {
-          body { margin: 20px; }
-          button { display: none; }
-        }
-      </style>
-    </head>
-    <body>
-      <div style="text-align: left; margin-bottom: 20px;">
-        <button onclick="window.print()" style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">طباعة كشف الحساب 🖨️</button>
-      </div>
-      <div class="header">
-        <div>
-          <h1>${escapeHtml(org.name)}</h1>
-          <div>هاتف: ${escapeHtml(org.phone || '-')}</div>
-        </div>
-        <div class="header-info">
-          <div>تاريخ الطباعة: ${new Date().toLocaleDateString('ar-IQ')}</div>
-          <div>الصفحة: 1 من 1</div>
-        </div>
-      </div>
-      
-      <div class="title">
-        <h2>كشف حساب مالي</h2>
-        <p>للشريك: <strong>${escapeHtml(partnerId)}</strong></p>
-        ${startDate || endDate ? `<p>الفترة من: ${escapeHtml(startDate || 'البداية')} إلى: ${escapeHtml(endDate || 'اليوم')}</p>` : ''}
-      </div>
-
-      <div class="summary-box">
-        <div class="summary-item">
-          <label>الرصيد الافتتاحي</label>
-          <val>${formatNum(stmt.startingBalance)} ${escapeHtml(cur)}</val>
-        </div>
-        <div class="summary-item">
-          <label>صافي الحركة</label>
-          <val>${formatNum(stmt.endingBalance - stmt.startingBalance)} ${escapeHtml(cur)}</val>
-        </div>
-        <div class="summary-item">
-          <label>الرصيد الختامي</label>
-          <val style="color: #2563eb;">${formatNum(stmt.endingBalance)} ${escapeHtml(cur)}</val>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>التاريخ</th>
-            <th>رقم القيد</th>
-            <th>البيان / الوصف</th>
-            <th style="text-align: left;">مدين (+)</th>
-            <th style="text-align: left;">دائن (-)</th>
-            <th style="text-align: left;">الرصيد الجاري</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
-
-      <div class="footer">
-        نظام بينتاجون ERP - شريك المحاسبة الذكي
-      </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
-}
-
-async function renderPartnerLedgerTab() {
-  const el = document.getElementById('financeTab-partner_ledger');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل أعمار الديون والشركاء...</div>';
-  try {
-    const summary = await FinanceService.getPartnerAgingSummary();
-    
-    summary.sort((a, b) => b.totalOpen - a.totalOpen);
-
-    const rowsHtml = await Promise.all(summary.map(async row => {
-      const ledger = await FinanceService.getPartnerLedger(row.partner);
-      
-      return `<tr>
-        <td><strong>${escapeHtml(row.partner)}</strong></td>
-        <td class="num-cell" style="color: #34d399;">${formatNum(ledger.totalDebit)}</td>
-        <td class="num-cell" style="color: #f87171;">${formatNum(ledger.totalCredit)}</td>
-        <td class="num-cell" style="font-weight:600; color: ${row.totalOpen >= 0 ? '#38bdf8' : '#fb923c'}">${formatNum(row.totalOpen)}</td>
-        <td class="num-cell">${formatNum(row.aging.current)}</td>
-        <td class="num-cell">${formatNum(row.aging.mid)}</td>
-        <td class="num-cell">${formatNum(row.aging.late)}</td>
-        <td class="num-cell" style="color: #f87171; font-weight:600;">${formatNum(row.aging.critical)}</td>
-        <td>
-          <button class="btn-xs btn-primary" onclick="switchFinanceTab('statement');setTimeout(()=>{document.getElementById('statementPartner').value='${jsString(row.partner)}';renderPartnerStatementTab();},80)"><i class="fa-solid fa-receipt"></i> كشف الحساب</button>
-        </td>
-      </tr>`;
-    })).then(rows => rows.join('')) || '<tr><td colspan="9" class="empty-cell">لا توجد أرصدة للشركاء حالياً</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0"><i class="fa-solid fa-users-viewfinder"></i> أعمار ديون العملاء والموردين (الشركاء)</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">تحليل أرصدة الشركاء المستحقة وتقسيمها حسب فترات التأخير (0-30، 31-60، 61-90، +90 يوماً)</div>
-          </div>
-        </div>
-        <div class="glass-card" style="margin-bottom: 16px; padding: 12px; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15); font-size: 13px; line-height: 1.6;">
-          <i class="fa-solid fa-circle-info" style="color: #38bdf8; margin-left: 6px;"></i>
-          <strong>ما هي أعمار الديون؟</strong> يوضح هذا التقرير المبالغ المستحقة للعملاء (ديون لنا مطلوب تحصيلها) أو للموردين والموظفين (ديون علينا مطلوب دفعها)، مقسمة حسب عدد الأيام التي مرت على تاريخ الفاتورة الأصلية دون سداد. يساعد هذا في تحديد الديون المتأخرة جداً لاتخاذ إجراءات التحصيل أو الدفع اللازمة.
-          </div>
-        </div>
-
-        <table class="data-table tb-table">
-          <thead>
-            <tr>
-              <th>اسم الشريك</th>
-              <th class="num-cell">إجمالي المدين (+)</th>
-              <th class="num-cell">إجمالي الدائن (-)</th>
-              <th class="num-cell">الرصيد المستحق</th>
-              <th class="num-cell">حالي (30-0)</th>
-              <th class="num-cell">متوسط (60-31)</th>
-              <th class="num-cell">متأخر (90-61)</th>
-              <th class="num-cell">حرج (+90)</th>
-              <th>خيارات</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل أعمار ديون الشركاء: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-let bankStatementLines = [
-  { id: 'bl_1', date: '2026-06-04', ref: 'تحويل مالي صيانة', amount: -250000, partner_id: 'خضر عبد الخالق', reconciled: false },
-  { id: 'bl_2', date: '2026-06-05', ref: 'تسديد دفعة عميل', amount: 750000, partner_id: 'حسين سالم', reconciled: false }
-];
-
-async function renderBankReconciliationTab() {
-  const el = document.getElementById('financeTab-bank_reco');
-  if (!el) return;
-  if (!window.FinanceService) {
-    el.innerHTML = '<p style="color:var(--danger)">FinanceService غير محمّل</p>';
-    return;
-  }
-  el.innerHTML = '<div style="padding:24px;color:var(--text-muted)">جاري تحميل أداة مطابقة البنك...</div>';
-  try {
-    const results = await FinanceService.processBankReconciliation(bankStatementLines);
-    
-    const rowsHtml = results.map(res => {
-      const line = res.bankLine;
-      const rec = res.recommended;
-      
-      let statusHtml = '';
-      let actionHtml = '';
-      
-      if (line.reconciled) {
-        statusHtml = '<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 6px; border-radius: 4px; font-size: 11px;">تمت المطابقة</span>';
-      } else if (rec) {
-        statusHtml = `<span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 6px; border-radius: 4px; font-size: 11px;">مقترح: ${escapeHtml(rec.move_name)}</span>`;
-        actionHtml = `<button class="btn-xs btn-primary" onclick="confirmBankReconciliationMatch('${escapeHtml(line.id)}', '${escapeHtml(rec.move_id)}', '${escapeHtml(rec.line_id)}')"><i class="fa-solid fa-link"></i> مطابقة واعتماد</button>`;
-      } else {
-        statusHtml = '<span class="badge" style="background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); padding: 2px 6px; border-radius: 4px; font-size: 11px;">لم يعثر على قيد</span>';
-        actionHtml = `<button class="btn-xs btn-secondary" onclick="switchFinanceTab('journal')"><i class="fa-solid fa-plus"></i> إنشاء قيد مالي جديد</button>`;
-      }
-      
-      return `<tr>
-        <td>${escapeHtml(line.date)}</td>
-        <td>${escapeHtml(line.ref)}</td>
-        <td>${escapeHtml(line.partner_id)}</td>
-        <td class="num-cell" style="direction: ltr; text-align: left; font-weight: bold; color: ${line.amount >= 0 ? '#34d399' : '#f87171'}">${formatNum(line.amount)}</td>
-        <td>${statusHtml}</td>
-        <td>${actionHtml}</td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="6" class="empty-cell">لا توجد بنود كشف حساب بنكي للمطابقة</td></tr>';
-
-    el.innerHTML = `
-      <div class="glass-card" style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-          <div>
-            <h3 class="section-title" style="margin:0"><i class="fa-solid fa-receipt"></i> مطابقة كشف الحساب البنكي (Bank Reconciliation)</h3>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">مطابقة بنود كشف الحساب البنكي مع قيود الصندوق/البنك المسجلة في النظام</div>
-          </div>
-          <div>
-            <button class="btn btn-secondary btn-sm" onclick="resetBankReconciliationDemo()"><i class="fa-solid fa-rotate-left"></i> إعادة تهيئة البيانات التجريبية</button>
-          </div>
-        </div>
-
-        <div class="glass-card" style="margin-bottom: 16px; padding: 12px; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.15); font-size: 13px; line-height: 1.6;">
-          <i class="fa-solid fa-circle-info" style="color: #38bdf8; margin-left: 6px;"></i>
-          <strong>كيف تعمل المطابقة البنكية؟</strong> يقوم محرك المطابقة تلقائياً بالبحث في كشف الحساب البنكي عن حركات تطابق القيود المحاسبية المسجلة بالخلفية بناءً على <strong>المبلغ، التاريخ، واسم الطرف</strong>. عند العثور على تطابق، يقترح النظام ربطهما؛ وإلا يتيح لك النظام إنشاء قيد مالي جديد فوراً لمطابقة الدفاتر مع البنك.
-        </div>
-
-        <table class="data-table tb-table">
-          <thead>
-            <tr>
-              <th>تاريخ البنك</th>
-              <th>مرجع المعاملة</th>
-              <th>الشريك</th>
-              <th class="num-cell">مبلغ المعاملة</th>
-              <th>حالة المطابقة</th>
-              <th>خيارات</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch (error) {
-    el.innerHTML = `<p style="color:var(--danger)">تعذر تحميل أداة مطابقة البنك: ${escapeHtml(error.message || '')}</p>`;
-  }
-}
-
-async function confirmBankReconciliationMatch(bankLineId, moveId, lineId) {
-  try {
-    await PentagonDB.mutate(db => {
-      const move = (db.account_moves || []).find(m => m.id === moveId);
-      if (move) {
-        const line = (move.line_ids || []).find(l => l.id === lineId);
-        if (line) {
-          line.reconciled = true;
-          if (typeof upsertLegacyJournalEntry === 'function') {
-            upsertLegacyJournalEntry(db, move);
-          }
-        }
-      }
-    });
-    
-    const line = bankStatementLines.find(bl => bl.id === bankLineId);
-    if (line) {
-      line.reconciled = true;
-    }
-    
-    showToast('تمت مطابقة البند واعتماد قيد البنك بنجاح', 'success');
-    renderBankReconciliationTab();
-  } catch (error) {
-    showToast('حدث خطأ أثناء مطابقة البند: ' + error.message, 'error');
-  }
-}
-
-function resetBankReconciliationDemo() {
-  bankStatementLines = [
-    { id: 'bl_1', date: '2026-06-04', ref: 'تحويل مالي صيانة', amount: -250000, partner_id: 'خضر عبد الخالق', reconciled: false },
-    { id: 'bl_2', date: '2026-06-05', ref: 'تسديد دفعة عميل', amount: 750000, partner_id: 'حسين سالم', reconciled: false }
-  ];
-  showToast('تمت إعادة تهيئة بنود كشف حساب البنك بنجاح', 'info');
-  renderBankReconciliationTab();
-}
-
-async function openPaymentForOpenItem(moveId, lineId) {
-  if (window.PermissionService && !window.PermissionService.check('account_payments', 'create')) {
-    return showToast('\u0644\u064A\u0633 \u0644\u062F\u064A\u0643 \u0635\u0644\u0627\u062D\u064A\u0629 \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u0641\u0639\u0627\u062A', 'warning');
-  }
-  const summary = await FinanceService.getReconciliationSummary();
-  const item = (summary.openItems || []).find(row => row.move_id === moveId && row.line_id === lineId);
-  if (!item) return showToast('\u0627\u0644\u0628\u0646\u062F \u0627\u0644\u0645\u0641\u062A\u0648\u062D \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F', 'error');
-
-  const isInbound = item.account_id === 'receivables_customers' || item.side === 'debit';
-  const modalTitle = isInbound ? '\u062A\u0633\u062C\u064A\u0644 \u0627\u0633\u062A\u0644\u0627\u0645 \u0645\u0646 \u0639\u0645\u064A\u0644' : '\u062A\u0633\u062C\u064A\u0644 \u062F\u0641\u0639 \u0644\u0645\u0648\u0631\u062F';
-  const bodyHtml = `
-    <div class="je-form-row">
-      <label>&#1575;&#1604;&#1578;&#1575;&#1585;&#1610;&#1582;<input id="paymentDate" type="date" class="form-input" value="${todayISO()}"></label>
-      <label>&#1575;&#1604;&#1605;&#1576;&#1604;&#1594;<input id="paymentAmount" type="text" inputmode="numeric" class="form-input" value="${formatNum(item.open_amount || 0)}"></label>
-      <label>&#1575;&#1604;&#1591;&#1585;&#1601;<input id="paymentPartner" type="text" class="form-input" value="${escapeHtml(item.partner_id || '')}" readonly></label>
-    </div>
-    <label style="display:block;margin-top:10px">&#1605;&#1604;&#1575;&#1581;&#1592;&#1577;<input id="paymentMemo" type="text" class="form-input" value="${isInbound ? '&#1575;&#1587;&#1578;&#1604;&#1575;&#1605; &#1583;&#1601;&#1593;&#1577;' : '&#1583;&#1601;&#1593; &#1605;&#1608;&#1585;&#1583;'} - ${escapeHtml(item.move_name || '')}"></label>
-    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:12px;color:var(--text-muted)">
-      <input id="paymentReviewed" type="checkbox" style="margin-top:3px">
-      <span>&#1585;&#1575;&#1580;&#1593;&#1578; &#1575;&#1604;&#1591;&#1585;&#1601; &#1608;&#1575;&#1604;&#1605;&#1576;&#1604;&#1594; &#1608;&#1571;&#1601;&#1607;&#1605; &#1571;&#1606; &#1575;&#1604;&#1606;&#1592;&#1575;&#1605; &#1587;&#1610;&#1571;&#1582;&#1584; &#1606;&#1587;&#1582;&#1577; &#1575;&#1581;&#1578;&#1610;&#1575;&#1591;&#1610;&#1577; &#1602;&#1576;&#1604; &#1575;&#1604;&#1578;&#1585;&#1581;&#1610;&#1604;.</span>
-    </label>
-    <div style="margin-top:12px;color:var(--text-muted);font-size:12px">
-      &#1575;&#1604;&#1581;&#1583; &#1575;&#1604;&#1571;&#1593;&#1604;&#1609; &#1604;&#1604;&#1605;&#1591;&#1575;&#1576;&#1602;&#1577;: ${formatNum(item.open_amount || 0)}. &#1575;&#1604;&#1605;&#1578;&#1576;&#1602;&#1610; &#1576;&#1593;&#1583; &#1607;&#1584;&#1607; &#1575;&#1604;&#1583;&#1601;&#1593;&#1577; &#1587;&#1610;&#1592;&#1607;&#1585; &#1601;&#1610; &#1580;&#1583;&#1608;&#1604; &#1575;&#1604;&#1576;&#1606;&#1608;&#1583; &#1575;&#1604;&#1605;&#1601;&#1578;&#1608;&#1581;&#1577;.
-    </div>
-  `;
-
-  const form = await showOmniModal(modalTitle, bodyHtml, modalBody => {
-    const amount = parseFinanceAmountInput(modalBody.querySelector('#paymentAmount')?.value || 0);
-    const date = modalBody.querySelector('#paymentDate')?.value || todayISO();
-    const memo = modalBody.querySelector('#paymentMemo')?.value || '';
-    const reviewed = !!modalBody.querySelector('#paymentReviewed')?.checked;
-    if (amount <= 0 || amount > Number(item.open_amount || 0)) {
-      showToast('\u0645\u0628\u0644\u063A \u0627\u0644\u062F\u0641\u0639\u0629 \u064A\u062C\u0628 \u0623\u0646 \u064A\u0643\u0648\u0646 \u0623\u0643\u0628\u0631 \u0645\u0646 \u0635\u0641\u0631 \u0648\u0644\u0627 \u064A\u062A\u062C\u0627\u0648\u0632 \u0627\u0644\u0645\u0641\u062A\u0648\u062D', 'warning');
-      return false;
-    }
-    if (!reviewed) {
-      showToast('\u0631\u0627\u062C\u0639 \u0627\u0644\u062F\u0641\u0639\u0629 \u0648\u0641\u0639\u0651\u0644 \u0627\u0644\u062A\u0623\u0643\u064A\u062F \u0642\u0628\u0644 \u0627\u0644\u062D\u0641\u0638', 'warning');
-      return false;
-    }
-    return { amount, date, memo };
-  });
-  if (!form) return null;
-
-  const remainingAfter = Math.max(0, Number(item.open_amount || 0) - form.amount);
-  const confirmHtml = `
-    <div style="display:grid;gap:8px;font-size:13px">
-      <div><strong>&#1575;&#1604;&#1602;&#1610;&#1583;:</strong> ${escapeHtml(item.move_name || '')}</div>
-      <div><strong>&#1575;&#1604;&#1581;&#1587;&#1575;&#1576;:</strong> ${escapeHtml(getFinanceOpenItemAccountLabel(item))}</div>
-      <div><strong>&#1575;&#1604;&#1591;&#1585;&#1601;:</strong> ${escapeHtml(item.partner_id || '-')}</div>
-      <div><strong>&#1575;&#1604;&#1605;&#1576;&#1604;&#1594;:</strong> ${formatNum(form.amount)}</div>
-      <div><strong>&#1575;&#1604;&#1605;&#1601;&#1578;&#1608;&#1581; &#1602;&#1576;&#1604;:</strong> ${formatNum(item.open_amount || 0)}</div>
-      <div><strong>&#1575;&#1604;&#1605;&#1578;&#1576;&#1602;&#1610; &#1576;&#1593;&#1583;:</strong> ${formatNum(remainingAfter)}</div>
-      <div style="color:var(--text-muted);margin-top:8px">&#1587;&#1610;&#1578;&#1605; &#1573;&#1606;&#1588;&#1575;&#1569; &#1606;&#1587;&#1582;&#1577; &#1575;&#1581;&#1578;&#1610;&#1575;&#1591;&#1610;&#1577; &#1605;&#1572;&#1603;&#1583;&#1577; &#1602;&#1576;&#1604; &#1571;&#1610; &#1578;&#1593;&#1583;&#1610;&#1604; &#1593;&#1604;&#1609; &#1602;&#1575;&#1593;&#1583;&#1577; &#1575;&#1604;&#1576;&#1610;&#1575;&#1606;&#1575;&#1578;.</div>
-    </div>
-  `;
-  const confirmed = await showOmniModal('\u0645\u0631\u0627\u062C\u0639\u0629 \u0623\u062E\u064A\u0631\u0629 \u0642\u0628\u0644 \u062A\u0631\u062D\u064A\u0644 \u0627\u0644\u062F\u0641\u0639\u0629', confirmHtml, () => true);
-  if (!confirmed) return null;
-
-  try {
-    const result = await FinanceService.createPayment({
-      amount: form.amount,
-      date: form.date,
-      memo: form.memo,
-      payment_type: isInbound ? 'inbound' : 'outbound',
-      partner_type: isInbound ? 'customer' : 'supplier',
-      partner_id: item.partner_id || '',
-      destination_account_id: item.account_id,
-      backup_tag: 'pre_payment',
-      reconcile_with: {
-        move_id: item.move_id,
-        line_id: item.line_id,
-        amount: form.amount,
-      },
-    });
-    const backupFile = result?.backup?.file ? ` - ${result.backup.file}` : '';
-    showToast(`\u062A\u0645 \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u0641\u0639\u0629 \u0648\u0645\u0637\u0627\u0628\u0642\u062A\u0647\u0627${backupFile}`, 'success');
-    await PentagonDB.load({ force: true });
-    renderPaymentsTab();
-    renderJournalEntryTab(item.move_id);
-    return result;
-  } catch (error) {
-    showToast(error.message || '\u062A\u0639\u0630\u0631 \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u0641\u0639\u0629', 'error');
-    return null;
-  }
-}
-
-function renderAccountMoveDetail(move, journals, db, canUpdate) {
-  const locked = isMoveLocked(move, db);
-  const totalDebit = (move.line_ids || []).reduce((sum, line) => sum + Number(line.debit || 0), 0);
-  const totalCredit = (move.line_ids || []).reduce((sum, line) => sum + Number(line.credit || 0), 0);
-  const lockedTip = locked ? ' title="الفترة مقفلة" disabled' : '';
-  const canEdit = canUpdate && move.state === 'draft' && !locked;
-  const canPost = canUpdate && move.state === 'draft' && !locked;
-  const canCancel = canUpdate && move.state === 'posted' && !locked;
-  const canUnpost = canUpdate && move.state === 'posted' && !locked;
-  const lineRows = (move.line_ids || []).map(line => {
-    const residual = getFinanceMoveLineResidual(db, move, line);
-    return `<tr>
-    <td>${escapeHtml(line.account_id || '')}</td>
-    <td>${escapeHtml(line.label || '')}</td>
-    <td>${escapeHtml(line.partner_id || '')}</td>
-    <td class="num-cell">${Number(line.debit || 0) ? formatNum(line.debit) : ''}</td>
-    <td class="num-cell">${Number(line.credit || 0) ? formatNum(line.credit) : ''}</td>
-    <td class="num-cell">${residual.reconcilable ? formatNum(residual.openAmount) : '-'}</td>
-  </tr>`;
-  }).join('');
-  return `
-    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
-      <div>
-        <h3 class="section-title" style="margin:0">${locked ? '<span title="الفترة مقفلة">🔒</span> ' : ''}${escapeHtml(move.name || '/')}</h3>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${escapeHtml(move.date || '')} · ${escapeHtml(getJournalLabel(journals, move.journal_id))} · ${escapeHtml(move.move_type || 'entry')}</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Origin: ${escapeHtml(move.origin || '-')}</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-xs btn-secondary" onclick="openEditAccountMoveDraftModal('${escapeHtml(move.id)}')" ${canEdit ? '' : lockedTip || 'disabled'}>تعديل</button>
-        <button class="btn-xs btn-primary" onclick="postJEFromUI('${escapeHtml(move.id)}')" ${canPost ? '' : lockedTip || 'disabled'}>ترحيل</button>
-        <button class="btn-xs btn-secondary" onclick="unpostMoveFromUI('${escapeHtml(move.id)}')" ${canUnpost ? '' : lockedTip || 'disabled'}>إرجاع</button>
-        <button class="btn-xs btn-danger" onclick="cancelMoveFromUI('${escapeHtml(move.id)}')" ${canCancel ? '' : lockedTip || 'disabled'}>إلغاء</button>
-        <button class="btn-xs btn-secondary" onclick="if(window.TrackChanges)TrackChanges.openDrawer('account_moves','${escapeHtml(move.id)}','${escapeHtml(move.name || move.id)}')" title="سجل التغييرات">📝 السجل</button>
-      </div>
-    </div>
-    <table class="data-table tb-table">
-      <thead><tr><th>الحساب</th><th>البيان</th><th>الطرف</th><th class="num-cell">مدين</th><th class="num-cell">دائن</th><th class="num-cell">المتبقي</th></tr></thead>
-      <tbody>${lineRows}</tbody>
-      <tfoot><tr><td colspan="3"><strong>المجموع</strong></td><td class="num-cell"><strong>${formatNum(totalDebit)}</strong></td><td class="num-cell"><strong>${formatNum(totalCredit)}</strong></td><td></td></tr></tfoot>
-    </table>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:10px;direction:ltr;text-align:left">hash: ${escapeHtml(move.hash || '-')} · previous: ${escapeHtml(move.previous_hash || '-')}</div>
-  `;
-}
-
-function renderDraftMoveAccountOptions(selectedId = '') {
-  ensureFinance();
-  return (finance?.accounts || [])
-    .map(account => `<option value="${escapeHtml(account.id)}" ${account.id === selectedId ? 'selected' : ''}>${escapeHtml(account.code || '')} - ${escapeHtml(account.name || account.id)}</option>`)
-    .join('');
-}
-
-function renderDraftMoveEditLine(line = {}, index = 0) {
-  return `<div class="je-lines-grid je-line-row draft-move-line-row" data-line-id="${escapeHtml(line.id || '')}">
-    <span>${index + 1}</span>
-    <select class="form-input draft-move-account" onchange="updateDraftMoveEditBalance()">${renderDraftMoveAccountOptions(line.account_id || '')}</select>
-    <input type="text" class="form-input draft-move-label" value="${escapeHtml(line.label || '')}" placeholder="البيان">
-    <input type="text" inputmode="numeric" class="form-input draft-move-debit" value="${Number(line.debit || 0) || ''}" oninput="if(parseFinanceAmountInput(this.value)>0)this.closest('.draft-move-line-row').querySelector('.draft-move-credit').value='';updateDraftMoveEditBalance()">
-    <input type="text" inputmode="numeric" class="form-input draft-move-credit" value="${Number(line.credit || 0) || ''}" oninput="if(parseFinanceAmountInput(this.value)>0)this.closest('.draft-move-line-row').querySelector('.draft-move-debit').value='';updateDraftMoveEditBalance()">
-    <button type="button" class="btn-xs btn-danger" onclick="this.closest('.draft-move-line-row').remove();renumberDraftMoveEditLines();updateDraftMoveEditBalance()">x</button>
-  </div>`;
-}
-
-function addDraftMoveEditLine() {
-  const container = document.getElementById('draftMoveEditLines');
-  if (!container) return;
-  container.insertAdjacentHTML('beforeend', renderDraftMoveEditLine({}, container.querySelectorAll('.draft-move-line-row').length));
-  updateDraftMoveEditBalance();
-}
-
-function renumberDraftMoveEditLines() {
-  document.querySelectorAll('#draftMoveEditLines .draft-move-line-row').forEach((row, index) => {
-    const label = row.querySelector('span');
-    if (label) label.textContent = String(index + 1);
-  });
-}
-
-function getDraftMoveEditTotals() {
-  return [...document.querySelectorAll('#draftMoveEditLines .draft-move-line-row')].reduce((acc, row) => {
-    acc.debit += parseFinanceAmountInput(row.querySelector('.draft-move-debit')?.value);
-    acc.credit += parseFinanceAmountInput(row.querySelector('.draft-move-credit')?.value);
-    return acc;
-  }, { debit: 0, credit: 0 });
-}
-
-function updateDraftMoveEditBalance() {
-  const chip = document.getElementById('draftMoveEditBalance');
-  if (!chip) return;
-  const totals = getDraftMoveEditTotals();
-  const balanced = totals.debit > 0 && Math.abs(totals.debit - totals.credit) < 0.01;
-  chip.textContent = balanced
-    ? `متوازن - ${formatNum(totals.debit)}`
-    : `غير متوازن: مدين ${formatNum(totals.debit)} - دائن ${formatNum(totals.credit)}`;
-  chip.className = `je-balance-chip ${balanced ? 'balanced' : 'unbalanced'}`;
-}
-
-async function openEditAccountMoveDraftModal(moveId) {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'update')) {
-    return showToast('ليس لديك صلاحية تعديل القيود', 'warning');
-  }
-  const move = await FinanceService.getMove(moveId);
-  if (!move) return showToast('القيد غير موجود', 'error');
-  if (move.state !== 'draft') return showToast('يمكن تعديل المسودات فقط', 'warning');
-  const journals = PentagonDB.getCached()?.journals || [];
-  const journalOptions = journals.map(journal => `<option value="${escapeHtml(journal.id)}" ${journal.id === move.journal_id ? 'selected' : ''}>${escapeHtml(journal.name || journal.code || journal.id)}</option>`).join('');
-  const typeOptions = FinanceService.moveTypes.map(type => `<option value="${escapeHtml(type)}" ${type === move.move_type ? 'selected' : ''}>${escapeHtml(type)}</option>`).join('');
-  const rows = (move.line_ids || []).map((line, index) => renderDraftMoveEditLine(line, index)).join('');
-  const form = await showOmniModal('تعديل مسودة قيد', `
-    <div class="je-form-row">
-      <label>اليومية<select id="draftMoveJournal" class="form-input">${journalOptions}</select></label>
-      <label>التاريخ<input id="draftMoveDate" type="date" class="form-input" value="${escapeHtml(move.date || todayISO())}"></label>
-      <label>النوع<select id="draftMoveType" class="form-input">${typeOptions}</select></label>
-    </div>
-    <div class="je-form-row">
-      <label>الطرف<input id="draftMovePartner" class="form-input" value="${escapeHtml(move.partner_id || '')}"></label>
-      <label>المرجع<input id="draftMoveOrigin" class="form-input" value="${escapeHtml(move.origin || '')}"></label>
-    </div>
-    <div id="draftMoveEditLines">
-      <div class="je-lines-grid je-lines-header"><span>#</span><span>الحساب</span><span>البيان</span><span>مدين</span><span>دائن</span><span></span></div>
-      ${rows}
-    </div>
-    <div class="je-footer-row" style="margin-top:12px">
-      <button type="button" class="btn-secondary btn-sm" onclick="addDraftMoveEditLine()">+ سطر</button>
-      <div id="draftMoveEditBalance" class="je-balance-chip">-</div>
-    </div>
-    <div style="color:var(--text-muted);font-size:12px;margin-top:10px">سيأخذ النظام نسخة احتياطية قبل حفظ أي تعديل على المسودة.</div>
-  `, body => {
-    const lineRows = [...body.querySelectorAll('#draftMoveEditLines .draft-move-line-row')];
-    const lines = lineRows.map((row, index) => ({
-      id: row.dataset.lineId || undefined,
-      sequence: index,
-      account_id: row.querySelector('.draft-move-account')?.value || '',
-      label: row.querySelector('.draft-move-label')?.value.trim() || '',
-      debit: parseFinanceAmountInput(row.querySelector('.draft-move-debit')?.value),
-      credit: parseFinanceAmountInput(row.querySelector('.draft-move-credit')?.value),
-    })).filter(line => line.account_id || line.debit || line.credit || line.label);
-    if (lines.length < 2) {
-      showToast('القيد يحتاج سطرين على الأقل', 'warning');
-      return false;
-    }
-    if (lines.some(line => !line.account_id)) {
-      showToast('اختر حساباً لكل سطر', 'warning');
-      return false;
-    }
-    try {
-      FinanceService.validateBalanced(lines);
-    } catch (error) {
-      showToast(error.message || 'القيد غير متوازن', 'warning');
-      return false;
-    }
-    return {
-      journal_id: body.querySelector('#draftMoveJournal')?.value || move.journal_id,
-      date: body.querySelector('#draftMoveDate')?.value || todayISO(),
-      move_type: body.querySelector('#draftMoveType')?.value || 'entry',
-      partner_id: body.querySelector('#draftMovePartner')?.value.trim() || '',
-      origin: body.querySelector('#draftMoveOrigin')?.value.trim() || '',
-      line_ids: lines,
-      backup_tag: 'pre_account_move_update_ui',
-    };
-  }, () => {
-    updateDraftMoveEditBalance();
-  });
-  if (!form) return null;
-  try {
-    const updated = await FinanceService.updateMove(moveId, form);
-    await PentagonDB.load({ force: true });
-    showToast('تم حفظ تعديل المسودة', 'success');
-    renderJournalEntryTab(updated.id);
-    return updated;
-  } catch (error) {
-    showToast(error.message || 'تعذر تعديل المسودة', 'error');
-    return null;
-  }
-}
-
-// LIVE definition (this is the one that actually runs — see the deprecated
-// notice near the first openNewJEModal()/saveNewJE() around line 3991).
-// Correctly operates on account_moves via FinanceService.createMove/postMove,
-// consistent with the source-of-truth rule.
-function openNewJEModal() {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
-  }
-  const form = document.getElementById('newJEForm');
-  if (!form) return;
-  const journals = PentagonDB.getCached()?.journals || [];
-  const journalOpts = journals.map(j => `<option value="${escapeHtml(j.id)}">${escapeHtml(j.name || j.code)}</option>`).join('');
-  const accountOpts = (finance?.accounts || []).map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.code)} - ${escapeHtml(a.name)}</option>`).join('');
-  form.style.display = '';
-  form.innerHTML = `
-    <h3 class="section-title">قيد يدوي</h3>
-    <div class="je-form-row">
-      <label>اليومية<select id="jeJournal" class="form-input">${journalOpts}</select></label>
-      <label>التاريخ<input id="jeDate" type="date" class="form-input" value="${todayISO()}"></label>
-      <label>المرجع<input id="jeOrigin" type="text" class="form-input" placeholder="اختياري"></label>
-    </div>
-    <div id="jeLinesContainer">
-      <div class="je-lines-grid je-lines-header"><span>#</span><span>الحساب</span><span>البيان</span><span>مدين</span><span>دائن</span><span></span></div>
-      <div id="jeLines"></div>
-    </div>
-    <button class="btn-secondary btn-sm" onclick="addJELine('${accountOpts.replace(/'/g, "\\'")}')">+ سطر</button>
-    <div class="je-footer-row">
-      <div id="jeBalanceChip" class="je-balance-chip">-</div>
-      <div>
-        <button class="btn-secondary btn-sm" onclick="document.getElementById('newJEForm').style.display='none'">إلغاء</button>
-        <button class="btn-primary btn-sm" onclick="saveNewJE()">حفظ مسودة</button>
-      </div>
-    </div>
-  `;
-  addJELine(accountOpts);
-  addJELine(accountOpts);
-  updateJEBalanceChip();
-}
-
-function saveNewJE() {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'create')) {
-    return showToast('ليس لديك صلاحية إنشاء قيد', 'warning');
-  }
-  const journalId = document.getElementById('jeJournal')?.value;
-  const date = document.getElementById('jeDate')?.value || todayISO();
-  const origin = document.getElementById('jeOrigin')?.value.trim() || '';
-  const lines = [];
-  document.querySelectorAll('#jeLines .je-line-row').forEach(row => {
-    lines.push({
-      account_id: row.querySelector('.je-account')?.value || '',
-      label: row.querySelector('.je-label')?.value || '',
-      debit: Number(row.querySelector('.je-debit')?.value || 0),
-      credit: Number(row.querySelector('.je-credit')?.value || 0),
-    });
-  });
-  FinanceService.createMove({ journal_id: journalId, date, origin, move_type: 'entry', line_ids: lines })
-    .then(move => {
-      showToast('تم حفظ القيد كمسودة', 'success');
-      renderJournalEntryTab(move.id);
-    })
-    .catch(error => showToast(error.message || 'خطأ في حفظ القيد', 'error'));
-}
-
-async function postJEFromUI(moveId) {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'update')) {
-    return showToast('ليس لديك صلاحية ترحيل القيود', 'warning');
-  }
-  try {
-    const move = await FinanceService.getMove(moveId);
-    if (!move) return showToast('القيد غير موجود', 'error');
-    const confirmed = await showOmniModal('مراجعة أخيرة قبل ترحيل القيد', `
-      <div style="display:grid;gap:8px;font-size:13px">
-        <div><strong>القيد:</strong> ${escapeHtml(move.name || '/')}</div>
-        <div><strong>التاريخ:</strong> ${escapeHtml(move.date || '')}</div>
-        <div><strong>النوع:</strong> ${escapeHtml(move.move_type || 'entry')}</div>
-        <div><strong>الإجمالي:</strong> ${formatNum(move.amount_total || 0)}</div>
-        <div style="color:var(--text-muted);margin-top:8px">سيأخذ النظام نسخة احتياطية قبل ترحيل القيد وإضافته إلى سلسلة الهاش.</div>
-      </div>
-    `, () => true);
-    if (!confirmed) return null;
-    const posted = await FinanceService.postMove(moveId, { backup_tag: 'pre_account_move_post_ui' });
-    await PentagonDB.load({ force: true });
-    showToast('تم ترحيل القيد', 'success');
-    renderJournalEntryTab(posted.id);
-    return posted;
-  } catch (error) {
-    showToast(error.message || 'خطأ في الترحيل', 'error');
-    return null;
-  }
-}
-
-async function cancelMoveFromUI(moveId) {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'update')) {
-    return showToast('ليس لديك صلاحية إلغاء القيود', 'warning');
-  }
-  try {
-    const move = await FinanceService.getMove(moveId);
-    if (!move) return showToast('القيد غير موجود', 'error');
-    const confirmed = await showOmniModal('مراجعة أخيرة قبل إلغاء القيد', `
-      <div style="display:grid;gap:8px;font-size:13px">
-        <div><strong>القيد:</strong> ${escapeHtml(move.name || '/')}</div>
-        <div><strong>التاريخ:</strong> ${escapeHtml(move.date || '')}</div>
-        <div><strong>الإجمالي:</strong> ${formatNum(move.amount_total || 0)}</div>
-        <div style="color:var(--text-muted);margin-top:8px">سيأخذ النظام نسخة احتياطية، ثم ينشئ قيداً عكسياً ويعلّم القيد الأصلي كملغي.</div>
-      </div>
-    `, () => true);
-    if (!confirmed) return null;
-    const result = await FinanceService.cancelMove(moveId, { backup_tag: 'pre_account_move_cancel_ui' });
-    await PentagonDB.load({ force: true });
-    showToast('تم إلغاء القيد وإنشاء قيد عكسي', 'success');
-    renderJournalEntryTab(result.cancelled.id);
-    return result;
-  } catch (error) {
-    showToast(error.message || 'خطأ في الإلغاء', 'error');
-    return null;
-  }
-}
-
-async function unpostMoveFromUI(moveId) {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'update')) {
-    return showToast('ليس لديك صلاحية إرجاع القيود', 'warning');
-  }
-  try {
-    const move = await FinanceService.getMove(moveId);
-    if (!move) return showToast('القيد غير موجود', 'error');
-    const confirmed = await showOmniModal('مراجعة أخيرة قبل إرجاع القيد', `
-      <div style="display:grid;gap:8px;font-size:13px">
-        <div><strong>القيد:</strong> ${escapeHtml(move.name || '/')}</div>
-        <div><strong>التاريخ:</strong> ${escapeHtml(move.date || '')}</div>
-        <div><strong>الإجمالي:</strong> ${formatNum(move.amount_total || 0)}</div>
-        <div style="color:var(--text-muted);margin-top:8px">سيأخذ النظام نسخة احتياطية، ثم يعيد القيد إلى مسودة ويزيل هاش الترحيل.</div>
-      </div>
-    `, () => true);
-    if (!confirmed) return null;
-    const draft = await FinanceService.unpostMove(moveId, { backup_tag: 'pre_account_move_unpost_ui' });
-    await PentagonDB.load({ force: true });
-    showToast('تم إرجاع القيد إلى مسودة', 'success');
-    renderJournalEntryTab(draft.id);
-    return draft;
-  } catch (error) {
-    showToast(error.message || 'خطأ في الإرجاع', 'error');
-    return null;
-  }
-}
-
-function saveFinanceLockDate() {
-  const value = document.getElementById('financeLockDate')?.value || '';
-  FinanceService.setLockDate(value)
-    .then(() => { showToast('تم حفظ تاريخ الإقفال', 'success'); renderJournalEntryTab(); })
-    .catch(error => showToast(error.message || 'تعذر حفظ تاريخ الإقفال', 'error'));
-}
-
-function closeFinanceSelectedMonth() {
-  const base = document.getElementById('jeDate')?.value || todayISO();
-  const date = new Date(`${base.slice(0, 7)}-01T00:00:00`);
-  date.setMonth(date.getMonth() + 1, 0);
-  const lockDate = date.toISOString().slice(0, 10);
-  FinanceService.setLockDate(lockDate)
-    .then(() => { showToast(`تم إقفال الفترة حتى ${lockDate}`, 'success'); renderJournalEntryTab(); })
-    .catch(error => showToast(error.message || 'تعذر إقفال الفترة', 'error'));
-}
-
-function reverseJEFromUI(moveId) {
-  return cancelMoveFromUI(moveId);
-}
+// T4.6 de-monolith: V6 Finance Workspace and Tab functions moved to modules/finance-ui.js
 
 
 
@@ -29403,7 +27211,7 @@ function normalizeAutomation() {
   if (!Array.isArray(omni.automationFireLog)) {
     omni.automationFireLog = [];
   }
-  
+
   // Ensure health fields exist for all rules
   omni.automationRules.forEach(rule => {
     if (rule.successCount === undefined) rule.successCount = 0;
@@ -29416,13 +27224,13 @@ function normalizeAutomation() {
 function triggerOmniEvent(eventType, eventData) {
   ensureOmni();
   normalizeAutomation();
-  
+
   console.log(`[AUTOMATION] Event triggered: "${eventType}"`, eventData);
-  
-  const activeRules = (omni.automationRules || []).filter(rule => 
+
+  const activeRules = (omni.automationRules || []).filter(rule =>
     rule.active && (rule.event === eventType || rule.event === '*')
   );
-  
+
   activeRules.forEach(rule => {
     let match = true;
     if (Array.isArray(rule.conditions) && rule.conditions.length > 0) {
@@ -29433,7 +27241,7 @@ function triggerOmniEvent(eventType, eventData) {
         }
       }
     }
-    
+
     if (match) {
       fireAutomationRule(rule, eventType, eventData);
     }
@@ -29442,7 +27250,7 @@ function triggerOmniEvent(eventType, eventData) {
 
 function evaluateRuleCondition(data, condition) {
   if (!data || !condition) return false;
-  
+
   let val = data[condition.field];
   if (val === undefined && data.card) val = data.card[condition.field];
   if (val === undefined && data.material) val = data.material[condition.field];
@@ -29450,17 +27258,17 @@ function evaluateRuleCondition(data, condition) {
   if (val === undefined && data.machine) val = data.machine[condition.field];
   if (val === undefined && data.request) val = data.request[condition.field];
   if (val === undefined && data.whatsappSuggestion) val = data.whatsappSuggestion[condition.field];
-  
+
   let targetVal = condition.value;
-  
+
   if (condition.field === 'stock' && targetVal === 'minimum' && data.material) {
     targetVal = Number(data.material.minimum) || 0;
   }
-  
+
   let numVal = Number(val);
   let numTarget = Number(targetVal);
   const isNumeric = !isNaN(numVal) && !isNaN(numTarget) && val !== '' && targetVal !== '';
-  
+
   const op = condition.operator;
   if (op === 'eq') return isNumeric ? numVal === numTarget : String(val) === String(targetVal);
   if (op === 'ne') return isNumeric ? numVal !== numTarget : String(val) !== String(targetVal);
@@ -29475,13 +27283,13 @@ function evaluateRuleCondition(data, condition) {
   if (op === 'contains') {
     return String(val).toLowerCase().includes(String(targetVal).toLowerCase());
   }
-  
+
   return false;
 }
 
 function fireAutomationRule(rule, eventType, eventData) {
   ensureOmni();
-  
+
   const logEntry = {
     id: makeId('fire'),
     ruleId: rule.id,
@@ -29491,33 +27299,33 @@ function fireAutomationRule(rule, eventType, eventData) {
     status: 'success',
     details: 'تم تشغيل القاعدة بنجاح.'
   };
-  
+
   rule.lastFired = logEntry.firedAt;
-  
+
   try {
     const action = rule.action;
     const value = rule.actionValue;
-    
+
     if (action === 'notify') {
       showToast(`${rule.name}: ${value}`, 'info');
       addSystemNotificationDirect(rule.name, value, eventData);
-    } 
+    }
     else if (action === 'flag_anomaly') {
       const ref = eventData.card?.title || eventData.material?.name || eventData.task?.title || eventData.machine?.name || 'كيان مجهول';
       recordAuditEvent('ANOMALY_FLAG', rule.name, `[${ref}] تم رصد شذوذ تشغيلي: ${value}`, 'محرك الأتمتة');
       showToast(`تم تسجيل شذوذ تشغيلي: ${rule.name}`, 'warning');
-      
+
       if (eventType === 'KANBAN_CARD_STUCK' && eventData.card) {
         eventData.card.priority = 'Urgent';
         if (!eventData.card.tags) eventData.card.tags = [];
         if (!eventData.card.tags.includes('Escalated')) eventData.card.tags.push('Escalated');
         if (!Array.isArray(eventData.card.activityLog)) eventData.card.activityLog = [];
-        eventData.card.activityLog.push({ 
-          date: new Date().toISOString(), 
-          text: `تم التصعيد التلقائي بواسطة قاعدة الأتمتة: ${rule.name}` 
+        eventData.card.activityLog.push({
+          date: new Date().toISOString(),
+          text: `تم التصعيد التلقائي بواسطة قاعدة الأتمتة: ${rule.name}`
         });
       }
-    } 
+    }
     else if (action === 'trigger_scan') {
       showToast(`بدء فحص صحة النظام التلقائي بطلب من القاعدة: ${rule.name}`, 'info');
       if (typeof runManualAuditScan === 'function') {
@@ -29634,7 +27442,7 @@ function fireAutomationRule(rule, eventType, eventData) {
       showToast(`تم إرسال طلب تحليل AI إلى طابور مركز القيادة: ${req.title}`, 'success');
       if (typeof renderCommandCenter === 'function') renderCommandCenter();
     }
-    
+
     rule.successCount++;
     rule.consecutiveErrors = 0; // reset consecutive errors
     logEntry.details = `تم تنفيذ الإجراء [${action}] بنجاح بقيمة [${value}].`;
@@ -29644,7 +27452,7 @@ function fireAutomationRule(rule, eventType, eventData) {
     logEntry.status = 'error';
     logEntry.details = `خطأ أثناء تنفيذ إجراء القاعدة: ${err.message}`;
     console.error(err);
-    
+
     // Fail-safe automatic rule disabling after 3 consecutive errors
     if (rule.consecutiveErrors >= 3) {
       rule.active = false;
@@ -29662,15 +27470,15 @@ function fireAutomationRule(rule, eventType, eventData) {
       showToast(`تم تعطيل القاعدة [${rule.name}] تلقائياً بسبب الأخطاء`, 'error');
     }
   }
-  
+
   omni.automationFireLog = omni.automationFireLog || [];
   omni.automationFireLog.unshift(logEntry);
   if (omni.automationFireLog.length > 500) {
     omni.automationFireLog.pop();
   }
-  
+
   saveData(true);
-  
+
   if (currentPage === 'automation') {
     renderAutomationEngine();
   }
@@ -29691,16 +27499,16 @@ function addSystemNotificationDirect(title, message, eventData) {
 function runRuleSimulation(ruleId, eventType, mockData) {
   const rule = (omni.automationRules || []).find(r => r.id === ruleId);
   if (!rule) return { success: false, logs: ['[ERROR] Rule not found.'] };
-  
+
   const logs = [];
   logs.push(`[SIM] بدء محاكاة القاعدة: "${rule.name}"`);
   logs.push(`[SIM] الحدث المحفز: "${eventType}"`);
-  
+
   if (rule.event !== eventType && rule.event !== '*') {
     logs.push(`[SIM] [ERROR] فشل تطابق الحدث. القاعدة تنتظر: "${rule.event}" والحدث الفعلي: "${eventType}". تم إنهاء المحاكاة.`);
     return { success: false, logs };
   }
-  
+
   let match = true;
   if (Array.isArray(rule.conditions) && rule.conditions.length > 0) {
     for (const cond of rule.conditions) {
@@ -29714,15 +27522,15 @@ function runRuleSimulation(ruleId, eventType, mockData) {
   } else {
     logs.push('[SIM] لا توجد شروط مطابقة إضافية.');
   }
-  
+
   if (!match) {
     logs.push('[SIM] [WARNING] لم تطابق الشروط. القاعدة لن يتم تشغيلها في الإنتاج.');
     return { success: false, logs };
   }
-  
+
   logs.push('[SIM] [SUCCESS] تطابقت جميع شروط القاعدة بنجاح.');
   logs.push(`[SIM] الإجراء المجدول: [${rule.action}] بقيمة [${rule.actionValue}]`);
-  
+
   // Sandbox actions log
   if (rule.action === 'notify') {
     logs.push('[ACTION] [SAFE] سيقوم النظام بإرسال إشعار فوري وعرض Toast.');
@@ -29743,7 +27551,7 @@ function runRuleSimulation(ruleId, eventType, mockData) {
   } else if (rule.action === 'trigger_ai_analysis') {
     logs.push('[ACTION] [GATED] سياسة حماية AI! سيقوم النظام بإنشاء طلب تحليل ذكي في مركز القيادة للموافقة عليه قبل التحليل.');
   }
-  
+
   logs.push('[SIM] اكتملت المحاكاة التشريحية بنجاح!');
   return { success: true, logs };
 }
@@ -29768,7 +27576,7 @@ function renderAutomationEngine_deprecated_dup1() {
   const pausedCount = omni.automationRules.filter(r => !r.active).length;
   const firedCount = omni.automationFireLog.length;
   const anomalyCount = (omni.systemLog || []).filter(l => l.action === 'ANOMALY_FLAG').length;
-  
+
   body.className = 'automation-shell';
   body.innerHTML = `
     <div class="automation-hero">
@@ -29780,7 +27588,7 @@ function renderAutomationEngine_deprecated_dup1() {
         <button class="btn-primary" onclick="addAutomationRule()"><i class="fa-solid fa-plus"></i> إضافة قاعدة جديدة</button>
       </div>
     </div>
-    
+
     <div class="automation-kpis">
       <div style="border-inline-start: 4px solid var(--success)">
         <span>القواعد النشطة</span>
@@ -29805,7 +27613,7 @@ function renderAutomationEngine_deprecated_dup1() {
       <button class="automation-tab-btn ${omniActiveAutomationTab === 'history' ? 'active' : ''}" onclick="switchAutomationTab('history')">سجل التشغيل</button>
       <button class="automation-tab-btn ${omniActiveAutomationTab === 'health' ? 'active' : ''}" onclick="switchAutomationTab('health')">صحة الأتمتة والسياسات</button>
     </div>
-    
+
     <div class="automation-tab-content">
       ${renderActiveAutomationTabContent()}
     </div>
@@ -29844,8 +27652,8 @@ function renderActiveAutomationTabContent() {
         ${renderAutomationRules()}
       </div>
     `;
-  } 
-  
+  }
+
   if (omniActiveAutomationTab === 'history') {
     return `
       <div class="task-filter-bar inv-toolbar" style="margin-bottom: 16px; justify-content: flex-end;">
@@ -29856,7 +27664,7 @@ function renderActiveAutomationTabContent() {
       </div>
     `;
   }
-  
+
   if (omniActiveAutomationTab === 'health') {
     return renderAutomationHealthAndPoliciesContent();
   }
@@ -29882,21 +27690,21 @@ function renderAutomationRulesContainer() {
 function renderAutomationRules() {
   ensureOmni();
   normalizeAutomation();
-  
+
   let rules = omni.automationRules || [];
-  
+
   if (automationSearchQuery) {
     rules = rules.filter(r => r.name.toLowerCase().includes(automationSearchQuery.toLowerCase()));
   }
-  
+
   if (automationEventFilter !== 'all') {
     rules = rules.filter(r => r.event === automationEventFilter);
   }
-  
+
   if (rules.length === 0) {
     return `<div class="task-empty-state-card" style="padding: 20px;"><h4>لا توجد قواعد أتمتة مطابقة</h4></div>`;
   }
-  
+
   const eventLabels = {
     KANBAN_CARD_STUCK: 'بطاقة كانبان عالقة > 24 ساعة',
     MATERIAL_LOW_STOCK: 'نقص المخزون عن الحد الأدنى',
@@ -29911,7 +27719,7 @@ function renderAutomationRules() {
     WHATSAPP_APPROVED: 'اعتماد واعتراض اقتراح WhatsApp',
     '*': 'أي حدث تشغيلي'
   };
-  
+
   const actionLabels = {
     notify: 'إرسال إشعار للنظام',
     flag_anomaly: 'تسجيل شذوذ تشغيلي',
@@ -29923,7 +27731,7 @@ function renderAutomationRules() {
     schedule_inspection: 'جدولة فحص جودة',
     trigger_ai_analysis: 'تحليل AI الذكي (Gated)'
   };
-  
+
   return rules.map(rule => {
     const conditionsHtml = (rule.conditions || []).map(c => {
       const opLabels = { eq: '=', ne: '≠', gt: '>', gte: '≥', lt: '<', lte: '≤', in: 'في', contains: 'يشتمل على' };
@@ -29933,12 +27741,12 @@ function renderAutomationRules() {
       const valLabel = valAr[c.value] || c.value;
       return `<span>${escapeHtml(fieldLabel)} <b>${opLabels[c.operator] || c.operator}</b> "${escapeHtml(valLabel)}"</span>`;
     }).join(' و ') || '<span class="muted">بدون شروط إضافية</span>';
-    
+
     const isAutoDisabled = !rule.active && rule.consecutiveErrors >= 3;
-    const healthBadge = isAutoDisabled 
+    const healthBadge = isAutoDisabled
       ? '<span class="health-badge health-badge-danger" style="margin-right:8px;">تعطل تلقائي (أخطاء)</span>'
       : (rule.active ? '<span class="health-badge health-badge-success" style="margin-right:8px;">نشط</span>' : '<span class="health-badge health-badge-disabled" style="margin-right:8px;">معطل</span>');
-      
+
     return `
       <div class="automation-rule-card ${rule.active ? '' : 'is-paused'}" style="display:flex; flex-direction:column; justify-content:space-between; min-height: 200px;">
         <div>
@@ -29960,7 +27768,7 @@ function renderAutomationRules() {
             شروط المطابقة: ${conditionsHtml}
           </div>
         </div>
-        
+
         <div style="margin-top:16px;">
           <div class="automation-rule-foot" style="border-top: 1px solid rgba(148,163,184,0.08); padding-top:10px; margin-bottom:8px;">
             <span class="automation-action-chip automation-action-${rule.action}">${actionLabels[rule.action] || rule.action}: "${escapeHtml(rule.actionValue || 'إجراء بدون نص')}"</span>
@@ -29983,17 +27791,17 @@ function renderAutomationRules() {
 function renderAutomationFireLog() {
   ensureOmni();
   normalizeAutomation();
-  
+
   const logs = omni.automationFireLog || [];
   if (logs.length === 0) {
     return `<div class="task-empty-state-card" style="padding: 20px;"><h4>سجل تشغيل العمليات فارغ حالياً</h4></div>`;
   }
-  
+
   return logs.map(log => {
     const isError = log.status === 'error';
     const timeStr = new Date(log.firedAt).toLocaleTimeString();
     const dateStr = new Date(log.firedAt).toLocaleDateString();
-    
+
     return `
       <div class="automation-fire-row ${isError ? 'automation-fire-error' : ''}" style="margin-bottom:8px;">
         <div>
@@ -30012,13 +27820,13 @@ function renderAutomationFireLog() {
 function renderAutomationHealthAndPoliciesContent() {
   ensureOmni();
   normalizeAutomation();
-  
+
   // Health cards
   const healthCardsHtml = omni.automationRules.map(rule => {
     const isAutoDisabled = !rule.active && rule.consecutiveErrors >= 3;
     const statusText = isAutoDisabled ? 'متعطل (أخطاء متتالية)' : (rule.active ? 'سليم ونشط' : 'معطل يدوياً');
     const badgeClass = isAutoDisabled ? 'health-badge-danger' : (rule.active ? 'health-badge-success' : 'health-badge-disabled');
-    
+
     return `
       <div class="automation-health-card">
         <div class="automation-health-card-head">
@@ -30065,7 +27873,7 @@ function renderAutomationHealthAndPoliciesContent() {
   };
 
   const selectedPresetJson = JSON.stringify(presetPreviews[omniSelectedSimPreset], null, 2);
-  const consoleOutputHtml = omniSimulationConsoleLogs.length > 0 
+  const consoleOutputHtml = omniSimulationConsoleLogs.length > 0
     ? omniSimulationConsoleLogs.map(l => {
         let cls = 'sim-log-info';
         if (l.startsWith('[SIM] [SUCCESS]')) cls = 'sim-log-success';
@@ -30085,11 +27893,11 @@ function renderAutomationHealthAndPoliciesContent() {
         <div class="automation-health-stats-grid">
           ${healthCardsHtml}
         </div>
-        
+
         <div class="policy-card">
           <h3 style="margin-top:0; color:#38bdf8; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-shield-halved"></i> سياسات الحماية ومستويات الأمان</h3>
           <p style="font-size:12px; color:var(--text-secondary); line-height:1.6;">بموجب السياسة الأمنية للنظام، تُمنع الأتمتة المباشرة والذكاء الاصطناعي من إجراء تعديلات بدون موافقة صريحة على الوحدات الحساسة (المالية، الرواتب، الإعدادات). جميع إجراءات الكتابة في هذه الوحدات تُحول تلقائياً إلى طابور مراجعة مركز القيادة.</p>
-          
+
           <table class="data-table tb-table" style="font-size:12px; margin-top:12px;">
             <thead>
               <tr><th>الوحدة / الإجراء</th><th>النوع</th><th>سياسة الأمان</th><th>الحالة</th></tr>
@@ -30106,11 +27914,11 @@ function renderAutomationHealthAndPoliciesContent() {
           </table>
         </div>
       </div>
-      
+
       <div class="glass-card" style="padding:16px;">
         <h3 style="margin-top:0; margin-bottom:12px;"><i class="fa-solid fa-vial"></i> محاكي الأتمتة التفاعلي</h3>
         <p style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-bottom:14px;">اختر قاعدة أتمتة ونموذج حدث تشغيلي لمحاكاة طريقة تقييم وتصرف النظام في بيئة معزولة وآمنة.</p>
-        
+
         <div style="display:grid; gap:12px; margin-bottom:16px;">
           <div>
             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">اختر قاعدة الأتمتة</label>
@@ -30119,7 +27927,7 @@ function renderAutomationHealthAndPoliciesContent() {
               ${omni.automationRules.map(r => `<option value="${r.id}" ${omniSelectedSimRule === r.id ? 'selected' : ''}>${escapeHtml(r.name)}</option>`).join('')}
             </select>
           </div>
-          
+
           <div>
             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">حدث المحاكاة المسبق</label>
             <select id="simPresetSelect" class="form-input" onchange="omniSelectedSimPreset = this.value; renderAutomationEngine();">
@@ -30131,15 +27939,15 @@ function renderAutomationHealthAndPoliciesContent() {
               <option value="whatsapp_app" ${omniSelectedSimPreset === 'whatsapp_app' ? 'selected' : ''}>اعتماد رسائل العملاء</option>
             </select>
           </div>
-          
+
           <div>
             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات الحدث المرسلة</label>
             <pre style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px; font-size:11px; color:#a7f3d0; margin:0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
           </div>
-          
+
           <button class="btn-primary" style="width:100%; padding:10px;" onclick="triggerRuleSimulation()"><i class="fa-solid fa-play"></i> تشغيل المحاكاة</button>
         </div>
-        
+
         <div>
           <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">مخرجات المحاكاة</label>
           <div class="automation-simulation-console">
@@ -30154,12 +27962,12 @@ function renderAutomationHealthAndPoliciesContent() {
 function triggerRuleSimulation() {
   const ruleSelect = document.getElementById('simRuleSelect');
   const ruleId = ruleSelect ? ruleSelect.value : '';
-  
+
   if (!ruleId) {
     showToast('يرجى اختيار قاعدة أتمتة للمحاكاة', 'warning');
     return;
   }
-  
+
   const presetPreviews = {
     stuck_card: { event: 'KANBAN_CARD_STUCK', data: { card: { id: 'card_stuck_1', title: 'صناعة طاولة خشبية مخصصة', priority: 'High', dueDate: '2026-06-01' }, diffHours: 36 } },
     low_stock: { event: 'MATERIAL_LOW_STOCK', data: { material: { id: 'mat_wood_1', name: 'أخشاب زان طبيعي 18مم', stock: 5, minimum: 20 } } },
@@ -30168,20 +27976,20 @@ function triggerRuleSimulation() {
     employee_req: { event: 'EMPLOYEE_REQUEST_APPROVED', data: { request: { id: 'req_leave_1', type: 'leave', title: 'طلب إجازة سنوية - علي', status: 'approved' } } },
     whatsapp_app: { event: 'WHATSAPP_APPROVED', data: { whatsappSuggestion: { id: 'wa_sug_1', label: 'طلب توريد مسامير إضافية', type: 'purchase_request', text: 'شراء كرتونة مسامير 5سم للنجارة' } } }
   };
-  
+
   const preset = presetPreviews[omniSelectedSimPreset];
   if (!preset) return;
-  
+
   const result = runRuleSimulation(ruleId, preset.event, preset.data);
   omniSimulationConsoleLogs = result.logs;
-  
+
   showToast(result.success ? 'اكتملت محاكاة قاعدة الأتمتة' : 'فشلت شروط القاعدة في المحاكاة', result.success ? 'success' : 'warning');
   renderAutomationEngine();
 }
 
 async function addAutomationRule() {
   ensureOmni();
-  
+
   const events = [
     { value: 'KANBAN_CARD_STUCK', label: 'بطاقة كانبان عالقة' },
     { value: 'MATERIAL_LOW_STOCK', label: 'نقص المواد بالمخزون' },
@@ -30195,7 +28003,7 @@ async function addAutomationRule() {
     { value: 'WHATSAPP_APPROVED', label: 'اعتماد اقتراح WhatsApp' },
     { value: '*', label: 'أي حدث تشغيلي (عام)' }
   ];
-  
+
   const actions = [
     { value: 'notify', label: 'إرسال إشعار للنظام' },
     { value: 'flag_anomaly', label: 'تسجيل شذوذ تشغيلي' },
@@ -30207,7 +28015,7 @@ async function addAutomationRule() {
     { value: 'schedule_inspection', label: 'جدولة فحص جودة (QC)' },
     { value: 'trigger_ai_analysis', label: 'تشغيل تحليل AI الذكي (Gated)' }
   ];
-  
+
   const result = await showOmniModal('إنشاء قاعدة أتمتة جديدة', `
     <div class="automation-modal-form" style="display:grid;gap:12px;">
       <div>
@@ -30262,9 +28070,9 @@ async function addAutomationRule() {
     action: body.querySelector('#ruleAction')?.value,
     actionValue: body.querySelector('#ruleActionValue')?.value.trim()
   }));
-  
+
   if (!result?.name || !result?.event || !result?.action) return;
-  
+
   const conditions = [];
   if (result.condField && result.condValue) {
     conditions.push({
@@ -30273,7 +28081,7 @@ async function addAutomationRule() {
       value: result.condValue
     });
   }
-  
+
   omni.automationRules.push({
     id: makeId('rule'),
     name: result.name,
@@ -30288,7 +28096,7 @@ async function addAutomationRule() {
     lastFired: null,
     createdAt: new Date().toISOString()
   });
-  
+
   saveData();
   renderAutomationEngine();
   showToast('تمت إضافة قاعدة الأتمتة بنجاح', 'success');
@@ -30298,7 +28106,7 @@ async function editAutomationRule(ruleId) {
   ensureOmni();
   const rule = omni.automationRules.find(r => r.id === ruleId);
   if (!rule) return;
-  
+
   const events = [
     { value: 'KANBAN_CARD_STUCK', label: 'بطاقة كانبان عالقة' },
     { value: 'MATERIAL_LOW_STOCK', label: 'نقص المواد بالمخزون' },
@@ -30312,7 +28120,7 @@ async function editAutomationRule(ruleId) {
     { value: 'WHATSAPP_APPROVED', label: 'اعتماد اقتراح WhatsApp' },
     { value: '*', label: 'أي حدث تشغيلي (عام)' }
   ];
-  
+
   const actions = [
     { value: 'notify', label: 'إرسال إشعار للنظام' },
     { value: 'flag_anomaly', label: 'تسجيل شذوذ تشغيلي' },
@@ -30324,9 +28132,9 @@ async function editAutomationRule(ruleId) {
     { value: 'schedule_inspection', label: 'جدولة فحص جودة (QC)' },
     { value: 'trigger_ai_analysis', label: 'تشغيل تحليل AI الذكي (Gated)' }
   ];
-  
+
   const cond = rule.conditions?.[0] || { field: '', operator: 'eq', value: '' };
-  
+
   const result = await showOmniModal('تعديل قاعدة الأتمتة', `
     <div class="automation-modal-form" style="display:grid;gap:12px;">
       <div>
@@ -30381,9 +28189,9 @@ async function editAutomationRule(ruleId) {
     action: body.querySelector('#ruleAction')?.value,
     actionValue: body.querySelector('#ruleActionValue')?.value.trim()
   }));
-  
+
   if (!result?.name || !result?.event || !result?.action) return;
-  
+
   const conditions = [];
   if (result.condField && result.condValue) {
     conditions.push({
@@ -30392,13 +28200,13 @@ async function editAutomationRule(ruleId) {
       value: result.condValue
     });
   }
-  
+
   rule.name = result.name;
   rule.event = result.event;
   rule.conditions = conditions;
   rule.action = result.action;
   rule.actionValue = result.actionValue || 'تم تعديل القاعدة تلقائياً.';
-  
+
   saveData();
   renderAutomationEngine();
   showToast('تم تعديل القاعدة بنجاح', 'success');
@@ -30432,7 +28240,7 @@ function testFireAutomationRule(ruleId) {
   ensureOmni();
   const rule = omni.automationRules.find(r => r.id === ruleId);
   if (!rule) return;
-  
+
   const testData = {
     card: { id: 'card_test_1', title: 'بطاقة اختبارية كانبان', priority: 'High', dueDate: todayISO(), department: 'الإنتاج' },
     material: { id: 'mat_test_1', name: 'ورق فينيل لاصق 3M', stock: 5, minimum: 20 },
@@ -30440,7 +28248,7 @@ function testFireAutomationRule(ruleId) {
     machine: { id: 'mach_test_1', name: 'ماكينة اختبار CNC' },
     totalMinutes: 260
   };
-  
+
   showToast(`تشغيل اختبار تشريحي للقاعدة: ${rule.name}`, 'info');
   fireAutomationRule(rule, rule.event === '*' ? 'KANBAN_CARD_STUCK' : rule.event, testData);
 }
@@ -30456,9 +28264,9 @@ function clearAutomationFireLog() {
 function runManualAuditScan() {
   ensureOmni();
   showToast('بدء فحص ومطابقة جميع مستندات المخزون والكانبان والأحمال المفرطة...', 'info');
-  
+
   let matchCount = 0;
-  
+
   (omni.materials || []).forEach(m => {
     const stock = Number(m.stock || 0) - Number(m.reserved || 0);
     if (stock < Number(m.minimum || 0)) {
@@ -30466,7 +28274,7 @@ function runManualAuditScan() {
       matchCount++;
     }
   });
-  
+
   const now = new Date();
   const inProgressColId = (omni.kanban.columns.find(c => c.title.toLowerCase().includes('progress') || c.title.includes('عمل') || c.title.includes('قيد')) || {}).id;
   if (inProgressColId) {
@@ -30491,21 +28299,21 @@ function runManualAuditScan() {
       matchCount++;
     }
   });
-  
+
   showToast(`اكتمل فحص ومطابقة المستندات. تم تشغيل ${matchCount} محفز أتمتة.`, 'success');
 }
 
 function runManualAuditScanSilent() {
   ensureOmni();
   normalizeAutomation();
-  
+
   (omni.materials || []).forEach(m => {
     const stock = Number(m.stock || 0) - Number(m.reserved || 0);
     if (stock < Number(m.minimum || 0)) {
       triggerOmniEvent('MATERIAL_LOW_STOCK', { material: m, stock });
     }
   });
-  
+
   const now = new Date();
   const inProgressColId = (omni.kanban.columns.find(c => c.title.toLowerCase().includes('progress') || c.title.includes('عمل') || c.title.includes('قيد')) || {}).id;
   if (inProgressColId) {
@@ -31642,7 +29450,7 @@ function createAiFollowupTasks() {
 function updateTaskManagerTaskStatusInline(taskId, statusValue) {
   updateTaskManagerTask(taskId, { status: statusValue });
   showToast('تم تحديث حالة المهمة', 'success');
-  
+
   if (statusValue === 'done') {
     const task = findTaskById(taskId);
     if (task) {
@@ -32757,11 +30565,11 @@ function convertQuotationToOrder(quotId) {
 
   // Create Kanban cards for oppack lines & Reserve materials
   const kanbanCol = (omni.kanban.columns || []).find(c => /backlog|to.?do|جديد|مهام/i.test(`${c.title || ''} ${c.name || ''}`)) || omni.kanban.columns[0];
-  
+
   // 1. Process oppack lines (Kanban card creation + Material reservation)
   q.lines.filter(l => l.type === 'oppack' && l.packId).forEach(line => {
     const pack = (omni.opPacks || []).find(p => p.id === line.packId);
-    
+
     // Create Kanban card if column exists
     if (kanbanCol) {
       const card = {
@@ -32780,7 +30588,7 @@ function convertQuotationToOrder(quotId) {
       omni.kanban.cards.push(card);
       so.kanbanCardIds.push(card.id);
     }
-    
+
     // Reserve materials for the op_pack steps
     if (pack) {
       const preview = buildOpPackPreview(pack, line.quantity);
@@ -33091,7 +30899,7 @@ function normalizeOmniWorkOrders() {
   if (!omni || typeof omni !== 'object') omni = {};
   if (!Array.isArray(omni.migrationsApplied)) omni.migrationsApplied = [];
   if (!Array.isArray(omni.workOrders)) omni.workOrders = [];
-  
+
   omni.workOrders.forEach(wo => {
     if (!wo.id) wo.id = makeId('wo');
     if (!wo.cardId) wo.cardId = '';
@@ -33113,7 +30921,7 @@ function normalizeOmniWorkOrders() {
     if (!wo.startedAt) wo.startedAt = '';
     if (!wo.completedAt) wo.completedAt = '';
   });
-  
+
   if (!omni.migrationsApplied.includes('work_orders_v2')) {
     omni.migrationsApplied.push('work_orders_v2');
   }
@@ -33121,7 +30929,7 @@ function normalizeOmniWorkOrders() {
 
 function normalizeInventoryDeepening() {
   if (!Array.isArray(omni.lots)) omni.lots = [];
-  
+
   omni.lots.forEach(lot => {
     if (!lot.id) lot.id = makeId('lot');
     if (!lot.product_id) lot.product_id = '';
@@ -33142,7 +30950,7 @@ function startWorkOrder(woId, operatorId = '', operatorName = '') {
   ensureOmni();
   const wo = (omni.workOrders || []).find(w => w.id === woId);
   if (!wo) return showToast('أمر العمل غير موجود', 'error');
-  
+
   wo.status = 'progress';
   wo.startedAt = wo.startedAt || new Date().toISOString();
   wo.operatorId = operatorId;
@@ -33180,14 +30988,14 @@ function pauseWorkOrder(woId, reason = '') {
   ensureOmni();
   const wo = (omni.workOrders || []).find(w => w.id === woId);
   if (!wo) return showToast('أمر العمل غير موجود', 'error');
-  
+
   wo.status = 'pause';
-  
+
   const activeLog = wo.timeLogs.find(l => !l.endTime);
   if (activeLog) {
     activeLog.endTime = new Date().toISOString();
     activeLog.pauseReason = reason || 'إيقاف مؤقت عام';
-    
+
     const durationMs = new Date(activeLog.endTime) - new Date(activeLog.startTime);
     const durationMins = Math.round(durationMs / 1000 / 60);
     wo.actualMinutes = (wo.actualMinutes || 0) + Math.max(1, durationMins);
@@ -33233,7 +31041,7 @@ function createQcRecordFromCard(card, batchNum) {
   };
   if (!Array.isArray(omni.qcRecords)) omni.qcRecords = [];
   omni.qcRecords.unshift(qc);
-  
+
   createOmniNotification({
     type: 'qc',
     title: 'طلب فحص جودة جديد',
@@ -33267,7 +31075,7 @@ function completeWorkOrder(woId, actualMinsOverride = null) {
 
   wo.materialRequirements.forEach(req => {
     releaseMaterialReservation(req.materialId, req.qty, 'op_pack', wo.opPackId);
-    
+
     const mat = getMaterialById(req.materialId);
     if (mat) {
       mat.stock = Math.max(0, mat.stock - req.qty);
@@ -33294,7 +31102,7 @@ function completeWorkOrder(woId, actualMinsOverride = null) {
     if (card) {
       card.columnId = 'kb_done';
       card.activityLog.push({ date: new Date().toISOString(), text: `أمر العمل المربوط اكتمل. الوقت الفعلي: ${wo.actualMinutes} دقيقة` });
-      
+
       if (card.requiresQc) {
         const batchNum = `B-${Date.now().toString(36).toUpperCase()}`;
         createQcRecordFromCard(card, batchNum);
@@ -33305,12 +31113,12 @@ function completeWorkOrder(woId, actualMinsOverride = null) {
   if (wo.cardId) {
     const parentCard = (omni.kanban.cards || []).find(c => c.id === wo.cardId);
     if (parentCard && parentCard.operationPackId) {
-      const runCards = (omni.kanban.cards || []).filter(c => 
-        c.operationPackId === parentCard.operationPackId && 
-        c.clientName === parentCard.clientName && 
+      const runCards = (omni.kanban.cards || []).filter(c =>
+        c.operationPackId === parentCard.operationPackId &&
+        c.clientName === parentCard.clientName &&
         c.dueDate === parentCard.dueDate
       );
-      
+
       const parentOpPack = (omni.opPacks || []).find(p => p.id === parentCard.operationPackId);
       if (parentOpPack) {
         const currentIndex = parentOpPack.steps.findIndex(s => s.id === parentCard.operationPackStepId);
@@ -33320,7 +31128,7 @@ function completeWorkOrder(woId, actualMinsOverride = null) {
           if (nextCard && nextCard.columnId === 'kb_backlog') {
             nextCard.columnId = 'kb_ready';
             nextCard.activityLog.push({ date: new Date().toISOString(), text: 'تم التنشيط التلقائي بعد إتمام الخطوة السابقة' });
-            
+
             const nextWo = (omni.workOrders || []).find(w => w.cardId === nextCard.id);
             if (nextWo && nextWo.status === 'draft') {
               nextWo.status = 'ready';
@@ -33374,9 +31182,9 @@ function getMrpAiSchedulingRecommendations() {
   const wos = omni.workOrders || [];
   const activeWos = wos.filter(w => ['ready', 'draft'].includes(w.status));
   const machines = omni.machines || [];
-  
+
   const recs = [];
-  
+
   machines.forEach(m => {
     const qCount = (m.queue || []).filter(q => q.status === 'queued').length;
     if (qCount > 3) {
@@ -33443,7 +31251,7 @@ window.applyMrpAiScheduling = function() {
       if (oldMach) {
         oldMach.queue = (oldMach.queue || []).filter(q => q.workOrderId !== wo.id);
       }
-      
+
       wo.machineId = r.targetMachineId;
       const newMach = getMachineById(r.targetMachineId);
       if (newMach) {
@@ -33664,7 +31472,7 @@ async function openNewTransferModal() {
         <input id="tfrOrigin" class="form-input" placeholder="مثال: صرف لطلب العميل أحمد / تحويل للرف A">
       </label>
     </div>
-    
+
     <h4 style="margin: 12px 0 6px 0; font-size: 13px;"><i class="fa-solid fa-list"></i> تفاصيل المواد المحولة</h4>
     <table class="inv-table" style="font-size: 12px; margin-bottom: 12px;">
       <thead>
@@ -33711,7 +31519,7 @@ async function openNewTransferModal() {
     const fromLoc = body.querySelector('#tfrFromLoc')?.value;
     const toLoc = body.querySelector('#tfrToLoc')?.value;
     const origin = body.querySelector('#tfrOrigin')?.value.trim();
-    
+
     if (fromLoc === toLoc) {
       showToast('لا يمكن التحويل لنفس موقع التخزين', 'warning');
       return false;
@@ -33751,7 +31559,7 @@ async function openNewTransferModal() {
         await StockService.createLot(line.product_id, line.lot_number);
       }
     }
-    
+
     await StockService.createTransfer(result);
     showToast('تم إنشاء مستند التحويل المخزني بنجاح كمسودة', 'success');
     renderInventoryPage();
@@ -33843,7 +31651,7 @@ async function cancelTransferFrontend(transferId) {
 
 function renderInventoryBarcodeSection() {
   ensureOmni();
-  
+
   if (!window.barcodeScanLog) window.barcodeScanLog = [];
   if (!window.barcodeScanMode) window.barcodeScanMode = 'receipt';
   if (!window.barcodeScanDefaultQty) window.barcodeScanDefaultQty = 1;
@@ -33860,7 +31668,7 @@ function renderInventoryBarcodeSection() {
   materials.forEach(m => {
     quickPresets.push({ label: `المادة: ${m.name} (ID: ${m.id})`, value: m.id });
   });
-  
+
   const lots = omni.lots || [];
   lots.slice(-4).forEach(l => {
     const matName = materials.find(m => m.id === l.product_id)?.name || l.product_id;
@@ -33875,7 +31683,7 @@ function renderInventoryBarcodeSection() {
       <div class="glass-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <h3 style="margin: 0 0 14px 0; font-size: 15px;"><i class="fa-solid fa-barcode"></i> محاكي قارئ الباركود (Barcode Scanner)</h3>
-          
+
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
             <label style="grid-column: 1 / -1;">اختر رمز سريع للتجربة (المادة / رقم Lot)
               <select id="bcPreset" class="form-input" onchange="document.getElementById('bcInput').value = this.value">
@@ -34008,10 +31816,10 @@ async function processBarcodeScanFrontend() {
     };
     window.barcodeScanLog.push(logEntry);
     showToast(`تم مسح المادة ${material.name} وتحديث المخزون بنجاح`, 'success');
-    
+
     // Clear input
     inputEl.value = '';
-    
+
     // Re-render
     renderInventoryPage();
   } catch (err) {
@@ -34031,7 +31839,7 @@ window.processBarcodeScanFrontend = processBarcodeScanFrontend;
 function renderInventoryShortagesSection() {
   ensureOmni();
   const allMats = omni.materials || [];
-  
+
   const shortages = allMats.map(m => {
     const avail = getMaterialAvailableQty(m);
     const reserved = getMaterialReservedQty(m);
@@ -34157,7 +31965,7 @@ async function renderInventoryValuationSection() {
 
   const valuations = [];
   let totalValuation = 0;
-  
+
   let fifoTotal = 0;
   let lifoTotal = 0;
   let avcoTotal = 0;
@@ -34165,7 +31973,7 @@ async function renderInventoryValuationSection() {
   for (const m of allMats) {
     const method = m.costingMethod || 'avco';
     const valObj = await StockService.getMaterialValuation(m.id, method);
-    
+
     const fifoObj = await StockService.getMaterialValuation(m.id, 'fifo');
     const lifoObj = await StockService.getMaterialValuation(m.id, 'lifo');
     const avcoObj = await StockService.getMaterialValuation(m.id, 'avco');
@@ -34302,7 +32110,7 @@ window.renderCustomerPortal = function() {
   const currentVal = selector.value;
   // If the selector was empty or had a value that's no longer valid, check initial customer ID
   const selectedId = currentVal || window.customerPortalInitialCustomerId || (finance.customers[0] ? finance.customers[0].id : '');
-  
+
   // Populate options
   selector.innerHTML = finance.customers.map(c => `
     <option value="${escapeHtml(c.id)}" ${c.id === selectedId ? 'selected' : ''}>${escapeHtml(c.name)} (${escapeHtml(c.companyName || 'فردي')})</option>
@@ -34343,7 +32151,7 @@ window.renderCustomerPortal = function() {
   let html = `
     <!-- KPI Cards -->
     <div class="portal-kpis-grid" style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:15px; margin-bottom:25px;">
-      
+
       <div class="portal-kpi-card glass-card" style="display:flex; align-items:center; gap:15px; padding:16px 20px; border-radius:16px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.05);">
         <div class="portal-kpi-icon" style="background:rgba(52, 211, 153, 0.1); color:var(--accent-green); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
           <i class="fa-solid fa-file-invoice-dollar"></i>
@@ -34411,7 +32219,7 @@ window.renderCustomerPortal = function() {
         const cards = so.kanbanCardIds.map(id => (omni.kanban.cards || []).find(c => c.id === id)).filter(Boolean);
         const totalCards = cards.length;
         const doneCards = so.kanbanCardIds.filter(isKanbanCardDone).length;
-        
+
         let confClass = 'completed', prodClass = '', compClass = '', delivClass = '';
         let progressScale = 0;
 
@@ -34460,7 +32268,7 @@ window.renderCustomerPortal = function() {
                   const isDone = isKanbanCardDone(c.id);
                   const machine = c.machineId ? (omni.machines || []).find(m => m.id === c.machineId) : null;
                   const machineName = machine ? ` · 💻 ${machine.name}` : '';
-                  
+
                   let cardStatusIcon = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--accent-blue); margin-left:8px;"></i>';
                   let textStyle = '';
                   let cardBorder = 'border: 1px solid rgba(56, 189, 248, 0.15);';
@@ -34469,7 +32277,7 @@ window.renderCustomerPortal = function() {
                     textStyle = 'text-decoration: line-through; opacity: 0.6;';
                     cardBorder = 'border: 1px solid rgba(52, 211, 153, 0.15);';
                   }
-                  
+
                   return `
                     <div style="display:flex; flex-direction:column; gap:6px; background:rgba(0,0,0,0.15); padding:10px 12px; border-radius:8px; ${cardBorder}">
                       <div style="display:flex; align-items:center; justify-content:space-between; min-width:0; gap:10px;">
@@ -34507,7 +32315,7 @@ window.renderCustomerPortal = function() {
             <!-- Progress Timeline -->
             <div class="portal-order-progress" style="display:flex; align-items:center; justify-content:space-between; margin:20px 0; position:relative; padding:0 20px;">
               <div class="portal-progress-line" style="position:absolute; top:50%; left:40px; right:40px; height:3px; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-green)); z-index:2; transform: translateY(-50%) scaleX(${progressScale}); transform-origin: right; transition:transform 0.4s ease;"></div>
-              
+
               <div class="progress-step ${confClass}" style="display:flex; flex-direction:column; align-items:center; gap:6px; z-index:3;">
                 <div class="progress-dot" style="width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all 0.3s;"><i class="fa-solid fa-check" style="font-size:10px; color:#fff;"></i></div>
                 <span class="progress-text" style="font-size:11px;">تم التأكيد</span>
@@ -34627,14 +32435,14 @@ window.renderCustomerPortal = function() {
             </thead>
             <tbody>
       `;
-      
+
       const sortedTxs = customerTxs.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-      
+
       sortedTxs.forEach(tx => {
         let typeLabel = '';
         let chargeCell = '-';
         let paymentCell = '-';
-        
+
         if (tx.type === 'customer_charge') {
           // Expose functions to window for DOM onclick events
           window.reopenFinancePeriod = reopenFinancePeriod;
@@ -34648,7 +32456,7 @@ window.renderCustomerPortal = function() {
           typeLabel = `<span class="customer-balance-badge" style="font-size:11px; padding:2px 8px; border-radius:4px; font-weight:bold; background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid rgba(255,255,255,0.08);">${escapeHtml(tx.type)}</span>`;
           chargeCell = `${formatNum(tx.amount)} د.ع`;
         }
-        
+
         const receipt = (finance.receipts || []).find(r => (tx.receiptNo && r.receiptNo === tx.receiptNo) || r.id === tx.sourceId || r.id === String(tx.sourceId || '').replace('_remaining', ''));
         const receiptBtn = receipt ? `<button class="btn-secondary" onclick="viewCustomerReceipt('${receipt.id}')" style="padding:2px 6px; font-size:10px; cursor:pointer; background:rgba(56, 189, 248, 0.1); border:1px solid rgba(56,189,248,0.2); color:var(--accent-cyan); border-radius:4px; display:inline-flex; align-items:center; gap:3px;" title="عرض وتنزيل الوصل"><i class="fa-solid fa-eye"></i> عرض</button>` : '';
 
@@ -34668,7 +32476,7 @@ window.renderCustomerPortal = function() {
           </tr>
         `;
       });
-      
+
       html += `
             </tbody>
           </table>
@@ -34726,10 +32534,10 @@ window.customerPortalApproveQuotation = function(quotId) {
 
   // Create Kanban cards & Reserve materials
   const kanbanCol = (omni.kanban.columns || []).find(c => /backlog|to.?do|جديد|مهام/i.test(`${c.title || ''} ${c.name || ''}`)) || omni.kanban.columns[0];
-  
+
   q.lines.filter(l => l.type === 'oppack' && l.packId).forEach(line => {
     const pack = (omni.opPacks || []).find(p => p.id === line.packId);
-    
+
     // Create card
     if (kanbanCol) {
       const card = {
@@ -34748,7 +32556,7 @@ window.customerPortalApproveQuotation = function(quotId) {
       omni.kanban.cards.push(card);
       so.kanbanCardIds.push(card.id);
     }
-    
+
     // Reserve materials
     if (pack) {
       const preview = buildOpPackPreview(pack, line.quantity);
@@ -34955,21 +32763,7 @@ window.shareCustomerPortalLink = function(customerId, orderRef) {
 
 // T4.4 de-monolith: Equipment Management cluster moved to modules/equipment-management.js.
 
-// ─── Reopen Finance Period ───
-async function reopenFinancePeriod() {
-  if (window.PermissionService && !window.PermissionService.check('account_moves', 'update')) {
-    return showToast('ليس لديك صلاحية فتح الفترة المغلقة', 'warning');
-  }
-  const confirmed = await showOmniConfirm('تأكيد فتح الفترة المغلقة', 'هل أنت متأكد من إلغاء قفل الفترة الحالية؟ سيتمكن المحاسبون من تعديل القيود التاريخية مجدداً.');
-  if (!confirmed) return;
-  
-  FinanceService.setLockDate('')
-    .then(() => { 
-      showToast('تم فتح إقفال الفترة بنجاح', 'success'); 
-      renderJournalEntryTab(); 
-    })
-    .catch(error => showToast(error.message || 'تعذر فتح إقفال الفترة', 'error'));
-}
+// T4.6 de-monolith: reopenFinancePeriod moved to modules/finance-ui.js
 
 // ─── Open Cashbox Transaction Modal ───
 async function openCashboxTransactionModal() {
@@ -34977,7 +32771,7 @@ async function openCashboxTransactionModal() {
   const expenseCats = finance.categories.expense.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
   const incomeCats = finance.categories.income.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
   const partnerOptions = renderFinancePartnerDatalistOptions('customer');
-  
+
   const form = await showOmniModal('إضافة حركة نقدية للقاصة', `
     <datalist id="cashboxPartnerOptions">${partnerOptions}</datalist>
     <div class="je-form-row">
@@ -35002,7 +32796,7 @@ async function openCashboxTransactionModal() {
     const categoryId = body.querySelector('#cashboxTxCategory')?.value || '';
     const partner = body.querySelector('#cashboxTxPartner')?.value.trim() || '';
     const memo = body.querySelector('#cashboxTxMemo')?.value.trim() || '';
-    
+
     if (amount <= 0) {
       showToast('المبلغ يجب أن يكون أكبر من صفر', 'warning');
       return false;
@@ -35027,7 +32821,7 @@ async function openCashboxTransactionModal() {
 
   const isDeposit = form.direction === 'in';
   const txType = isDeposit ? 'income' : 'expense';
-  
+
   const tx = {
     type: txType,
     direction: form.direction,
@@ -35036,7 +32830,7 @@ async function openCashboxTransactionModal() {
     amount: form.amount,
     categoryId: form.categoryId,
     departmentId: isDeposit ? 'dept_sales' : 'dept_workshop',
-    accountId: isDeposit 
+    accountId: isDeposit
       ? (finance.categories.income.find(c => c.id === form.categoryId) || {}).accountId || 'income_sales'
       : (finance.categories.expense.find(c => c.id === form.categoryId) || {}).accountId || 'expense_general',
     description: form.memo || (isDeposit ? 'إيداع نقدي يدوياً' : 'سحب نقدي يدوياً'),
@@ -35056,10 +32850,10 @@ async function openCashboxTransactionModal() {
 // ─── Sync Legacy Transactions to V6 Double-Entry ───
 async function syncLegacyTransactionToV6(tx) {
   if (!window.FinanceService) return;
-  
+
   const amount = Number(tx.amount || 0);
   if (amount <= 0) return;
-  
+
   try {
     const isIncome = tx.direction === 'in' || tx.type === 'income';
     const isCustomerCharge = tx.type === 'customer_charge';
@@ -35094,7 +32888,7 @@ async function syncLegacyTransactionToV6(tx) {
         { account_id: tx.sourceType === 'person_pocket' ? 'payables_people' : 'cash_workshop', debit: 0, credit: amount, label: tx.description || 'مصروف نقدي', partner_id: partnerId }
       ];
     }
-    
+
     const move = await FinanceService.createMove({
       journal_id: journalId,
       move_type: 'entry',
@@ -35105,7 +32899,7 @@ async function syncLegacyTransactionToV6(tx) {
       companyId: tx.companyId || '',
       skip_backup: true
     });
-    
+
     const posted = await FinanceService.postMove(move.id, { skip_backup: true });
     tx.v6_move_id = posted.id;
     console.log(`Synced legacy tx ${tx.id} to V6 move ${posted.id}`);
@@ -35123,84 +32917,11 @@ async function syncLegacyTransactionToV6(tx) {
 // repaired original ends up state 'cancel' (skipped next run) and its replacement is
 // j_sale/AR (never re-flagged). Locked-period moves are reported as skipped, not
 // forced (unlocking is an owner decision — see T2.1). Pass { dryRun:true } to preview.
-async function repairCustomerChargeMoves(options = {}) {
-  const dryRun = !!options.dryRun;
-  if (!window.FinanceService || !window.PentagonDB) throw new Error('FinanceService غير جاهز');
-  const db = await window.PentagonDB.load({ force: true });
-  const moves = db.account_moves || [];
-  const legacy = (typeof getFinanceTransactions === 'function') ? getFinanceTransactions() : [];
-  const ccById = {};
-  legacy.forEach(t => { if (t && t.type === 'customer_charge') ccById[t.id] = t; });
-
-  const candidates = moves.filter(m => {
-    if (m.state !== 'posted') return false;
-    const o = String(m.origin || '');
-    if (!o.startsWith('legacy_sync/')) return false;
-    const tx = ccById[o.slice('legacy_sync/'.length)];
-    if (!tx) return false;
-    const debitsAR = (m.line_ids || []).some(l => l.account_id === 'receivables_customers' && Number(l.debit || 0) > 0);
-    return !(m.journal_id === 'j_sale' && debitsAR); // mis-journaled = not (j_sale AND debits AR)
-  });
-
-  const result = { scanned: moves.length, candidates: candidates.length, repaired: 0, skipped: 0, details: [] };
-  if (dryRun) {
-    result.details = candidates.map(m => ({ id: m.id, journal: m.journal_id, date: m.date, action: 'would-repair' }));
-    return result;
-  }
-
-  let relinked = false;
-  for (const m of candidates) {
-    const tx = ccById[String(m.origin || '').slice('legacy_sync/'.length)];
-    const amount = Number(tx.amount || 0);
-    try {
-      await FinanceService.cancelMove(m.id, { skip_backup: true, reason: 'T2.2 customer_charge journal repair' });
-      const partnerId = tx.customerId || tx.partyName || 'شريك عام';
-      const label = tx.description || 'مطالبة على عميل';
-      const fixed = await FinanceService.createMove({
-        journal_id: 'j_sale', move_type: 'entry', date: tx.date, partner_id: partnerId,
-        origin: `legacy_sync/${tx.id}`, companyId: tx.companyId || '', skip_backup: true,
-        line_ids: [
-          { account_id: (tx.accountId || 'receivables_customers'), debit: amount, credit: 0, label, partner_id: partnerId },
-          { account_id: 'income_sales', debit: 0, credit: amount, label, partner_id: partnerId },
-        ],
-      });
-      const posted = await FinanceService.postMove(fixed.id, { skip_backup: true });
-      tx.v6_move_id = posted.id; // live ref from finance.transactions — persisted by saveData below
-      relinked = true;
-      result.repaired++;
-      result.details.push({ old: m.id, new: posted.id, date: tx.date });
-    } catch (err) {
-      result.skipped++;
-      result.details.push({ id: m.id, skipped: true, reason: (err.message || String(err)).slice(0, 90) });
-    }
-  }
-  if (relinked && typeof saveData === 'function') { try { saveData(); } catch (_) {} }
-  return result;
-}
-
-// Confirm-gated UI handler (finance journal-entries tab). Manual maintenance action.
-async function runCustomerChargeRepair() {
-  try {
-    const preview = await repairCustomerChargeMoves({ dryRun: true });
-    if (!preview.candidates) {
-      if (typeof showToast === 'function') showToast('لا توجد قيود عملاء بحاجة إلى إصلاح', 'success');
-      return;
-    }
-    if (!confirm(`سيتم إصلاح ${preview.candidates} قيد عميل مُرحّل بيومية خاطئة (عكس + إعادة ترحيل صحيح). متابعة؟`)) return;
-    const res = await repairCustomerChargeMoves();
-    if (typeof showToast === 'function') showToast(`تم إصلاح ${res.repaired} قيد، وتخطّي ${res.skipped}`, res.skipped ? 'warning' : 'success');
-    if (typeof renderJournalEntryTab === 'function') renderJournalEntryTab();
-  } catch (err) {
-    if (typeof showToast === 'function') showToast(`تعذر الإصلاح: ${err.message || err}`, 'error');
-  }
-}
+// T4.6 de-monolith: repairCustomerChargeMoves and runCustomerChargeRepair moved to modules/finance-ui.js
 
 // Expose functions to window for DOM onclick events
-window.reopenFinancePeriod = reopenFinancePeriod;
 window.openCashboxTransactionModal = openCashboxTransactionModal;
 window.syncLegacyTransactionToV6 = syncLegacyTransactionToV6;
-window.repairCustomerChargeMoves = repairCustomerChargeMoves;
-window.runCustomerChargeRepair = runCustomerChargeRepair;
 window.calculatePayrollPeriod = calculatePayrollPeriod;
 window.closePayrollPeriod = closePayrollPeriod;
 window.postPayrollAccrual = postPayrollAccrual;
@@ -35957,7 +33678,7 @@ window.prefetchAllViews = function () {
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready'
   ];
-  
+
   let i = 0;
   function next() {
     if (i >= pages.length) return;

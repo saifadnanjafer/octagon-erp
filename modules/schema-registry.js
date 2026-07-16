@@ -29,12 +29,16 @@
   const VIOLATIONS_CAP = 200;
 
   const OctagonSchema = {
-    // Warn-first per T1.1: log to console + omni.schemaViolations, never
-    // reject. Flip to true (via setEnforce(true), persisted) only after a
-    // real usage window with zero unexpected violations. When true, only
-    // NEW writes are affected — existing bad records are never rejected on
-    // read, this is a boundary guard, not a migration.
-    ENFORCE: localStorage.getItem(ENFORCE_KEY) === 'true',
+    // T1.6 (2026-07-16): the 1-week warn window (started T1.1, 2026-07-12)
+    // showed zero schema violations across a full 36-page navigation sweep,
+    // so the default flips to true for new writes only — existing bad
+    // records are never rejected on read, this is a boundary guard, not a
+    // migration. localStorage still overrides: explicit 'true'/'false'
+    // wins over this default, so setEnforce(false) via the settings UI
+    // still works to temporarily relax it.
+    ENFORCE: localStorage.getItem(ENFORCE_KEY) === null
+      ? true
+      : localStorage.getItem(ENFORCE_KEY) === 'true',
 
     collections: {
       // ── Frozen zone (§1) — read-only for every lane. protect:true means

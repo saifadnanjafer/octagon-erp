@@ -18,6 +18,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const BASELINE_FILE = path.join(ROOT, 'scripts', 'dup-baseline.txt');
+const EXTRACTION_INTEGRITY_SCRIPT = path.join(ROOT, 'scripts', 'extraction-integrity.mjs');
 
 const SECRET_PATTERNS = [
   { name: 'Google-style API key', regex: /AIza[A-Za-z0-9_-]{30,}/g },
@@ -190,6 +191,20 @@ function checkInnerHtmlDiff(failures, warnings) {
   }
 }
 
+function checkExtractedModuleIntegrity(failures) {
+  if (!fs.existsSync(EXTRACTION_INTEGRITY_SCRIPT)) {
+    failures.push('Missing scripts/extraction-integrity.mjs');
+    return;
+  }
+  const result = childProcess.spawnSync(process.execPath, [EXTRACTION_INTEGRITY_SCRIPT], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) {
+    failures.push(`Extracted-module integrity failed\n${(result.stderr || result.stdout || '').trim()}`);
+  }
+}
+
 function main() {
   if (process.argv.includes('--install-hook')) {
     installHook();
@@ -205,6 +220,7 @@ function main() {
   checkDuplicateFunctions(failures, warnings);
   checkJsSyntax(stagedFiles, failures);
   checkInnerHtmlDiff(failures, warnings);
+  checkExtractedModuleIntegrity(failures);
 
   if (warnings.length) {
     console.warn('Octagon precommit warnings:');

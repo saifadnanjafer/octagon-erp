@@ -175,6 +175,23 @@ handler → `saveData()` → re-render in place → `node --check app.js` → **
    Phase 6 audit.
 4. **Financial statements polish** — P&L / trial balance / ledger exist; verify Balance Sheet + Cash Flow + aging
    + VAT report completeness against real data (audit, not rebuild).
+   **Audit performed 2026-07-15 (claude-opus-4-8), per this item's own "audit, not rebuild" scope:**
+   - P&L, trial balance, ledger: confirmed real and working (trial balance additionally verified balanced —
+     debit=credit across 568 moves — via `system_check`'s `trial_balance` suite, T2.4).
+   - AR/AP aging: a lightweight version exists (`modules/finance-close.js` `agingBuckets()`) but it is a flat
+     total of open customer balances (`bucket: 'unclassified'`) — **not** a real aging report (no 30/60/90-day
+     buckets). Reads live data correctly as far as it goes.
+   - Cash Flow: a lightweight version exists (`modules/finance-close.js` `cashForecast()`) — a trailing 30-day
+     net (inflow − outflow) shown as a KPI on the finance-close readiness panel. **Not** a real Cash Flow
+     Statement (no operating/investing/financing sections, no forward projection model).
+   - Balance Sheet: **does not exist anywhere in the codebase.** Only mention found is a knowledge-base FAQ
+     seed question ("Where do I audit the ledger and balance sheets?") — no actual report.
+   - VAT report: **does not exist.** Only a chart-of-accounts entry (`vat_payable`, code 2200) — no VAT return/
+     summary report of any kind.
+   **Net: this item is genuinely NOT done.** Two of five components (P&L, trial balance/ledger) are solid;
+   aging and cash-flow have partial/lightweight stand-ins that could be labeled as satisfying the letter of the
+   item but not its intent; Balance Sheet and VAT report are greenfield. Building the missing pieces is new
+   feature work (bigger scope than a routine audit pass) — not attempted here.
 
 > ⚠️ REALITY CHECK (2026-06-07): the ERP money-core (sales, purchasing, accounting) is **already built** — much
 > further than the old "~46%" estimate. So Phases 1–4 are mostly *verify + link + polish* (Phase 6 work), NOT
@@ -183,6 +200,38 @@ handler → `saveData()` → re-render in place → `node --check app.js` → **
 
 ### ▶ PHASE 2 — Operational depth
 5. **Inventory depth** — locations/multi-warehouse, transfers, batch/lot/serial, reservation release + shortage dashboard, valuation (FIFO/avg), barcode quick actions (fix dead barcode button in Tools).
+   **Root-caused 2026-07-15 (claude-opus-4-8), on an isolated scratch copy, no live data touched:** the barcode
+   button is NOT dead in the "no handler" sense — `processBarcodeScanFrontend()` (`app.js`) is a real, working
+   implementation that correctly looks up the scanned material. It fails one step later, inside
+   `services/stockService.js`'s `assertMovePayload()`, with **"موقع المصدر غير موجود"** (source location not
+   found) — reproduced in BOTH 'receipt' mode (hardcoded `LOC_SUPPLIERS`/`LOC_MAIN`) and 'issue' mode
+   (`LOC_MAIN`/`LOC_WIP`), so it isn't about which location ID is used.
+   **Confirmed root cause:** `getLocation()` in `stockService.js` reads `db.locations` — a collection that is
+   **completely empty in the live database** (verified directly against `database.db`: zero rows, in fact no
+   `locations` collection exists at all). The location names the barcode scanner expects (`LOC_MAIN`, `LOC_WIP`)
+   DO exist, but in a **different, parallel collection** — `omni.storageLocations` (3 real records) — which
+   `stockService.js` never reads. There IS a working "Create Storage Location" UI (`app.js` ~line 27090,
+   `PentagonDB.mutate` → `db.locations.push(...)`) that populates the collection `stockService.js` actually
+   checks, but it auto-generates IDs from the name+timestamp (e.g. `LOC_MAIN_ROOM_4821`), never the literal
+   `LOC_MAIN`/`LOC_WIP`/`LOC_SUPPLIERS` the barcode scanner hardcodes — so even using that form as designed can't
+   satisfy the barcode scanner's expectations.
+   **This is bigger than "the barcode button":** confirmed via SQLite that **zero stock moves have ever been
+   created** in this deployment's history (no `stock_moves`/`quants` records at all) — meaning the entire
+   `StockService`-backed location-based movement system has never successfully run, for ANY caller, not just
+   the barcode simulator.
+   **✅ FIXED 2026-07-15 (claude-opus-4-8, T5.6):** chose the "seed `db.locations`" option — purely additive,
+   zero lines of `stockService.js` validation logic touched (that file has 5+ callers beyond the barcode
+   button: `createStockMove`, `createInventoryAdjustment`, `createTransfer`, `validateTransfer`,
+   `getMaterialValuation` all hardcode these same 4 IDs — a logic change there risks a wider blast radius).
+   New `modules/stock-locations-seed.js` seeds exactly the 4 canonical IDs used anywhere in the codebase
+   (`LOC_MAIN`/`LOC_WIP` as `type:'internal'` — real, availability-checked; `LOC_SUPPLIERS`/`LOC_SCRAP` as
+   other types, so moves from/to them skip the availability check, matching their role as an external source /
+   adjustment sink), called once (idempotent) from `app.js`'s `ensureOmni()`. **Verified end-to-end on an
+   isolated scratch copy:** ran the real barcode-scan UI in both 'receipt' and 'issue' mode — both now
+   **succeed** (previously 100% failure); confirmed a real `stock_moves` record persists, `quants` update
+   correctly (`LOC_MAIN` +1, `LOC_SUPPLIERS` −1), and `material.stock` syncs (0→1). `system_check` still 9/9
+   green after the change — no regression. Full verification detail in
+   `coordination/claims/T5.6.md`.
 6. **Manufacturing (MRP II)** — extend `modules/mrp.js`: BOM depth, routing, capacity/scheduling, actual-cost capture, scrap.
 7. **CRM depth** — leads → pipeline → opportunities feeding Sales (pipeline scaffolding exists).
 8. **HR depth** — leave/vacation, contracts, end-of-service, appraisals (extend payroll, keep locked pages safe).
@@ -372,10 +421,10 @@ handler → `saveData()` → re-render in place → `node --check app.js` → **
     Readiness 12/12.
 
 ### ▶ PHASE 6 — FULL AUDIT & STABILIZATION (the planned end review — run LAST)
-18. **Button-by-button audit** — open every page, test every button/filter against its Information-Registry purpose; fix dead buttons (e.g. barcode in Tools), broken filters, wrong-data links.
-19. **Dead-code & perf pass** — remove duplicates (e.g. second `renderSalesCrmPage`), verify no global timers/observers do O(whole-DOM) work, virtualize timesheet if still heavy, optional lazy page unmount.
+18. **Button-by-button audit** — open every page, test every button/filter against its Information-Registry purpose; fix dead buttons (e.g. barcode in Tools — ✅ fixed 2026-07-15, see Phase 2 item 5: was a `db.locations` seeding gap in `services/stockService.js`, not a missing handler), broken filters, wrong-data links.
+19. **Dead-code & perf pass** — remove duplicates (example in this item was `renderSalesCrmPage`; re-verified 2026-07-15, claude-opus-4-8 — only 1 definition exists now, no longer duplicated; the fixing task isn't identified in the coordination claims log, so treat as historically resolved rather than attributing it to a specific session), verify no global timers/observers do O(whole-DOM) work, virtualize timesheet if still heavy, optional lazy page unmount. **The rest of this item (timer/observer audit, timesheet virtualization, lazy unmount) is NOT verified — do not treat the whole item as done.**
 20. **Data integrity & release** — migrations idempotent, backups verified, Odoo category comparison, honest readiness %, release notes, version tag.
-21. **v6 mapping audit** — `syncLegacyTransactionToV6` maps `customer_charge` (direction `neutral`) through the EXPENSE branch (debit expense_general / credit cash) — wrong for a receivable. Affects Sales O2C invoices, POS آجل, pharmacy آجل/insurance legs. The legacy customer-balance model is correct; only the v6 journal mapping needs a receivable branch (debit AR / credit income). Audit + fix here.
+21. ~~**v6 mapping audit** — `syncLegacyTransactionToV6` maps `customer_charge` (direction `neutral`) through the EXPENSE branch (debit expense_general / credit cash) — wrong for a receivable. Affects Sales O2C invoices, POS آجل, pharmacy آجل/insurance legs. The legacy customer-balance model is correct; only the v6 journal mapping needs a receivable branch (debit AR / credit income). Audit + fix here.~~ **RESOLVED — see note near §7.** Re-verified 2026-07-15 (claude-opus-4-8): current `syncLegacyTransactionToV6` in `app.js` still routes `customer_charge` through `j_sale` (debit `receivables_customers`, credit `income_sales`) — correct, unchanged since the 2026-06-12 fix. (T2.2, 2026-07-13, additionally added an idempotent repair tool for any historical mis-journaled moves from before this fix; that tool now lives in `modules/finance-ui.js` post-T4.6 extraction.)
 
 ---
 
@@ -658,7 +707,7 @@ For EVERY tool/page/button built or touched, record here so Phase 6 audit is a c
 - Operational safety: added `OCTAGON_DB_FILE`, `OCTAGON_SQLITE_DB_FILE`, `OCTAGON_BACKUP_DIR`, and `USE_SQLITE=false` support so server API smoke tests can run against a throwaway database without touching live data or workspace backups. Existing default behavior stays unchanged.
 - Verification 2026-06-14: `node --check server.js scripts/test-server-tenant-api.mjs scripts/test-v5-services.mjs` clean; `node scripts/test-server-tenant-api.mjs` passes record-create stamp, foreign record block, explicit foreign create block, collection-preserve, active update, full-DB preserve, and legacy stamp checks; `node scripts/test-v5-services.mjs` still passes; JSON parse and encoding checks clean; restarted local server and browser Route Health remains **66/66 nav · 66/66 pages · 8/8 globals · 14/14 functions · 13/13 collections · 1/1 work-order links**, 0 console errors.
 
-> **Note (stale roadmap item corrected 2026-06-12):** Phase 6 #21 ("v6 receivable mapping bug — `customer_charge` routed through the expense branch") is **already fixed in code**. `syncLegacyTransactionToV6` ([app.js:32310](app.js)) routes `customer_charge` as debit `receivables_customers` / credit `income_sales`, and customer-tied income credits AR. No expense-branch mis-mapping remains; the bug text above describes a prior state.
+> **Note (stale roadmap item corrected 2026-06-12; re-verified 2026-07-15):** Phase 6 #21 ("v6 receivable mapping bug — `customer_charge` routed through the expense branch") is **already fixed in code**. `syncLegacyTransactionToV6` (in `app.js` — omitting a line number deliberately: Phase 4's ongoing de-monolith extractions move this function's line number every session) routes `customer_charge` as debit `receivables_customers` / credit `income_sales`, and customer-tied income credits AR. No expense-branch mis-mapping remains; the bug text above describes a prior state.
 
 ---
 

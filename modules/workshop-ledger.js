@@ -11,8 +11,13 @@
  * module does NOT touch the legacy timesheet / finance v6 / employees.
  *
  * The workbook is already normalized (Saif→two cashbox entries, no "راتب",
- * food redistributed on attendees, Hussein net = 69,000, 22/03 = travel cost).
- * We import it; we do not re-clean it. The validator re-asserts every rule.
+ * food redistributed on attendees, 22/03 = travel cost). We import it; we do not
+ * re-clean it. The validator re-asserts every rule.
+ *
+ * Reconciliation targets (cashbox approved balance, Hussein net, …) come from the
+ * dataset's own `reconciliation` block and are persisted to wsLedger.reconciliation
+ * on import — never hardcoded. Literals here go stale silently when the workbook is
+ * updated and then misreport approved financial figures.
  */
 (function () {
   'use strict';
@@ -646,6 +651,9 @@
     const batch = { id: uid('batch'), batch_code: 'IMP-' + new Date().toISOString().slice(0, 10) + '-' + Math.random().toString(36).slice(2, 5), at: nowISO(), by: currentUserName(), source: previewCache.meta?.source || 'قاعدة_موحدة.xlsx', counts: {}, status: 'قيد التنفيذ' };
     const built = buildRecords(previewCache, batch.id);
     const added = commitImport(built, batch);
+    // keep the source's reconciliation targets with the data they describe, so the
+    // self-test can still verify them after a reload (previewCache is transient)
+    try { if (previewCache.reconciliation) data().reconciliation = previewCache.reconciliation; } catch (_) {}
     activeView = 'timesheet';
     render();
     let bridgeMsg = '';
@@ -676,14 +684,14 @@
   /* ═══════════════ RENDER ═══════════════ */
   function kpiStrip() {
     const d = data();
-    const recon = (d.importBatches[0] ? (previewCache && previewCache.reconciliation) : null) || (previewCache && previewCache.reconciliation) || {};
+    const recon = (d.importBatches[0] ? (previewCache && previewCache.reconciliation) : null) || (previewCache && previewCache.reconciliation) || d.reconciliation || {};
     const run = cashboxRunning();
     const rawNet = run.length ? run[run.length - 1].running : 0;
     const hs = husseinSummary();
     const cashAdv = d.advances.filter(a => a.advance_type === 'سلفة نقدية').reduce((s, a) => s + a.amount, 0);
     const foodAdv = d.advances.filter(a => a.advance_type === 'سلفة وجبة طعام').reduce((s, a) => s + a.amount, 0);
     const cards = [
-      { l: 'رصيد القاصة المعتمد', v: fmt(recon.cashboxFinal || 118000), c: 'pos', s: 'نهاية ' + ((recon.cashboxAsOf || '2026-06-29').slice(5).split('-').reverse().join('/')) },
+      { l: 'رصيد القاصة المعتمد', v: recon.cashboxFinal != null ? fmt(recon.cashboxFinal) : '—', c: 'pos', s: recon.cashboxFinal != null ? ('نهاية ' + ((recon.cashboxAsOf || '2026-06-29').slice(5).split('-').reverse().join('/'))) : 'غير متوفر — شغّل الاستيراد' },
       { l: 'صافي حركة القاصة الخام', v: fmt(rawNet), c: rawNet < 0 ? 'neg' : 'pos', s: 'داخل − خارج' },
       { l: 'السلف النقدية', v: fmt(cashAdv), c: '', s: d.advances.filter(a => a.advance_type === 'سلفة نقدية').length + ' سلفة' },
       { l: 'سلفة وجبة الطعام', v: fmt(foodAdv), c: '', s: d.foodAllocations.length + ' حصة' },
@@ -781,9 +789,9 @@
         + '<td class="num"><b>' + fmt(t.running) + '</b></td>'
         + '<td>' + esc(t.expense_type) + ' — ' + esc(t.party_name || t.notes || '') + '</td></tr>';
     }).join('');
-    const recon0 = (previewCache && previewCache.reconciliation) || {};
+    const recon0 = (previewCache && previewCache.reconciliation) || data().reconciliation || {};
     return '<div class="ws-legend"><span class="lg hus-short">نقص على حسين</span><span class="lg hus-in">وارد من حسين</span><span class="lg note-pending">ملاحظة/مراجعة</span></div>'
-      + '<div class="ws-cashbox-note">رصيد القاصة المعتمد نهاية ' + esc((recon0.cashboxAsOf || '2026-06-29').slice(5).split('-').reverse().join('/')) + ': <b>' + fmt(recon0.cashboxFinal || 43000) + '</b> دينار — والصافي الخام أدناه هو حركة وليست فرقاً.</div>'
+      + '<div class="ws-cashbox-note">رصيد القاصة المعتمد نهاية ' + esc((recon0.cashboxAsOf || '2026-06-29').slice(5).split('-').reverse().join('/')) + ': <b>' + (recon0.cashboxFinal != null ? fmt(recon0.cashboxFinal) : '—') + '</b> دينار — والصافي الخام أدناه هو حركة وليست فرقاً.</div>'
       + '<table class="ws-table"><thead><tr><th>الكود</th><th>التاريخ</th><th>وارد</th><th>صادر</th><th>الرصيد الجاري</th><th>البيان</th></tr></thead><tbody>' + rows + '</tbody></table>';
   }
 
@@ -893,12 +901,32 @@
     T.push(['لا توجد كلمة «راتب/رواتب» في السلف والحركات', txText.indexOf('راتب') < 0 && advText.indexOf('راتب') < 0]);
     const saifIn = d.transactions.filter(t => t.account_id === 'OWN-SAIF' && t.direction === 'وارد');
     T.push(['وارد سيف محوّل لقيود قاصة (دخول) موجودة', saifIn.length > 0]);
-    const recon = (previewCache && previewCache.reconciliation) || {};
-    const cashboxTarget = recon.cashboxFinal || 118000;
-    T.push(['رصيد القاصة المعتمد = ' + fmt(cashboxTarget), true, fmt(cashboxTarget) + ' دينار (رقم معتمد من المصدر)']);
+    // targets come from the imported dataset's own reconciliation block — never a
+    // literal. An absent reference is reported as an unverified FAIL, because a
+    // hardcoded fallback silently "passes" against a number nobody checked.
+    const recon = (previewCache && previewCache.reconciliation) || d.reconciliation || {};
+    // NOTE: the approved balance is an EXTERNAL figure the ledger records; it is
+    // deliberately NOT the running sum (see the cashbox note: «الصافي الخام … حركة
+    // وليست فرقاً»). So this asserts the source actually carries the approved
+    // reference — it must never assert a literal, and must never claim a number
+    // nobody supplied.
+    const run = cashboxRunning();
+    const rawNet = run.length ? run[run.length - 1].running : 0;
+    const cashboxTarget = recon.cashboxFinal;
+    T.push([
+      'رصيد القاصة المعتمد مصدره البيانات الرسمية' + (cashboxTarget != null ? ' = ' + fmt(cashboxTarget) : ''),
+      cashboxTarget != null,
+      cashboxTarget == null ? 'المرجع غير متوفر — شغّل المعاينة أو الاستيراد أولاً'
+        : fmt(cashboxTarget) + ' معتمد · ' + fmt(rawNet) + ' صافي حركة خام (حركة وليست رصيداً)'
+    ]);
     const hs = husseinSummary();
-    const husseinTarget = recon.husseinNet != null ? recon.husseinNet : 69000;
-    T.push(['صافي فروقات حسين = ' + fmt(husseinTarget) + ' نقص على حسين', hs.net === husseinTarget, fmt(hs.short) + ' − ' + fmt(hs.inc) + ' = ' + fmt(hs.net)]);
+    const husseinTarget = recon.husseinNet;
+    T.push([
+      'صافي فروقات حسين' + (husseinTarget != null ? ' = ' + fmt(husseinTarget) + ' نقص على حسين' : ''),
+      husseinTarget != null && hs.net === husseinTarget,
+      husseinTarget == null ? 'المرجع غير متوفر — شغّل المعاينة أو الاستيراد أولاً'
+        : fmt(hs.short) + ' − ' + fmt(hs.inc) + ' = ' + fmt(hs.net)
+    ]);
     const foodAdv = d.advances.filter(a => a.advance_type === 'سلفة وجبة طعام').reduce((s, a) => s + a.amount, 0);
     const foodAlloc = d.foodAllocations.reduce((s, a) => s + a.share, 0);
     T.push(['مجموع سلفة الطعام = مجموع الطعام الموزّع', foodAdv === foodAlloc, fmt(foodAdv) + ' = ' + fmt(foodAlloc)]);
@@ -908,15 +936,65 @@
     T.push(['الأيام غير الموجودة تظهر غياباً افتراضياً', absent > 0, absent + ' يوم غياب']);
     const yellow = d.attendanceDays.filter(a => a.review_status === 'pending').length;
     T.push(['أيام نقص البصمة تحمل علامة صفراء', yellow > 0, yellow + ' علامة صفراء']);
-    T.push(['الضغط 3 مرات يحوّل الملاحظة لخضراء دون حذف', true, 'منفّذ في wsNoteClick (لا يحذف الملاحظة)']);
-    T.push(['تعديل اليوم بعد المراجعة يعيدها صفراء', true, 'منفّذ في wsSetDayStatus/edit']);
+    // #10/#11 exercise the REAL noteClickTransition/dayStatusReviewImpact logic
+    // against a disposable clone — NEVER the live d.attendanceDays. system_check
+    // promises "بدون تعديل بيانات التشغيل" (no operational-data mutation); calling
+    // the actual wsNoteClick/wsSetDayStatus handlers here would violate that and
+    // silently corrupt a real attendance day every time someone runs this suite.
+    const noteProbe = { id: '__t54_probe', note: 'ملاحظة اختبار', review_status: 'pending', review_click_count: 0 };
+    let clicksToReview = 0;
+    let noteProbeState = Object.assign({}, noteProbe);
+    for (let i = 0; i < 3; i++) {
+      const t = noteClickTransition(noteProbeState);
+      noteProbeState = Object.assign({}, noteProbeState, { review_click_count: t.review_click_count, review_status: t.reviewed ? 'reviewed' : noteProbeState.review_status });
+      clicksToReview++;
+      if (t.reviewed) break;
+    }
+    T.push(['الضغط 3 مرات يحوّل الملاحظة لخضراء دون حذف',
+      clicksToReview === 3 && noteProbeState.review_status === 'reviewed' && noteProbeState.note === noteProbe.note,
+      clicksToReview + ' ضغطات → ' + noteProbeState.review_status + ' · الملاحظة: «' + noteProbeState.note + '»']);
+    const reviewedProbe = { id: '__t54_probe2', note: 'ملاحظة سابقة', review_status: 'reviewed', review_click_count: 3 };
+    const impact = dayStatusReviewImpact(reviewedProbe);
+    T.push(['تعديل اليوم بعد المراجعة يعيدها صفراء',
+      impact.reverts === true,
+      impact.reverts ? 'ترجع إلى pending عند تعديل الحالة' : 'لم ترجع — خلل']);
     const linkedAdv = d.advances.filter(a => a.financial_transaction_id).length;
     T.push(['كل سلفة تظهر بالتايم شيت ومربوطة بحركة', linkedAdv > 0, linkedAdv + ' / ' + d.advances.length + ' سلفة مربوطة بحركة قاصة']);
-    // no duplicate unlinked: count advances whose amount also appears as a separate صادر with same date+party but not the linked one
-    let dup = 0;
-    T.push(['لا تكرار لنفس المبلغ كسلفة وصادر منفصلين', dup === 0, 'السلف روابط على الحركات، لا صرف مستقل']);
+    // no duplicate unlinked: an employee-advance صادر matching an advance on
+    // (date, amount, employee) but linked to NO advance means the same money was
+    // booked twice. Candidates must be restricted to the EMP-* advance accounts
+    // buildRecords itself links against — a same-day/-amount/-party spend on any
+    // other account is a different, legitimate expense (e.g. EXP-TRANS fare), not
+    // a duplicate. Transactions linked to some OTHER advance are legitimate too
+    // (an employee can take two advances the same day).
+    const linkedTxIds = new Set(d.advances.map(a => a.financial_transaction_id).filter(Boolean));
+    const dupTxIds = new Set();
+    d.advances.forEach(a => {
+      d.transactions.forEach(t => {
+        if (t.direction === 'صادر'
+          && String(t.account_id || '').indexOf('EMP-') === 0
+          && t.date === a.date
+          && Math.round(t.amount) === Math.round(a.amount)
+          && t.party_name === a.employee_name
+          && !linkedTxIds.has(t.id)) dupTxIds.add(t.id);
+      });
+    });
+    const dup = dupTxIds.size;
+    T.push(['لا تكرار لنفس المبلغ كسلفة وصادر منفصلين', dup === 0,
+      dup === 0 ? 'السلف روابط على الحركات، لا صرف مستقل' : dup + ' حركة صادر مكرّرة غير مربوطة بأي سلفة']);
     T.push(['حالات التايم شيت (ERP) مستوردة كسجلات دائمة', d.timesheetCases.length > 0, d.timesheetCases.length + ' حالة (' + d.timesheetCases.filter(c => String(c.status || '').indexOf('مفتوح') >= 0).length + ' مفتوحة)']);
-    T.push(['إعادة الاستيراد لا تمسح ملاحظة يوم تمّت مراجعته', true, 'applyTimesheetCaseNotes يتخطّى review_status=reviewed دائماً']);
+    // #15 calls the REAL applyTimesheetCaseNotes() — but only ever on a
+    // structuredClone built from a synthetic day+case pair, never on the live d.
+    // A case is constructed that WOULD match and overwrite an unreviewed day,
+    // proving the guard is actually exercised, not just present but unreachable.
+    const reimportDay = { id: '__t54_reimport', employee_name: '__probe__', date: '1900-01-01', note: 'ملاحظة تمت مراجعتها', review_status: 'reviewed', review_click_count: 3, erp_case_num: null };
+    const reimportCase = { num: '__t54_case', employee_names: ['__probe__'], dates: ['1900-01-01'], status: 'مفتوح', case_type: 'PROBE', note: 'حالة اختبار', suggested_action: '' };
+    const reimportClone = { attendanceDays: [Object.assign({}, reimportDay)], timesheetCases: [Object.assign({}, reimportCase)] };
+    applyTimesheetCaseNotes(reimportClone);
+    const untouchedDay = reimportClone.attendanceDays[0];
+    T.push(['إعادة الاستيراد لا تمسح ملاحظة يوم تمّت مراجعته',
+      untouchedDay.note === reimportDay.note && untouchedDay.review_status === 'reviewed',
+      untouchedDay.note === reimportDay.note ? 'applyTimesheetCaseNotes تخطّت اليوم المراجَع كما هو متوقّع' : 'خلل: الملاحظة تغيّرت رغم review_status=reviewed']);
     const pass = T.filter(t => t[1]).length;
     return { T, pass, total: T.length };
   }
@@ -1297,12 +1375,26 @@
   };
 
   // 3-click note review: yellow → (3 clicks) → green; never deletes the note
+  // Pure decision logic for the 3-click note review, extracted so runTests()
+  // can verify the real rule against synthetic/cloned state without ever
+  // mutating a live attendanceDay (system_check promises "بدون تعديل بيانات
+  // التشغيل" — calling the live handler from a test would break that).
+  // Never mutates its input; wsNoteClick applies the result.
+  function noteClickTransition(a) {
+    if (!a || !a.note) return { changed: false };
+    if (a.review_status === 'reviewed') return { changed: false, alreadyReviewed: true };
+    const clicks = (a.review_click_count || 0) + 1;
+    if (clicks >= 3) return { changed: true, reviewed: true, review_click_count: clicks };
+    return { changed: true, reviewed: false, review_click_count: clicks };
+  }
+
   window.wsNoteClick = function (id) {
     const a = data().attendanceDays.find(x => x.id === id);
-    if (!a || !a.note) return;
-    if (a.review_status === 'reviewed') { toast('الملاحظة مُراجَعة بالفعل (خضراء)', 'info'); return; }
-    a.review_click_count = (a.review_click_count || 0) + 1;
-    if (a.review_click_count >= 3) {
+    if (!a) return;
+    const t = noteClickTransition(a);
+    if (!t.changed) { if (t.alreadyReviewed) toast('الملاحظة مُراجَعة بالفعل (خضراء)', 'info'); return; }
+    a.review_click_count = t.review_click_count;
+    if (t.reviewed) {
       a.review_status = 'reviewed'; a.reviewed_by = currentUserName(); a.reviewed_at = nowISO();
       logAudit('attendanceDay', a.id, 'review_status', 'pending', 'reviewed', 'مراجعة بالضغط 3 مرات');
       toast('تمت مراجعة الملاحظة ✅ (خضراء)', 'success');
@@ -1312,6 +1404,13 @@
     save(); render();
   };
 
+  // Pure decision logic for whether editing a day's status reverts a reviewed
+  // note back to pending (yellow). Same extraction rationale as noteClickTransition.
+  function dayStatusReviewImpact(a) {
+    if (!a || a.review_status !== 'reviewed') return { reverts: false };
+    return { reverts: true, needsNote: !a.note };
+  }
+
   // editing a reviewed day reverts the note to yellow (data changed → needs re-review)
   window.wsSetDayStatus = function (id, status) {
     if (!status) return;
@@ -1320,9 +1419,10 @@
     const old = a.status;
     logAudit('attendanceDay', a.id, 'status', old, status, 'تحويل يدوي للحالة');
     a.status = status; a.manual_override = status;
-    if (a.review_status === 'reviewed') {
+    const impact = dayStatusReviewImpact(a);
+    if (impact.reverts) {
       a.review_status = 'pending'; a.review_click_count = 0; a.reviewed_by = ''; a.reviewed_at = '';
-      if (!a.note) a.note = 'تم تعديل اليوم — يحتاج مراجعة جديدة';
+      if (impact.needsNote) a.note = 'تم تعديل اليوم — يحتاج مراجعة جديدة';
       logAudit('attendanceDay', a.id, 'review_status', 'reviewed', 'pending', 'البيانات تغيّرت بعد المراجعة');
     }
     save(); render();
@@ -1374,10 +1474,14 @@
         risk: 'safe', params: {},
         run: function () {
           const d = data(); const hs = husseinSummary(); const r = runTests();
+          // cashboxApproved must come from the imported source's reconciliation —
+          // never a literal. null tells the caller the reference isn't loaded yet,
+          // which is honest; a stale constant would misreport an approved figure.
+          const recon = (previewCache && previewCache.reconciliation) || d.reconciliation || {};
           return {
             transactions: d.transactions.length, cashAdvances: d.advances.filter(a => a.advance_type === 'سلفة نقدية').reduce((s, a) => s + a.amount, 0),
             food: d.foodAllocations.reduce((s, a) => s + a.share, 0), husseinNet: hs.net,
-            cashboxApproved: 118000, acceptanceTests: r.pass + '/' + r.total
+            cashboxApproved: recon.cashboxFinal != null ? recon.cashboxFinal : null, acceptanceTests: r.pass + '/' + r.total
           };
         }
       };

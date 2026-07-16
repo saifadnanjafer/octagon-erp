@@ -18,7 +18,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_PORT = 8090;
-const DEFAULT_TIMEOUT_MS = 60_000;
+const DEFAULT_TIMEOUT_MS = 20_000;
 const CDP_TIMEOUT_MS = 90_000;
 
 function log(message) {
@@ -313,7 +313,7 @@ function browserErrors(events) {
   const errors = [];
   for (const event of events) {
     if (event.method === 'Runtime.exceptionThrown') {
-      errors.push(event.params?.exceptionDetails?.text || 'Runtime exception');
+      errors.push(event.params?.exceptionDetails?.exception?.description || event.params?.exceptionDetails?.text || 'Runtime exception');
     }
     if (event.method === 'Runtime.consoleAPICalled' && event.params?.type === 'error') {
       const args = event.params.args || [];
@@ -324,6 +324,35 @@ function browserErrors(events) {
     }
   }
   return errors.filter(Boolean);
+}
+
+function allConsoleLogs(events) {
+  const logs = [];
+  for (const event of events) {
+    if (event.method === 'Runtime.exceptionThrown') {
+      const details = event.params?.exceptionDetails;
+      const stack = details?.exception?.description || details?.text || 'Exception';
+      logs.push(`[Exception] ${stack}`);
+    }
+    if (event.method === 'Runtime.consoleAPICalled') {
+      const type = event.params?.type || 'log';
+      const args = event.params.args || [];
+      let msg = args.map(arg => arg.value !== undefined ? String(arg.value) : (arg.description || '')).join(' ');
+      if (event.params.stackTrace) {
+        const frames = (event.params.stackTrace.callFrames || [])
+          .map(f => `  at ${f.functionName || '<anonymous>'} (${f.url}:${f.lineNumber}:${f.columnNumber})`)
+          .join('\n');
+        msg += '\n' + frames;
+      }
+      logs.push(`[Console.${type}] ${msg}`);
+    }
+    if (event.method === 'Log.entryAdded') {
+      const level = event.params?.entry?.level || 'info';
+      const text = event.params?.entry?.text || '';
+      logs.push(`[Log.${level}] ${text}`);
+    }
+  }
+  return logs;
 }
 
 async function runBrowserSmoke({ appUrl, debugPort }) {
@@ -342,96 +371,110 @@ async function runBrowserSmoke({ appUrl, debugPort }) {
   const cdp = new CdpClient(wsUrl);
   await cdp.connect();
   try {
-    log('enabling browser domains');
-    await cdp.command('Runtime.enable');
-    await cdp.command('Log.enable');
-    await cdp.command('Page.enable');
-    await cdp.command('Page.addScriptToEvaluateOnNewDocument', {
-      source: `
-        window.confirm = () => true;
-        localStorage.setItem('octagon_auto_login_enabled', '1');
-        localStorage.setItem('octagon_auto_login_user_id', 'system_admin');
-        localStorage.setItem('octagon_user_id', 'system_admin');
-        localStorage.setItem('pentagon_user_id', 'system_admin');
-        localStorage.setItem('omni_current_user_id', 'system_admin');
-      `,
-    });
+    let lastState = null;
+    try {
+      log('enabling browser domains');
+      await cdp.command('Runtime.enable');
+      await cdp.command('Log.enable');
+      await cdp.command('Page.enable');
+      // Network.enable deliberately omitted (T5.10): it floods the single shared
+      // WebSocket with a requestWillBeSent/responseReceived event per font/API
+      // fetch, each carrying a full initiator stack — those events starve pending
+      // Runtime.evaluate replies on the same socket and caused this harness to
+      // wedge on every run. Nothing in the pass/fail logic reads Network events.
+      await cdp.command('Page.addScriptToEvaluateOnNewDocument', {
+        source: `
+          window.confirm = () => true;
+          localStorage.setItem('octagon_auto_login_enabled', '1');
+          localStorage.setItem('octagon_auto_login_user_id', 'system_admin');
+          localStorage.setItem('octagon_user_id', 'system_admin');
+          localStorage.setItem('pentagon_user_id', 'system_admin');
+          localStorage.setItem('omni_current_user_id', 'system_admin');
+        `,
+      });
 
-    log(`navigating browser to ${appUrl}`);
-    await cdp.command('Page.navigate', { url: appUrl });
-    log('waiting for document readiness');
-    await waitFor(async () => {
-      const state = await evaluate(cdp, 'document.readyState', false);
-      return state === 'interactive' || state === 'complete';
-    }, 'document readiness');
+      log(`navigating browser to ${appUrl}`);
+      await cdp.command('Page.navigate', { url: appUrl });
+      log('waiting for document readiness');
+      await waitFor(async () => {
+        const state = await evaluate(cdp, 'document.readyState', false);
+        return state === 'interactive' || state === 'complete';
+      }, 'document readiness');
 
-    log('waiting for login shell');
-    await waitFor(async () => {
-      return evaluate(cdp, `Boolean(document.getElementById('loginOverlay') || document.getElementById('introScreen'))`, false);
-    }, 'login shell');
+      log('waiting for login shell');
+      await waitFor(async () => {
+        return evaluate(cdp, `Boolean(document.getElementById('loginOverlay') || document.getElementById('introScreen'))`, false);
+      }, 'login shell');
 
-    log('injecting local test login');
-    const loginState = await evaluate(cdp, `
-      (async () => {
-        localStorage.setItem('octagon_user_id', 'system_admin');
-        localStorage.setItem('pentagon_user_id', 'system_admin');
-        localStorage.setItem('omni_current_user_id', 'system_admin');
-        if (window.PentagonAuth && typeof window.PentagonAuth.setCurrentUser === 'function') {
-          window.PentagonAuth.setCurrentUser('system_admin');
-        }
-        if (typeof checkLoginStatus === 'function') checkLoginStatus();
-        if (typeof updateAuthSessionModeBadge === 'function') updateAuthSessionModeBadge();
-        return {
-          bodyClass: document.body.className,
-          overlayDisplay: getComputedStyle(document.getElementById('loginOverlay') || document.body).display,
-          user: window.PentagonAuth?.getCurrentUser?.()?.id || '',
-        };
-      })()
-    `);
-
-    if (String(loginState.bodyClass || '').includes('login-required')) {
-      fail('Login shell still requires login after local test account injection', loginState);
-    }
-
-    log('waiting for app data and route health');
-    const appState = await waitFor(async () => {
-      const state = await evaluate(cdp, `
-        (() => {
-          let employeeCount = 0;
-          try { employeeCount = Array.isArray(employees) ? employees.length : 0; } catch (_) {}
-          let omniReady = false;
-          try { omniReady = !!omni; } catch (_) {}
+      log('injecting local test login');
+      const loginState = await evaluate(cdp, `
+        (async () => {
+          localStorage.setItem('octagon_user_id', 'system_admin');
+          localStorage.setItem('pentagon_user_id', 'system_admin');
+          localStorage.setItem('omni_current_user_id', 'system_admin');
+          if (window.PentagonAuth && typeof window.PentagonAuth.setCurrentUser === 'function') {
+            window.PentagonAuth.setCurrentUser('system_admin');
+          }
+          if (typeof checkLoginStatus === 'function') checkLoginStatus();
+          if (typeof updateAuthSessionModeBadge === 'function') updateAuthSessionModeBadge();
           return {
-            employeeCount,
-            omniReady,
-            routeHealthReady: !!window.OctagonRouteHealth,
-            loadingHidden: !!document.querySelector('#loadingOverlay.hidden') || getComputedStyle(document.getElementById('loadingOverlay') || document.body).display === 'none',
+            bodyClass: document.body.className,
+            overlayDisplay: getComputedStyle(document.getElementById('loginOverlay') || document.body).display,
+            user: window.PentagonAuth?.getCurrentUser?.()?.id || '',
           };
         })()
       `);
-      return state && state.omniReady && state.employeeCount > 0 && state.routeHealthReady ? state : null;
-    }, 'loaded app data and Route Health');
 
-    log('checking route health availability');
-    const routeHealth = await evaluate(cdp, `
-      (() => {
-        const service = window.OctagonRouteHealth;
-        const navTarget = document.querySelector('[data-page="route_health"], [onclick*="route_health"], #nav-route_health');
-        return {
-          ok: !!service && typeof service.report === 'function',
-          serviceReady: !!service,
-          hasReport: typeof service?.report === 'function',
-          hasHydrate: typeof service?.hydrate === 'function',
-          navTarget: !!navTarget,
-        };
-      })()
-    `, false);
+      if (String(loginState.bodyClass || '').includes('login-required')) {
+        fail('Login shell still requires login after local test account injection', loginState);
+      }
 
-    const errors = browserErrors(cdp.events);
-    if (errors.length) fail('Browser console/runtime errors detected', errors);
-    if (!routeHealth.ok) fail('Route Health is not reachable', routeHealth);
+      log('waiting for app data and route health');
+      const appState = await waitFor(async () => {
+        const state = await evaluate(cdp, `
+          (() => {
+            let employeeCount = 0;
+            try { employeeCount = Array.isArray(employees) ? employees.length : 0; } catch (_) {}
+            let omniReady = false;
+            try { omniReady = !!omni; } catch (_) {}
+            return {
+              employeeCount,
+              omniReady,
+              routeHealthReady: !!window.OctagonRouteHealth,
+              loadingHidden: !!document.querySelector('#loadingOverlay.hidden') || getComputedStyle(document.getElementById('loadingOverlay') || document.body).display === 'none',
+            };
+          })()
+        `);
+        lastState = state;
+        return state && state.omniReady && state.employeeCount > 0 && state.routeHealthReady ? state : null;
+      }, 'loaded app data and Route Health');
 
-    return { loginState, appState, routeHealth, browserErrors: errors.length };
+      log('checking route health availability');
+      const routeHealth = await evaluate(cdp, `
+        (() => {
+          const service = window.OctagonRouteHealth;
+          const navTarget = document.querySelector('[data-page="route_health"], [onclick*="route_health"], #nav-route_health');
+          return {
+            ok: !!service && typeof service.report === 'function',
+            serviceReady: !!service,
+            hasReport: typeof service?.report === 'function',
+            hasHydrate: typeof service?.hydrate === 'function',
+            navTarget: !!navTarget,
+          };
+        })()
+      `, false);
+
+      const errors = browserErrors(cdp.events);
+      if (errors.length) fail('Browser console/runtime errors detected', errors);
+      if (!routeHealth.ok) fail('Route Health is not reachable', routeHealth);
+
+      return { loginState, appState, routeHealth, browserErrors: errors.length };
+    } catch (err) {
+      if (lastState) console.error('[smoke-boot] Last app state before timeout:', lastState);
+      const logs = allConsoleLogs(cdp.events);
+      console.error('[smoke-boot] Full browser logs during boot:\n' + logs.join('\n'));
+      throw err;
+    }
   } finally {
     cdp.close();
   }

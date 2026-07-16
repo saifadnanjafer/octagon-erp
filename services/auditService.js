@@ -71,17 +71,30 @@
   const DB = root.OctagonDB || root.PentagonDB || {
     cache: null,
     cacheStr: null,
+    // T5.9 (2026-07-16): in-flight dedup. Before this, every concurrent
+    // caller that arrived while cache was still null fired its OWN full-DB
+    // GET — measured at boot as 29 × 4.6 MB /api/db round-trips (106.5 MB,
+    // 40 s load event). Concurrent callers now share one fetch promise.
+    _loading: null,
     async load(options = {}) {
       if (this.cache && !options.force) {
         normalizeAuditLog(this.cache);
         return this.cache;
       }
-      const res = await fetch('/api/db', { headers: { Accept: 'application/json' } });
-      if (!res.ok) throw new Error('تعذر تحميل قاعدة البيانات');
-      this.cache = await res.json();
-      normalizeAuditLog(this.cache);
-      this.cacheStr = JSON.stringify(this.cache);
-      return this.cache;
+      if (this._loading && !options.force) return this._loading;
+      this._loading = (async () => {
+        const res = await fetch('/api/db', { headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error('تعذر تحميل قاعدة البيانات');
+        this.cache = await res.json();
+        normalizeAuditLog(this.cache);
+        this.cacheStr = JSON.stringify(this.cache);
+        return this.cache;
+      })();
+      try {
+        return await this._loading;
+      } finally {
+        this._loading = null;
+      }
     },
     getCached() {
       return this.cache;

@@ -1,51 +1,112 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+secrets/
+private/
+
 # Dependencies
 node_modules/
+vendor/
+.venv/
+venv/
+__pycache__/
+*.pyc
 
-# Secrets (Security Hardening 2026-07-05): real keys live ONLY in .env
-.env
-server-ai-approvals.json
-
-# Runtime databases and generated backups
+# Local databases and operational data
 *.db
 *.db-*
 *.sqlite
 *.sqlite3
-*.bak
-*.prev
+database.json
 database.backup.*.json
-.phase7a-server.pid
-.phase7b-server.pid
-db-backups/*.db
-db-backups/*.json
-db-backups/*.bak
+workshop_migration_data.json
+ERP_MIGRATION_OFFICIAL_WORKSHOP_*.xlsx
+data/
+storage/
+runtime-data/
+operational-data/
 
-# Logs and local process output
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Company, employee, payroll, attendance, and customer files
+COMPANY/
+attendance/
+payroll-data/
+employee-data/
+imports/
+private-imports/
 
-# Temporary/exported artifacts
-scratch/
-tmp/
-temp/
+# User-generated files and review output
+uploads/
+user_uploads/
+attachments/
 exports/
 review-reports/
-*.tmp
 
-# Local editor/cache state
-.DS_Store
-Thumbs.db
+# Backups, archives, and local handoff bundles
+backup/
+backups/
+db-backups/
+release-backups/
+archive/
+archives/
+hand over/
+*.bak
+*.backup
+*.dump
+*.sql.gz
+*.prev
+*.zip
+*.tar
+*.tar.gz
+
+# Logs and runtime files
+logs/
+*.log
+*.pid
+*.pid.lock
+.phase*-server.pid
+server-ai-approvals.json
+sessions/
+tmp/
+temp/
+scratch/
+.cache/
+.codex-runtime/
+
+# Build and generated output
+dist/
+build/
+coverage/
+.next/
+.nuxt/
+out/
+
+# IDE, operating-system, and local agent files
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+.codex/
+.agent/
 .claude/
+coordination/
+AGENT_EXECUTION_PLAN.md
+AGENT_PROMPT.txt
+claude-*.json
+check_finance_html.py
+get_switch_page_details.py
+finance_html.txt
 
 # Office lock files
 ~$*
+*.~lock.*
 
-# Python bytecode cache
-__pycache__/
-*.pyc
-
-# Multi-agent runtime lock (coordination/README.md)
+# Multi-agent runtime locks
 coordination/verify.lock

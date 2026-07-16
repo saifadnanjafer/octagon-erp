@@ -1944,7 +1944,7 @@
     };
   </script>
   <script src="glass-real.js"></script>
-  <script src="services/auditService.js?v=20260705-session-reconnect-v1"></script>
+  <script src="services/auditService.js?v=20260716-t5.9-v1"></script>
   <script src="services/tenantService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/recordService.js?v=20260614-tenant-service-v1"></script>
   <script src="services/stateService.js?v=20260514c2"></script>
@@ -1959,8 +1959,15 @@
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
   <!-- T4.4: Equipment Management cluster; loads before app.js because ensureOmni() calls normalizeEquipment(). -->
   <script src="modules/equipment-management.js?v=20260714-t4.4-v1"></script>
+  <!-- T4.11: Automation Engine cluster (rules/fire-log/simulation/manual-scan), moved verbatim out of app.js.
+       Loads before app.js because ensureOmni() calls normalizeAutomation(). -->
+  <script src="modules/automation-engine.js?v=20260715-t4.11-v1"></script>
+  <!-- T5.6: seeds db.locations (LOC_MAIN/LOC_WIP/LOC_SUPPLIERS/LOC_SCRAP) services/stockService.js
+       hardcodes but nothing ever created; loads before app.js because ensureOmni() calls
+       seedMissingStockLocations(). -->
+  <script src="modules/stock-locations-seed.js?v=20260716-t5.9-v1"></script>
   <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
-  <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
+  <script src="modules/schema-registry.js?v=20260716-t1.6-v1"></script>
   <!-- T1.4: unified document numbering (OctagonSeq.next('inv') -> INV-2026-00042) -->
   <script src="modules/sequence-service.js?v=20260713-t1.4-v1"></script>
   <!-- T2.4: read-only trial-balance assertion (window.runTrialBalanceCheck) -->
@@ -1975,7 +1982,30 @@
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260715-t4.7-v1"></script>
+  <!-- T4.16 (Phase 4): Sales/CRM/Quotation cluster loads before app.js because ensureOmni() normalizes it at boot. -->
+  <script src="modules/sales-crm.js?v=20260716-t4.16-v1"></script>
+  <!-- T4.18 (Phase 4): MRP/work-order execution cluster loads before app.js because ensureOmni() calls normalizeOmniWorkOrders() at boot. -->
+  <script src="modules/mrp-work-orders.js?v=20260716-t4.18-v1"></script>
+  <!-- T4.18 (Phase 4): Inventory Deepening cluster loads before app.js because ensureOmni() calls normalizeInventoryDeepening() at boot. -->
+  <script src="modules/inventory-deepening.js?v=20260716-t4.18-v1"></script>
+  <script src="app.js?v=20260716-t4.18-v1"></script>
+  <!-- T4.17 (Phase 4): Employee Portal Engine (Sprint V1), moved verbatim out of app.js.
+       Loads immediately AFTER app.js — normalizeEmployeePortalData() is not called from
+       ensureOmni(), so no forced boot-order dependency. -->
+  <script src="modules/employee-portal.js?v=20260716-t4.17-v1"></script>
+  <!-- T4.15 (Phase 4): Workflow Studio canvas, validation, renderer, and editor. -->
+  <script src="modules/workflow-studio.js?v=20260716-t4.15-v1"></script>
+  <!-- T4.13 (Phase 4): Op-Packs cluster (two regions: rule/pricing engine + page renderer),
+       moved verbatim out of app.js. Loads immediately AFTER app.js — all functions are
+       global via window scope, and the region's own internal calls resolve fine either way. -->
+  <script src="modules/op-packs.js?v=20260715-t4.13-v1"></script>
+  <!-- T4.14 (Phase 4): Cashbox cluster (cash-totals core + page renderer + transaction modal),
+       moved verbatim out of app.js. Loads immediately AFTER app.js — all functions are
+       global via window scope. -->
+  <script src="modules/cashbox.js?v=20260715-t4.14-v1"></script>
+  <!-- T4.10 (Phase 4): Task Manager V2 cluster, moved verbatim out of app.js.
+       Loads immediately AFTER app.js — all TM functions are global via window scope. -->
+  <script src="modules/task-manager.js?v=20260716-t5.9-v2"></script>
   <!-- T4.2 (Phase 4): Command Center cluster, moved verbatim out of app.js.
        Loads immediately AFTER app.js and BEFORE modules that wrap renderCommandCenter. -->
   <script src="modules/command-center.js?v=20260714-t4.2-v2"></script>
@@ -1987,6 +2017,11 @@
   <script src="modules/finance-ui.js?v=20260714-t4.6-v1"></script>
   <!-- T4.7 (Phase 4): Kanban Board cluster, moved verbatim out of app.js. -->
   <script src="modules/kanban.js?v=20260715-t4.7-v1"></script>
+  <!-- T4.8 (Phase 4): Admin Panel UI cluster, moved verbatim out of app.js.
+       Wiring completed by a second agent (claude-opus-4-8) — see coordination/claims/T4.8.md:
+       the functions were already deleted from app.js with no script-tag reference added,
+       leaving addAdminUser/deleteAdminUser/addCompany/computeAdminSystemHealth/etc. undefined. -->
+  <script src="modules/admin-panel.js?v=20260715-t4.8-v1"></script>
   <script>
     function loadOctagonAIAssistant() {
       if (window.octagonAIAssistant && typeof window.octagonAIAssistant.open === 'function') {
@@ -2106,6 +2141,9 @@
   <!-- GO 16+ de-monolith modules: extracted page renderers + new feature overlays.
        All self-contained IIFEs / globals that load AFTER app.js and wrap switchPage. -->
   <script src="modules/page-help-manual.js?v=20260624-arabic-v2"></script>
+  <!-- T4.12 (Phase 4): SOP Issues & AI Context Index cluster, moved verbatim out of app.js.
+       Loads before page-sop.js, which calls getSopIssues()/renderSopIssuesPanel() at render time. -->
+  <script src="modules/sop-issues-ai-index.js?v=20260715-t4.12-v1"></script>
   <script src="modules/page-sop.js?v=20260608-modules-wire-v1"></script>
   <script src="modules/page-qc.js?v=20260625-wire-fix-v1"></script>
   <script src="modules/ai-providers.js?v=20260703-omni-v6"></script>
@@ -2174,7 +2212,7 @@
   <script src="modules/warranty-rma.js?v=20260619-major-erp-v1"></script>
   <script src="modules/enterprise-suite.js?v=20260624-arabic-v4"></script>
   <script src="modules/appointments.js?v=20260622-appt-v1"></script>
-  <script src="modules/workshop-ledger.js?v=20260715-t5.4-v1"></script>
+  <script src="modules/workshop-ledger.js?v=20260715-t5.5-v1"></script>
   <script src="modules/ws-timesheet-bridge.js?v=20260701-wstb-v1"></script>
   <script src="modules/loyalty.js?v=20260622-loy-v1"></script>
   <script src="modules/finance-installments.js?v=20260626-fi-v1"></script>

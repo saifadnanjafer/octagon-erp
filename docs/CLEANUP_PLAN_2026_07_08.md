@@ -389,8 +389,8 @@ Do not touch:
 
 Leave these exactly where they are until Saif reviews them:
 
-- `COMPANY/` - contains official workshop/business files and old archives; do not reorganize during generic project cleanup.
-- `ERP_MIGRATION_OFFICIAL_WORKSHOP_2026_04_01_to_2026_06_18.xlsx` - likely source-of-truth import workbook/history.
+- `../../COMPANY/` - canonical shared location for official workshop/business files and old archives; do not reorganize during generic project cleanup.
+- `../../COMPANY/02_الأشخاص - People/الموظفين/سجل الحضور العام/ERP_MIGRATION_OFFICIAL_WORKSHOP_2026_04_01_to_2026_06_18.xlsx` - source-of-truth import workbook/history.
 - `workshop_migration_data.json` - migration artifact; not proven obsolete.
 - `server-ai-approvals.json` - approval state/data.
 - `server-ai-audit.log` - active/recent AI audit log; may be useful for current assistant safety work.
@@ -463,4 +463,3 @@ Approximate groups after approval:
 ## Phase 2 Approval Gate
 
 Do not proceed to archive until Saif explicitly approves Phase 2 and confirms whether to include conservative review items such as `scratch/`, `review-reports/*.json`, root database backups, and `hand over/OCTAGON_MASTER_REFERENCE.md`.
-

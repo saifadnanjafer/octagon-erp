@@ -1765,6 +1765,13 @@ jarvisSecurity.init({
 });
 
 let octagonScheduler = null;
+let octagonCrudEngine = null;
+let octagonCommercialInbox = null;
+let octagonViewsFields = null;
+let octagonPrintTemplates = null;
+let octagonWorkflowEngine = null;
+let octagonChatter = null;
+let octagonAclHttp = null;
 
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
@@ -1775,6 +1782,13 @@ const server = http.createServer((req, res) => {
 
   // T3.1: /api/cron/* — server-side scheduler status/force-run/dismiss.
   if (octagonScheduler && octagonScheduler.handle(req, res, requestUrl)) return;
+  if (octagonCommercialInbox && octagonCommercialInbox.handle(req, res, requestUrl)) return; // P0.5 /api/x/notify + /api/x/approvals
+  if (octagonViewsFields && octagonViewsFields.handle(req, res, requestUrl)) return; // P0.7 saved views + custom fields
+  if (octagonPrintTemplates && octagonPrintTemplates.handle(req, res, requestUrl)) return; // P0.9 /api/x/print/*
+  if (octagonWorkflowEngine && octagonWorkflowEngine.handle(req, res, requestUrl)) return; // P0.10 /api/x/workflows
+  if (octagonChatter && octagonChatter.handle(req, res, requestUrl)) return; // P0.3 /api/x/chatter/*
+  if (octagonAclHttp && octagonAclHttp.handle(req, res, requestUrl)) return; // P0.2 ACL gate + Arabic matrix API; must precede CRUD
+  if (octagonCrudEngine && octagonCrudEngine.handle(req, res, requestUrl)) return; // P0.1 /api/x/* platform CRUD
 
   // T1.4: unified document numbering. POST /api/sequence/next {code, prefix?, padding?}
   // -> { ok, data:{ sequence, number, ... } }. Race-safe (transaction). The
@@ -2760,6 +2774,15 @@ octagonScheduler = installOctagonScheduler({
   sqliteDbFile: SQLITE_DB_FILE,
   backupDir: BACKUP_DIR,
 });
+
+if (dbSync) octagonCrudEngine = require('./platform/server/crud-engine').mountCrud({ db: dbSync, sendJson, readRequestBody, authSessionFromRequest });
+if (dbSync) octagonAclHttp = require('./platform/server/acl-http-adapter').mountAclHttp({ db: dbSync, requireSession, sendJson, readRequestBody });
+if (dbSync) octagonChatter = require('./platform/server/chatter-crud-adapter').mountChatterWithCrud({ db: dbSync, crudEngine: octagonCrudEngine });
+if (dbSync) octagonCommercialInbox = require('./platform/server/notify').mountNotify({ db: dbSync, authSessionFromRequest });
+if (dbSync) octagonViewsFields = require('./platform/server/views-fields').createViewsFieldsHandler({ db: dbSync, sendJson, requireSession });
+if (dbSync) octagonPrintTemplates = require('./platform/server/print-templates').mountPrintTemplates({ db: dbSync });
+if (dbSync) octagonWorkflowEngine = require('./platform/server/workflow').mountWorkflow({ db: dbSync, crudEngine: octagonCrudEngine, authSessionFromRequest, readRequestBody });
+if (dbSync) require('./platform/server/seed-commercial').seedCommercial(dbSync); // P0.12 idempotent commercial demo seed
 
 probeDefaultPort();
 

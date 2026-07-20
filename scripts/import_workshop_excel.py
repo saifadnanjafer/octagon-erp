@@ -11,7 +11,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 
-DEFAULT_EXCEL = Path(r"C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp\COMPANY\قاعدة_موحدة_نهائية_نظيفة_حتى_2026_06_30.xlsx")
+DEFAULT_EXCEL = Path(__file__).resolve().parents[2] / "COMPANY" / "قاعدة_موحدة_نهائية_نظيفة_حتى_2026_06_30.xlsx"
 DEFAULT_DB = Path(__file__).resolve().parents[1] / "database.json"
 DEFAULT_SQLITE = Path(__file__).resolve().parents[1] / "database.db"
 

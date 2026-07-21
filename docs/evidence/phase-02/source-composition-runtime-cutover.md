@@ -56,7 +56,7 @@
 - `POST /api/tts` and `POST /api/review-report` → require real session (no `isLocalRequest` bypass)
 - All `requireSession`/`requireRoleSession`/`requireAdminSession` callers → `requireDecisionContext` + `evaluator.require`
 - `platform/api/index.mjs` `resolveContext` → derive from session cookie, reject headers
-- `app.js` → fetch `/api/auth/bootstrap` after login, use it for navigation/actions/fields, keep Arabic RTL
+- `app.js` → fetch `/api/auth/bootstrap` after login, use it for navigation/actions/fields, keep Arabic RTL; the platform login derives tenant from the matched user record when the legacy shell omits tenantId
 
 ## 5. Testing Strategy
 
@@ -64,8 +64,19 @@
 - Run all Phase 02 unit tests (`tests/phase02/*.test.mjs`) — must remain 100% passing
 - Run migration tests (`tests/migration/runner.test.mjs`) including down/up
 - Add `tests/phase02/runtime-integration.test.mjs` for server route behavior
-- Add `tests/phase02/browser-evidence.test.mjs` using Puppeteer against the real Octagon shell
+- Add `tests/phase02/browser-evidence.test.mjs` for contract-level bootstrap verification
+- Add `tests/phase02/browser-live-evidence.test.mjs` using Puppeteer against the real Octagon shell
 - Add adversarial tests: request-body spoofing, localhost bypass, direct hidden API calls, revoked session, cross-tenant API, CSRF mismatch
+
+## 6.1 Current verification correction
+
+The source-composition goal above is not yet achieved. The verified runtime
+cutover currently covers server-derived identity/session context, bootstrap,
+permission-gated `/api/db`, `/api/v1`, upload, and static upload reads. The
+existing `app.js` still contains a broad `saveData()` full-blob writer and the
+settings, workflow, collaboration, file, and job platform services remain
+canonical-test only for their live callers. Gate I is therefore partial; see
+`runtime-authority-map.md` and `legacy-authority-cutover.md`.
 
 ## 6. Risk Register
 

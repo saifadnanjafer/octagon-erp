@@ -34,11 +34,20 @@ regression assertions as part of **24/24**.
 - unauthenticated privileged routes are blocked,
 - a clerk without `platform:db:write` / `platform:backup:*` is denied.
 
+`tests/phase02/browser-live-evidence.test.mjs` (Puppeteer) passes and produces
+screenshots in `docs/evidence/phase-02/browser-screenshots/`:
+
+- Arabic `lang="ar"` and `dir="rtl"` are preserved on the root element,
+- the owner login flow through the existing Octagon shell works and applies the
+  platform bootstrap,
+- role-specific navigation hides `security_center` from a clerk with a limited role,
+- direct API calls and request-body identity/company/role overrides are denied.
+
 ## Limitation
 
-No headless browser/Chromium is installed in this environment. Browser evidence is
-contract-level DOM/payload and live HTTP evidence, not a real pixel or real-login
-browser run. The bootstrap payload, `app.js` wiring, and server route guards are
-proven; a full Puppeteer/Playwright regression run remains a recommended follow-up
-when the dependency is available. Gate H is **PASS** for the contract-level proof
-with this noted limitation.
+The live evidence is bounded to three scenarios: Arabic/RTL owner login and
+bootstrap, limited-role navigation, and direct API/identity-override denial.
+Responsive viewport behavior, English/LTR, session revocation, tenant/company
+isolation in the UI, field masking, workflow/approval actions, inbox/chatter,
+file flows, and unrelated operational deep links do not yet have live browser
+evidence. Gate H is therefore **PARTIAL**, not a closure pass.

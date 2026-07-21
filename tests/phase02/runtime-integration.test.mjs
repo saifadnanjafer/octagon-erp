@@ -113,6 +113,12 @@ async function testServerStartsAndLoginWorks() {
     assert.ok(Array.isArray(bootstrap.payload.navigation?.pages));
     assert.ok(Array.isArray(bootstrap.payload.actions));
     assert.ok(bootstrap.payload.actor?.locale === 'ar' || bootstrap.payload.actor?.direction === 'rtl', 'RTL identity preserved');
+
+    const dbRead = await withCookie(base, cookies, 'GET', '/api/db');
+    assert.strictEqual(dbRead.res.status, 200, `owner should be allowed db read, got ${dbRead.res.status}`);
+
+    const apiRead = await withCookie(base, cookies, 'GET', '/api/v1/meta/entities');
+    assert.strictEqual(apiRead.res.status, 200, `owner should be allowed platform API read, got ${apiRead.res.status}`);
   } finally {
     await server.stop();
     for (const f of [jsonPath, jsonPath + '.prev']) { try { fs.unlinkSync(f); } catch {} }
@@ -141,9 +147,20 @@ async function testUnauthenticatedRoutesAreBlocked() {
     const restore = await fetch(`${base}/api/restore`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     assert.ok(restore.status === 401 || restore.status === 403, `expected 401/403 for restore, got ${restore.status}`);
 
-    // GET /api/db remains unauthenticated by design (it was already open).
+    // Full database reads are governance-protected; the browser gets only the
+    // public identity options before login.
     const dbRead = await fetch(`${base}/api/db`, { method: 'GET' });
-    assert.strictEqual(dbRead.status, 200, 'GET /api/db should remain open');
+    assert.ok(dbRead.status === 401 || dbRead.status === 403, `expected 401/403 for db read, got ${dbRead.status}`);
+
+    const options = await fetch(`${base}/api/auth/options`);
+    assert.strictEqual(options.status, 200, 'public auth options should be available before login');
+    assert.ok(Array.isArray((await options.json()).users));
+
+    const apiRead = await fetch(`${base}/api/v1/meta/entities`);
+    assert.ok(apiRead.status === 401 || apiRead.status === 403, `expected 401/403 for platform API, got ${apiRead.status}`);
+
+    const uploadRead = await fetch(`${base}/uploads/not-present.txt`);
+    assert.ok(uploadRead.status === 401 || uploadRead.status === 403, `expected 401/403 for upload read, got ${uploadRead.status}`);
   } finally {
     await server.stop();
     for (const f of [jsonPath, jsonPath + '.prev']) { try { fs.unlinkSync(f); } catch {} }
@@ -161,6 +178,8 @@ async function testClerkIsDeniedPrivilegedActions() {
   const server = await startServer({ dbPath, jsonPath, port });
   try {
     const { cookies } = await login(base, 'clerk', STRONG_PASSWORD, org.tenantA);
+    const apiRead = await withCookie(base, cookies, 'GET', '/api/v1/meta/entities');
+    assert.strictEqual(apiRead.res.status, 403, `clerk should not be allowed platform API read, got ${apiRead.res.status}`);
     const dbWrite = await withCookie(base, cookies, 'POST', '/api/db', { employees: [] });
     assert.strictEqual(dbWrite.res.status, 403, `clerk should not be allowed db write, got ${dbWrite.res.status}`);
 

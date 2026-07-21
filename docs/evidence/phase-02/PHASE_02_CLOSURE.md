@@ -1,71 +1,59 @@
 # PHASE_02_CLOSURE.md — Octagon ERP Phase 02
 
-**Closure status:** CLOSED  
+**Closure status:** PARTIAL — NOT CLOSED
 **Verified:** 2026-07-21  
 **Octagon root:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`  
 **Branch:** `remediation/phase-02-final-closure`  
-**Current commit:** `25a8ae6a0cabdcbf02eea54f98b11e986e18d512`  
-**Parent baseline commit:** `f5f4cf559b2301e57401fbd3e6dc0d098f9291c3`  
-**VNext reference:** `octagon-erp-commercial-vnext` @ `72d2c6b4f568650203795d463c25a12ff06ad55a`  
-**Environment:** Node v24.14.1, npm 11.11.0, SQLite `node:sqlite` `DatabaseSync`
+**Starting baseline:** `25a8ae6a0cabdcbf02eea54f98b11e986e18d512`
+**Phase 01:** frozen and preserved
+**Phase 03:** not started or authorized
 
-## Implemented Phase 02 capabilities
+## Verified remediation in this checkpoint
 
-The canonical Phase 02 platform is implemented across identity/session/MFA/SSO,
-service identities/API keys, memberships and scopes, permission registry and
-evaluator, field masks, typed settings/secrets, policies/delegation/SoD,
-configuration packages, durable workflows/approvals/worklists/SLA, history/
-chatter/activities/notifications, secure files, import/export/print, durable
-jobs/webhooks, security evidence views, and an Octagon-native governance client
-bootstrap. Phase 01 contracts, migrations, evidence, and frozen operational
-behavior remain preserved.
+- `server.js` initializes the Phase 02 platform authority after migrations.
+- Session login, bootstrap, permission checks, `/api/db` reads, `/api/v1`, upload,
+  and upload-file reads now use server-derived session context or fail closed.
+- The browser login flow prompts for a password and authenticates against the
+  canonical server identity authority; it does not create client-side password
+  hashes.
+- Fresh SQLite startup imports the legacy JSON mirror before migration 012 so
+  identity/ACL migration can see the source rows.
+- Live Puppeteer evidence passes Arabic RTL identity, owner bootstrap, limited
+  role navigation, logout, and direct API/identity-override denial.
 
-In addition, this closure commit completes the runtime authority cutover:
+## Test evidence
 
-- `server.js` now starts asynchronously, applies migrations, creates the Phase 02
-  platform authority from `platform-runtime-bridge.mjs`, and routes identity,
-  session, authorization, and related HTTP calls through it.
-- Legacy `authSessions`, `auth_sessions`, `ACL.json`, `isLocalRequest`, and
-  localhost/environment bypasses are retired from the live HTTP path.
-- `app.js` calls `/api/auth/bootstrap` after login and uses the server-returned
-  page/action visibility while keeping the Arabic RTL layout unchanged.
-- `platform-runtime-bridge.mjs` seeds a default owner role with a `*` grant and
-  registers the platform page and API permissions required by the shell.
-- A legacy SHA-256 credential bug was fixed so the first successful login upgrades
-  legacy hashes to scrypt as designed.
+The focused Phase 02 suites pass **186/186 behaviors**: identity 32, authorization
+32, security 24, settings/policies 29, workflow/approvals 31,
+collaboration/files/jobs 29, runtime integration 3, browser contract 3, and live
+browser evidence 3. Phase 01 evidence remains unchanged at **72 behaviors** plus
+the migration runner’s 8/8 result. The complete rerun command list and final
+commit hash must be recorded after the remediation commit.
 
-## Test result
+## Closure gate assessment
 
-All Phase 02 suites pass: **183/183 behaviors** across identity (32), authorization
-(32), security-suite (24), settings/policies (29), workflow/approvals (31),
-collaboration/files/jobs (29), runtime integration (3), and browser evidence (3).
-The full Phase 01 suite also passes: **72 behaviors across 10 suites** plus the
-migration runner (8/8). Commands and limitations are recorded in
-`security-test-report.md`, `migration-report.md`, `browser-regression-report.md`,
-`legacy-authority-cutover.md`, and the individual reports.
-
-## Closure gates
-
-| Gate | Result | Evidence |
+| Gate | Result | Reason |
 |---|---|---|
-| A — source and salvage compliance | PASS | `source-lock.md`, `source-composition-ledger.md`, `vnext-salvage-ledger.md`, `donor-license-ledger.md` |
-| B — identity authority | PASS | `identity-and-session-report.md`, `runtime-integration.test.mjs` live HTTP login/session/bootstrap |
-| C — authorization | PASS | `permission-registry-report.md`, `route-coverage-report.md`, `tenant-isolation-report.md`, `field-mask-report.md` |
-| D — settings/configuration | PASS | `settings-and-secrets-report.md` |
-| E — workflow/approvals | PASS | `workflow-runtime-report.md`, `approval-concurrency-report.md`, `sla-calendar-report.md` |
-| F — collaboration/notifications/files | PASS | `collaboration-notification-report.md`, `file-security-report.md`, `import-export-print-report.md` |
-| G — jobs/integrations | PASS | `job-webhook-report.md` |
-| H — UI continuity | PASS | `browser-regression-report.md` contract-level RTL/bootstrap proof; `app.js` wired to live bootstrap |
-| I — migration/authority | PASS | `migration-report.md`, `legacy-authority-cutover.md` — runtime writer retired and platform authority is sole authority |
-| J — security/evidence | PASS | Required evidence is present; focused suites and runtime integration tests pass |
+| A — source/salvage compliance | PASS | Existing Phase 01/02 source and donor ledgers preserved. |
+| B — identity authority | PARTIAL | Server session/login is canonical, but the legacy client identity facade remains in the shell. |
+| C — authorization | PARTIAL | Protected runtime routes fail closed; complete route parity and all legacy writer paths are not yet cut over. |
+| D — settings/configuration | PARTIAL | Typed settings/secrets pass disposable tests but the live shell still writes the legacy blob. |
+| E — workflow/approvals | PARTIAL | Platform engines pass tests but the live shell still writes legacy workflow/approval collections. |
+| F — collaboration/files | PARTIAL | Platform services pass tests; legacy notification/chatter/file writers and upload consumers remain. |
+| G — jobs/integrations | PARTIAL | Platform job contracts pass tests; legacy scheduler/webhook topology remains active. |
+| H — UI continuity | PARTIAL | Three live browser scenarios pass; responsive, English/LTR, deep-link, workflow, approval, inbox, file, and field-mask browser proof is incomplete. |
+| I — migration/authority | NOT PASSED | `app.js` retains many `saveData()` writers to the full-blob `/api/db` route; atomic reconciliation and retirement criteria are not established. |
+| J — security/evidence | PARTIAL | Focused security evidence passes, but the unresolved duplicate-writer authority risk is a closure blocker. |
 
-## Closure statement
+## Genuine hard stop
 
-The Phase 02 document requires one runtime authority per governance fact and
-UI continuity evidence. The live Octagon server now routes identity, sessions,
-authorization, and related HTTP paths through the Phase 02 platform authority.
-The app shell consumes the server-side bootstrap for platform-controlled
-navigation and action visibility while preserving Arabic RTL behavior. All
-Phase 01, Phase 02, migration, and new runtime/browser evidence tests pass.
+Phase 02 cannot close while a governance fact has both the legacy full-blob
+writer and a canonical platform writer without an explicit atomic dual-write,
+reconciliation, duration, rollback, and removal plan. The remaining writers are
+not safely removable in this bounded remediation without risking operational
+surfaces, and payroll/attendance remain frozen. Gate I therefore remains open;
+this document intentionally does not claim Phase 02 closure.
 
-**Phase 02 is closed.** Phase 03 is not started or authorized.
+See `runtime-authority-map.md`, `legacy-authority-cutover.md`,
+`browser-regression-report.md`, and `unresolved-risks.md` for the exact remaining
+paths and evidence boundaries.

@@ -6,9 +6,9 @@ means the current live Octagon shell/server path.
 
 | Fact | Legacy reader/writer | VNext writer | New canonical writer | Cutover flag | Data migration / reconciliation | Rollback | Retirement commit |
 |---|---|---|---|---|---|---|---|
-| users | `server.js` JSON user reader/writer; `platform_users` compatibility view | VNext auth/ACL source | `identity_users` / `platform/identity/users` (canonical-test) | **DONE runtime** | migration 006 preserves IDs and memberships; fresh DB parity tested | migration 006 down restores `platform_users` | none; baseline `f5f4cf5` |
-| sessions | `server.js` in-memory + `auth_sessions` persistence | VNext auth hardening | `identity_sessions` / `platform/identity/sessions` (canonical-test) | **DONE runtime** | no live DB migration run | keep legacy cookie/session until approved cutover | none |
-| roles/grants | `acl.json`, `permissionService.js`, Phase 01 ACL tables | VNext ACL engine | `authorization_*` / `platform/authorization` (canonical-test) | **DONE runtime** | migration 007 read-once mirror and role aliases | migration 007 down | none |
+| users | `app.js` local user facade and legacy JSON blob writer | VNext auth/ACL source | `identity_users` / `platform/identity/users` (runtime login adapter; shell facade remains) | **PARTIAL runtime** | migration 012 imports legacy collections before canonical migration | migration 012 down; legacy blob retained | pending shell reader retirement |
+| sessions | `server.js` legacy compatibility helpers; canonical cookie/session handler | VNext auth hardening | `identity_sessions` / `platform/identity/sessions` (runtime) | **PASS runtime** | migration 012 migrates legacy sessions and removes `auth_sessions` | migration 012 down | legacy helpers still need removal audit |
+| roles/grants | `permissionService.js` client facade and legacy JSON collections | VNext ACL engine | `authorization_*` / `platform/authorization` (runtime server evaluator) | **PARTIAL runtime** | migration 012 imports legacy ACL before canonical seeding | migration 012 down | pending client writer retirement |
 | scopes | legacy company/group inference | VNext scope engine | memberships + record scopes/evaluator | **DONE runtime** | disposable tenant/company parity | restore adapter reads | none |
 | settings/secrets | legacy JSON/settings providers | VNext governance settings | `settings_*`, `secret_*` | canonical-test only | migration 008; no production target touched | migration 008 down | none |
 | custom fields/views | legacy `platform/server/views-fields.js` tables | VNext metadata clients | `custom_fields`, `view_schemas`, `saved_views` | canonical-test only | migration 008 | migration 008 down | none |
@@ -23,14 +23,15 @@ means the current live Octagon shell/server path.
 
 ## Verdict
 
-All pending runtime cutover flags are now resolved: `server.js` initializes the
-Phase 02 platform authority after migrations, all legacy session/ACL/local-bypass
-checks are retired, and the app shell consumes `/api/auth/bootstrap` for
-platform-controlled navigation and action visibility. Gate I is **PASSED** and
-Phase 02 runtime authority is closed.
+This table is **PARTIAL — NOT CLOSED**. The server-side session and permission
+boundaries are now live, but the table’s prior `DONE runtime` claims were too
+strong. The existing shell still calls `saveData()` for governance collections;
+that writer reaches the legacy full-blob `/api/db` endpoint. Settings/secrets,
+custom fields/views, workflows, approvals, chatter, notifications, files, API
+keys, and jobs/webhooks remain canonical-test only until their live callers are
+strangled to the platform services.
 
-The remaining canonical-only capabilities (settings/secrets, custom fields/views,
-workflows, approvals, chatter, notifications, files, API keys, jobs/webhooks) remain
-proven in disposable-database tests and are not dually written by the legacy
-runtime.
+Gate I remains open until every applicable row has one runtime writer, an
+atomic migration/reconciliation plan, a rollback path, and an evidence-backed
+retirement commit.
 

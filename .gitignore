@@ -8,7 +8,7 @@
 *.pfx
 credentials.json
 service-account*.json
-secrets/
+/secrets/
 private/
 
 # Dependencies
@@ -28,8 +28,8 @@ database.json
 database.backup.*.json
 workshop_migration_data.json
 ERP_MIGRATION_OFFICIAL_WORKSHOP_*.xlsx
-data/
-storage/
+/data/
+/storage/
 runtime-data/
 operational-data/
 
@@ -72,7 +72,7 @@ logs/
 *.pid.lock
 .phase*-server.pid
 server-ai-approvals.json
-sessions/
+/sessions/
 tmp/
 temp/
 scratch/

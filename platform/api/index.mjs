@@ -61,10 +61,11 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1' }) {
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null }) {
   const executor = createActionExecutor(dialect);
 
   function resolveContext(req, requestUrl) {
+    if (resolveContextOption) return resolveContextOption(req, requestUrl);
     const headers = req.headers || {};
     const headerUser = headers['x-user'];
     const headerCompany = headers['x-company'];
@@ -92,9 +93,19 @@ export function mountApi({ dialect, prefix = '/api/v1' }) {
     const resource = segments[1];
     const recordId = segments[2];
     const ctx = resolveContext(req, requestUrl);
+    if (!ctx) return sendJson(res, 401, envelope(null, 'Login session required', null, null));
+
+    const requirePermission = (permission) => {
+      if (!authorize) return true;
+      const decision = authorize({ permission, ctx, req, requestUrl });
+      if (decision === true || decision?.allowed) return true;
+      sendJson(res, decision?.statusCode || 403, envelope(null, decision?.message || 'Permission denied', null, ctx.correlationId));
+      return false;
+    };
 
     try {
       if (namespace === 'meta' && resource === 'entities' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
         const rows = dialect.prepare('SELECT id, label_ar, label_en, module_id, lifecycle_policy FROM platform_entities ORDER BY id').all();
         return sendJson(res, 200, envelope(rows, null, { total: rows.length }, ctx.correlationId));
       }
@@ -103,22 +114,26 @@ export function mountApi({ dialect, prefix = '/api/v1' }) {
         const entityId = resource;
         const repo = createRepository(dialect, entityId);
         if (req.method === 'GET' && !recordId) {
+          if (!requirePermission('platform:db:read')) return;
           const query = Object.fromEntries(requestUrl.searchParams.entries());
           const { items, meta } = repo.list(query, ctx);
           return sendJson(res, 200, envelope(items, null, meta, ctx.correlationId));
         }
         if (req.method === 'GET' && recordId) {
+          if (!requirePermission('platform:db:read')) return;
           const doc = repo.read(recordId, ctx);
           if (!doc) return sendJson(res, 404, envelope(null, 'record not found', null, ctx.correlationId));
           return sendJson(res, 200, envelope(doc, null, null, ctx.correlationId));
         }
         if (req.method === 'POST' && !recordId) {
+          if (!requirePermission('platform:db:write')) return;
           const raw = await readBody(req);
           const body = raw ? JSON.parse(raw) : {};
           const doc = repo.create(body, ctx);
           return sendJson(res, 201, envelope(doc, null, null, ctx.correlationId));
         }
         if (req.method === 'PATCH' && recordId) {
+          if (!requirePermission('platform:db:write')) return;
           const raw = await readBody(req);
           const body = raw ? JSON.parse(raw) : {};
           const doc = repo.update(recordId, body, ctx);
@@ -126,6 +141,7 @@ export function mountApi({ dialect, prefix = '/api/v1' }) {
           return sendJson(res, 200, envelope(doc, null, null, ctx.correlationId));
         }
         if (req.method === 'DELETE' && recordId) {
+          if (!requirePermission('platform:db:write')) return;
           const doc = repo.delete(recordId, ctx);
           if (!doc) return sendJson(res, 404, envelope(null, 'record not found', null, ctx.correlationId));
           return sendJson(res, 200, envelope({ id: doc.id, removed: 1 }, null, null, ctx.correlationId));
@@ -134,6 +150,7 @@ export function mountApi({ dialect, prefix = '/api/v1' }) {
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {
+        if (!requirePermission('platform:db:write')) return;
         const actionId = resource;
         const raw = await readBody(req);
         const body = raw ? JSON.parse(raw) : {};

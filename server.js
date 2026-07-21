@@ -62,6 +62,7 @@ const USE_SQLITE = !SQLITE_DISABLED && (process.env.USE_SQLITE === 'true' || fs.
 
 let dbSync = null;
 let platformAuthority = null;
+let platformApiHandler = null;
 const BACKUP_KEEP = 30;
 const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per hour of activity
 let lastAutoBackupMs = 0;
@@ -1642,6 +1643,27 @@ const server = http.createServer((req, res) => {
     return platformAuthority.handleBootstrap(req, res);
   }
 
+  if (requestUrl.pathname === '/api/auth/options' && req.method === 'GET') {
+    if (!dbSync) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    const users = dbSync.prepare(`
+      SELECT id, login, name, locale
+      FROM identity_users
+      WHERE status = 'active'
+      ORDER BY name, login
+    `).all().map(user => ({
+      id: user.id,
+      login: user.login,
+      name: user.name,
+      displayName: user.name,
+      locale: user.locale || 'ar',
+    }));
+    return sendJson(res, 200, { success: true, users });
+  }
+
+  if (platformApiHandler && requestUrl.pathname.startsWith('/api/v1/')) {
+    return platformApiHandler(req, res, requestUrl);
+  }
+
   if (requestUrl.pathname === '/api/server/status' && req.method === 'GET') {
     return sendJson(res, 200, {
       success: true,
@@ -1796,6 +1818,8 @@ const server = http.createServer((req, res) => {
 
   // API Routes
   if (requestUrl.pathname === '/api/db' && req.method === 'GET') {
+    const guard = requirePermission(req, res, 'platform:db:read');
+    if (!guard.ok) return;
     if (dbSync) {
       try {
         const db = loadDbFromSqlite(dbSync);
@@ -2085,7 +2109,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/upload' && req.method === 'POST') {
-    const guard = requireSession(req, res);
+    const guard = requirePermission(req, res, 'platform:db:write');
     if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
@@ -2274,6 +2298,10 @@ const server = http.createServer((req, res) => {
   }
 
   // Static Files
+  if (requestUrl.pathname.startsWith('/uploads/')) {
+    const guard = requirePermission(req, res, 'platform:db:read');
+    if (!guard.ok) return;
+  }
   let filePath = requestUrl.pathname === '/' ? '/index.html' : requestUrl.pathname;
   filePath = path.join(__dirname, decodeURIComponent(filePath));
   
@@ -2398,24 +2426,24 @@ async function initializeDatabase() {
       // auth_sessions table is created by migration 012 only when migrating an
       // existing database and is dropped once migration is complete.
       const { runMigrations } = await import('./database/migration-runner/index.mjs');
+      const rowCountBeforeMigrations = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
+        dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;
+      if (rowCountBeforeMigrations === 0 && fs.existsSync(DB_FILE)) {
+        console.log('SQLite: Database is empty. Importing database.json before canonical migrations...');
+        try {
+          const jsonDb = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+          saveDbToSqlite(dbSync, jsonDb);
+          console.log('SQLite: Legacy import completed successfully.');
+        } catch (migrationError) {
+          console.error('SQLite legacy import failed:', migrationError.message);
+        }
+      }
+
       const migrationResult = await runMigrations({ dbPath: SQLITE_DB_FILE, direction: 'up', actor: 'system' });
       if (migrationResult.migrations.length) {
         console.log('Migrations applied:', migrationResult.migrations.join(', '));
       }
 
-      const rowCount = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
-                       dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;
-
-      if (rowCount === 0 && fs.existsSync(DB_FILE)) {
-        console.log('SQLite: Database is empty. Migrating database.json to SQLite database.db...');
-        try {
-          const jsonDb = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-          saveDbToSqlite(dbSync, jsonDb);
-          console.log('SQLite: Migration completed successfully.');
-        } catch (migrationError) {
-          console.error('SQLite Migration failed:', migrationError.message);
-        }
-      }
     } catch (sqliteInitError) {
       console.error('Failed to initialize SQLite DatabaseSync:', sqliteInitError.message);
       dbSync = null;
@@ -2442,8 +2470,9 @@ async function initializeDatabase() {
 
   if (dbSync) {
     try {
-      const { createPlatformAuthority } = await import('./platform-runtime-bridge.mjs');
+      const { createPlatformAuthority, mountPlatformApi } = await import('./platform-runtime-bridge.mjs');
       platformAuthority = createPlatformAuthority(dbSync);
+      platformApiHandler = await mountPlatformApi(platformAuthority, '/api/v1');
       console.log('Phase 02 platform authority initialized');
     } catch (err) {
       console.error('Failed to initialize Phase 02 platform authority:', err.message);

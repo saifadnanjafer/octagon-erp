@@ -3309,6 +3309,20 @@ async function switchAuthUser(userId, force) {
   }
 }
 
+let _serverAuthOptions = [];
+
+async function loadServerAuthOptions() {
+  try {
+    const res = await fetch('/api/auth/options', { credentials: 'same-origin' });
+    const payload = await res.json().catch(() => ({}));
+    _serverAuthOptions = res.ok && Array.isArray(payload.users) ? payload.users : [];
+  } catch (_) {
+    _serverAuthOptions = [];
+  }
+  refreshAuthUserSwitcher();
+  return _serverAuthOptions;
+}
+
 function refreshAuthUserSwitcher() {
   const sel = document.getElementById('authUserSwitcher');
   if (!sel) return;
@@ -3322,7 +3336,15 @@ function refreshAuthUserSwitcher() {
     { id: 'viewer_user', name: 'مراقب قراءة', displayName: 'مراقب قراءة', role: 'viewer_user', roleId: 'viewer_user', groups: [], status: 'active', is_active: true, source: 'phase6d_fallback' }
   ];
   const currentId = window.PentagonAuth?._currentUserId || sel.value || 'system';
-  const sourceUsers = (omni && Array.isArray(omni.users) && omni.users.length) ? omni.users : fallbackUsers;
+  const serverUsers = _serverAuthOptions.map(user => ({
+    ...user,
+    id: user.login || user.id,
+    name: user.name || user.displayName || user.login,
+    displayName: user.displayName || user.name || user.login,
+    is_active: true,
+    status: 'active',
+  }));
+  const sourceUsers = serverUsers.length ? serverUsers : ((omni && Array.isArray(omni.users) && omni.users.length) ? omni.users : []);
   const activeUsers = sourceUsers.filter(u => u && u.is_active !== false && u.status !== 'inactive');
   const rank = id => ({ system: 0, system_admin: 1, finance_manager: 2, workshop_manager: 3, operator_user: 4, employee_user: 5, viewer_user: 6, mgr_finance: 7, user_finance: 8, mgr_workshop: 9 }[id] ?? 50);
   const sorted = [...activeUsers].sort((a, b) => {
@@ -3421,7 +3443,8 @@ function checkLoginStatus() {
   const overlay = document.getElementById('loginOverlay');
   const intro = document.getElementById('introScreen');
   if (!overlay) return;
-  const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id') || applyOctagonAutoLogin();
+  const storedClientId = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
+  const stored = window.__octagonServerSession?.authenticated ? storedClientId : '';
   if (!stored) {
     if (intro) {
       intro.style.display = 'flex';
@@ -3575,7 +3598,7 @@ async function ensureOctagonLibrary(key, globalName, errorMessage) {
   return lib;
 }
 
-async function performLogin(userId) {
+async function legacyPerformLogin(userId) {
   try {
     if (!omni || !Array.isArray(omni.users)) {
       normalizeOmniUsersRolesPermissions();
@@ -3659,6 +3682,51 @@ async function performLogin(userId) {
   } catch (err) {
     console.error("Login flow error:", err);
     showToast("حدث خطأ أثناء تسجيل الدخول", "danger");
+  }
+}
+
+async function performLogin(userId) {
+  try {
+    const listedUser = _serverAuthOptions.find(user => (user.login || user.id) === userId) || {};
+    const displayName = listedUser.name || listedUser.displayName || userId;
+    const password = await showPasswordPrompt(displayName);
+    if (password === null) return;
+    const payload = await syncServerAuthSession(userId, password);
+    if (!payload?.authenticated) {
+      showToast(payload?.error || 'Login failed.', 'danger');
+      return;
+    }
+
+    if (!omni || !Array.isArray(omni.users)) normalizeOmniUsersRolesPermissions();
+    omni.users = Array.isArray(omni.users) ? omni.users : [];
+    let userObj = omni.users.find(user => user.id === userId);
+    if (!userObj) {
+      userObj = {
+        id: userId,
+        name: payload.user?.name || displayName,
+        displayName: payload.user?.name || displayName,
+        role: 'authenticated',
+        groups: [],
+        status: 'active',
+        is_active: true,
+      };
+      omni.users.push(userObj);
+    }
+    userObj.sessionStartedAt = new Date().toISOString();
+    localStorage.setItem('octagon_user_id', userId);
+    localStorage.setItem('omni_current_user_id', userId);
+    await loadData();
+    if (!omni.users.some(user => user.id === userId)) omni.users.push(userObj);
+    switchAuthUser(userId, true);
+    showToast('Login successful.', 'success');
+    const overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.style.display = 'none';
+    const intro = document.getElementById('introScreen');
+    if (intro) intro.style.display = 'none';
+    checkLoginStatus();
+  } catch (err) {
+    console.error('Login flow error:', err);
+    showToast('Login failed.', 'danger');
   }
 }
 
@@ -16716,6 +16784,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (switcher && window.PentagonAuth) {
     switcher.value = window.PentagonAuth._currentUserId;
   }
+  await loadServerAuthOptions();
   await loadData();
   window.__dataLoadComplete = true; // unlock saveData() now that real data is loaded
   if (migrateEmployeePrevAdvanceSignConvention()) saveData();

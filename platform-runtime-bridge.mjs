@@ -136,7 +136,12 @@ export function createPlatformAuthority(dialect) {
   authority.resolveContext = (req, opts) => resolveContextFromRequest(authority, req, opts);
   authority.mountApi = async (prefix) => {
     const { createApiHandler } = await import('./platform/api/index.mjs');
-    return createApiHandler({ dialect: authority.dialect, prefix });
+    return createApiHandler({
+      dialect: authority.dialect,
+      prefix,
+      resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
+      authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
+    });
   };
 
   return authority;
@@ -336,7 +341,27 @@ function readBody(req, limit = 1024 * 1024) {
  */
 export async function mountPlatformApi(authority, prefix = '/api/v1') {
   const { createApiHandler } = await import('./platform/api/index.mjs');
-  return createApiHandler({ dialect: authority.dialect, prefix });
+  return createApiHandler({
+    dialect: authority.dialect,
+    prefix,
+    resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
+    authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
+  });
+}
+
+function resolveApiContext(authority, req, requestUrl) {
+  const ctx = resolveContextFromRequest(authority, req, { touch: true });
+  if (!ctx) return null;
+  const headers = req.headers || {};
+  return {
+    ...ctx,
+    userId: ctx.actorId,
+    companyId: ctx.activeCompanyId || ctx.companyId || null,
+    branchId: ctx.activeBranchId || ctx.branchId || null,
+    correlationId: headers['x-correlation-id'] || requestUrl.searchParams.get('correlation_id') || `corr_${Math.random().toString(36).slice(2)}`,
+    idempotencyKey: headers['x-idempotency-key'] ? String(headers['x-idempotency-key']).slice(0, 120) : null,
+    sourceChannel: 'api',
+  };
 }
 
 /**

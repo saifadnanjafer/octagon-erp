@@ -4,7 +4,8 @@
 **Verified:** 2026-07-21  
 **Octagon root:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`  
 **Branch:** `codex/phase7-safe-baseline`  
-**Current commit:** `f5f4cf559b2301e57401fbd3e6dc0d098f9291c3` (Phase 01 baseline; Phase 02 work remains in the worktree)  
+**Parent baseline commit:** `f5f4cf559b2301e57401fbd3e6dc0d098f9291c3`  
+**Phase 02 checkpoint commit:** `cad1bb1` (canonical platform, tests, and evidence saved; runtime cutover still pending)  
 **VNext reference:** `octagon-erp-commercial-vnext` @ `72d2c6b4f568650203795d463c25a12ff06ad55a`  
 **Environment:** Node v24.14.1, npm 11.11.0, SQLite `node:sqlite` `DatabaseSync`
 
@@ -52,4 +53,3 @@ The next authorized action is to perform the controlled runtime identity/ACL
 cutover with disposable migration rehearsal, parity/reconciliation, rollback,
 real HTTP/browser proof, and an owner-visible retirement commit. **Phase 03 is
 not started or authorized.**
-

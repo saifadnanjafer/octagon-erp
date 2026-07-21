@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "phase": "01",
+    "document": "phase-01-source-manifest.json",
+    "created": "2026-07-21T00:36:00Z",
+    "workspace_root": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0",
+    "octagon_root": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp",
+    "vnext_root": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp-commercial-vnext",
+    "node_version": "v24.14.1",
+    "npm_version": "11.11.0"
+  },
+  "octagon": {
+    "branch": "codex/phase7-safe-baseline",
+    "commit": "f5f4cf559b2301e57401fbd3e6dc0d098f9291c3",
+    "worktree_status": "clean",
+    "files": {
+      "server.js": "8f2532c9ce0761cf64bc7ac6f9c83e2194db40a6353bc3246b5841074a2a4074",
+      "app.js": "e26bc1778ba751bb7d7a45a4c5351b436e2b6a44137a5ec680f043349bb27fea",
+      "index.html": "54310d5f3117c9a45d73e70395070348085627daf682c26acbc81422e3ea359d",
+      "package.json": "6d2d02494e373cd25b69985b76d562e65e3272622fdeac59f4b4bbd203694631",
+      "acl.json": "ed2cd535f649c09884679bf7b0057e4463ebaf8241915fa35c335c62ce4e0d0a",
+      "platform/server/entities.json": "7bd25e0bb990f52a4bc6a47e2f499fd8645e4bdc40dfa67f61c9c9712c723546",
+      "platform/server/crud-engine.js": "9dcaa79091d10f5423fb085876d359a2f39fa1fb9fd70650381e76ce13973b4e",
+      "services/permissionService.js": "11c4dffdcc8da0d977b17956e3b32a4ae687fad427fc6f5975347324dbc7ef21",
+      "services/recordService.js": "0f83aecebb5cf1d9ee7e9732fceb131fa83d72db30fe970a791a299128ee75d6",
+      "services/auditService.js": "d0e9dceea5ab5bbe9abaf3103e6eacaab56f271e05409ab356291cdd1ffc4c32",
+      "services/stateService.js": "84a75bf4888ae1e902047d6f644061a300a515a6ff9debcec8de5d6b0c803283"
+    }
+  },
+  "vnext": {
+    "branch": "automation/r9-marketplace-distribution",
+    "commit": "72d2c6b4f568650203795d463c25a12ff06ad55a",
+    "worktree_status": "clean",
+    "files": {
+      "server.js": "22b48db2618315394aa4253e9151790f2b864d670fcc7a5a77d0b6a509f1398f",
+      "app.js": "697ea2b89bffe67bc6296f02ada75452fdf31da0ac6f282bd6524391a422bc15",
+      "index.html": "bf4c3f5d24af1e1c7c3e9ed8a6ffeb2f10f7f2a1dffd890955337df7695b0087",
+      "package.json": "6d2d02494e373cd25b69985b76d562e65e3272622fdeac59f4b4bbd203694631",
+      "acl.json": "ed2cd535f649c09884679bf7b0057e4463ebaf8241915fa35c335c62ce4e0d0a",
+      "vnext/server/db/migration-runner.mjs": "0736a6fe45f5c9749158f8db795da70dbe7ac2843b7396049bc13dd2bc82d4d2",
+      "vnext/server/modules/module-framework.js": "5a863785c3016fe53288360a7ddafd8169c42032255939b8d39c52b5b8d4b25c",
+      "vnext/server/modules/module-lifecycle.js": "c1da1a48d1bdf316f1f92e9c6bf65cc92697f809cf41626b891cc783378f6d71",
+      "vnext/server/modules/packs/pack-sdk-engine.js": "5d6a4aa0f53f89495a5790711bc4ea2ab10a2e6a230248364f65c20bd0f9428b",
+      "vnext/server/crud/crud-engine.js": "2e205ebaa374ba164526af711bd1158d5dbbe892bdf35ed8b71863d80fd58570",
+      "vnext/server/acl/acl-engine.js": "9ff79b42ad3e3ee8147babbad5110dd20401defa7819ba780e1d3006f6d9c18a",
+      "vnext/server/sequences/sequences.js": "ad933ef537d0f94e0868f34fa016a0390e98dfaca82862bdc80e41615871c40e",
+      "vnext/server/audit/audit.js": "eaed5195d0875c9232abf0b778f22dbb216d13c0be7d369796e6fdb47ee5025f",
+      "vnext/server/events/events.js": "97879a812a42b15796950b3062eb9a13d343674bd5fc565684dbf9f9cdbb7b55",
+      "vnext/server/events/outbox.js": "030c29f2291d507b8c417821c6e55e28c0682106e9709f5c7a20b0fb204d9151",
+      "vnext/server/state/doc-state.js": "acbfd72ec0963bcfeb704fa1f00648e43536ec0f2c6b6457e9cfcd251e53de8b",
+      "vnext/server/workflow/workflow-engine.js": "cbd876c68cf1dd75c3736b17dcbf0f4a89eacb70b8579858c38440c6b1b68917"
+    }
+  },
+  "donors": {
+    "odoo": {
+      "path": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0",
+      "kind": "workspace_root",
+      "snapshot": "git-tracked-odoo-19.0",
+      "key_subsystems": {
+        "modules": "odoo/modules/",
+        "account": "addons/account/",
+        "stock": "addons/stock/",
+        "sale": "addons/sale/"
+      }
+    },
+    "erpnext": {
+      "path": "erp-research/erpnext-develop",
+      "kind": "extracted_snapshot",
+      "has_git": false,
+      "key_subsystems": {
+        "accounts": "erpnext/accounts/",
+        "stock": "erpnext/stock/",
+        "buying": "erpnext/buying/",
+        "selling": "erpnext/selling/"
+      }
+    },
+    "frappe": {
+      "path": "erp-research/frappe-develop",
+      "kind": "MISSING",
+      "note": "Directory not present. Frappe-derived behavior will be implemented clean-room or deferred."
+    },
+    "ruoyi": {
+      "path": "erp-research/ruoyi-vue-pro-master",
+      "kind": "extracted_snapshot",
+      "has_git": false,
+      "key_subsystems": {
+        "framework": "yudao-framework/",
+        "system": "yudao-module-system/",
+        "bpm": "yudao-module-bpm/"
+      }
+    },
+    "ruoyi_ui": {
+      "path": "erp-research/yudao-ui-admin-vue3-master",
+      "kind": "MISSING",
+      "note": "Directory not present. RuoYi frontend behavior will be inferred from backend or deferred."
+    },
+    "nocobase": {
+      "path": "erp-research/nocobase-main",
+      "kind": "extracted_snapshot",
+      "has_git": false,
+      "key_subsystems": {
+        "core_database": "packages/core/database/",
+        "core_acl": "packages/core/acl/",
+        "core_server": "packages/core/server/",
+        "workflow": "packages/plugins/@nocobase/plugin-workflow/"
+      }
+    },
+    "aureus": {
+      "path": "erp-research/aureuserp-master",
+      "kind": "extracted_snapshot",
+      "has_git": false,
+      "key_subsystems": {
+        "plugins": "plugins/webkul/",
+        "plugin_manager": "plugins/webkul/plugin-manager/"
+      }
+    },
+    "idurar": {
+      "path": "erp-research/idurar-erp-crm-master",
+      "kind": "extracted_snapshot",
+      "has_git": false,
+      "key_subsystems": {
+        "backend_controllers": "backend/src/controllers/",
+        "frontend_modules": "frontend/src/modules/"
+      }
+    }
+  },
+  "disposable_databases": {
+    "fresh_install": "octagon-erp/database-test-fresh.db",
+    "compat_copy": "octagon-erp/database-test-compat-*.db",
+    "vnext_replay": "octagon-erp-commercial-vnext/vnext-data/vnext-migrations-test.db",
+    "rollback": "octagon-erp/database-test-rollback.db"
+  },
+  "known_missing_paths": [
+    "erp-research/frappe-develop",
+    "erp-research/yudao-ui-admin-vue3-master"
+  ],
+  "frozen_zones": [
+    "payroll calculations and Iraqi payroll behavior",
+    "attendance source and calculations",
+    "smart timesheet behavior",
+    "employee records required by payroll"
+  ]
+}

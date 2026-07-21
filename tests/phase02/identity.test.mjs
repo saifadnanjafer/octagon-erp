@@ -2,12 +2,13 @@
 // Packets 02.01 – 02.05. Every test uses a disposable temp database.
 
 import assert from 'node:assert';
+import crypto from 'node:crypto';
 import { setup, cleanup, run, seedOrg } from './harness.mjs';
 import { createUserDirectory, mapLegacyRoles } from '../../platform/identity/users/index.mjs';
 import { createMembershipDirectory, MembershipError } from '../../platform/organizations/memberships/index.mjs';
 import { createSessionAuthority, SessionError } from '../../platform/identity/sessions/index.mjs';
 import {
-  checkPasswordPolicy, savePasswordPolicy, loadPasswordPolicy, setPassword,
+  checkPasswordPolicy, savePasswordPolicy, loadPasswordPolicy, setPassword, checkCredentials,
   createPasswordReset, consumePasswordReset, PasswordError,
 } from '../../platform/identity/passwords/index.mjs';
 import { createMfaAuthority, generateHOTP, _internal as mfaInternal } from '../../platform/identity/mfa/index.mjs';
@@ -284,6 +285,30 @@ async function testPasswordNeverStoredInClear() {
   assert.ok(row.hash && row.hash !== STRONG);
   assert.ok(!JSON.stringify(row).includes(STRONG), 'plaintext password appears nowhere in the credential row');
   assert.strictEqual(row.algorithm, 'scrypt');
+  await cleanup(dialect, dbPath);
+}
+
+async function testLegacySha256PasswordMigration() {
+  const { dialect, dbPath } = await setup();
+  const org = seedOrg(dialect);
+  const salt = 'deadbeef';
+  const legacyHash = crypto.createHash('sha256').update(STRONG + salt).digest('hex');
+  // Simulate a user that was created before the platform cutover.
+  dialect.prepare(`
+    INSERT INTO identity_credentials (user_id, algorithm, salt, hash, must_change, changed_at, changed_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(user_id) DO UPDATE SET algorithm=excluded.algorithm, salt=excluded.salt, hash=excluded.hash,
+      must_change=excluded.must_change, changed_at=excluded.changed_at, changed_by=excluded.changed_by
+  `).run(org.userClerk, 'legacy_sha256', salt, legacyHash, 0, new Date().toISOString(), 'test');
+  const before = dialect.prepare('SELECT algorithm FROM identity_credentials WHERE user_id = ?').get(org.userClerk);
+  assert.strictEqual(before.algorithm, 'legacy_sha256');
+
+  const result = checkCredentials(dialect, org.userClerk, STRONG);
+  assert.strictEqual(result.ok, true, `legacy password verification failed: ${result.reasonCode}`);
+
+  const after = dialect.prepare('SELECT algorithm FROM identity_credentials WHERE user_id = ?').get(org.userClerk);
+  assert.strictEqual(after.algorithm, 'scrypt', 'legacy credential must be upgraded to scrypt on first successful login');
+  assert.ok(!JSON.stringify(after).includes(legacyHash), 'legacy hash must not remain in the row after upgrade');
   await cleanup(dialect, dbPath);
 }
 
@@ -609,6 +634,7 @@ await run('Phase 02 / identity, session, MFA, SSO, service identity', [
   ['02.02 concurrent-session policy', testConcurrentSessionPolicy],
   ['02.03 password policy enforcement', testPasswordPolicyEnforcement],
   ['02.03 password never stored in clear', testPasswordNeverStoredInClear],
+  ['02.03 legacy SHA-256 password migrates to scrypt on first login', testLegacySha256PasswordMigration],
   ['02.03 reset token expiry and single use', testResetTokenExpiryAndReuse],
   ['02.03 admin reset discloses no credential', testAdminResetWithoutCredentialDisclosure],
   ['02.03 TOTP enrollment, replay, recovery codes', testTotpEnrollmentReplayAndRecovery],

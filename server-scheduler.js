@@ -423,12 +423,11 @@ function installOctagonScheduler(context = {}) {
   }
 
   function authorize(req, res) {
-    if (typeof ctx.isLocalRequest === 'function' && ctx.isLocalRequest(req)) return true;
-    if (typeof ctx.requireRoleSession === 'function') {
-      const guard = ctx.requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    if (typeof ctx.requireSession === 'function') {
+      const guard = ctx.requireSession(req, res);
       return !!guard?.ok;
     }
-    sendJson(res, 403, { ok: false, error: 'Scheduler API requires local access or system/finance role' });
+    sendJson(res, 403, { ok: false, error: 'Scheduler API requires a session' });
     return false;
   }
 

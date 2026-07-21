@@ -61,6 +61,7 @@ const SQLITE_DISABLED = process.env.USE_SQLITE === 'false';
 const USE_SQLITE = !SQLITE_DISABLED && (process.env.USE_SQLITE === 'true' || fs.existsSync(SQLITE_DB_FILE)) && !!DatabaseSync;
 
 let dbSync = null;
+let platformAuthority = null;
 const BACKUP_KEEP = 30;
 const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per hour of activity
 let lastAutoBackupMs = 0;
@@ -73,40 +74,8 @@ const BACKUP_LOG_FILE = process.env.OCTAGON_BACKUP_LOG ? path.resolve(process.en
 const BACKUP_DIR = process.env.OCTAGON_BACKUP_DIR ? path.resolve(process.env.OCTAGON_BACKUP_DIR) : __dirname;
 const REVIEW_REPORT_DIR = process.env.OCTAGON_REVIEW_REPORT_DIR ? path.resolve(process.env.OCTAGON_REVIEW_REPORT_DIR) : path.join(__dirname, 'review-reports');
 const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
-const authSessions = new Map();
-const authFailures = new Map();
-
-// Session persistence (2026-07-05): authSessions used to live ONLY in this
-// in-memory Map, so every server restart silently invalidated all cookies —
-// the client still looked logged-in (localStorage user) but every protected
-// API call failed with 401 "Login session required" (bit Saif mid-payroll).
-// Sessions are now write-through mirrored to the SQLite `auth_sessions`
-// table and restored on boot. Best-effort: if SQLite is down we degrade to
-// the old in-memory behavior rather than blocking logins.
-function persistAuthSession(token, session) {
-  try {
-    if (dbSync) dbSync.prepare('INSERT OR REPLACE INTO auth_sessions (token, userId, createdAt, expiresAt) VALUES (?, ?, ?, ?)')
-      .run(token, session.userId || '', session.createdAt || Date.now(), session.expiresAt || 0);
-  } catch (_) {}
-}
-function deletePersistedAuthSession(token) {
-  try { if (dbSync) dbSync.prepare('DELETE FROM auth_sessions WHERE token = ?').run(token); } catch (_) {}
-}
-function restoreAuthSessionsFromDb() {
-  if (!dbSync) return;
-  try {
-    dbSync.prepare('DELETE FROM auth_sessions WHERE expiresAt <= ?').run(Date.now());
-    const rows = dbSync.prepare('SELECT token, userId, createdAt, expiresAt FROM auth_sessions').all();
-    rows.forEach(row => authSessions.set(row.token, {
-      userId: row.userId,
-      createdAt: Number(row.createdAt) || Date.now(),
-      expiresAt: Number(row.expiresAt) || 0,
-    }));
-    if (rows.length) console.log(`Auth: restored ${rows.length} login session(s) from SQLite (survive restarts)`);
-  } catch (e) {
-    console.warn('Auth: session restore failed:', e.message);
-  }
-}
+// Phase 02: session authority has moved to platform/identity/sessions (identity_sessions table).
+// The legacy authSessions Map, auth_sessions table, and ACL.json are retired.
 const V5_PRESERVED_TOP_LEVEL_KEYS = [
   '_schema_version',
   '_migrated_at',
@@ -174,80 +143,9 @@ function logWriteGuardRejection(reason, detail, req) {
 // T3.3 (server half): coarse role x collection write enforcement using
 // acl.json (client mirror: modules/acl-client.js). Loaded once at startup;
 // acl.json is small and hand-edited, not worth hot-reloading.
-let ACL_MATRIX = { groups: {}, roles: {}, roleAliases: {}, defaultRole: 'viewer' };
-try {
-  ACL_MATRIX = JSON.parse(fs.readFileSync(path.join(__dirname, 'acl.json'), 'utf8'));
-} catch (e) {
-  console.warn('[acl] failed to load acl.json, ACL enforcement disabled (fail-open to avoid blocking all writes on a config typo):', e.message);
-}
-const ACL_ENABLED = !!(ACL_MATRIX.groups && Object.keys(ACL_MATRIX.groups).length);
-
-// Explicit override for this app's known seed users (phase6d_seed, see
-// omni.users/omni.roles): their real `groups` (from enrichAuthUser) don't
-// all resolve cleanly onto acl.json's role keys — operator_user's group is
-// "workshop.user" (not an ACL role), and employee_user/viewer_user have
-// EMPTY groups arrays. Falling through to acl.json's generic alias system
-// for these specific users would silently downgrade finance_manager/
-// workshop_manager (whose groups list happens not to match glancing at
-// role name casing in some code paths) to defaultRole "viewer" — verified
-// live against the actual seeded data before writing this. userId is the
-// most reliable signal for the known accounts; acl.json's own
-// roles/roleAliases still apply for any other/future user.
-const ACL_SEED_USER_ROLE_OVERRIDES = {
-  system_admin: 'system.admin',
-  finance_manager: 'finance.manager',
-  workshop_manager: 'workshop.manager',
-  operator_user: 'employee',
-  employee_user: 'employee',
-  viewer_user: 'viewer',
-};
-
-function resolveAclRole(session) {
-  if (!ACL_ENABLED) return null;
-  if (session.userId && ACL_SEED_USER_ROLE_OVERRIDES[session.userId]) {
-    return ACL_SEED_USER_ROLE_OVERRIDES[session.userId];
-  }
-  const groups = Array.isArray(session.groups) ? session.groups : [];
-  const direct = groups.find(g => ACL_MATRIX.roles && ACL_MATRIX.roles[g]);
-  if (direct) return direct;
-  for (const g of groups) {
-    const alias = ACL_MATRIX.roleAliases && ACL_MATRIX.roleAliases[g];
-    if (alias && ACL_MATRIX.roles && ACL_MATRIX.roles[alias]) return alias;
-  }
-  return ACL_MATRIX.defaultRole || 'viewer';
-}
-
-function aclGroupForCollection(collectionPath) {
-  const key = String(collectionPath || '');
-  let best = null;
-  Object.keys(ACL_MATRIX.groups || {}).forEach(group => {
-    (ACL_MATRIX.groups[group].collections || []).forEach(prefix => {
-      if (key === prefix || key.startsWith(`${prefix}.`)) {
-        if (!best || String(prefix).length > String(best.prefix).length) best = { group, prefix };
-      }
-    });
-  });
-  return best ? best.group : '';
-}
-
-const ACL_ACCESS_RANK = { none: 0, read: 1, write: 2 };
-function aclCan(role, group, action) {
-  if (!ACL_ENABLED || !group) return true; // no matrix loaded, or collection isn't ACL-mapped -> not this gate's concern
-  const policy = (ACL_MATRIX.roles && ACL_MATRIX.roles[role]) || (ACL_MATRIX.roles && ACL_MATRIX.roles[ACL_MATRIX.defaultRole]) || {};
-  const have = ACL_ACCESS_RANK[policy[group]] ?? 0;
-  const need = ACL_ACCESS_RANK[action] ?? 2;
-  return have >= need;
-}
-
-const ACL_LOG_FILE = path.join(__dirname, 'server-acl.log');
-function logAclRejection(detail) {
-  try {
-    fs.appendFileSync(ACL_LOG_FILE, JSON.stringify({ at: new Date().toISOString(), ...detail }) + '\n');
-  } catch (e) {
-    console.warn('[acl] failed to write server-acl.log:', e.message);
-  }
-}
-
+// Phase 02: the legacy acl.json authority has been retired. The canonical
+// permission evaluator lives in platform/authorization/evaluator and is created
+// by the platform runtime bridge after migrations are applied.
 const SERVER_TENANT_COLLECTIONS = new Set([
   'employees',
   'contacts',
@@ -1423,124 +1321,40 @@ function appendServerAudit(db, event = {}) {
   if (db.audit_log.length > 5000) db.audit_log.length = 5000;
   if (db.omni.historyLedger.length > 5000) db.omni.historyLedger.length = 5000;
 }
-
-function authSessionFromRequest(req) {
-  const token = parseCookies(req).octagon_session;
-  if (!token) return null;
-  const session = authSessions.get(token);
-  if (!session) return null;
-  if (Date.now() > session.expiresAt) {
-    authSessions.delete(token);
-    deletePersistedAuthSession(token);
-    try {
-      const db = loadDbForMutation();
-      appendServerAudit(db, { action: 'session_expired', status: 'expired', actorId: session.userId || 'unknown', actorName: session.userId || 'unknown', payload: { userId: session.userId || '', expiredAt: new Date().toISOString() } });
-      saveDb(db);
-    } catch (_) {}
-    return null;
-  }
-  return { token, session };
-}
-
-function hashClientPassword(password, salt) {
-  return crypto.createHash('sha256').update(String(password || '') + String(salt || '')).digest('hex');
-}
-
-function isLocalRequest(req) {
-  const addr = String(req.socket?.remoteAddress || '');
-  const host = String(req.headers.host || '').split(':')[0].toLowerCase();
-  return ['127.0.0.1', '::1', '::ffff:127.0.0.1', 'localhost'].includes(addr) ||
-    ['127.0.0.1', 'localhost', '[::1]', '::1'].includes(host);
-}
-
-function isDevMode() {
-  return process.env.NODE_ENV !== 'production' && process.env.OCTAGON_PRODUCTION !== 'true';
-}
-
-// Strict loopback check for WRITE-trust: only the actual TCP socket address is
-// consulted — NOT the Host header, which the client fully controls. (A remote
-// attacker could send `Host: localhost` and pass the looser isLocalRequest();
-// that's harmless for the read-only endpoints that use it, but must never
-// grant writes.) A real remote client's remoteAddress is its LAN/public IP,
-// never loopback, so it can never be trusted here.
-function isLoopbackSocket(req) {
-  const addr = String(req.socket?.remoteAddress || '');
-  return ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(addr);
-}
-
-// The physical console (localhost) is the trusted operator machine, so it may
-// write even under NODE_ENV=production (2026-07-06). The pilot's production
-// hardening exists to protect NETWORK access — a browser on a *different* PC
-// pointed at this server is NOT loopback and still needs a real login session.
-// Before this, production mode required a live session for EVERY write, so a
-// dead session (server restart / 8h TTL expiry) silently rejected every save
-// with 401 — the operator kept editing advances/payroll/timesheet and nothing
-// persisted. Set OCTAGON_TRUST_LOCALHOST=false to require a session even on
-// the console.
-function isLocalWriteTrusted(req) {
-  const trustLocalhost = process.env.OCTAGON_TRUST_LOCALHOST !== 'false';
-  return (isDevMode() || trustLocalhost) && isLoopbackSocket(req);
-}
-
-function safeSessionInfo(req) {
-  const active = authSessionFromRequest(req);
-  if (!active) return null;
-  return {
-    userId: active.session.userId,
-    createdAt: new Date(active.session.createdAt).toISOString(),
-    expiresAt: new Date(active.session.expiresAt).toISOString(),
-  };
-}
-
-function sessionGroupsForUser(db, userId) {
-  const user = userListFromDb(db).find(item => item.id === userId);
-  const enriched = enrichAuthUser(db, user);
-  return Array.isArray(enriched?.groups) ? enriched.groups : [];
-}
-
 function requireSession(req, res, options = {}) {
-  const allowLocalDev = options.allowLocalDev !== false;
-  if (allowLocalDev && isLocalWriteTrusted(req)) {
-    return { ok: true, mode: isDevMode() ? 'local-dev' : 'local-trusted', userId: 'local-console', groups: ['system.admin', 'finance.manager'], user: null };
-  }
-  const active = authSessionFromRequest(req);
-  if (!active) {
-    sendJson(res, 401, { success: false, error: 'Login session required' });
+  if (!platformAuthority) {
+    sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
     return { ok: false };
   }
-  try {
-    const db = loadDbForMutation();
-    const user = userListFromDb(db).find(item => item.id === active.session.userId);
-    if (!user) {
-      authSessions.delete(active.token);
-      deletePersistedAuthSession(active.token);
-      sendJson(res, 401, { success: false, error: 'Session user no longer exists' });
-      return { ok: false };
-    }
-    const enriched = enrichAuthUser(db, user);
-    return { ok: true, mode: 'server', userId: user.id, groups: enriched.groups || [], user: enriched };
-  } catch (error) {
-    sendJson(res, 500, { success: false, error: error.message || 'Session check failed' });
+  const result = platformAuthority.require(req, res, { touch: options.touch !== false });
+  if (!result.ok) return result;
+  const user = platformAuthority.users.get(result.ctx.actorId);
+  return { ok: true, userId: result.ctx.actorId, user: sanitizeAuthUser(user), ctx: result.ctx };
+}
+
+function requirePermission(req, res, permission) {
+  if (!platformAuthority) {
+    sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
     return { ok: false };
   }
+  return platformAuthority.require(req, res, { permission });
 }
 
 function requireRoleSession(req, res, groups, options = {}) {
   const session = requireSession(req, res, options);
   if (!session.ok) return session;
-  const required = Array.isArray(groups) ? groups : [groups];
-  if (session.mode === 'local-dev' || session.mode === 'local-trusted') return session;
-  if (!required.some(group => session.groups.includes(group))) {
-    sendJson(res, 403, { success: false, error: 'Insufficient role for this API endpoint', required });
-    return { ok: false };
-  }
-  return session;
+  // Legacy group-based guard shim. The platform is permission-based; owners are
+  // the seeded administrator role and are treated as having the legacy admin/manager
+  // groups. Non-owners are denied. This preserves the shape for the scheduler and
+  // Jarvis callers while the runtime is fully on the platform authority.
+  if (session.user?.isOwner || session.ctx?.isOwner) return session;
+  sendJson(res, 403, { success: false, error: 'Insufficient role for this API endpoint', required: groups });
+  return { ok: false };
 }
 
 function requireAdminSession(req, res, options = {}) {
   return requireRoleSession(req, res, ['system.admin'], options);
 }
-
 function safeReviewReportSegment(value, fallback = 'report') {
   const cleaned = String(value || fallback)
     .toLowerCase()
@@ -1668,7 +1482,7 @@ function serverStatusSnapshot() {
     backupDir: BACKUP_DIR,
     uptimeSeconds: Math.round(process.uptime()),
     nodeVersion: process.version,
-    environmentMode: process.env.NODE_ENV || (isDevMode() ? 'local-dev' : 'production'),
+    environmentMode: process.env.NODE_ENV || 'production',
   };
 }
 
@@ -1728,24 +1542,25 @@ function apiProtectionMatrix() {
     { endpoint: 'GET /api/auth/session', classification: 'public-safe-session-info', protection: 'public sanitized current session only' },
     { endpoint: 'POST /api/auth/login', classification: 'public-auth-entry', protection: 'public with password hash validation and failure lock' },
     { endpoint: 'POST /api/auth/logout', classification: 'session-clear', protection: 'safe clear, works with or without active session' },
+    { endpoint: 'GET /api/auth/bootstrap', classification: 'governance bootstrap', protection: 'requires a valid session and platform:page:home permission' },
     { endpoint: 'GET /api/server/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
     { endpoint: 'GET /api/release/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
-    { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'localhost or login session only; API key stays server-side' },
-    { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'localhost or login session only; writes only to review-reports' },
-    { endpoint: 'GET /api/db', classification: 'public/dev-safe read', protection: 'local/dev readable; not production-safe' },
-    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'admin session or local-dev only; T3.3 ACL strips (not rejects) collection groups the role lacks write on, logged to server-acl.log' },
-    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'login session or local-dev only; T3.3 ACL rejects (403) if role lacks write on the collection\'s group, logged to server-acl.log' },
-    { endpoint: 'POST /api/record', classification: 'data write', protection: 'login session or local-dev only; T3.3 ACL rejects (403) if role lacks write on the collection\'s group, logged to server-acl.log' },
-    { endpoint: 'POST /api/upload', classification: 'file write', protection: 'login session or local-dev only' },
-    { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'system admin/finance manager or local-dev only' },
-    { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'system admin/finance manager or local-dev only' },
-    { endpoint: 'GET /api/backup/verify', classification: 'backup dry verification', protection: 'system admin/finance manager or local-dev only' },
-    { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'system admin/finance manager or local-dev only' },
-    { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'system admin plus typed confirmation and pre-restore backup' },
+    { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'requires platform:tts:use permission; API key stays server-side' },
+    { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'requires platform:review_report:save permission; writes only to review-reports' },
+    { endpoint: 'GET /api/db', classification: 'dev-safe read', protection: 'no session required in this build; not production-safe' },
+    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'requires platform:db:write permission' },
+    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'requires platform:db:write permission' },
+    { endpoint: 'POST /api/record', classification: 'data write', protection: 'requires platform:db:write permission' },
+    { endpoint: 'POST /api/upload', classification: 'file write', protection: 'requires a valid session' },
+    { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'requires platform:backup:verify permission' },
+    { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'requires platform:backup:verify permission' },
+    { endpoint: 'GET /api/backup/verify', classification: 'backup dry verification', protection: 'requires platform:backup:verify permission' },
+    { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'requires platform:backup:restore permission' },
+    { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'requires platform:backup:restore permission plus typed confirmation and pre-restore backup' },
     { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'verify token/signature/rate limit preserved' },
-    { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'localhost or system admin/finance manager only' },
-    { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'localhost or system admin/finance manager only' },
-    { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'localhost or system admin/finance manager only' },
+    { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'requires a valid session' },
+    { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'requires a valid session' },
+    { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'requires a valid session' },
     { endpoint: 'POST /api/sequence/next', classification: 'document numbering (T1.4)', protection: 'open utility; issues next number from dedicated sequences table only (no business data touched), race-safe transaction' },
     { endpoint: 'GET /api/sequence/peek', classification: 'document numbering read (T1.4)', protection: 'open read-only; returns next number without consuming it' },
   ];
@@ -1808,88 +1623,23 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/auth/session' && req.method === 'GET') {
-    const active = authSessionFromRequest(req);
-    // `enforced` tells the client whether protected APIs would actually reject
-    // it without a session — false when this request comes from the trusted
-    // localhost console, so the client only nags for re-login on network
-    // access where a session is genuinely required.
-    const enforced = !isLocalWriteTrusted(req);
-    if (!active) return sendJson(res, 200, { authenticated: false, user: null, enforced });
-    try {
-      const db = loadDbForMutation();
-      const user = userListFromDb(db).find(item => item.id === active.session.userId);
-      return sendJson(res, 200, {
-        authenticated: !!user,
-        user: enrichAuthUser(db, user),
-        expiresAt: new Date(active.session.expiresAt).toISOString(),
-      });
-    } catch (error) {
-      return sendJson(res, 500, { authenticated: false, error: error.message || 'Session check failed' });
-    }
+    if (!platformAuthority) return sendJson(res, 503, { authenticated: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleSessionInfo(req, res);
   }
 
   if (requestUrl.pathname === '/api/auth/login' && req.method === 'POST') {
-    readRequestBody(req).then(body => {
-      let parsed = {};
-      try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
-      const userId = String(parsed.userId || '').trim();
-      const password = String(parsed.password || '');
-      const db = loadDbForMutation();
-      const user = userListFromDb(db).find(item => item.id === userId);
-      const failure = authFailures.get(userId) || { count: 0, lockedUntil: 0 };
-      if (failure.lockedUntil && Date.now() < failure.lockedUntil) {
-        appendServerAudit(db, { action: 'login_locked', status: 'blocked', actorId: userId || 'unknown', actorName: user?.displayName || user?.name || userId || 'unknown', payload: { userId, lockedUntil: new Date(failure.lockedUntil).toISOString() } });
-        saveDb(db);
-        return sendJson(res, 423, { success: false, locked: true, error: 'Account temporarily locked after failed logins' });
-      }
-      if (!user) {
-        appendServerAudit(db, { action: 'login_failed', status: 'failed', actorId: userId || 'unknown', actorName: userId || 'unknown', payload: { userId, reason: 'user_not_found' } });
-        saveDb(db);
-        return sendJson(res, 401, { success: false, error: 'Invalid credentials' });
-      }
-      if (!user.passwordHash || !user.passwordSalt) {
-        appendServerAudit(db, { action: 'login_setup_required', status: 'blocked', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id } });
-        saveDb(db);
-        return sendJson(res, 409, { success: false, setupRequired: true, error: 'Password setup required in local client flow' });
-      }
-      const expected = String(user.passwordHash || '');
-      const actual = hashClientPassword(password, user.passwordSalt);
-      if (actual !== expected) {
-        failure.count += 1;
-        if (failure.count >= 5) failure.lockedUntil = Date.now() + (15 * 60 * 1000);
-        authFailures.set(user.id, failure);
-        appendServerAudit(db, { action: 'login_failed', status: 'failed', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id, failedCount: failure.count } });
-        saveDb(db);
-        return sendJson(res, 401, { success: false, error: 'Invalid credentials', failedCount: failure.count, locked: !!failure.lockedUntil });
-      }
-      authFailures.delete(user.id);
-      const token = crypto.randomBytes(32).toString('hex');
-      const expiresAt = Date.now() + AUTH_SESSION_TTL_MS;
-      const sessionRecord = { userId: user.id, createdAt: Date.now(), expiresAt };
-      authSessions.set(token, sessionRecord);
-      persistAuthSession(token, sessionRecord);
-      user.lastServerLoginAt = new Date().toISOString();
-      appendServerAudit(db, { action: 'login_success', status: 'success', actorId: user.id, actorName: user.displayName || user.name || user.id, payload: { userId: user.id, expiresAt: new Date(expiresAt).toISOString() } });
-      saveDb(db);
-      setAuthCookie(res, token, Math.floor(AUTH_SESSION_TTL_MS / 1000));
-      return sendJson(res, 200, { success: true, authenticated: true, user: enrichAuthUser(db, user), expiresAt: new Date(expiresAt).toISOString() });
-    }).catch(error => sendJson(res, 500, { success: false, error: error.message || 'Login failed' }));
-    return;
+    if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleLogin(req, res);
   }
 
   if (requestUrl.pathname === '/api/auth/logout' && req.method === 'POST') {
-    const active = authSessionFromRequest(req);
-    if (active) {
-      authSessions.delete(active.token);
-      deletePersistedAuthSession(active.token);
-    }
-    try {
-      const db = loadDbForMutation();
-      appendServerAudit(db, { action: 'logout_success', status: 'success', actorId: active?.session?.userId || 'unknown', actorName: active?.session?.userId || 'unknown', payload: { userId: active?.session?.userId || '' } });
-      saveDb(db);
-    } catch (_) {}
-    setAuthCookie(res, '', 0);
-    return sendJson(res, 200, { success: true });
+    if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleLogout(req, res);
+  }
+
+  if (requestUrl.pathname === '/api/auth/bootstrap' && req.method === 'GET') {
+    if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleBootstrap(req, res);
   }
 
   if (requestUrl.pathname === '/api/server/status' && req.method === 'GET') {
@@ -1902,24 +1652,26 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/release/status' && req.method === 'GET') {
+    const liveSessions = platformAuthority
+      ? platformAuthority.dialect.prepare("SELECT COUNT(*) AS n FROM identity_sessions WHERE revoked_at IS NULL AND absolute_expires_at > datetime('now')").get().n
+      : 0;
     return sendJson(res, 200, {
       app: 'Octagon ERP',
-      phase: 'Phase 7B',
+      phase: 'Phase 02 runtime',
       generatedAt: new Date().toISOString(),
       git: gitSnapshot(),
       route: routeStaticSnapshot(),
       backup: backupStatusSnapshot(),
       server: serverStatusSnapshot(),
-      auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: authSessions.size, apiProtectionFoundation: true },
+      auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: liveSessions, apiProtectionFoundation: true, platformAuthority: !!platformAuthority },
       apiProtection: apiProtectionMatrix(),
     });
   }
 
   if (requestUrl.pathname === '/api/tts' && req.method === 'POST') {
-    const session = isLocalRequest(req)
-      ? { ok: true, mode: 'local-tts', userId: 'local-tts' }
-      : requireSession(req, res, { allowLocalDev: false });
-    if (!session.ok) return;
+    const guard = requirePermission(req, res, 'platform:tts:use');
+    if (!guard.ok) return;
+    const session = guard;
     readRequestBody(req, 32 * 1024).then(async body => {
       let parsed = {};
       try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
@@ -1938,10 +1690,9 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/review-report' && req.method === 'POST') {
-    const session = isLocalRequest(req)
-      ? { ok: true, mode: 'local-review', userId: 'local-review' }
-      : requireSession(req, res, { allowLocalDev: false });
-    if (!session.ok) return;
+    const guard = requirePermission(req, res, 'platform:review_report:save');
+    if (!guard.ok) return;
+    const session = guard;
     readRequestBody(req, 5 * 1024 * 1024).then(body => {
       let parsed = {};
       try { parsed = body ? JSON.parse(body) : {}; } catch (error) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
@@ -1959,7 +1710,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/backup/verify' && req.method === 'GET') {
-    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    const guard = requirePermission(req, res, 'platform:backup:verify');
     if (!guard.ok) return;
     try {
       const requested = requestUrl.searchParams.get('file') || '';
@@ -1979,7 +1730,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/restore/dry-run' && (req.method === 'GET' || req.method === 'POST')) {
-    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    const guard = requirePermission(req, res, 'platform:backup:restore');
     if (!guard.ok) return;
     const run = body => {
       try {
@@ -2067,7 +1818,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/db' && req.method === 'POST') {
-    const guard = requireAdminSession(req, res);
+    const guard = requirePermission(req, res, 'platform:db:write');
     if (!guard.ok) return;
     // T1.3: a full-DB-replacement POST must explicitly declare intent. This
     // alone bounces naive/scripted probes (e.g. a bare `curl -X POST
@@ -2117,36 +1868,6 @@ const server = http.createServer((req, res) => {
             });
           }
 
-          // T3.3: coarse role x collection ACL for the full-DB-replacement
-          // path. requireAdminSession above already restricts this endpoint
-          // to system.admin-equivalent sessions (who have write-all in
-          // acl.json), so in practice this rarely fires today — kept for
-          // defense-in-depth / if that restriction is ever loosened. Strips
-          // (reverts to existing) rather than rejecting the whole request:
-          // saveData() always sends the FULL db state regardless of which
-          // collections the current role actually needs to touch, so a hard
-          // reject on any incidental difference would be far more
-          // disruptive than silently keeping the existing values for groups
-          // this session isn't allowed to write.
-          if (existing && guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
-            const aclRole = resolveAclRole(guard);
-            const strippedGroups = [];
-            Object.keys(ACL_MATRIX.groups || {}).forEach(group => {
-              if (aclCan(aclRole, group, 'write')) return;
-              (ACL_MATRIX.groups[group].collections || []).forEach(colPath => {
-                const existingArr = getNestedPath(existing, colPath);
-                const incomingArr = getNestedPath(parsed, colPath);
-                if (JSON.stringify(existingArr) === JSON.stringify(incomingArr)) return;
-                setNestedPath(parsed, colPath, existingArr);
-                strippedGroups.push({ group, collection: colPath });
-              });
-            });
-            if (strippedGroups.length) {
-              logAclRejection({ endpoint: '/api/db', actor: guard.userId, role: aclRole, stripped: strippedGroups });
-              console.warn('[/api/db POST] ACL stripped unauthorized collection changes:', strippedGroups);
-            }
-          }
-
           // T1.3: SERVER_TENANT_COLLECTIONS protection above only runs when
           // multiTenant is on (tenantEnabledForWrite) — for this
           // single-tenant deployment that's a no-op, so account_moves/
@@ -2187,24 +1908,13 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/collection' && req.method === 'POST') {
-    const guard = requireSession(req, res);
+    const guard = requirePermission(req, res, 'platform:db:write');
     if (!guard.ok) return;
     readRequestBody(req).then(body => {
       try {
         const { collection, data } = JSON.parse(body);
         if (!collection || !Array.isArray(data)) {
           return sendJson(res, 400, { error: 'Invalid collection or data' });
-        }
-        // T3.3: coarse role x collection ACL. Local-dev/loopback trust
-        // already grants system.admin (full write), so this only bites
-        // real network sessions with a lesser role.
-        if (guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
-          const aclGroup = aclGroupForCollection(collection);
-          const aclRole = resolveAclRole(guard);
-          if (!aclCan(aclRole, aclGroup, 'write')) {
-            logAclRejection({ endpoint: '/api/collection', actor: guard.userId, collection, group: aclGroup, role: aclRole });
-            return sendJson(res, 403, { success: false, error: `صلاحياتك لا تسمح بالكتابة على "${collection}"`, collection, group: aclGroup });
-          }
         }
 
         const db = loadDbForMutation();
@@ -2222,22 +1932,13 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/record' && req.method === 'POST') {
-    const guard = requireSession(req, res);
+    const guard = requirePermission(req, res, 'platform:db:write');
     if (!guard.ok) return;
     readRequestBody(req).then(body => {
       try {
         const { collection, id, data } = JSON.parse(body);
         if (!collection || !id || !data) {
           return sendJson(res, 400, { error: 'Invalid collection, id, or data' });
-        }
-        // T3.3: coarse role x collection ACL (see /api/collection above).
-        if (guard.mode !== 'local-dev' && guard.mode !== 'local-trusted') {
-          const aclGroup = aclGroupForCollection(collection);
-          const aclRole = resolveAclRole(guard);
-          if (!aclCan(aclRole, aclGroup, 'write')) {
-            logAclRejection({ endpoint: '/api/record', actor: guard.userId, collection, group: aclGroup, role: aclRole });
-            return sendJson(res, 403, { success: false, error: `صلاحياتك لا تسمح بالكتابة على "${collection}"`, collection, group: aclGroup });
-          }
         }
 
         const db = loadDbForMutation();
@@ -2437,7 +2138,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/backup' && req.method === 'POST') {
-    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    const guard = requirePermission(req, res, 'platform:backup:verify');
     if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
@@ -2458,7 +2159,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/backups' && req.method === 'GET') {
-    const guard = requireRoleSession(req, res, ['system.admin', 'finance.manager']);
+    const guard = requirePermission(req, res, 'platform:backup:verify');
     if (!guard.ok) return;
     try {
       const files = fs.readdirSync(BACKUP_DIR);
@@ -2497,7 +2198,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (requestUrl.pathname === '/api/restore' && req.method === 'POST') {
-    const guard = requireAdminSession(req, res);
+    const guard = requirePermission(req, res, 'platform:backup:restore');
     if (!guard.ok) return;
     let body = '';
     req.on('data', chunk => body += chunk.toString());
@@ -2617,9 +2318,9 @@ const server = http.createServer((req, res) => {
   });
 });
 
-function initializeDatabase() {
+async function initializeDatabase() {
   recoverDbIfCorrupt();
-  
+
   if (USE_SQLITE) {
     console.log('Database Engine: SQLite Active');
     try {
@@ -2634,6 +2335,8 @@ function initializeDatabase() {
       dbSync.exec('PRAGMA journal_mode = WAL;');
       dbSync.exec('PRAGMA busy_timeout = 5000;');
       dbSync.exec('PRAGMA synchronous = NORMAL;');
+      // Phase 02: metadata/collections/operation_locks/sequences are legacy runtime
+      // tables that the app still relies on; migrations 001–012 build the rest.
       dbSync.exec(`
         CREATE TABLE IF NOT EXISTS metadata (
           key TEXT PRIMARY KEY,
@@ -2677,15 +2380,6 @@ function initializeDatabase() {
           errorMessage TEXT
         );
       `);
-      // Login sessions survive restarts (2026-07-05) — see persistAuthSession().
-      dbSync.exec(`
-        CREATE TABLE IF NOT EXISTS auth_sessions (
-          token TEXT PRIMARY KEY,
-          userId TEXT,
-          createdAt INTEGER,
-          expiresAt INTEGER
-        );
-      `);
       // T1.4: unified document numbering (Odoo ir.sequence equivalent). One row
       // per code; next_number is issued and incremented inside a transaction so
       // two concurrent acquire requests can never receive the same number. year
@@ -2699,11 +2393,19 @@ function initializeDatabase() {
           year INTEGER
         );
       `);
-      restoreAuthSessionsFromDb();
+
+      // Phase 02: apply the canonical migration suite (001–012). The legacy
+      // auth_sessions table is created by migration 012 only when migrating an
+      // existing database and is dropped once migration is complete.
+      const { runMigrations } = await import('./database/migration-runner/index.mjs');
+      const migrationResult = await runMigrations({ dbPath: SQLITE_DB_FILE, direction: 'up', actor: 'system' });
+      if (migrationResult.migrations.length) {
+        console.log('Migrations applied:', migrationResult.migrations.join(', '));
+      }
 
       const rowCount = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
                        dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;
-                       
+
       if (rowCount === 0 && fs.existsSync(DB_FILE)) {
         console.log('SQLite: Database is empty. Migrating database.json to SQLite database.db...');
         try {
@@ -2735,55 +2437,67 @@ function initializeDatabase() {
   }
 }
 
-initializeDatabase();
+(async function start() {
+  await initializeDatabase();
 
-// T3.1: install after initializeDatabase() so dbSync (if SQLite is active)
-// is already set. Read-only notification generators only — see
-// server-scheduler.js's own header comment.
-octagonScheduler = installOctagonScheduler({
-  sqliteDb: dbSync,
-  loadDbForMutation,
-  saveDb,
-  makeId,
-  sendJson,
-  readRequestBody,
-  requireRoleSession,
-  isLocalRequest,
-  // T1.5: the scheduler's nightly_backup_verify job calls ctx.createDatabaseBackup('scheduler');
-  // hand it the full create -> verify -> prune(14) -> log cycle instead of the raw
-  // create, so the nightly job satisfies T1.5 without any scheduler-side change.
-  createDatabaseBackup: runNightlyBackupCycle,
-  backupStatusSnapshot,
-  serverStatusSnapshot,
-  routeStaticSnapshot,
-  dbFile: DB_FILE,
-  sqliteDbFile: SQLITE_DB_FILE,
-  backupDir: BACKUP_DIR,
-});
-
-probeDefaultPort();
-
-let fallbackListenIndex = 0;
-server.on('error', error => {
-  if (error.code === 'EADDRINUSE' && fallbackListenIndex < FALLBACK_PORTS.length) {
-    const blockedPort = PORT;
-    const nextPort = FALLBACK_PORTS[fallbackListenIndex++];
-    FALLBACK_PORT_USED = true;
-    ACTIVE_PORT = nextPort;
-    PORT = nextPort;
-    PORT_WARNING = `Port ${blockedPort} is already in use. No process was killed; trying fallback port ${nextPort}.`;
-    console.warn(PORT_WARNING);
-    server.listen(nextPort);
-    return;
+  if (dbSync) {
+    try {
+      const { createPlatformAuthority } = await import('./platform-runtime-bridge.mjs');
+      platformAuthority = createPlatformAuthority(dbSync);
+      console.log('Phase 02 platform authority initialized');
+    } catch (err) {
+      console.error('Failed to initialize Phase 02 platform authority:', err.message);
+      console.error(err.stack || '');
+    }
   }
-  console.error(`Server failed to start on port ${PORT}:`, error.message || error);
-  process.exitCode = 1;
-});
 
-server.listen(REQUESTED_PORT, () => {
-  console.log(`\n  ⬡ OCTAGON ERP`);
-  console.log(`  ──────────────────────────`);
-  console.log(`  ✅ Server running: http://localhost:${PORT}`);
-  console.log(`  💾 Database file:  ${DB_FILE}`);
-  console.log(`  🛡  Safe persistence: atomic writes + .prev snapshot + auto-recovery\n`);
-});
+  // T3.1: install after initializeDatabase() so dbSync (if SQLite is active)
+  // is already set. Read-only notification generators only — see
+  // server-scheduler.js's own header comment.
+  octagonScheduler = installOctagonScheduler({
+    sqliteDb: dbSync,
+    loadDbForMutation,
+    saveDb,
+    makeId,
+    sendJson,
+    readRequestBody,
+    requireSession,
+    // T1.5: the scheduler's nightly_backup_verify job calls ctx.createDatabaseBackup('scheduler');
+    // hand it the full create -> verify -> prune(14) -> log cycle instead of the raw
+    // create, so the nightly job satisfies T1.5 without any scheduler-side change.
+    createDatabaseBackup: runNightlyBackupCycle,
+    backupStatusSnapshot,
+    serverStatusSnapshot,
+    routeStaticSnapshot,
+    dbFile: DB_FILE,
+    sqliteDbFile: SQLITE_DB_FILE,
+    backupDir: BACKUP_DIR,
+  });
+
+  probeDefaultPort();
+
+  let fallbackListenIndex = 0;
+  server.on('error', error => {
+    if (error.code === 'EADDRINUSE' && fallbackListenIndex < FALLBACK_PORTS.length) {
+      const blockedPort = PORT;
+      const nextPort = FALLBACK_PORTS[fallbackListenIndex++];
+      FALLBACK_PORT_USED = true;
+      ACTIVE_PORT = nextPort;
+      PORT = nextPort;
+      PORT_WARNING = `Port ${blockedPort} is already in use. No process was killed; trying fallback port ${nextPort}.`;
+      console.warn(PORT_WARNING);
+      server.listen(nextPort);
+      return;
+    }
+    console.error(`Server failed to start on port ${PORT}:`, error.message || error);
+    process.exitCode = 1;
+  });
+
+  server.listen(REQUESTED_PORT, () => {
+    console.log(`\n  ⬡ OCTAGON ERP`);
+    console.log(`  ──────────────────────────`);
+    console.log(`  ✅ Server running: http://localhost:${PORT}`);
+    console.log(`  💾 Database file:  ${DB_FILE}`);
+    console.log(`  🛡  Safe persistence: atomic writes + .prev snapshot + auto-recovery\n`);
+  });
+})();

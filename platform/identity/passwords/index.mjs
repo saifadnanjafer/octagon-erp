@@ -139,6 +139,22 @@ export function verifyPassword(password, salt, expectedHash) {
   return crypto.timingSafeEqual(actual, expected);
 }
 
+// Legacy Octagon password migration (packet 02.04 runtime cutover). Existing
+// users were stored with SHA256(password + salt). This verifier accepts one
+// successful legacy login and immediately re-hashes the password to scrypt so
+// the legacy format has the shortest possible lifetime.
+function hashLegacySha256(password, salt) {
+  return crypto.createHash('sha256').update(String(password || '') + String(salt || '')).digest('hex');
+}
+
+function verifyLegacySha256(password, salt, expectedHash) {
+  const actual = hashLegacySha256(password, salt);
+  const expected = Buffer.from(String(expectedHash), 'hex');
+  const actualBytes = Buffer.from(actual, 'hex');
+  if (actualBytes.length !== expected.length) return false;
+  return crypto.timingSafeEqual(actualBytes, expected);
+}
+
 export function setPassword(dialect, userId, password, { actor = 'system', enforcePolicy = true, mustChange = false } = {}) {
   if (enforcePolicy) {
     const result = checkPasswordPolicy(password, loadPasswordPolicy(dialect));
@@ -155,9 +171,23 @@ export function setPassword(dialect, userId, password, { actor = 'system', enfor
 }
 
 export function checkCredentials(dialect, userId, password) {
-  const row = dialect.prepare('SELECT salt, hash, must_change FROM identity_credentials WHERE user_id = ?').get(userId);
+  const row = dialect.prepare('SELECT algorithm, salt, hash, must_change FROM identity_credentials WHERE user_id = ?').get(userId);
   if (!row) return { ok: false, reasonCode: 'NO_CREDENTIAL' };
-  const ok = verifyPassword(password, row.salt, row.hash);
+  let ok = false;
+  if (row.algorithm === 'legacy_sha256') {
+    ok = verifyLegacySha256(password, row.salt, row.hash);
+    if (ok) {
+      // Upgrade to scrypt on first successful verification. The legacy hash is
+      // removed from the row and never stored again.
+      const { salt, hash } = hashPassword(password);
+      dialect.prepare(`
+        UPDATE identity_credentials SET algorithm = ?, salt = ?, hash = ?, changed_at = ?, changed_by = ?
+        WHERE user_id = ?
+      `).run('scrypt', salt, hash, new Date().toISOString(), 'legacy_migration_upgrade', userId);
+    }
+  } else {
+    ok = verifyPassword(password, row.salt, row.hash);
+  }
   return { ok, reasonCode: ok ? null : 'BAD_PASSWORD', mustChange: row.must_change === 1 };
 }
 

@@ -27,9 +27,8 @@
  *  - Raw console edits to arbitrary browser globals are still a separate
  *    application risk. This layer closes the Jarvis tool path, not every legacy
  *    app.js UI writer or admin-level /api/db route.
- *  - requireSession() has the existing local-dev bypass (localhost + non-
- *    production => system.admin). In production set OCTAGON_PRODUCTION=true /
- *    NODE_ENV=production so real login sessions are required.
+ *  - requireSession() now resolves through the Phase 02 platform authority;
+ *    there is no localhost/environment bypass.
  *
  * Storage (server-owned; deliberately NOT under database.json `omni` because
  * client POST /api/db replaces those collections):

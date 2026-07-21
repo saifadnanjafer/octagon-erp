@@ -3168,6 +3168,7 @@ function rebuildSidebarNavigation() {
   bindSidebarNavigation();
   applyNavGroupState();
   setNavDomain(getNavDomainForPage(currentPage) || getStoredNavDomain(), false);
+  applyPlatformBootstrapVisibility();
 }
 
 function getNavGroupState() {
@@ -3465,6 +3466,51 @@ function updateAuthSessionModeBadge() {
   badge.textContent = `${role} | ${mode}`;
 }
 
+// Phase 02: platform authority bootstrap integration.
+// The server returns the canonical visible pages and enabled actions; the shell
+// uses them for platform-controlled navigation and action visibility while
+// keeping the existing Arabic RTL layout unchanged.
+const PLATFORM_PAGE_NAV_MAP = {
+  home: ['home'],
+  approvals: ['approvals'],
+  workflows: ['workflow'],
+  users: ['employee_ui', 'people_ops'],
+  settings: ['admin_panel'],
+  security: ['security_center'],
+};
+const navPageToPlatformPage = new Map();
+Object.entries(PLATFORM_PAGE_NAV_MAP).forEach(([platformId, navIds]) => {
+  navIds.forEach(navId => navPageToPlatformPage.set(navId, platformId));
+});
+
+function isPlatformNavPage(page) {
+  return navPageToPlatformPage.has(page);
+}
+
+function isPlatformPageVisible(page) {
+  const bootstrap = window.__octagonBootstrap;
+  if (!bootstrap || !bootstrap.navigation || !Array.isArray(bootstrap.navigation.pages)) return true;
+  const platformId = navPageToPlatformPage.get(page);
+  if (!platformId) return true;
+  return bootstrap.navigation.pages.some(p => p.id === platformId);
+}
+
+function isPlatformActionEnabled(actionId) {
+  const bootstrap = window.__octagonBootstrap;
+  if (!bootstrap || !Array.isArray(bootstrap.actions)) return true;
+  const action = bootstrap.actions.find(a => a.id === actionId);
+  return action ? action.enabled : true;
+}
+
+function applyPlatformBootstrapVisibility() {
+  document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
+    const page = btn.dataset.page;
+    if (isPlatformNavPage(page)) {
+      btn.style.display = isPlatformPageVisible(page) ? '' : 'none';
+    }
+  });
+}
+
 async function syncServerAuthSession(userId, password) {
   if (!userId || !password) return null;
   try {
@@ -3476,6 +3522,18 @@ async function syncServerAuthSession(userId, password) {
     const payload = await res.json().catch(() => ({}));
     window.__octagonServerSession = payload;
     updateAuthSessionModeBadge();
+    if (res.ok && payload.authenticated) {
+      try {
+        const bRes = await fetch('/api/auth/bootstrap', { credentials: 'same-origin' });
+        const bPayload = await bRes.json().catch(() => ({}));
+        if (bPayload.success) {
+          window.__octagonBootstrap = bPayload;
+          applyPlatformBootstrapVisibility();
+        }
+      } catch (bErr) {
+        console.warn('Server bootstrap fetch failed:', bErr.message || bErr);
+      }
+    }
     if (!res.ok && !payload.setupRequired) {
       console.warn('Server auth session bridge failed:', payload.error || res.status);
     }
@@ -3609,6 +3667,7 @@ function performLogout() {
     fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
   } catch (_) {}
   window.__octagonServerSession = { authenticated: false, mode: 'logged-out' };
+  window.__octagonBootstrap = null;
   if (window.PentagonAuth) {
     if (typeof recordOmniHistoryEvent === 'function') {
       const user = window.PentagonAuth.getCurrentUser();
@@ -3676,6 +3735,10 @@ function enforceUIPermissions() {
   // 1. Sidebar Nav
   document.querySelectorAll('.nav-btn').forEach(btn => {
     const page = btn.getAttribute('onclick')?.match(/switchPage\('([^']+)'\)/)?.[1];
+    if (page && isPlatformNavPage(page)) {
+      btn.style.display = isPlatformPageVisible(page) ? '' : 'none';
+      return;
+    }
     if (page && !window.PermissionService.checkPage(page)) {
       btn.style.display = 'none';
     } else {

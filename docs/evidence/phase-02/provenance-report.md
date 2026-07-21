@@ -20,7 +20,7 @@ files are absent from the Phase 02 changed-path set.
 
 Octagon: `octagon-erp`, branch `codex/phase7-safe-baseline`, parent baseline
 commit `f5f4cf559b2301e57401fbd3e6dc0d098f9291c3`; Phase 02 checkpoint commit
-`cad1bb1`.  
+`cad1bb1`; secure filename validation follow-up `f6cbda7`.  
 VNext source-only reference: `octagon-erp-commercial-vnext`, branch
 `automation/r9-marketplace-distribution`, commit
 `72d2c6b4f568650203795d463c25a12ff06ad55a`.

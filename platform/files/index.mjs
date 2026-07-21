@@ -70,7 +70,7 @@ export function createMemoryStorage() {
 export function safeFilename(input) {
   const raw = String(input || 'file');
   const base = path.basename(raw.replace(/\\/g, '/'));
-  const cleaned = base.replace(/[\\x00-\\x1F\\x7F]/g, '').replace(/^\.+/, '').replace(/[<>:"|?*]/g, '_').trim();
+  const cleaned = base.replace(/[\x00-\x1F\x7F]/g, '').replace(/^\.+/, '').replace(/[<>:"|?*]/g, '_').trim();
   if (!cleaned || cleaned === '.' || cleaned === '..') return 'file';
   return cleaned.slice(0, 200);
 }

@@ -6,6 +6,7 @@
 **Branch:** `codex/phase7-safe-baseline`  
 **Parent baseline commit:** `f5f4cf559b2301e57401fbd3e6dc0d098f9291c3`  
 **Phase 02 checkpoint commit:** `cad1bb1` (canonical platform, tests, and evidence saved; runtime cutover still pending)  
+**Follow-up fix commit:** `f6cbda7` (restored secure filename control-character validation; collaboration/files/jobs suite 29/29)  
 **VNext reference:** `octagon-erp-commercial-vnext` @ `72d2c6b4f568650203795d463c25a12ff06ad55a`  
 **Environment:** Node v24.14.1, npm 11.11.0, SQLite `node:sqlite` `DatabaseSync`
 

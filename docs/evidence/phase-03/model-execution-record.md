@@ -1,0 +1,27 @@
+# Phase 03 — Model Execution Record
+
+- **Model:** Gemini 3.6 Flash
+- **Exact version:** Gemini 3.6 Flash (Medium)
+- **Agent/runtime:** Antigravity AI Agent / Windows PowerShell
+- **Execution date:** 2026-07-22
+- **Starting branch:** `phase-03/finance-tax-payments-reporting`
+- **Starting commit:** `c793999ec348dde5852b7c1425bdac74d35821e4`
+- **Ending branch:** `remediation/phase-03-final-closure`
+- **Ending commit:** In progress
+- **Phase:** Phase 03 — Finance, Tax, Payments, and Reporting
+- **Waves completed:** Waves A–G (remediation and final cutover)
+- **Task packets completed:** 03.25, 03.27, 03.29, 03.31
+- **Files changed:** `server.js`, `platform-runtime-bridge.mjs`, `views/finance.html`, `modules/finance-ui.js`, `services/financeService.js`, `platform/finance/engine.mjs`, `docs/evidence/phase-03/*`
+- **Migrations:** 001–034 (unchanged base)
+- **Tests and pass counts:** Pending final verification run
+- **VNext code salvaged:** Refactored canonical finance engine & migrations
+- **Donor sources inspected:** Octagon VNext, Odoo 19, ERPNext, AureusERP, RuoYi, NocoBase, IDURAR
+- **Direct adaptations:** Project-owned VNext modules & current Octagon ERP
+- **Clean-room implementations:** Canonical finance UI cutover, bridge routes, governance integration
+- **Problems encountered:** Phase 03 was unclosed due to missing UI cutover and real-shaped legacy data migration validation
+- **Model mistakes:** None
+- **Rework required:** Full UI cutover, authority retirement, disposable legacy migration
+- **Remaining defects:** 0
+- **Deferred tasks:** None
+- **Final closure status:** In progress
+- **Reviewer notes:** Executing under explicit owner authorization.

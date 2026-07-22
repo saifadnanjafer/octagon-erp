@@ -137,6 +137,19 @@
       credit: ['finance.user'],
     }
   };
+
+  const BOOTSTRAP_ACTION_ID_MAP = {
+    'db_write': 'db_write',
+    'platform:db:write': 'db_write',
+    'backup_verify': 'backup_verify',
+    'platform:backup:verify': 'backup_verify',
+    'backup_restore': 'backup_restore',
+    'platform:backup:restore': 'backup_restore',
+    'tts': 'tts',
+    'platform:tts:use': 'tts',
+    'review_report': 'review_report',
+    'platform:review_report:save': 'review_report',
+  };
   
   const PAGE_METADATA = {
     home: { sensitivity: 'system/home', riskLevel: 'low', phase: 'core', label: 'Home dashboard' },
@@ -473,6 +486,30 @@
       const highRisk = ['high', 'critical'].includes(riskLevel);
       const allowedGroups = mapped ? (this.actionPermissions[actionKey] || []) : [];
       const userGroups = this.resolveGroups(user);
+
+      const bootstrap = typeof window !== 'undefined' && window.__octagonBootstrap ? window.__octagonBootstrap : null;
+      const bootstrapActionId = bootstrap && BOOTSTRAP_ACTION_ID_MAP[actionKey] ? BOOTSTRAP_ACTION_ID_MAP[actionKey] : null;
+      const bootstrapAction = bootstrapActionId && Array.isArray(bootstrap.actions) ? bootstrap.actions.find(a => a.id === bootstrapActionId) : null;
+      if (bootstrapAction && bootstrapAction.enabled === false) {
+        return {
+          actionKey,
+          label: meta.label || actionKey,
+          page: meta.page || context?.page || '',
+          module: meta.module || context?.module || '',
+          mapped: false,
+          allowedGroups: [],
+          userId: user?.id || '',
+          userName: user?.name || user?.id || '',
+          userGroups,
+          riskLevel: meta.riskLevel || 'low',
+          approvalRequired: false,
+          defaultPolicy: 'server_bootstrap',
+          outcome: 'blocked',
+          allowed: false,
+          reason: bootstrapAction.reasonCode || 'server_bootstrap_action_disabled',
+        };
+      }
+
       const systemAdmin = userGroups.includes('system.admin');
       const directAllowed = systemAdmin || (mapped && allowedGroups.some(group => userGroups.includes(group)));
       let outcome = directAllowed ? 'allowed' : 'blocked';
@@ -516,6 +553,14 @@
     },
 
     checkField(collection, field, user = root.PentagonAuth.getCurrentUser()) {
+      const bootstrap = typeof window !== 'undefined' && window.__octagonBootstrap ? window.__octagonBootstrap : null;
+      const entityFields = bootstrap && bootstrap.fields ? bootstrap.fields[collection] : null;
+      if (entityFields) {
+        if (Array.isArray(entityFields.hidden) && entityFields.hidden.includes(field)) return false;
+        if (Array.isArray(entityFields.masked) && entityFields.masked.includes(field)) return true;
+        if (Array.isArray(entityFields.readOnly) && entityFields.readOnly.includes(field)) return true;
+        return true;
+      }
       const userGroups = this.resolveGroups(user);
       if (userGroups.includes('system.admin')) return true;
       const allowedGroups = SENSITIVE_FIELDS[collection]?.[field] || [];

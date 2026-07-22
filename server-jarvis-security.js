@@ -261,10 +261,9 @@ function parseJsonBody(body) {
   if (!body) return {};
   try { return JSON.parse(body); } catch (_) { return null; }
 }
-function isManagerSession(session) {
-  if (session.mode === 'local-dev') return true; // existing dev bypass (temporary; see header)
-  return (session.groups || []).some(g => MANAGER_GROUPS.indexOf(g) !== -1);
-}
+// Phase 02: the legacy isManagerSession helper (with its 'local-dev' mode
+// bypass) is removed. Manager gating goes through requireRoleSession ->
+// the platform authority; there is no environment/mode bypass.
 
 // ════════════════════════════════════════════════════════════════════════════
 // JARVIS ACTION ROUTES

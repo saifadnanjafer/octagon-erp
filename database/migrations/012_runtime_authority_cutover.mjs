@@ -32,6 +32,11 @@
 //   - The original legacy tables/columns are left in place until the next phase
 //     so rollback can reverse the structural changes; the data is mirrored, not
 //     deleted, so no production row is lost.
+//   - Remediation hardening (Phase 02 final closure): legacy users may carry
+//     tenant/company/branch ids that never existed in the platform control
+//     plane (e.g. client-generated company profile ids). Referenced org rows
+//     are created on demand so real legacy data satisfies the foreign keys
+//     instead of aborting the whole chain.
 
 import crypto from 'node:crypto';
 
@@ -143,6 +148,29 @@ function migrateLegacyAuthSessions(dialect, now) {
   dialect.exec('DROP TABLE IF EXISTS auth_sessions;');
 }
 
+function ensureOrgRows(dialect, tenantId, companyId, branchId, now) {
+  if (tenantId && tenantId !== 'default') {
+    dialect.prepare(`
+      INSERT INTO platform_tenants (id, name, status, created_at) VALUES (?, ?, 'active', ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(tenantId, `Legacy tenant ${tenantId}`, now);
+  }
+  if (companyId && companyId !== 'default') {
+    dialect.prepare(`
+      INSERT INTO platform_companies (id, tenant_id, name, status, fiscal_year_start, created_at)
+      VALUES (?, ?, ?, 'active', 1, ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(companyId, tenantId || 'default', `Legacy company ${companyId}`, now);
+  }
+  if (branchId && branchId !== 'default') {
+    dialect.prepare(`
+      INSERT INTO platform_branches (id, company_id, name, status, created_at)
+      VALUES (?, ?, ?, 'active', ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(branchId, companyId || 'default', `Legacy branch ${branchId}`, now);
+  }
+}
+
 function migrateLegacyUsers(dialect, now) {
   const rows = dialect.prepare("SELECT id, data FROM collections WHERE collection = 'omni.users'").all();
   if (!rows.length) return;
@@ -184,6 +212,7 @@ function migrateLegacyUsers(dialect, now) {
     const tenantId = normalizeId(user.tenantId) || 'default';
     const companyId = normalizeId(user.companyId) || 'default';
     const branchId = normalizeId(user.branchId) || null;
+    ensureOrgRows(dialect, tenantId, companyId, branchId, now);
     const name = String(user.displayName || user.name || id).trim();
     const email = user.email || null;
     const isActive = user.is_active !== false && user.status !== 'inactive' && user.status !== 'archived';

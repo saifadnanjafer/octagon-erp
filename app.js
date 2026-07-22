@@ -3213,20 +3213,8 @@ function ensureNavGroupForPage(page) {
   setNavGroupOpen(group, true);
 }
 
-// Phase 6H password crypto utilities
-async function hashPassword(password, salt) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + salt);
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
-function generateSalt() {
-  const array = new Uint8Array(16);
-  window.crypto.getRandomValues(array);
-  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// Phase 6H password crypto utilities retired — server is the canonical credential authority.
 
 function showPasswordPrompt(displayName) {
   const html = `
@@ -3546,16 +3534,7 @@ async function syncServerAuthSession(userId, password) {
     window.__octagonServerSession = payload;
     updateAuthSessionModeBadge();
     if (res.ok && payload.authenticated) {
-      try {
-        const bRes = await fetch('/api/auth/bootstrap', { credentials: 'same-origin' });
-        const bPayload = await bRes.json().catch(() => ({}));
-        if (bPayload.success) {
-          window.__octagonBootstrap = bPayload;
-          applyPlatformBootstrapVisibility();
-        }
-      } catch (bErr) {
-        console.warn('Server bootstrap fetch failed:', bErr.message || bErr);
-      }
+      await refreshPlatformBootstrap();
     }
     if (!res.ok && !payload.setupRequired) {
       console.warn('Server auth session bridge failed:', payload.error || res.status);
@@ -3568,6 +3547,20 @@ async function syncServerAuthSession(userId, password) {
     return null;
   }
 }
+
+async function refreshPlatformBootstrap() {
+  try {
+    const bRes = await fetch('/api/auth/bootstrap', { credentials: 'same-origin' });
+    const bPayload = await bRes.json().catch(() => ({}));
+    if (bPayload.success) {
+      window.__octagonBootstrap = bPayload;
+      applyPlatformBootstrapVisibility();
+    }
+  } catch (bErr) {
+    console.warn('Server bootstrap fetch failed:', bErr.message || bErr);
+  }
+}
+
 
 function hideLoadingOverlay(reason = 'ready') {
   if (typeof window.hideOctagonLoadingOverlay === 'function') {
@@ -3609,38 +3602,48 @@ async function legacyPerformLogin(userId) {
       omni.users.push(userObj);
       saveData();
     }
-    
-    if (!userObj.passwordHash) {
-      const password = await showFirstTimePasswordSetup(userObj.displayName || userObj.name || userId);
-      if (password === null) return; // User cancelled
-      const salt = generateSalt();
-      userObj.passwordSalt = salt;
-      userObj.passwordHash = await hashPassword(password, salt);
-      userObj.passwordAlgo = 'SHA-256';
-      userObj.passwordSetAt = new Date().toISOString();
-      userObj.mustChangePassword = false;
-      saveData();
-      await syncServerAuthSession(userId, password);
-      
-      if (typeof recordOmniHistoryEvent === 'function') {
-        recordOmniHistoryEvent({
-          module: 'auth',
-          source: 'login',
-          action: 'password_setup',
-          title: 'إعداد كلمة المرور لأول مرة',
-          actorId: userObj.id,
-          actorName: userObj.displayName || userObj.name,
-          status: 'success',
-          payload: { userId: userObj.id }
+
+    // Server is the canonical credential authority; never keep client-side hashes.
+    delete userObj.passwordHash;
+    delete userObj.passwordSalt;
+    delete userObj.passwordAlgo;
+
+    const displayName = userObj.displayName || userObj.name || userId;
+
+    // First-time / no-credential setup: collect password and set it server-side.
+    if (!userObj.passwordSetAt) {
+      const newPassword = await showFirstTimePasswordSetup(displayName);
+      if (newPassword === null) return;
+      try {
+        const setRes = await fetch('/api/auth/set-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, password: newPassword }),
+          credentials: 'same-origin',
         });
+        const setPayload = await setRes.json().catch(() => ({}));
+        if (!setRes.ok) {
+          showToast(setPayload?.error || 'فشل إعداد كلمة المرور على الخادم.', 'danger');
+          return;
+        }
+        userObj.passwordSetAt = new Date().toISOString();
+        userObj.mustChangePassword = false;
+        const loginPayload = await syncServerAuthSession(userId, newPassword);
+        if (!loginPayload?.authenticated) {
+          showToast(loginPayload?.error || 'فشل تسجيل الدخول بعد إعداد كلمة المرور.', 'danger');
+          return;
+        }
+      } catch (err) {
+        console.error('First-time password setup failed:', err);
+        showToast('فشل إعداد كلمة المرور.', 'danger');
+        return;
       }
-      showToast("تم إعداد كلمة المرور بنجاح وتسجيل الدخول", "success");
     } else {
-      const password = await showPasswordPrompt(userObj.displayName || userObj.name || userId);
-      if (password === null) return; // User cancelled
-      const hashed = await hashPassword(password, userObj.passwordSalt);
-      if (hashed !== userObj.passwordHash) {
-        showToast("كلمة المرور غير صحيحة.", "danger");
+      const password = await showPasswordPrompt(displayName);
+      if (password === null) return;
+      const payload = await syncServerAuthSession(userId, password);
+      if (!payload?.authenticated) {
+        showToast(payload?.error || 'كلمة المرور غير صحيحة.', 'danger');
         if (typeof recordOmniHistoryEvent === 'function') {
           recordOmniHistoryEvent({
             module: 'auth',
@@ -3655,25 +3658,23 @@ async function legacyPerformLogin(userId) {
         }
         return;
       }
-      await syncServerAuthSession(userId, password);
-      
-      if (typeof recordOmniHistoryEvent === 'function') {
-        recordOmniHistoryEvent({
-          module: 'auth',
-          source: 'login',
-          action: 'login_success',
-          title: 'تسجيل الدخول بنجاح',
-          actorId: userObj.id,
-          actorName: userObj.displayName || userObj.name,
-          status: 'success',
-          payload: { userId: userObj.id }
-        });
-      }
     }
-    
+
+    if (typeof recordOmniHistoryEvent === 'function') {
+      recordOmniHistoryEvent({
+        module: 'auth',
+        source: 'login',
+        action: 'login_success',
+        title: 'تسجيل الدخول بنجاح',
+        actorId: userObj.id,
+        actorName: userObj.displayName || userObj.name,
+        status: 'success',
+        payload: { userId: userObj.id }
+      });
+    }
     showToast("تم تسجيل الدخول بنجاح.", "success");
     userObj.sessionStartedAt = new Date().toISOString();
-    
+
     switchAuthUser(userId, true);
     const overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.style.display = 'none';
@@ -3684,6 +3685,7 @@ async function legacyPerformLogin(userId) {
     showToast("حدث خطأ أثناء تسجيل الدخول", "danger");
   }
 }
+
 
 async function performLogin(userId) {
   try {
@@ -3712,6 +3714,10 @@ async function performLogin(userId) {
       };
       omni.users.push(userObj);
     }
+    // Server is the canonical credential authority: never mirror password material.
+    delete userObj.passwordHash;
+    delete userObj.passwordSalt;
+    delete userObj.passwordAlgo;
     userObj.sessionStartedAt = new Date().toISOString();
     localStorage.setItem('octagon_user_id', userId);
     localStorage.setItem('omni_current_user_id', userId);
@@ -3730,9 +3736,10 @@ async function performLogin(userId) {
   }
 }
 
-function performLogout() {
+
+async function performLogout() {
   try {
-    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
   } catch (_) {}
   window.__octagonServerSession = { authenticated: false, mode: 'logged-out' };
   window.__octagonBootstrap = null;
@@ -7512,6 +7519,15 @@ function renderCommandCenterRequests(activeType = 'all') {
       `;
     }
 
+    const activity = Array.isArray(req.activityLog) ? req.activityLog.slice(0, 8) : [];
+    if (activity.length) {
+      return `
+        <div class="cc-request-chatter" style="margin-top: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 8px;">
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;"><i class="fa-regular fa-comments"></i> سجل الملاحظات</div>
+          ${activity.map(item => `<div class="cc-request-chatter-entry" style="font-size: 12px; padding: 3px 0; border-top: 1px solid rgba(255,255,255,0.04);"><span>${escapeHtml(item.text || '')}</span><small style="display: block; color: var(--text-muted);">${formatOmniDateTime(item.date)}</small></div>`).join('')}
+        </div>
+      `;
+    }
     return '';
   };
 
@@ -23775,13 +23791,43 @@ function updateActiveCompany(companyId) {
   const companies = getOrgCompanies();
   const exists = companies.some(co => co.id === companyId);
   if (!exists) return showToast('اختر شركة صحيحة', 'warning');
+  const previousId = omni.adminSettings.organization.activeCompanyId;
   omni.adminSettings.organization.activeCompanyId = companyId;
   saveData();
   renderAdminPanel();
   if (currentPage === 'receipt') renderReceiptPage();
   if (currentPage === 'report') renderReport();
   showToast('تم تغيير الشركة النشطة للمستندات والتقارير', 'success');
+
+  (async () => {
+    try {
+      const res = await fetch('/api/auth/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId }),
+        credentials: 'same-origin',
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 403) {
+          showToast(payload?.error || 'غير مسموح بالتبديل إلى هذه الشركة.', 'danger');
+          omni.adminSettings.organization.activeCompanyId = previousId;
+          saveData();
+          renderAdminPanel();
+          if (currentPage === 'receipt') renderReceiptPage();
+          if (currentPage === 'report') renderReport();
+        } else {
+          console.warn('Server context switch failed:', payload?.error || res.status);
+        }
+        return;
+      }
+      await refreshPlatformBootstrap();
+    } catch (err) {
+      console.warn('Server context switch unavailable:', err.message || err);
+    }
+  })();
 }
+
 
 // T0.4 dedup (2026-07-12): dead copy, shadowed by the live definition below
 // (which also tracks shift-based supervisor routing, not just direct
@@ -25487,6 +25533,10 @@ async function addAdminUser() {
         </select>
       </div>
       <div class="form-group">
+        <label class="form-label">كلمة المرور الابتدائية (اختياري — يتم تطبيقها على الخادم)</label>
+        <input type="password" id="adminUserNewPassword" class="form-input" placeholder="اتركها فارغة لإعداد لاحق">
+      </div>
+      <div class="form-group">
         <label class="form-label">صلاحيات مخصصة إضافية (Overrides)</label>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; max-height:150px; overflow-y:auto;">
           ${permissionsCheckboxes}
@@ -25501,12 +25551,13 @@ async function addAdminUser() {
     const status = body.querySelector('#adminUserNewStatus').value;
     const checkedCheckboxes = body.querySelectorAll('input[name="adminUserPerm"]:checked');
     const userPerms = Array.from(checkedCheckboxes).map(cb => cb.value);
+    const password = body.querySelector('#adminUserNewPassword').value;
     
     if (!name) {
       showToast('يرجى إدخال اسم المستخدم', 'error');
       return false;
     }
-    return { name, roleId, status, permissions: userPerms };
+    return { name, roleId, status, permissions: userPerms, password };
   });
   
   if (!result) return;
@@ -25523,7 +25574,28 @@ async function addAdminUser() {
   saveData();
   renderAdminPanel();
   showToast('تمت إضافة المستخدم بنجاح', 'success');
+
+  if (result.password) {
+    try {
+      const res = await fetch('/api/auth/set-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: newUser.id, password: result.password }),
+        credentials: 'same-origin',
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(payload?.error || 'فشل تعيين كلمة المرور على الخادم.', 'danger');
+      } else {
+        showToast('تم تعيين كلمة المرور على الخادم.', 'success');
+      }
+    } catch (err) {
+      console.error('set-password failed:', err);
+      showToast('فشل الاتصال بالخادم لتعيين كلمة المرور.', 'danger');
+    }
+  }
 }
+
 
 async function editAdminUser(userId) {
   ensureOmni();
@@ -25582,6 +25654,10 @@ async function editAdminUser(userId) {
         <input type="checkbox" id="adminUserResetPassword" style="cursor:pointer;">
         <label for="adminUserResetPassword" style="font-size:13px; color:var(--text); cursor:pointer;">إعادة تعيين كلمة المرور (إجبار المستخدم على تعيينها عند الدخول القادم)</label>
       </div>
+      <div class="form-group">
+        <label class="form-label">كلمة المرور الجديدة (تُستخدم عند إعادة التعيين)</label>
+        <input type="password" id="adminUserResetPasswordValue" class="form-input" placeholder="كلمة المرور الجديدة">
+      </div>
     </div>
   `;
   
@@ -25592,12 +25668,17 @@ async function editAdminUser(userId) {
     const checkedCheckboxes = body.querySelectorAll('input[name="adminUserPerm"]:checked');
     const userPerms = Array.from(checkedCheckboxes).map(cb => cb.value);
     const resetPassword = body.querySelector('#adminUserResetPassword').checked;
+    const password = body.querySelector('#adminUserResetPasswordValue').value;
     
     if (!name) {
       showToast('يرجى إدخال اسم المستخدم', 'error');
       return false;
     }
-    return { name, roleId, status, permissions: userPerms, resetPassword };
+    if (resetPassword && !password) {
+      showToast('يرجى إدخال كلمة المرور الجديدة عند إعادة التعيين', 'error');
+      return false;
+    }
+    return { name, roleId, status, permissions: userPerms, resetPassword, password };
   });
   
   if (!result) return;
@@ -25607,18 +25688,34 @@ async function editAdminUser(userId) {
   user.status = result.status;
   user.permissions = result.permissions;
   
-  if (result.resetPassword) {
-    delete user.passwordHash;
-    delete user.passwordSalt;
-    user.mustChangePassword = true;
-    showToast('تمت إعادة تعيين كلمة مرور المستخدم. سيُطلب منه تعيين كلمة مرور جديدة عند تسجيل الدخول القادم.', 'info');
-  }
-  
   addSystemLog('system', `تم تعديل مستخدم: ${user.name} بدور: ${user.roleId}`, 'info', 'admin_panel', user.id);
   saveData();
   renderAdminPanel();
   showToast('تم تحديث بيانات المستخدم', 'success');
+
+  if (result.resetPassword && result.password) {
+    try {
+      const res = await fetch('/api/auth/set-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, password: result.password }),
+        credentials: 'same-origin',
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast(payload?.error || 'فشل إعادة تعيين كلمة المرور على الخادم.', 'danger');
+      } else {
+        user.mustChangePassword = true;
+        saveData();
+        showToast('تمت إعادة تعيين كلمة المرور على الخادم. سيُطلب من المستخدم تعيين كلمة مرور جديدة عند الدخول القادم.', 'info');
+      }
+    } catch (err) {
+      console.error('set-password failed:', err);
+      showToast('فشل الاتصال بالخادم لإعادة تعيين كلمة المرور.', 'danger');
+    }
+  }
 }
+
 
 async function deleteAdminUser(userId) {
   ensureOmni();

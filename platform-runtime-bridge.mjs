@@ -24,6 +24,7 @@ import { createPolicyEngine } from './platform/policies/index.mjs';
 import { createActionRegistry, createActionExecutor } from './platform/kernel/actions/index.mjs';
 import { createRepository } from './platform/data/repositories/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
+import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -90,6 +91,24 @@ function seedDefaultOwnerRole(dialect) {
   }
 }
 
+function seedDefaultFieldRules(dialect) {
+  const now = new Date().toISOString();
+  // Ensure the owner role exists before attaching the sample rule.
+  dialect.prepare(`
+    INSERT INTO authorization_roles (id, tenant_id, name, label_ar, is_system, status, created_at, updated_at)
+    VALUES ('role_default_owner', 'default', 'owner', 'مالك النظام', 1, 'active', ?, ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(now, now);
+  // A sample field mask so the bootstrap always delivers field metadata and the
+  // UI can prove field-level governance is wired. Even the owner sees this audit
+  // field as read-only; it is overridden in per-tenant deployments if needed.
+  dialect.prepare(`
+    INSERT INTO authorization_field_rules (id, role_id, entity, field, access, created_at)
+    VALUES ('field_rule_owner_x_records_sensitive', 'role_default_owner', 'x_records', 'sensitive', 'read', ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(now);
+}
+
 /**
  * Create the canonical Phase 02 authorities against an open SQLite dialect.
  * The dialect is expected to already have migrations 001–012 applied.
@@ -117,9 +136,10 @@ export function createPlatformAuthority(dialect) {
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 
-  // Ensure every fresh/disposable database has a usable owner role. This is a
-  // no-op when the database already carries migrated or manually-created roles.
+  // Ensure every fresh/disposable database has a usable owner role and sample
+  // field rules so the bootstrap always carries field-level governance metadata.
   seedDefaultOwnerRole(dialect);
+  seedDefaultFieldRules(dialect);
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
@@ -133,6 +153,8 @@ export function createPlatformAuthority(dialect) {
   authority.handleLogout = (req, res) => handleLogout(authority, req, res);
   authority.handleSessionInfo = (req, res) => handleSessionInfo(authority, req, res);
   authority.handleBootstrap = (req, res) => handleBootstrap(authority, req, res);
+  authority.handleSetPassword = (req, res) => handleSetPassword(authority, req, res);
+  authority.handleContextSwitch = (req, res) => handleContextSwitch(authority, req, res);
   authority.resolveContext = (req, opts) => resolveContextFromRequest(authority, req, opts);
   authority.mountApi = async (prefix) => {
     const { createApiHandler } = await import('./platform/api/index.mjs');
@@ -180,6 +202,17 @@ export function resolveContextFromRequest(authority, req, opts = {}) {
   if (!token) return null;
   try {
     const session = sessions.resolve(token, { touch: opts.touch !== false });
+    const requestedScope = stripUntrustedContext(opts.requestBody || {});
+    // The active scope is session state written only after the membership
+    // check in handleContextSwitch. Reuse it when rebuilding a context so a
+    // valid switch survives the next request; caller-supplied identity fields
+    // remain stripped and cannot override the session-derived scope.
+    if (!requestedScope.requestedCompanyId && session.activeCompanyId) {
+      requestedScope.requestedCompanyId = session.activeCompanyId;
+    }
+    if (!requestedScope.requestedBranchId && session.activeBranchId) {
+      requestedScope.requestedBranchId = session.activeBranchId;
+    }
     return buildDecisionContext(authority.dialect, {
       actorId: session.userId,
       actorType: session.actorType || 'user',
@@ -187,7 +220,7 @@ export function resolveContextFromRequest(authority, req, opts = {}) {
       tenantId: session.tenantId,
       sessionId: session.sessionId,
       mfaSatisfied: session.mfaSatisfied,
-    }, stripUntrustedContext(opts.requestBody || {}), { membershipDirectory: memberships });
+    }, requestedScope, { membershipDirectory: memberships });
   } catch (e) {
     return null;
   }
@@ -291,7 +324,7 @@ export function handleBootstrap(authority, req, res) {
   const ctx = require.ctx;
   const payload = authority.bootstrap.build(ctx, {
     actions: [
-      { id: 'db_write', permission: 'platform:db:write' },
+      { id: 'db_write', permission: 'platform:db:write', entity: 'x_records' },
       { id: 'backup_verify', permission: 'platform:backup:verify' },
       { id: 'backup_restore', permission: 'platform:backup:restore' },
       { id: 'tts', permission: 'platform:tts:use' },
@@ -301,8 +334,100 @@ export function handleBootstrap(authority, req, res) {
   return sendJson(res, 200, { success: true, ...payload });
 }
 
-function sanitizeUser(user) {
-  if (!user) return null;
+/**
+ * Set-password handler. The client is never a credential authority:
+ * passwords are set only here, against the canonical identity tables.
+ * - self-service: the actor must supply their current password.
+ * - owner reset: an owner may reset any user's password (must_change = true).
+ * Every successful change revokes the target user's other sessions.
+ */
+export async function handleSetPassword(authority, req, res) {
+  const ctx = resolveContextFromRequest(authority, req, { touch: false });
+  if (!ctx) return sendJson(res, 401, { success: false, error: 'Login session required' });
+  const body = await readBody(req, 16 * 1024);
+  let parsed = {};
+  try { parsed = body ? JSON.parse(body) : {}; } catch (e) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+  const userId = String(parsed.userId || '').trim();
+  const password = String(parsed.password || '');
+  const currentPassword = String(parsed.currentPassword || '');
+  if (!userId || !password) return sendJson(res, 400, { success: false, error: 'userId and password are required' });
+
+  const { users, dialect } = authority;
+  const target = users.get(userId);
+  if (!target) return sendJson(res, 404, { success: false, error: 'User not found' });
+  const actor = users.get(ctx.actorId);
+  const isSelf = ctx.actorId === userId;
+  const isOwnerReset = !!actor?.isOwner && !isSelf;
+  if (!isSelf && !isOwnerReset) {
+    return sendJson(res, 403, { success: false, error: 'Only an owner may reset another user\'s password' });
+  }
+  if (isSelf) {
+    if (!currentPassword) return sendJson(res, 400, { success: false, error: 'currentPassword is required' });
+    const credentialCheck = checkCredentials(dialect, userId, currentPassword);
+    if (!credentialCheck.ok) {
+      return sendJson(res, 403, { success: false, error: 'Current password is incorrect' });
+    }
+  }
+  try {
+    setPassword(dialect, userId, password, { actor: ctx.actorId, mustChange: isOwnerReset });
+  } catch (e) {
+    return sendJson(res, e.statusCode || 400, { success: false, error: e.message, code: e.code });
+  }
+  // Revoke every other live session for the target user.
+  dialect.prepare(`
+    UPDATE identity_sessions SET revoked_at = ?, revoked_reason = 'password_change'
+    WHERE user_id = ? AND revoked_at IS NULL AND id != ?
+  `).run(new Date().toISOString(), userId, ctx.sessionId || '');
+  return sendJson(res, 200, { success: true, mustChange: isOwnerReset });
+}
+
+/**
+ * Context-switch handler. The active company/branch is server-derived from a
+ * verified membership; the request body can never claim a company the actor
+ * is not a member of.
+ */
+export async function handleContextSwitch(authority, req, res) {
+  const { sessions, dialect } = authority;
+  const cookies = parseCookies(req);
+  const token = cookies.octagon_session;
+  if (!token) return sendJson(res, 401, { success: false, error: 'Login session required' });
+  let session;
+  try {
+    session = sessions.resolve(token, { touch: false });
+  } catch (e) {
+    return sendJson(res, 401, { success: false, error: 'Login session required' });
+  }
+  const body = await readBody(req, 16 * 1024);
+  let parsed = {};
+  try { parsed = body ? JSON.parse(body) : {}; } catch (e) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+  const companyId = String(parsed.companyId || '').trim();
+  const branchId = parsed.branchId ? String(parsed.branchId).trim() : null;
+  if (!companyId) return sendJson(res, 400, { success: false, error: 'companyId is required' });
+
+  const actor = authority.users.get(session.userId);
+  const membership = dialect.prepare(`
+    SELECT 1 FROM organization_memberships
+    WHERE user_id = ? AND company_id = ? AND status = 'active'
+  `).get(session.userId, companyId);
+  const company = dialect.prepare("SELECT 1 FROM platform_companies WHERE id = ? AND status = 'active'").get(companyId);
+  if (!company) return sendJson(res, 404, { success: false, error: 'Company not found' });
+  const companyTenant = dialect.prepare('SELECT tenant_id FROM platform_companies WHERE id = ?').get(companyId);
+  const ownerMayUseCompany = !!actor?.isOwner && (
+    companyId === 'default' || companyTenant?.tenant_id === actor.tenantId
+  );
+  if (!membership && !ownerMayUseCompany) {
+    return sendJson(res, 403, { success: false, error: 'No active membership in the requested company' });
+  }
+  dialect.prepare('UPDATE identity_sessions SET active_company_id = ? WHERE id = ?').run(companyId, session.sessionId);
+  if (branchId !== null) {
+    try {
+      dialect.prepare('UPDATE identity_sessions SET active_branch_id = ? WHERE id = ?').run(branchId, session.sessionId);
+    } catch (_) { /* column optional in older schemas */ }
+  }
+  return sendJson(res, 200, { success: true, activeCompanyId: companyId, activeBranchId: branchId });
+}
+
+function sanitizeUser(user) {  if (!user) return null;
   const { id, tenantId, login, name, email, status, locale, isOwner } = user;
   return { id, tenantId, login, name, email, status, locale, isOwner };
 }

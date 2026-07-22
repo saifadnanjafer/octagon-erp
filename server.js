@@ -63,6 +63,8 @@ const USE_SQLITE = !SQLITE_DISABLED && (process.env.USE_SQLITE === 'true' || fs.
 let dbSync = null;
 let platformAuthority = null;
 let platformApiHandler = null;
+let governanceStrangler = null;
+let governanceCollections = null;
 const BACKUP_KEEP = 30;
 const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per hour of activity
 let lastAutoBackupMs = 0;
@@ -75,6 +77,9 @@ const BACKUP_LOG_FILE = process.env.OCTAGON_BACKUP_LOG ? path.resolve(process.en
 const BACKUP_DIR = process.env.OCTAGON_BACKUP_DIR ? path.resolve(process.env.OCTAGON_BACKUP_DIR) : __dirname;
 const REVIEW_REPORT_DIR = process.env.OCTAGON_REVIEW_REPORT_DIR ? path.resolve(process.env.OCTAGON_REVIEW_REPORT_DIR) : path.join(__dirname, 'review-reports');
 const AUTH_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+// Phase 02: bounded request bodies on the heavy write routes (fail closed).
+const MAX_FULL_SYNC_BODY_BYTES = 32 * 1024 * 1024;
+const MAX_UPLOAD_BODY_BYTES = 16 * 1024 * 1024;
 // Phase 02: session authority has moved to platform/identity/sessions (identity_sessions table).
 // The legacy authSessions Map, auth_sessions table, and ACL.json are retired.
 const V5_PRESERVED_TOP_LEVEL_KEYS = [
@@ -727,13 +732,21 @@ function extractDbCollections(obj, path = '', collections = {}, metadata = {}) {
   metadata[path] = obj;
 }
 
-function saveDbToSqlite(sqliteDb, db) {
-  const collections = {};
-  const metadata = {};
-  extractDbCollections(db, '', collections, metadata);
-  
+function saveDbToSqlite(sqliteDb, db, actorCtx = null) {
   sqliteDb.exec("BEGIN TRANSACTION");
   try {
+    // Phase 02 governance strangler: governed paths (identity, roles, settings,
+    // notifications, approvals, workflow documents, logs, documents, automation)
+    // are synced into the canonical platform tables and stripped from the blob
+    // INSIDE this transaction, so the legacy tables below are never again an
+    // authority for those facts.
+    if (governanceStrangler) {
+      governanceStrangler.syncWrites(db, actorCtx);
+    }
+    const collections = {};
+    const metadata = {};
+    extractDbCollections(db, '', collections, metadata);
+
     // 1. Delta save metadata
     const existingMetaRows = sqliteDb.prepare("SELECT key, value FROM metadata").all();
     const existingMetaMap = new Map();
@@ -845,7 +858,12 @@ function loadDbFromSqlite(sqliteDb) {
     }
     arr.push(record);
   }
-  
+
+  // Phase 02: overlay canonical governance state so legacy readers always see
+  // the platform tables as the single source of truth for governed paths.
+  if (governanceStrangler) {
+    governanceStrangler.projectReads(db);
+  }
   return db;
 }
 
@@ -863,14 +881,23 @@ function loadDbFromSqlite(sqliteDb) {
 // SQLite is ever unavailable — so it must never be allowed to go stale
 // again. Every SQLite save now also mirrors the full DB to database.json
 // (best-effort: failures here are logged but never abort the real save).
-function safeSaveDb(db) {
+function safeSaveDb(db, actorCtx = null) {
   if (!db || typeof db !== 'object') throw new Error('Refusing to save invalid DB (not an object)');
   sanitizePersistedArabicText(db);
 
   if (dbSync) {
-    saveDbToSqlite(dbSync, db);
+    saveDbToSqlite(dbSync, db, actorCtx);
     mirrorDbToJsonBestEffort(db);
     return;
+  }
+
+  // Degraded non-SQLite mode: no canonical authority exists, so governed
+  // paths must never silently re-enter the legacy JSON store (fail closed).
+  if (governanceCollections) {
+    const stripped = governanceCollections.stripGovernancePaths(db);
+    if (stripped.length) {
+      console.warn('[safeSaveDb] degraded mode: stripped governed paths from legacy JSON write:', stripped.join(', '));
+    }
   }
 
   const json = JSON.stringify(db, null, 2);
@@ -951,8 +978,8 @@ function recoverDbIfCorrupt() {
   if (!fs.existsSync(DB_FILE)) console.error('❌ No valid snapshot found to recover database.json');
 }
 
-function saveDb(db) {
-  safeSaveDb(db);
+function saveDb(db, actorCtx = null) {
+  safeSaveDb(db, actorCtx);
 }
 
 function loadDbForMutation() {
@@ -1548,17 +1575,17 @@ function apiProtectionMatrix() {
     { endpoint: 'GET /api/release/status', classification: 'read-only diagnostic', protection: 'public sanitized status, no secrets' },
     { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'requires platform:tts:use permission; API key stays server-side' },
     { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'requires platform:review_report:save permission; writes only to review-reports' },
-    { endpoint: 'GET /api/db', classification: 'dev-safe read', protection: 'no session required in this build; not production-safe' },
-    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'requires platform:db:write permission' },
+    { endpoint: 'GET /api/db', classification: 'full data read', protection: 'requires platform:db:read permission; governed paths projected from canonical platform tables' },
+    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'requires platform:db:write permission + X-Octagon-Full-Sync header; governed paths strangled to canonical platform writers; fail-closed on unreadable existing state' },
     { endpoint: 'POST /api/collection', classification: 'data write', protection: 'requires platform:db:write permission' },
     { endpoint: 'POST /api/record', classification: 'data write', protection: 'requires platform:db:write permission' },
-    { endpoint: 'POST /api/upload', classification: 'file write', protection: 'requires a valid session' },
+    { endpoint: 'POST /api/upload', classification: 'file write', protection: 'requires platform:db:write permission; bounded body; filename sanitized' },
     { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'requires platform:backup:verify permission' },
     { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'requires platform:backup:verify permission' },
     { endpoint: 'GET /api/backup/verify', classification: 'backup dry verification', protection: 'requires platform:backup:verify permission' },
     { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'requires platform:backup:restore permission' },
     { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'requires platform:backup:restore permission plus typed confirmation and pre-restore backup' },
-    { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'verify token/signature/rate limit preserved' },
+    { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'fail-closed verify token + HMAC signature (env-configured) + rate limit' },
     { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'requires a valid session' },
     { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'requires a valid session' },
     { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'requires a valid session' },
@@ -1583,6 +1610,19 @@ jarvisSecurity.init({
 let octagonScheduler = null;
 
 const server = http.createServer((req, res) => {
+  // Inspect the raw request target before URL parsing normalizes dot segments.
+  // Otherwise `/../server.js` can become `/server.js` before the resolved-path
+  // guard below sees it.
+  const rawPath = String(req.url || '').split('?')[0];
+  let decodedRawPath = rawPath;
+  try {
+    decodedRawPath = decodeURIComponent(rawPath);
+  } catch (_) {
+    return sendJson(res, 400, { error: 'Invalid path encoding' });
+  }
+  if (/(^|[\\/])\.\.(?:[\\/]|$)/.test(decodedRawPath)) {
+    return sendJson(res, 403, { error: 'Security constraint: invalid path' });
+  }
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
   // Security hardening 2026-07-05: /api/jarvis/* (server-side tool gate,
@@ -1636,6 +1676,16 @@ const server = http.createServer((req, res) => {
   if (requestUrl.pathname === '/api/auth/logout' && req.method === 'POST') {
     if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
     return platformAuthority.handleLogout(req, res);
+  }
+
+  if (requestUrl.pathname === '/api/auth/set-password' && req.method === 'POST') {
+    if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleSetPassword(req, res);
+  }
+
+  if (requestUrl.pathname === '/api/auth/context' && req.method === 'POST') {
+    if (!platformAuthority) return sendJson(res, 503, { success: false, error: 'Platform authority not initialized' });
+    return platformAuthority.handleContextSwitch(req, res);
   }
 
   if (requestUrl.pathname === '/api/auth/bootstrap' && req.method === 'GET') {
@@ -1773,7 +1823,10 @@ const server = http.createServer((req, res) => {
     const mode = requestUrl.searchParams.get('hub.mode');
     const token = requestUrl.searchParams.get('hub.verify_token');
     const challenge = requestUrl.searchParams.get('hub.challenge');
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'octagon-local-dev';
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || '';
+    // Fail closed: without a configured verify token there is no shared
+    // secret to check against, so every verification attempt is rejected.
+    if (!verifyToken) return sendJson(res, 503, { success: false, error: 'WHATSAPP_VERIFY_TOKEN not configured' });
     if (mode === 'subscribe' && token === verifyToken && challenge) {
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       res.writeHead(200);
@@ -1788,7 +1841,11 @@ const server = http.createServer((req, res) => {
     }
     readRequestBody(req).then(rawBody => {
       const signature = verifyWhatsAppSignature(rawBody, req.headers['x-hub-signature-256']);
-      if (signature.enforced && !signature.verified) {
+      if (!signature.enforced) {
+        // Fail closed: an unsigned/unverifiable webhook is never accepted.
+        return sendJson(res, 503, { success: false, error: signature.reason || 'Webhook signature enforcement unavailable' });
+      }
+      if (!signature.verified) {
         return sendJson(res, 403, { success: false, error: signature.reason });
       }
       let payload;
@@ -1853,19 +1910,36 @@ const server = http.createServer((req, res) => {
       return sendJson(res, 409, { ok: false, error: 'يتطلب هذا المسار ترويسة X-Octagon-Full-Sync: yes للحفظ الكامل', collection: null });
     }
     let body = '';
-    req.on('data', chunk => body += chunk.toString());
+    let bodyTooLarge = false;
+    req.on('data', chunk => {
+      body += chunk.toString();
+      if (!bodyTooLarge && Buffer.byteLength(body) > MAX_FULL_SYNC_BODY_BYTES) {
+        bodyTooLarge = true;
+        sendJson(res, 413, { ok: false, error: 'Payload too large' });
+        req.destroy();
+      }
+    });
     req.on('end', () => {
+      if (bodyTooLarge) return;
       try {
         const parsed = JSON.parse(body);
         let existing = null;
         if (dbSync) {
           try {
             existing = loadDbFromSqlite(dbSync);
-          } catch(e) {}
+          } catch (loadError) {
+            // Fail closed: without the current state the wipe protections
+            // below cannot run, so this write must not proceed.
+            console.error('[/api/db POST] refusing write: existing DB unreadable:', loadError.message);
+            return sendJson(res, 503, { ok: false, error: 'Existing database unreadable; write refused (fail-closed)' });
+          }
         } else if (fs.existsSync(DB_FILE)) {
           try {
             existing = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-          } catch (mergeError) {}
+          } catch (mergeError) {
+            console.error('[/api/db POST] refusing write: database.json unreadable:', mergeError.message);
+            return sendJson(res, 503, { ok: false, error: 'Existing database unreadable; write refused (fail-closed)' });
+          }
         }
 
         if (existing) {
@@ -1914,9 +1988,9 @@ const server = http.createServer((req, res) => {
         }
 
         if (dbSync) {
-          saveDbToSqlite(dbSync, parsed);
+          saveDbToSqlite(dbSync, parsed, guard.ctx);
         } else {
-          safeSaveDb(parsed);
+          safeSaveDb(parsed, guard.ctx);
         }
 
         res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -1944,7 +2018,7 @@ const server = http.createServer((req, res) => {
         const db = loadDbForMutation();
         const result = mergeTenantCollectionForWrite(db, db, collection, data);
         setNestedPath(db, collection, result.data);
-        safeSaveDb(db);
+        safeSaveDb(db, guard.ctx);
         sendJson(res, 200, { success: true, stamped: result.stamped, preservedForeign: result.preservedForeign });
       } catch (e) {
         sendJson(res, 400, { error: e.message || 'Invalid JSON' });
@@ -1978,7 +2052,7 @@ const server = http.createServer((req, res) => {
         } else {
           arr.push(prepared);
         }
-        safeSaveDb(db);
+        safeSaveDb(db, guard.ctx);
         sendJson(res, 200, { success: true, stamped: !recordTenantCompanyId(data) && !!recordTenantCompanyId(prepared) });
       } catch (e) {
         sendJson(res, 400, { error: e.message || 'Invalid JSON' });
@@ -2112,8 +2186,17 @@ const server = http.createServer((req, res) => {
     const guard = requirePermission(req, res, 'platform:db:write');
     if (!guard.ok) return;
     let body = '';
-    req.on('data', chunk => body += chunk.toString());
+    let uploadTooLarge = false;
+    req.on('data', chunk => {
+      body += chunk.toString();
+      if (!uploadTooLarge && Buffer.byteLength(body) > MAX_UPLOAD_BODY_BYTES) {
+        uploadTooLarge = true;
+        sendJson(res, 413, { error: 'Payload too large' });
+        req.destroy();
+      }
+    });
     req.on('end', () => {
+      if (uploadTooLarge) return;
       try {
         const parsed = JSON.parse(body);
         const filename = parsed.filename;
@@ -2303,8 +2386,20 @@ const server = http.createServer((req, res) => {
     if (!guard.ok) return;
   }
   let filePath = requestUrl.pathname === '/' ? '/index.html' : requestUrl.pathname;
-  filePath = path.join(__dirname, decodeURIComponent(filePath));
-  
+  // Fail closed on path traversal: the resolved path must stay inside the
+  // application directory.
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(filePath);
+  } catch (_) {
+    return sendJson(res, 400, { error: 'Invalid path encoding' });
+  }
+  const resolvedPath = path.resolve(__dirname, decodedPath.replace(/^[/\\]+/, ''));
+  if (resolvedPath !== path.resolve(__dirname) && !resolvedPath.startsWith(path.resolve(__dirname) + path.sep)) {
+    return sendJson(res, 403, { error: 'Security constraint: invalid path' });
+  }
+  filePath = resolvedPath;
+
   const ext = path.extname(filePath);
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
@@ -2439,6 +2534,19 @@ async function initializeDatabase() {
         }
       }
 
+      // Pre-alignment for databases created by pre-migration dev builds: an
+      // old x_records table (created outside the migration runner) may lack
+      // the company_id/version columns that migration 002's indexes and
+      // migration 012's alignment expect. Applied migrations 001-011 are
+      // frozen, so the runtime that created the legacy table repairs its own
+      // drift here, before the chain runs. No-op on fresh databases.
+      const xRecordsTable = dbSync.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='x_records'").get();
+      if (xRecordsTable) {
+        const xCols = dbSync.prepare('PRAGMA table_info(x_records)').all().map(c => c.name);
+        if (!xCols.includes('company_id')) dbSync.exec('ALTER TABLE x_records ADD COLUMN company_id TEXT;');
+        if (!xCols.includes('version')) dbSync.exec("ALTER TABLE x_records ADD COLUMN version INTEGER NOT NULL DEFAULT 1;");
+      }
+
       const migrationResult = await runMigrations({ dbPath: SQLITE_DB_FILE, direction: 'up', actor: 'system' });
       if (migrationResult.migrations.length) {
         console.log('Migrations applied:', migrationResult.migrations.join(', '));
@@ -2473,10 +2581,23 @@ async function initializeDatabase() {
       const { createPlatformAuthority, mountPlatformApi } = await import('./platform-runtime-bridge.mjs');
       platformAuthority = createPlatformAuthority(dbSync);
       platformApiHandler = await mountPlatformApi(platformAuthority, '/api/v1');
+      const { createGovernanceStrangler } = await import('./platform/server/governance-strangler.mjs');
+      governanceStrangler = createGovernanceStrangler(platformAuthority);
       console.log('Phase 02 platform authority initialized');
+      console.log('Phase 02 governance strangler active: legacy blob is no longer a governance authority');
     } catch (err) {
       console.error('Failed to initialize Phase 02 platform authority:', err.message);
       console.error(err.stack || '');
+    }
+  }
+
+  // The governance collections module is also needed in degraded non-SQLite
+  // mode so safeSaveDb can strip governed paths (fail closed).
+  if (!governanceCollections) {
+    try {
+      governanceCollections = await import('./platform/server/governance-collections.mjs');
+    } catch (err) {
+      console.error('Governance collections module unavailable:', err.message);
     }
   }
 

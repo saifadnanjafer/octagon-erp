@@ -71,7 +71,25 @@ export function registerFinanceActions(executor) {
     .registerHandler('finance_credit_profile:set', ({ dialect, ctx, input }) => engine.setCreditProfile(dialect, ctx, input))
     .registerHandler('finance_credit:hold', ({ dialect, ctx, input }) => engine.holdCredit(dialect, ctx, input))
     .registerHandler('finance_credit:release_hold', ({ dialect, ctx, input }) => engine.releaseCreditHold(dialect, ctx, input))
-    .registerHandler('finance_credit:exposure', ({ dialect, ctx, input }) => engine.getCreditExposure(dialect, ctx, input));
+    .registerHandler('finance_credit:exposure', ({ dialect, ctx, input }) => engine.getCreditExposure(dialect, ctx, input))
+    .registerHandler('finance_budget:create', ({ dialect, ctx, input }) => engine.createBudget(dialect, ctx, input))
+    .registerHandler('finance_budget:submit', ({ dialect, ctx, input }) => engine.submitBudget(dialect, ctx, input))
+    .registerHandler('finance_budget:approve', ({ dialect, ctx, input }) => engine.approveBudget(dialect, ctx, input))
+    .registerHandler('finance_budget:reject', ({ dialect, ctx, input }) => engine.rejectBudget(dialect, ctx, input))
+    .registerHandler('finance_budget:revise', ({ dialect, ctx, input }) => engine.reviseBudget(dialect, ctx, input))
+    .registerHandler('finance_budget:variance', ({ dialect, ctx, input }) => engine.getBudgetVariance(dialect, ctx, input))
+    .registerHandler('finance_expense_claim:create', ({ dialect, ctx, input }) => engine.createExpenseClaim(dialect, ctx, input))
+    .registerHandler('finance_expense_claim:submit', ({ dialect, ctx, input }) => engine.submitExpenseClaim(dialect, ctx, input))
+    .registerHandler('finance_expense_claim:approve', ({ dialect, ctx, input }) => engine.approveExpenseClaim(dialect, ctx, input))
+    .registerHandler('finance_expense_claim:reject', ({ dialect, ctx, input }) => engine.rejectExpenseClaim(dialect, ctx, input))
+    .registerHandler('finance_employee_advance:issue', ({ dialect, ctx, input }) => engine.issueEmployeeAdvance(dialect, ctx, input))
+    .registerHandler('finance_employee_advance:settle', ({ dialect, ctx, input }) => engine.settleAdvanceAgainstClaim(dialect, ctx, input))
+    .registerHandler('finance_report:run', ({ dialect, ctx, input }) => engine.runReport(dialect, ctx, input))
+    .registerHandler('finance_report:snapshot', ({ dialect, ctx, input }) => engine.snapshotReport(dialect, ctx, input))
+    .registerHandler('finance_asset_category:create', ({ dialect, ctx, input }) => engine.createAssetCategory(dialect, ctx, input))
+    .registerHandler('finance_asset:capitalize', ({ dialect, ctx, input }) => engine.capitalizeAsset(dialect, ctx, input))
+    .registerHandler('finance_asset:post_depreciation', ({ dialect, ctx, input }) => engine.postAssetDepreciation(dialect, ctx, input))
+    .registerHandler('finance_asset:dispose', ({ dialect, ctx, input }) => engine.disposeAsset(dialect, ctx, input));
 
   return executor;
 }

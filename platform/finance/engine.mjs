@@ -1974,4 +1974,502 @@ export function getCreditExposure(dialect, ctx, input) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Wave E — Budgeting foundation (Packet 03.22)
+// ---------------------------------------------------------------------------
+
+export function createBudget(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const code = String(input.code || '').trim();
+  const name = String(input.name || '').trim();
+  if (!code) throw new FinanceError('budget code is required', 'BUDGET_CODE_REQUIRED');
+  if (!name) throw new FinanceError('budget name is required', 'BUDGET_NAME_REQUIRED');
+  if (!input.fiscal_year_id) throw new FinanceError('fiscal_year_id is required', 'BUDGET_FISCAL_YEAR_REQUIRED');
+  const lines = Array.isArray(input.lines) ? input.lines : [];
+  if (!lines.length) throw new FinanceError('at least one budget line is required', 'BUDGET_LINES_EMPTY');
+  const id = input.id || `finbudget_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_budgets (id, company_id, code, name, fiscal_year_id, version, parent_budget_id, status, threshold_warn_percent, threshold_block_percent, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)
+  `).run(id, companyId, code, name, input.fiscal_year_id, input.version || 1, input.parent_budget_id || null, Number(input.threshold_warn_percent ?? 80), input.threshold_block_percent ?? null, now, now, userId);
+  insertBudgetLines(dialect, companyId, id, lines, now);
+  return { id, companyId, code, name, status: 'draft', line_count: lines.length };
+}
+
+function insertBudgetLines(dialect, companyId, budgetId, lines, now) {
+  const insLine = dialect.prepare('INSERT INTO finance_budget_lines (id, budget_id, company_id, account_id, dimension_value_id, period_id, amount, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+  for (const l of lines) {
+    assertCompanyMatch(dialect, 'finance_accounts', l.account_id, companyId);
+    insLine.run(`finbudgetl_${crypto.randomUUID()}`, budgetId, companyId, l.account_id, l.dimension_value_id || null, l.period_id, Number(l.amount || 0), now);
+  }
+}
+
+export function updateBudgetLines(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const budget = dialect.prepare('SELECT * FROM finance_budgets WHERE id = ? AND company_id = ?').get(input.budget_id, companyId);
+  if (!budget) throw new FinanceError('budget not found', 'BUDGET_NOT_FOUND');
+  if (budget.status !== 'draft') throw new FinanceError('only a draft budget version can be edited', 'BUDGET_VERSION_IMMUTABLE');
+  const lines = Array.isArray(input.lines) ? input.lines : [];
+  if (!lines.length) throw new FinanceError('at least one budget line is required', 'BUDGET_LINES_EMPTY');
+  dialect.prepare('DELETE FROM finance_budget_lines WHERE budget_id = ?').run(input.budget_id);
+  insertBudgetLines(dialect, companyId, input.budget_id, lines, now);
+  return { id: input.budget_id, line_count: lines.length };
+}
+
+function transitionBudget(dialect, companyId, userId, now, budgetId, fromStates, toState, extra = {}) {
+  const budget = dialect.prepare('SELECT * FROM finance_budgets WHERE id = ? AND company_id = ?').get(budgetId, companyId);
+  if (!budget) throw new FinanceError('budget not found', 'BUDGET_NOT_FOUND');
+  if (!fromStates.includes(budget.status)) throw new FinanceError(`budget must be in ${fromStates.join('/')} state to transition to ${toState}`, 'BUDGET_STATE_INVALID');
+  const fields = ['status = ?', 'updated_at = ?'];
+  const params = [toState, now];
+  for (const [k, v] of Object.entries(extra)) { fields.push(`${k} = ?`); params.push(v); }
+  params.push(budgetId, companyId);
+  dialect.prepare(`UPDATE finance_budgets SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).run(...params);
+  return { id: budgetId, status: toState };
+}
+
+export function submitBudget(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionBudget(dialect, companyId, userId, now, input.budget_id, ['draft'], 'submitted', { submitted_by: userId, submitted_at: now });
+}
+
+export function approveBudget(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionBudget(dialect, companyId, userId, now, input.budget_id, ['submitted'], 'approved', { approved_by: userId, approved_at: now });
+}
+
+export function rejectBudget(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionBudget(dialect, companyId, userId, now, input.budget_id, ['submitted'], 'rejected');
+}
+
+export function reviseBudget(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const original = dialect.prepare('SELECT * FROM finance_budgets WHERE id = ? AND company_id = ?').get(input.budget_id, companyId);
+  if (!original) throw new FinanceError('budget not found', 'BUDGET_NOT_FOUND');
+  if (original.status !== 'approved') throw new FinanceError('only an approved budget can be revised', 'BUDGET_REVISE_REQUIRES_APPROVED');
+  const lines = Array.isArray(input.lines) ? input.lines : dialect.prepare('SELECT account_id, dimension_value_id, period_id, amount FROM finance_budget_lines WHERE budget_id = ?').all(original.id);
+  return createBudget(dialect, ctx, {
+    code: original.code, name: input.name || original.name, fiscal_year_id: original.fiscal_year_id,
+    version: original.version + 1, parent_budget_id: original.id, lines,
+    threshold_warn_percent: original.threshold_warn_percent, threshold_block_percent: original.threshold_block_percent,
+  });
+}
+
+function actualForAccountPeriodDimension(dialect, companyId, accountId, startDate, endDate, dimensionValueId) {
+  const rows = dialect.prepare(`
+    SELECT debit, credit, dims FROM finance_journal_lines
+    WHERE company_id = ? AND account_id = ? AND posting_date >= ? AND posting_date <= ?
+  `).all(companyId, accountId, startDate, endDate);
+  let net = 0;
+  for (const row of rows) {
+    let share = 1;
+    if (dimensionValueId) {
+      share = 0;
+      if (row.dims) {
+        try {
+          const parsed = JSON.parse(row.dims);
+          if (Object.prototype.hasOwnProperty.call(parsed, dimensionValueId)) share = Number(parsed[dimensionValueId]) / 100;
+        } catch { /* malformed dims JSON contributes nothing to a dimension-scoped budget */ }
+      }
+    }
+    net += (Number(row.debit) - Number(row.credit)) * share;
+  }
+  return net;
+}
+
+export function getBudgetVariance(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const budget = dialect.prepare('SELECT * FROM finance_budgets WHERE id = ? AND company_id = ?').get(input.budget_id, companyId);
+  if (!budget) throw new FinanceError('budget not found', 'BUDGET_NOT_FOUND');
+  const lines = dialect.prepare('SELECT * FROM finance_budget_lines WHERE budget_id = ?').all(input.budget_id);
+  return lines.map(l => {
+    const period = dialect.prepare('SELECT start_date, end_date FROM finance_periods WHERE id = ?').get(l.period_id);
+    const account = dialect.prepare('SELECT type, normal_balance FROM finance_accounts WHERE id = ?').get(l.account_id);
+    const rawNet = actualForAccountPeriodDimension(dialect, companyId, l.account_id, period.start_date, period.end_date, l.dimension_value_id);
+    const actual = round2(account.normal_balance === 'debit' ? rawNet : -rawNet);
+    const variance = round2(actual - l.amount);
+    const percentUsed = l.amount !== 0 ? round2((actual / l.amount) * 100) : null;
+    return {
+      budget_line_id: l.id, account_id: l.account_id, period_id: l.period_id, budgeted: l.amount, actual, variance,
+      percent_used: percentUsed,
+      over_warn_threshold: percentUsed != null && percentUsed >= budget.threshold_warn_percent,
+      over_block_threshold: budget.threshold_block_percent != null && percentUsed != null && percentUsed >= budget.threshold_block_percent,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Wave E — Expense claims and employee advances (Packet 03.23)
+// ---------------------------------------------------------------------------
+
+export function createExpenseClaim(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const employeeId = input.employee_id;
+  if (!employeeId) throw new FinanceError('employee_id is required', 'EXPENSE_CLAIM_EMPLOYEE_REQUIRED');
+  const lines = Array.isArray(input.lines) ? input.lines : [];
+  if (!lines.length) throw new FinanceError('at least one expense line is required', 'EXPENSE_CLAIM_LINES_EMPTY');
+  const id = input.id || `finexpclaim_${crypto.randomUUID()}`;
+  const total = round2(lines.reduce((s, l) => s + Number(l.amount || 0) + Number(l.tax_amount || 0), 0));
+  dialect.prepare(`
+    INSERT INTO finance_expense_claims (id, company_id, employee_id, project_dimension_value_id, currency, total_amount, status, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)
+  `).run(id, companyId, employeeId, input.project_dimension_value_id || null, input.currency || 'IQD', total, now, now, userId);
+  const insLine = dialect.prepare(`
+    INSERT INTO finance_expense_claim_lines (id, claim_id, company_id, category, expense_account_id, amount, tax_id, tax_amount, expense_date, receipt_fingerprint, description, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  for (const l of lines) {
+    assertCompanyMatch(dialect, 'finance_accounts', l.expense_account_id, companyId);
+    try {
+      insLine.run(`finexpline_${crypto.randomUUID()}`, id, companyId, l.category || 'general', l.expense_account_id, Number(l.amount || 0), l.tax_id || null, Number(l.tax_amount || 0), l.expense_date || now.slice(0, 10), l.receipt_fingerprint || null, l.description || null, now);
+    } catch (e) {
+      if (String(e.message || '').includes('UNIQUE constraint')) throw new FinanceError('duplicate receipt for this employee', 'EXPENSE_CLAIM_DUPLICATE_RECEIPT');
+      throw e;
+    }
+  }
+  return { id, companyId, employee_id: employeeId, total_amount: total, status: 'draft', line_count: lines.length };
+}
+
+export function submitExpenseClaim(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const claim = dialect.prepare('SELECT * FROM finance_expense_claims WHERE id = ? AND company_id = ?').get(input.claim_id, companyId);
+  if (!claim) throw new FinanceError('expense claim not found', 'EXPENSE_CLAIM_NOT_FOUND');
+  if (claim.status !== 'draft') throw new FinanceError('only a draft claim can be submitted', 'EXPENSE_CLAIM_STATE_INVALID');
+  dialect.prepare("UPDATE finance_expense_claims SET status = 'submitted', submitted_at = ?, updated_at = ? WHERE id = ?").run(now, now, input.claim_id);
+  return { id: input.claim_id, status: 'submitted' };
+}
+
+export function approveExpenseClaim(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const claim = dialect.prepare('SELECT * FROM finance_expense_claims WHERE id = ? AND company_id = ?').get(input.claim_id, companyId);
+  if (!claim) throw new FinanceError('expense claim not found', 'EXPENSE_CLAIM_NOT_FOUND');
+  if (claim.status !== 'submitted') throw new FinanceError('only a submitted claim can be approved', 'EXPENSE_CLAIM_STATE_INVALID');
+  const lines = dialect.prepare('SELECT * FROM finance_expense_claim_lines WHERE claim_id = ?').all(input.claim_id);
+  const overPolicy = lines.some(l => input.over_policy_line_ids?.includes(l.id));
+  if (overPolicy && !String(input.override_reason || '').trim()) {
+    throw new FinanceError('over-policy lines require an override_reason to approve', 'EXPENSE_CLAIM_OVER_POLICY_APPROVAL_REQUIRED');
+  }
+  if (!input.reimbursement_account_id) throw new FinanceError('reimbursement_account_id is required', 'EXPENSE_CLAIM_REIMBURSEMENT_ACCOUNT_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.reimbursement_account_id, companyId);
+  const docLines = lines.map(l => ({
+    account_id: l.expense_account_id, debit: round2(Number(l.amount) + Number(l.tax_amount)), credit: 0,
+    dims: l.category === 'general' && !claim.project_dimension_value_id ? null : undefined,
+    description: l.description || l.category,
+  }));
+  docLines.push({ account_id: input.reimbursement_account_id, debit: 0, credit: claim.total_amount, partner_id: claim.employee_id });
+  const doc = createDocument(dialect, ctx, { move_type: 'manual_entry', doc_date: now.slice(0, 10), partner_id: claim.employee_id, currency: claim.currency, lines: docLines });
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  const posted = postDocument(dialect, ctx, { document_id: doc.id });
+  dialect.prepare("UPDATE finance_expense_claims SET status = 'approved', document_id = ?, approved_by = ?, approved_at = ?, updated_at = ? WHERE id = ?").run(posted.id, userId, now, now, input.claim_id);
+  return { id: input.claim_id, status: 'approved', document_id: posted.id };
+}
+
+export function rejectExpenseClaim(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const claim = dialect.prepare('SELECT * FROM finance_expense_claims WHERE id = ? AND company_id = ?').get(input.claim_id, companyId);
+  if (!claim) throw new FinanceError('expense claim not found', 'EXPENSE_CLAIM_NOT_FOUND');
+  if (claim.status !== 'submitted') throw new FinanceError('only a submitted claim can be rejected', 'EXPENSE_CLAIM_STATE_INVALID');
+  const reason = String(input.reason || '').trim();
+  if (!reason) throw new FinanceError('rejection reason is required', 'EXPENSE_CLAIM_REJECTION_REASON_REQUIRED');
+  dialect.prepare("UPDATE finance_expense_claims SET status = 'rejected', rejection_reason = ?, updated_at = ? WHERE id = ?").run(reason, now, input.claim_id);
+  return { id: input.claim_id, status: 'rejected' };
+}
+
+export function issueEmployeeAdvance(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  if (!input.employee_id) throw new FinanceError('employee_id is required', 'ADVANCE_EMPLOYEE_REQUIRED');
+  const amount = round2(Number(input.amount));
+  if (!(amount > 0)) throw new FinanceError('advance amount must be positive', 'ADVANCE_AMOUNT_INVALID');
+  if (!input.control_account_id) throw new FinanceError('control_account_id is required', 'ADVANCE_CONTROL_ACCOUNT_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.control_account_id, companyId);
+  assertCompanyMatch(dialect, 'finance_accounts', input.cash_or_bank_account_id, companyId);
+  const doc = createDocument(dialect, ctx, {
+    move_type: 'manual_entry', doc_date: input.issue_date || now.slice(0, 10), partner_id: input.employee_id, currency: input.currency || 'IQD',
+    lines: [
+      { account_id: input.control_account_id, debit: amount, credit: 0, partner_id: input.employee_id, description: 'Employee advance issued' },
+      { account_id: input.cash_or_bank_account_id, debit: 0, credit: amount },
+    ],
+  });
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  const posted = postDocument(dialect, ctx, { document_id: doc.id });
+  const id = input.id || `finadv_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_employee_advances (id, company_id, employee_id, amount, applied_amount, currency, status, document_id, issued_at, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, 0, ?, 'issued', ?, ?, ?, ?, ?)
+  `).run(id, companyId, input.employee_id, amount, input.currency || 'IQD', posted.id, now, now, now, userId);
+  return { id, companyId, employee_id: input.employee_id, amount, status: 'issued', document_id: posted.id };
+}
+
+export function settleAdvanceAgainstClaim(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const advance = dialect.prepare('SELECT * FROM finance_employee_advances WHERE id = ? AND company_id = ?').get(input.advance_id, companyId);
+  if (!advance) throw new FinanceError('advance not found', 'ADVANCE_NOT_FOUND');
+  const claim = dialect.prepare('SELECT * FROM finance_expense_claims WHERE id = ? AND company_id = ?').get(input.claim_id, companyId);
+  if (!claim) throw new FinanceError('expense claim not found', 'EXPENSE_CLAIM_NOT_FOUND');
+  if (claim.status !== 'approved') throw new FinanceError('claim must be approved before advance settlement', 'ADVANCE_SETTLE_CLAIM_NOT_APPROVED');
+  const remaining = round2(Number(advance.amount) - Number(advance.applied_amount));
+  const amount = round2(input.amount != null ? Number(input.amount) : Math.min(remaining, claim.total_amount));
+  if (amount <= 0 || amount > remaining + 0.0001) throw new FinanceError('settlement amount exceeds remaining advance balance', 'ADVANCE_SETTLE_EXCEEDS_REMAINING');
+  const newApplied = round2(Number(advance.applied_amount) + amount);
+  const status = newApplied >= round2(advance.amount) - 0.005 ? 'settled' : 'partially_settled';
+  dialect.prepare('UPDATE finance_employee_advances SET applied_amount = ?, status = ?, updated_at = ? WHERE id = ?').run(newApplied, status, now, input.advance_id);
+  return { id: input.advance_id, applied_amount: newApplied, status };
+}
+
+// ---------------------------------------------------------------------------
+// Wave E — Canonical financial report queries (Packet 03.24)
+// ---------------------------------------------------------------------------
+
+export function getProfitAndLoss(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const startDate = options.start_date || null;
+  const endDate = options.end_date || null;
+  const rows = dialect.prepare(`
+    SELECT l.account_id, a.code, a.name, a.type, SUM(l.debit) AS total_debit, SUM(l.credit) AS total_credit
+    FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.company_id = ? AND a.type IN ('income','expense')
+      AND (? IS NULL OR l.posting_date >= ?) AND (? IS NULL OR l.posting_date <= ?)
+    GROUP BY l.account_id ORDER BY a.code
+  `).all(companyId, startDate, startDate, endDate, endDate);
+  const withNet = rows.map(r => ({ ...r, net: round2(r.type === 'income' ? Number(r.total_credit) - Number(r.total_debit) : Number(r.total_debit) - Number(r.total_credit)) }));
+  const income = round2(withNet.filter(r => r.type === 'income').reduce((s, r) => s + r.net, 0));
+  const expense = round2(withNet.filter(r => r.type === 'expense').reduce((s, r) => s + r.net, 0));
+  return { rows: withNet, totals: { income, expense, net_result: round2(income - expense) } };
+}
+
+export function getBalanceSheet(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const asOfDate = options.as_of_date || null;
+  const rows = dialect.prepare(`
+    SELECT l.account_id, a.code, a.name, a.type, SUM(l.debit - l.credit) AS balance
+    FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.company_id = ? AND (? IS NULL OR l.posting_date <= ?)
+    GROUP BY l.account_id ORDER BY a.code
+  `).all(companyId, asOfDate, asOfDate);
+  const sum = types => round2(rows.filter(r => types.includes(r.type)).reduce((s, r) => s + Number(r.balance), 0));
+  const assets = sum(['asset', 'receivable', 'liquidity']);
+  const liabilities = round2(-sum(['liability', 'payable']));
+  const equity = round2(-sum(['equity']));
+  const currentResult = round2(-sum(['income']) - sum(['expense']));
+  return {
+    rows, totals: {
+      assets, liabilities, equity, current_result: currentResult,
+      liabilities_plus_equity: round2(liabilities + equity + currentResult),
+      balanced: Math.abs(assets - liabilities - equity - currentResult) < 0.01,
+    },
+  };
+}
+
+export function getCashFlow(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const startDate = options.start_date || null;
+  const endDate = options.end_date || null;
+  const rows = dialect.prepare(`
+    SELECT l.account_id, a.code, a.name, SUM(l.debit - l.credit) AS net_change
+    FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.company_id = ? AND a.type = 'liquidity'
+      AND (? IS NULL OR l.posting_date >= ?) AND (? IS NULL OR l.posting_date <= ?)
+    GROUP BY l.account_id ORDER BY a.code
+  `).all(companyId, startDate, startDate, endDate, endDate);
+  return { rows, net_change: round2(rows.reduce((s, r) => s + Number(r.net_change), 0)), method: 'indirect-ledger-derived' };
+}
+
+export function getPartnerLedger(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const startDate = options.start_date || null;
+  const endDate = options.end_date || null;
+  const partnerId = options.partner_id || null;
+  const rows = dialect.prepare(`
+    SELECT l.partner_id, d.id AS document_id, d.doc_number, d.doc_date, d.move_type, l.account_id, l.debit, l.credit, (l.debit - l.credit) AS net
+    FROM finance_journal_lines l JOIN finance_documents d ON d.id = l.document_id
+    WHERE l.company_id = ? AND l.partner_id IS NOT NULL
+      AND (? IS NULL OR l.partner_id = ?)
+      AND (? IS NULL OR d.doc_date >= ?) AND (? IS NULL OR d.doc_date <= ?)
+    ORDER BY d.doc_date, d.doc_number, l.id
+  `).all(companyId, partnerId, partnerId, startDate, startDate, endDate, endDate);
+  return rows;
+}
+
+export function getTaxReport(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const startDate = options.start_date || null;
+  const endDate = options.end_date || null;
+  // Tax amounts are posted onto accounts flagged with a tax_role (Wave A schema);
+  // grouping by that column reconciles the tax report to GL by construction
+  // without needing a separate tax ledger.
+  const rows = dialect.prepare(`
+    SELECT a.tax_role, a.id AS account_id, a.code, a.name, SUM(l.debit) AS total_debit, SUM(l.credit) AS total_credit
+    FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.company_id = ? AND a.tax_role IS NOT NULL
+      AND (? IS NULL OR l.posting_date >= ?) AND (? IS NULL OR l.posting_date <= ?)
+    GROUP BY a.id ORDER BY a.code
+  `).all(companyId, startDate, startDate, endDate, endDate);
+  return rows.map(r => ({ ...r, net: round2(Number(r.total_credit) - Number(r.total_debit)) }));
+}
+
+export function getDimensionProfitLoss(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  if (!options.dimension_id) throw new FinanceError('dimension_id is required', 'DIMENSION_PNL_DIMENSION_REQUIRED');
+  const breakdown = getDimensionBreakdown(dialect, ctx, options);
+  const withType = breakdown.map(b => {
+    const line = dialect.prepare(`
+      SELECT a.type FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+      WHERE l.company_id = ? AND l.dims LIKE '%' || ? || '%' AND a.type IN ('income','expense') LIMIT 1
+    `).get(companyId, b.dimension_value_id);
+    return { ...b, account_type: line?.type || null };
+  });
+  return { dimension_id: options.dimension_id, rows: withType, total: round2(withType.reduce((s, r) => s + r.net, 0)) };
+}
+
+export function getCurrencyRevaluationReport(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const asOfDate = options.as_of_date || null;
+  return dialect.prepare(`
+    SELECT * FROM finance_fx_revaluation_runs WHERE company_id = ? AND (? IS NULL OR as_of_date <= ?) ORDER BY as_of_date DESC
+  `).all(companyId, asOfDate, asOfDate);
+}
+
+export function getBankCashReconciliationStatus(dialect, ctx) {
+  const { companyId } = context(ctx);
+  const bankLines = dialect.prepare(`
+    SELECT status, COUNT(*) AS n FROM finance_bank_statement_lines WHERE company_id = ? GROUP BY status
+  `).all(companyId);
+  const cashShifts = dialect.prepare(`
+    SELECT status, COUNT(*) AS n FROM finance_cash_shifts WHERE company_id = ? GROUP BY status
+  `).all(companyId);
+  return { bank_lines: bankLines, cash_shifts: cashShifts };
+}
+
+export function getPeriodCloseStatus(dialect, ctx) {
+  const { companyId } = context(ctx);
+  const periods = dialect.prepare('SELECT id, name, start_date, end_date, status FROM finance_periods WHERE company_id = ? ORDER BY start_date').all(companyId);
+  const locks = dialect.prepare('SELECT module, lock_date FROM finance_locks WHERE company_id = ?').all(companyId);
+  return { periods, locks };
+}
+
+const REPORT_HANDLERS = {
+  trial_balance: (dialect, ctx, options) => getTrialBalance(dialect, ctx, options),
+  general_ledger: (dialect, ctx, options) => getGeneralLedger(dialect, ctx, options.account_id, options),
+  profit_loss: (dialect, ctx, options) => getProfitAndLoss(dialect, ctx, options),
+  balance_sheet: (dialect, ctx, options) => getBalanceSheet(dialect, ctx, options),
+  cash_flow: (dialect, ctx, options) => getCashFlow(dialect, ctx, options),
+  ar_aging: (dialect, ctx, options) => getCustomerAging(dialect, ctx, options),
+  ap_aging: (dialect, ctx, options) => getSupplierAging(dialect, ctx, options),
+  partner_ledger: (dialect, ctx, options) => getPartnerLedger(dialect, ctx, options),
+  tax_report: (dialect, ctx, options) => getTaxReport(dialect, ctx, options),
+  dimension_pnl: (dialect, ctx, options) => getDimensionProfitLoss(dialect, ctx, options),
+  currency_revaluation: (dialect, ctx, options) => getCurrencyRevaluationReport(dialect, ctx, options),
+  bank_reconciliation_status: (dialect, ctx) => getBankCashReconciliationStatus(dialect, ctx),
+  budget_vs_actual: (dialect, ctx, options) => getBudgetVariance(dialect, ctx, options),
+  period_close_status: (dialect, ctx) => getPeriodCloseStatus(dialect, ctx),
+};
+
+export function runReport(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const code = input.report_code;
+  const def = dialect.prepare('SELECT * FROM finance_report_definitions WHERE code = ?').get(code);
+  if (!def) throw new FinanceError(`unknown report_code: ${code}`, 'REPORT_NOT_FOUND');
+  const handler = REPORT_HANDLERS[code];
+  if (!handler) throw new FinanceError(`report handler not implemented for ${code}`, 'REPORT_NOT_IMPLEMENTED');
+  return handler(dialect, ctx, input.params || {});
+}
+
+export function snapshotReport(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const data = runReport(dialect, ctx, input);
+  const paramsJson = JSON.stringify(input.params || {});
+  const paramsHash = crypto.createHash('sha256').update(`${input.report_code}|${paramsJson}`).digest('hex');
+  const id = `finreportsnap_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_report_snapshots (id, company_id, report_code, params_hash, params_json, data_json, generated_at, generated_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, input.report_code, paramsHash, paramsJson, JSON.stringify(data), now, userId);
+  return { id, report_code: input.report_code, generated_at: now, data };
+}
+
+// ---------------------------------------------------------------------------
+// Wave E — Asset-accounting interface for Phase 05 (Packet 03.26)
+// ---------------------------------------------------------------------------
+
+export function createAssetCategory(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const code = String(input.code || '').trim();
+  const name = String(input.name || '').trim();
+  if (!code) throw new FinanceError('asset category code is required', 'ASSET_CATEGORY_CODE_REQUIRED');
+  if (!name) throw new FinanceError('asset category name is required', 'ASSET_CATEGORY_NAME_REQUIRED');
+  for (const field of ['asset_account_id', 'depreciation_expense_account_id', 'accumulated_depreciation_account_id']) {
+    if (!input[field]) throw new FinanceError(`${field} is required`, 'ASSET_CATEGORY_ACCOUNT_REQUIRED');
+    assertCompanyMatch(dialect, 'finance_accounts', input[field], companyId);
+  }
+  const id = input.id || `finassetcat_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_asset_categories (id, company_id, code, name, asset_account_id, depreciation_expense_account_id, accumulated_depreciation_account_id, disposal_gain_account_id, disposal_loss_account_id, default_method, is_active, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, code, name, input.asset_account_id, input.depreciation_expense_account_id, input.accumulated_depreciation_account_id, input.disposal_gain_account_id || null, input.disposal_loss_account_id || null, input.default_method || 'straight_line', 1, now, userId);
+  return { id, companyId, code, name };
+}
+
+function postAssetContract(dialect, ctx, moveType, categoryId, lines, extra = {}) {
+  const { companyId } = context(ctx);
+  const category = dialect.prepare('SELECT * FROM finance_asset_categories WHERE id = ? AND company_id = ?').get(categoryId, companyId);
+  if (!category) throw new FinanceError('asset category not found', 'ASSET_CATEGORY_NOT_FOUND');
+  const doc = createDocument(dialect, ctx, { move_type: moveType, doc_date: extra.doc_date || new Date().toISOString().slice(0, 10), lines, source_type: 'asset_event', source_canonical_key: extra.asset_reference ? `${moveType}:${extra.asset_reference}` : undefined });
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  return { category, posted: postDocument(dialect, ctx, { document_id: doc.id }) };
+}
+
+export function capitalizeAsset(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const category = dialect.prepare('SELECT * FROM finance_asset_categories WHERE id = ? AND company_id = ?').get(input.category_id, companyId);
+  if (!category) throw new FinanceError('asset category not found', 'ASSET_CATEGORY_NOT_FOUND');
+  if (!input.source_account_id) throw new FinanceError('source_account_id is required', 'ASSET_CAPITALIZE_SOURCE_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.source_account_id, companyId);
+  const amount = round2(Number(input.amount));
+  if (!(amount > 0)) throw new FinanceError('capitalization amount must be positive', 'ASSET_CAPITALIZE_AMOUNT_INVALID');
+  const { posted } = postAssetContract(dialect, ctx, 'manual_entry', input.category_id, [
+    { account_id: category.asset_account_id, debit: amount, credit: 0, description: `Asset capitalization ${input.asset_reference}` },
+    { account_id: input.source_account_id, debit: 0, credit: amount },
+  ], { doc_date: input.doc_date, asset_reference: input.asset_reference });
+  return { document_id: posted.id, category_id: category.id, amount };
+}
+
+export function postAssetDepreciation(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const category = dialect.prepare('SELECT * FROM finance_asset_categories WHERE id = ? AND company_id = ?').get(input.category_id, companyId);
+  if (!category) throw new FinanceError('asset category not found', 'ASSET_CATEGORY_NOT_FOUND');
+  const amount = round2(Number(input.amount));
+  if (!(amount > 0)) throw new FinanceError('depreciation amount must be positive', 'ASSET_DEPRECIATION_AMOUNT_INVALID');
+  const { posted } = postAssetContract(dialect, ctx, 'manual_entry', input.category_id, [
+    { account_id: category.depreciation_expense_account_id, debit: amount, credit: 0, description: `Depreciation ${input.asset_reference}` },
+    { account_id: category.accumulated_depreciation_account_id, debit: 0, credit: amount },
+  ], { doc_date: input.doc_date, asset_reference: input.asset_reference });
+  return { document_id: posted.id, category_id: input.category_id, amount };
+}
+
+export function disposeAsset(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const category = dialect.prepare('SELECT * FROM finance_asset_categories WHERE id = ? AND company_id = ?').get(input.category_id, companyId);
+  if (!category) throw new FinanceError('asset category not found', 'ASSET_CATEGORY_NOT_FOUND');
+  if (!input.proceeds_account_id) throw new FinanceError('proceeds_account_id is required', 'ASSET_DISPOSE_PROCEEDS_ACCOUNT_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.proceeds_account_id, companyId);
+  const netBookValue = round2(Number(input.net_book_value));
+  const proceeds = round2(Number(input.proceeds));
+  const gain = round2(Math.max(0, proceeds - netBookValue));
+  const loss = round2(Math.max(0, netBookValue - proceeds));
+  if (gain > 0 && !category.disposal_gain_account_id) throw new FinanceError('category has no disposal_gain_account_id configured', 'ASSET_DISPOSE_GAIN_ACCOUNT_MISSING');
+  if (loss > 0 && !category.disposal_loss_account_id) throw new FinanceError('category has no disposal_loss_account_id configured', 'ASSET_DISPOSE_LOSS_ACCOUNT_MISSING');
+  const lines = [
+    { account_id: input.proceeds_account_id, debit: proceeds, credit: 0, description: `Asset disposal proceeds ${input.asset_reference}` },
+    { account_id: category.asset_account_id, debit: 0, credit: netBookValue, description: `Asset disposal ${input.asset_reference}` },
+  ];
+  if (gain > 0) lines.push({ account_id: category.disposal_gain_account_id, debit: 0, credit: gain, description: 'Gain on disposal' });
+  if (loss > 0) lines.push({ account_id: category.disposal_loss_account_id, debit: loss, credit: 0, description: 'Loss on disposal' });
+  const { posted } = postAssetContract(dialect, ctx, 'manual_entry', input.category_id, lines, { doc_date: input.doc_date, asset_reference: input.asset_reference });
+  return { document_id: posted.id, category_id: input.category_id, net_book_value: netBookValue, proceeds, gain, loss };
+}
+
 export { ACCOUNT_TYPES, JOURNAL_TYPES, DOCUMENT_TYPES };

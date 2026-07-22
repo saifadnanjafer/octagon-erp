@@ -402,6 +402,78 @@
 
 ---
 
+## Capability: Wave E.1 — Budgeting foundation (Packet 03.22)
+
+- **Capability ID:** `FN-034`
+- **Outcome:** Versioned, approved-immutable budgets tied to accounts/dimensions/periods, with GL-derived variance (no separate actuals table).
+- **Current Octagon paths inspected:** `services/financeService.js` — no budget model exists.
+- **VNext paths inspected:** VNext budgeting exploration (project-owned, foundation-level, no shippable code).
+- **Primary donor repository:** ERPNext Budget doctype — clean-room reference for account/dimension scope and variance/threshold-alert concepts.
+- **License:** clean-room reference only.
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createBudget`, `updateBudgetLines`, `submitBudget`, `approveBudget`, `rejectBudget`, `reviseBudget`, `getBudgetVariance`), `database/migrations/029_budgeting_foundation.mjs`.
+- **Canonical database authority:** `finance_budgets`, `finance_budget_lines`.
+- **Finance integration:** `getBudgetVariance` re-derives actuals from `finance_journal_lines` on every call — zero independent balance state.
+- **Tests:** approved-version mutation denial + revision lineage, dimension-scoped variance reconciliation to real GL activity (2 tests).
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
+## Capability: Wave E.2 — Expense claims and employee advances (Packet 03.23)
+
+- **Capability ID:** `FN-035`
+- **Outcome:** Financially governed expense/advance flow with zero payroll or attendance modification.
+- **Current Octagon paths inspected:** `services/financeService.js` payroll-finance bridge — expense recording today is a generic transaction category, no claim lifecycle.
+- **Current Octagon behavior preserved:** none carried forward as authority; payroll/attendance are explicitly untouched (binding rule, verified by code inspection — no query in this wave's engine code touches a payroll or attendance table).
+- **Primary donor repository:** ERPNext Expense Claim + Employee Advance doctypes — clean-room reference.
+- **License:** clean-room reference only.
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createExpenseClaim`, `submitExpenseClaim`, `approveExpenseClaim`, `rejectExpenseClaim`, `issueEmployeeAdvance`, `settleAdvanceAgainstClaim`), `database/migrations/030_expense_claims_and_advances.mjs`.
+- **Canonical database authority:** `finance_expense_claims`, `finance_expense_claim_lines`, `finance_employee_advances`.
+- **Finance integration:** claim approval posts through the standard `createDocument`/`postDocument` pipeline.
+- **Migration:** duplicate-receipt detection is a real unique index (`WHERE receipt_fingerprint IS NOT NULL`), not an application-level check.
+- **Tests:** duplicate receipt (DB constraint), over-policy approval gate, single-document-per-approval guarantee, partial/full advance settlement (4 tests).
+- **Known risks:** the payroll adapter is a nullable reference column only (`payroll_settlement_ref`) — no adapter logic is implemented or active, matching the packet's own "payroll adapter remains inactive unless later authorized" test requirement by construction (there is nothing to authorize yet).
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
+## Capability: Wave E.3 — Canonical financial report queries (Packet 03.24)
+
+- **Capability ID:** `FN-036`
+- **Outcome:** One registered report catalog (15 reports) reconciling directly to the canonical ledger; snapshotting for immutable point-in-time evidence.
+- **VNext paths inspected:** `octagon-erp-commercial-vnext/vnext/server/finance/report-engine.js` (entire file).
+- **VNext implementation disposition:** `MERGE-REFACTOR` — `profitLoss`, `balanceSheet`, `cashFlow`, `partnerLedger`, `tax`, `dimensionPnl` ported near-verbatim onto `finance_*` tables; `trialBalance`/`generalLedger`/aging were already canonical from Waves A/C and are reused via the dispatcher, not reimplemented.
+- **Primary donor repository:** Odoo Community account report views — clean-room reference for opening/movement/closing column convention.
+- **Secondary donor:** ERPNext Financial Statements — clean-room reference confirming P&L/Balance Sheet grouping independently.
+- **License:** VNext project-owned; Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`getProfitAndLoss`, `getBalanceSheet`, `getCashFlow`, `getPartnerLedger`, `getTaxReport`, `getDimensionProfitLoss`, `getCurrencyRevaluationReport`, `getBankCashReconciliationStatus`, `getPeriodCloseStatus`, `runReport`, `snapshotReport`), `database/migrations/031_canonical_financial_reports.mjs`.
+- **Canonical database authority:** `finance_report_definitions`, `finance_report_snapshots`.
+- **Canonical query authority:** `runReport` (single dispatcher for all 15 report codes).
+- **Tests:** P&L/Balance Sheet reconciliation and balance proof, cash flow reconciliation, partner ledger, tax report (via `tax_role`), snapshot immutability, cross-company isolation (6 tests).
+- **Known risks:** `finance_tax:quote`'s repartition tags are not yet linked to `finance_journal_lines` with a queryable tax-id column; `getTaxReport` instead groups by `finance_accounts.tax_role` (Wave A column), which reconciles to GL by construction but is coarser than a per-tax-code grid. Recorded in `unresolved-risks.md`.
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave E.4 — Asset-accounting interface for Phase 05 (Packet 03.26)
+
+- **Capability ID:** `FN-037`
+- **Outcome:** Stable finance posting contracts (capitalize/depreciate/dispose) without prematurely building the asset register, exactly as the packet's outcome statement requires.
+- **Current Octagon paths inspected:** asset/maintenance module — tracks figures in its own store, does not post to `finance_documents` today.
+- **VNext paths inspected:** searched for an asset-accounting engine; `migrations/705_r7_maintenance.mjs` exists but is maintenance scheduling, not depreciation accounting — no VNext code to port.
+- **Primary donor repository:** ERPNext Asset / Depreciation Schedule — clean-room reference for the category→account-mapping and posting-contract shape.
+- **License:** clean-room reference only.
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createAssetCategory`, `capitalizeAsset`, `postAssetDepreciation`, `disposeAsset`), `database/migrations/032_asset_accounting_interface.mjs`.
+- **Canonical database authority:** `finance_asset_categories` only — deliberately no asset register table (Phase 05 owns that entity).
+- **Finance integration:** all three posting contracts flow through the standard `createDocument`/`postDocument` pipeline, including the shared period-lock gate (verified: a locked period rejects an asset capitalization the same way it rejects any other document).
+- **Tests:** capitalization/depreciation/disposal-gain/disposal-loss fixtures, missing-account-configuration denial, period-lock enforcement (3 tests, 6 assertions).
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
 ## Capability: Wave C — Currency, tax, localization, dimensions, AR/AP
 
 - **Capability ID:** `FN-008`–`FN-014`, `FN-011`

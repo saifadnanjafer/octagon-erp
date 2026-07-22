@@ -49,3 +49,25 @@ After reversal:
 
 - Expense account balance = 0 (within rounding tolerance).
 - Reversal document is posted and linked to original.
+
+
+## Wave B update
+
+- Verified append-only GL triggers still block direct mutation/deletion.
+- Verified hash chain integrity after full document lifecycle and reversal.
+- Verified trial balance reconciles after approved-only posting.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Hash chain verifies after lifecycle and reversal | `finance-wave-b.test.mjs` | PASS |
+| Cross-company document access denied | `finance-wave-b.test.mjs` | PASS |
+| Append-only GL trigger blocks direct mutation | `finance-wave-a.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

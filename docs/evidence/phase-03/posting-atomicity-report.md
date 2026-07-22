@@ -44,3 +44,26 @@ node tests/phase03/finance-wave-a.test.mjs
 ## Failure-injection status
 
 Wave A does not yet inject failures at every boundary. Mandatory failure-injection suite is scheduled for Wave F and will be added to `tests/phase03/finance-failure-injection.test.mjs`.
+
+
+## Wave B update
+
+- Verified full lifecycle through the action executor: `finance_document:create` → `:submit` → `:approve` → `:post`.
+- Verified idempotency enforcement by the action executor across lifecycle actions.
+- Verified concurrent posting produces sequential numbers (`JV-2026-00001`, `JV-2026-00002`) and a valid hash chain.
+- Confirmed that `BEGIN IMMEDIATE` transaction ownership in the action executor serializes posting attempts safely.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Document lifecycle via action executor | `finance-wave-b.test.mjs` | PASS |
+| Concurrent posting issues sequential numbers | `finance-wave-b.test.mjs` | PASS |
+| Hash chain verifies after concurrent posting | `finance-wave-b.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

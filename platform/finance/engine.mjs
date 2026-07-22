@@ -280,8 +280,8 @@ export function postDocument(dialect, ctx, input) {
   const docId = input.document_id;
   const doc = getDocument(dialect, companyId, docId);
   if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
-  if (!['draft', 'submitted', 'approved'].includes(doc.state)) {
-    throw new FinanceError('document must be draft, submitted, or approved to post', 'DOCUMENT_STATE_INVALID');
+  if (!['approved'].includes(doc.state)) {
+    throw new FinanceError('document must be approved to post', 'DOCUMENT_STATE_INVALID');
   }
 
   checkPeriodAndLock(dialect, companyId, doc.doc_date);
@@ -338,6 +338,31 @@ export function postDocument(dialect, ctx, input) {
   return getDocument(dialect, companyId, docId);
 }
 
+function transitionDocumentState(dialect, companyId, userId, now, docId, fromStates, toState) {
+  const doc = getDocument(dialect, companyId, docId);
+  if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
+  if (!fromStates.includes(doc.state)) {
+    throw new FinanceError(`document must be in ${fromStates.join('/')} state to ${toState}`, 'DOCUMENT_STATE_INVALID');
+  }
+  dialect.prepare('UPDATE finance_documents SET state = ?, updated_at = ?, updated_by = ? WHERE id = ? AND company_id = ?').run(toState, now, userId, docId, companyId);
+  return getDocument(dialect, companyId, docId);
+}
+
+export function submitDocument(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionDocumentState(dialect, companyId, userId, now, input.document_id, ['draft'], 'submitted');
+}
+
+export function approveDocument(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionDocumentState(dialect, companyId, userId, now, input.document_id, ['submitted'], 'approved');
+}
+
+export function cancelDocument(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  return transitionDocumentState(dialect, companyId, userId, now, input.document_id, ['draft', 'submitted', 'approved'], 'cancelled');
+}
+
 export function reverseDocument(dialect, ctx, input) {
   const { companyId, userId, now } = context(ctx);
   const originalId = input.document_id;
@@ -370,6 +395,8 @@ export function reverseDocument(dialect, ctx, input) {
     lines: reversalLines,
   });
 
+  submitDocument(dialect, ctx, { document_id: reversalDoc.id });
+  approveDocument(dialect, ctx, { document_id: reversalDoc.id });
   postDocument(dialect, ctx, { document_id: reversalDoc.id });
 
   dialect.prepare(`

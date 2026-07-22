@@ -44,3 +44,29 @@ node tests/phase03/finance-wave-a.test.mjs
 
 VNext `fiscal_doc` → `finance_documents` / `finance_document_lines`.
 Odoo `account_move` behavior used as clean-room reference for state rules and immutability.
+
+
+## Wave B update
+
+Wave B added the full document lifecycle and deepened period/lock/sequence semantics.
+
+- Added `finance_document:create`, `finance_document:submit`, `finance_document:approve`, `finance_document:cancel` actions in migration `015_finance_document_lifecycle`.
+- Engine now enforces `draft → submitted → approved → posted`.
+- Cancellation is allowed from `draft`, `submitted`, or `approved`; not from `posted` (use reversal instead).
+- Reversal document goes through the same lifecycle internally.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Document lifecycle via engine | `finance-wave-b.test.mjs` | PASS |
+| Post denied if not approved | `finance-wave-b.test.mjs` | PASS |
+| Document lifecycle via action executor | `finance-wave-b.test.mjs` | PASS |
+| Reversal preserves original immutability | `finance-wave-b.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

@@ -44,3 +44,23 @@ entry_number: JV-2026-00003, hash: ..., prev_hash: <hash of 00002>
 ```
 
 `verifyHashChain()` returns `{ ok: true, count: 3 }`.
+
+
+## Wave B update
+
+- Verified concurrent posting allocates sequential numbers without gaps and preserves hash chain integrity.
+- Verified original document number and state are immutable after reversal.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Concurrent posting issues sequential numbers | `finance-wave-b.test.mjs` | PASS |
+| Reversal preserves original immutability | `finance-wave-b.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

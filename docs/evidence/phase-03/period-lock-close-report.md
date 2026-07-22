@@ -39,3 +39,27 @@ node tests/phase03/finance-wave-a.test.mjs
 
 - Full close checklist, unresolved-reconciliation warnings, and close-reconciliation reports are scheduled for Wave B/E.
 - Period-close versus posting race concurrency test is scheduled for Wave F.
+
+
+## Wave B update
+
+- Verified lock-date enforcement via `finance_locks` (`gl` module).
+- Verified hard-close reopen requires an explicit reason.
+- Verified cross-company document access is denied by the engine context.
+- Verified posting is denied when period is `soft_closed` or `hard_closed`.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Lock date prevents posting | `finance-wave-b.test.mjs` | PASS |
+| Reopen hard-closed period requires reason | `finance-wave-b.test.mjs` | PASS |
+| Cross-company document access denied | `finance-wave-b.test.mjs` | PASS |
+| Period lock prevents posting | `finance-wave-a.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

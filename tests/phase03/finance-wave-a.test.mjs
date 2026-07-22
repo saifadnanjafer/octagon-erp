@@ -5,12 +5,19 @@ import { createActionExecutor } from '../../platform/kernel/actions/index.mjs';
 import { registerFinanceActions, seedChartOfAccounts, accountIdByCode } from '../../platform/finance/index.mjs';
 import { migration as financeMigration } from '../../database/migrations/014_finance_canonical_schema_and_coa.mjs';
 import {
-  createAccount, updateAccount, createDocument, postDocument, reverseDocument,
+  createAccount, updateAccount, createDocument, submitDocument, approveDocument, cancelDocument, postDocument, reverseDocument,
   getTrialBalance, getGeneralLedger, hardClosePeriod, reopenPeriod, verifyHashChain,
   createJournal,
 } from '../../platform/finance/engine.mjs';
 
 const SUITE = 'finance-wave-a';
+
+function createAndApproveDocument(dialect, ctx, input) {
+  const doc = createDocument(dialect, ctx, input);
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  return doc;
+}
 
 async function setupFinance() {
   const { dialect, dbPath } = await setup(SUITE);
@@ -94,7 +101,7 @@ async function run() {
         const ctx = { companyId: org.companyA1, userId: 'u_owner' };
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-03-15',
           lines: [
@@ -116,7 +123,7 @@ async function run() {
         const ctx = { companyId: org.companyA1, userId: 'u_owner' };
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-03-15',
           lines: [
@@ -141,7 +148,7 @@ async function run() {
         const ctx = { companyId: org.companyA1, userId: 'u_owner' };
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-03-15',
           lines: [
@@ -168,7 +175,7 @@ async function run() {
         const ctx = { companyId: org.companyA1, userId: 'u_owner' };
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-03-15',
           lines: [
@@ -199,7 +206,7 @@ async function run() {
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
         const period = dialect.prepare('SELECT id FROM finance_periods WHERE company_id = ? AND start_date <= ? AND end_date >= ?').get(org.companyA1, '2026-03-15', '2026-03-15');
         hardClosePeriod(dialect, ctx, { period_id: period.id });
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-03-15',
           lines: [
@@ -221,7 +228,7 @@ async function run() {
         const ctx = { companyId: org.companyA1, userId: 'u_owner' };
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
-        const doc = createDocument(dialect, ctx, {
+        const doc = createAndApproveDocument(dialect, ctx, {
           move_type: 'manual_entry',
           doc_date: '2026-04-10',
           lines: [
@@ -267,7 +274,7 @@ async function run() {
         const cash = accountIdByCode(dialect, org.companyA1, '101000');
         const expense = accountIdByCode(dialect, org.companyA1, '502000');
         for (const amount of [100, 200, 300]) {
-          const doc = createDocument(dialect, ctx, {
+          const doc = createAndApproveDocument(dialect, ctx, {
             move_type: 'manual_entry',
             doc_date: '2026-05-01',
             lines: [

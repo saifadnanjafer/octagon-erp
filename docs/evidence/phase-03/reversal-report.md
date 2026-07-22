@@ -40,3 +40,23 @@ Reversal entry:
 - Expense 800 credit / Cash 800 debit.
 
 Net trial balance: zero for both accounts.
+
+
+## Wave B update
+
+- Verified reversal creates a linked document but never mutates the original document's number, date, or lines.
+- Verified reversal preserves hash chain integrity.
+
+### Tests added
+
+| Test | Suite | Result |
+|------|-------|--------|
+| Reversal preserves original immutability | `finance-wave-b.test.mjs` | PASS |
+| Reversal creates linked document and net-zero trial balance | `finance-wave-a.test.mjs` | PASS |
+
+Command:
+
+```bash
+node tests/phase03/finance-wave-b.test.mjs
+# PASS: 9/9
+```

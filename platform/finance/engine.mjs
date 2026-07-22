@@ -1358,7 +1358,10 @@ export function checkApprovalAuthority(dialect, ctx, input) {
   const limit = dialect.prepare(`
     SELECT max_amount FROM finance_approval_authority_limits WHERE company_id = ? AND role_or_user = ? AND limit_type = ?
   `).get(companyId, input.role_or_user, input.limit_type);
-  if (!limit) return { allowed: true, limit: null };
+  if (!limit) {
+    if (input.fail_closed) throw new FinanceError(`no approval authority limit configured for ${input.role_or_user}`, 'AUTHORITY_LIMIT_MISSING');
+    return { allowed: true, limit: null };
+  }
   const allowed = Number(input.amount) <= Number(limit.max_amount) + 0.0001;
   if (!allowed) throw new FinanceError(`amount exceeds ${input.limit_type} authority limit for ${input.role_or_user}`, 'AUTHORITY_LIMIT_EXCEEDED');
   return { allowed: true, limit: limit.max_amount };
@@ -1390,6 +1393,18 @@ export function createPayment(dialect, ctx, input) {
   const feeAmount = round2(Number(input.fee_amount || 0));
   if (feeAmount > 0 && !input.fee_account_id) throw new FinanceError('fee_account_id is required when fee_amount is set', 'PAYMENT_FEE_ACCOUNT_REQUIRED');
   if (feeAmount > 0) assertCompanyMatch(dialect, 'finance_accounts', input.fee_account_id, companyId);
+
+  // Cashbox max_balance enforcement (Wave E remediation)
+  if (method === 'cash' && paymentType === 'receive') {
+    const cbox = dialect.prepare('SELECT max_balance FROM finance_cashboxes WHERE company_id = ? AND gl_account_id = ? AND max_balance IS NOT NULL').get(companyId, input.cash_or_bank_account_id);
+    if (cbox && cbox.max_balance !== null) {
+      const curBalRow = dialect.prepare('SELECT COALESCE(SUM(debit - credit), 0) AS balance FROM finance_journal_lines WHERE account_id = ?').get(input.cash_or_bank_account_id);
+      const curBal = Number(curBalRow?.balance || 0);
+      if (curBal + (amount * fxRate) > Number(cbox.max_balance) + 0.0001) {
+        throw new FinanceError(`payment exceeds cashbox maximum balance limit of ${cbox.max_balance}`, 'CASHBOX_MAX_BALANCE_EXCEEDED');
+      }
+    }
+  }
 
   const paymentDate = input.payment_date || now.slice(0, 10);
   const moveType = paymentType === 'receive' ? 'cash_receipt' : paymentType === 'pay' ? 'cash_payment' : 'internal_transfer';

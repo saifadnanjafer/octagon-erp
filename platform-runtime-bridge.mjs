@@ -25,6 +25,7 @@ import { createActionRegistry, createActionExecutor } from './platform/kernel/ac
 import { createRepository } from './platform/data/repositories/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
+import { registerFinanceActions } from './platform/finance/index.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -133,6 +134,7 @@ export function createPlatformAuthority(dialect) {
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
   const actionRegistry = createActionRegistry(dialect);
   const actionExecutor = createActionExecutor(dialect);
+  registerFinanceActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 

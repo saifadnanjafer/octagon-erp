@@ -24,7 +24,8 @@ records required by payroll remain frozen.
 
 - Phase 01 unit suites: **72/72 behaviors passed** across 9 suites.
 - Phase 01 migration runner: **8/8 passed**.
-- Phase 02 non-browser suites: **200/200 behaviors passed**.
+- Phase 02 core/runtime suites: **200/200 behaviors passed**, including the
+  browser-contract suite (3/3); the non-browser subset is **197/197**.
 - Phase 02 browser contract evidence: **3/3 passed**.
 - Phase 02 live browser evidence: **12/12 scenarios passed**.
 - Phase 02 runtime strangler: **6/6 passed**, including migration 013 upgrade/

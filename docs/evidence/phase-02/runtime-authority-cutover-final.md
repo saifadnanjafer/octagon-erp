@@ -97,7 +97,7 @@ See `tests/phase02/browser-live-evidence.test.mjs` and the screenshot directory 
 | Phase 02 browser live evidence | `node tests/phase02/browser-live-evidence.test.mjs` | **12/12 scenarios passed** |
 | Phase 02 runtime strangler | `node tests/phase02/runtime-strangler.test.mjs` | **6/6 passed** |
 | Phase 02 runtime adversarial | `node tests/phase02/runtime-adversarial.test.mjs` | **11/11 passed** |
-| Phase 02 non-browser aggregate | listed Phase 02 suites above | **200/200 behaviors passed** |
+| Phase 02 core/runtime aggregate | listed Phase 02 suites above, including browser contract | **200/200 behaviors passed**; **197/197** excluding browser contract |
 | Precommit | `node scripts/precommit.js` | **passed** |
 
 ## Unresolved risks

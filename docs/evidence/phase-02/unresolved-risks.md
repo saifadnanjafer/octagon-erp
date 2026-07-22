@@ -1,25 +1,47 @@
 # Phase 02 Unresolved Risks
 
-1. **HIGH — duplicate runtime governance writer:** `app.js` retains many
-   `saveData()` calls that post the full legacy blob to `/api/db`. This overlaps
-   the platform repositories/services without atomic reconciliation or a
-   retirement commit. It blocks Gate I and Phase 02 closure.
-2. **HIGH — incomplete live caller cutover:** settings/secrets, custom fields,
-   workflows, approvals, chatter, notifications, files, API keys, and
-   jobs/webhooks are proven in disposable platform tests but remain
-   canonical-test only for the current shell/server path.
-3. **HIGH — browser evidence boundary:** live evidence covers only three
-   scenarios. Responsive, English/LTR, revocation, tenant/company isolation,
-   field masking, workflow/approval, inbox/file, and unrelated deep-link
-   scenarios remain unproven in a real browser.
-4. **MEDIUM — PostgreSQL is a declared stub:** Phase 02 migrations are
-   SQLite-only and PostgreSQL compatibility remains unproven.
-5. **MEDIUM — external worker topology:** durable leases, retries, dead-letter,
-   and crash recovery exist in the platform contracts, but deployment-level
-   worker supervision remains open.
-6. **MEDIUM — SAML and passkeys:** SAML is rejected by the adapter until an
-   approved ADR; passkeys have no local source/threat model.
+**Phase 02 closure status:** CLOSED  
+**Verified:** 2026-07-22  
+**Branch:** `remediation/phase-02-final-closure`
 
-The focused suites and live browser evidence pass, but these risks are not
-resolved and Phase 02 remains `PARTIAL — NOT CLOSED`. Payroll and attendance
-remain frozen and Phase 03 is not started.
+The closure gates that were open in the earlier partial checkpoint are now
+resolved. The items below are the remaining accepted risks that were explicitly
+recorded as non-blockers in `PHASE_02_CLOSURE.md` and
+`runtime-authority-cutover-final.md`.
+
+## Accepted residual risks (not closure blockers)
+
+1. **Payroll, attendance, timesheet, and payroll-dependent employee records**
+   remain frozen and were intentionally outside the Phase 02 authority boundary.
+
+2. **PostgreSQL is a declared stub:** Phase 02 migrations and runtime paths are
+   verified on SQLite. PostgreSQL compatibility is documented but not exercised
+   in this phase.
+
+3. **External durable worker topology:** bounded leases, retries, dead-letter,
+   and crash-recovery contracts pass in tests and the runtime bridge. Full
+   deployment-level supervision (separate worker processes, queue back-ends,
+   observability) remains an operational follow-up.
+
+4. **SAML and passkeys:** SAML is rejected by the adapter until an approved
+   ADR and threat model are produced. Passkeys have no local source/threat model.
+
+5. **`GET /api/auth/options`** exposes only the login picker fields (id, login,
+   name, locale) required by the shell. It does not expose credentials, secret
+   material, or session tokens.
+
+6. **`/uploads/` binary compatibility reads** remain until file metadata is moved
+   to the canonical file service. Access is still permission-gated.
+
+7. **Non-SQLite degraded mode** is fail-closed: governed paths are stripped from
+   the legacy JSON store when SQLite is unavailable. This is a documented
+   degradation, not a production path.
+
+## Closure statement
+
+Phase 02 is closed. The HIGH risks from the previous partial checkpoint
+(duplicate runtime governance writer, incomplete live caller cutover, and
+incomplete browser evidence) were resolved by the server-side strangler,
+migration 013, the client cutover, and the expanded live browser evidence suite.
+The remaining risks above are accepted and recorded. Phase 03 is not started
+and is not authorized by this closure.

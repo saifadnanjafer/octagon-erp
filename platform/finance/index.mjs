@@ -89,7 +89,14 @@ export function registerFinanceActions(executor) {
     .registerHandler('finance_asset_category:create', ({ dialect, ctx, input }) => engine.createAssetCategory(dialect, ctx, input))
     .registerHandler('finance_asset:capitalize', ({ dialect, ctx, input }) => engine.capitalizeAsset(dialect, ctx, input))
     .registerHandler('finance_asset:post_depreciation', ({ dialect, ctx, input }) => engine.postAssetDepreciation(dialect, ctx, input))
-    .registerHandler('finance_asset:dispose', ({ dialect, ctx, input }) => engine.disposeAsset(dialect, ctx, input));
+    .registerHandler('finance_asset:dispose', ({ dialect, ctx, input }) => engine.disposeAsset(dialect, ctx, input))
+    .registerHandler('finance_migration:import_accounts', ({ dialect, ctx, input }) => engine.migrateLegacyAccounts(dialect, ctx, input))
+    .registerHandler('finance_migration:import_moves', ({ dialect, ctx, input }) => engine.migrateLegacyMoves(dialect, ctx, input))
+    .registerHandler('finance_migration:reconcile', ({ dialect, ctx, input }) => engine.reconcileMigrationTrialBalance(dialect, ctx, input))
+    .registerHandler('finance_migration:rollback_run', ({ dialect, ctx, input }) => engine.rollbackMigrationRun(dialect, ctx, input))
+    .registerHandler('finance_migration:quarantine_list', ({ dialect, ctx, input }) => engine.getMigrationQuarantine(dialect, ctx, input))
+    .registerHandler('finance_source_fact:post', ({ dialect, ctx, input }) => engine.postSourceFact(dialect, ctx, input))
+    .registerHandler('finance_source_fact:reverse', ({ dialect, ctx, input }) => engine.reverseSourceFact(dialect, ctx, input));
 
   return executor;
 }

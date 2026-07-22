@@ -2472,4 +2472,236 @@ export function disposeAsset(dialect, ctx, input) {
   return { document_id: posted.id, category_id: input.category_id, net_book_value: netBookValue, proceeds, gain, loss };
 }
 
+// ---------------------------------------------------------------------------
+// Wave F — Legacy finance bridge and opening-balance migration (Packet 03.27)
+// ---------------------------------------------------------------------------
+//
+// Every function below takes legacy records as plain JS input (arrays of
+// objects). None of them reach into the live application store
+// (PentagonDB / database.db) themselves — that keeps this code fully testable
+// against synthetic fixtures. A future live run is: read
+// PentagonDB.getCached().finance.accounts / .account_moves (read-only), then
+// call migrateLegacyAccounts / migrateLegacyMoves with that data. That live
+// read-and-call step has not been performed against production data; see
+// docs/evidence/phase-03/legacy-migration-report.md.
+
+const LEGACY_ACCOUNT_TYPE_MAP = {
+  asset: 'asset', assets: 'asset',
+  liability: 'liability', liabilities: 'liability',
+  equity: 'equity',
+  income: 'income', revenue: 'income',
+  expense: 'expense', expenses: 'expense',
+  receivable: 'receivable', receivables: 'receivable',
+  payable: 'payable', payables: 'payable',
+  cash: 'liquidity', bank: 'liquidity', liquidity: 'liquidity',
+  off_balance: 'off_balance',
+};
+
+export function mapLegacyAccountType(legacyType) {
+  const key = String(legacyType || '').trim().toLowerCase();
+  return LEGACY_ACCOUNT_TYPE_MAP[key] || null;
+}
+
+function startMigrationRun(dialect, companyId, userId, now, runType, sourceCount) {
+  const id = `finmigrun_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_migration_runs (id, company_id, run_type, status, source_count, started_at, started_by, created_at)
+    VALUES (?, ?, ?, 'running', ?, ?, ?, ?)
+  `).run(id, companyId, runType, sourceCount, now, userId, now);
+  return id;
+}
+
+function finishMigrationRun(dialect, runId, imported, skipped, quarantined, now) {
+  dialect.prepare(`
+    UPDATE finance_migration_runs SET status = 'completed', imported_count = ?, skipped_count = ?, quarantined_count = ?, completed_at = ? WHERE id = ?
+  `).run(imported, skipped, quarantined, now, runId);
+}
+
+function quarantineRecord(dialect, companyId, runId, sourceSystem, sourceId, reason, rawData, now) {
+  dialect.prepare(`
+    INSERT INTO finance_migration_quarantine (id, company_id, migration_run_id, source_system, source_id, reason, raw_data_json, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(`finmigq_${crypto.randomUUID()}`, companyId, runId, sourceSystem, sourceId || null, reason, JSON.stringify(rawData), now);
+}
+
+function recordSourceMapping(dialect, companyId, runId, sourceSystem, sourceId, canonicalId, canonicalTable, now) {
+  dialect.prepare(`
+    INSERT INTO finance_migration_source_map (id, company_id, source_system, source_id, canonical_id, canonical_table, migration_run_id, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(`finmigmap_${crypto.randomUUID()}`, companyId, sourceSystem, sourceId, canonicalId, canonicalTable, runId, now);
+}
+
+export function getMigrationSourceMapping(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  return dialect.prepare('SELECT * FROM finance_migration_source_map WHERE company_id = ? AND source_system = ? AND source_id = ?').get(companyId, input.source_system, String(input.source_id));
+}
+
+export function migrateLegacyAccounts(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const records = Array.isArray(input.legacy_accounts) ? input.legacy_accounts : [];
+  const runId = startMigrationRun(dialect, companyId, userId, now, 'accounts', records.length);
+  let imported = 0;
+  let skipped = 0;
+  let quarantined = 0;
+  // Two passes: create accounts without parent linkage first (so a child
+  // referencing a not-yet-created legacy parent doesn't fail), then patch
+  // parent_id once every account in this batch has a canonical mapping.
+  const createdBySourceId = {};
+  for (const rec of records) {
+    const sourceId = String(rec.id ?? rec.code ?? '');
+    const existing = sourceId ? getMigrationSourceMapping(dialect, ctx, { source_system: 'legacy_account', source_id: sourceId }) : null;
+    if (existing) { skipped++; createdBySourceId[sourceId] = existing.canonical_id; continue; }
+    const canonicalType = mapLegacyAccountType(rec.type);
+    if (!rec.code || !rec.name || !canonicalType) {
+      quarantineRecord(dialect, companyId, runId, 'legacy_account', sourceId, !canonicalType ? `unmappable account type: ${rec.type}` : 'missing code or name', rec, now);
+      quarantined++;
+      continue;
+    }
+    try {
+      const created = createAccount(dialect, ctx, { code: rec.code, name: rec.name, name_ar: rec.name_ar, type: canonicalType, is_reconcilable: !!rec.is_reconcilable });
+      recordSourceMapping(dialect, companyId, runId, 'legacy_account', sourceId, created.id, 'finance_accounts', now);
+      createdBySourceId[sourceId] = created.id;
+      imported++;
+    } catch (e) {
+      quarantineRecord(dialect, companyId, runId, 'legacy_account', sourceId, e.message || 'account creation failed', rec, now);
+      quarantined++;
+    }
+  }
+  for (const rec of records) {
+    const sourceId = String(rec.id ?? rec.code ?? '');
+    if (!rec.parent_id || !createdBySourceId[sourceId]) continue;
+    const parentCanonicalId = createdBySourceId[String(rec.parent_id)];
+    if (parentCanonicalId) {
+      dialect.prepare('UPDATE finance_accounts SET parent_id = ? WHERE id = ? AND company_id = ?').run(parentCanonicalId, createdBySourceId[sourceId], companyId);
+    }
+  }
+  finishMigrationRun(dialect, runId, imported, skipped, quarantined, now);
+  return { run_id: runId, source_count: records.length, imported, skipped, quarantined };
+}
+
+export function migrateLegacyMoves(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const records = Array.isArray(input.legacy_moves) ? input.legacy_moves : [];
+  const runId = startMigrationRun(dialect, companyId, userId, now, 'moves', records.length);
+  let imported = 0;
+  let skipped = 0;
+  let quarantined = 0;
+  for (const rec of records) {
+    const sourceId = String(rec.id ?? '');
+    const existing = sourceId ? getMigrationSourceMapping(dialect, ctx, { source_system: 'legacy_move', source_id: sourceId }) : null;
+    if (existing) { skipped++; continue; }
+    const lines = Array.isArray(rec.lines) ? rec.lines : [];
+    if (!sourceId || !rec.date || !lines.length) {
+      quarantineRecord(dialect, companyId, runId, 'legacy_move', sourceId, 'missing id, date, or lines', rec, now);
+      quarantined++;
+      continue;
+    }
+    let resolvedLines;
+    try {
+      resolvedLines = lines.map(l => {
+        const mapping = getMigrationSourceMapping(dialect, ctx, { source_system: 'legacy_account', source_id: String(l.account_id) });
+        if (!mapping) throw new Error(`legacy account ${l.account_id} was not migrated (import accounts first)`);
+        return { account_id: mapping.canonical_id, debit: Number(l.debit || 0), credit: Number(l.credit || 0), partner_id: l.partner_id || null, description: l.description || null };
+      });
+      const totalDebit = round2(resolvedLines.reduce((s, l) => s + l.debit, 0));
+      const totalCredit = round2(resolvedLines.reduce((s, l) => s + l.credit, 0));
+      if (Math.abs(totalDebit - totalCredit) > 0.01) throw new Error(`unbalanced move: debit ${totalDebit} != credit ${totalCredit}`);
+    } catch (e) {
+      quarantineRecord(dialect, companyId, runId, 'legacy_move', sourceId, e.message, rec, now);
+      quarantined++;
+      continue;
+    }
+    try {
+      const doc = createDocument(dialect, ctx, {
+        move_type: 'manual_entry', doc_date: String(rec.date).slice(0, 10), currency: rec.currency || 'IQD',
+        source_type: 'legacy_migration', source_id: sourceId, source_canonical_key: `legacy_move:${sourceId}`,
+        lines: resolvedLines,
+      });
+      submitDocument(dialect, ctx, { document_id: doc.id });
+      approveDocument(dialect, ctx, { document_id: doc.id });
+      const posted = postDocument(dialect, ctx, { document_id: doc.id });
+      recordSourceMapping(dialect, companyId, runId, 'legacy_move', sourceId, posted.id, 'finance_documents', now);
+      imported++;
+    } catch (e) {
+      quarantineRecord(dialect, companyId, runId, 'legacy_move', sourceId, e.message || 'posting failed', rec, now);
+      quarantined++;
+    }
+  }
+  finishMigrationRun(dialect, runId, imported, skipped, quarantined, now);
+  return { run_id: runId, source_count: records.length, imported, skipped, quarantined };
+}
+
+export function reconcileMigrationTrialBalance(dialect, ctx, input) {
+  const canonical = getTrialBalance(dialect, ctx, {});
+  const legacy = Array.isArray(input.legacy_trial_balance) ? input.legacy_trial_balance : [];
+  const byCode = new Map(canonical.map(r => [r.code, r.balance]));
+  const diffs = legacy.map(l => {
+    const canonicalBalance = byCode.get(l.code) ?? 0;
+    const diff = round2(Number(canonicalBalance) - Number(l.balance || 0));
+    return { code: l.code, legacy_balance: Number(l.balance || 0), canonical_balance: round2(canonicalBalance), diff, reconciled: Math.abs(diff) < 0.01 };
+  });
+  return { rows: diffs, fully_reconciled: diffs.every(d => d.reconciled) };
+}
+
+export function getMigrationQuarantine(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  return dialect.prepare('SELECT * FROM finance_migration_quarantine WHERE company_id = ? AND migration_run_id = ? ORDER BY created_at').all(companyId, input.migration_run_id);
+}
+
+export function getMigrationRunStatus(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  return dialect.prepare('SELECT * FROM finance_migration_runs WHERE company_id = ? AND id = ?').get(companyId, input.migration_run_id);
+}
+
+export function rollbackMigrationRun(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const run = dialect.prepare('SELECT * FROM finance_migration_runs WHERE id = ? AND company_id = ?').get(input.migration_run_id, companyId);
+  if (!run) throw new FinanceError('migration run not found', 'MIGRATION_RUN_NOT_FOUND');
+  if (run.status !== 'completed') throw new FinanceError('only a completed run can be rolled back', 'MIGRATION_RUN_NOT_COMPLETED');
+  const mappings = dialect.prepare("SELECT * FROM finance_migration_source_map WHERE migration_run_id = ? AND canonical_table = 'finance_documents'").all(input.migration_run_id);
+  let reversed = 0;
+  for (const m of mappings) {
+    const doc = dialect.prepare('SELECT state FROM finance_documents WHERE id = ?').get(m.canonical_id);
+    if (doc && doc.state === 'posted') {
+      reverseDocument(dialect, ctx, { document_id: m.canonical_id, reason: `rollback of migration run ${run.id}` });
+      reversed++;
+    }
+  }
+  dialect.prepare("UPDATE finance_migration_runs SET status = 'rolled_back', completed_at = ? WHERE id = ?").run(now, input.migration_run_id);
+  return { run_id: input.migration_run_id, status: 'rolled_back', documents_reversed: reversed };
+}
+
+// ---------------------------------------------------------------------------
+// Wave F — Cross-module accounting test adapters (Packet 03.28)
+// ---------------------------------------------------------------------------
+
+export function postSourceFact(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const schema = dialect.prepare('SELECT * FROM finance_source_fact_schemas WHERE fact_type = ?').get(input.fact_type);
+  if (!schema) throw new FinanceError(`unknown source fact_type: ${input.fact_type}`, 'SOURCE_FACT_TYPE_UNKNOWN');
+  const required = JSON.parse(schema.required_fields);
+  for (const field of required) {
+    if (input[field] === undefined || input[field] === null) throw new FinanceError(`source fact missing required field: ${field}`, 'SOURCE_FACT_FIELD_MISSING');
+  }
+  if (!Array.isArray(input.lines) || !input.lines.length) throw new FinanceError('source fact must include at least one line', 'SOURCE_FACT_LINES_EMPTY');
+  const doc = createDocument(dialect, ctx, {
+    move_type: input.move_type || 'source_post',
+    doc_date: input.doc_date,
+    partner_id: input.partner_id || null,
+    currency: input.currency || 'IQD',
+    source_type: input.fact_type,
+    source_id: String(input.source_id),
+    source_canonical_key: `${input.fact_type}:${input.source_id}`,
+    lines: input.lines,
+  });
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  const posted = postDocument(dialect, ctx, { document_id: doc.id });
+  return { document_id: posted.id, fact_type: input.fact_type, source_id: String(input.source_id), schema_version: schema.schema_version };
+}
+
+export function reverseSourceFact(dialect, ctx, input) {
+  return reverseDocument(dialect, ctx, { document_id: input.document_id, reason: input.reason || 'source fact reversal' });
+}
+
 export { ACCOUNT_TYPES, JOURNAL_TYPES, DOCUMENT_TYPES };

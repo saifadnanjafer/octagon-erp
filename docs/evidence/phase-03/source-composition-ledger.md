@@ -517,6 +517,53 @@
 
 ---
 
+## Capability: Wave F.1 — Legacy finance bridge and opening-balance migration (Packet 03.27)
+
+- **Capability ID:** `FN-038`
+- **Outcome:** Idempotent, quarantine-aware, reconciled migration engine for legacy accounts and moves — engine only; no live extraction run performed (see `legacy-migration-report.md` scope note).
+- **Current Octagon paths inspected:** `services/financeService.js` — confirmed legacy store is `PentagonDB.getCached().finance.accounts` / `db.account_moves` (JSON document arrays, not a relational schema).
+- **Current Octagon behavior preserved:** none migrated yet; the engine that will do so is built and tested.
+- **VNext paths inspected:** VNext legacy-bridge/reconciliation-report concepts (project-owned, foundation-level).
+- **Primary donor:** none code-level; `SPEC-IMPLEMENT` directly from the packet's own migration-classes/strategy list.
+- **License:** N/A (no donor code used).
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`migrateLegacyAccounts`, `migrateLegacyMoves`, `reconcileMigrationTrialBalance`, `rollbackMigrationRun`, `getMigrationQuarantine`, `getMigrationRunStatus`, `getMigrationSourceMapping`), `database/migrations/033_legacy_finance_migration_registry.mjs`.
+- **Canonical database authority:** `finance_migration_runs`, `finance_migration_source_map`, `finance_migration_quarantine`.
+- **Migration:** the engine itself; a live data-extraction run is deferred pending owner authorization.
+- **Reconciliation:** `reconcileMigrationTrialBalance` proven to both pass on a correct legacy trial balance and correctly flag a deliberately wrong one.
+- **Legacy writer retirement:** not applicable to this packet (retirement is Packet 03.31).
+- **Tests:** 12 tests covering account/move import, idempotency, hierarchy, quarantine, reconciliation, and rollback.
+- **Known risks:** no live extraction against `PentagonDB`/`database.db` has been performed. This is the single largest remaining risk item in the whole phase and is recorded at the top of `unresolved-risks.md`.
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
+## Capability: Wave F.2 — Cross-module accounting test adapters (Packet 03.28)
+
+- **Capability ID:** `FN-039`
+- **Outcome:** One narrow, versioned-schema adapter (`postSourceFact`/`reverseSourceFact`) that Phase 04/05/06 modules will call, without Phase 03 building any of those operational modules.
+- **Primary donor:** none; `SPEC-IMPLEMENT` directly from the packet's own required-adapter list (12 fact types registered).
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`postSourceFact`, `reverseSourceFact`), `database/migrations/034_cross_module_source_fact_adapters.mjs`.
+- **Canonical database authority:** `finance_source_fact_schemas`; posted facts land in the existing `finance_documents`/`finance_journal_lines` — no parallel ledger.
+- **Finance integration:** reuses `createDocument`'s existing duplicate-reference check for idempotency; reuses `reverseDocument` for reversal. Zero new posting logic.
+- **Tests:** unknown-fact-type rejection, missing-required-field rejection, idempotent posting + reversal, period-lock enforcement (3 tests).
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
+## Capability: Wave F.3 — Security, atomicity, concurrency, and failure-injection completion (Packet 03.30)
+
+- **Capability ID:** `FN-040`
+- **Outcome:** Objective, executable proof against the packet's full mandatory adversarial-case list — see `security-concurrency-report.md` for the case-by-case coverage map (most cases were already covered by Waves A-E; this wave adds the genuinely new ones: body-supplied override, hidden-action rejection, hash-chain tamper-at-the-trigger-level, period-lock-vs-mid-lifecycle-document race, 10-way concurrent posting, action-executor-level idempotency replay, cross-company report-snapshot isolation, and a static payroll/attendance non-reference guard).
+- **Reuse mode:** `SPEC-IMPLEMENT` (tests only; no new production code beyond what Waves A-F already built).
+- **Target:** `tests/phase03/finance-wave-f-adversarial.test.mjs`.
+- **Tests:** 10 adversarial tests, all passing.
+- **Known risks:** this is not a professional penetration test or fuzzing campaign; it is the packet's own mandatory case list covered with real tests. Full browser-level adversarial coverage (deep-link denial, stale document conflict in the actual UI) is Packet 03.29/25 territory and requires the UI cutover to exist first.
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
 ## Excluded / deferred
 
 - VNext `vnext/server/finance/finance-routes.js` and `r2-finance-routes.js` → `EXCLUDE`; Octagon uses Phase 01 action executor and existing shell routes.

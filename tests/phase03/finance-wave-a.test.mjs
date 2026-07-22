@@ -3,14 +3,6 @@ import fs from 'node:fs';
 import { setup, cleanup, seedOrg } from '../phase02/harness.mjs';
 import { createActionExecutor } from '../../platform/kernel/actions/index.mjs';
 import { registerFinanceActions, seedChartOfAccounts, accountIdByCode } from '../../platform/finance/index.mjs';
-import { migration as financeMigration } from '../../database/migrations/014_finance_canonical_schema_and_coa.mjs';
-import { migration as documentLifecycleMigration } from '../../database/migrations/015_finance_document_lifecycle.mjs';
-import { migration as dimensionsMigration } from '../../database/migrations/016_accounting_dimensions.mjs';
-import { migration as currencyMigration } from '../../database/migrations/017_currency_and_exchange_rates.mjs';
-import { migration as taxMigration } from '../../database/migrations/018_tax_definition_and_calculation.mjs';
-import { migration as fiscalPositionMigration } from '../../database/migrations/019_fiscal_positions_and_iraq_localization.mjs';
-import { migration as arMigration } from '../../database/migrations/020_accounts_receivable_subledger.mjs';
-import { migration as apMigration } from '../../database/migrations/021_accounts_payable_subledger.mjs';
 import {
   createAccount, updateAccount, createDocument, submitDocument, approveDocument, cancelDocument, postDocument, reverseDocument,
   getTrialBalance, getGeneralLedger, hardClosePeriod, reopenPeriod, verifyHashChain,
@@ -301,12 +293,17 @@ async function run() {
     ['migration rollback removes finance tables', async () => {
       const { dialect, dbPath } = await setupFinance();
       try {
-        // Roll back the full finance_canonical dependency chain in reverse order
-        // (021 -> ... -> 014), mirroring how the migration runner unwinds dependents
-        // before their dependencies. Calling only 014's down() in isolation would
-        // leave behind every table introduced by 015-021.
-        for (const m of [apMigration, arMigration, fiscalPositionMigration, taxMigration, currencyMigration, dimensionsMigration, documentLifecycleMigration, financeMigration]) {
-          m.down(dialect);
+        // Roll back the full finance_canonical dependency chain in reverse order,
+        // mirroring how the migration runner unwinds dependents before their
+        // dependencies. Calling only 014's down() in isolation would leave behind
+        // every table introduced by every later migration. The chain is read from
+        // platform_modules.migrations (maintained by every migration's own up())
+        // and imported dynamically so this test never needs editing again as new
+        // finance migrations are added in later waves.
+        const appliedIds = JSON.parse(dialect.prepare('SELECT migrations FROM platform_modules WHERE id = ?').get('finance_canonical')?.migrations || '[]');
+        for (const migrationId of [...appliedIds].reverse()) {
+          const mod = await import(`../../database/migrations/${migrationId}.mjs`);
+          mod.migration.down(dialect);
         }
         const tables = dialect.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'finance_%'").all();
         assert.strictEqual(tables.length, 0, 'finance tables remain after rollback');

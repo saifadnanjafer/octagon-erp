@@ -12,7 +12,7 @@ export class FinanceError extends Error {
 
 const ACCOUNT_TYPES = ['asset', 'liability', 'equity', 'income', 'expense', 'receivable', 'payable', 'liquidity', 'off_balance'];
 const JOURNAL_TYPES = ['sale', 'purchase', 'cash', 'bank', 'general', 'opening', 'period_close', 'tax_adjustment'];
-const DOCUMENT_TYPES = ['manual_entry', 'customer_invoice', 'customer_credit_note', 'supplier_bill', 'supplier_credit_note', 'cash_receipt', 'cash_payment', 'opening_entry', 'period_close', 'tax_adjustment', 'source_post', 'fx_revaluation'];
+const DOCUMENT_TYPES = ['manual_entry', 'customer_invoice', 'customer_credit_note', 'supplier_bill', 'supplier_credit_note', 'cash_receipt', 'cash_payment', 'opening_entry', 'period_close', 'tax_adjustment', 'source_post', 'fx_revaluation', 'internal_transfer', 'write_off'];
 const TAX_AMOUNT_TYPES = ['percent', 'fixed', 'group'];
 const NORMAL_BALANCE = {
   asset: 'debit', liquidity: 'debit', receivable: 'debit', expense: 'debit', off_balance: 'debit',
@@ -273,6 +273,8 @@ function sequenceTemplate(moveType) {
     tax_adjustment: 'TAX-{YYYY}-{#####}',
     source_post: 'POST-{YYYY}-{#####}',
     fx_revaluation: 'FX-{YYYY}-{#####}',
+    internal_transfer: 'XFER-{YYYY}-{#####}',
+    write_off: 'WO-{YYYY}-{#####}',
   };
   return map[moveType] || 'DOC-{YYYY}-{#####}';
 }
@@ -1164,14 +1166,28 @@ export function setDueSchedule(dialect, ctx, input) {
 }
 
 function creditNotesTotal(dialect, companyId, invoiceId) {
+  // Sums every posted document that offsets this invoice/bill without a payment:
+  // credit/debit notes (Wave C) and write-offs (Wave D, Packet 03.16). Both are
+  // structured the same way (debit the offsetting account, credit the control
+  // account for AR / the mirror for AP), so SUM(debit) is the correct offset
+  // amount for either kind.
   const row = dialect.prepare(`
     SELECT COALESCE(SUM(d2.doc_total), 0) AS total FROM (
       SELECT d.id, SUM(l.debit) AS doc_total
       FROM finance_documents d JOIN finance_journal_lines l ON l.document_id = d.id
-      WHERE d.company_id = ? AND d.source_type = 'credit_note_of' AND d.source_id = ? AND d.state = 'posted'
+      WHERE d.company_id = ? AND d.source_type IN ('credit_note_of', 'write_off_of') AND d.source_id = ? AND d.state = 'posted'
       GROUP BY d.id
     ) d2
   `).get(companyId, invoiceId);
+  return round2(Number(row.total) || 0);
+}
+
+function paymentAllocationsTotal(dialect, documentId) {
+  // finance_payment_allocations is created in Wave D (migration 023); guard so
+  // Wave C code paths keep working stand-alone (e.g. isolated migration tests).
+  const hasTable = dialect.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'finance_payment_allocations'").get();
+  if (!hasTable) return 0;
+  const row = dialect.prepare('SELECT COALESCE(SUM(amount), 0) AS total FROM finance_payment_allocations WHERE document_id = ?').get(documentId);
   return round2(Number(row.total) || 0);
 }
 
@@ -1189,14 +1205,27 @@ function openItemsFor(dialect, companyId, moveTypes, partnerId) {
   return docs.map(d => {
     const total = round2(Math.max(Number(d.total_debit) || 0, Number(d.total_credit) || 0));
     const credits = creditNotesTotal(dialect, companyId, d.id);
+    const allocated = paymentAllocationsTotal(dialect, d.id);
     const schedule = dialect.prepare('SELECT due_date, amount FROM finance_due_schedules WHERE document_id = ? ORDER BY sequence').all(d.id);
-    const open = round2(total - credits);
+    const open = round2(total - credits - allocated);
     return {
       document_id: d.id, doc_number: d.doc_number, doc_date: d.doc_date, partner_id: d.partner_id,
-      currency: d.currency, total, credit_notes: credits, open_amount: open,
+      currency: d.currency, total, credit_notes: credits, allocated_amount: allocated, open_amount: open,
       due_date: schedule[0]?.due_date || d.doc_date, schedule,
     };
   }).filter(item => item.open_amount > 0.005);
+}
+
+export function getOpenAmountForDocument(dialect, ctx, documentId) {
+  const { companyId } = context(ctx);
+  const doc = getDocument(dialect, companyId, documentId);
+  if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
+  const isCustomer = doc.move_type === 'customer_invoice';
+  const isSupplier = doc.move_type === 'supplier_bill';
+  if (!isCustomer && !isSupplier) throw new FinanceError('document is not an AR/AP open item', 'DOCUMENT_NOT_OPEN_ITEM');
+  const items = isCustomer ? getCustomerOpenItems(dialect, ctx, {}) : getSupplierOpenItems(dialect, ctx, {});
+  const match = items.find(i => i.document_id === documentId);
+  return match ? match.open_amount : 0;
 }
 
 export function getCustomerOpenItems(dialect, ctx, input = {}) {
@@ -1333,6 +1362,616 @@ export function checkApprovalAuthority(dialect, ctx, input) {
   const allowed = Number(input.amount) <= Number(limit.max_amount) + 0.0001;
   if (!allowed) throw new FinanceError(`amount exceeds ${input.limit_type} authority limit for ${input.role_or_user}`, 'AUTHORITY_LIMIT_EXCEEDED');
   return { allowed: true, limit: limit.max_amount };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Payment documents and methods (Packet 03.15)
+// ---------------------------------------------------------------------------
+
+export function createPayment(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const key = String(input.idempotency_key || '').trim();
+  if (!key) throw new FinanceError('idempotency_key is required', 'PAYMENT_IDEMPOTENCY_KEY_REQUIRED');
+  const existing = dialect.prepare('SELECT * FROM finance_payments WHERE company_id = ? AND idempotency_key = ?').get(companyId, key);
+  if (existing) return { ...existing, replayed: true };
+
+  const paymentType = input.payment_type;
+  if (!['receive', 'pay', 'transfer'].includes(paymentType)) throw new FinanceError('invalid payment_type', 'PAYMENT_TYPE_INVALID');
+  const method = input.method;
+  if (!['cash', 'bank', 'clearing'].includes(method)) throw new FinanceError('unsupported payment method', 'PAYMENT_METHOD_UNSUPPORTED');
+  const amount = round2(Number(input.amount));
+  if (!(amount > 0)) throw new FinanceError('payment amount must be positive', 'PAYMENT_AMOUNT_INVALID');
+  if (!input.counter_account_id) throw new FinanceError('counter_account_id is required', 'PAYMENT_COUNTER_ACCOUNT_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.cash_or_bank_account_id, companyId);
+  assertCompanyMatch(dialect, 'finance_accounts', input.counter_account_id, companyId);
+  const currency = input.currency || 'IQD';
+  const fxRate = currency === 'IQD' ? 1 : Number(input.fx_rate);
+  if (currency !== 'IQD' && !(fxRate > 0)) throw new FinanceError('foreign-currency payments require a positive fx_rate', 'PAYMENT_FX_RATE_REQUIRED');
+  const feeAmount = round2(Number(input.fee_amount || 0));
+  if (feeAmount > 0 && !input.fee_account_id) throw new FinanceError('fee_account_id is required when fee_amount is set', 'PAYMENT_FEE_ACCOUNT_REQUIRED');
+  if (feeAmount > 0) assertCompanyMatch(dialect, 'finance_accounts', input.fee_account_id, companyId);
+
+  const paymentDate = input.payment_date || now.slice(0, 10);
+  const moveType = paymentType === 'receive' ? 'cash_receipt' : paymentType === 'pay' ? 'cash_payment' : 'internal_transfer';
+  const localAmount = round2(amount * fxRate);
+  const localFee = round2(feeAmount * fxRate);
+  const fxLine = (accountId, debit, credit) => ({
+    account_id: accountId, debit, credit, currency_code: currency,
+    currency_debit: currency !== 'IQD' && debit > 0 ? amount : 0,
+    currency_credit: currency !== 'IQD' && credit > 0 ? amount : 0,
+  });
+
+  const lines = [];
+  if (paymentType === 'receive') {
+    lines.push(fxLine(input.cash_or_bank_account_id, round2(localAmount - localFee), 0));
+    if (feeAmount > 0) lines.push({ account_id: input.fee_account_id, debit: localFee, credit: 0 });
+    lines.push({ ...fxLine(input.counter_account_id, 0, localAmount), partner_id: input.partner_id || null });
+  } else if (paymentType === 'pay') {
+    lines.push({ ...fxLine(input.counter_account_id, localAmount, 0), partner_id: input.partner_id || null });
+    if (feeAmount > 0) lines.push({ account_id: input.fee_account_id, debit: localFee, credit: 0 });
+    lines.push(fxLine(input.cash_or_bank_account_id, 0, round2(localAmount + localFee)));
+  } else {
+    lines.push(fxLine(input.counter_account_id, round2(localAmount - localFee), 0));
+    if (feeAmount > 0) lines.push({ account_id: input.fee_account_id, debit: localFee, credit: 0 });
+    lines.push(fxLine(input.cash_or_bank_account_id, 0, localAmount));
+  }
+
+  const doc = createDocument(dialect, ctx, { move_type: moveType, doc_date: paymentDate, currency, partner_id: input.partner_id || null, lines });
+
+  const id = input.id || `finpay_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_payments (
+      id, company_id, document_id, payment_type, method, partner_id, cash_or_bank_account_id, counter_account_id,
+      amount, currency, fx_rate, fee_amount, fee_account_id, payment_date, status, idempotency_key, reference,
+      provider_reference, unallocated_amount, created_at, updated_at, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id, companyId, doc.id, paymentType, method, input.partner_id || null, input.cash_or_bank_account_id, input.counter_account_id,
+    amount, currency, fxRate, feeAmount, input.fee_account_id || null, paymentDate, key, input.reference || null,
+    input.provider_reference || null, amount, now, now, userId
+  );
+
+  return { id, companyId, document_id: doc.id, payment_type: paymentType, amount, currency, status: 'draft', idempotency_key: key };
+}
+
+export function postPayment(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const payment = dialect.prepare('SELECT * FROM finance_payments WHERE id = ? AND company_id = ?').get(input.payment_id, companyId);
+  if (!payment) throw new FinanceError('payment not found', 'PAYMENT_NOT_FOUND');
+  if (payment.status !== 'draft') throw new FinanceError('only a draft payment can be posted', 'PAYMENT_STATE_INVALID');
+  submitDocument(dialect, ctx, { document_id: payment.document_id });
+  approveDocument(dialect, ctx, { document_id: payment.document_id });
+  postDocument(dialect, ctx, { document_id: payment.document_id });
+  dialect.prepare("UPDATE finance_payments SET status = 'posted', updated_at = ? WHERE id = ?").run(now, input.payment_id);
+  return { id: input.payment_id, status: 'posted' };
+}
+
+export function reversePaymentAction(dialect, ctx, input) {
+  const { companyId, now } = context(ctx);
+  const payment = dialect.prepare('SELECT * FROM finance_payments WHERE id = ? AND company_id = ?').get(input.payment_id, companyId);
+  if (!payment) throw new FinanceError('payment not found', 'PAYMENT_NOT_FOUND');
+  if (payment.status !== 'posted') throw new FinanceError('only a posted payment can be reversed', 'PAYMENT_NOT_POSTED');
+  if (round2(payment.unallocated_amount) !== round2(payment.amount)) {
+    throw new FinanceError('unallocate this payment fully before reversing it', 'PAYMENT_HAS_ALLOCATIONS');
+  }
+  reverseDocument(dialect, ctx, { document_id: payment.document_id, reason: input.reason || 'payment reversal' });
+  dialect.prepare("UPDATE finance_payments SET status = 'cancelled', updated_at = ? WHERE id = ?").run(now, input.payment_id);
+  return { id: input.payment_id, status: 'cancelled' };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Allocation, advances, refunds, write-offs (Packet 03.16)
+// ---------------------------------------------------------------------------
+
+export function allocatePayment(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const payment = dialect.prepare('SELECT * FROM finance_payments WHERE id = ? AND company_id = ?').get(input.payment_id, companyId);
+  if (!payment) throw new FinanceError('payment not found', 'PAYMENT_NOT_FOUND');
+  if (payment.status !== 'posted') throw new FinanceError('only a posted payment can be allocated', 'PAYMENT_NOT_POSTED');
+  const amount = round2(Number(input.amount));
+  if (!(amount > 0)) throw new FinanceError('allocation amount must be positive', 'ALLOCATION_AMOUNT_INVALID');
+  const openAmount = getOpenAmountForDocument(dialect, ctx, input.document_id);
+  if (amount > openAmount + 0.0001) throw new FinanceError('allocation exceeds open amount on the document', 'ALLOCATION_EXCEEDS_OPEN_ITEM');
+
+  // Atomic check-and-decrement: the WHERE clause makes this safe even if two
+  // allocations against the same payment are attempted back-to-back.
+  const result = dialect.prepare(
+    'UPDATE finance_payments SET unallocated_amount = unallocated_amount - ?, updated_at = ? WHERE id = ? AND unallocated_amount >= ?'
+  ).run(amount, now, input.payment_id, amount);
+  if (result.changes === 0) throw new FinanceError('allocation exceeds unallocated payment amount', 'ALLOCATION_EXCEEDS_PAYMENT');
+
+  const id = `finpalloc_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_payment_allocations (id, company_id, payment_id, document_id, amount, currency, fx_difference, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, input.payment_id, input.document_id, amount, payment.currency, Number(input.fx_difference || 0), now, userId);
+  return { id, payment_id: input.payment_id, document_id: input.document_id, amount };
+}
+
+export function unallocatePayment(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const alloc = dialect.prepare('SELECT * FROM finance_payment_allocations WHERE id = ? AND company_id = ?').get(input.allocation_id, companyId);
+  if (!alloc) throw new FinanceError('allocation not found', 'ALLOCATION_NOT_FOUND');
+  if (alloc.reversed_allocation_id) throw new FinanceError('this row is already a reversal', 'ALLOCATION_IS_A_REVERSAL');
+  const alreadyReversed = dialect.prepare('SELECT 1 FROM finance_payment_allocations WHERE reversed_allocation_id = ?').get(alloc.id);
+  if (alreadyReversed) throw new FinanceError('allocation already unallocated', 'ALLOCATION_ALREADY_REVERSED');
+  const id = `finpalloc_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_payment_allocations (id, company_id, payment_id, document_id, amount, currency, fx_difference, reversed_allocation_id, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, alloc.payment_id, alloc.document_id, -alloc.amount, alloc.currency, -Number(alloc.fx_difference || 0), alloc.id, now, userId);
+  dialect.prepare('UPDATE finance_payments SET unallocated_amount = unallocated_amount + ?, updated_at = ? WHERE id = ?').run(alloc.amount, now, alloc.payment_id);
+  return { id, reversed_allocation_id: alloc.id, amount: -alloc.amount };
+}
+
+export function writeOffOpenItem(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const documentId = input.document_id;
+  const openAmount = getOpenAmountForDocument(dialect, ctx, documentId);
+  if (openAmount <= 0.005) throw new FinanceError('document has no remaining open amount to write off', 'WRITE_OFF_NO_OPEN_AMOUNT');
+  const amount = input.amount != null ? round2(Number(input.amount)) : openAmount;
+  if (amount > openAmount + 0.0001) throw new FinanceError('write-off amount exceeds open amount', 'WRITE_OFF_EXCEEDS_OPEN_AMOUNT');
+  const reason = String(input.reason || '').trim();
+  if (!reason) throw new FinanceError('write-off reason is required', 'WRITE_OFF_REASON_REQUIRED');
+  assertCompanyMatch(dialect, 'finance_accounts', input.write_off_account_id, companyId);
+  const original = getDocument(dialect, companyId, documentId);
+  const isCustomer = original.move_type === 'customer_invoice';
+  const controlLine = dialect.prepare(`
+    SELECT l.account_id FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.document_id = ? AND a.type IN ('receivable','payable') LIMIT 1
+  `).get(documentId);
+  if (!controlLine) throw new FinanceError('could not resolve the control account for this document', 'WRITE_OFF_CONTROL_NOT_FOUND');
+  const lines = isCustomer
+    ? [{ account_id: input.write_off_account_id, debit: amount, credit: 0 }, { account_id: controlLine.account_id, debit: 0, credit: amount, partner_id: original.partner_id }]
+    : [{ account_id: controlLine.account_id, debit: amount, credit: 0, partner_id: original.partner_id }, { account_id: input.write_off_account_id, debit: 0, credit: amount }];
+  const woDoc = createDocument(dialect, ctx, {
+    move_type: 'write_off', doc_date: input.doc_date || now.slice(0, 10), partner_id: original.partner_id,
+    currency: original.currency, source_type: 'write_off_of', source_id: documentId, lines,
+  });
+  submitDocument(dialect, ctx, { document_id: woDoc.id });
+  approveDocument(dialect, ctx, { document_id: woDoc.id });
+  const posted = postDocument(dialect, ctx, { document_id: woDoc.id });
+  const id = `finwo_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_write_offs (id, company_id, document_id, write_off_document_id, amount, write_off_account_id, reason, approved_by, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, documentId, posted.id, amount, input.write_off_account_id, reason, userId, now);
+  return { id, document_id: documentId, write_off_document_id: posted.id, amount };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Open-item reconciliation engine (Packet 03.17)
+// ---------------------------------------------------------------------------
+
+export function openReconciliationSession(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const targetType = input.target_type;
+  if (!['ar', 'ap'].includes(targetType)) throw new FinanceError('target_type must be ar or ap', 'RECONCILIATION_TARGET_INVALID');
+  const id = `finrecsess_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_reconciliation_sessions (id, company_id, target_type, partner_id, status, opened_by, created_at)
+    VALUES (?, ?, ?, ?, 'open', ?, ?)
+  `).run(id, companyId, targetType, input.partner_id || null, userId, now);
+  return { id, companyId, target_type: targetType, partner_id: input.partner_id || null, status: 'open' };
+}
+
+export function suggestReconciliationCandidates(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const session = dialect.prepare('SELECT * FROM finance_reconciliation_sessions WHERE id = ? AND company_id = ?').get(input.session_id, companyId);
+  if (!session) throw new FinanceError('reconciliation session not found', 'RECONCILIATION_SESSION_NOT_FOUND');
+  const openItems = session.target_type === 'ar'
+    ? getCustomerOpenItems(dialect, ctx, { partner_id: session.partner_id })
+    : getSupplierOpenItems(dialect, ctx, { partner_id: session.partner_id });
+  const paymentType = session.target_type === 'ar' ? 'receive' : 'pay';
+  let sql = "SELECT * FROM finance_payments WHERE company_id = ? AND status = 'posted' AND payment_type = ? AND unallocated_amount > 0.005";
+  const params = [companyId, paymentType];
+  if (session.partner_id) { sql += ' AND partner_id = ?'; params.push(session.partner_id); }
+  const payments = dialect.prepare(sql).all(...params);
+  const tolerance = Number(input.tolerance || 0);
+  const suggestions = [];
+  for (const item of openItems) {
+    for (const payment of payments) {
+      const diff = round2(Math.abs(item.open_amount - payment.unallocated_amount));
+      if (diff < 0.005) {
+        suggestions.push({ document_id: item.document_id, payment_id: payment.id, amount: item.open_amount, method: 'exact', confidence: 1 });
+      } else if (tolerance > 0 && diff <= tolerance) {
+        suggestions.push({ document_id: item.document_id, payment_id: payment.id, amount: round2(Math.min(item.open_amount, payment.unallocated_amount)), method: 'tolerance', confidence: round2(1 - diff / tolerance) });
+      }
+    }
+  }
+  return suggestions;
+}
+
+export function confirmReconciliationMatch(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const session = dialect.prepare('SELECT * FROM finance_reconciliation_sessions WHERE id = ? AND company_id = ?').get(input.session_id, companyId);
+  if (!session) throw new FinanceError('reconciliation session not found', 'RECONCILIATION_SESSION_NOT_FOUND');
+  if (session.status !== 'open') throw new FinanceError('reconciliation session is closed', 'RECONCILIATION_SESSION_CLOSED');
+  const allocation = allocatePayment(dialect, ctx, { payment_id: input.payment_id, document_id: input.document_id, amount: input.amount });
+  const id = `finrecmatch_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_reconciliation_matches (id, session_id, company_id, document_id, payment_id, allocation_id, amount, method, confidence, explain, status, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?)
+  `).run(id, input.session_id, companyId, input.document_id, input.payment_id, allocation.id, input.amount, input.method || 'manual', input.confidence ?? 1, input.explain || null, now, userId);
+  return { id, session_id: input.session_id, allocation_id: allocation.id, amount: input.amount, status: 'confirmed' };
+}
+
+export function undoReconciliationMatch(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const match = dialect.prepare('SELECT * FROM finance_reconciliation_matches WHERE id = ? AND company_id = ?').get(input.match_id, companyId);
+  if (!match) throw new FinanceError('reconciliation match not found', 'RECONCILIATION_MATCH_NOT_FOUND');
+  if (match.status !== 'confirmed') throw new FinanceError('reconciliation match already undone', 'RECONCILIATION_MATCH_ALREADY_UNDONE');
+  if (match.allocation_id) unallocatePayment(dialect, ctx, { allocation_id: match.allocation_id });
+  dialect.prepare('UPDATE finance_reconciliation_matches SET status = ?, undone_at = ?, undone_by = ? WHERE id = ?').run('undone', now, userId, input.match_id);
+  return { id: input.match_id, status: 'undone' };
+}
+
+export function closeReconciliationSession(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const session = dialect.prepare('SELECT * FROM finance_reconciliation_sessions WHERE id = ? AND company_id = ?').get(input.session_id, companyId);
+  if (!session) throw new FinanceError('reconciliation session not found', 'RECONCILIATION_SESSION_NOT_FOUND');
+  dialect.prepare('UPDATE finance_reconciliation_sessions SET status = ?, closed_by = ?, closed_at = ? WHERE id = ?').run('closed', userId, now, input.session_id);
+  return { id: input.session_id, status: 'closed' };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Banking and statement import (Packet 03.18)
+// ---------------------------------------------------------------------------
+
+export function createBankAccount(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  assertCompanyMatch(dialect, 'finance_accounts', input.gl_account_id, companyId);
+  const id = input.id || `finbank_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_bank_accounts (id, company_id, name, gl_account_id, currency, is_active, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, String(input.name || '').trim(), input.gl_account_id, input.currency || 'IQD', input.is_active !== false ? 1 : 0, now, userId);
+  return { id, companyId, name: input.name };
+}
+
+export function createBankMatchRule(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const name = String(input.name || '').trim();
+  if (!name) throw new FinanceError('match rule name is required', 'BANK_RULE_NAME_REQUIRED');
+  if (input.target_account_id) assertCompanyMatch(dialect, 'finance_accounts', input.target_account_id, companyId);
+  const id = input.id || `finbankrule_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_bank_match_rules (id, company_id, name, description_pattern, amount_tolerance, target_account_id, is_active, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, name, input.description_pattern || null, Number(input.amount_tolerance || 0), input.target_account_id || null, 1, now, userId);
+  return { id, companyId, name };
+}
+
+function hashStatementLine(companyId, line) {
+  return crypto.createHash('sha256').update(JSON.stringify([companyId, line.external_id || '', line.transaction_date, round2(line.amount), line.currency || 'IQD', line.description || ''])).digest('hex');
+}
+
+export function importBankStatement(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const bank = dialect.prepare('SELECT * FROM finance_bank_accounts WHERE id = ? AND company_id = ? AND is_active = 1').get(input.bank_account_id, companyId);
+  if (!bank) throw new FinanceError('bank account not found or inactive', 'BANK_ACCOUNT_NOT_FOUND');
+  const key = String(input.import_key || '').trim();
+  if (!key) throw new FinanceError('import_key is required', 'IMPORT_KEY_REQUIRED');
+  const existing = dialect.prepare('SELECT * FROM finance_bank_statement_batches WHERE company_id = ? AND import_key = ?').get(companyId, key);
+  if (existing) {
+    const lines = dialect.prepare('SELECT * FROM finance_bank_statement_lines WHERE statement_id = ? ORDER BY line_number').all(existing.id);
+    return { ...existing, duplicate: true, lines };
+  }
+  const lines = Array.isArray(input.lines) ? input.lines : [];
+  const statementId = input.id || `finstmt_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_bank_statement_batches (id, company_id, bank_account_id, statement_date, opening_balance, closing_balance, import_key, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(statementId, companyId, bank.id, input.statement_date || now.slice(0, 10), Number(input.opening_balance || 0), input.closing_balance == null ? null : Number(input.closing_balance), key, now, userId);
+  const insertLine = dialect.prepare(`
+    INSERT INTO finance_bank_statement_lines (id, statement_id, company_id, line_number, transaction_date, amount, currency, description, external_id, line_hash, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unmatched', ?)
+  `);
+  let number = 0;
+  for (const line of lines) {
+    number += 1;
+    if (!line.transaction_date && !input.statement_date) throw new FinanceError('malformed statement line: missing transaction_date', 'BANK_LINE_MALFORMED');
+    if (!Number.isFinite(Number(line.amount))) throw new FinanceError('malformed statement line: invalid amount', 'BANK_LINE_MALFORMED');
+    const lineHash = hashStatementLine(companyId, line);
+    const dup = dialect.prepare('SELECT 1 FROM finance_bank_statement_lines WHERE company_id = ? AND line_hash = ?').get(companyId, lineHash);
+    if (dup) throw new FinanceError('duplicate statement line import', 'BANK_LINE_DUPLICATE');
+    insertLine.run(line.id || `finstmtl_${crypto.randomUUID()}`, statementId, companyId, number, line.transaction_date || input.statement_date, Number(line.amount), line.currency || bank.currency, line.description || null, line.external_id || null, lineHash, now);
+  }
+  return { id: statementId, imported: lines.length, duplicate: false };
+}
+
+function activeReconciledLines(dialect, lineId) {
+  return dialect.prepare("SELECT * FROM finance_bank_reconciliations WHERE statement_line_id = ? AND status = 'reconciled'").all(lineId);
+}
+
+export function matchBankStatementLine(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const line = dialect.prepare('SELECT * FROM finance_bank_statement_lines WHERE id = ? AND company_id = ?').get(input.line_id, companyId);
+  if (!line) throw new FinanceError('statement line not found', 'BANK_LINE_NOT_FOUND');
+  if (activeReconciledLines(dialect, line.id).length) throw new FinanceError('statement line is already reconciled', 'BANK_LINE_ALREADY_RECONCILED');
+  const rule = input.rule_id ? dialect.prepare('SELECT * FROM finance_bank_match_rules WHERE id = ? AND company_id = ? AND is_active = 1').get(input.rule_id, companyId) : null;
+  if (input.rule_id && !rule) throw new FinanceError('match rule not found', 'BANK_RULE_NOT_FOUND');
+  const tolerance = Number(input.tolerance == null ? (rule?.amount_tolerance || 0) : input.tolerance);
+  if (rule?.description_pattern && !String(line.description || '').toLowerCase().includes(String(rule.description_pattern).toLowerCase())) {
+    return { matched: false, rule_id: rule.id, candidates: 0 };
+  }
+  const candidates = dialect.prepare("SELECT * FROM finance_payments WHERE company_id = ? AND status = 'posted' AND currency = ? ORDER BY payment_date, id").all(companyId, line.currency);
+  const target = candidates.find(p => Math.abs(Number(p.amount) - Math.abs(Number(line.amount))) <= tolerance && (!input.payment_id || p.id === input.payment_id));
+  if (!target) return { matched: false, candidates: candidates.length };
+  const amount = round2(Math.min(Math.abs(Number(line.amount)), Number(target.amount)));
+  const id = `finbankrec_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_bank_reconciliations (id, statement_line_id, company_id, target_type, target_id, amount, method, status, created_at, created_by)
+    VALUES (?, ?, ?, 'payment', ?, ?, ?, 'reconciled', ?, ?)
+  `).run(id, line.id, companyId, target.id, amount, tolerance ? 'tolerance' : 'exact', now, userId);
+  dialect.prepare("UPDATE finance_bank_statement_lines SET status = 'reconciled' WHERE id = ?").run(line.id);
+  return { matched: true, reconciliation_id: id, target_id: target.id, amount };
+}
+
+export function manualReconcileBankLine(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const line = dialect.prepare('SELECT * FROM finance_bank_statement_lines WHERE id = ? AND company_id = ?').get(input.line_id, companyId);
+  if (!line) throw new FinanceError('statement line not found', 'BANK_LINE_NOT_FOUND');
+  if (!['payment', 'document', 'difference'].includes(input.target_type)) throw new FinanceError('invalid reconciliation target_type', 'BANK_TARGET_TYPE_INVALID');
+  if (activeReconciledLines(dialect, line.id).length) throw new FinanceError('statement line is already reconciled', 'BANK_LINE_ALREADY_RECONCILED');
+  const amount = round2(input.amount != null ? Number(input.amount) : Math.abs(line.amount));
+  if (!(amount > 0) || amount > Math.abs(line.amount) + 0.0001) throw new FinanceError('reconciliation amount exceeds statement line amount', 'BANK_RECONCILE_AMOUNT_INVALID');
+  const id = `finbankrec_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_bank_reconciliations (id, statement_line_id, company_id, target_type, target_id, amount, method, status, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, 'manual', 'reconciled', ?, ?)
+  `).run(id, line.id, companyId, input.target_type, input.target_id, amount, now, userId);
+  dialect.prepare("UPDATE finance_bank_statement_lines SET status = 'reconciled' WHERE id = ?").run(line.id);
+  return { matched: true, reconciliation_id: id, target_id: input.target_id, amount };
+}
+
+export function recordBankDifference(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const line = dialect.prepare('SELECT * FROM finance_bank_statement_lines WHERE id = ? AND company_id = ?').get(input.line_id, companyId);
+  if (!line) throw new FinanceError('statement line not found', 'BANK_LINE_NOT_FOUND');
+  const statement = dialect.prepare('SELECT * FROM finance_bank_statement_batches WHERE id = ?').get(line.statement_id);
+  const bank = dialect.prepare('SELECT * FROM finance_bank_accounts WHERE id = ?').get(statement.bank_account_id);
+  if (!input.account_id) throw new FinanceError('difference account_id is required', 'BANK_DIFFERENCE_ACCOUNT_REQUIRED');
+  const amount = round2(Math.abs(line.amount));
+  const bankDebit = Number(line.amount) >= 0 ? amount : 0;
+  const bankCredit = Number(line.amount) < 0 ? amount : 0;
+  const doc = createDocument(dialect, ctx, {
+    move_type: 'manual_entry', doc_date: line.transaction_date, currency: line.currency,
+    lines: [
+      { account_id: bank.gl_account_id, debit: bankDebit, credit: bankCredit, description: 'Bank statement difference' },
+      { account_id: input.account_id, debit: bankCredit, credit: bankDebit, description: input.reason || 'Bank difference' },
+    ],
+  });
+  submitDocument(dialect, ctx, { document_id: doc.id });
+  approveDocument(dialect, ctx, { document_id: doc.id });
+  const posted = postDocument(dialect, ctx, { document_id: doc.id });
+  const rec = manualReconcileBankLine(dialect, ctx, { line_id: line.id, target_type: 'difference', target_id: posted.id, amount });
+  return { document_id: posted.id, ...rec };
+}
+
+export function unreconcileBankLine(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const rec = dialect.prepare("SELECT * FROM finance_bank_reconciliations WHERE id = ? AND company_id = ? AND status = 'reconciled'").get(input.reconciliation_id, companyId);
+  if (!rec) throw new FinanceError('active reconciliation not found', 'BANK_RECONCILIATION_NOT_FOUND');
+  dialect.prepare("UPDATE finance_bank_reconciliations SET status = 'reversed' WHERE id = ?").run(rec.id);
+  const stillReconciled = dialect.prepare("SELECT 1 FROM finance_bank_reconciliations WHERE statement_line_id = ? AND status = 'reconciled'").get(rec.statement_line_id);
+  if (!stillReconciled) dialect.prepare("UPDATE finance_bank_statement_lines SET status = 'unmatched' WHERE id = ?").run(rec.statement_line_id);
+  return { id: rec.id, status: 'reversed' };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Cashboxes, petty cash, and custody (Packet 03.19)
+// ---------------------------------------------------------------------------
+
+export function createCashbox(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  assertCompanyMatch(dialect, 'finance_accounts', input.gl_account_id, companyId);
+  const name = String(input.name || '').trim();
+  if (!name) throw new FinanceError('cashbox name is required', 'CASHBOX_NAME_REQUIRED');
+  const id = input.id || `fincbox_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_cashboxes (id, company_id, branch_id, name, gl_account_id, custodian_user_id, currency, max_balance, is_active, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, input.branch_id || null, name, input.gl_account_id, input.custodian_user_id || null, input.currency || 'IQD', input.max_balance ?? null, 1, now, userId);
+  return { id, companyId, name };
+}
+
+export function openCashShift(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const cashbox = dialect.prepare('SELECT * FROM finance_cashboxes WHERE id = ? AND company_id = ?').get(input.cashbox_id, companyId);
+  if (!cashbox) throw new FinanceError('cashbox not found', 'CASHBOX_NOT_FOUND');
+  const openShift = dialect.prepare("SELECT id FROM finance_cash_shifts WHERE cashbox_id = ? AND status = 'open'").get(input.cashbox_id);
+  if (openShift) throw new FinanceError('cashbox already has an open shift', 'CASH_SHIFT_ALREADY_OPEN');
+  const id = input.id || `fincshift_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_cash_shifts (id, company_id, cashbox_id, opened_by, opening_balance, status, opened_at)
+    VALUES (?, ?, ?, ?, ?, 'open', ?)
+  `).run(id, companyId, input.cashbox_id, userId, Number(input.opening_balance || 0), now);
+  return { id, companyId, cashbox_id: input.cashbox_id, status: 'open' };
+}
+
+function expectedShiftBalance(dialect, shift) {
+  const net = dialect.prepare(`
+    SELECT COALESCE(SUM(l.debit - l.credit), 0) AS net FROM finance_journal_lines l
+    JOIN finance_cashboxes c ON c.gl_account_id = l.account_id
+    WHERE c.id = (SELECT cashbox_id FROM finance_cash_shifts WHERE id = ?) AND l.posting_date >= ?
+  `).get(shift.id, shift.opened_at.slice(0, 10));
+  return round2(Number(shift.opening_balance) + Number(net.net || 0));
+}
+
+export function recordCashCount(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const shift = dialect.prepare('SELECT * FROM finance_cash_shifts WHERE id = ? AND company_id = ?').get(input.shift_id, companyId);
+  if (!shift) throw new FinanceError('cash shift not found', 'CASH_SHIFT_NOT_FOUND');
+  if (shift.status !== 'open') throw new FinanceError('cash count requires an open shift', 'CASH_SHIFT_CLOSED');
+  const expected = expectedShiftBalance(dialect, shift);
+  const counted = round2(Number(input.counted_amount));
+  const variance = round2(counted - expected);
+  const id = `fincscount_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_cash_counts (id, shift_id, company_id, counted_amount, expected_amount, variance, counted_by, note, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, input.shift_id, companyId, counted, expected, variance, userId, input.note || null, now);
+  return { id, shift_id: input.shift_id, expected_amount: expected, counted_amount: counted, variance };
+}
+
+export function closeCashShift(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const shift = dialect.prepare('SELECT * FROM finance_cash_shifts WHERE id = ? AND company_id = ?').get(input.shift_id, companyId);
+  if (!shift) throw new FinanceError('cash shift not found', 'CASH_SHIFT_NOT_FOUND');
+  if (shift.status !== 'open') throw new FinanceError('cash shift is already closed', 'CASH_SHIFT_ALREADY_CLOSED');
+  const expected = expectedShiftBalance(dialect, shift);
+  const actual = round2(Number(input.actual_closing_balance));
+  const variance = round2(actual - expected);
+  dialect.prepare(`
+    UPDATE finance_cash_shifts SET status = 'closed', expected_closing_balance = ?, actual_closing_balance = ?, variance = ?, closed_at = ?, closed_by = ?
+    WHERE id = ?
+  `).run(expected, actual, variance, now, userId, input.shift_id);
+  return { id: input.shift_id, status: 'closed', expected_closing_balance: expected, actual_closing_balance: actual, variance };
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Payment terms, installments, retainage (Packet 03.20)
+// ---------------------------------------------------------------------------
+
+export function createPaymentTermTemplate(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const code = String(input.code || '').trim();
+  const name = String(input.name || '').trim();
+  if (!code) throw new FinanceError('payment term code is required', 'PAYMENT_TERM_CODE_REQUIRED');
+  if (!name) throw new FinanceError('payment term name is required', 'PAYMENT_TERM_NAME_REQUIRED');
+  const lines = Array.isArray(input.lines) ? input.lines : [];
+  if (!lines.length) throw new FinanceError('at least one payment term line is required', 'PAYMENT_TERM_LINES_EMPTY');
+  const percentSum = lines.filter(l => l.line_type === 'percent').reduce((s, l) => s + Number(l.value || 0), 0);
+  const hasBalanceOrFixed = lines.some(l => l.line_type === 'balance' || l.line_type === 'fixed');
+  if (!hasBalanceOrFixed && Math.abs(percentSum - 100) > 0.01) {
+    throw new FinanceError('percent lines must sum to 100 unless a balance or fixed line is present', 'PAYMENT_TERM_LINES_INVALID');
+  }
+  const dup = dialect.prepare('SELECT id FROM finance_payment_term_templates WHERE company_id = ? AND code = ?').get(companyId, code);
+  if (dup) throw new FinanceError('duplicate payment term code', 'PAYMENT_TERM_DUPLICATE');
+  const id = input.id || `finterm_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_payment_term_templates (id, company_id, code, name, name_ar, early_discount_percent, early_discount_days, retainage_percent, is_active, created_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(id, companyId, code, name, input.name_ar || name, Number(input.early_discount_percent || 0), Number(input.early_discount_days || 0), Number(input.retainage_percent || 0), 1, now, userId);
+  const insLine = dialect.prepare('INSERT INTO finance_payment_term_lines (id, template_id, sequence, line_type, value, due_rule, due_days, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+  lines.forEach((l, idx) => {
+    insLine.run(`fintermline_${crypto.randomUUID()}`, id, idx, l.line_type, Number(l.value || 0), l.due_rule || 'days_after_date', Number(l.due_days || 0), now);
+  });
+  return { id, companyId, code, name, line_count: lines.length };
+}
+
+function computeDueDate(docDate, rule, days) {
+  const base = new Date(`${docDate}T00:00:00Z`);
+  if (rule === 'days_after_date') {
+    base.setUTCDate(base.getUTCDate() + days);
+    return base.toISOString().slice(0, 10);
+  }
+  if (rule === 'days_after_month_end') {
+    const monthEnd = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, 0));
+    monthEnd.setUTCDate(monthEnd.getUTCDate() + days);
+    return monthEnd.toISOString().slice(0, 10);
+  }
+  if (rule === 'fixed_day_next_month') {
+    const next = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, Math.min(Math.max(days, 1), 28)));
+    return next.toISOString().slice(0, 10);
+  }
+  return docDate;
+}
+
+export function generateDueScheduleFromTerm(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const doc = getDocument(dialect, companyId, input.document_id);
+  if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
+  const template = dialect.prepare('SELECT * FROM finance_payment_term_templates WHERE id = ? AND company_id = ?').get(input.template_id, companyId);
+  if (!template) throw new FinanceError('payment term template not found', 'PAYMENT_TERM_NOT_FOUND');
+  const lines = dialect.prepare('SELECT * FROM finance_payment_term_lines WHERE template_id = ? ORDER BY sequence').all(input.template_id);
+  const total = round2(doc.lines.reduce((s, l) => s + Number(l.debit || 0), 0));
+  let allocated = 0;
+  const schedule = lines.map((l, idx) => {
+    let amount;
+    if (idx === lines.length - 1) {
+      amount = round2(total - allocated); // last line absorbs any rounding remainder so the schedule sums exactly.
+    } else if (l.line_type === 'percent') {
+      amount = round2(total * (Number(l.value) / 100));
+    } else if (l.line_type === 'fixed') {
+      amount = round2(Number(l.value));
+    } else {
+      amount = round2(total - allocated);
+    }
+    allocated = round2(allocated + amount);
+    return { due_date: computeDueDate(doc.doc_date, l.due_rule, l.due_days), amount };
+  });
+  return setDueSchedule(dialect, ctx, { document_id: input.document_id, schedule });
+}
+
+// ---------------------------------------------------------------------------
+// Wave D — Credit exposure and policy foundation (Packet 03.21)
+// ---------------------------------------------------------------------------
+
+export function setCreditProfile(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const partnerId = input.partner_id;
+  if (!partnerId) throw new FinanceError('partner_id is required', 'CREDIT_PROFILE_PARTNER_REQUIRED');
+  const id = input.id || `fincredit_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_credit_profiles (id, company_id, partner_id, credit_limit, overdue_grace_days, temporary_limit_override, temporary_limit_expires_at, include_guarantees, include_disputed, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(company_id, partner_id) DO UPDATE SET credit_limit = excluded.credit_limit, overdue_grace_days = excluded.overdue_grace_days,
+      temporary_limit_override = excluded.temporary_limit_override, temporary_limit_expires_at = excluded.temporary_limit_expires_at,
+      include_guarantees = excluded.include_guarantees, include_disputed = excluded.include_disputed, updated_at = excluded.updated_at
+  `).run(id, companyId, partnerId, Number(input.credit_limit || 0), Number(input.overdue_grace_days || 0), input.temporary_limit_override ?? null, input.temporary_limit_expires_at ?? null, Number(input.include_guarantees || 0), input.include_disputed ? 1 : 0, now, now, userId);
+  return { id, companyId, partner_id: partnerId, credit_limit: Number(input.credit_limit || 0) };
+}
+
+export function holdCredit(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const reason = String(input.reason || '').trim();
+  if (!reason) throw new FinanceError('credit hold reason is required', 'CREDIT_HOLD_REASON_REQUIRED');
+  const id = `fincrhold_${crypto.randomUUID()}`;
+  dialect.prepare(`
+    INSERT INTO finance_credit_holds (id, company_id, partner_id, reason, held_by, held_at, status)
+    VALUES (?, ?, ?, ?, ?, ?, 'held')
+  `).run(id, companyId, input.partner_id, reason, userId, now);
+  return { id, partner_id: input.partner_id, status: 'held' };
+}
+
+export function releaseCreditHold(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const hold = dialect.prepare('SELECT * FROM finance_credit_holds WHERE id = ? AND company_id = ?').get(input.hold_id, companyId);
+  if (!hold) throw new FinanceError('credit hold not found', 'CREDIT_HOLD_NOT_FOUND');
+  if (hold.status !== 'held') throw new FinanceError('credit hold already released', 'CREDIT_HOLD_ALREADY_RELEASED');
+  dialect.prepare('UPDATE finance_credit_holds SET status = ?, released_by = ?, released_at = ?, released_reason = ? WHERE id = ?').run('released', userId, now, input.released_reason || null, input.hold_id);
+  return { id: input.hold_id, status: 'released' };
+}
+
+export function getCreditExposure(dialect, ctx, input) {
+  const { companyId } = context(ctx);
+  const partnerId = input.partner_id;
+  const profile = dialect.prepare('SELECT * FROM finance_credit_profiles WHERE company_id = ? AND partner_id = ?').get(companyId, partnerId);
+  const openItems = getCustomerOpenItems(dialect, ctx, { partner_id: partnerId });
+  const openReceivables = round2(openItems.reduce((s, i) => s + i.open_amount, 0));
+  const asOfDate = input.as_of_date || new Date().toISOString().slice(0, 10);
+  const aging = getCustomerAging(dialect, ctx, { partner_id: partnerId, as_of_date: asOfDate });
+  const graceDays = profile ? profile.overdue_grace_days : 0;
+  const overdueBuckets = graceDays > 30 ? ['d61_90', 'd90_plus'] : graceDays > 0 ? ['d1_30', 'd31_60', 'd61_90', 'd90_plus'] : ['current', 'd1_30', 'd31_60', 'd61_90', 'd90_plus'];
+  const overdueBalance = round2(overdueBuckets.reduce((s, k) => s + (aging[k] || 0), 0));
+  const activeHold = dialect.prepare("SELECT * FROM finance_credit_holds WHERE company_id = ? AND partner_id = ? AND status = 'held'").get(companyId, partnerId);
+  const nowIso = new Date().toISOString();
+  const overrideActive = !!(profile && profile.temporary_limit_override != null && (!profile.temporary_limit_expires_at || profile.temporary_limit_expires_at > nowIso));
+  const limit = overrideActive ? profile.temporary_limit_override : (profile ? profile.credit_limit : 0);
+  const exposure = round2(openReceivables + (profile ? Number(profile.include_guarantees || 0) : 0));
+  return {
+    partner_id: partnerId,
+    open_receivables: openReceivables,
+    overdue_balance: overdueBalance,
+    exposure,
+    credit_limit: limit,
+    available: round2(limit - exposure),
+    is_over_limit: exposure > limit + 0.0001,
+    is_held: !!activeHold,
+    explain: { profile_found: !!profile, temporary_override_active: overrideActive, overdue_grace_days: graceDays, as_of_date: asOfDate },
+  };
 }
 
 export { ACCOUNT_TYPES, JOURNAL_TYPES, DOCUMENT_TYPES };

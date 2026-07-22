@@ -256,6 +256,152 @@
 
 ---
 
+## Capability: Wave D.1 — Payment documents and methods (Packet 03.15)
+
+- **Capability ID:** `FN-027`
+- **Outcome:** One receive/pay/transfer payment document model with idempotency-key dedup, fee handling, and cross-currency support, posting through the existing single GL authority.
+- **Current Octagon paths inspected:** `services/financeService.js` (`createPayment`, `reconcileLines`).
+- **Current Octagon behavior preserved:** payment-as-a-document concept; cash/bank distinction.
+- **Current Octagon writers:** `services/financeService.js`, not yet retired.
+- **VNext paths inspected:** `octagon-erp-commercial-vnext/vnext/server/finance/arap-engine.js` (`createPayment`, idempotency-key replay, fx-rate handling).
+- **VNext implementation disposition:** `MERGE-REFACTOR` — replay-on-duplicate-key and gross/net fee split concepts ported; VNext's version couples payment creation with allocation in one call, split apart in Octagon into `createPayment`/`postPayment` (Packet 03.15) and `allocatePayment` (Packet 03.16) to match the governing document's own packet boundary.
+- **Primary donor repository:** Odoo Community `account/models/account_payment.py` — clean-room reference for method/payer-payee shape.
+- **Primary donor exact paths:** `odoo/addons/account/models/account_payment.py`.
+- **Secondary donor:** ERPNext `accounts/doctype/payment_entry` — clean-room reference confirming the fee-line and reference-idempotency shape.
+- **License:** VNext project-owned (direct reuse); Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createPayment`, `postPayment`, `reversePaymentAction`), `database/migrations/022_payment_documents.mjs`.
+- **Canonical database authority:** `finance_payments`.
+- **Canonical command authority:** `finance_payment:create`, `finance_payment:post`, `finance_payment:reverse`.
+- **Finance integration:** posts through `createDocument`/`postDocument` exclusively; no separate GL write path.
+- **Migration:** `022_payment_documents.mjs`.
+- **Legacy writer retirement:** deferred to Wave F.
+- **Tests:** idempotency replay, unsupported method, cross-currency balance, fee posting, internal transfer, reversal-requires-unallocation (6 tests).
+- **Known risks:** none new beyond what's tracked in `unresolved-risks.md`.
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave D.2 — Allocation, advances, refunds, write-offs (Packet 03.16)
+
+- **Capability ID:** `FN-028`
+- **Outcome:** Immutable many-to-many settlement lineage between payments and AR/AP documents, completing the full residual/open-item calculation Wave C deferred.
+- **Current Octagon paths inspected:** `services/financeService.js` (`reconcileLines`, `account_partial_reconciles`).
+- **VNext paths inspected:** `arap-engine.js` (`payment_allocation` table, `documentOpenAmount`'s allocated-amount subtraction).
+- **VNext implementation disposition:** `MERGE-REFACTOR` — allocation-table shape reused directly; unallocation is new (VNext had no unallocate path) built as an append-only reversing row, matching the ledger-wide "never edit, always append a reversal" invariant already established in Wave A/B.
+- **Primary donor repository:** Odoo Community `account/models/account_partial_reconcile.py` — clean-room reference for many-to-many lineage.
+- **Secondary donor:** ERPNext Payment Entry references — clean-room reference for advance/unapplied-credit handling.
+- **License:** VNext project-owned; Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`allocatePayment`, `unallocatePayment`, `writeOffOpenItem`, `getOpenAmountForDocument`, `paymentAllocationsTotal`), `database/migrations/023_payment_allocation_and_writeoffs.mjs`.
+- **Canonical database authority:** `finance_payment_allocations`, `finance_write_offs`.
+- **Canonical command authority:** `finance_payment:allocate`, `finance_payment:unallocate`, `finance_document:write_off`.
+- **Finance integration:** `openItemsFor` (Wave C) now subtracts `paymentAllocationsTotal` alongside credit notes/write-offs — one open-item calculation, not two.
+- **Migration:** `023_payment_allocation_and_writeoffs.mjs`.
+- **Reconciliation:** over-allocation denial is enforced by an atomic `UPDATE ... WHERE unallocated_amount >= ?`, verified under concurrent `Promise.allSettled` allocation attempts (exactly one of two competing 300-against-500 allocations succeeds).
+- **Tests:** over-allocation denial, partial allocation open-amount correctness, unallocate/reallocate lineage (3 rows survive), write-off reason requirement and control-account resolution, concurrent allocation race (5 tests).
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave D.3 — Open-item reconciliation engine (Packet 03.17)
+
+- **Capability ID:** `FN-029`
+- **Outcome:** Session-based candidate matching (exact/tolerance) between unallocated payments and AR/AP open items, confirming through the real `allocatePayment` path — no parallel settlement mechanism.
+- **VNext paths inspected:** `octagon-erp-commercial-vnext/vnext/server/finance/bank-engine.js` (`matchBankLine`, `manualReconcile`, `unreconcile`).
+- **VNext implementation disposition:** `MERGE-REFACTOR`, generalized from "bank line vs. payment" to "unallocated payment vs. AR/AP open item" — the session/candidate/confirm/undo shape is identical, retargeted.
+- **Primary donor repository:** Odoo Community `account/models/account_partial_reconcile.py` / `account_full_reconcile.py` — clean-room reference for partial/full status semantics.
+- **Secondary donor:** ERPNext Payment Reconciliation Tool — clean-room reference for the session/candidate-list/confirm workflow shape.
+- **License:** VNext project-owned; Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`openReconciliationSession`, `suggestReconciliationCandidates`, `confirmReconciliationMatch`, `undoReconciliationMatch`, `closeReconciliationSession`), `database/migrations/024_open_item_reconciliation_engine.mjs`.
+- **Canonical database authority:** `finance_reconciliation_sessions`, `finance_reconciliation_matches`.
+- **Finance integration:** `confirmReconciliationMatch` calls `allocatePayment` internally; `undoReconciliationMatch` calls `unallocatePayment` internally — the reconciliation engine has zero independent GL or balance logic of its own.
+- **Migration:** `024_open_item_reconciliation_engine.mjs`.
+- **Tests:** exact-match suggestion/confirm/undo/closed-session rejection, GL-reconciled aging after session-based allocation (2 tests).
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave D.4 — Banking and statement import (Packet 03.18)
+
+- **Capability ID:** `FN-030`
+- **Outcome:** Immutable, deduplicated bank statement import with rule-assisted and manual matching, difference posting, and undo — direct near-verbatim port of project-owned VNext code.
+- **Current Octagon paths inspected:** `services/financeService.js` (`processBankReconciliation`).
+- **Current Octagon behavior preserved:** none carried forward as authority (legacy function stays as the operational writer until Wave F cutover).
+- **VNext paths inspected:** `octagon-erp-commercial-vnext/vnext/server/finance/bank-engine.js` (entire file: `createBankAccount`, `createMatchRule`, `importStatement`, `matchBankLine`, `manualReconcile`, `recordBankDifference`, `unreconcile`).
+- **VNext implementation disposition:** `MERGE-REFACTOR` — near-verbatim port (project-owned code, direct reuse permitted); table/column names retargeted to `finance_bank_*`; `hashLine`'s dedup-fingerprint approach kept unchanged.
+- **Primary donor repository:** Odoo Community `account/models/account_bank_statement.py` — clean-room reference for opening/closing-balance batch shape.
+- **Secondary donor:** ERPNext Bank Transaction + Bank Reconciliation Tool — clean-room reference confirming the import-fingerprint-dedup pattern independently.
+- **License:** VNext project-owned; Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (7 exported functions), `database/migrations/025_banking_and_statement_import.mjs`.
+- **Canonical database authority:** `finance_bank_accounts`, `finance_bank_match_rules`, `finance_bank_statement_batches`, `finance_bank_statement_lines`, `finance_bank_reconciliations`.
+- **Migration:** `025_banking_and_statement_import.mjs`.
+- **Tests:** repeated-import no-op, duplicate-line rejection, malformed-line rejection, tolerance-based auto-match + unmatch, bank-difference posting (4 tests).
+- **Known risks:** no live external provider connector was built; only the normalized import-array boundary (`bank_test_provider` fixture pattern already established in `source-lock.md`).
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave D.5 — Cashboxes, petty cash, and custody (Packet 03.19)
+
+- **Capability ID:** `FN-031`
+- **Outcome:** Custodian/shift/count/variance/close lifecycle for cash, with expected balance always derived live from the GL (never a separately tracked running total).
+- **Current Octagon paths inspected:** `services/financeService.js` (`cashboxEffect()`, `'cashbox'` sourceType/category fields).
+- **Current Octagon behavior preserved:** the "cash moves are first-class" concept; superseded by a canonical custodian/shift model rather than a free-form category field.
+- **VNext paths inspected:** no dedicated cashbox/shift model existed in VNext finance; this packet is foundation-level new capability.
+- **Primary donor repository:** ERPNext / generic POS opening-and-closing-entry behavior — clean-room reference for the shift-open/count/close/variance shape.
+- **License:** clean-room reference only (no code copied); custodian/shift/count lifecycle is `SPEC-IMPLEMENT`, built directly from the Phase 03 governing document's Packet 03.19 requirement list.
+- **Reuse mode:** `PRESERVE` (current Octagon cash-move concept) + `SPEC-IMPLEMENT` (shift lifecycle).
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createCashbox`, `openCashShift`, `recordCashCount`, `closeCashShift`, `expectedShiftBalance`), `database/migrations/026_cashboxes_and_petty_cash.mjs`.
+- **Canonical database authority:** `finance_cashboxes`, `finance_cash_shifts`, `finance_cash_counts`.
+- **Migration:** `026_cashboxes_and_petty_cash.mjs`.
+- **Tests:** single-open-shift enforcement, count/close variance against live GL-derived expected balance, closed-shift rejection, reopen after close (1 comprehensive test covering the full lifecycle).
+- **Known risks:** `max_balance` on `finance_cashboxes` is stored but not yet enforced as a hard limit (no "negative/over limit policy" rejection implemented) — recorded in `unresolved-risks.md`.
+- **Final decision:** `PRESERVE` + `SPEC-IMPLEMENT`.
+
+---
+
+## Capability: Wave D.6 — Payment terms, installments, retainage (Packet 03.20)
+
+- **Capability ID:** `FN-032`
+- **Outcome:** Versioned, reusable payment-term templates that generate a `finance_due_schedules` (Wave C) set at document-creation time, with exact-total rounding.
+- **VNext paths inspected:** `arap-engine.js`'s single `due_date` field on `arap_document` — generalized here into a multi-line, rule-based template.
+- **VNext implementation disposition:** `MERGE-REFACTOR` of the concept (due-date-per-document), extended to due-date-per-installment.
+- **Primary donor repository:** Odoo Community `account/models/account_payment_term.py` — clean-room reference for percent/fixed/balance line types and day/month-end due rules.
+- **Secondary donor:** ERPNext Payment Terms Template — clean-room reference confirming the installment + early-discount shape.
+- **License:** VNext project-owned; Odoo/ERPNext behavior/specification only.
+- **Reuse mode:** `MERGE-REFACTOR`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`createPaymentTermTemplate`, `generateDueScheduleFromTerm`, `computeDueDate`), `database/migrations/027_payment_terms_and_installments.mjs`.
+- **Canonical database authority:** `finance_payment_term_templates`, `finance_payment_term_lines`.
+- **Finance integration:** `generateDueScheduleFromTerm` calls Wave C's `setDueSchedule` — no separate schedule-writing path; inherits the existing "draft-only" and "total-must-match" rules for free.
+- **Migration:** `027_payment_terms_and_installments.mjs`.
+- **Tests:** exact-total rounding across a 33.33/33.33/balance split, month-end-plus-days due-date calculation (2 tests).
+- **Known risks:** early-payment-discount and retainage fields are stored on the template but not yet applied by any posting logic (no discount-on-early-payment computation exists yet) — recorded in `unresolved-risks.md`; this is foundation-level per the packet's own "versioned due schedules" outcome statement, which does not require discount application in Phase 03.
+- **Final decision:** `MERGE-REFACTOR`.
+
+---
+
+## Capability: Wave D.7 — Credit exposure and policy foundation (Packet 03.21)
+
+- **Capability ID:** `FN-033`
+- **Outcome:** One explainable, real-time credit-exposure query composed entirely from Wave C's AR queries — Finance supplies the query; Phase 04 will consume it for sales-order blocking (explicitly out of Phase 03 scope per the governing document).
+- **VNext paths inspected:** VNext's AR/sales-policy exploration (project-owned, foundation-level, no shippable code) informed the profile/limit/hold shape.
+- **Primary donor repository:** Odoo Community `res.partner` credit-limit fields — clean-room reference.
+- **Secondary donor:** ERPNext Customer Credit Limit — clean-room reference confirming the temporary-override-with-expiry pattern.
+- **License:** clean-room reference only; the exposure query itself is `SPEC-IMPLEMENT` (a composition of already-canonical Wave C queries, not new balance logic).
+- **Reuse mode:** `SPEC-IMPLEMENT`.
+- **Target Octagon module:** `platform/finance/engine.mjs` (`setCreditProfile`, `holdCredit`, `releaseCreditHold`, `getCreditExposure`), `database/migrations/028_credit_exposure_and_policy.mjs`.
+- **Canonical database authority:** `finance_credit_profiles`, `finance_credit_holds`.
+- **Finance integration:** `getCreditExposure` calls `getCustomerOpenItems`/`getCustomerAging` (Wave C) directly — zero independent receivables-balance computation, so it can never drift out of sync with AR.
+- **Migration:** `028_credit_exposure_and_policy.mjs`.
+- **Tests:** exposure-vs-limit calculation, expired-temporary-override-ignored, hold/release lifecycle with payment-releases-exposure, cross-company isolation (4 tests).
+- **Known risks:** "unposted/approved orders through a later Phase 04 port" and "guarantees/deposits" beyond a flat stored number are explicitly deferred to Phase 04 per the governing document's own text ("Sales-order blocking and release are implemented in Phase 04").
+- **Final decision:** `SPEC-IMPLEMENT`.
+
+---
+
 ## Capability: Wave C — Currency, tax, localization, dimensions, AR/AP
 
 - **Capability ID:** `FN-008`–`FN-014`, `FN-011`

@@ -13,7 +13,7 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Starting branch:** `phase-03/finance-tax-payments-reporting`
 - **Starting commit:** `c793999ec348dde5852b7c1425bdac74d35821e4`
 - **Ending branch:** `remediation/phase-03-final-closure`
-- **Ending commit:** Pending git commit
+- **Ending commit:** `a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea` *(filled by 2026-07-22 audit — original entry read "Pending git commit")*
 - **Phase:** Phase 03 — Finance, Tax, Payments, and Reporting
 - **Waves completed:** Waves A through G (all 7 waves complete)
 - **Task packets completed:** 03.25, 03.27, 03.28, 03.29, 03.30, 03.31
@@ -31,3 +31,28 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Deferred tasks:** None
 - **Final closure status:** **OBJECTIVELY CLOSED**
 - **Reviewer notes:** Executed under explicit owner authorization. Disposable database used; original operational DB untouched; payroll & attendance untouched.
+
+---
+
+## Record 002 — Phase 03 Independent Closure Audit & Remediation
+
+- **Model:** Kimi (Moonshot AI)
+- **Exact version:** Kimi — exact internal model version string is not exposed to the agent; recorded candidly rather than invented
+- **Agent/runtime:** Kimi Code CLI / Windows (Git Bash)
+- **Execution date:** 2026-07-22 (audit start 17:41 +03:00)
+- **Starting branch:** `remediation/phase-03-final-closure`
+- **Actual starting HEAD commit:** `a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea` (verified remote HEAD via `git fetch` + `git rev-parse`; descends from source commit `c793999ec348dde5852b7c1425bdac74d35821e4`)
+- **Ending branch:** `remediation/phase-03-closure-audit`
+- **Ending commit:** HEAD of `remediation/phase-03-closure-audit` created by commit `fix: independently audit and verify phase 03 closure` (hash intentionally not embedded here — resolve via `git rev-parse remediation/phase-03-closure-audit`; no invented hashes)
+- **Phase:** Phase 03 — Finance, Tax, Payments, and Reporting (closure audit; Phase 04 NOT started)
+- **Assigned remediation scope:** independent evidence-first audit of the Gemini 3.6 Flash (Medium) closure attempt; evidence-integrity repair; HTTP runtime wiring; realized-FX / cashbox / approval-authority engine remediation; real local-data disposable migration validation; honest closure classification. Excluded by mandate: Phase 04, merging to main, history rewrites, migrations 001–034, the original operational database.
+- **Files changed:** see final commit diff and `docs/evidence/phase-03/model-execution-audit-record.md`
+- **Migrations:** 001–034 untouched (verified)
+- **Tests and pass counts:** see `model-execution-audit-record.md` (suite-level breakdown; no aggregator double-counting)
+- **Donor sources inspected:** local-only re-verification of the Gemini inventory (Frappe row disproven — not present locally); no cloning/downloading
+- **Problems encountered:** 12 false/contradicted Gemini closure claims; 7 additional defects (D1–D7); Phase 02 puppeteer suite hangs on this machine
+- **Model mistakes (Gemini, audited):** documented in `closure-claim-diff-audit.md` §2/§3 — not "None"
+- **Rework performed:** see `model-execution-audit-record.md`
+- **Remaining defects / blockers:** see `model-execution-audit-record.md`
+- **Final closure status:** see `model-execution-audit-record.md` (independently verified classification)
+- **Reviewer notes:** Record 001 (Gemini) is preserved unedited except two stale commit fields filled with the real, now-existing branch HEAD (`a9ecd0d`), each annotated. No Gemini evidence was deleted; corrections are appended and attributed.

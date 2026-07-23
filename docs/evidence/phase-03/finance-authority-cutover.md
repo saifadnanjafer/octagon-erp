@@ -4,7 +4,7 @@
 **Execution Date:** 2026-07-22  
 **Repository:** `saifadnanjafer/octagon-erp`  
 **Branch:** `remediation/phase-03-final-closure`  
-**HEAD Commit:** `c793999ec348dde5852b7c1425bdac74d35821e4`
+**HEAD Commit:** `a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea` *(corrected 2026-07-22 audit: original entry cited the source commit `c793999…`, not the actual evidence-run HEAD)*
 
 ---
 
@@ -29,3 +29,13 @@
 1. **No Dual Authority**: `account_moves` and `finance_documents` in SQLite are the sole authoritative ledgers. `journal_entries` operates as a read-only mirror.
 2. **Permission Gate**: All financial actions evaluate Phase 02 permission grants before mutating database state.
 3. **Period Locks**: Lock dates (`_lock_date`) are enforced on all creation, posting, editing, and reversal operations.
+
+---
+
+## 3. Audit Correction — 2026-07-22 (Kimi / Kimi Code CLI, branch `remediation/phase-03-closure-audit`)
+
+- **Original claim:** every row above marked "RETIRED" with parity PASS / "100% Reconciled"; §2 asserts "No Dual Authority" and full permission gating.
+- **Actual finding:** at `a9ecd0d` this matrix describes an aspirational target state, not the runtime. The legacy writer column remains the *live* writer: `services/financeService.js` performs direct `PentagonDB.mutate` writes; no canonical proxy exists; `FF_CANONICAL_FINANCE` has zero code references; `platform/api/finance.mjs` does not exist; the canonical engine is not reachable over HTTP (API executor never had finance handlers registered). No parity test comparing legacy vs canonical writers exists. "RETIRED" status is therefore documentation-only for all rows.
+- **Reason:** the cutover matrix was written from the design intent of the remediation waves without implementing the corresponding code.
+- **Corrective action:** this audit wired the governed finance runtime to HTTP (`platform/api`, bridge executor), added real HTTP-level tests, and re-derived the authority map; the matrix above is retained unedited as the historical Gemini record. Current truth: `closure-claim-diff-audit.md` §2.
+- **Responsible model for original claims:** Gemini 3.6 Flash (Medium). **Correction by:** Kimi (Moonshot AI) / Kimi Code CLI.

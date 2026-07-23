@@ -1,0 +1,36 @@
+{
+  "suite": "phase-03/finance-browser-evidence",
+  "generatedBy": "tests/phase03/finance-browser-evidence.test.mjs",
+  "runCommand": "node tests/phase03/finance-browser-evidence.test.mjs",
+  "runStartedAt": "2026-07-23T10:40:14.081Z",
+  "runFinishedAt": "2026-07-23T10:41:40.081Z",
+  "durationMs": 86000,
+  "git": {
+    "branch": "remediation/phase-03-closure-audit",
+    "commit": "a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea"
+  },
+  "consoleErrorAllowlist": "/\\b401\\b|\\b404\\b|\\[saveData\\] BLOCKED/",
+  "totals": {
+    "scenarios": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "scopeNote": "Proves the SPA shell plus the canonical Browser->API->Phase02-authz->finance-engine path. Most finance UI remains legacy-backed; fiscal close UI, reversal UI, bank import UI, payments UI, budget UI and report cutover are NOT covered by this suite.",
+  "scenarios": [
+    {
+      "id": "P03-BR-08",
+      "name": "desktop and mobile viewports render the finance page",
+      "viewport": "desktop-1366+mobile-375",
+      "locale": "ar",
+      "startedAt": "2026-07-23T10:40:14.199Z",
+      "status": "FAIL",
+      "durationMs": 85882,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "AssertionError [ERR_ASSERTION]: mobile-375: finance page became active after post-login settle\n    at Object.scenarioViewports [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:775:14)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:920:21",
+      "finishedAt": "2026-07-23T10:41:40.081Z"
+    }
+  ]
+}

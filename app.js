@@ -13521,6 +13521,13 @@ function saveData(skipAutomation = false) {
           _serverDownWarned = false;
           showToast('✅ تم استعادة الاتصال بالسيرفر — البيانات محفوظة محلياً', 'success');
         }
+      } else if (res.status === 401 || res.status === 403) {
+        // The canonical database endpoint is session-protected. During the
+        // login chooser, do not misreport an expected unauthenticated write as
+        // a dead local server; the authenticated login flow reloads and saves
+        // through the same endpoint after the session is established.
+        _lastFileSaveOk = false;
+        console.debug('[saveData] skipped server persistence until login session is established.');
       } else {
         _lastFileSaveOk = false;
         if (!_serverDownWarned) {
@@ -13582,6 +13589,7 @@ function migrateEmployeePrevAdvanceSignConvention() {
 
 async function loadData() {
   let loadedFromFile = false;
+  let authRequired = false;
 
   try {
     // PRIMARY: Load from local file database.json — the source of truth.
@@ -13593,6 +13601,10 @@ async function loadData() {
     for (let attempt = 0; attempt < 6; attempt++) {
       try { res = await fetch('/api/db'); } catch (e) { res = null; }
       if (res && res.ok) break;
+      if (res && (res.status === 401 || res.status === 403)) {
+        authRequired = true;
+        break;
+      }
       console.warn(`loadData: /api/db attempt ${attempt + 1} failed — retrying (server may still be starting)...`);
       await new Promise(r => setTimeout(r, 400 + attempt * 500));
     }
@@ -13638,9 +13650,13 @@ async function loadData() {
   if (!loadedFromFile) {
     console.warn('⚠️ Using localStorage fallback — data may not be up to date!');
     // Show a persistent warning after a short delay so the UI is ready
-    setTimeout(() => {
-      showToast('⚠️ تحذير: تم تحميل البيانات من ذاكرة المتصفح المؤقتة! شغّل start.ps1 لضمان حفظ البيانات في الملف المحلي', 'error');
-    }, 1500);
+    if (!authRequired) {
+      setTimeout(() => {
+        showToast('⚠️ تحذير: تم تحميل البيانات من ذاكرة المتصفح المؤقتة! شغّل start.ps1 لضمان حفظ البيانات في الملف المحلي', 'error');
+      }, 1500);
+    } else {
+      console.debug('[loadData] server data is waiting for an authenticated session.');
+    }
   }
 
   try {
@@ -16832,10 +16848,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Guard: do NOT save during init if employees is empty. A previous race wrote `employees:[]` over
   // the server on every reload, wiping the workforce. The server now also refuses to wipe, but skip
   // the unnecessary write here too.
-  if (Array.isArray(employees) && employees.length > 0) {
+  if (Array.isArray(employees) && employees.length > 0 && window.__octagonServerSession?.authenticated === true) {
     saveData(true);
   } else {
-    console.warn('[init] skipping startup saveData — employees array is empty (would wipe server).');
+    console.warn('[init] skipping startup saveData — login session is not established or employees array is empty.');
   }
   refreshAuthUserSwitcher();
   checkLoginStatus();

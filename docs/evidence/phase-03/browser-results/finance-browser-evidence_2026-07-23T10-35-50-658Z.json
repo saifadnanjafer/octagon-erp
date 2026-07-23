@@ -1,0 +1,36 @@
+{
+  "suite": "phase-03/finance-browser-evidence",
+  "generatedBy": "tests/phase03/finance-browser-evidence.test.mjs",
+  "runCommand": "node tests/phase03/finance-browser-evidence.test.mjs",
+  "runStartedAt": "2026-07-23T10:35:50.658Z",
+  "runFinishedAt": "2026-07-23T10:36:47.062Z",
+  "durationMs": 56404,
+  "git": {
+    "branch": "remediation/phase-03-closure-audit",
+    "commit": "a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea"
+  },
+  "consoleErrorAllowlist": "/\\b401\\b|\\b404\\b|\\[saveData\\] BLOCKED/",
+  "totals": {
+    "scenarios": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "scopeNote": "Proves the SPA shell plus the canonical Browser->API->Phase02-authz->finance-engine path. Most finance UI remains legacy-backed; fiscal close UI, reversal UI, bank import UI, payments UI, budget UI and report cutover are NOT covered by this suite.",
+  "scenarios": [
+    {
+      "id": "P03-BR-08",
+      "name": "desktop and mobile viewports render the finance page",
+      "viewport": "desktop-1366+mobile-375",
+      "locale": "ar",
+      "startedAt": "2026-07-23T10:35:50.747Z",
+      "status": "FAIL",
+      "durationMs": 56315,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "TimeoutError: Waiting failed: 20000ms exceeded\n    at new WaitTask (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/common/WaitTask.js:46:34)\n    at IsolatedWorld.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Realm.js:49:26)\n    at CdpFrame.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:580:43)\n    at CdpFrame.<anonymous> (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)\n    at CdpPage.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1447:37)\n    at Object.scenarioViewports [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:769:18)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:915:21",
+      "finishedAt": "2026-07-23T10:36:47.062Z"
+    }
+  ]
+}

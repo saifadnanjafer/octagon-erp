@@ -62,6 +62,313 @@
     return 'suspense';
   }
 
+  // ---------------------------------------------------------------------
+  // Canonical finance cutover — FF_CANONICAL_FINANCE (Phase 03 closure).
+  //
+  // When the flag is ON, the mutation methods below (createMove, postMove,
+  // cancelMove, createPayment, createCustomerInvoice, createVendorBill,
+  // postFinanceTransaction) and the readers that have an HTTP counterpart
+  // (getMoves, getMove, getTrialBalance) are proxied to the governed
+  // canonical finance runtime over HTTP:
+  //   mutations: POST /api/v1/action/:actionId  (session cookie, per-action grant)
+  //   reads:     GET  /api/v1/finance/accounts|documents|trial-balance
+  // When the flag is OFF (default) every method takes the original legacy
+  // PentagonDB path, byte-identical to before this block existed.
+  //
+  // Flag resolution (first hit wins):
+  //   1. window.OCTAGON_FEATURE_FLAGS.FF_CANONICAL_FINANCE (boolean)
+  //   2. localStorage 'FF_CANONICAL_FINANCE' = '1' | 'true' | 'on'
+  //   default: OFF.
+  // ---------------------------------------------------------------------
+
+  function canonicalFinanceEnabled() {
+    const flags = root.OCTAGON_FEATURE_FLAGS;
+    if (flags && flags.FF_CANONICAL_FINANCE !== undefined) return !!flags.FF_CANONICAL_FINANCE;
+    try {
+      const value = root.localStorage?.getItem?.('FF_CANONICAL_FINANCE');
+      return value === '1' || value === 'true' || value === 'on';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Legacy chart ids (app.js defaultFinanceState) -> canonical seeded COA codes
+  // (platform/finance/engine.mjs seedChartOfAccounts). Deployments with a
+  // migrated chart can override/extend via
+  // window.OCTAGON_FEATURE_FLAGS.FF_CANONICAL_FINANCE_ACCOUNT_MAP
+  // ({ legacyId -> canonical code or canonical id }).
+  const DEFAULT_LEGACY_TO_CANONICAL_ACCOUNT_CODE = {
+    cash_workshop: '101000',
+    bank_account: '102000',
+    employee_cash_custody: '101000',
+    receivables_customers: '103000',
+    employee_advances: '103000',
+    inventory_stock: '104000',
+    payables_suppliers: '201000',
+    payables_people: '201000',
+    customer_deposits: '201000',
+    vat_payable: '202000',
+    accrued_payroll: '200000',
+    owner_capital: '300000',
+    retained_earnings: '301000',
+    income_sales: '401000',
+    income_projects: '401000',
+    other_income: '400000',
+    cogs_materials: '501000',
+    expense_general: '502000',
+    expense_payroll: '500000',
+    // The canonical seed has no suspense account; map to the assets root and
+    // let deployments override with a real suspense account.
+    suspense: '100000',
+  };
+
+  const LEGACY_TO_CANONICAL_MOVE_TYPE = {
+    entry: 'manual_entry',
+    out_invoice: 'customer_invoice',
+    out_refund: 'customer_credit_note',
+    in_invoice: 'supplier_bill',
+    in_refund: 'supplier_credit_note',
+  };
+  const CANONICAL_TO_LEGACY_MOVE_TYPE = {
+    manual_entry: 'entry', source_post: 'entry', opening_entry: 'entry',
+    cash_receipt: 'entry', cash_payment: 'entry', internal_transfer: 'entry',
+    customer_invoice: 'out_invoice', customer_credit_note: 'out_refund',
+    supplier_bill: 'in_invoice', supplier_credit_note: 'in_refund',
+  };
+  // Canonical lifecycle has submitted/approved states the legacy UI does not
+  // know; from the UI's perspective those are still un-posted drafts.
+  const CANONICAL_TO_LEGACY_STATE = {
+    draft: 'draft', submitted: 'draft', approved: 'draft',
+    posted: 'posted', cancelled: 'cancel', reversed: 'cancel',
+  };
+
+  function canonicalError(message, status, payload) {
+    const err = new Error(message);
+    err.status = status;
+    err.payload = payload;
+    err.canonical = true;
+    return err;
+  }
+
+  async function canonicalFetch(path, { method = 'GET', body } = {}) {
+    if (typeof fetch !== 'function') throw canonicalError('canonical finance API unreachable: no fetch in this environment', 0);
+    const options = { method, credentials: 'same-origin', headers: {} };
+    if (body !== undefined) {
+      options.headers['Content-Type'] = 'application/json';
+      options.body = JSON.stringify(body);
+    }
+    const res = await fetch(path, options);
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload.success === false) {
+      throw canonicalError(payload.error || `canonical finance API error (HTTP ${res.status})`, res.status, payload);
+    }
+    return payload.data;
+  }
+
+  let canonicalIdempotencyCounter = 0;
+  function canonicalAction(actionId, input = {}) {
+    // The action executor requires an idempotency key per command; generate a
+    // unique one per call unless the caller supplies a meaningful one.
+    canonicalIdempotencyCounter += 1;
+    const idempotency_key = input.idempotency_key || `ui-finance-${Date.now()}-${canonicalIdempotencyCounter}`;
+    return canonicalFetch(`/api/v1/action/${actionId}`, { method: 'POST', body: { ...input, idempotency_key } });
+  }
+
+  let canonicalAccountsCache = null;
+  async function canonicalAccounts(forceRefresh = false) {
+    if (!forceRefresh && canonicalAccountsCache) return canonicalAccountsCache;
+    canonicalAccountsCache = await canonicalFetch('/api/v1/finance/accounts');
+    return canonicalAccountsCache;
+  }
+
+  // Map a legacy account id (e.g. 'cash_workshop') to a canonical
+  // finance_accounts id. Resolution order: identity, explicit override map,
+  // built-in default map, legacy account's code against the canonical chart.
+  async function resolveCanonicalAccountId(legacyAccountId, _retried = false) {
+    if (!legacyAccountId) throw canonicalError('canonical finance: account id is required', 0);
+    const accounts = await canonicalAccounts();
+    const direct = accounts.find(a => a.id === legacyAccountId);
+    if (direct) return direct.id;
+    const overrideMap = root.OCTAGON_FEATURE_FLAGS?.FF_CANONICAL_FINANCE_ACCOUNT_MAP || {};
+    const mapped = overrideMap[legacyAccountId] || DEFAULT_LEGACY_TO_CANONICAL_ACCOUNT_CODE[legacyAccountId];
+    if (mapped) {
+      const byMap = accounts.find(a => a.id === mapped || a.code === mapped);
+      if (byMap) return byMap.id;
+    }
+    const legacy = getFinanceAccounts().find(a => a.id === legacyAccountId);
+    if (legacy?.code) {
+      const byCode = accounts.find(a => a.code === legacy.code);
+      if (byCode) return byCode.id;
+    }
+    if (!_retried) {
+      await canonicalAccounts(true); // the chart may have changed since the cache was built
+      return resolveCanonicalAccountId(legacyAccountId, true);
+    }
+    throw canonicalError(`canonical finance: no canonical account mapped for legacy account '${legacyAccountId}'`, 0);
+  }
+
+  // Reverse direction for reads: canonical account id -> legacy id, so adapted
+  // rows line up with the ids the rest of the UI renders.
+  function canonicalToLegacyAccountId(canonicalAccountId) {
+    const accounts = canonicalAccountsCache || [];
+    const acct = accounts.find(a => a.id === canonicalAccountId);
+    if (!acct) return canonicalAccountId;
+    const byCode = getFinanceAccounts().find(a => a.code === acct.code);
+    if (byCode) return byCode.id;
+    for (const [legacyId, code] of Object.entries(DEFAULT_LEGACY_TO_CANONICAL_ACCOUNT_CODE)) {
+      if (code === acct.code) return legacyId;
+    }
+    return canonicalAccountId;
+  }
+
+  // Adapt a canonical finance document (finance_documents + lines) to the
+  // legacy account_move shape app.js consumes.
+  function adaptCanonicalDocument(doc) {
+    const lines = (doc.lines || []).map((line, index) => ({
+      id: line.id,
+      sequence: index,
+      account_id: canonicalToLegacyAccountId(line.account_id),
+      label: line.description || '',
+      debit: Number(line.debit || 0),
+      credit: Number(line.credit || 0),
+      amount_residual: Math.max(Number(line.debit || 0), Number(line.credit || 0)),
+      partner_id: line.partner_id || doc.partner_id || '',
+      department_id: '',
+      reconciled: false,
+      reconcile_id: null,
+    }));
+    return {
+      id: doc.id,
+      name: doc.doc_number || '/',
+      journal_id: doc.journal_id || '',
+      date: doc.doc_date,
+      move_type: CANONICAL_TO_LEGACY_MOVE_TYPE[doc.move_type] || 'entry',
+      state: CANONICAL_TO_LEGACY_STATE[doc.state] || 'draft',
+      partner_id: doc.partner_id || '',
+      origin: doc.source_canonical_key || '',
+      sourceType: doc.source_type || '',
+      sourceId: doc.source_id || '',
+      sourceCanonicalKey: doc.source_canonical_key || '',
+      line_ids: lines,
+      amount_total: lines.reduce((sum, line) => sum + line.debit, 0),
+      hash: null,
+      previous_hash: null,
+      created_at: doc.created_at,
+      posted_at: doc.post_date || null,
+      cancelled_at: null,
+      reversed_of: doc.reversal_of_id || null,
+      reversal_id: doc.reversal_id || null,
+      created_by: doc.created_by || 'system',
+      updated_at: doc.updated_at,
+      updated_by: doc.updated_by || 'system',
+      is_active: true,
+      companyId: doc.company_id || '',
+      _canonical: true,
+      _canonical_state: doc.state,
+      _canonical_move_type: doc.move_type,
+    };
+  }
+
+  // createMove over the canonical runtime. Preserves the legacy create-time
+  // contract (line normalization errors + balance validation throw here, not
+  // at post) before anything is sent to the server.
+  async function canonicalCreateMove(payload = {}) {
+    const moveType = payload.move_type || 'entry';
+    validateMoveType(moveType);
+    const partnerId = payload.partner_id || '';
+    const legacyLines = (payload.line_ids || payload.lines || []).map((line, index) => normalizeLine(line, index, partnerId));
+    const total = FinanceService.validateBalanced(legacyLines);
+    const lines = [];
+    for (const line of legacyLines) {
+      lines.push({
+        account_id: await resolveCanonicalAccountId(line.account_id),
+        debit: line.debit,
+        credit: line.credit,
+        partner_id: line.partner_id || partnerId || undefined,
+        description: line.label || undefined,
+      });
+    }
+    const doc = await canonicalAction('finance_document:create', {
+      move_type: LEGACY_TO_CANONICAL_MOVE_TYPE[moveType],
+      doc_date: payload.date || todayISO(),
+      partner_id: partnerId || undefined,
+      source_canonical_key: payload.sourceCanonicalKey || undefined,
+      source_type: payload.sourceType || undefined,
+      source_id: payload.sourceId || undefined,
+      lines,
+    });
+    const adapted = adaptCanonicalDocument(doc);
+    adapted.move_type = moveType;
+    adapted.origin = payload.origin || '';
+    adapted.name = payload.name || '/';
+    adapted.amount_total = total.debit;
+    if (payload.state === 'posted') return canonicalPostMove(adapted.id);
+    return adapted;
+  }
+
+  // postMove over the canonical runtime: the canonical lifecycle requires
+  // draft -> submitted -> approved -> posted.
+  async function canonicalPostMove(documentId) {
+    await canonicalAction('finance_document:submit', { document_id: documentId });
+    await canonicalAction('finance_document:approve', { document_id: documentId });
+    await canonicalAction('finance_document:post', { document_id: documentId });
+    const doc = await canonicalFetch(`/api/v1/finance/documents/${encodeURIComponent(documentId)}`);
+    return adaptCanonicalDocument(doc);
+  }
+
+  // createPayment over the canonical runtime. Canonical payments are their own
+  // entity (finance_payments) wrapping a cash_receipt/cash_payment document;
+  // posting the payment runs the full document lifecycle server-side.
+  async function canonicalCreatePayment({ payload, amount, paymentType, partnerType, partnerId, date, cashAccount, destinationAccount }) {
+    const created = await canonicalAction('finance_payment:create', {
+      idempotency_key: payload.id || payload.origin || makeId('PAYMENT'),
+      payment_type: paymentType === 'inbound' ? 'receive' : 'pay',
+      method: payload.method || 'cash',
+      amount,
+      payment_date: date,
+      cash_or_bank_account_id: await resolveCanonicalAccountId(cashAccount),
+      counter_account_id: await resolveCanonicalAccountId(destinationAccount),
+      partner_id: partnerId || undefined,
+      reference: payload.memo || undefined,
+    });
+    await canonicalAction('finance_payment:post', { payment_id: created.id });
+    const doc = await canonicalFetch(`/api/v1/finance/documents/${encodeURIComponent(created.document_id)}`);
+    const move = adaptCanonicalDocument(doc);
+    const payment = {
+      id: created.id,
+      name: move.name,
+      date,
+      amount,
+      payment_type: paymentType,
+      partner_type: partnerType,
+      partner_id: partnerId,
+      journal_id: payload.journal_id || 'j_bank',
+      move_id: move.id,
+      destination_account_id: destinationAccount,
+      cash_account_id: cashAccount,
+      memo: payload.memo || '',
+      state: 'posted',
+      is_reconciled: false,
+      created_at: doc.created_at || now(),
+      created_by: root.PentagonAuth?.getCurrentUser?.()?.id || 'system',
+      is_active: true,
+      companyId: doc.company_id || '',
+      _canonical: true,
+    };
+    if (payload.reconcile_with?.move_id) {
+      // Canonical settlement: allocate the posted payment against the open
+      // document (finance_payment:allocate). The legacy line_id is not needed
+      // — canonical allocations target whole documents.
+      await canonicalAction('finance_payment:allocate', {
+        payment_id: created.id,
+        document_id: payload.reconcile_with.move_id,
+        amount: Math.min(amount, Number(payload.reconcile_with.amount || amount)),
+      });
+      payment.is_reconciled = true;
+    }
+    return { payment, move, backup: null };
+  }
+
   function money(value) {
     const n = Number(value || 0);
     return Number.isFinite(n) ? Math.round(n) : 0;
@@ -454,6 +761,11 @@
     },
 
     getAccounts(filters = {}) {
+      // NOT-CUT-OVER: this method is synchronous and app.js relies on that;
+      // the canonical account list is only available over async HTTP
+      // (GET /api/v1/finance/accounts), so the legacy chart stays the
+      // synchronous source. Async consumers get canonical accounts
+      // indirectly through the proxied readers below.
       let list = getFinanceAccounts();
       if (filters.type) list = list.filter(a => a.type === filters.type);
       if (filters.is_active !== undefined) list = list.filter(a => a.is_active !== false);
@@ -485,6 +797,40 @@
           sourceCanonicalKey,
           line_ids: lines,
         };
+      }
+      if (canonicalFinanceEnabled()) {
+        // Repeat-call idempotency: the local finance.transactions row remembers
+        // the canonical document it produced (the canonical engine also rejects
+        // duplicate source_canonical_key with DUPLICATE_SOURCE_REFERENCE).
+        if (tx.accountMoveId) {
+          try {
+            const existingDoc = await canonicalFetch(`/api/v1/finance/documents/${encodeURIComponent(tx.accountMoveId)}`);
+            return adaptCanonicalDocument(existingDoc);
+          } catch (_) { /* fall through and (re)post */ }
+        }
+        const canonicalDraft = await canonicalCreateMove({
+          move_type: 'entry',
+          date: tx.date || todayISO(),
+          partner_id: tx.customerId || tx.partyName || tx.paidByName || '',
+          sourceCanonicalKey,
+          sourceType: tx.sourceType || 'finance.transactions',
+          sourceId: tx.sourceId || tx.id || '',
+          line_ids: buildMoveLinesFromTransaction(tx),
+        });
+        const canonicalPosted = await canonicalPostMove(canonicalDraft.id);
+        // Local bookkeeping only (posting status on the UI-side transaction
+        // row) — the ledger write happened canonically above.
+        await root.PentagonDB.mutate(mdb => {
+          const saved = (mdb.finance?.transactions || []).find(item => item.id === tx.id);
+          if (saved) {
+            saved.accountMoveId = canonicalPosted.id;
+            saved.v6_move_id = canonicalPosted.id;
+            saved.postingStatus = 'posted';
+            saved.postedAt = canonicalPosted.posted_at || now();
+            saved.sourceCanonicalKey = sourceCanonicalKey;
+          }
+        });
+        return canonicalPosted;
       }
       // Server-backed lock (Production Hardening Final Lock Sprint,
       // 2026-07-04): withOperationLock (defined in app.js) acquires a real
@@ -561,6 +907,24 @@
 
     async getMoves(options = {}) {
       root.PermissionService.require('account_moves', 'read');
+      if (canonicalFinanceEnabled()) {
+        // Canonical read surface. LIMIT: the list route caps at 500 documents
+        // and returns no lines, so each document is re-fetched for its lines
+        // (N+1 — acceptable behind the experimental flag; a paged/lines-in-list
+        // route is the follow-up).
+        const summaries = await canonicalFetch('/api/v1/finance/documents?limit=500');
+        let moves = [];
+        for (const summary of summaries) {
+          const full = await canonicalFetch(`/api/v1/finance/documents/${encodeURIComponent(summary.id)}`);
+          moves.push(adaptCanonicalDocument(full));
+        }
+        if (options.state) moves = moves.filter(move => move.state === options.state);
+        if (options.move_type) moves = moves.filter(move => move.move_type === options.move_type);
+        if (options.dateFrom) moves = moves.filter(move => move.date >= options.dateFrom);
+        if (options.dateTo) moves = moves.filter(move => move.date <= options.dateTo);
+        if (options.journal_id) moves = moves.filter(move => move.journal_id === options.journal_id);
+        return moves.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.name || '').localeCompare(String(a.name || '')));
+      }
       const db = await root.PentagonDB.load();
       let moves = getMoves(db).filter(move => move.is_active !== false);
       moves = tenantScope('account_moves', moves, { db, includeGlobal: options.includeGlobal !== false });
@@ -574,6 +938,15 @@
 
     async getMove(moveId) {
       root.PermissionService.require('account_moves', 'read');
+      if (canonicalFinanceEnabled()) {
+        try {
+          const doc = await canonicalFetch(`/api/v1/finance/documents/${encodeURIComponent(moveId)}`);
+          return adaptCanonicalDocument(doc);
+        } catch (error) {
+          if (error.status === 404) return null; // legacy contract: unknown id -> null
+          throw error;
+        }
+      }
       const db = await root.PentagonDB.load();
       const move = findMove(db, moveId);
       if (move && !tenantCanRead('account_moves', move, { db })) return null;
@@ -582,6 +955,9 @@
 
     async createMove(payload = {}) {
       root.PermissionService.require('account_moves', 'create');
+      if (canonicalFinanceEnabled()) {
+        return canonicalCreateMove(payload);
+      }
       await backupBeforeLiveFinanceMutation(payload.skip_backup ? false : (payload.backup_tag || 'pre_account_move'));
       let created;
       await root.PentagonDB.mutate(db => {
@@ -599,6 +975,10 @@
     },
 
     async updateMove(moveId, changes = {}) {
+      // NOT-CUT-OVER: the canonical runtime has no draft-update action.
+      // finance_document:amend only works on posted/reversed documents and
+      // creates a NEW document, which would change the move id and break
+      // app.js's draft edit-in-place flows. Stays on the legacy path.
       root.PermissionService.require('account_moves', 'update');
       await backupBeforeLiveFinanceMutation(changes.skip_backup ? false : (changes.backup_tag || 'pre_account_move_update'));
       let updated;
@@ -634,6 +1014,9 @@
 
     async postMove(moveId, options = {}) {
       root.PermissionService.require('account_moves', 'update');
+      if (canonicalFinanceEnabled()) {
+        return canonicalPostMove(moveId);
+      }
       await backupBeforeLiveFinanceMutation(options.skip_backup ? false : (options.backup_tag || 'pre_account_move_post'));
       let posted;
       await root.PentagonDB.mutate(db => {
@@ -660,6 +1043,18 @@
 
     async cancelMove(moveId, options = {}) {
       root.PermissionService.require('account_moves', 'update');
+      if (canonicalFinanceEnabled()) {
+        // Canonical reversal: creates + posts a mirrored reversal document and
+        // marks the original 'reversed' (legacy UI calls that state 'cancel').
+        const result = await canonicalAction('finance_document:reverse', {
+          document_id: moveId,
+          reason: options.reason || undefined,
+        });
+        const cancelled = adaptCanonicalDocument(result.original);
+        cancelled.state = 'cancel';
+        cancelled.cancelled_at = cancelled.updated_at;
+        return { cancelled, reversal: adaptCanonicalDocument(result.reversal) };
+      }
       await backupBeforeLiveFinanceMutation(options.skip_backup ? false : (options.backup_tag || 'pre_account_move_cancel'));
       const original = await this.getMove(moveId);
       if (!original) throw new Error('القيد غير موجود');
@@ -708,6 +1103,10 @@
     },
 
     async unpostMove(moveId, options = {}) {
+      // NOT-CUT-OVER: canonical posted documents are immutable — the governed
+      // runtime offers reversal (finance_document:reverse), never
+      // posted->draft. There is no canonical counterpart for unpost. Stays
+      // on the legacy path.
       root.PermissionService.require('account_moves', 'update');
       await backupBeforeLiveFinanceMutation(options.skip_backup ? false : (options.backup_tag || 'pre_account_move_unpost'));
       let draft;
@@ -731,6 +1130,10 @@
     },
 
     async setLockDate(lockDate) {
+      // NOT-CUT-OVER: the canonical engine has setLockDate (finance_locks) but
+      // no HTTP action is registered for it, and the registered period actions
+      // (finance_period:soft_close/hard_close) close whole periods rather than
+      // setting a date threshold. Stays on the legacy path.
       root.PermissionService.require('account_moves', 'update');
       await root.PentagonDB.mutate(db => { db._lock_date = lockDate || ''; });
       await root.AuditService.createEvent('account_moves.lock_date', 'database', { lock_date: lockDate || '' });
@@ -800,6 +1203,11 @@
     },
 
     async reconcileLines(payload = {}) {
+      // NOT-CUT-OVER: legacy line<->line partial matching has no canonical
+      // counterpart. finance_payment:allocate settles a posted payment against
+      // a whole document (used by createPayment's reconcile_with), and the
+      // finance_reconciliation:* actions are bank-statement sessions — neither
+      // matches two arbitrary posted move lines. Stays on the legacy path.
       root.PermissionService.require('account_moves', 'update');
       await backupBeforeLiveFinanceMutation(payload.skip_backup ? false : (payload.backup_tag || 'pre_account_reconcile'));
       let partial;
@@ -853,6 +1261,9 @@
       const date = payload.date || todayISO();
       const cashAccount = resolveAccount(payload.cash_account_id || 'cash_workshop');
       const destinationAccount = resolveAccount(payload.destination_account_id || (paymentType === 'inbound' ? 'receivables_customers' : 'payables_people'));
+      if (canonicalFinanceEnabled()) {
+        return canonicalCreatePayment({ payload, amount, paymentType, partnerType, partnerId, date, cashAccount, destinationAccount });
+      }
       const backup = await backupBeforeLiveFinanceMutation(payload.skip_backup ? false : (payload.backup_tag || 'pre_payment'));
       const lines = paymentType === 'inbound'
         ? [
@@ -934,6 +1345,27 @@
       const partnerId = payload.partner_id || '';
       const memo = payload.memo || 'فاتورة عميل';
       const incomeAccount = resolveAccount(payload.income_account_id || 'income_sales');
+      if (canonicalFinanceEnabled()) {
+        // Same posting logic as legacy, but createMove/postMove are proxied to
+        // the canonical runtime. No local backup file: canonical writes are
+        // server-side and transactional (backup: null).
+        const draft = await this.createMove({
+          journal_id: payload.journal_id || 'j_sale',
+          move_type: 'out_invoice',
+          date,
+          partner_id: partnerId,
+          origin: payload.origin,
+          line_ids: [
+            { account_id: resolveAccount('receivables_customers'), debit: amount, credit: 0, label: memo, partner_id: partnerId },
+            { account_id: incomeAccount, debit: 0, credit: amount, label: memo, partner_id: partnerId },
+          ],
+          companyId: payload.companyId,
+          skip_backup: true,
+        });
+        if (payload.post === false) return { move: draft, backup: null };
+        const posted = await this.postMove(draft.id, { skip_backup: true });
+        return { move: posted, backup: null };
+      }
       const backup = await backupBeforeLiveFinanceMutation(payload.skip_backup ? false : (payload.backup_tag || 'pre_customer_invoice'));
       const draft = await this.createMove({
         journal_id: payload.journal_id || 'j_sale',
@@ -961,6 +1393,26 @@
       const partnerId = payload.partner_id || '';
       const memo = payload.memo || 'فاتورة مورد';
       const expenseAccount = resolveAccount(payload.expense_account_id || 'expense_general');
+      if (canonicalFinanceEnabled()) {
+        // Same posting logic as legacy, but createMove/postMove are proxied to
+        // the canonical runtime (backup: null — server-side transactional).
+        const draft = await this.createMove({
+          journal_id: payload.journal_id || 'j_purc',
+          move_type: 'in_invoice',
+          date,
+          partner_id: partnerId,
+          origin: payload.origin,
+          line_ids: [
+            { account_id: expenseAccount, debit: amount, credit: 0, label: memo, partner_id: partnerId },
+            { account_id: resolveAccount('payables_people'), debit: 0, credit: amount, label: memo, partner_id: partnerId },
+          ],
+          companyId: payload.companyId,
+          skip_backup: true,
+        });
+        if (payload.post === false) return { move: draft, backup: null };
+        const posted = await this.postMove(draft.id, { skip_backup: true });
+        return { move: posted, backup: null };
+      }
       const backup = await backupBeforeLiveFinanceMutation(payload.skip_backup ? false : (payload.backup_tag || 'pre_vendor_bill'));
       const draft = await this.createMove({
         journal_id: payload.journal_id || 'j_purc',
@@ -1068,6 +1520,26 @@
     },
 
     async getTrialBalance(options = {}) {
+      if (canonicalFinanceEnabled() && !options.journal_id) {
+        // Canonical read surface: GET /api/v1/finance/trial-balance.
+        // (journal_id filtering has no canonical query counterpart — that
+        // combination falls through to the legacy path below.)
+        const params = new URLSearchParams();
+        if (options.dateFrom) params.set('start_date', options.dateFrom);
+        if (options.dateTo) params.set('end_date', options.dateTo);
+        const suffix = params.toString() ? `?${params.toString()}` : '';
+        const rows = await canonicalFetch(`/api/v1/finance/trial-balance${suffix}`);
+        return rows.map(row => ({
+          account_id: canonicalToLegacyAccountId(row.account_id),
+          code: row.code || '?',
+          name: row.name || row.account_id,
+          type: row.type || 'asset',
+          normal_side: row.normal_balance || 'debit',
+          total_debit: Number(row.total_debit || 0),
+          total_credit: Number(row.total_credit || 0),
+          balance: Number(row.total_debit || 0) - Number(row.total_credit || 0),
+        })).sort((a, b) => String(a.code).localeCompare(String(b.code)));
+      }
       const db = await root.PentagonDB.load();
       const accounts = getFinanceAccounts();
       let moves = getMoves(db).filter(move => move.state === 'posted');
@@ -1104,6 +1576,9 @@
     },
 
     async getLedger(accountId, options = {}) {
+      // NOT-CUT-OVER: no canonical HTTP query route for the general ledger
+      // (engine.getGeneralLedger exists but is not exposed over HTTP). Stays
+      // on the legacy path.
       const db = await root.PentagonDB.load();
       const accounts = getFinanceAccounts();
       const acct = accounts.find(a => a.id === accountId);
@@ -1166,6 +1641,10 @@
     },
 
     async getPartnerLedger(partnerId, options = {}) {
+      // NOT-CUT-OVER: no canonical HTTP query route for a combined partner
+      // ledger (open items + posted line totals + aging). The canonical
+      // finance_ar/ap:open_items actions have a different shape and are not
+      // GET routes. Stays on the legacy path.
       const db = await root.PentagonDB.load();
       const openItems = await this.getOpenPartnerItems({ partner_id: partnerId });
       

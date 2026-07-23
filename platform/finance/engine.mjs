@@ -177,6 +177,23 @@ export function getDocument(dialect, companyId, docId) {
   return { ...doc, lines };
 }
 
+export function listAccounts(dialect, ctx) {
+  const { companyId } = context(ctx);
+  return dialect.prepare(`
+    SELECT id, code, name, name_ar, type, parent_id, normal_balance, is_active
+    FROM finance_accounts WHERE company_id = ? ORDER BY code
+  `).all(companyId);
+}
+
+export function listDocuments(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const limit = Math.min(Math.max(parseInt(options.limit, 10) || 100, 1), 500);
+  return dialect.prepare(`
+    SELECT id, doc_number, move_type, partner_id, doc_date, post_date, currency, state, created_by
+    FROM finance_documents WHERE company_id = ? ORDER BY doc_date DESC, id DESC LIMIT ?
+  `).all(companyId, limit);
+}
+
 export function createDocument(dialect, ctx, input) {
   const { companyId, userId, now } = context(ctx);
   const docId = input.id || `findoc_${crypto.randomUUID()}`;
@@ -300,6 +317,7 @@ export function postDocument(dialect, ctx, input) {
 
   checkPeriodAndLock(dialect, companyId, doc.doc_date);
   const { totalDebit, totalCredit } = validateDocumentBalanced(dialect, docId);
+  enforceApprovalAuthority(dialect, ctx, { limitType: 'post', amount: totalDebit });
 
   const { formatted: entryNumber } = nextSeq(dialect, {
     scopeKey: `finance_documents:${doc.move_type}`,
@@ -764,6 +782,35 @@ export function computeRealizedFx({ settledForeignAmount, originalRate, settleme
   const settledLocal = round2(Number(settledForeignAmount) * Number(settlementRate));
   const delta = round2(settledLocal - bookedLocal);
   return { bookedLocal, settledLocal, delta, direction: delta > 0 ? 'gain' : delta < 0 ? 'loss' : 'none' };
+}
+
+// ---------------------------------------------------------------------------
+// Finance policy knobs (Phase 03 closure audit)
+//
+// Server-side persisted configuration, stored in the Phase 02 settings value
+// store (migration 008 settings_values) and read directly through the dialect
+// so the engine never trusts caller-supplied policy flags. A key that has no
+// stored value falls back to the legacy default noted at each reader.
+// ---------------------------------------------------------------------------
+export const FINANCE_SETTINGS = Object.freeze({
+  approvalFailClosed: 'finance.approval_authority.fail_closed',
+  fxGainAccount: 'finance.fx_gain_account_id',
+  fxLossAccount: 'finance.fx_loss_account_id',
+});
+
+function readFinanceSetting(dialect, companyId, key) {
+  const hasTable = dialect.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'settings_values'").get();
+  if (!hasTable) return null;
+  const row = dialect.prepare("SELECT value FROM settings_values WHERE key = ? AND scope = 'company' AND scope_id = ?").get(key, companyId)
+    || dialect.prepare("SELECT value FROM settings_values WHERE key = ? AND scope = 'system' AND scope_id = ''").get(key);
+  return row ? row.value : null;
+}
+
+// Default false: without an explicit persisted policy the legacy fail-open
+// behavior is preserved; the runtime bridge wires the fail-closed default.
+export function isApprovalAuthorityFailClosed(dialect, companyId) {
+  const raw = readFinanceSetting(dialect, companyId, FINANCE_SETTINGS.approvalFailClosed);
+  return raw === 'true' || raw === '1';
 }
 
 export function revalueForeignBalances(dialect, ctx, input) {
@@ -1358,8 +1405,14 @@ export function checkApprovalAuthority(dialect, ctx, input) {
   const limit = dialect.prepare(`
     SELECT max_amount FROM finance_approval_authority_limits WHERE company_id = ? AND role_or_user = ? AND limit_type = ?
   `).get(companyId, input.role_or_user, input.limit_type);
+  // The fail-closed policy is server-side persisted configuration; an explicit
+  // input flag is honored only for direct administrative checks, while the
+  // governed posting paths always resolve it from storage (see below).
+  const failClosed = input.fail_closed !== undefined && input.fail_closed !== null
+    ? Boolean(input.fail_closed)
+    : isApprovalAuthorityFailClosed(dialect, companyId);
   if (!limit) {
-    if (input.fail_closed) throw new FinanceError(`no approval authority limit configured for ${input.role_or_user}`, 'AUTHORITY_LIMIT_MISSING');
+    if (failClosed) throw new FinanceError(`no approval authority limit configured for ${input.role_or_user}`, 'AUTHORITY_LIMIT_MISSING');
     return { allowed: true, limit: null };
   }
   const allowed = Number(input.amount) <= Number(limit.max_amount) + 0.0001;
@@ -1367,9 +1420,33 @@ export function checkApprovalAuthority(dialect, ctx, input) {
   return { allowed: true, limit: limit.max_amount };
 }
 
+// Governed posting paths call this so that, once a company opts into the
+// fail-closed policy, nothing posts without a configured authority limit for
+// the acting user. When the policy is not enabled this is a no-op, preserving
+// the legacy default for deployments that have not configured the policy.
+function enforceApprovalAuthority(dialect, ctx, { limitType, amount }) {
+  const { companyId, userId } = context(ctx);
+  if (!isApprovalAuthorityFailClosed(dialect, companyId)) return;
+  checkApprovalAuthority(dialect, ctx, { role_or_user: userId, limit_type: limitType, amount, fail_closed: true });
+}
+
 // ---------------------------------------------------------------------------
 // Wave D — Payment documents and methods (Packet 03.15)
 // ---------------------------------------------------------------------------
+
+// Cashbox max_balance enforcement (Wave E remediation). Checked both when the
+// payment is created (early rejection) and again when it is posted: draft
+// payments have no journal lines yet, so only the posting-time check — inside
+// the executor's BEGIN IMMEDIATE transaction — closes the concurrency bypass.
+function assertCashboxMaxBalance(dialect, companyId, accountId, incomingLocal) {
+  const cbox = dialect.prepare('SELECT max_balance FROM finance_cashboxes WHERE company_id = ? AND gl_account_id = ? AND max_balance IS NOT NULL').get(companyId, accountId);
+  if (!cbox || cbox.max_balance === null) return;
+  const curBalRow = dialect.prepare('SELECT COALESCE(SUM(debit - credit), 0) AS balance FROM finance_journal_lines WHERE account_id = ?').get(accountId);
+  const curBal = Number(curBalRow?.balance || 0);
+  if (curBal + incomingLocal > Number(cbox.max_balance) + 0.0001) {
+    throw new FinanceError(`payment exceeds cashbox maximum balance limit of ${cbox.max_balance}`, 'CASHBOX_MAX_BALANCE_EXCEEDED');
+  }
+}
 
 export function createPayment(dialect, ctx, input) {
   const { companyId, userId, now } = context(ctx);
@@ -1396,14 +1473,7 @@ export function createPayment(dialect, ctx, input) {
 
   // Cashbox max_balance enforcement (Wave E remediation)
   if (method === 'cash' && paymentType === 'receive') {
-    const cbox = dialect.prepare('SELECT max_balance FROM finance_cashboxes WHERE company_id = ? AND gl_account_id = ? AND max_balance IS NOT NULL').get(companyId, input.cash_or_bank_account_id);
-    if (cbox && cbox.max_balance !== null) {
-      const curBalRow = dialect.prepare('SELECT COALESCE(SUM(debit - credit), 0) AS balance FROM finance_journal_lines WHERE account_id = ?').get(input.cash_or_bank_account_id);
-      const curBal = Number(curBalRow?.balance || 0);
-      if (curBal + (amount * fxRate) > Number(cbox.max_balance) + 0.0001) {
-        throw new FinanceError(`payment exceeds cashbox maximum balance limit of ${cbox.max_balance}`, 'CASHBOX_MAX_BALANCE_EXCEEDED');
-      }
-    }
+    assertCashboxMaxBalance(dialect, companyId, input.cash_or_bank_account_id, round2(amount * fxRate));
   }
 
   const paymentDate = input.payment_date || now.slice(0, 10);
@@ -1454,6 +1524,10 @@ export function postPayment(dialect, ctx, input) {
   const payment = dialect.prepare('SELECT * FROM finance_payments WHERE id = ? AND company_id = ?').get(input.payment_id, companyId);
   if (!payment) throw new FinanceError('payment not found', 'PAYMENT_NOT_FOUND');
   if (payment.status !== 'draft') throw new FinanceError('only a draft payment can be posted', 'PAYMENT_STATE_INVALID');
+  enforceApprovalAuthority(dialect, ctx, { limitType: 'payment', amount: round2(Number(payment.amount) * Number(payment.fx_rate || 1)) });
+  if (payment.method === 'cash' && payment.payment_type === 'receive') {
+    assertCashboxMaxBalance(dialect, companyId, payment.cash_or_bank_account_id, round2(Number(payment.amount) * Number(payment.fx_rate || 1)));
+  }
   submitDocument(dialect, ctx, { document_id: payment.document_id });
   approveDocument(dialect, ctx, { document_id: payment.document_id });
   postDocument(dialect, ctx, { document_id: payment.document_id });
@@ -1478,6 +1552,75 @@ export function reversePaymentAction(dialect, ctx, input) {
 // Wave D — Allocation, advances, refunds, write-offs (Packet 03.16)
 // ---------------------------------------------------------------------------
 
+// Realized FX on settlement (Phase 03 closure audit): when a foreign-currency
+// payment settles an open item that was booked at a different rate, the delta
+// between the booked local amount and the settled local amount is a realized
+// gain/loss. It is computed from stored payment/document data — never from
+// caller input — and posted as a balanced journal document linked to the
+// allocation, atomically within the caller's (executor) transaction.
+function postRealizedFxSettlement(dialect, ctx, { payment, documentId, amount, allocationId, input }) {
+  const none = { fxDifference: 0, documentId: null };
+  const { companyId } = context(ctx);
+  if (payment.payment_type === 'transfer') return none;
+  if (!payment.currency || payment.currency === 'IQD') return none;
+  const doc = getDocument(dialect, companyId, documentId);
+  if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
+  if (doc.currency !== payment.currency) return none;
+
+  // The document's booked rate is recovered from its posted control-account
+  // line (receivable/payable), the same line the payment settled against.
+  const controlLine = dialect.prepare(`
+    SELECT l.account_id, l.debit, l.credit, l.currency_debit, l.currency_credit
+    FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.document_id = ? AND a.type IN ('receivable','payable') LIMIT 1
+  `).get(documentId);
+  if (!controlLine) return none;
+  const bookedForeign = Number(controlLine.currency_debit || 0) + Number(controlLine.currency_credit || 0);
+  if (!(bookedForeign > 0)) return none;
+  const bookedLocal = Number(controlLine.debit || 0) + Number(controlLine.credit || 0);
+  const originalRate = bookedLocal / bookedForeign;
+  const settlementRate = Number(payment.fx_rate || 0);
+  if (!(settlementRate > 0)) return none;
+
+  const realized = computeRealizedFx({ settledForeignAmount: amount, originalRate, settlementRate });
+  if (realized.direction === 'none' || Math.abs(realized.delta) < 0.005) return none;
+
+  // For a receivable, settling at a higher rate is a gain; for a payable the
+  // direction flips. The control account is adjusted against the FX account.
+  const isGain = payment.payment_type === 'receive' ? realized.delta > 0 : realized.delta < 0;
+  const accountId = isGain
+    ? (input.fx_gain_account_id || readFinanceSetting(dialect, companyId, FINANCE_SETTINGS.fxGainAccount))
+    : (input.fx_loss_account_id || readFinanceSetting(dialect, companyId, FINANCE_SETTINGS.fxLossAccount));
+  if (!accountId) {
+    const key = isGain ? FINANCE_SETTINGS.fxGainAccount : FINANCE_SETTINGS.fxLossAccount;
+    throw new FinanceError(`realized FX ${isGain ? 'gain' : 'loss'} account is not configured (set ${key} or pass fx_${isGain ? 'gain' : 'loss'}_account_id)`, 'FX_ACCOUNT_NOT_CONFIGURED');
+  }
+  assertCompanyMatch(dialect, 'finance_accounts', accountId, companyId);
+
+  const absDelta = Math.abs(realized.delta);
+  const lines = isGain
+    ? [
+      { account_id: controlLine.account_id, debit: absDelta, credit: 0, description: 'Realized FX gain on settlement' },
+      { account_id: accountId, debit: 0, credit: absDelta, description: 'Realized FX gain on settlement' },
+    ]
+    : [
+      { account_id: accountId, debit: absDelta, credit: 0, description: 'Realized FX loss on settlement' },
+      { account_id: controlLine.account_id, debit: 0, credit: absDelta, description: 'Realized FX loss on settlement' },
+    ];
+  const fxDoc = createDocument(dialect, ctx, {
+    move_type: 'fx_revaluation',
+    doc_date: input.fx_doc_date || payment.payment_date || undefined,
+    partner_id: doc.partner_id || payment.partner_id || null,
+    source_type: 'realized_fx_allocation',
+    source_id: allocationId,
+    lines,
+  });
+  submitDocument(dialect, ctx, { document_id: fxDoc.id });
+  approveDocument(dialect, ctx, { document_id: fxDoc.id });
+  const posted = postDocument(dialect, ctx, { document_id: fxDoc.id });
+  return { fxDifference: realized.delta, documentId: posted.id };
+}
+
 export function allocatePayment(dialect, ctx, input) {
   const { companyId, userId, now } = context(ctx);
   const payment = dialect.prepare('SELECT * FROM finance_payments WHERE id = ? AND company_id = ?').get(input.payment_id, companyId);
@@ -1496,11 +1639,21 @@ export function allocatePayment(dialect, ctx, input) {
   if (result.changes === 0) throw new FinanceError('allocation exceeds unallocated payment amount', 'ALLOCATION_EXCEEDS_PAYMENT');
 
   const id = `finpalloc_${crypto.randomUUID()}`;
+  // Caller-supplied fx_difference remains as an explicit override; by default
+  // the realized FX difference is computed from stored rates and posted as a
+  // balanced gain/loss journal in the same operation.
+  let fxDifference = Number(input.fx_difference || 0);
+  let fxDocumentId = null;
+  if (input.fx_difference === undefined || input.fx_difference === null) {
+    const realized = postRealizedFxSettlement(dialect, ctx, { payment, documentId: input.document_id, amount, allocationId: id, input });
+    fxDifference = realized.fxDifference;
+    fxDocumentId = realized.documentId;
+  }
   dialect.prepare(`
     INSERT INTO finance_payment_allocations (id, company_id, payment_id, document_id, amount, currency, fx_difference, created_at, created_by)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(id, companyId, input.payment_id, input.document_id, amount, payment.currency, Number(input.fx_difference || 0), now, userId);
-  return { id, payment_id: input.payment_id, document_id: input.document_id, amount };
+  `).run(id, companyId, input.payment_id, input.document_id, amount, payment.currency, fxDifference, now, userId);
+  return { id, payment_id: input.payment_id, document_id: input.document_id, amount, fx_difference: fxDifference, fx_document_id: fxDocumentId };
 }
 
 export function unallocatePayment(dialect, ctx, input) {
@@ -1516,6 +1669,10 @@ export function unallocatePayment(dialect, ctx, input) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(id, companyId, alloc.payment_id, alloc.document_id, -alloc.amount, alloc.currency, -Number(alloc.fx_difference || 0), alloc.id, now, userId);
   dialect.prepare('UPDATE finance_payments SET unallocated_amount = unallocated_amount + ?, updated_at = ? WHERE id = ?').run(alloc.amount, now, alloc.payment_id);
+  // Reverse the realized FX journal posted with the original allocation, if
+  // any, so the booked gain/loss does not outlive the settlement.
+  const fxDoc = dialect.prepare("SELECT id FROM finance_documents WHERE company_id = ? AND source_type = 'realized_fx_allocation' AND source_id = ? AND state = 'posted'").get(companyId, alloc.id);
+  if (fxDoc) reverseDocument(dialect, ctx, { document_id: fxDoc.id, reason: 'payment allocation reversed' });
   return { id, reversed_allocation_id: alloc.id, amount: -alloc.amount };
 }
 

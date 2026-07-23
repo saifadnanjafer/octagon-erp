@@ -40,7 +40,6 @@ async function run() {
         assert.strictEqual(moduleRow.status, 'enabled');
         const actions = dialect.prepare('SELECT COUNT(*) AS n FROM platform_actions WHERE module_id = ?').get('finance_canonical');
         assert.ok(actions.n >= 10, 'finance actions missing');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -52,7 +51,6 @@ async function run() {
           () => createAccount(dialect, ctx, { code: '101000', name: 'Duplicate Cash', type: 'liquidity' }),
           /duplicate/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -64,7 +62,6 @@ async function run() {
           () => createAccount(dialect, ctx, { code: '999', name: 'Bad', type: 'notatype' }),
           /invalid account type/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -79,7 +76,6 @@ async function run() {
           () => updateAccount(dialect, ctx, { account_id: a.id, parent_id: c.id }),
           /cycle/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -90,7 +86,6 @@ async function run() {
         assert.ok(cashA1);
         const cashA2 = dialect.prepare('SELECT id FROM finance_accounts WHERE company_id = ? AND code = ?').get(org.companyA2, '101000');
         assert.strictEqual(cashA2, undefined);
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -112,7 +107,6 @@ async function run() {
           () => postDocument(dialect, ctx, { document_id: doc.id }),
           /not balanced/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -137,7 +131,6 @@ async function run() {
         const entry = dialect.prepare('SELECT entry_number, hash, prev_hash FROM finance_journal_entries WHERE document_id = ?').get(posted.id);
         assert.ok(entry.hash, 'hash not set');
         assert.ok(entry.prev_hash, 'prev_hash not set');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -164,7 +157,6 @@ async function run() {
         const totalDebit = tb.reduce((s, r) => s + r.total_debit, 0);
         const totalCredit = tb.reduce((s, r) => s + r.total_credit, 0);
         assert.strictEqual(totalDebit, totalCredit);
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -193,7 +185,6 @@ async function run() {
         assert.strictEqual(totalDebit, totalCredit);
         const netExpense = tb.find(r => r.account_id === expense);
         assert.ok(Math.abs(netExpense.balance) < 0.01, 'expense balance not net-zero after reversal');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -217,7 +208,6 @@ async function run() {
           () => postDocument(dialect, ctx, { document_id: doc.id }),
           /period is closed/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -245,7 +235,6 @@ async function run() {
           () => dialect.exec(`DELETE FROM finance_journal_lines WHERE id = '${line.id}'`),
           /append-only/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -262,7 +251,6 @@ async function run() {
         assert.ok(result.id);
         const row = dialect.prepare('SELECT code FROM finance_accounts WHERE id = ?').get(result.id);
         assert.strictEqual(row.code, '700_EXEC');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -286,7 +274,6 @@ async function run() {
         const verify = verifyHashChain(dialect, ctx, {});
         assert.strictEqual(verify.ok, true);
         assert.strictEqual(verify.count, 3);
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -311,7 +298,6 @@ async function run() {
         assert.strictEqual(moduleRow, undefined, 'finance_canonical module remains after rollback');
         const actionRows = dialect.prepare('SELECT id FROM platform_actions WHERE module_id = ?').all('finance_canonical');
         assert.strictEqual(actionRows.length, 0, 'finance actions remain after rollback');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
   ];

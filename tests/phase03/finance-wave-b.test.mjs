@@ -32,7 +32,6 @@ async function run() {
         for (const expected of ['finance_document:create', 'finance_document:submit', 'finance_document:approve', 'finance_document:cancel', 'finance_document:post', 'finance_document:reverse', 'finance_document:amend']) {
           assert.ok(ids.includes(expected), `missing action ${expected}`);
         }
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -61,7 +60,6 @@ async function run() {
           () => cancelDocument(dialect, ctx, { document_id: doc.id }),
           /cancelled/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -83,7 +81,6 @@ async function run() {
           () => postDocument(dialect, ctx, { document_id: doc.id }),
           /must be approved/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -107,7 +104,6 @@ async function run() {
         executor.execute('finance_document:approve', { document_id: created.id, idempotency_key: 'doc-approve-1' }, ctx);
         const posted = executor.execute('finance_document:post', { document_id: created.id, idempotency_key: 'doc-post-1' }, ctx);
         assert.strictEqual(posted.state, 'posted');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -132,7 +128,6 @@ async function run() {
           () => postDocument(dialect, ctx, { document_id: doc.id }),
           /locked/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -148,7 +143,6 @@ async function run() {
         );
         const reopened = reopenPeriod(dialect, ctx, { period_id: period.id, reason: 'accountant correction' });
         assert.strictEqual(reopened.status, 'open');
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -171,7 +165,6 @@ async function run() {
           () => submitDocument(dialect, ctxB, { document_id: doc.id }),
           /cross-company|not found/
         );
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -202,7 +195,6 @@ async function run() {
         assert.ok(entries[1].entry_number.endsWith('00002'));
         const verify = verifyHashChain(dialect, ctx, {});
         assert.strictEqual(verify.ok, true);
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
 
@@ -228,7 +220,6 @@ async function run() {
         const after = dialect.prepare('SELECT state, doc_number FROM finance_documents WHERE id = ?').get(doc.id);
         assert.strictEqual(after.state, 'reversed');
         assert.strictEqual(after.doc_number, before.doc_number); // number preserved
-        passed++;
       } finally { await cleanup(dialect, dbPath); }
     }],
   ];

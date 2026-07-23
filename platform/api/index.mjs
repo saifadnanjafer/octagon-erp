@@ -23,6 +23,7 @@
 
 import { createRepository } from '../data/repositories/index.mjs';
 import { createActionExecutor } from '../kernel/actions/index.mjs';
+import { handleFinanceQuery } from './finance.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -61,8 +62,10 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null }) {
-  const executor = createActionExecutor(dialect);
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null }) {
+  // The runtime authority passes its own executor (with finance handlers
+  // registered); standalone mounts fall back to a bare kernel executor.
+  const executor = actionExecutor || createActionExecutor(dialect);
 
   function resolveContext(req, requestUrl) {
     if (resolveContextOption) return resolveContextOption(req, requestUrl);
@@ -149,14 +152,39 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 405, envelope(null, 'method not allowed', null, ctx.correlationId));
       }
 
+      if (namespace === 'finance' && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const financeResult = handleFinanceQuery({ dialect, ctx, resource, recordId, query });
+        if (financeResult.error) return sendJson(res, financeResult.status || 404, envelope(null, financeResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(financeResult.data, null, financeResult.meta, ctx.correlationId));
+      }
+
       if (namespace === 'action' && resource && req.method === 'POST') {
         if (!requirePermission('platform:db:write')) return;
+        // Governed actions declare their own required permission in
+        // platform_actions; evaluate it so HTTP dispatch honors the same
+        // contract as the runtime authority. No-op when authorize is unset.
+        const actionPermission = dialect.prepare('SELECT required_permission FROM platform_actions WHERE id = ?').get(resource);
+        if (actionPermission?.required_permission && !requirePermission(actionPermission.required_permission)) return;
         const actionId = resource;
         const raw = await readBody(req);
         const body = raw ? JSON.parse(raw) : {};
         if (ctx.idempotencyKey) body.idempotency_key = ctx.idempotencyKey;
-        const result = executor.execute(actionId, body, ctx);
-        return sendJson(res, 200, envelope(result, null, null, ctx.correlationId));
+        try {
+          const result = executor.execute(actionId, body, ctx);
+          return sendJson(res, 200, envelope(result, null, null, ctx.correlationId));
+        } catch (actionError) {
+          // Governed business-rule denials (FinanceError with a machine code)
+          // must surface as 4xx with the code intact, not a masked 500, so
+          // denial evidence (period locks, authority limits, cashbox caps) is
+          // distinguishable from server faults.
+          if (actionError && typeof actionError.code === "string" && actionError.code) {
+            const denial = /AUTHORITY|PERMISSION|NO_GRANT|DENIED/.test(actionError.code);
+            return sendJson(res, denial ? 403 : 422, envelope(null, actionError.code + ": " + actionError.message, null, ctx.correlationId));
+          }
+          throw actionError;
+        }
       }
 
       return sendJson(res, 404, envelope(null, 'unknown route', null, ctx.correlationId));

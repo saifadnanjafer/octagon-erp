@@ -1,0 +1,174 @@
+{
+  "suite": "phase-03/finance-browser-evidence",
+  "generatedBy": "tests/phase03/finance-browser-evidence.test.mjs",
+  "runCommand": "node tests/phase03/finance-browser-evidence.test.mjs",
+  "runStartedAt": "2026-07-22T15:18:51.690Z",
+  "runFinishedAt": "2026-07-22T15:26:13.069Z",
+  "durationMs": 441379,
+  "git": {
+    "branch": "remediation/phase-03-closure-audit",
+    "commit": "a9ecd0daf6eb49640bd5cf13d3966c3c0d6fdcea"
+  },
+  "consoleErrorAllowlist": "/\\b401\\b|\\b404\\b|\\[saveData\\] BLOCKED/",
+  "totals": {
+    "scenarios": 9,
+    "passed": 6,
+    "failed": 3
+  },
+  "scopeNote": "Proves the SPA shell plus the canonical Browser->API->Phase02-authz->finance-engine path. Most finance UI remains legacy-backed; fiscal close UI, reversal UI, bank import UI, payments UI, budget UI and report cutover are NOT covered by this suite.",
+  "scenarios": [
+    {
+      "id": "P03-BR-01",
+      "name": "login and logout issue and revoke the session cookie",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:18:52.128Z",
+      "status": "PASS",
+      "durationMs": 48465,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-01_2026-07-22T15-19-35-365Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-22T15:19:40.593Z"
+    },
+    {
+      "id": "P03-BR-02",
+      "name": "finance navigation renders for an authorized user",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:19:40.593Z",
+      "status": "FAIL",
+      "durationMs": 45075,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "AssertionError [ERR_ASSERTION]: finance nav button is visible for owner\n    at Object.scenarioFinanceNavigation [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:426:12)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:830:21",
+      "finishedAt": "2026-07-22T15:20:25.668Z"
+    },
+    {
+      "id": "P03-BR-03",
+      "name": "role-based denial proven from the page context (API-level)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:20:25.668Z",
+      "status": "FAIL",
+      "durationMs": 46946,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "AssertionError [ERR_ASSERTION]: clerk bootstrap applied after login\n    at Object.scenarioRoleBasedDenial [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:453:12)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:830:21",
+      "finishedAt": "2026-07-22T15:21:12.614Z"
+    },
+    {
+      "id": "P03-BR-04",
+      "name": "finance page renders with no pageerror and no console errors",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:21:12.615Z",
+      "status": "PASS",
+      "durationMs": 48326,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-04_2026-07-22T15-21-55-921Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "allowlistedConsoleErrors": 147,
+      "finishedAt": "2026-07-22T15:22:00.941Z"
+    },
+    {
+      "id": "P03-BR-05",
+      "name": "canonical runtime round trip from the page context",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:22:00.941Z",
+      "status": "PASS",
+      "durationMs": 44264,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-05_2026-07-22T15-22-41-656Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "created account code: 199743",
+        "accounts visible: 16"
+      ],
+      "error": null,
+      "finishedAt": "2026-07-22T15:22:45.205Z"
+    },
+    {
+      "id": "P03-BR-06",
+      "name": "unauthenticated fetch to finance API is denied (401)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:22:45.205Z",
+      "status": "PASS",
+      "durationMs": 24224,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-06_2026-07-22T15-23-05-186Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-22T15:23:09.429Z"
+    },
+    {
+      "id": "P03-BR-07",
+      "name": "Arabic RTL render and English LTR switch",
+      "viewport": "desktop-1366",
+      "locale": "ar+en",
+      "startedAt": "2026-07-22T15:23:09.429Z",
+      "status": "PASS",
+      "durationMs": 48009,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-22T15-23-50-161Z_desktop-1366_ar.png",
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-22T15-23-54-617Z_desktop-1366_en.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-22T15:23:57.438Z"
+    },
+    {
+      "id": "P03-BR-08",
+      "name": "desktop and mobile viewports render the finance page",
+      "viewport": "desktop-1366+mobile-375",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:23:57.439Z",
+      "status": "FAIL",
+      "durationMs": 91507,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "TimeoutError: Waiting failed: 10000ms exceeded\n    at new WaitTask (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/common/WaitTask.js:46:34)\n    at IsolatedWorld.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Realm.js:49:26)\n    at CdpFrame.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:580:43)\n    at CdpFrame.<anonymous> (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)\n    at CdpPage.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1447:37)\n    at assertPageRendered (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:345:14)\n    at Object.scenarioViewports [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:700:13)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:830:21",
+      "finishedAt": "2026-07-22T15:25:28.946Z"
+    },
+    {
+      "id": "P03-BR-09",
+      "name": "unrelated pages still render after finance operations",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-22T15:25:28.946Z",
+      "status": "PASS",
+      "durationMs": 44123,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-09_2026-07-22T15-26-09-930Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "allowlistedConsoleErrors": 147,
+      "finishedAt": "2026-07-22T15:26:13.069Z"
+    }
+  ]
+}

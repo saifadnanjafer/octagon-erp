@@ -122,6 +122,20 @@ export function createPlatformAuthority(dialect) {
   const registry = createPermissionRegistry(dialect);
   registry.registerMany([...DEFAULT_PAGE_PERMISSIONS, ...DEFAULT_API_PERMISSIONS]);
 
+  // Every governed action declares its required permission in platform_actions
+  // (see migrations 003/014+). Register those tokens so the evaluator knows
+  // them — unknown tokens fail closed — and the HTTP action route can evaluate
+  // them per action. Existing registrations (e.g. page/API defaults) win.
+  const ACTION_TOKEN_RE = /^[a-z][a-z0-9_]*(:[a-z0-9_*]+)+$/;
+  const actionPermissions = dialect.prepare(`
+    SELECT DISTINCT required_permission AS id, module_id FROM platform_actions
+    WHERE required_permission IS NOT NULL
+  `).all();
+  for (const row of actionPermissions) {
+    if (!ACTION_TOKEN_RE.test(row.id) || registry.get(row.id)) continue;
+    registry.register({ id: row.id, module_id: row.module_id, kind: 'action', label_ar: row.id, label_en: row.id });
+  }
+
   const policyEngine = createPolicyEngine(dialect);
   const evaluator = createPermissionEvaluator(dialect, { permissionRegistry: registry, policyEngine });
   policyEngine.evaluator = evaluator;
@@ -143,6 +157,21 @@ export function createPlatformAuthority(dialect) {
   seedDefaultOwnerRole(dialect);
   seedDefaultFieldRules(dialect);
 
+  // Phase 03 closure audit: persist the finance approval-authority policy as
+  // fail-closed by default. The engine reads only this stored value (company
+  // scope may override it through the typed settings authority); posting paths
+  // never accept a caller-supplied policy flag.
+  settings.define({
+    key: 'finance.approval_authority.fail_closed', module_id: 'finance_canonical',
+    type: 'boolean', default_value: 'false', scopes: ['company', 'system'],
+    overridable_scopes: { company: true },
+  });
+  const financeModule = dialect.prepare("SELECT status FROM platform_modules WHERE id = 'finance_canonical'").get();
+  const existingPolicy = dialect.prepare("SELECT 1 FROM settings_values WHERE key = ? AND scope = 'system' AND scope_id = ''").get('finance.approval_authority.fail_closed');
+  if (financeModule?.status === 'enabled' && !existingPolicy) {
+    settings.set('finance.approval_authority.fail_closed', 'system', '', true, { actor: 'platform_bridge', reason: 'default fail-closed finance approval policy' });
+  }
+
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, notifications, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
@@ -163,6 +192,9 @@ export function createPlatformAuthority(dialect) {
     return createApiHandler({
       dialect: authority.dialect,
       prefix,
+      // The API must dispatch through the SAME executor that carries the
+      // finance handlers (registered above), not a bare kernel executor.
+      actionExecutor: authority.actionExecutor,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
       authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
     });
@@ -471,6 +503,9 @@ export async function mountPlatformApi(authority, prefix = '/api/v1') {
   return createApiHandler({
     dialect: authority.dialect,
     prefix,
+    // Same executor as the runtime authority: finance handlers stay reachable
+    // over HTTP (Phase 03 closure repair).
+    actionExecutor: authority.actionExecutor,
     resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
     authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
   });

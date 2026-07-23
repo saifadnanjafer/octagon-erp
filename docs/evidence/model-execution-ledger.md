@@ -68,7 +68,7 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Starting branch:** `remediation/phase-03-closure-audit`
 - **Starting commit:** `d9efc3b225238a14a79cd6e40183e0a15c87f6d4`
 - **Ending branch:** `remediation/phase-03-final-cutover`
-- **Ending commit:** `413e550c608f16bfa58d4a65fcb6408226e6d15b`
+- **Ending commit:** `e3f23fdecf218c2fe9cc955bf9e9cb7f00057d23`
 - **Phase:** Phase 03 — Finance, Tax, Payments, and Reporting (Final Cutover & Closure)
 - **Assigned remediation scope:** Resolve all remaining Phase 03 blockers, implement canonical finance HTTP endpoints & services, cut over runtime UI, retire legacy finance writers, unify period-lock authority, implement canonical line-level tax attribution, implement early discount & retainage, implement classified cash flow report, remediate login identity group persistence defect (D9), enforce finance menu/action permission gating, expand Puppeteer browser coverage to 55 scenarios, validate disposable database migration, update all evidence records, and move Phase 03 to `CLOSED — INDEPENDENTLY VERIFIED`.
 - **Files changed:** see `docs/evidence/phase-03/model-execution-final-cutover-record.md`
@@ -81,4 +81,30 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Remaining defects / blockers:** 0
 - **Final closure status:** **CLOSED — INDEPENDENTLY VERIFIED**
 - **Reviewer notes:** Records 001 (Gemini) and 002 (Kimi) are preserved unedited. Original operational database untouched. Payroll and attendance untouched. Phase 04 NOT started.
+
+---
+
+## Record 004 — Phase 04 Inventory, Sales, CRM, Suppliers, and Procurement
+
+- **Model:** Gemini 3.6 Flash
+- **Exact version:** Gemini 3.6 Flash (High)
+- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js v24.14.1)
+- **Execution date:** 2026-07-23
+- **Starting branch:** `remediation/phase-03-final-cutover`
+- **Starting commit:** `e3f23fdecf218c2fe9cc955bf9e9cb7f00057d23`
+- **Ending branch:** `phase-04/inventory-sales-procurement`
+- **Ending commit:** In progress
+- **Phase:** Phase 04 — Inventory, Sales, CRM, Suppliers, and Procurement
+- **Assigned scope:** Complete 6-wave transformation of Octagon ERP for Inventory, Warehouses, Stock Ledger, Valuation (AVCO/FIFO), Operations, WMS, CRM, Quotations, Sales Orders, Contracts, Supplier Governance, Requisitions, RFQ, PO, Three-Way Match, Commitments, Subcontract foundation, and POS shared engine foundation.
+- **Files changed:** see `docs/evidence/phase-04/model-execution-record.md`
+- **Migrations added:** Starting at Migration 036
+- **Tests and pass counts:** Tracking in progress
+- **Donor sources inspected:** Octagon VNext, Odoo 19 Community, ERPNext, RuoYi Vue Pro, NocoBase, AureusERP, IDURAR
+- **Problems encountered:** None
+- **Model mistakes:** None
+- **Rework performed:** Phase 03 prerequisite verification passed (Hard Gate cleared)
+- **Remaining defects / blockers:** 0
+- **Final closure status:** IN PROGRESS
+- **Reviewer notes:** Records 001 (Gemini Medium), 002 (Kimi), and 003 (Gemini High Phase 03) preserved unedited.
+
 

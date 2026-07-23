@@ -118,7 +118,7 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Starting branch:** `phase-04/inventory-sales-procurement`
 - **Starting commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`
 - **Ending branch:** `remediation/phase-04-canonical-consolidation`
-- **Ending commit:** In progress (Fix commit pending)
+- **Ending commit:** `00411ae81c5d353fe662f24264743c0bf799c9d3`
 - **Phase:** Phase 04.5 — System-Wide Canonical Consolidation, Runtime Cutover, and Duplicate-Authority Remediation
 - **Assigned scope:** Autonomous audit and remediation of Phase 04 attempt, actual Node HTTP runtime integration, ActionExecutor integration, UI cutover in Octagon shell (`index.html`, `app.js`), canonical Work Item foundation creation to consolidate duplicate task engines, finance view consolidation into Phase 03 facts, legacy data migration using disposable database copies, legacy writer retirement, browser regression verification, complete evidence suite.
 - **Files changed:** see `docs/evidence/phase-04-remediation/model-execution-record.md`

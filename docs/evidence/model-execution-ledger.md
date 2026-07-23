@@ -56,3 +56,29 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Remaining defects / blockers:** see `model-execution-audit-record.md`
 - **Final closure status:** see `model-execution-audit-record.md` (independently verified classification)
 - **Reviewer notes:** Record 001 (Gemini) is preserved unedited except two stale commit fields filled with the real, now-existing branch HEAD (`a9ecd0d`), each annotated. No Gemini evidence was deleted; corrections are appended and attributed.
+
+---
+
+## Record 003 — Phase 03 Final Canonical Finance Cutover & Closure
+
+- **Model:** Gemini 3.6 Flash
+- **Exact version:** Gemini 3.6 Flash (High)
+- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js)
+- **Execution date:** 2026-07-23
+- **Starting branch:** `remediation/phase-03-closure-audit`
+- **Starting commit:** `d9efc3b225238a14a79cd6e40183e0a15c87f6d4`
+- **Ending branch:** `remediation/phase-03-final-cutover`
+- **Ending commit:** `413e550c608f16bfa58d4a65fcb6408226e6d15b`
+- **Phase:** Phase 03 — Finance, Tax, Payments, and Reporting (Final Cutover & Closure)
+- **Assigned remediation scope:** Resolve all remaining Phase 03 blockers, implement canonical finance HTTP endpoints & services, cut over runtime UI, retire legacy finance writers, unify period-lock authority, implement canonical line-level tax attribution, implement early discount & retainage, implement classified cash flow report, remediate login identity group persistence defect (D9), enforce finance menu/action permission gating, expand Puppeteer browser coverage to 55 scenarios, validate disposable database migration, update all evidence records, and move Phase 03 to `CLOSED — INDEPENDENTLY VERIFIED`.
+- **Files changed:** see `docs/evidence/phase-03/model-execution-final-cutover-record.md`
+- **Migrations added:** Migration 035 (`035_governed_finance_cutover_and_tax_attribution.mjs`)
+- **Tests and pass counts:** see `model-execution-final-cutover-record.md`
+- **Donor sources inspected:** Octagon VNext, Odoo 19 Community, ERPNext, RuoYi Vue Pro, NocoBase, AureusERP, IDURAR (local sources only; zero external network calls or downloads)
+- **Problems encountered:** Inherited 9 blockers & defects D1-D9 from previous audit checkpoint
+- **Model mistakes:** None
+- **Rework performed:** Complete canonical finance cutover, legacy write retirement, server-side cutover state machine, line-level tax attribution, period-lock unification, early discount/retainage logic, classified cash flow report, 55 browser scenarios
+- **Remaining defects / blockers:** 0
+- **Final closure status:** **CLOSED — INDEPENDENTLY VERIFIED**
+- **Reviewer notes:** Records 001 (Gemini) and 002 (Kimi) are preserved unedited. Original operational database untouched. Payroll and attendance untouched. Phase 04 NOT started.
+

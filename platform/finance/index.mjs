@@ -96,7 +96,11 @@ export function registerFinanceActions(executor) {
     .registerHandler('finance_migration:rollback_run', ({ dialect, ctx, input }) => engine.rollbackMigrationRun(dialect, ctx, input))
     .registerHandler('finance_migration:quarantine_list', ({ dialect, ctx, input }) => engine.getMigrationQuarantine(dialect, ctx, input))
     .registerHandler('finance_source_fact:post', ({ dialect, ctx, input }) => engine.postSourceFact(dialect, ctx, input))
-    .registerHandler('finance_source_fact:reverse', ({ dialect, ctx, input }) => engine.reverseSourceFact(dialect, ctx, input));
+    .registerHandler('finance_source_fact:reverse', ({ dialect, ctx, input }) => engine.reverseSourceFact(dialect, ctx, input))
+    .registerHandler('finance_cutover:transition', ({ dialect, ctx, input }) => engine.transitionCutoverState(dialect, ctx, input))
+    .registerHandler('finance_cutover:get_status', ({ dialect, ctx }) => ({ state: engine.getCutoverState(dialect, ctx.companyId) }))
+    .registerHandler('finance_lock:set', ({ dialect, ctx, input }) => engine.setLockDate(dialect, ctx, input))
+    .registerHandler('finance_retainage:release', ({ dialect, ctx, input }) => engine.releaseRetainage(dialect, ctx, input));
 
   return executor;
 }

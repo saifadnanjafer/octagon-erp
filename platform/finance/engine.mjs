@@ -228,19 +228,47 @@ export function createDocument(dialect, ctx, input) {
     const accountId = line.account_id;
     const acc = dialect.prepare('SELECT id FROM finance_accounts WHERE id = ? AND company_id = ? AND is_active = 1').get(accountId, companyId);
     if (!acc) throw new FinanceError(`account ${accountId} not found or inactive`, 'ACCOUNT_NOT_FOUND');
-    dialect.prepare(`
-      INSERT INTO finance_document_lines (
-        id, document_id, company_id, account_id, debit, credit, currency_code, currency_debit, currency_credit,
-        tax_refs, dims, partner_id, description, created_at, created_by
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      lineId, docId, companyId, accountId,
-      Number(line.debit || 0), Number(line.credit || 0),
-      line.currency_code || currency, Number(line.currency_debit || 0), Number(line.currency_credit || 0),
-      line.tax_refs || null, line.dims || null,
-      line.partner_id || input.partner_id || null, line.description || null,
-      now, userId
-    );
+    const hasDocTaxCols = (() => {
+      try {
+        const cols = dialect.prepare("PRAGMA table_info(finance_document_lines)").all().map(c => c.name);
+        return cols.includes('tax_id');
+      } catch {
+        return false;
+      }
+    })();
+
+    if (hasDocTaxCols) {
+      dialect.prepare(`
+        INSERT INTO finance_document_lines (
+          id, document_id, company_id, account_id, debit, credit, currency_code, currency_debit, currency_credit,
+          tax_refs, dims, partner_id, description, tax_id, tax_version_id, tax_base_amount, tax_amount,
+          withholding_id, exemption_reason, reverse_charge_id, tax_jurisdiction, created_at, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        lineId, docId, companyId, accountId,
+        Number(line.debit || 0), Number(line.credit || 0),
+        line.currency_code || currency, Number(line.currency_debit || 0), Number(line.currency_credit || 0),
+        line.tax_refs || null, line.dims || null,
+        line.partner_id || input.partner_id || null, line.description || null,
+        line.tax_id || null, line.tax_version_id || null, Number(line.tax_base_amount || 0), Number(line.tax_amount || 0),
+        line.withholding_id || null, line.exemption_reason || null, line.reverse_charge_id || null, line.tax_jurisdiction || null,
+        now, userId
+      );
+    } else {
+      dialect.prepare(`
+        INSERT INTO finance_document_lines (
+          id, document_id, company_id, account_id, debit, credit, currency_code, currency_debit, currency_credit,
+          tax_refs, dims, partner_id, description, created_at, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        lineId, docId, companyId, accountId,
+        Number(line.debit || 0), Number(line.credit || 0),
+        line.currency_code || currency, Number(line.currency_debit || 0), Number(line.currency_credit || 0),
+        line.tax_refs || null, line.dims || null,
+        line.partner_id || input.partner_id || null, line.description || null,
+        now, userId
+      );
+    }
   }
   return getDocument(dialect, companyId, docId);
 }
@@ -268,12 +296,20 @@ function validateDocumentBalanced(dialect, docId) {
   return { totalDebit, totalCredit };
 }
 
-function checkPeriodAndLock(dialect, companyId, docDate) {
+export function checkPeriodAndLock(dialect, companyId, docDate, options = {}) {
   const period = dialect.prepare('SELECT id, status FROM finance_periods WHERE company_id = ? AND start_date <= ? AND end_date >= ?').get(companyId, docDate, docDate);
   if (!period) throw new FinanceError('no fiscal period exists for the document date', 'PERIOD_MISSING');
   if (period.status !== 'open') throw new FinanceError('period is closed or locked', 'PERIOD_CLOSED');
-  const lock = dialect.prepare('SELECT lock_date FROM finance_locks WHERE company_id = ? AND module = ?').get(companyId, 'gl');
+  const lock = dialect.prepare("SELECT lock_date FROM finance_locks WHERE company_id = ? AND (module = 'gl' OR module = 'all') ORDER BY lock_date DESC LIMIT 1").get(companyId);
   if (lock && lock.lock_date >= docDate) throw new FinanceError('document date is locked', 'LOCK_DATE');
+  if (options.isTax || options.module === 'tax') {
+    const taxLock = dialect.prepare("SELECT lock_date FROM finance_locks WHERE company_id = ? AND module = 'tax' ORDER BY lock_date DESC LIMIT 1").get(companyId);
+    if (taxLock && taxLock.lock_date >= docDate) throw new FinanceError('document date is locked by tax lock', 'LOCK_DATE_TAX');
+  }
+  if (options.journalId) {
+    const jnlLock = dialect.prepare("SELECT lock_date FROM finance_locks WHERE company_id = ? AND journal_id = ? ORDER BY lock_date DESC LIMIT 1").get(companyId, options.journalId);
+    if (jnlLock && jnlLock.lock_date >= docDate) throw new FinanceError('document date is locked for journal', 'LOCK_DATE_JOURNAL');
+  }
 }
 
 function sequenceTemplate(moveType) {
@@ -315,7 +351,7 @@ export function postDocument(dialect, ctx, input) {
     throw new FinanceError('document must be approved to post', 'DOCUMENT_STATE_INVALID');
   }
 
-  checkPeriodAndLock(dialect, companyId, doc.doc_date);
+  checkPeriodAndLock(dialect, companyId, doc.doc_date, { journalId: doc.journal_id });
   const { totalDebit, totalCredit } = validateDocumentBalanced(dialect, docId);
   enforceApprovalAuthority(dialect, ctx, { limitType: 'post', amount: totalDebit });
 
@@ -342,20 +378,53 @@ export function postDocument(dialect, ctx, input) {
     totalDebit, totalCredit, hash, prevHash, now, userId
   );
 
-  const lineStmt = dialect.prepare(`
-    INSERT INTO finance_journal_lines (
-      id, journal_entry_id, company_id, document_id, document_line_id, account_id, posting_date, debit, credit,
-      currency_code, currency_debit, currency_credit, dims, partner_id, description, created_at, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  const hasTaxCols = (() => {
+    try {
+      const cols = dialect.prepare("PRAGMA table_info(finance_journal_lines)").all().map(c => c.name);
+      return cols.includes('tax_id');
+    } catch {
+      return false;
+    }
+  })();
+
+  const lineStmt = hasTaxCols
+    ? dialect.prepare(`
+        INSERT INTO finance_journal_lines (
+          id, journal_entry_id, company_id, document_id, document_line_id, account_id, posting_date, debit, credit,
+          currency_code, currency_debit, currency_credit, dims, partner_id, description,
+          tax_id, tax_version_id, fiscal_position_id, tax_base_amount, tax_amount, tax_currency_id, tax_company_amount,
+          withholding_id, exemption_reason, reverse_charge_id, tax_jurisdiction, tax_date, created_at, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+    : dialect.prepare(`
+        INSERT INTO finance_journal_lines (
+          id, journal_entry_id, company_id, document_id, document_line_id, account_id, posting_date, debit, credit,
+          currency_code, currency_debit, currency_credit, dims, partner_id, description, created_at, created_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
   for (const l of doc.lines) {
     validateDimensionDistribution(dialect, companyId, l.account_id, l.dims);
-    lineStmt.run(
-      `finjll_${crypto.randomUUID()}`, entryId, companyId, docId, l.id,
-      l.account_id, doc.doc_date, Number(l.debit || 0), Number(l.credit || 0),
-      l.currency_code || doc.currency, Number(l.currency_debit || 0), Number(l.currency_credit || 0),
-      l.dims || null, l.partner_id || doc.partner_id || null, l.description || null, now, userId
-    );
+    if (hasTaxCols) {
+      lineStmt.run(
+        `finjll_${crypto.randomUUID()}`, entryId, companyId, docId, l.id,
+        l.account_id, doc.doc_date, Number(l.debit || 0), Number(l.credit || 0),
+        l.currency_code || doc.currency, Number(l.currency_debit || 0), Number(l.currency_credit || 0),
+        l.dims || null, l.partner_id || doc.partner_id || null, l.description || null,
+        l.tax_id || null, l.tax_version_id || null, l.fiscal_position_id || null,
+        Number(l.tax_base_amount || 0), Number(l.tax_amount || 0), l.currency_code || doc.currency,
+        Number(l.debit || 0) || Number(l.credit || 0),
+        l.withholding_id || null, l.exemption_reason || null, l.reverse_charge_id || null,
+        l.tax_jurisdiction || null, doc.doc_date, now, userId
+      );
+    } else {
+      lineStmt.run(
+        `finjll_${crypto.randomUUID()}`, entryId, companyId, docId, l.id,
+        l.account_id, doc.doc_date, Number(l.debit || 0), Number(l.credit || 0),
+        l.currency_code || doc.currency, Number(l.currency_debit || 0), Number(l.currency_credit || 0),
+        l.dims || null, l.partner_id || doc.partner_id || null, l.description || null, now, userId
+      );
+    }
   }
 
   dialect.prepare(`
@@ -2435,18 +2504,141 @@ export function getBalanceSheet(dialect, ctx, options = {}) {
   };
 }
 
+export function getCutoverState(dialect, companyId) {
+  try {
+    const tableExists = dialect.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='finance_cutover_settings'").get();
+    if (!tableExists) return 'CANONICAL_ONLY';
+    const row = dialect.prepare('SELECT state FROM finance_cutover_settings WHERE company_id = ?').get(companyId);
+    return row ? row.state : 'CANONICAL_ONLY';
+  } catch (e) {
+    return 'CANONICAL_ONLY';
+  }
+}
+
+export function transitionCutoverState(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const targetState = String(input.target_state || input.targetState || '').trim();
+  const reason = String(input.reason || '').trim();
+  const VALID_STATES = ['LEGACY_READ_WRITE', 'SHADOW_READ', 'CANONICAL_WRITE_SHADOW_COMPARE', 'CANONICAL_READ_WRITE', 'LEGACY_READ_ONLY', 'CANONICAL_ONLY'];
+  if (!VALID_STATES.includes(targetState)) {
+    throw new FinanceError(`Invalid cutover state: ${targetState}`, 'CUTOVER_STATE_INVALID');
+  }
+  if (!reason) {
+    throw new FinanceError('Reason is required for cutover state transition', 'CUTOVER_REASON_REQUIRED');
+  }
+
+  const currentState = getCutoverState(dialect, companyId);
+
+  dialect.prepare(`
+    INSERT INTO finance_cutover_settings (company_id, state, previous_state, transitioned_at, transitioned_by, reason)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(company_id) DO UPDATE SET
+      previous_state = state,
+      state = excluded.state,
+      transitioned_at = excluded.transitioned_at,
+      transitioned_by = excluded.transitioned_by,
+      reason = excluded.reason
+  `).run(companyId, targetState, currentState, now, userId, reason);
+
+  dialect.prepare(`
+    INSERT INTO finance_cutover_history (company_id, from_state, to_state, reason, actor_id, transitioned_at)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(companyId, currentState, targetState, reason, userId, now);
+
+  return { company_id: companyId, from_state: currentState, to_state: targetState, transitioned_at: now };
+}
+
+export function releaseRetainage(dialect, ctx, input) {
+  const { companyId, userId, now } = context(ctx);
+  const docId = input.document_id;
+  const doc = getDocument(dialect, companyId, docId);
+  if (!doc) throw new FinanceError('document not found', 'DOCUMENT_NOT_FOUND');
+  if (doc.state !== 'posted') throw new FinanceError('retainage can only be released for posted documents', 'DOCUMENT_NOT_POSTED');
+  const releaseAmount = round2(Number(input.release_amount || doc.retainage_amount || 0));
+  if (releaseAmount <= 0) throw new FinanceError('release_amount must be positive', 'RETAINAGE_RELEASE_AMOUNT_INVALID');
+
+  dialect.prepare(`
+    UPDATE finance_documents SET retainage_released = 1, retainage_release_date = ?, updated_at = ?, updated_by = ?
+    WHERE id = ? AND company_id = ?
+  `).run(now.slice(0, 10), now, userId, docId, companyId);
+
+  return { document_id: docId, retainage_released: 1, release_amount: releaseAmount, release_date: now.slice(0, 10) };
+}
+
 export function getCashFlow(dialect, ctx, options = {}) {
   const { companyId } = context(ctx);
   const startDate = options.start_date || null;
   const endDate = options.end_date || null;
-  const rows = dialect.prepare(`
-    SELECT l.account_id, a.code, a.name, SUM(l.debit - l.credit) AS net_change
+
+  const openingRow = dialect.prepare(`
+    SELECT SUM(l.debit - l.credit) AS opening_balance
     FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
+    WHERE l.company_id = ? AND a.type = 'liquidity' AND (? IS NULL OR l.posting_date < ?)
+  `).get(companyId, startDate, startDate);
+  const openingCash = round2(Number(openingRow?.opening_balance || 0));
+
+  const rows = dialect.prepare(`
+    SELECT l.id, l.posting_date, l.account_id, a.code, a.name, a.type AS account_type,
+           d.move_type, d.source_type, (l.debit - l.credit) AS net_change
+    FROM finance_journal_lines l
+    JOIN finance_accounts a ON a.id = l.account_id
+    JOIN finance_documents d ON d.id = l.document_id
     WHERE l.company_id = ? AND a.type = 'liquidity'
       AND (? IS NULL OR l.posting_date >= ?) AND (? IS NULL OR l.posting_date <= ?)
-    GROUP BY l.account_id ORDER BY a.code
+    ORDER BY l.posting_date, l.id
   `).all(companyId, startDate, startDate, endDate, endDate);
-  return { rows, net_change: round2(rows.reduce((s, r) => s + Number(r.net_change), 0)), method: 'indirect-ledger-derived' };
+
+  let operatingNet = 0;
+  let investingNet = 0;
+  let financingNet = 0;
+
+  const classifiedRows = rows.map(r => {
+    const net = round2(Number(r.net_change));
+    let activity = 'operating';
+    if (r.move_type === 'asset_capitalization' || r.move_type === 'asset_disposal' || r.source_type === 'asset_event' || r.move_type === 'fx_revaluation') {
+      activity = 'investing';
+      investingNet += net;
+    } else if (r.move_type === 'owner_contribution' || r.move_type === 'loan' || r.move_type === 'dividend') {
+      activity = 'financing';
+      financingNet += net;
+    } else {
+      activity = 'operating';
+      operatingNet += net;
+    }
+    return { ...r, net_change: net, activity };
+  });
+
+  operatingNet = round2(operatingNet);
+  investingNet = round2(investingNet);
+  financingNet = round2(financingNet);
+  const netChange = round2(operatingNet + investingNet + financingNet);
+  const closingCash = round2(openingCash + netChange);
+
+  const liquidityAccounts = dialect.prepare(`
+    SELECT a.id, a.code, a.name, SUM(l.debit - l.credit) AS balance
+    FROM finance_accounts a
+    LEFT JOIN finance_journal_lines l ON l.account_id = a.id AND (? IS NULL OR l.posting_date <= ?)
+    WHERE a.company_id = ? AND a.type = 'liquidity'
+    GROUP BY a.id ORDER BY a.code
+  `).all(endDate, endDate, companyId);
+
+  const totalAccountBalance = round2(liquidityAccounts.reduce((s, acc) => s + Number(acc.balance || 0), 0));
+
+  return {
+    method: 'direct-classified',
+    sections: {
+      operating: { net: operatingNet },
+      investing: { net: investingNet },
+      financing: { net: financingNet },
+    },
+    net_change: netChange,
+    opening_cash: openingCash,
+    closing_cash: closingCash,
+    account_balances: liquidityAccounts,
+    total_liquidity_balance: totalAccountBalance,
+    reconciled: Math.abs(closingCash - totalAccountBalance) < 0.01,
+    rows: classifiedRows,
+  };
 }
 
 export function getPartnerLedger(dialect, ctx, options = {}) {
@@ -2469,17 +2661,44 @@ export function getTaxReport(dialect, ctx, options = {}) {
   const { companyId } = context(ctx);
   const startDate = options.start_date || null;
   const endDate = options.end_date || null;
-  // Tax amounts are posted onto accounts flagged with a tax_role (Wave A schema);
-  // grouping by that column reconciles the tax report to GL by construction
-  // without needing a separate tax ledger.
+  // Group by line-level tax_id if populated, otherwise fall back to account tax_role
   const rows = dialect.prepare(`
-    SELECT a.tax_role, a.id AS account_id, a.code, a.name, SUM(l.debit) AS total_debit, SUM(l.credit) AS total_credit
+    SELECT COALESCE(l.tax_id, a.tax_role) AS tax_identity,
+           l.tax_version_id,
+           a.tax_role, a.id AS account_id, a.code, a.name,
+           SUM(l.tax_base_amount) AS total_tax_base,
+           SUM(l.debit) AS total_debit, SUM(l.credit) AS total_credit
     FROM finance_journal_lines l JOIN finance_accounts a ON a.id = l.account_id
-    WHERE l.company_id = ? AND a.tax_role IS NOT NULL
+    WHERE l.company_id = ? AND (a.tax_role IS NOT NULL OR l.tax_id IS NOT NULL)
       AND (? IS NULL OR l.posting_date >= ?) AND (? IS NULL OR l.posting_date <= ?)
-    GROUP BY a.id ORDER BY a.code
+    GROUP BY COALESCE(l.tax_id, a.id), l.tax_version_id ORDER BY a.code
   `).all(companyId, startDate, startDate, endDate, endDate);
   return rows.map(r => ({ ...r, net: round2(Number(r.total_credit) - Number(r.total_debit)) }));
+}
+
+export function getAuditHistory(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const limit = Math.min(Math.max(parseInt(options.limit, 10) || 100, 1), 500);
+  return dialect.prepare(`
+    SELECT id, company_id, journal_entry_id, hash_input, hash, prev_hash, created_at
+    FROM finance_integrity_hashes WHERE company_id = ? ORDER BY created_at DESC LIMIT ?
+  `).all(companyId, limit);
+}
+
+export function listPayments(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const limit = Math.min(Math.max(parseInt(options.limit, 10) || 100, 1), 500);
+  return dialect.prepare(`
+    SELECT * FROM finance_payments WHERE company_id = ? ORDER BY payment_date DESC LIMIT ?
+  `).all(companyId, limit);
+}
+
+export function listAllocations(dialect, ctx, options = {}) {
+  const { companyId } = context(ctx);
+  const limit = Math.min(Math.max(parseInt(options.limit, 10) || 100, 1), 500);
+  return dialect.prepare(`
+    SELECT * FROM finance_allocations WHERE company_id = ? ORDER BY created_at DESC LIMIT ?
+  `).all(companyId, limit);
 }
 
 export function getDimensionProfitLoss(dialect, ctx, options = {}) {

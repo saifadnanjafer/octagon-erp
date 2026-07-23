@@ -1,0 +1,191 @@
+{
+  "suite": "phase-03/finance-browser-evidence",
+  "generatedBy": "tests/phase03/finance-browser-evidence.test.mjs",
+  "runCommand": "node tests/phase03/finance-browser-evidence.test.mjs",
+  "runStartedAt": "2026-07-23T16:01:21.235Z",
+  "runFinishedAt": "2026-07-23T16:05:28.448Z",
+  "durationMs": 247213,
+  "git": {
+    "branch": "remediation/phase-03-final-cutover",
+    "commit": "d9efc3b225238a14a79cd6e40183e0a15c87f6d4"
+  },
+  "consoleErrorAllowlist": "/\\b401\\b|\\b404\\b|\\[saveData\\] BLOCKED/",
+  "totals": {
+    "scenarios": 9,
+    "passed": 6,
+    "failed": 3
+  },
+  "scopeNote": "Proves the SPA shell plus the canonical Browser->API->Phase02-authz->finance-engine path. Most finance UI remains legacy-backed; fiscal close UI, reversal UI, bank import UI, payments UI, budget UI and report cutover are NOT covered by this suite.",
+  "scenarios": [
+    {
+      "id": "P03-BR-01",
+      "name": "login and logout issue and revoke the session cookie",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:01:21.805Z",
+      "status": "PASS",
+      "durationMs": 16589,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-01_2026-07-23T16-01-36-675Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-23T16:01:38.394Z"
+    },
+    {
+      "id": "P03-BR-02",
+      "name": "finance navigation renders for an authorized user",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:01:38.394Z",
+      "status": "FAIL",
+      "durationMs": 42407,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "TimeoutError: Waiting failed: 30000ms exceeded\n    at new WaitTask (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/common/WaitTask.js:46:34)\n    at IsolatedWorld.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Realm.js:49:26)\n    at CdpFrame.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:580:43)\n    at CdpFrame.<anonymous> (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)\n    at CdpPage.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1447:37)\n    at assertPageRendered (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:348:14)\n    at Object.scenarioFinanceNavigation [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:432:11)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:946:21",
+      "finishedAt": "2026-07-23T16:02:20.801Z"
+    },
+    {
+      "id": "P03-BR-03",
+      "name": "role-based denial proven from the page context (API-level)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:02:20.801Z",
+      "status": "PASS",
+      "durationMs": 16795,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-03_2026-07-23T16-02-33-035Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "Menu gating (app.js PLATFORM_PAGE_NAV_MAP) does not cover the finance nav button; finance nav visible for clerk: false. Denial is therefore proven at the API layer from the page context (403 on finance_account:create)."
+      ],
+      "error": null,
+      "finishedAt": "2026-07-23T16:02:37.596Z"
+    },
+    {
+      "id": "P03-BR-04",
+      "name": "finance page renders with no pageerror and no console errors",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:02:37.596Z",
+      "status": "FAIL",
+      "durationMs": 45275,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "TimeoutError: Waiting failed: 30000ms exceeded\n    at new WaitTask (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/common/WaitTask.js:46:34)\n    at IsolatedWorld.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Realm.js:49:26)\n    at CdpFrame.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:580:43)\n    at CdpFrame.<anonymous> (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)\n    at CdpPage.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1447:37)\n    at assertPageRendered (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:348:14)\n    at Object.scenarioFinancePageCleanRender [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:579:11)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:946:21",
+      "finishedAt": "2026-07-23T16:03:22.871Z"
+    },
+    {
+      "id": "P03-BR-05",
+      "name": "canonical runtime round trip from the page context",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:03:22.871Z",
+      "status": "PASS",
+      "durationMs": 19649,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-05_2026-07-23T16-03-38-365Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "created account code: 199785",
+        "accounts visible: 16"
+      ],
+      "error": null,
+      "finishedAt": "2026-07-23T16:03:42.520Z"
+    },
+    {
+      "id": "P03-BR-06",
+      "name": "unauthenticated fetch to finance API is denied (401)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:03:42.520Z",
+      "status": "PASS",
+      "durationMs": 11438,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-06_2026-07-23T16-03-48-806Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-23T16:03:53.958Z"
+    },
+    {
+      "id": "P03-BR-07",
+      "name": "Arabic RTL render and English LTR switch",
+      "viewport": "desktop-1366",
+      "locale": "ar+en",
+      "startedAt": "2026-07-23T16:03:53.958Z",
+      "status": "PASS",
+      "durationMs": 17752,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-23T16-04-06-801Z_desktop-1366_ar.png",
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-23T16-04-09-159Z_desktop-1366_en.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-23T16:04:11.710Z"
+    },
+    {
+      "id": "P03-BR-08",
+      "name": "desktop and mobile viewports render the finance page",
+      "viewport": "desktop-1366+mobile-375",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:04:11.710Z",
+      "status": "PASS",
+      "durationMs": 33714,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-08_2026-07-23T16-04-30-845Z_desktop-1366_ar.png",
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-08_2026-07-23T16-04-44-051Z_mobile-375_ar.png"
+      ],
+      "notes": [
+        "Observation (pre-existing client auth quirk, fails closed): performLogin pushes a group-less stub user into omni.users; once persisted, later logins in the same store resolve that user with no groups and group-gated pages fail closed. Each viewport therefore runs against a fresh disposable server. Recorded for the backlog; it never grants excess access."
+      ],
+      "error": null,
+      "perViewport": [
+        {
+          "viewport": "desktop-1366",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "allowlistedConsoleErrors": 142
+        },
+        {
+          "viewport": "mobile-375",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "allowlistedConsoleErrors": 137
+        }
+      ],
+      "finishedAt": "2026-07-23T16:04:45.424Z"
+    },
+    {
+      "id": "P03-BR-09",
+      "name": "unrelated pages still render after finance operations",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-23T16:04:45.425Z",
+      "status": "FAIL",
+      "durationMs": 43023,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [],
+      "notes": [],
+      "error": "TimeoutError: Waiting failed: 30000ms exceeded\n    at new WaitTask (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/common/WaitTask.js:46:34)\n    at IsolatedWorld.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Realm.js:49:26)\n    at CdpFrame.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:580:43)\n    at CdpFrame.<anonymous> (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)\n    at CdpPage.waitForFunction (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:1447:37)\n    at assertPageRendered (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:348:14)\n    at Object.scenarioUnrelatedPageRegression [as fn] (file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:876:11)\n    at async file:///C:/Users/Zahraa%20dlbooz/Downloads/odoo-19.0/octagon-erp/tests/phase03/finance-browser-evidence.test.mjs:946:21",
+      "finishedAt": "2026-07-23T16:05:28.448Z"
+    }
+  ]
+}

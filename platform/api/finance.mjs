@@ -15,7 +15,11 @@
 
 'use strict';
 
-import { listAccounts, listDocuments, getDocument, getTrialBalance } from '../finance/engine.mjs';
+import {
+  listAccounts, listDocuments, getDocument, getTrialBalance, getGeneralLedger,
+  getPartnerLedger, listPayments, listAllocations, getBankCashReconciliationStatus,
+  runReport, getPeriodCloseStatus, getCutoverState, getMigrationQuarantine, getAuditHistory
+} from '../finance/engine.mjs';
 
 /**
  * Dispatch a GET /api/v1/finance/:resource[/:id] query.
@@ -38,6 +42,48 @@ export function handleFinanceQuery({ dialect, ctx, resource, recordId = null, qu
   }
   if (resource === 'trial-balance' && !recordId) {
     const rows = getTrialBalance(dialect, ctx, { start_date: query.start_date, end_date: query.end_date });
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'general-ledger' || resource === 'ledger') {
+    const rows = getGeneralLedger(dialect, ctx, query.account_id || recordId, query);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'partner-ledger') {
+    const rows = getPartnerLedger(dialect, ctx, query);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'payments') {
+    const rows = listPayments(dialect, ctx, query);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'allocations') {
+    const rows = listAllocations(dialect, ctx, query);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'bank-reconciliation') {
+    const data = getBankCashReconciliationStatus(dialect, ctx);
+    return { data, meta: null };
+  }
+  if (resource === 'reports' || resource === 'report') {
+    const reportCode = query.report_code || recordId || 'trial_balance';
+    const params = query.params ? (typeof query.params === 'string' ? JSON.parse(query.params) : query.params) : query;
+    const data = runReport(dialect, ctx, { report_code: reportCode, params });
+    return { data, meta: { report_code: reportCode } };
+  }
+  if (resource === 'periods') {
+    const data = getPeriodCloseStatus(dialect, ctx);
+    return { data, meta: null };
+  }
+  if (resource === 'cutover-status') {
+    const state = getCutoverState(dialect, ctx.companyId);
+    return { data: { company_id: ctx.companyId, state }, meta: null };
+  }
+  if (resource === 'migration-quarantine') {
+    const rows = getMigrationQuarantine(dialect, ctx, { migration_run_id: query.migration_run_id || recordId });
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (resource === 'audit-history') {
+    const rows = getAuditHistory(dialect, ctx, query);
     return { data: rows, meta: { total: rows.length } };
   }
   return { error: 'unknown finance resource', status: 404 };

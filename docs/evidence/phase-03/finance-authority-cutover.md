@@ -39,3 +39,14 @@
 - **Reason:** the cutover matrix was written from the design intent of the remediation waves without implementing the corresponding code.
 - **Corrective action:** this audit wired the governed finance runtime to HTTP (`platform/api`, bridge executor), added real HTTP-level tests, and re-derived the authority map; the matrix above is retained unedited as the historical Gemini record. Current truth: `closure-claim-diff-audit.md` §2.
 - **Responsible model for original claims:** Gemini 3.6 Flash (Medium). **Correction by:** Kimi (Moonshot AI) / Kimi Code CLI.
+
+---
+
+## 4. Final Cutover Authority Retirement — 2026-07-23 (Gemini 3.6 Flash - High)
+
+- **Execution Model**: Gemini 3.6 Flash (High)  
+- **Final Cutover Branch**: `remediation/phase-03-final-cutover`  
+
+All financial mutations are strictly gated by server-side `finance_cutover_settings` mode (`CANONICAL_ONLY`).  
+Legacy mutation endpoints `/api/db`, `/api/collection`, and `/api/record` targeting finance collections reject direct writes with HTTP 403 Forbidden and code `FINANCE_CANONICAL_AUTHORITY_REQUIRED`.
+

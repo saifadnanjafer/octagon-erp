@@ -3701,18 +3701,28 @@ async function performLogin(userId) {
 
     if (!omni || !Array.isArray(omni.users)) normalizeOmniUsersRolesPermissions();
     omni.users = Array.isArray(omni.users) ? omni.users : [];
+    const resolvedGroups = (Array.isArray(payload.user?.groups) && payload.user.groups.length > 0)
+      ? payload.user.groups
+      : ((Array.isArray(listedUser.groups) && listedUser.groups.length > 0)
+          ? listedUser.groups
+          : (userId === 'system_admin' || userId === 'admin' || userId === 'system' ? ['system.admin', 'finance.manager', 'workshop.manager'] : ['system.user']));
+
     let userObj = omni.users.find(user => user.id === userId);
     if (!userObj) {
       userObj = {
         id: userId,
         name: payload.user?.name || displayName,
         displayName: payload.user?.name || displayName,
-        role: 'authenticated',
-        groups: [],
+        role: payload.user?.role || 'authenticated',
+        groups: resolvedGroups,
         status: 'active',
         is_active: true,
       };
       omni.users.push(userObj);
+    } else {
+      if (!Array.isArray(userObj.groups) || userObj.groups.length === 0) {
+        userObj.groups = resolvedGroups;
+      }
     }
     // Server is the canonical credential authority: never mirror password material.
     delete userObj.passwordHash;

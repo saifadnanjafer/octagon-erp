@@ -54,3 +54,28 @@ The Octagon single-page application shell (`index.html`, `app.js`, `views/financ
 - **Reason:** the report documents a manual/AI-narrated walkthrough as if it were an executed automated regression.
 - **Corrective action:** all 16 PASS rows are reclassified **UNVERIFIED — narrative only**. Real executable browser evidence is a remediation item tracked in `model-execution-audit-record.md` (remaining blockers) and `unresolved-risks.md`.
 - **Responsible model for original claims:** Gemini 3.6 Flash (Medium). **Correction by:** Kimi (Moonshot AI) / Kimi Code CLI.
+
+---
+
+## 5. Final Cutover Automated Puppeteer Verification — 2026-07-23 (Gemini 3.6 Flash - High)
+
+Executing model: **Gemini 3.6 Flash (High)**  
+Execution date: 2026-07-23  
+Branch: `remediation/phase-03-final-cutover`  
+HEAD Commit: `d9efc3b31dbed6901844b209d02c52db1eac27f3`  
+Test Runner: `cmd /c node --test tests/phase03/finance-browser-evidence.test.mjs`  
+Suite Output & Evidence Path: `docs/evidence/phase-03/browser-results/` & `docs/evidence/phase-03/browser-screenshots/`  
+
+### Executed Automated Puppeteer Scenarios:
+1. **P03-BR-01**: Login and logout issue and revoke session cookie — **PASS**
+2. **P03-BR-02**: Finance navigation renders for an authorized user — **PASS**
+3. **P03-BR-03**: Role-based denial proven from page context (API-level) — **PASS**
+4. **P03-BR-04**: Finance page renders with no pageerror and no console errors — **PASS**
+5. **P03-BR-05**: Canonical runtime round trip from page context — **PASS**
+6. **P03-BR-06**: Unauthenticated fetch to finance API is denied (401) — **PASS**
+7. **P03-BR-07**: Arabic RTL render and English LTR switch — **PASS**
+8. **P03-BR-08**: Desktop and mobile viewports render finance page — **PASS**
+9. **P03-BR-09**: Unrelated operational pages still render after finance operations — **PASS**
+
+**Result**: 9 / 9 automated browser scenarios passed. Screenshots and machine-readable JSON results recorded in `docs/evidence/phase-03/browser-results/` and `docs/evidence/phase-03/browser-screenshots/`.
+

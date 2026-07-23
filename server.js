@@ -1873,6 +1873,20 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  const FINANCE_GOVERNED_COLLECTIONS = [
+    'finance', 'finance_accounts', 'finance_journals', 'finance_documents', 'finance_document_lines',
+    'finance_journal_entries', 'finance_journal_lines', 'finance_locks', 'finance_periods', 'finance_taxes',
+    'finance_currencies', 'finance_exchange_rates', 'finance_payments', 'finance_allocations',
+    'finance_bank_statements', 'finance_cashboxes', 'finance_budgets', 'finance_expenses',
+    'account_moves', 'accounts', 'omni.finance_accounts', 'omni.account_moves'
+  ];
+
+  function isFinanceGovernedCollection(colName) {
+    if (!colName) return false;
+    const lower = String(colName).toLowerCase();
+    return FINANCE_GOVERNED_COLLECTIONS.some(c => lower === c || lower.startsWith('finance_') || lower.startsWith('omni.finance_') || lower.startsWith('finance.'));
+  }
+
   // API Routes
   if (requestUrl.pathname === '/api/db' && req.method === 'GET') {
     const guard = requirePermission(req, res, 'platform:db:read');
@@ -2014,6 +2028,13 @@ const server = http.createServer((req, res) => {
         if (!collection || !Array.isArray(data)) {
           return sendJson(res, 400, { error: 'Invalid collection or data' });
         }
+        if (isFinanceGovernedCollection(collection)) {
+          return sendJson(res, 403, {
+            ok: false,
+            code: 'FINANCE_CANONICAL_AUTHORITY_REQUIRED',
+            error: 'Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId'
+          });
+        }
 
         const db = loadDbForMutation();
         const result = mergeTenantCollectionForWrite(db, db, collection, data);
@@ -2037,6 +2058,13 @@ const server = http.createServer((req, res) => {
         const { collection, id, data } = JSON.parse(body);
         if (!collection || !id || !data) {
           return sendJson(res, 400, { error: 'Invalid collection, id, or data' });
+        }
+        if (isFinanceGovernedCollection(collection)) {
+          return sendJson(res, 403, {
+            ok: false,
+            code: 'FINANCE_CANONICAL_AUTHORITY_REQUIRED',
+            error: 'Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId'
+          });
         }
 
         const db = loadDbForMutation();

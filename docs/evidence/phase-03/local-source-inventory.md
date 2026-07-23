@@ -48,3 +48,13 @@ The table above was re-verified path-by-path on 2026-07-22. Corrections (origina
 | **IDURAR** | `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\erp-research\idurar-erp-crm-master\` (+ zip) | not a git repo | AGPL-3.0 (`LICENSE`) | Verified. UX concept reference only (no ledger code reused). | Reference-negative |
 
 Audit rules confirmation: no donor repository was cloned, downloaded, or modified during this audit; all verification used local paths only.
+
+---
+
+## Final Cutover Verification — 2026-07-23 (Gemini 3.6 Flash - High)
+
+Executing model for final canonical cutover: **Gemini 3.6 Flash (High)**  
+Execution branch: `remediation/phase-03-final-cutover`  
+Starting commit: `d9efc3b31dbed6901844b209d02c52db1eac27f3`  
+
+All local source verification and audit corrections established during the Kimi audit remain valid and verified. Migration 035 was registered and verified against the local runtime DB schema without modifying operational `database.db`.

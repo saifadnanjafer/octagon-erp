@@ -26,6 +26,13 @@ import { createRepository } from './platform/data/repositories/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 import { registerFinanceActions } from './platform/finance/index.mjs';
+import { registerCommercialActions } from './platform/commercial/index.mjs';
+import { registerInventoryActions } from './platform/inventory/index.mjs';
+import { registerWmsActions } from './platform/wms/index.mjs';
+import { registerSalesActions } from './platform/sales/index.mjs';
+import { registerProcurementActions } from './platform/procurement/index.mjs';
+import { registerPosActions } from './platform/pos/index.mjs';
+import { registerWorkItemActions } from './platform/work_items/index.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -149,6 +156,13 @@ export function createPlatformAuthority(dialect) {
   const actionRegistry = createActionRegistry(dialect);
   const actionExecutor = createActionExecutor(dialect);
   registerFinanceActions(actionExecutor);
+  registerCommercialActions(actionExecutor);
+  registerInventoryActions(actionExecutor);
+  registerWmsActions(actionExecutor);
+  registerSalesActions(actionExecutor);
+  registerProcurementActions(actionExecutor);
+  registerPosActions(actionExecutor);
+  registerWorkItemActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 

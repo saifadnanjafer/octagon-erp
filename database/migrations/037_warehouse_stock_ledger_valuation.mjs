@@ -13,7 +13,13 @@ const MODULE_ID = 'stock_inventory';
 export const migration = {
   id: '037_warehouse_stock_ledger_valuation',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '036_party_product_uom_pricing_foundation',
+  dependsOn: ['036_party_product_uom_pricing_foundation'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave B Inventory Migration',
 
   up(db, { dialect }) {
     // 1. Warehouses & Locations

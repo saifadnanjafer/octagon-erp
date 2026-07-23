@@ -14,7 +14,13 @@ const MODULE_ID = 'commercial_procurement';
 export const migration = {
   id: '040_suppliers_procurement_threeway_match',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '039_crm_sales_contracts_commissions',
+  dependsOn: ['039_crm_sales_contracts_commissions'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave E Procurement Migration',
 
   up(db, { dialect }) {
     // 1. Supplier Governance & Requisitions

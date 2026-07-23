@@ -1,3 +1,10 @@
+// Commercial & Supply Chain Query Surface — Phase 04.5 Remediation
+//
+// Read surface over raw Node HTTP for Commercial, Inventory, Sales, Procurement, POS, and Work Items.
+// All mutations dispatch via POST /api/v1/action/:actionId.
+
+'use strict';
+
 import { getParties } from '../commercial/parties.mjs';
 import { getProducts } from '../commercial/products.mjs';
 import { getUoms } from '../commercial/uom.mjs';
@@ -5,75 +12,91 @@ import { getWarehouses, getLocations } from '../inventory/warehouses.mjs';
 import { getQuantBalance } from '../inventory/ledger.mjs';
 import { getSaleOrder } from '../sales/orders.mjs';
 import { getPurchaseOrder } from '../procurement/orders.mjs';
+import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
 
-export function registerCommercialHttpRoutes(app, actionExecutor) {
-  if (!app) return;
+/**
+ * Dispatch a GET /api/v1/:namespace/:resource[/:id] query.
+ * Returns { data, meta } on success or { error, status } for missing/unknown resources.
+ */
+export function handleCommercialQuery({ dialect, ctx, namespace, resource, recordId = null, query = {} }) {
+  const company_id = ctx?.companyId || query.company_id || '*';
 
-  // Unified Query Routes
-  app.get('/api/v1/query/commercial/parties', (req, res) => {
-    try {
-      const company_id = req.query.company_id || '*';
-      const role = req.query.role || null;
-      const search = req.query.search || null;
-      const result = getParties(req.db, { company_id, role, search });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
+  // 1. Commercial Parties
+  if ((namespace === 'commercial' && resource === 'parties') || namespace === 'parties') {
+    const role = query.role || null;
+    const search = query.search || null;
+    const rows = getParties(dialect, { company_id, role, search });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 2. Commercial Products
+  if ((namespace === 'commercial' && resource === 'products') || namespace === 'products') {
+    const category_id = query.category_id || null;
+    const search = query.search || null;
+    const rows = getProducts(dialect, { company_id, category_id, search });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 3. Commercial UOMs
+  if ((namespace === 'commercial' && resource === 'uoms') || namespace === 'uoms') {
+    const category_id = query.category_id || null;
+    const rows = getUoms(dialect, { category_id });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 4. Inventory Warehouses
+  if ((namespace === 'inventory' && resource === 'warehouses') || namespace === 'warehouses') {
+    const rows = getWarehouses(dialect, { company_id });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 5. Inventory Locations
+  if ((namespace === 'inventory' && resource === 'locations') || namespace === 'locations') {
+    const warehouse_id = query.warehouse_id || recordId || null;
+    const rows = getLocations(dialect, { warehouse_id });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 6. Inventory Quant Balances
+  if ((namespace === 'inventory' && (resource === 'quants' || resource === 'balances')) || namespace === 'quants') {
+    const product_id = query.product_id;
+    const location_id = query.location_id || null;
+    const rows = getQuantBalance(dialect, { company_id, product_id, location_id });
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 7. Sales Orders
+  if ((namespace === 'sales' && resource === 'orders') || namespace === 'sales-orders') {
+    if (recordId) {
+      const doc = getSaleOrder(dialect, recordId);
+      if (!doc) return { error: 'Sales order not found', status: 404 };
+      return { data: doc, meta: null };
     }
-  });
+    const rows = dialect.prepare("SELECT * FROM sale_orders WHERE company_id = ? OR company_id = '*' ORDER BY created_at DESC LIMIT 100").all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
 
-  app.get('/api/v1/query/commercial/products', (req, res) => {
-    try {
-      const company_id = req.query.company_id || '*';
-      const category_id = req.query.category_id || null;
-      const search = req.query.search || null;
-      const result = getProducts(req.db, { company_id, category_id, search });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
+  // 8. Purchase Orders
+  if ((namespace === 'procurement' && resource === 'orders') || namespace === 'purchase-orders') {
+    if (recordId) {
+      const doc = getPurchaseOrder(dialect, recordId);
+      if (!doc) return { error: 'Purchase order not found', status: 404 };
+      return { data: doc, meta: null };
     }
-  });
+    const rows = dialect.prepare("SELECT * FROM purchase_orders WHERE company_id = ? OR company_id = '*' ORDER BY created_at DESC LIMIT 100").all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
 
-  app.get('/api/v1/query/inventory/warehouses', (req, res) => {
-    try {
-      const company_id = req.query.company_id || '*';
-      const result = getWarehouses(req.db, { company_id });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
+  // 9. Work Items / Tasks
+  if (namespace === 'work-items' || namespace === 'work_items' || resource === 'work-items') {
+    if (recordId) {
+      const doc = getWorkItem(dialect, recordId);
+      if (!doc) return { error: 'Work Item not found', status: 404 };
+      return { data: doc, meta: null };
     }
-  });
+    const rows = listWorkItems(dialect, ctx, query);
+    return { data: rows, meta: { total: rows.length } };
+  }
 
-  app.get('/api/v1/query/inventory/quants', (req, res) => {
-    try {
-      const company_id = req.query.company_id || '*';
-      const product_id = req.query.product_id;
-      const location_id = req.query.location_id || null;
-      if (!product_id) return res.status(400).json({ success: false, error: 'product_id parameter is required' });
-      const result = getQuantBalance(req.db, { company_id, product_id, location_id });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
-    }
-  });
-
-  app.get('/api/v1/query/sales/orders/:id', (req, res) => {
-    try {
-      const result = getSaleOrder(req.db, req.params.id);
-      if (!result) return res.status(404).json({ success: false, error: 'Sales order not found' });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
-    }
-  });
-
-  app.get('/api/v1/query/procurement/orders/:id', (req, res) => {
-    try {
-      const result = getPurchaseOrder(req.db, req.params.id);
-      if (!result) return res.status(404).json({ success: false, error: 'Purchase order not found' });
-      res.json({ success: true, data: result });
-    } catch (e) {
-      res.status(500).json({ success: false, error: e.message });
-    }
-  });
+  return { error: 'unknown commercial resource', status: 404 };
 }

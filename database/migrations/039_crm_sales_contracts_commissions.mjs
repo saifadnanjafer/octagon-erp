@@ -14,7 +14,13 @@ const MODULE_ID = 'commercial_sales';
 export const migration = {
   id: '039_crm_sales_contracts_commissions',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '038_wms_operations_cycle_counts_landed_cost',
+  dependsOn: ['038_wms_operations_cycle_counts_landed_cost'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave D Sales Migration',
 
   up(db, { dialect }) {
     // 1. CRM

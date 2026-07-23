@@ -13,7 +13,13 @@ const MODULE_ID = 'commercial_cutover';
 export const migration = {
   id: '041_pos_foundation_and_commercial_cutover',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '040_suppliers_procurement_threeway_match',
+  dependsOn: ['040_suppliers_procurement_threeway_match'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave F POS & Cutover Migration',
 
   up(db, { dialect }) {
     // 1. POS Shared Engine

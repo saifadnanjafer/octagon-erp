@@ -24,6 +24,7 @@
 import { createRepository } from '../data/repositories/index.mjs';
 import { createActionExecutor } from '../kernel/actions/index.mjs';
 import { handleFinanceQuery } from './finance.mjs';
+import { handleCommercialQuery } from './commercial.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -158,6 +159,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const financeResult = handleFinanceQuery({ dialect, ctx, resource, recordId, query });
         if (financeResult.error) return sendJson(res, financeResult.status || 404, envelope(null, financeResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(financeResult.data, null, financeResult.meta, ctx.correlationId));
+      }
+
+      if (['commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const commercialResult = handleCommercialQuery({ dialect, ctx, namespace, resource, recordId, query });
+        if (commercialResult.error) return sendJson(res, commercialResult.status || 404, envelope(null, commercialResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(commercialResult.data, null, commercialResult.meta, ctx.correlationId));
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {

@@ -15,7 +15,13 @@ const MODULE_ID = 'commercial_master';
 export const migration = {
   id: '036_party_product_uom_pricing_foundation',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '035_governed_finance_cutover_and_tax_attribution',
+  dependsOn: ['035_governed_finance_cutover_and_tax_attribution'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave A Commercial Master Migration',
 
   up(db, { dialect }) {
     // 1. Shared Party Identity

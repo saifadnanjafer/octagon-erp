@@ -14,7 +14,13 @@ const MODULE_ID = 'stock_wms';
 export const migration = {
   id: '038_wms_operations_cycle_counts_landed_cost',
   owner: MODULE_ID,
+  version: '1.22.0',
   parent: '037_warehouse_stock_ledger_valuation',
+  dependsOn: ['037_warehouse_stock_ledger_valuation'],
+  dialect: ['sqlite'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  provenance: 'Phase 04 Wave C WMS Migration',
 
   up(db, { dialect }) {
     // 1. Stock Pickings & Types

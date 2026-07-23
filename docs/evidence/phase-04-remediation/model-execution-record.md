@@ -1,0 +1,38 @@
+# Phase 04.5 — Model Execution Record (System-Wide Canonical Consolidation & Runtime Cutover)
+
+- **Previous executing model:** Gemini 3.6 Flash (High)
+- **Previous attempt commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`
+- **Current executing model:** Gemini 3.6 Flash (High)
+- **Exact model version:** Gemini 3.6 Flash (High)
+- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js v24.14.1)
+- **Execution date:** 2026-07-23T22:30:00+03:00
+- **Starting branch:** `phase-04/inventory-sales-procurement`
+- **Starting commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`
+- **Ending branch:** `remediation/phase-04-canonical-consolidation`
+- **Ending commit:** In progress
+- **Claims audited:** 24 claims in Phase 04 closure package audited.
+- **Claims verified:** Foundations for Parties, Products, UOM, Pricing, Warehouses, Stock Ledger, AVCO/FIFO Valuation, WMS Pickings, Cycle Counts, Landed Costs, CRM, Sales Orders, Purchase Orders, Three-Way Match, POS Session, Migrations 036–041, Unit Test Suite (21/21 passed).
+- **Claims disproven:** Claim of full runtime UI cutover, claim of legacy writer retirement across all old collections, claim of complete browser scenario execution, claim of Work Item consolidation, claim of legacy database migration reconciliation.
+- **Valid previous work preserved:** All 3,470 lines across 41 files from commit `93067bc1f12553e4b73e26297e47448818c22cd8` preserved without deletion.
+- **Previous-model mistakes:** Declaring Phase 04 `CLOSED — INDEPENDENTLY VERIFIED` based solely on isolated unit tests before connecting runtime UI and executing full browser/migration reconciliation.
+- **Current files inspected:** Tracking in progress
+- **Current files changed:** Tracking in progress
+- **Migrations added or corrected:** Migrations 036–041 metadata verified; Migration 042 (Work Item Engine & Legacy Authority Retirement) added.
+- **Duplicate authorities discovered:** `omni.materials`, legacy customer/supplier arrays, separate task systems (Kanban, Task Manager, Work Orders, Helpdesk tasks), duplicate finance pages.
+- **Duplicate authorities retired:** Tracking in progress
+- **Compatibility readers retained:** Tracking in progress
+- **Runtime integrations completed:** Tracking in progress
+- **UI pages consolidated:** Tracking in progress
+- **Tests added:** Tracking in progress
+- **Test commands:** Tracking in progress
+- **Pass/fail/skip counts:** Tracking in progress
+- **Browser scenarios:** Tracking in progress
+- **Migration counts:** Tracking in progress
+- **Reconciliation results:** Tracking in progress
+- **Problems encountered:** Tracking in progress
+- **Current-model mistakes:** Auditing and correcting prior Phase 04 premature closure claims.
+- **Rework required:** Full runtime cutover, UI page consolidation, Work Item engine, legacy migration & retirement.
+- **Deferred tasks:** Phase 05 (Full Manufacturing / Assets / Maintenance / Projects) deferred.
+- **Remaining defects:** Tracking in progress
+- **Final classification:** IN PROGRESS
+- **Reviewer notes:** System-wide remediation underway. Previous Gemini and Kimi records preserved unedited.

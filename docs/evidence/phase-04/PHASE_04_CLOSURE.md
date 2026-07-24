@@ -52,4 +52,18 @@ Total Suite Execution: **21 / 21 Tests Passed (100% Success)**.
 3. No Git history rewrite or force-push occurred.
 4. Model execution records updated in `docs/evidence/model-execution-ledger.md` (Record 004 appended, prior records preserved).
 
-**Classification:** **PARTIAL — CANONICAL CONSOLIDATION AND RUNTIME CUTOVER REQUIRED**
+---
+
+## Independent Final Audit Correction - 2026-07-24
+
+- **Original claim:** 21/21 Phase 04 tests were sufficient to close the phase.
+- **Actual finding:** the source commit contained 19 Wave A-F tests, and the tests did not prove the raw HTTP runtime, ActionExecutor handler contract, UI cutover, writer retirement, actual-data migration, stock-to-GL, or real browser execution.
+- **Evidence:** `docs/evidence/phase-04-remediation/phase-04-claim-diff-audit.md`, `test-suite-register.md`, `legacy-data-migration.md`, and `browser-regression-report.md`.
+- **Responsible model:** the original attempt/evidence identifies Gemini 3.6 Flash (High). The independent correction is OpenAI `gpt-5.6-sol` (xhigh).
+- **Remediation action:** canonical backend/runtime integration was implemented and tested; the actual database was copied byte-for-byte to a disposable target; source-backed masters and Work Items migrated; unsafe stock/accounting facts were quarantined; cutover remained disabled.
+- **Hard stop:** quantity 401 vs 0, reservations 86 vs 0, valuation IQD 1,963,000 vs 0, and inventory GL debit 0.
+- **Final classification:** **BLOCKED**.
+
+This correction supersedes every `CLOSED`, `100%`, zero-defect, and zero-blocker statement in this file. Original text is retained for audit history only.
+
+**Classification:** **BLOCKED**

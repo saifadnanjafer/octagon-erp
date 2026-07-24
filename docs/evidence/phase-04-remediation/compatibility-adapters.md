@@ -1,15 +1,14 @@
-# Phase 04.5 — Compatibility Adapters Register
+# Compatibility Adapters
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Remaining adapters/sources:
 
----
+| Legacy surface | Intended adapter | Current status | Removal criterion |
+|---|---|---|---|
+| `omni.materials` / material arrays | canonical product/material read projection | legacy read/write still active | product + stock migration and browser parity |
+| customer/supplier arrays | party role read projection | legacy read/write still active | party/contact/address parity |
+| `services/stockService.js` | canonical balances/operation client | still owns legacy writes | quantity/reservation/valuation/GL pass |
+| legacy sales/purchase/POS arrays | canonical query views | still active | lifecycle migration/UI parity |
+| Task Manager/Kanban arrays | Work Item read projections | still active | cross-view browser parity and history acceptance |
+| generic `/api/db`, `/api/collection`, `/api/record` | machine-readable strangler | Phase 04 denial dormant | explicit feature-flag cutover |
 
-## 1. Retained Read-Only Compatibility Projections
-
-| Legacy Key | Projection Source | Purpose | Removal Criterion |
-| :--- | :--- | :--- | :--- |
-| `omni.materials` | `SELECT * FROM product_templates` | Render material view in legacy workshop components | Phase 05 full workshop cutover |
-| `customers[]` | `SELECT * FROM parties JOIN party_roles` | Render legacy customer dropdowns | Complete frontend JS refactoring |
-| `suppliers[]` | `SELECT * FROM parties JOIN party_roles` | Render legacy supplier dropdowns | Complete frontend JS refactoring |
-| `tasks[]` | `SELECT * FROM work_items` | Compatibility layer for legacy task readers | Retain as read-only projection |
+No adapter is described as read-only unless the server currently enforces it. This corrects the inherited report that presented planned adapters as completed retirement.

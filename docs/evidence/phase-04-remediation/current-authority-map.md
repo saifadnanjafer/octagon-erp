@@ -1,22 +1,19 @@
-# Phase 04.5 — Current Authority Map
+# Current Authority Map
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+| Fact | Canonical backend owner now | Runtime status | Live UI/write status |
+|---|---|---|---|
+| Parties/products/UOM/pricing | `platform/commercial/**` | registered and raw-HTTP reachable | legacy arrays remain because cutover disabled |
+| Warehouses/locations | `platform/inventory/warehouses.mjs` | registered and reachable | legacy pages/writers remain |
+| Stock facts/balances | `platform/inventory/ledger.mjs`, `operations.mjs` | append-only operation path tested | operational legacy data not migrated |
+| Reservations | `platform/inventory/reservations.mjs` | serialized ledger tested | legacy aggregate fields remain read/write |
+| Traceability | `platform/inventory/traceability.mjs` | registered | UI parity not proven |
+| Valuation | `platform/inventory/valuation.mjs` | AVCO/FIFO facts tested | opening valuation blocked |
+| Stock accounting | `platform/finance/ports/stock-accounting.mjs` -> Phase 03 | atomic failure rollback tested | opening GL blocked |
+| WMS/landed cost | `platform/wms/**` | registered; receipt-linked implementation | full UI/failure matrix incomplete |
+| Sales | `platform/sales/**` | canonical confirmation/delivery/invoice tested | UI/legacy writer cutover blocked |
+| Procurement | `platform/procurement/**` | receipt/match/AP tested | UI/legacy writer cutover blocked |
+| POS | `platform/pos/**` + Phase 03 finance | payment/stock/fiscal/GL/cashbox/close tested | UI/legacy writer cutover blocked |
+| Work Items | `platform/work_items/**` | canonical versioned engine tested | Task Manager/Kanban UI writers remain |
+| Finance | Phase 03 `platform/finance/**` | preserved | legacy finance pages remain views/worklists |
 
----
-
-## 1. Single Business Authorities
-
-| Business Fact | Single Canonical Authority | Governing Service / Module | Storage Table |
-| :--- | :--- | :--- | :--- |
-| **Party Identity** | Canonical Party Engine | `platform/commercial/parties.mjs` | `parties`, `party_roles`, `contacts`, `addresses` |
-| **Product Master** | Canonical Product Engine | `platform/commercial/products.mjs` | `product_templates`, `product_variants`, `uoms` |
-| **Pricing & Discount** | Canonical Pricing Engine | `platform/commercial/pricing.mjs` | `price_lists`, `price_list_items` |
-| **Stock Ledger** | Canonical Stock Ledger | `platform/inventory/ledger.mjs` | `stock_moves`, `stock_quants` |
-| **Stock Reservations** | Canonical Reservation Ledger | `platform/inventory/ledger.mjs` | `stock_reservations` |
-| **Valuation Layers** | Canonical Valuation Engine | `platform/inventory/valuation.mjs` | `stock_valuation_layers` |
-| **Sales Lifecycle** | Canonical Sales Engine | `platform/sales/orders.mjs` | `sale_orders`, `sale_order_lines` |
-| **Procurement Lifecycle** | Canonical Procurement Engine | `platform/procurement/orders.mjs` | `purchase_orders`, `purchase_order_lines`, `three_way_matches` |
-| **POS Transactions** | Canonical POS Engine | `platform/pos/session.mjs` | `pos_sessions`, `pos_orders`, `pos_payments` |
-| **Work Items / Tasks** | Canonical Work Item Engine | `platform/work_items/work_items.mjs` | `work_items` |
-| **General Ledger** | Canonical Phase 03 Finance Engine | `platform/finance/engine.mjs` | `account_moves`, `account_move_lines`, `fiscal_documents` |
+The system therefore has one proved canonical backend path for new governed Phase 04 actions, but it does not yet have one exclusive live authority. Exclusive authority requires reconciliation, feature-flag activation, UI conversion, and writer denial.

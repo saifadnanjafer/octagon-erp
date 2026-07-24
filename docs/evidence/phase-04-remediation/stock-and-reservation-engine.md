@@ -1,13 +1,19 @@
-# Phase 04.5 — Canonical Stock & Reservation Engine Report
+# Stock and Reservation Engine
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Canonical implementation:
 
----
+- `platform/inventory/ledger.mjs`: append stock move facts and rebuild quant projection;
+- `platform/inventory/reservations.mjs`: reserve, partial reserve, release, expire, reallocate, consume, reverse with version/idempotency/source linkage;
+- `platform/inventory/operations.mjs`: one coordinator for stock, reservation, valuation, Phase 03 GL, audit/outbox transaction ownership;
+- `platform/inventory/traceability.mjs`: lot, serial, package facts;
+- migration 043: immutable/source/reversal/linkage tables and triggers.
 
-## 1. Stock Engine Atomicity & Reservation Ledger
+Proof:
 
-- **Immutable Stock Moves:** `stock_moves` table records all stock transactions in 'done' state.
-- **Rebuildable Stock Quants:** `stock_quants` are projections dynamically rebuildable from `stock_moves` history via `rebuildStockQuants`.
-- **Reservation Ledger:** `stock_reservations` manages stock allocations with state machine (`reserved`, `partial`, `released`, `consumed`, `expired`).
-- **Concurrency & Availability Protection:** `available_quantity = on_hand - reserved`. Attempts to over-reserve or deduct below zero are rejected with machine-readable error codes.
+- stock receipt is idempotent and rebuilds to the same balance;
+- insufficient/over-reservation is rejected;
+- partial reservation is explicit;
+- injected finance-port failure leaves no move, quant, valuation, audit, outbox, or idempotency record;
+- ActionExecutor outbox failure rolls back the business mutation.
+
+Operational migration is blocked: 401 aggregate units and 86 reserved units lack source movement/reservation lineage. The engine is valid for governed new facts, but exclusive live authority is not activated.

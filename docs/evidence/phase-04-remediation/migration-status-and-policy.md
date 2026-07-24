@@ -1,27 +1,41 @@
-# Phase 04.5 — Migration Status and Policy Report
+# Migration Status and Policy
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+## Applied design
 
----
+- Migrations 036-042 retain historical SQL behavior but now expose runner-recognized `dependsOn` metadata and complete `sourceProvenance`.
+- Migration `043_phase04_canonical_registry_and_lineage.mjs` is additive and reversible.
+- Operational `database.db` had migrations 001-034 at audit time. Therefore 036-042 were not treated as already-applied operational history.
+- No migration command was executed against the operational database.
 
-## 1. Migration Governance Policy
+## Migration 043 scope
 
-1. **Migrations 001–035:** Strictly immutable baseline. No line modified.
-2. **Migrations 036–041:** Corrected metadata exports (`dependsOn`, `dialect`, `transactionPolicy`, `rollbackPolicy`, `provenance`). Applied only to disposable test databases. Git history preserved.
-3. **Migration 042:** Added `042_canonical_work_item_and_authority_retirement.mjs` creating `work_items`, `stock_reservations`, and `authority_retirement_locks` tables.
-4. **Operational Database Safety:** `database.db` remained 100% untouched.
+- Registers 7 Phase 04 modules, 25 entities, and 42 governed actions.
+- Creates stock lot/serial/package and traceability facts.
+- Creates immutable valuation, FIFO consumption, landed-cost, reservation, and stock-accounting linkage tables.
+- Adds sales/procurement fulfilment and three-way-match facts.
+- Adds POS finance/tax/payment configuration and linkage.
+- Adds Work Item relations/watchers/approval/version support.
+- Adds stable legacy source maps, quarantine, and migration-run records.
+- Seeds `phase04.canonical_cutover` as disabled.
 
----
+## Executable proof
 
-## 2. Migration Execution Register (036–042)
+`tests/phase04/migration_contract.test.mjs` covers:
 
-| Migration ID | File Name | Target Tables Created | Status |
-| :--- | :--- | :--- | :--- |
-| **036** | `036_party_product_uom_pricing_foundation.mjs` | `parties`, `party_roles`, `contacts`, `addresses`, `uom_categories`, `uoms`, `product_categories`, `product_templates`, `product_variants`, `product_barcodes`, `price_lists`, `price_list_items` | **VERIFIED** |
-| **037** | `037_warehouse_stock_ledger_valuation.mjs` | `warehouses`, `stock_locations`, `stock_moves`, `stock_quants`, `stock_valuation_layers` | **VERIFIED** |
-| **038** | `038_wms_operations_cycle_counts_landed_cost.mjs` | `stock_picking_types`, `stock_pickings`, `stock_packages`, `stock_inventory_counts`, `landed_costs` | **VERIFIED** |
-| **039** | `039_crm_sales_contracts_commissions.mjs` | `crm_leads`, `sale_orders`, `sale_order_lines`, `sale_contracts` | **VERIFIED** |
-| **040** | `040_suppliers_procurement_threeway_match.mjs` | `purchase_requisitions`, `purchase_rfqs`, `purchase_orders`, `three_way_matches` | **VERIFIED** |
-| **041** | `041_pos_foundation_and_commercial_cutover.mjs` | `pos_sessions`, `pos_orders`, `pos_order_lines`, `pos_payments`, `commercial_cutover_settings` | **VERIFIED** |
-| **042** | `042_canonical_work_item_and_authority_retirement.mjs` | `work_items`, `stock_reservations`, `authority_retirement_locks` | **VERIFIED** |
+- fresh install and idempotent rerun;
+- sequential 042-to-043 upgrade;
+- down/up rollback;
+- injected registry failure rollback;
+- parallel disposable installs with collision-safe backup paths.
+
+The parallel test was added after a real collision exposed millisecond-only backup names. `database/migration-runner/index.mjs::backupBeforeMigration` now adds PID plus a cryptographic nonce.
+
+All migrations use the actual `migration.dependsOn` graph. Migration 043 declares:
+
+- owner: `platform.kernel`
+- dialect: `sqlite`
+- transaction policy: `required`
+- rollback policy: `reversible`
+- source provenance: independent Phase 04 remediation
+
+The legacy rehearsal applies pending migrations only to the disposable byte copy. Its `BLOCKED` result is a data-reconciliation hard stop, not a schema-runner failure.

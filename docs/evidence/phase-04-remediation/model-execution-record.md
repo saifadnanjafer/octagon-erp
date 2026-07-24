@@ -1,38 +1,39 @@
-# Phase 04.5 — Model Execution Record (System-Wide Canonical Consolidation & Runtime Cutover)
+# Phase 04 Independent Remediation Model Execution Record
 
 - **Previous executing model:** Gemini 3.6 Flash (High)
 - **Previous attempt commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`
-- **Current executing model:** Gemini 3.6 Flash (High)
-- **Exact model version:** Gemini 3.6 Flash (High)
-- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js v24.14.1)
-- **Execution date:** 2026-07-23T22:30:00+03:00
-- **Starting branch:** `phase-04/inventory-sales-procurement`
-- **Starting commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`
+- **Current executing model:** OpenAI GPT-5.6
+- **Exact model version:** `gpt-5.6-sol`
+- **Reasoning effort:** xhigh
+- **Agent/runtime:** Codex desktop; Windows PowerShell; Node.js v24.14.1
+- **Execution date and time:** 2026-07-24, Asia/Baghdad
+- **Starting branch:** `remediation/phase-04-canonical-consolidation`
+- **Starting commit:** `56e273f1f2f09fa080e9c70c37eb4173d9a12588`
 - **Ending branch:** `remediation/phase-04-canonical-consolidation`
-- **Ending commit:** `00411ae81c5d353fe662f24264743c0bf799c9d3`
-- **Claims audited:** 24 claims in Phase 04 closure package audited.
-- **Claims verified:** Foundations for Parties, Products, UOM, Pricing, Warehouses, Stock Ledger, AVCO/FIFO Valuation, WMS Pickings, Cycle Counts, Landed Costs, CRM, Sales Orders, Purchase Orders, Three-Way Match, POS Session, Migrations 036–041, Unit Test Suite (21/21 passed).
-- **Claims disproven:** Claim of full runtime UI cutover, claim of legacy writer retirement across all old collections, claim of complete browser scenario execution, claim of Work Item consolidation, claim of legacy database migration reconciliation.
-- **Valid previous work preserved:** All 3,470 lines across 41 files from commit `93067bc1f12553e4b73e26297e47448818c22cd8` preserved without deletion.
-- **Previous-model mistakes:** Declaring Phase 04 `CLOSED — INDEPENDENTLY VERIFIED` based solely on isolated unit tests before connecting runtime UI and executing full browser/migration reconciliation.
-- **Current files inspected:** Tracking in progress
-- **Current files changed:** Tracking in progress
-- **Migrations added or corrected:** Migrations 036–041 metadata verified; Migration 042 (Work Item Engine & Legacy Authority Retirement) added.
-- **Duplicate authorities discovered:** `omni.materials`, legacy customer/supplier arrays, separate task systems (Kanban, Task Manager, Work Orders, Helpdesk tasks), duplicate finance pages.
-- **Duplicate authorities retired:** Tracking in progress
-- **Compatibility readers retained:** Tracking in progress
-- **Runtime integrations completed:** Tracking in progress
-- **UI pages consolidated:** Tracking in progress
-- **Tests added:** Tracking in progress
-- **Test commands:** Tracking in progress
-- **Pass/fail/skip counts:** Tracking in progress
-- **Browser scenarios:** Tracking in progress
-- **Migration counts:** Tracking in progress
-- **Reconciliation results:** Tracking in progress
-- **Problems encountered:** Tracking in progress
-- **Current-model mistakes:** Auditing and correcting prior Phase 04 premature closure claims.
-- **Rework required:** Full runtime cutover, UI page consolidation, Work Item engine, legacy migration & retirement.
-- **Deferred tasks:** Phase 05 (Full Manufacturing / Assets / Maintenance / Projects) deferred.
-- **Remaining defects:** Tracking in progress
-- **Final classification:** IN PROGRESS
-- **Reviewer notes:** System-wide remediation underway. Previous Gemini and Kimi records preserved unedited.
+- **Ending commit:** self-referential record; resolve as the pushed branch HEAD
+- **Assigned remediation scope:** independent Phase 04 audit, canonical backend/runtime integration, disposable migration, writer/UI cutover only if safe, executable evidence, corrected classification, commit, and push
+- **Claims audited:** 24 inherited closure claims plus migration, action, browser, security, atomicity, and prior-phase gates
+- **Claims verified:** schema/domain foundations; canonical action/query runtime; stock/reservation/valuation/GL backend; sales/procurement/POS/Work Item backend lifecycles; disposable-copy safety; party/product/Work Item count parity
+- **Claims disproven:** closed classification; UI cutover; writer retirement; real Phase 04 browser proof; 100% legacy reconciliation; historical 35/35 total
+- **Valid Gemini work preserved:** migrations 036-041 and the initial commercial, inventory, WMS, sales, procurement, POS, and Wave A-F test foundations
+- **Gemini defects discovered:** wrong dependency metadata, unregistered action handlers, dead/incomplete runtime mounting, non-atomic audit/outbox, duplicate writers, unsafe false-positive migration, synthetic browser evidence, incorrect totals, premature closure
+- **Files inspected:** repository/branch graph; migrations 001-043; migration runner/dialect; `server.js`; runtime bridge/API/action registry/executor; all Phase 04 domain modules/tests/evidence; legacy collections in a disposable byte copy; Phase 01-03 test/browser runners
+- **Files changed:** migration runner/dialect; migrations 036-043; Phase 04 runtime/API/domain modules; `server.js`; migration script; Phase 04 tests; remediation evidence; machine-readable Phase 03 browser artifacts
+- **Migrations added or corrected:** dependency/provenance correction for 036-042; new `043_phase04_canonical_registry_and_lineage`
+- **Duplicate authorities discovered:** `omni.materials`, material/customer/supplier arrays, `stockService`, generic collections/records, legacy sales/purchase/POS/task arrays, Kanban/task managers
+- **Duplicate authorities retired:** none activated; server strangler implemented but cutover flag remains disabled because migration is blocked
+- **Runtime integrations completed:** raw HTTP Phase 04 queries/actions; ActionExecutor handler wiring; scoped domain handlers; stock accounting port; atomic stock/reservation/valuation/GL; sales/procurement/POS/Work Item backend flows
+- **UI pages cut over:** none; prohibited by the reconciliation hard stop
+- **Tests added:** canonical runtime, stock, sales, procurement, POS, Work Item, migration contract, legacy migration, raw HTTP; truthful remediation/cutover guard
+- **Test commands:** see `test-suite-register.md`
+- **Pass/fail/skip counts:** Phase 01 deterministic 80/80; Phase 02 deterministic 200/200; Phase 03 deterministic 138/138; Phase 04 wave/corrected suites pass; live-browser/migration gates blocked or failing as separately recorded
+- **Browser scenarios:** Phase 04 0 executed due hard stop; Phase 02 full run 8/12; Phase 03 5/9
+- **Migration counts:** fresh install 43; operational source copy applied pending 035-043 to the disposable target; 37 stable legacy maps
+- **Reconciliation results:** parties 7/7; products 8/8; Work Items 11/11; quantity 401/0; reservations 86/0; valuation IQD 1,963,000/0; stock-to-GL IQD 1,963,000/0
+- **Problems encountered:** inherited evidence swallowed errors; synthetic browser proof; source lacks movement/reservation/accounting lineage; parallel migration backups initially collided
+- **Current-model mistakes:** initially ran separated test groups concurrently before the backup-name collision was guarded; first commentary arithmetic overstated Phase 02 deterministic count as 209 before correction to 200
+- **Rework performed:** replaced weak remediation/browser tests; added collision-safe backup naming and a parallel regression test; restored prior Phase 02 screenshots overwritten by the current test run; corrected all active remediation evidence to `BLOCKED`
+- **Deferred work:** source-policy decision, UI conversion, feature-flag activation, writer retirement, complete failure/concurrency matrix, real Phase 04 browser coverage, prior-phase browser stabilization
+- **Remaining defects:** unreconciled stock/reservation/valuation/GL; legacy writers/UI authority; live-browser failures; incomplete full mandatory adversarial matrix
+- **Final classification:** `BLOCKED`
+- **Reviewer notes:** The prompt requested a Kimi/Moonshot identity, but the actual exposed runtime is OpenAI `gpt-5.6-sol`; no false Kimi attribution is made.

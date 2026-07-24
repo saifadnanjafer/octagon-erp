@@ -10,8 +10,11 @@ import { getProducts } from '../commercial/products.mjs';
 import { getUoms } from '../commercial/uom.mjs';
 import { getWarehouses, getLocations } from '../inventory/warehouses.mjs';
 import { getQuantBalance } from '../inventory/ledger.mjs';
+import { getProductValuation } from '../inventory/valuation.mjs';
+import { listReservations } from '../inventory/reservations.mjs';
 import { getSaleOrder } from '../sales/orders.mjs';
 import { getPurchaseOrder } from '../procurement/orders.mjs';
+import { getPosOrder } from '../pos/session.mjs';
 import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
 
 /**
@@ -19,7 +22,10 @@ import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
  * Returns { data, meta } on success or { error, status } for missing/unknown resources.
  */
 export function handleCommercialQuery({ dialect, ctx, namespace, resource, recordId = null, query = {} }) {
-  const company_id = ctx?.companyId || query.company_id || '*';
+  const company_id = ctx?.companyId || null;
+  if (!company_id) {
+    return { error: 'an active company scope is required', status: 403 };
+  }
 
   // 1. Commercial Parties
   if ((namespace === 'commercial' && resource === 'parties') || namespace === 'parties') {
@@ -46,14 +52,14 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
 
   // 4. Inventory Warehouses
   if ((namespace === 'inventory' && resource === 'warehouses') || namespace === 'warehouses') {
-    const rows = getWarehouses(dialect, { company_id });
+    const rows = getWarehouses(dialect, { company_id, branch_id: ctx?.branchId || null });
     return { data: rows, meta: { total: rows.length } };
   }
 
   // 5. Inventory Locations
   if ((namespace === 'inventory' && resource === 'locations') || namespace === 'locations') {
     const warehouse_id = query.warehouse_id || recordId || null;
-    const rows = getLocations(dialect, { warehouse_id });
+    const rows = getLocations(dialect, { company_id, warehouse_id });
     return { data: rows, meta: { total: rows.length } };
   }
 
@@ -61,37 +67,79 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
   if ((namespace === 'inventory' && (resource === 'quants' || resource === 'balances')) || namespace === 'quants') {
     const product_id = query.product_id;
     const location_id = query.location_id || null;
-    const rows = getQuantBalance(dialect, { company_id, product_id, location_id });
+    const balance = getQuantBalance(dialect, { company_id, product_id, location_id });
+    return { data: balance, meta: { total: 1 } };
+  }
+
+  // 7. Inventory operations, reservations, valuation, and traceability
+  if (namespace === 'inventory' && resource === 'operations') {
+    const rows = dialect.prepare(`
+      SELECT * FROM stock_moves
+      WHERE company_id = ? ORDER BY move_date DESC, created_at DESC LIMIT 200
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'inventory' && resource === 'reservations') {
+    const rows = listReservations(dialect, {
+      company_id,
+      source_document_id: query.source_document_id || null,
+      status: query.status || null,
+    });
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'inventory' && resource === 'valuation') {
+    if (!query.product_id) return { error: 'product_id is required', status: 400 };
+    return {
+      data: getProductValuation(dialect, { company_id, product_id: query.product_id }),
+      meta: { total: 1 },
+    };
+  }
+  if (namespace === 'inventory' && ['lots', 'serials', 'packages'].includes(resource)) {
+    const table = { lots: 'stock_lots', serials: 'stock_serials', packages: 'stock_packages' }[resource];
+    const rows = dialect.prepare(`
+      SELECT * FROM ${table} WHERE company_id = ? ORDER BY created_at DESC LIMIT 200
+    `).all(company_id);
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 7. Sales Orders
+  // 8. Sales Orders
   if ((namespace === 'sales' && resource === 'orders') || namespace === 'sales-orders') {
     if (recordId) {
       const doc = getSaleOrder(dialect, recordId);
-      if (!doc) return { error: 'Sales order not found', status: 404 };
+      if (!doc || doc.company_id !== company_id) return { error: 'Sales order not found', status: 404 };
       return { data: doc, meta: null };
     }
-    const rows = dialect.prepare("SELECT * FROM sale_orders WHERE company_id = ? OR company_id = '*' ORDER BY created_at DESC LIMIT 100").all(company_id);
+    const rows = dialect.prepare('SELECT * FROM sale_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100').all(company_id);
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 8. Purchase Orders
+  // 9. Purchase Orders
   if ((namespace === 'procurement' && resource === 'orders') || namespace === 'purchase-orders') {
     if (recordId) {
       const doc = getPurchaseOrder(dialect, recordId);
-      if (!doc) return { error: 'Purchase order not found', status: 404 };
+      if (!doc || doc.company_id !== company_id) return { error: 'Purchase order not found', status: 404 };
       return { data: doc, meta: null };
     }
-    const rows = dialect.prepare("SELECT * FROM purchase_orders WHERE company_id = ? OR company_id = '*' ORDER BY created_at DESC LIMIT 100").all(company_id);
+    const rows = dialect.prepare('SELECT * FROM purchase_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100').all(company_id);
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 9. Work Items / Tasks
+  // 10. POS orders
+  if (namespace === 'pos' && resource === 'orders') {
+    if (recordId) {
+      const doc = getPosOrder(dialect, recordId);
+      if (!doc || doc.company_id !== company_id) return { error: 'POS order not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare('SELECT * FROM pos_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100').all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 11. Work Items / Tasks
   if (namespace === 'work-items' || namespace === 'work_items' || resource === 'work-items') {
     if (recordId) {
       const doc = getWorkItem(dialect, recordId);
-      if (!doc) return { error: 'Work Item not found', status: 404 };
+      if (!doc || doc.company_id !== company_id) return { error: 'Work Item not found', status: 404 };
       return { data: doc, meta: null };
     }
     const rows = listWorkItems(dialect, ctx, query);

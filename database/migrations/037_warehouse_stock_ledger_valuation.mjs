@@ -19,7 +19,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04 Wave B Inventory Migration',
+  sourceProvenance: 'Phase 04 Wave B Inventory Migration',
 
   up(db, { dialect }) {
     // 1. Warehouses & Locations

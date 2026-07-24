@@ -1,24 +1,21 @@
-# Phase 04.5 — Action Registry Integration Report
+# Action Registry Integration
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Migration 043 registers 42 Phase 04 actions with:
 
----
+- module/entity IDs;
+- `kind=domain`;
+- permission and company scope;
+- input schema;
+- `transaction_owner=platform_action_executor`;
+- required idempotency, audit, and outbox;
+- stable error contract.
 
-## 1. Action Registration Verification
+Every domain `index.mjs` now uses `registerDomainHandler` from `platform/kernel/actions/domain-handler.mjs`, which rejects body/query attempts to supply company, branch, or actor authority and injects session-derived scope.
 
-All domain actions are registered during server startup in `platform-runtime-bridge.mjs` via `createActionExecutor(dialect)`:
+`ActionExecutor` supports multi-segment action IDs and records business mutation, idempotency, audit, and outbox inside the same database transaction. `SqliteDialect.isTransaction` prevents nested transaction ownership.
 
-1. **Finance Actions:** `registerFinanceActions(actionExecutor)`
-2. **Commercial Actions:** `registerCommercialActions(actionExecutor)`
-3. **Inventory Actions:** `registerInventoryActions(actionExecutor)`
-4. **WMS Actions:** `registerWmsActions(actionExecutor)`
-5. **Sales Actions:** `registerSalesActions(actionExecutor)`
-6. **Procurement Actions:** `registerProcurementActions(actionExecutor)`
-7. **POS Actions:** `registerPosActions(actionExecutor)`
-8. **Work Item Actions:** `registerWorkItemActions(actionExecutor)`
+Proof:
 
-Every action specifies:
-- `id`
-- `required_permission`
-- `handler` executing within an atomic SQLite transaction.
+- `canonical_runtime.test.mjs`: 42 registry rows/42 handlers, scope spoof denial, idempotent replay, injected outbox rollback.
+- `remediation_phase04.test.mjs`: fresh install, live handler census, cutover flag disabled.
+- `runtime_http.test.mjs`: actual raw HTTP reachability and denial.

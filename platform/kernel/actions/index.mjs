@@ -34,7 +34,8 @@ export class ActionError extends Error {
 export const ACTION_KINDS = ['lifecycle_transition', 'create', 'reverse', 'amend', 'domain'];
 
 export function validateActionId(id) {
-  return /^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$/.test(id) || /^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$/.test(id);
+  return /^[a-z][a-z0-9_]*(?::[a-z][a-z0-9_]*)+$/.test(id)
+    || /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$/.test(id);
 }
 
 export function normalizeAction(input) {
@@ -352,14 +353,14 @@ export class ActionExecutor {
         throw new ActionError(`unsupported action kind: ${normalized.kind}`, 'UNSUPPORTED_KIND');
       }
       this.#rememberIdempotency(idempotency, normalized, input, result, 200, context);
+      const auditRecordId = result?.record_id || result?.id || input?.record_id || input?.id || null;
+      this.#writePlatformAudit(`action.execute.${actionId}`, normalized.entity_id, auditRecordId, null, result, context);
+      this.#writeOutbox('action.execute', normalized.entity_id, auditRecordId, { actionId, result }, context);
       this.dialect.exec('COMMIT;');
     } catch (error) {
       this.dialect.exec('ROLLBACK;');
       throw error;
     }
-    const auditRecordId = result?.record_id || input?.record_id || null;
-    this.#writePlatformAudit(`action.execute.${actionId}`, normalized.entity_id, auditRecordId, null, result, context);
-    this.#writeOutbox('action.execute', normalized.entity_id, auditRecordId, { actionId, result }, context);
     return result;
   }
 }

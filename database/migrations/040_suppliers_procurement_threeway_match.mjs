@@ -20,7 +20,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04 Wave E Procurement Migration',
+  sourceProvenance: 'Phase 04 Wave E Procurement Migration',
 
   up(db, { dialect }) {
     // 1. Supplier Governance & Requisitions

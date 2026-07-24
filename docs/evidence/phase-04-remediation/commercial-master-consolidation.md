@@ -1,13 +1,17 @@
-# Phase 04.5 — Commercial Master Consolidation Report
+# Commercial Master Consolidation
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Canonical tables are `parties`, `party_roles`, `contacts`, `addresses`, `product_templates`, `product_variants`, `product_categories`, `uom_categories`, `uoms`, `product_barcodes`, `price_lists`, and `price_list_items`.
 
----
+Canonical actions/queries are registered and raw-HTTP reachable. Company scope is injected by `domain-handler.mjs`; customer/supplier roles are validated by the sales/procurement/POS engines.
 
-## 1. Authority Consolidation Summary
+Actual-data disposable migration results:
 
-- **Customers & Suppliers:** Converted from disconnected JSON arrays into single canonical `parties` table with typed `party_roles` ('customer', 'supplier').
-- **Materials & Products:** `omni.materials` and product arrays unified under canonical `product_templates` and `product_variants`.
-- **UOM & Barcodes:** Standardized under `uoms` and `product_barcodes` with global barcode uniqueness enforcement.
-- **Pricing:** Dynamic price lists (`price_lists`, `price_list_items`) calculating tiered discounts by customer role and quantity brackets.
+- parties: 7 source / 7 canonical;
+- products: 8 / 8;
+- categories: 4;
+- UOMs: 5;
+- price lists/items: 6/8;
+- stable maps overall: 37;
+- barcodes: 0 source.
+
+The product/material and party/customer/supplier live UI writers remain because stock-linked cutover cannot safely activate. They are compatibility sources, not claimed retired.

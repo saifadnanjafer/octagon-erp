@@ -20,7 +20,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04 Wave C WMS Migration',
+  sourceProvenance: 'Phase 04 Wave C WMS Migration',
 
   up(db, { dialect }) {
     // 1. Stock Pickings & Types

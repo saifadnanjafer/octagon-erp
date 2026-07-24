@@ -1,12 +1,9 @@
-# Phase 04.5 — Valuation and Landed Cost Report
+# Valuation and Landed Cost
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+`platform/inventory/valuation.mjs` now records append-only valuation facts and projections. AVCO receipts append facts rather than rewriting history. FIFO consumption selects oldest eligible layers and writes explicit consumption links; insufficient layers fail.
 
----
+`platform/wms/landed_cost.mjs` requires actual receipt linkage, supports quantity/weight/volume/current-value/equal/custom bases, appends adjustments, and invokes the canonical stock-accounting path.
 
-## 1. Valuation & Landed Cost Execution
+Executable proof includes Wave B AVCO/FIFO, canonical stock atomicity, migration rollback/failure, and existing Wave C landed-cost allocation. The complete requested backdating/currency/return/reversal/concurrency matrix is not fully proven and remains a risk.
 
-- **AVCO Valuation:** Append-only moving average valuation layers (`stock_valuation_layers`). Recalculates unit cost on incoming receipts and updates product variant `standard_price`.
-- **FIFO Valuation:** Depletes oldest available layers (`remaining_qty > 0`) in chronological order. Preserves unit cost history and exact consumption lineage.
-- **Landed Cost Allocation:** `landed_costs` and `landed_cost_lines` allocate shipping, customs, and handling expenses by quantity, volume, or value across stock pickings, adjusting valuation layers append-only.
+Actual legacy valuation is blocked: IQD 1,963,000 is an aggregate material value without executed layers or approved opening accounting policy. Canonical migrated valuation is 0 by design.

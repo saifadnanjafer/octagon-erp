@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED",
+  "command": "node scripts/migrate_legacy_data.mjs",
+  "exitCode": 2,
+  "source": {
+    "path": "C:\\Users\\Zahraa dlbooz\\Downloads\\odoo-19.0\\octagon-erp\\database.db",
+    "sha256Before": "36da81437da7383c9ec42bc9b15f6ace8d99d18e9e1d8bd6907262a7a4c106c5",
+    "sha256After": "36da81437da7383c9ec42bc9b15f6ace8d99d18e9e1d8bd6907262a7a4c106c5",
+    "sizeBefore": 17084416,
+    "sizeAfter": 17084416,
+    "modifiedAt": "2026-07-23T21:16:27.758Z",
+    "unchanged": true
+  },
+  "sourceCounts": {
+    "customers": 1,
+    "suppliers": 6,
+    "materials": 8,
+    "warehouses": 1,
+    "locations": 4,
+    "workOrders": 3,
+    "taskManagerTasks": 5,
+    "kanbanCards": 3
+  },
+  "migrated": {
+    "parties": 7,
+    "warehouses": 1,
+    "locations": 4,
+    "categories": 4,
+    "uoms": 5,
+    "products": 8,
+    "barcodes": 0,
+    "priceLists": 6,
+    "priceItems": 8,
+    "workItems": 11,
+    "stableSourceMaps": 37,
+    "openQuarantine": 16
+  },
+  "reconciliation": {
+    "parties": { "source": 7, "canonical": 7, "match": true },
+    "products": { "source": 8, "canonical": 8, "match": true },
+    "workItems": { "source": 11, "canonical": 11, "match": true },
+    "quantity": { "source": 401, "canonical": 0, "match": false },
+    "reservations": { "source": 86, "canonical": 0, "match": false },
+    "valuationIQD": { "source": 1963000, "canonical": 0, "match": false },
+    "stockToGlIQD": { "sourceStockValue": 1963000, "canonicalJournalDebit": 0, "match": false }
+  },
+  "quarantineReasons": {
+    "RESERVATION_LINEAGE_MISSING": 8,
+    "OPENING_STOCK_GL_POLICY_REQUIRED": 8
+  },
+  "idempotentRerun": true,
+  "rollbackVerified": true,
+  "cutoverActivated": false
+}

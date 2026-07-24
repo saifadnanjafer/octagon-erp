@@ -1576,9 +1576,9 @@ function apiProtectionMatrix() {
     { endpoint: 'POST /api/tts', classification: 'server-side speech synthesis', protection: 'requires platform:tts:use permission; API key stays server-side' },
     { endpoint: 'POST /api/review-report', classification: 'local QA report write', protection: 'requires platform:review_report:save permission; writes only to review-reports' },
     { endpoint: 'GET /api/db', classification: 'full data read', protection: 'requires platform:db:read permission; governed paths projected from canonical platform tables' },
-    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'requires platform:db:write permission + X-Octagon-Full-Sync header; governed paths strangled to canonical platform writers; fail-closed on unreadable existing state' },
-    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'requires platform:db:write permission' },
-    { endpoint: 'POST /api/record', classification: 'data write', protection: 'requires platform:db:write permission' },
+    { endpoint: 'POST /api/db', classification: 'dangerous write', protection: 'requires platform:db:write permission + X-Octagon-Full-Sync header; Phase 03 finance is strangled; Phase 04 domains are strangled only after the control-plane cutover flag; fail-closed on unreadable existing state' },
+    { endpoint: 'POST /api/collection', classification: 'data write', protection: 'requires platform:db:write permission; finance is canonical; Phase 04 domain denials activate only after phase04.canonical_cutover' },
+    { endpoint: 'POST /api/record', classification: 'data write', protection: 'requires platform:db:write permission; finance is canonical; Phase 04 domain denials activate only after phase04.canonical_cutover' },
     { endpoint: 'POST /api/upload', classification: 'file write', protection: 'requires platform:db:write permission; bounded body; filename sanitized' },
     { endpoint: 'POST /api/backup', classification: 'admin backup write', protection: 'requires platform:backup:verify permission' },
     { endpoint: 'GET /api/backups', classification: 'admin backup read', protection: 'requires platform:backup:verify permission' },
@@ -1873,18 +1873,106 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const FINANCE_GOVERNED_COLLECTIONS = [
-    'finance', 'finance_accounts', 'finance_journals', 'finance_documents', 'finance_document_lines',
-    'finance_journal_entries', 'finance_journal_lines', 'finance_locks', 'finance_periods', 'finance_taxes',
-    'finance_currencies', 'finance_exchange_rates', 'finance_payments', 'finance_allocations',
-    'finance_bank_statements', 'finance_cashboxes', 'finance_budgets', 'finance_expenses',
-    'account_moves', 'accounts', 'omni.finance_accounts', 'omni.account_moves'
+  const CANONICAL_AUTHORITY_COLLECTIONS = [
+    {
+      domain: 'FINANCE',
+      paths: [
+        'finance.accounts', 'finance.transactions', 'finance.journals', 'finance.documents',
+        'finance.document_lines', 'finance.journal_entries', 'finance.journal_lines',
+        'finance.locks', 'finance.periods', 'finance.taxes', 'finance.currencies',
+        'finance.exchange_rates', 'finance.payments', 'finance.allocations',
+        'finance.bank_statements', 'finance.cashboxes', 'finance.budgets', 'finance.expenses',
+        'account_moves', 'accounts', 'omni.finance_accounts', 'omni.account_moves',
+      ],
+      matches: (lower) => (
+        lower === 'finance'
+        || (lower.startsWith('finance.') && lower !== 'finance.customers')
+        || lower.startsWith('finance_')
+        || lower.startsWith('omni.finance_')
+        || ['account_moves', 'accounts', 'omni.account_moves'].includes(lower)
+      ),
+    },
+    {
+      domain: 'COMMERCIAL',
+      paths: [
+        'finance.customers', 'customers', 'suppliers', 'contacts',
+        'omni.materials', 'materials', 'omni.suppliers',
+      ],
+      matches: (lower) => [
+        'finance.customers', 'customers', 'suppliers', 'contacts',
+        'omni.materials', 'materials', 'omni.suppliers',
+      ].includes(lower),
+    },
+    {
+      domain: 'INVENTORY',
+      paths: [
+        'stock_moves', 'quants', 'transfers', 'locations', 'warehouses',
+        'omni.lots', 'omni.serials', 'omni.packages',
+      ],
+      matches: (lower) => [
+        'stock_moves', 'quants', 'transfers', 'locations', 'warehouses',
+        'omni.lots', 'omni.serials', 'omni.packages',
+      ].includes(lower),
+    },
+    {
+      domain: 'SALES',
+      paths: ['salesOrders', 'omni.salesOrders', 'omni.crm', 'leads'],
+      matches: (lower) => ['salesorders', 'omni.salesorders', 'omni.crm', 'leads'].includes(lower),
+    },
+    {
+      domain: 'PROCUREMENT',
+      paths: ['purchaseOrders', 'omni.purchaseOrders'],
+      matches: (lower) => ['purchaseorders', 'omni.purchaseorders'].includes(lower),
+    },
+    {
+      domain: 'POS',
+      paths: ['posOrders', 'omni.posOrders', 'pos'],
+      matches: (lower) => ['posorders', 'omni.posorders', 'pos'].includes(lower),
+    },
+    {
+      domain: 'WORK_ITEM',
+      paths: ['tasks', 'omni.kanban.cards', 'omni.taskManager'],
+      matches: (lower) => (
+        lower === 'tasks'
+        || lower === 'omni.kanban.cards'
+        || lower === 'omni.taskmanager'
+        || lower.startsWith('omni.taskmanager.')
+      ),
+    },
   ];
 
-  function isFinanceGovernedCollection(colName) {
-    if (!colName) return false;
+  function canonicalAuthorityForCollection(colName) {
+    if (!colName) return null;
     const lower = String(colName).toLowerCase();
-    return FINANCE_GOVERNED_COLLECTIONS.some(c => lower === c || lower.startsWith('finance_') || lower.startsWith('omni.finance_') || lower.startsWith('finance.'));
+    return CANONICAL_AUTHORITY_COLLECTIONS.find(({ matches }) => matches(lower)) || null;
+  }
+
+  function canonicalAuthorityError(authority) {
+    return {
+      ok: false,
+      code: `${authority.domain}_CANONICAL_AUTHORITY_REQUIRED`,
+      error: `Governed ${authority.domain.toLowerCase()} facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId`,
+    };
+  }
+
+  function phase04CanonicalCutoverActive() {
+    if (!dbSync) return false;
+    try {
+      const row = dbSync.prepare(`
+        SELECT enabled FROM platform_feature_flags
+        WHERE key = 'phase04.canonical_cutover'
+      `).get();
+      return row?.enabled === 1;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function canonicalAuthorityEnforced(authority) {
+    // Finance was cut over and closed in Phase 03. Phase 04 domains remain
+    // behind the control-plane flag until disposable migration, parity, and
+    // browser evidence pass.
+    return authority?.domain === 'FINANCE' || phase04CanonicalCutoverActive();
   }
 
   // API Routes
@@ -1980,6 +2068,28 @@ const server = http.createServer((req, res) => {
             });
           }
 
+          // Phase 04 canonical-authority strangler. The full-state endpoint
+          // remains available for legacy, non-governed UI state, but it may
+          // only echo governed compatibility projections byte-for-byte.
+          // Any attempted mutation is rejected with the same machine code as
+          // the per-collection and per-record legacy routes.
+          for (const authority of CANONICAL_AUTHORITY_COLLECTIONS) {
+            if (!canonicalAuthorityEnforced(authority)) continue;
+            for (const governedPath of authority.paths) {
+              const currentValue = getNestedPath(existing, governedPath);
+              const incomingValue = getNestedPath(parsed, governedPath);
+              if (JSON.stringify(currentValue) === JSON.stringify(incomingValue)) continue;
+              logWriteGuardRejection('canonical_authority_required', {
+                collection: governedPath,
+                authority: authority.domain,
+              }, req);
+              return sendJson(res, 409, {
+                ...canonicalAuthorityError(authority),
+                collection: governedPath,
+              });
+            }
+          }
+
           // T1.3: SERVER_TENANT_COLLECTIONS protection above only runs when
           // multiTenant is on (tenantEnabledForWrite) — for this
           // single-tenant deployment that's a no-op, so account_moves/
@@ -2028,12 +2138,9 @@ const server = http.createServer((req, res) => {
         if (!collection || !Array.isArray(data)) {
           return sendJson(res, 400, { error: 'Invalid collection or data' });
         }
-        if (isFinanceGovernedCollection(collection)) {
-          return sendJson(res, 403, {
-            ok: false,
-            code: 'FINANCE_CANONICAL_AUTHORITY_REQUIRED',
-            error: 'Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId'
-          });
+        const authority = canonicalAuthorityForCollection(collection);
+        if (authority && canonicalAuthorityEnforced(authority)) {
+          return sendJson(res, 403, canonicalAuthorityError(authority));
         }
 
         const db = loadDbForMutation();
@@ -2059,12 +2166,9 @@ const server = http.createServer((req, res) => {
         if (!collection || !id || !data) {
           return sendJson(res, 400, { error: 'Invalid collection, id, or data' });
         }
-        if (isFinanceGovernedCollection(collection)) {
-          return sendJson(res, 403, {
-            ok: false,
-            code: 'FINANCE_CANONICAL_AUTHORITY_REQUIRED',
-            error: 'Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId'
-          });
+        const authority = canonicalAuthorityForCollection(collection);
+        if (authority && canonicalAuthorityEnforced(authority)) {
+          return sendJson(res, 403, canonicalAuthorityError(authority));
         }
 
         const db = loadDbForMutation();

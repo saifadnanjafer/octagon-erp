@@ -23,11 +23,20 @@ export class SqliteDialect {
     fs.mkdirSync(path.dirname(path.resolve(dbPath)), { recursive: true });
     this.db = new DatabaseSync(dbPath);
     this.db.exec('PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON;');
+    this.transactionActive = false;
     return this;
   }
 
   exec(sql) {
-    return this.db.exec(sql);
+    const command = String(sql || '').trim().toUpperCase();
+    const result = this.db.exec(sql);
+    if (command.startsWith('BEGIN')) this.transactionActive = true;
+    if (command.startsWith('COMMIT') || command.startsWith('ROLLBACK')) this.transactionActive = false;
+    return result;
+  }
+
+  get isTransaction() {
+    return this.transactionActive === true;
   }
 
   prepare(sql) {
@@ -36,6 +45,7 @@ export class SqliteDialect {
 
   close() {
     this.db.close();
+    this.transactionActive = false;
   }
 
   backup(dbPath, backupPath) {

@@ -1,12 +1,13 @@
-# Phase 04.5 — Control Plane and Navigation Report
+# Control Plane and Navigation
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Migration 043 registers the Phase 04 modules/entities/actions and seeds `phase04.canonical_cutover` disabled. The raw HTTP runtime checks the control-plane flag before enforcing Phase 04 generic-writer denial.
 
----
+The future activation gate is:
 
-## 1. Module Visibility & Route Access
+1. legacy migration and all reconciliations pass;
+2. canonical UI/API parity passes;
+3. real browser/security/concurrency proof passes;
+4. machine-readable writer denial passes;
+5. an explicit reviewed cutover enables the flag.
 
-- Control Plane governs module availability (`platform_modules` status='enabled').
-- Unlicensed or disabled modules are hidden from navigation and denied at API layer.
-- Preserves Arabic RTL identity, CSS styles, and deep links across all route hashes.
+`index.html`, `app.js`, views, services, navigation, deep links, RTL/LTR, and mobile layouts were not changed after the hard stop. Control-plane registration is complete; page visibility and cutover are not.

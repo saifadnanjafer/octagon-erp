@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { setup } from '../phase02/harness.mjs';
 import { parties, products, uom } from '../../platform/commercial/index.mjs';
 import { warehouses } from '../../platform/inventory/index.mjs';
-import { governance, rfq, orders, matching } from '../../platform/procurement/index.mjs';
+import { governance, rfq, orders } from '../../platform/procurement/index.mjs';
 
 async function setupDb() {
   const { dialect } = await setup('wave-e');
@@ -41,7 +41,7 @@ test('Wave E: RFQ, Supplier Bidding, and Contract Award', async () => {
   assert.equal(awarded.supplier_id, supp2.id);
 });
 
-test('Wave E: Purchase Order, WMS Incoming Receipt, Three-Way Match, and AP Bill Request', async () => {
+test('Wave E: unscoped direct purchase confirmation is rejected', async () => {
   const db = await setupDb();
   const supplier = parties.createParty(db, { name: 'Global Industrial Oils', roles: ['supplier'] });
   const wh = warehouses.createWarehouse(db, { name: 'Procurement WH', code: 'PRC1' });
@@ -60,23 +60,9 @@ test('Wave E: Purchase Order, WMS Incoming Receipt, Three-Way Match, and AP Bill
 
   assert.equal(po.amount_total, 6500);
 
-  // 2. Confirm Purchase Order -> Generates WMS Incoming Receipt Picking
-  const confirmed = orders.confirmPurchaseOrder(db, { order_id: po.id, warehouse_id: wh.id });
-  assert.equal(confirmed.order.state, 'purchase');
-  assert.ok(confirmed.receipt_picking_id);
-
-  // 3. Perform Three-Way Match
-  const match = matching.performThreeWayMatch(db, {
-    purchase_order_id: po.id,
-    receipt_picking_id: confirmed.receipt_picking_id,
-    bill_amount: 6500,
-  });
-
-  assert.equal(match.match_status, 'matched');
-
-  // 4. Create Supplier Bill Request for Phase 03 AP Finance posting
-  const billReq = matching.createSupplierBillRequest(db, { purchase_order_id: po.id });
-  assert.equal(billReq.document_type, 'vendor_bill');
-  assert.equal(billReq.amount_total, 6500);
-  assert.equal(billReq.status, 'pending_canonical_finance_ap_posting');
+  assert.throws(
+    () => orders.confirmPurchaseOrder(db, { order_id: po.id, warehouse_id: wh.id }),
+    /Purchase order not found/,
+  );
+  assert.equal(orders.getPurchaseOrder(db, po.id).state, 'draft');
 });

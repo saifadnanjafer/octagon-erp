@@ -17,6 +17,12 @@ export function createPurchaseOrder(db, poData) {
   } = poData;
 
   if (!supplier_id) throw new Error('Supplier ID is required for purchase order');
+  const supplier = db.prepare(`
+    SELECT p.id FROM parties p
+    JOIN party_roles role ON role.party_id = p.id
+    WHERE p.id = ? AND p.company_id = ? AND role.company_id = ? AND role.role = 'supplier'
+  `).get(supplier_id, company_id, company_id);
+  if (!supplier) throw new Error('Purchase partner must be a supplier in the active company');
 
   const orderId = makeId('po');
   const name = inputName || `PO-${Date.now().toString().slice(-6)}`;
@@ -76,13 +82,19 @@ export function getPurchaseOrder(db, id) {
   return { ...order, lines };
 }
 
-export function confirmPurchaseOrder(db, { order_id, warehouse_id }) {
+export function confirmPurchaseOrder(db, { order_id, warehouse_id, company_id, branch_id = null }) {
   const order = getPurchaseOrder(db, order_id);
-  if (!order) throw new Error(`Purchase order not found: ${order_id}`);
+  if (!order || order.company_id !== company_id) throw new Error(`Purchase order not found: ${order_id}`);
   if (order.state === 'purchase') throw new Error('Purchase order is already confirmed');
 
-  const wh = db.prepare(`SELECT * FROM warehouses WHERE id = ?`).get(warehouse_id);
+  const wh = db.prepare('SELECT * FROM warehouses WHERE id = ? AND company_id = ?').get(warehouse_id, company_id);
   if (!wh) throw new Error(`Warehouse not found: ${warehouse_id}`);
+  if (branch_id && !db.prepare(`
+    SELECT 1 FROM warehouse_branch_scopes
+    WHERE warehouse_id = ? AND company_id = ? AND branch_id = ?
+  `).get(warehouse_id, company_id, branch_id)) {
+    throw new Error('Procurement warehouse is outside the active branch scope');
+  }
 
   // Resolve picking type
   const pickingTypeId = `pt_in_${wh.id}`;
@@ -116,6 +128,26 @@ export function confirmPurchaseOrder(db, { order_id, warehouse_id }) {
     partner_id: order.supplier_id,
   });
 
+  const now = new Date().toISOString();
+  for (const line of order.lines) {
+    db.prepare(`
+      INSERT INTO purchase_fulfilment_demands (
+        id, company_id, purchase_order_id, purchase_order_line_id,
+        warehouse_id, product_id, demanded_quantity, picking_id,
+        status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'awaiting_receipt', ?)
+    `).run(
+      `pfd_${crypto.randomUUID()}`,
+      company_id,
+      order.id,
+      line.id,
+      warehouse_id,
+      line.product_id,
+      line.product_qty,
+      picking.id,
+      now,
+    );
+  }
   db.prepare(`UPDATE purchase_orders SET state = 'purchase' WHERE id = ?`).run(order_id);
   return { order: getPurchaseOrder(db, order_id), receipt_picking_id: picking.id };
 }

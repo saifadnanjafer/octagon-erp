@@ -1,68 +1,14 @@
 {
-  "executedAt": "2026-07-23T20:39:23.178Z",
-  "scenarios": [
-    {
-      "id": "P04-BR-01",
-      "name": "Commercial Party Authority",
-      "pass": true,
-      "detail": "Found 1 party records"
-    },
-    {
-      "id": "P04-BR-02",
-      "name": "Product Master & UOM View",
-      "pass": true,
-      "detail": "Found 1 products"
-    },
-    {
-      "id": "P04-BR-03",
-      "name": "Inventory Warehouses & Balances",
-      "pass": true,
-      "detail": "Warehouses query active"
-    },
-    {
-      "id": "P04-BR-04",
-      "name": "Sales Quotation & Order View",
-      "pass": true,
-      "detail": "Sales order read surface active"
-    },
-    {
-      "id": "P04-BR-05",
-      "name": "Procurement PO & Match View",
-      "pass": true,
-      "detail": "Purchase order read surface active"
-    },
-    {
-      "id": "P04-BR-06",
-      "name": "POS Session & Checkout Engine",
-      "pass": true,
-      "detail": "POS engine mounted"
-    },
-    {
-      "id": "P04-BR-07",
-      "name": "Canonical Work Item Task Authority",
-      "pass": true,
-      "detail": "Work Item ID: wi_136ae2fe21c1b85f"
-    },
-    {
-      "id": "P04-BR-08",
-      "name": "Arabic RTL & Responsive Viewport",
-      "pass": true,
-      "detail": "index.html includes RTL directory tag"
-    },
-    {
-      "id": "P04-BR-09",
-      "name": "API Permission Security & Session Gating",
-      "pass": true,
-      "detail": "app.js API connectivity verified"
-    },
-    {
-      "id": "P04-BR-10",
-      "name": "Navigation Shell Integrity",
-      "pass": true,
-      "detail": "Shell containers present"
-    }
+  "schemaVersion": 2,
+  "status": "BLOCKED",
+  "executed": false,
+  "cutoverActivated": false,
+  "reasonCode": "LEGACY_RECONCILIATION_BLOCKED",
+  "reason": "Canonical UI cutover is unsafe while opening stock, reservation lineage, valuation, and stock-to-GL do not reconcile.",
+  "prohibitedEvidence": [
+    "source-text inspection presented as browser execution",
+    "in-memory database calls presented as browser execution",
+    "success totals that ignore failed scenarios"
   ],
-  "passCount": 10,
-  "failCount": 0,
-  "totalScenarios": 10
+  "prerequisite": "Resolve or formally approve source-backed opening-stock and reservation lineage, rerun disposable migration to PASSED, then execute real browser scenarios."
 }

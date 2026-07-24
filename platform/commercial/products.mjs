@@ -122,9 +122,9 @@ export function getProducts(db, { company_id = '*', category_id = null, search =
     SELECT v.*, t.type, t.category_id, t.uom_id, t.list_price
     FROM product_variants v
     JOIN product_templates t ON v.template_id = t.id
-    WHERE (v.company_id = ? OR v.company_id = '*' OR ? = '*') AND v.is_active = 1
+    WHERE v.company_id = ? AND v.is_active = 1
   `;
-  const params = [company_id, company_id];
+  const params = [company_id];
 
   if (category_id) {
     sql += ` AND t.category_id = ?`;

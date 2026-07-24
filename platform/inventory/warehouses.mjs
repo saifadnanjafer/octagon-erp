@@ -4,7 +4,7 @@ function makeId(prefix = 'wh') {
   return `${prefix}_${crypto.randomBytes(8).toString('hex')}`;
 }
 
-export function createWarehouse(db, { company_id = '*', name, code }) {
+export function createWarehouse(db, { company_id = '*', branch_id = null, name, code }) {
   if (!name || !code) throw new Error('Warehouse name and code are required');
   const now = new Date().toISOString();
   const whId = makeId('wh');
@@ -42,6 +42,14 @@ export function createWarehouse(db, { company_id = '*', name, code }) {
     VALUES (?, ?, ?, ?, 'Output', ?, 'internal', 0, ?)
   `).run(outputLocId, company_id, whId, viewLocId, `${code}/Output`, now);
 
+  if (branch_id) {
+    db.prepare(`
+      INSERT INTO warehouse_branch_scopes (
+        warehouse_id, company_id, branch_id, created_at
+      ) VALUES (?, ?, ?, ?)
+    `).run(whId, company_id, branch_id, now);
+  }
+
   return db.prepare(`SELECT * FROM warehouses WHERE id = ?`).get(whId);
 }
 
@@ -64,15 +72,23 @@ export function createStockLocation(db, { company_id = '*', warehouse_id = null,
   return db.prepare(`SELECT * FROM stock_locations WHERE id = ?`).get(locId);
 }
 
-export function getWarehouses(db, { company_id = '*' } = {}) {
+export function getWarehouses(db, { company_id = '*', branch_id = null } = {}) {
+  if (branch_id) {
+    return db.prepare(`
+      SELECT warehouse.*
+      FROM warehouses warehouse
+      JOIN warehouse_branch_scopes scope ON scope.warehouse_id = warehouse.id
+      WHERE warehouse.company_id = ? AND scope.branch_id = ? AND warehouse.is_active = 1
+    `).all(company_id, branch_id);
+  }
   return db.prepare(`
-    SELECT * FROM warehouses WHERE (company_id = ? OR company_id = '*' OR ? = '*') AND is_active = 1
-  `).all(company_id, company_id);
+    SELECT * FROM warehouses WHERE company_id = ? AND is_active = 1
+  `).all(company_id);
 }
 
 export function getLocations(db, { company_id = '*', warehouse_id = null } = {}) {
-  let sql = `SELECT * FROM stock_locations WHERE (company_id = ? OR company_id = '*' OR ? = '*')`;
-  const params = [company_id, company_id];
+  let sql = 'SELECT * FROM stock_locations WHERE company_id = ?';
+  const params = [company_id];
   if (warehouse_id) {
     sql += ` AND warehouse_id = ?`;
     params.push(warehouse_id);

@@ -1,17 +1,18 @@
-# Phase 04.5 — Legacy Writer Retirement Report
+# Legacy Writer Retirement
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Status: **IMPLEMENTED AS A DORMANT STRANGLER; NOT RETIRED**
 
----
+`server.js` maps protected legacy paths to:
 
-## 1. Writer Retirement Audit
+- `COMMERCIAL_CANONICAL_AUTHORITY_REQUIRED`
+- `INVENTORY_CANONICAL_AUTHORITY_REQUIRED`
+- `SALES_CANONICAL_AUTHORITY_REQUIRED`
+- `PROCUREMENT_CANONICAL_AUTHORITY_REQUIRED`
+- `POS_CANONICAL_AUTHORITY_REQUIRED`
+- `WORK_ITEM_CANONICAL_AUTHORITY_REQUIRED`
 
-Direct un-governed write attempts to retired legacy storage paths return machine-readable authority errors:
+It guards `/api/db`, `/api/collection`, and `/api/record`, including bulk/full-state writes. Finance protection remains active from Phase 03. Phase 04 protection activates only when `phase04.canonical_cutover` is enabled.
 
-- `omni.materials` -> `COMMERCIAL_CANONICAL_AUTHORITY_REQUIRED`
-- `customers` / `suppliers` -> `COMMERCIAL_CANONICAL_AUTHORITY_REQUIRED`
-- `stock_moves` / `quants` -> `INVENTORY_CANONICAL_AUTHORITY_REQUIRED`
-- `omni.projectHub.tasks` -> `WORK_ITEM_CANONICAL_AUTHORITY_REQUIRED`
+The flag is intentionally disabled. Therefore `omni.materials`, stock service writes, legacy quants/moves/transfers/reservations, customer/supplier/sales/purchase/POS/task arrays, Kanban mutation, and protected generic CRUD are not claimed retired.
 
-Governance strangler strips writes to these keys and routes mutations exclusively through canonical ActionExecutor actions.
+Removal criterion: successful migration/reconciliation, read parity, real browser proof, action/runtime security proof, then explicit cutover activation.

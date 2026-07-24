@@ -59,9 +59,9 @@ export function getParties(db, { company_id = '*', role = null, search = null })
   let sql = `
     SELECT DISTINCT p.* FROM parties p
     LEFT JOIN party_roles r ON p.id = r.party_id
-    WHERE (p.company_id = ? OR p.company_id = '*' OR ? = '*')
+    WHERE p.company_id = ?
   `;
-  const params = [company_id, company_id];
+  const params = [company_id];
 
   if (role) {
     sql += ` AND r.role = ?`;
@@ -82,8 +82,8 @@ export function getParties(db, { company_id = '*', role = null, search = null })
 
 export function getParty(db, { id, company_id = '*' }) {
   const party = db.prepare(`
-    SELECT * FROM parties WHERE id = ? AND (company_id = ? OR company_id = '*' OR ? = '*')
-  `).get(id, company_id, company_id);
+    SELECT * FROM parties WHERE id = ? AND company_id = ?
+  `).get(id, company_id);
 
   if (!party) return null;
 

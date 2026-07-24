@@ -143,7 +143,8 @@ export async function migrationStatus({ dbPath, migrationsDir = defaultMigration
 export function backupBeforeMigration(dialect, dbPath, backupDir) {
   fs.mkdirSync(backupDir, { recursive: true });
   const stamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
-  const backupPath = path.join(backupDir, `pre-migration-${stamp}.db`);
+  const nonce = crypto.randomBytes(6).toString('hex');
+  const backupPath = path.join(backupDir, `pre-migration-${stamp}-${process.pid}-${nonce}.db`);
   dialect.backup(dbPath, backupPath);
   return backupPath;
 }

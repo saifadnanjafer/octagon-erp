@@ -1,15 +1,16 @@
-# Phase 04.5 — UI Cutover Report
+# UI Cutover Report
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Status: **NOT ACTIVATED - BLOCKED**
 
----
+No Phase 04 page is claimed cut over. `index.html`, `app.js`, `views/`, `modules/`, and `services/stockService.js` remain on inherited behavior because the disposable migration cannot reconcile stock, reservations, valuation, or GL.
 
-## 1. Octagon Shell UI Cutover Summary
+Backend routes/actions exist and the server strangler is ready behind `phase04.canonical_cutover`, but enabling it now would strand or misstate 401 units, 86 reservations, and IQD 1,963,000.
 
-- **Materials Page:** Renders `product_templates` with type='consu' or raw material categories.
-- **Inventory Page:** Renders `stock_quants` and `stock_moves` via `/api/v1/inventory/*`.
-- **Customers & Suppliers:** Renders canonical `parties` filtered by role.
-- **Sales & Procurement:** Renders `sale_orders` and `purchase_orders` backed by canonical APIs.
-- **Task Manager & Kanban:** Renders `work_items` via `/api/v1/work-items`.
-- **POS Interface:** Operates against `/api/v1/action/pos:order:process`.
+Consequences:
+
+- no legacy Phase 04 writer denial is active;
+- no Material/Customer/Supplier/Inventory/Sales/Procurement/POS/Task UI parity claim is made;
+- no real Phase 04 browser scenarios were run;
+- Arabic RTL, English LTR, deep links, role views, and mobile behavior were preserved by avoiding an unsafe partial UI rewrite.
+
+Safest next step is a disposable acceptance cutover after the source-policy decision, not a live-shell edit against unreconciled facts.

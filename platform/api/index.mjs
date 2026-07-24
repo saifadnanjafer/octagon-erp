@@ -190,7 +190,11 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
           // distinguishable from server faults.
           if (actionError && typeof actionError.code === "string" && actionError.code) {
             const denial = /AUTHORITY|PERMISSION|NO_GRANT|DENIED/.test(actionError.code);
-            return sendJson(res, denial ? 403 : 422, envelope(null, actionError.code + ": " + actionError.message, null, ctx.correlationId));
+            return sendJson(
+              res,
+              actionError.statusCode || (denial ? 403 : 422),
+              envelope(null, actionError.code + ": " + actionError.message, null, ctx.correlationId),
+            );
           }
           throw actionError;
         }
@@ -198,8 +202,8 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
 
       return sendJson(res, 404, envelope(null, 'unknown route', null, ctx.correlationId));
     } catch (error) {
-      const status = error.statusCode || error.code === 'PROTECTED_ENTITY_MUTATION' ? 403 : 500;
-      const safeMessage = error.statusCode ? error.message : 'internal error';
+      const status = error.statusCode || (error.code === 'PROTECTED_ENTITY_MUTATION' ? 403 : 500);
+      const safeMessage = error.statusCode || error.code === 'PROTECTED_ENTITY_MUTATION' ? error.message : 'internal error';
       return sendJson(res, status, envelope(null, safeMessage, null, ctx.correlationId));
     }
   }

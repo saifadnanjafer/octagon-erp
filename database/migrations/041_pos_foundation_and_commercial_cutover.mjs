@@ -19,7 +19,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04 Wave F POS & Cutover Migration',
+  sourceProvenance: 'Phase 04 Wave F POS & Cutover Migration',
 
   up(db, { dialect }) {
     // 1. POS Shared Engine

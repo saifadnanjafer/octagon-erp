@@ -1,60 +1,45 @@
-# Phase 04.5 Remediation — Starting State Verification Report
+# Phase 04 Independent Remediation Starting State
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
-**Repository:** `saifadnanjafer/octagon-erp`  
-**Workspace Root:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0`  
-**Starting Source Branch:** `phase-04/inventory-sales-procurement`  
-**Starting Source Commit:** `93067bc1f12553e4b73e26297e47448818c22cd8`  
-**Remediation Branch:** `remediation/phase-04-canonical-consolidation`  
+Recorded by OpenAI `gpt-5.6-sol` (xhigh) on 2026-07-24.
 
----
+## Repository and branch facts
 
-## 1. Remote & Local Synchronization Verification
+- Repository root: `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`
+- Origin: `https://github.com/saifadnanjafer/octagon-erp.git`
+- Phase 04 source branch: `origin/phase-04/inventory-sales-procurement`
+- Resolved source commit: `93067bc1f12553e4b73e26297e47448818c22cd8` (matches the assigned commit)
+- Phase 03 prerequisite: `e3f23fdecf218c2fe9cc955bf9e9cb7f00057d23`
+- Ancestry command: `git merge-base --is-ancestor e3f23fd 93067bc`; exit `0`
+- Active remediation branch: `remediation/phase-04-canonical-consolidation`
+- Starting remediation HEAD inherited by this independent run: `56e273f1f2f09fa080e9c70c37eb4173d9a12588`
+- Inherited remediation commits after the source attempt: `51a49203bf59ed1c237f87734daa7fc2518c9a8b`, `56e273f1f2f09fa080e9c70c37eb4173d9a12588`
+- `origin/main` observed at `8815b00b2c5281167aad3bbe8370270efffb61b8`; it was not checked out, merged, or pushed.
+- Migrations 001-035 diff between Phase 03 and source Phase 04: empty (`git diff --quiet ...`; exit `0`).
+- Phase 05: no Phase 05 module/migration was started. Existing Phase 03 comments/interfaces that reserve future Phase 05 boundaries were preserved.
 
-- **Remote Origin URL:** `https://github.com/saifadnanjafer/octagon-erp.git`
-- **Remote Branch (`origin/phase-04/inventory-sales-procurement`):** `93067bc1f12553e4b73e26297e47448818c22cd8`
-- **Local Branch (`phase-04/inventory-sales-procurement`):** `93067bc1f12553e4b73e26297e47448818c22cd8`
-- **Branch Ancestry:** Confirmed source branch descends from `remediation/phase-03-final-cutover` (`e3f23fdecf218c2fe9cc955bf9e9cb7f00057d23`).
-- **Working Tree State:** Clean (`nothing to commit, working tree clean`).
-- **Operational Database State:** `database.db` SHA256 is `5f4948285d904f5d6ca955157d5d57622b9352508dc0833b3375dc3c1c474ecb` (100% untouched).
-- **Immutable Migrations (001–035):** Untouched.
+## Operational data safety
 
----
+- Source database: `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp\database.db`
+- SHA-256 before and after disposable migration: `36da81437da7383c9ec42bc9b15f6ace8d99d18e9e1d8bd6907262a7a4c106c5`
+- Size before and after: `17,084,416` bytes
+- Source timestamp: `2026-07-23T21:16:27.758Z`
+- The source was opened only for byte copying/hash/stat operations by `scripts/migrate_legacy_data.mjs`; canonical migrations ran on an OS-temporary copy.
+- The running operational server and `database.db` were not restarted, migrated, or written by this remediation.
 
-## 2. Phase 04 File Inventory Audit (Commit `e3f23fd` vs `93067bc`)
+## Source-attempt diff classification
 
-Total files added in Phase 04 attempt: **41 files (+3,470 insertions, -1 deletion)**.
+The source attempt changed 41 files / approximately 3,470 lines relative to Phase 03. Its valid core was migrations 036-041 plus domain modules under `platform/commercial`, `platform/inventory`, `platform/wms`, `platform/sales`, `platform/procurement`, and `platform/pos`.
 
-### Migrations Added (6 files)
-1. `database/migrations/036_party_product_uom_pricing_foundation.mjs`
-2. `database/migrations/037_warehouse_stock_ledger_valuation.mjs`
-3. `database/migrations/038_wms_operations_cycle_counts_landed_cost.mjs`
-4. `database/migrations/039_crm_sales_contracts_commissions.mjs`
-5. `database/migrations/040_suppliers_procurement_threeway_match.mjs`
-6. `database/migrations/041_pos_foundation_and_commercial_cutover.mjs`
+| Class | Source-attempt paths | Independent finding |
+|---|---|---|
+| Schema | `database/migrations/036_*.mjs` through `041_*.mjs` | Valuable foundation; dependency/provenance metadata needed correction |
+| Domain engine | `platform/commercial/**`, `inventory/**`, `wms/**`, `sales/**`, `procurement/**`, `pos/**` | Valuable foundation; several engines were disconnected from the real action/runtime contract |
+| Runtime integration | `platform/api/**`, `platform-runtime-bridge.mjs` | Incomplete; Express-style assumptions and unregistered handlers |
+| UI integration | closure statements only | No proven canonical shell cutover |
+| Migration | `scripts/migrate_legacy_data.mjs` | Unsafe false-positive implementation; replaced |
+| Tests | `tests/phase04/wave-*.test.mjs`, remediation/browser files | Wave foundations useful; remediation/browser proof swallowed errors or simulated browser behavior |
+| Evidence | `docs/evidence/phase-04*` | Premature closure and incorrect totals |
+| Dead/unmounted code | Phase 04 route/handler surfaces | Present but not all reachable through raw Node HTTP/ActionExecutor |
+| Incomplete adapter | legacy generic CRUD and `services/stockService.js` | Still authoritative because migration/cutover had not passed |
 
-### Domain Engines & Platform Modules (20 files)
-- `platform/commercial/` (`parties.mjs`, `products.mjs`, `uom.mjs`, `pricing.mjs`, `index.mjs`)
-- `platform/inventory/` (`warehouses.mjs`, `ledger.mjs`, `valuation.mjs`, `index.mjs`)
-- `platform/wms/` (`operations.mjs`, `counts.mjs`, `landed_cost.mjs`, `index.mjs`)
-- `platform/sales/` (`crm.mjs`, `orders.mjs`, `contracts.mjs`, `index.mjs`)
-- `platform/procurement/` (`governance.mjs`, `rfq.mjs`, `orders.mjs`, `matching.mjs`, `index.mjs`)
-- `platform/pos/` (`session.mjs`)
-- `platform/api/` (`commercial.mjs`)
-
-### Test Suites (6 files)
-- `tests/phase04/wave-a.test.mjs`
-- `tests/phase04/wave-b.test.mjs`
-- `tests/phase04/wave-c.test.mjs`
-- `tests/phase04/wave-d.test.mjs`
-- `tests/phase04/wave-e.test.mjs`
-- `tests/phase04/wave-f.test.mjs`
-
-### Evidence Reports (4 files)
-- `docs/evidence/phase-04/phase-03-prerequisite-verification.md`
-- `docs/evidence/phase-04/local-source-inventory.md`
-- `docs/evidence/phase-04/model-execution-record.md`
-- `docs/evidence/phase-04/PHASE_04_CLOSURE.md`
-
-All 41 files are preserved intact for Phase 04.5 remediation.
+The independent worktree was clean before this run. All current modifications are part of this remediation or machine-readable browser evidence generated by the recorded commands.

@@ -3088,11 +3088,54 @@ export function postSourceFact(dialect, ctx, input) {
   submitDocument(dialect, ctx, { document_id: doc.id });
   approveDocument(dialect, ctx, { document_id: doc.id });
   const posted = postDocument(dialect, ctx, { document_id: doc.id });
+  const sourceDocumentType = input.source_document_type
+    || (input.fact_type === 'sales_invoice_posting' ? 'sale_order' : null)
+    || (input.fact_type === 'purchase_bill_posting' ? 'purchase_order' : null);
+  if (sourceDocumentType) {
+    const hasLineFacts = dialect.prepare(`
+      SELECT 1 FROM sqlite_master
+      WHERE type = 'table' AND name = 'commercial_finance_line_facts'
+    `).get();
+    if (hasLineFacts) {
+      const insertFact = dialect.prepare(`
+        INSERT INTO commercial_finance_line_facts (
+          id, company_id, finance_document_id, source_document_type,
+          source_document_id, source_line_id, product_id, quantity,
+          fact_state, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'posted', ?)
+      `);
+      for (const line of input.lines) {
+        if (!line.source_line_id || !(Number(line.quantity) > 0)) continue;
+        insertFact.run(
+          `cff_${crypto.randomUUID()}`,
+          companyId,
+          posted.id,
+          sourceDocumentType,
+          String(input.source_id),
+          String(line.source_line_id),
+          line.product_id ? String(line.product_id) : null,
+          Number(line.quantity),
+          new Date().toISOString(),
+        );
+      }
+    }
+  }
   return { document_id: posted.id, fact_type: input.fact_type, source_id: String(input.source_id), schema_version: schema.schema_version };
 }
 
 export function reverseSourceFact(dialect, ctx, input) {
-  return reverseDocument(dialect, ctx, { document_id: input.document_id, reason: input.reason || 'source fact reversal' });
+  const reversed = reverseDocument(dialect, ctx, { document_id: input.document_id, reason: input.reason || 'source fact reversal' });
+  const hasLineFacts = dialect.prepare(`
+    SELECT 1 FROM sqlite_master
+    WHERE type = 'table' AND name = 'commercial_finance_line_facts'
+  `).get();
+  if (hasLineFacts) {
+    dialect.prepare(`
+      UPDATE commercial_finance_line_facts SET fact_state = 'reversed'
+      WHERE finance_document_id = ?
+    `).run(input.document_id);
+  }
+  return reversed;
 }
 
 export { ACCOUNT_TYPES, JOURNAL_TYPES, DOCUMENT_TYPES };

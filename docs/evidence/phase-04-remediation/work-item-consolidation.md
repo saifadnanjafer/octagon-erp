@@ -1,20 +1,16 @@
-# Phase 04.5 — Work Item Consolidation Report
+# Work Item Consolidation
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+Canonical owner: `platform/work_items/work_items.mjs`.
 
----
+Migration 043 adds relations, watchers, approvals, version/history support, source/source-line references, and governance tables around the existing `work_items` foundation. Registered actions create, update, archive/delete, and approve through ActionExecutor.
 
-## 1. Single Task Authority Consolidation
+`tests/phase04/canonical_work_items.test.mjs` proves:
 
-- **Canonical Table:** `work_items` table created in Migration 042.
-- **Consolidated Systems:**
-  1. Task Manager (`source_type='task'`)
-  2. Kanban Board (view over `work_items` by status/stage)
-  3. Work Orders (`source_type='work_order'`)
-  4. Helpdesk Tickets (`source_type='helpdesk'`)
-  5. QC Rework (`source_type='qc'`)
-  6. Maintenance Actions (`source_type='maintenance'`)
-  7. Mobile My Tasks (`assigned_user_id=currentUser`)
-  8. Workshop TV (active work items dashboard)
-- **Shared Fact Consistency:** A status update in any view (e.g. Kanban) immediately updates the single `work_items` row and reflects across all other views.
+- one versioned record is read consistently through Task Manager/Kanban-style queries;
+- parent/dependency/watcher relations persist;
+- approval transition and optimistic version checks work;
+- company scope is enforced.
+
+Disposable migration mapped 3 work orders, 5 Task Manager tasks, and 3 Kanban cards into 11/11 Work Items with stable source keys and idempotent rerun.
+
+Live Task Manager/Kanban/Calendar/mobile/TV/project/helpdesk/QC/maintenance writers were not converted after the stock/GL hard stop. The backend authority is ready, but exclusive UI authority is not claimed.

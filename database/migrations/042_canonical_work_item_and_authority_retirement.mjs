@@ -18,7 +18,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04.5 Canonical Work Item and Reservation Remediation Migration',
+  sourceProvenance: 'Phase 04.5 Canonical Work Item and Reservation Remediation Migration',
 
   up(db, { dialect }) {
     // 1. Canonical Work Items Table

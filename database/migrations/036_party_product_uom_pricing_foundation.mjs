@@ -21,7 +21,7 @@ export const migration = {
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'reversible',
-  provenance: 'Phase 04 Wave A Commercial Master Migration',
+  sourceProvenance: 'Phase 04 Wave A Commercial Master Migration',
 
   up(db, { dialect }) {
     // 1. Shared Party Identity

@@ -1,14 +1,11 @@
-# Phase 04.5 — POS Lifecycle Integration Report
+# POS Lifecycle Integration
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+`platform/pos/session.mjs` implements a governed transaction:
 
----
+cash-shift ownership -> POS session -> canonical customer/product/pricing/tax -> payment configuration -> stock operation -> fiscal/GL posting -> cashbox link -> paid order -> counted close.
 
-## 1. End-to-End POS Session & Checkout
+`tests/phase04/canonical_pos.test.mjs` proves the success path and injected rollback: after the injected failure, no paid order, stock deduction, fiscal link, GL effect, or cashbox close survives. The legacy Wave F test now verifies that a cashier cannot open a POS session without an active owned Phase 03 cash shift.
 
-1. **Session Opening:** `pos:session:open` creates session in 'opened' state.
-2. **Order Checkout:** `pos:order:process` inserts `pos_orders` and lines.
-3. **Stock Deduction:** Immediately posts outbound `stock_moves` from warehouse stock to customer location.
-4. **Payment Recording:** `pos_payments` records cash/card tender.
-5. **Session Closing & Reconciliation:** Verifies total cash against cashbox balance.
+Idempotency keys cover POS and per-line stock effects; payment totals must equal the server-computed fiscal total. Session/cash-shift cashier identity is server context.
+
+Offline replay UI, complete payment-method/cash-difference approval matrix, actual source POS reconciliation, and browser checkout remain unproven. Live POS cutover is blocked.

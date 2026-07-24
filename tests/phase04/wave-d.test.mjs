@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { setup } from '../phase02/harness.mjs';
-import { parties, products, pricing, uom } from '../../platform/commercial/index.mjs';
+import { parties, products, uom } from '../../platform/commercial/index.mjs';
 import { warehouses } from '../../platform/inventory/index.mjs';
-import { crm, orders, contracts } from '../../platform/sales/index.mjs';
+import { crm, orders } from '../../platform/sales/index.mjs';
 
 async function setupDb() {
   const { dialect } = await setup('wave-d');
@@ -50,7 +50,7 @@ test('Wave D: Quotation, Pricing Integration, and Order Totals', async () => {
   assert.equal(quote.amount_total, 30000);
 });
 
-test('Wave D: Order Confirmation, WMS Delivery Picking, and Fiscal Invoice Request', async () => {
+test('Wave D: unscoped direct order confirmation is rejected', async () => {
   const db = await setupDb();
   const customer = parties.createParty(db, { name: 'Sumer Logistics' });
   const wh = warehouses.createWarehouse(db, { name: 'Sales WH', code: 'SLS1' });
@@ -66,14 +66,9 @@ test('Wave D: Order Confirmation, WMS Delivery Picking, and Fiscal Invoice Reque
     lines: [{ product_id: prod.default_variant_id, product_uom_qty: 10, price_unit: 400 }],
   });
 
-  // Confirm order
-  const confirmed = orders.confirmSalesOrder(db, { order_id: quote.id, warehouse_id: wh.id });
-  assert.equal(confirmed.order.state, 'sale');
-  assert.ok(confirmed.delivery_picking_id);
-
-  // Generate Fiscal Invoice Request for Phase 03 Finance posting
-  const invReq = orders.createFiscalInvoiceRequest(db, { order_id: quote.id });
-  assert.equal(invReq.document_type, 'customer_invoice');
-  assert.equal(invReq.amount_total, 4000);
-  assert.equal(invReq.status, 'pending_canonical_finance_posting');
+  assert.throws(
+    () => orders.confirmSalesOrder(db, { order_id: quote.id, warehouse_id: wh.id }),
+    /Sale order not found/,
+  );
+  assert.equal(orders.getSaleOrder(db, quote.id).state, 'draft');
 });

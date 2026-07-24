@@ -1,21 +1,13 @@
-# Phase 04.5 — Octagon VNext Salvage Ledger
+# VNext Salvage Ledger
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+The Phase 04 source attempt already contained domain structures attributed to earlier Commercial VNext work. This independent run did not copy additional VNext files.
 
----
+| Pattern | Current Octagon destination | Decision |
+|---|---|---|
+| Party/product/UOM/pricing domain shape | `platform/commercial/**`, migrations 036/043 | preserve and harden |
+| Stock ledger/valuation shape | `platform/inventory/**`, migrations 037/043 | preserve concepts; replace mutable/non-atomic behavior |
+| WMS operations/landed cost | `platform/wms/**`, migrations 038/043 | preserve and link to canonical stock/GL |
+| Sales/procurement | `platform/sales/**`, `platform/procurement/**` | preserve and complete source-line fulfilment/fiscal integration |
+| POS | `platform/pos/**` | preserve and complete cash-shift/payment/stock/fiscal/GL transaction |
 
-## 1. Salvage Audit from `octagon-erp-commercial-vnext`
-
-| Salvaged Module | Path in VNext | Target Octagon Module | Integration Status |
-| :--- | :--- | :--- | :--- |
-| **Parties & Roles** | `vnext/server/modules/parties/` | `platform/commercial/parties.mjs` | Integrated & Verified |
-| **Products & UOM** | `vnext/server/modules/products/` | `platform/commercial/products.mjs` | Integrated & Verified |
-| **Pricing Engine** | `vnext/server/modules/pricing/` | `platform/commercial/pricing.mjs` | Integrated & Verified |
-| **Warehouses & Locations**| `vnext/server/modules/warehouses/`| `platform/inventory/warehouses.mjs` | Integrated & Verified |
-| **Stock Ledger & Valuation**| `vnext/server/modules/ledger/`| `platform/inventory/ledger.mjs` | Integrated & Verified |
-| **WMS Pickings & Counts** | `vnext/server/modules/wms/` | `platform/wms/operations.mjs` | Integrated & Verified |
-| **Landed Cost** | `vnext/server/modules/landed_cost/`| `platform/wms/landed_cost.mjs` | Integrated & Verified |
-| **CRM & Sales Orders** | `vnext/server/modules/sales/` | `platform/sales/orders.mjs` | Integrated & Verified |
-| **Procurement & Matching**| `vnext/server/modules/procurement/`| `platform/procurement/orders.mjs` | Integrated & Verified |
-| **POS Shared Session** | `vnext/server/modules/pos/` | `platform/pos/session.mjs` | Integrated & Verified |
+Authority always remains in this Octagon repository. VNext is not a runtime dependency, writer, database, or deployed service.

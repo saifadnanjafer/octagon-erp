@@ -1,46 +1,22 @@
-# Phase 04.5 — Runtime API Integration Report
+# Runtime API Integration
 
-**Executing Model:** Gemini 3.6 Flash (High)  
-**Date:** 2026-07-23  
+The active application is the raw Node HTTP runtime in `server.js`.
 
----
+Implemented surfaces:
 
-## 1. HTTP API Endpoint Mounting
+- `platform/api/index.mjs::handlePlatformApi`
+- `platform/api/commercial.mjs::handleCommercialQuery`
+- `platform-runtime-bridge.mjs::createPlatformAuthority`
+- `server.js` handling `/api/v1/*` and `/api/x/action/*`
 
-The platform API router in `platform/api/index.mjs` and `platform/api/commercial.mjs` is mounted directly in raw Node HTTP (`server.js`) via `platform-runtime-bridge.mjs`.
+Queries cover parties, products, UOM/pricing, warehouses/locations/balances/reservations/operations/valuation, sales, procurement, POS, and Work Items. Governed actions flow through the Phase 01 registry/executor rather than Express-style route handlers.
 
-### Query Endpoints (GET /api/v1/...)
+`tests/phase04/runtime_http.test.mjs` starts a real raw HTTP server on a disposable database and proves:
 
-- `/api/v1/commercial/parties` — Fetch canonical parties (filtered by company, role, search)
-- `/api/v1/commercial/products` — Fetch canonical product templates & variants
-- `/api/v1/commercial/uoms` — Fetch canonical UOM categories and conversion units
-- `/api/v1/inventory/warehouses` — Fetch warehouses and stock locations
-- `/api/v1/inventory/quants` / `/api/v1/inventory/balances` — Fetch stock balances
-- `/api/v1/sales/orders` / `/api/v1/sales/orders/:id` — Fetch sales orders
-- `/api/v1/procurement/orders` / `/api/v1/procurement/orders/:id` — Fetch purchase orders
-- `/api/v1/work-items` / `/api/v1/work-items/:id` — Fetch canonical Work Items
+- unauthenticated request -> `401`;
+- cross-company spoof -> `403`;
+- scoped query envelope and correlation ID;
+- governed action reaches the ActionExecutor;
+- route list is mounted.
 
-### Command Endpoints (POST /api/v1/action/:actionId)
-
-- `/api/v1/action/party:create`
-- `/api/v1/action/product:template:create`
-- `/api/v1/action/warehouse:create`
-- `/api/v1/action/stock:move:post`
-- `/api/v1/action/wms:picking:create`
-- `/api/v1/action/sales:quotation:create`
-- `/api/v1/action/sales:order:confirm`
-- `/api/v1/action/procurement:order:create`
-- `/api/v1/action/procurement:order:confirm`
-- `/api/v1/action/pos:session:open`
-- `/api/v1/action/pos:order:process`
-- `/api/v1/action/work_item:create`
-- `/api/v1/action/work_item:update`
-
----
-
-## 2. Server-Side Context & Envelope Discipline
-
-Every request:
-1. Resolves `ctx` from `octagon_session` cookie via `resolveContextFromRequest`.
-2. Evaluates permission grants via `PermissionEvaluator`.
-3. Wraps response in stable JSON envelope `{ success, data, error, meta, correlationId }`.
+The legacy generic CRUD strangler in `server.js` maps protected collections to exact authority error codes. Finance denial remains active from Phase 03. Phase 04 denial is conditional on `phase04.canonical_cutover`; this flag remains disabled because actual-data reconciliation failed.

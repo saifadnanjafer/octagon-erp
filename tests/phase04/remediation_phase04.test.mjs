@@ -30,8 +30,8 @@ async function withFreshDatabase(name, callback) {
 
 test('Phase 04 remediation fresh install applies every migration without swallowing failures', async () => {
   await withFreshDatabase('fresh-install', (db, result) => {
-    assert.equal(result.executed.length, 43);
-    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n, 43);
+    assert.equal(result.executed.length, 44);
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n, 44);
     assert.equal(db.prepare(`
       SELECT COUNT(*) AS n
       FROM platform_modules

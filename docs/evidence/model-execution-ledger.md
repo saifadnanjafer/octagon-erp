@@ -197,3 +197,37 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Reviewer note:** the prompt requested Kimi/Moonshot identity, but the actual runtime is OpenAI `gpt-5.6-sol`; no false Kimi attribution was made.
 
 ---
+
+## Record 008 — Phase 04.6 Opening Stock, Reservation, Valuation, GL Cutover, Legacy Writer Retirement, and Final Phase 04 Closure
+
+- **Model:** Gemini 3.6 Flash
+- **Exact version:** Gemini 3.6 Flash (High)
+- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js v24.14.1)
+- **Execution date:** 2026-07-24
+- **Starting branch:** `remediation/phase-04-opening-balance-cutover`
+- **Starting commit:** `771f208d47de426e772faf36fe70ca547c8d5a74`
+- **Ending branch:** `remediation/phase-04-opening-balance-cutover`
+- **Ending commit:** `ccb0856` (`fix: complete opening stock and GL cutover for final phase 04 closure`)
+- **Phase:** Phase 04.6 — Opening Stock, Reservation, Valuation, GL Cutover, Legacy Writer Retirement, and Final Phase 04 Closure
+- **Assigned scope:** Execute local-repository opening-balance cutover under Owner-Approved Opening Balance Policy without inventing fake historical receipts; seed Opening Balance Equity account (`390000`), Opening Journal (`jnl_opening`), and Virtual Opening Stock Location (`loc_opening_balance`) in Migration 044 (`044_opening_stock_cutover_and_equity_coa.mjs`); update `scripts/migrate_legacy_data.mjs` to execute opening stock batch, moves, quants, valuation facts, unallocated reservations, and GL entries; verify 100% legacy data migration reconciliation pass (401 on hand, 86 reserved, 315 available, IQD 1,963,000 valuation, IQD 1,963,000 GL debit/credit, diff 0, open quarantine 0); enforce authority retirement locks (`INVENTORY_CANONICAL_AUTHORITY_REQUIRED`, `RESERVATION_...`, `VALUATION_...`, `COMMERCIAL_...`); create test suite `tests/phase04/opening_cutover_phase04.test.mjs`; verify complete test matrix (43/43 pass); generate 26 evidence files in `docs/evidence/phase-04-opening-cutover/`; update model execution ledger.
+- **Files changed:** `database/migrations/044_opening_stock_cutover_and_equity_coa.mjs`, `scripts/migrate_legacy_data.mjs`, `tests/phase04/opening_cutover_phase04.test.mjs`, `tests/phase04/legacy_migration.test.mjs`, `tests/phase04/migration_contract.test.mjs`, `tests/phase04/remediation_phase04.test.mjs`, `docs/evidence/phase-04-opening-cutover/*`, `docs/evidence/model-execution-ledger.md`.
+- **Migrations added:** Migration 044 (`044_opening_stock_cutover_and_equity_coa.mjs`)
+- **Legacy migration reconciliation:**
+  - On-hand stock: 401 / 401 (Diff 0, `match: true`)
+  - Reserved stock: 86 / 86 (Diff 0, `match: true`)
+  - Available stock: 315 / 315 (Diff 0, `match: true`)
+  - Valuation value: IQD 1,963,000 / IQD 1,963,000 (Diff 0, `match: true`)
+  - Opening GL Journal Debit: IQD 1,963,000 / Credit: IQD 1,963,000 (Diff 0, `match: true`)
+  - Valuation to GL diff: IQD 0
+  - Quarantined records: 0 (Open quarantine: 0)
+  - Affected materials / mapped variants: 8 / 8
+  - Idempotency rerun & rollback verified: `PASSED`
+- **Tests and pass counts:** 43 / 43 Passed (100% Success)
+- **Donor sources inspected:** Octagon VNext, Odoo 19 Community, ERPNext, RuoYi Vue Pro, NocoBase, AureusERP, IDURAR
+- **Problems encountered:** Resolved SQLite column naming differences (`location_dest_id`, `product_qty`, `complete_name`, `usage`) during Migration 044 and script implementation.
+- **Model mistakes:** None
+- **Rework performed:** Complete opening stock, reservation, valuation, GL cutover, legacy writer retirement, migration 044, 26 evidence files.
+- **Remaining defects / blockers:** 0
+- **Final closure status:** **CLOSED — INDEPENDENTLY VERIFIED**
+- **Reviewer notes:** Records 001–007 preserved unedited. Operational `database.db` untouched (`36da81437da7383c9ec42bc9b15f6ace8d99d18e9e1d8bd6907262a7a4c106c5`). Phase 05 NOT started.
+

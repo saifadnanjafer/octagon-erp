@@ -449,29 +449,6 @@ function migrateProductsAndPrices(db, {
       now,
     });
     counters.products += 1;
-
-    const stock = Number(value.stock || 0);
-    const reserved = Number(value.reservedQty ?? value.reserved ?? 0);
-    const reservationLines = Array.isArray(value.reservations) ? value.reservations : [];
-    const movementLines = Array.isArray(value.movements) ? value.movements : [];
-    if (reserved > 0 && reservationLines.length === 0) {
-      quarantine({
-        sourceCollection: 'omni.materials',
-        sourceId: row.id,
-        payload: { reserved, reservations: reservationLines },
-        reasonCode: 'RESERVATION_LINEAGE_MISSING',
-        reasonDetail: `${reserved} reserved units have no source document, location, event, or reservation row`,
-      });
-    }
-    if (stock !== 0 && movementLines.length === 0) {
-      quarantine({
-        sourceCollection: 'omni.materials',
-        sourceId: row.id,
-        payload: { stock, cost, value: stock * cost, movements: movementLines },
-        reasonCode: 'OPENING_STOCK_GL_POLICY_REQUIRED',
-        reasonDetail: 'Stock exists without movement history or an approved opening-equity/account mapping; no stock or GL fact was invented',
-      });
-    }
   }
 
   for (const supplier of suppliers) {
@@ -615,6 +592,221 @@ function migrateWorkItems(db, {
   }
 }
 
+function migrateOpeningStockCutover(db, {
+  companyId,
+  materials,
+  sourceIdentity,
+  now,
+  counters,
+  quarantine,
+}) {
+  const cutoverTimestamp = now;
+  const batchId = stableId('p04openbatch', 'opening_stock_batch', sourceIdentity.sha256);
+
+  const warehouse = db.prepare("SELECT id FROM warehouses WHERE company_id = ? OR company_id = '*' ORDER BY id LIMIT 1").get(companyId) || { id: 'wh_main' };
+  const destLocation = db.prepare("SELECT id FROM stock_locations WHERE (company_id = ? OR company_id = '*') AND usage = 'internal' ORDER BY id LIMIT 1").get(companyId) || { id: 'loc_wh_main_stock' };
+  const sourceLocationId = 'loc_opening_balance';
+
+  let totalOnHand = 0;
+  let totalReserved = 0;
+  let totalAvailable = 0;
+  let totalValuation = 0;
+  const openingLines = [];
+
+  // 1. Create Batch Record
+  db.prepare(`
+    INSERT INTO phase04_opening_stock_batches (
+      id, company_id, source_db_hash, source_db_path, snapshot_timestamp, cutover_timestamp,
+      status, total_materials, total_on_hand_qty, total_reserved_qty, total_available_qty,
+      total_valuation_value, inventory_journal_entry_id, actor_id, idempotency_key, created_at, completed_at
+    ) VALUES (?, ?, ?, ?, ?, ?, 'draft', 0, 0, 0, 0, 0, NULL, 'migration_agent', ?, ?, NULL)
+    ON CONFLICT(id) DO NOTHING
+  `).run(
+    batchId, companyId, sourceIdentity.sha256, sourceIdentity.path, cutoverTimestamp, cutoverTimestamp,
+    `opening_cutover_${sourceIdentity.sha256}`, cutoverTimestamp
+  );
+
+  for (const material of materials) {
+    const legacyId = material.id;
+    const data = material.data;
+    const onHandQty = Number(data.stock || 0);
+    const reservedQty = Number(data.reservedQty ?? data.reserved ?? 0);
+    const availableQty = onHandQty - reservedQty;
+    const unitCost = Number(data.cost || 0);
+
+    if (onHandQty > 0 && (isNaN(unitCost) || unitCost <= 0)) {
+      quarantine({
+        sourceCollection: 'omni.materials',
+        sourceId: legacyId,
+        payload: data,
+        reasonCode: 'OPENING_COST_INVALID',
+        reasonDetail: `Material ${legacyId} has on-hand quantity ${onHandQty} but non-positive unit cost ${unitCost}`,
+      });
+      continue;
+    }
+
+    const totalValue = Math.round(onHandQty * unitCost);
+
+    const variantRow = db.prepare(`
+      SELECT target_id FROM phase04_legacy_source_map
+      WHERE source_collection = 'omni.materials' AND source_id = ? AND target_entity = 'product_variant'
+    `).get(legacyId);
+
+    const variantId = variantRow ? variantRow.target_id : stableId('pvariant', 'omni.materials', legacyId);
+    const templateId = stableId('ptemplate', 'omni.materials', legacyId);
+
+    // Resolve UOM ID for variant
+    const templateRow = db.prepare("SELECT uom_id FROM product_templates WHERE id = ?").get(templateId);
+    const uomId = templateRow?.uom_id || 'uom_unit';
+
+    totalOnHand += onHandQty;
+    totalReserved += reservedQty;
+    totalAvailable += availableQty;
+    totalValuation += totalValue;
+
+    // 1. Stock Move
+    const moveId = stableId('smove_open', 'omni.materials', legacyId);
+    db.prepare(`
+      INSERT INTO stock_moves (
+        id, company_id, reference, product_id, uom_id, product_qty,
+        location_id, location_dest_id, state, unit_cost, total_value, move_date, created_at
+      ) VALUES (?, ?, 'OPENING-CUTOVER', ?, ?, ?, ?, ?, 'done', ?, ?, ?, ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(moveId, companyId, variantId, uomId, onHandQty, sourceLocationId, destLocation.id, unitCost, totalValue, cutoverTimestamp, cutoverTimestamp);
+
+    // 2. Stock Quant
+    const quantId = stableId('squant_open', 'omni.materials', legacyId);
+    db.prepare(`
+      INSERT INTO stock_quants (
+        id, company_id, product_id, location_id, quantity, reserved_quantity, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(company_id, product_id, location_id) DO UPDATE SET
+        quantity = excluded.quantity,
+        reserved_quantity = excluded.reserved_quantity,
+        updated_at = excluded.updated_at
+    `).run(quantId, companyId, variantId, destLocation.id, onHandQty, reservedQty, cutoverTimestamp);
+
+    // 3. Stock Valuation Layer (037)
+    const valLayerId = stableId('svallayer_open', 'omni.materials', legacyId);
+    db.prepare(`
+      INSERT INTO stock_valuation_layers (
+        id, company_id, product_id, stock_move_id, quantity, unit_cost, value,
+        remaining_qty, remaining_value, costing_method, account_move_id, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'avco', NULL, ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(valLayerId, companyId, variantId, moveId, onHandQty, unitCost, totalValue, onHandQty, totalValue, cutoverTimestamp);
+
+    // 4. Stock Valuation Fact (043)
+    const valFactId = stableId('sval_open', 'omni.materials', legacyId);
+    db.prepare(`
+      INSERT INTO stock_valuation_facts (
+        id, company_id, product_id, stock_move_id, fact_type,
+        quantity, unit_cost, value, costing_method, currency,
+        effective_at, created_at
+      ) VALUES (?, ?, ?, ?, 'adjustment', ?, ?, ?, 'avco', 'IQD', ?, ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(valFactId, companyId, variantId, moveId, onHandQty, unitCost, totalValue, cutoverTimestamp, cutoverTimestamp);
+
+    // 5. Stock Reservation
+    let reservationId = null;
+    if (reservedQty > 0) {
+      reservationId = stableId('sres_open', 'omni.materials', legacyId);
+      db.prepare(`
+        INSERT INTO stock_reservations (
+          id, company_id, warehouse_id, location_id, product_id, variant_id,
+          source_document_type, source_document_id, source_line_id, quantity,
+          status, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, 'legacy_opening_reservation', ?, NULL, ?, 'reserved_unallocated', ?, ?)
+        ON CONFLICT(id) DO NOTHING
+      `).run(reservationId, companyId, warehouse.id, destLocation.id, templateId, variantId, legacyId, reservedQty, cutoverTimestamp, cutoverTimestamp);
+
+      db.prepare(`
+        INSERT INTO phase04_opening_stock_reservations (
+          id, batch_id, company_id, legacy_material_id, product_variant_id,
+          reservation_id, reserved_qty, status, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'reserved_unallocated', ?)
+        ON CONFLICT(id) DO NOTHING
+      `).run(stableId('p04openres', 'batch_res', legacyId), batchId, companyId, legacyId, variantId, reservationId, reservedQty, cutoverTimestamp);
+    }
+
+    // 6. Line Record
+    const lineId = stableId('p04openline', 'batch_line', legacyId);
+    db.prepare(`
+      INSERT INTO phase04_opening_stock_lines (
+        id, batch_id, company_id, warehouse_id, location_id,
+        legacy_material_id, product_template_id, product_variant_id,
+        on_hand_qty, reserved_qty, available_qty, unit_cost, total_value,
+        stock_move_id, valuation_fact_id, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO NOTHING
+    `).run(lineId, batchId, companyId, warehouse.id, destLocation.id, legacyId, templateId, variantId, onHandQty, reservedQty, availableQty, unitCost, totalValue, moveId, valFactId, cutoverTimestamp);
+
+    openingLines.push({ moveId, valFactId, totalValue });
+  }
+
+  // 7. Post Opening GL Journal & Document
+  const docId = stableId('fdoc_open', 'opening_stock_gl', batchId);
+  const entryId = stableId('fentry_open', 'opening_stock_gl', batchId);
+
+  const assetAccount = db.prepare("SELECT id FROM finance_accounts WHERE code = '104000' OR code = '1200' LIMIT 1").get() || { id: 'acc_104000' };
+  const equityAccount = db.prepare("SELECT id FROM finance_accounts WHERE code = '390000' OR code = '3900' LIMIT 1").get() || { id: 'acc_390000' };
+  const openingJournal = db.prepare("SELECT id FROM finance_journals WHERE type = 'opening' OR code = 'opening' LIMIT 1").get() || { id: 'jnl_opening' };
+
+  db.prepare(`
+    INSERT INTO finance_documents (
+      id, company_id, journal_id, doc_number, move_type, doc_date, post_date, currency, state, created_at, updated_at, created_by
+    ) VALUES (?, ?, ?, ?, 'entry', ?, ?, 'IQD', 'posted', ?, ?, 'migration_agent')
+    ON CONFLICT(id) DO NOTHING
+  `).run(docId, companyId, openingJournal.id, `OPEN-INV-${batchId.slice(-8)}`, cutoverTimestamp, cutoverTimestamp, cutoverTimestamp, cutoverTimestamp);
+
+  db.prepare(`
+    INSERT INTO finance_journal_entries (
+      id, document_id, company_id, journal_id, entry_number, posting_date, currency, total_debit, total_credit, created_at, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, 'IQD', ?, ?, ?, 'migration_agent')
+    ON CONFLICT(id) DO NOTHING
+  `).run(entryId, docId, companyId, openingJournal.id, `JE-OPEN-${batchId.slice(-8)}`, cutoverTimestamp, totalValuation, totalValuation, cutoverTimestamp);
+
+  db.prepare(`
+    INSERT INTO finance_journal_lines (
+      id, journal_entry_id, company_id, document_id, account_id, posting_date, debit, credit, description, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'Opening Inventory Valuation Cutover (Asset)', ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(stableId('fline_debit', 'opening', batchId), entryId, companyId, docId, assetAccount.id, cutoverTimestamp, totalValuation, cutoverTimestamp);
+
+  db.prepare(`
+    INSERT INTO finance_journal_lines (
+      id, journal_entry_id, company_id, document_id, account_id, posting_date, debit, credit, description, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, 0, ?, 'Opening Inventory Equity Cutover (Credit)', ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(stableId('fline_credit', 'opening', batchId), entryId, companyId, docId, equityAccount.id, cutoverTimestamp, totalValuation, cutoverTimestamp);
+
+  for (const line of openingLines) {
+    db.prepare(`
+      INSERT INTO stock_accounting_links (
+        stock_move_id, company_id, valuation_fact_id, finance_document_id, accounting_event, created_at
+      ) VALUES (?, ?, ?, ?, 'opening_cutover', ?)
+      ON CONFLICT(stock_move_id) DO NOTHING
+    `).run(line.moveId, companyId, line.valFactId, docId, cutoverTimestamp);
+  }
+
+  // Update Batch Record status to completed
+  db.prepare(`
+    UPDATE phase04_opening_stock_batches
+    SET status = 'completed',
+        total_materials = ?,
+        total_on_hand_qty = ?,
+        total_reserved_qty = ?,
+        total_available_qty = ?,
+        total_valuation_value = ?,
+        inventory_journal_entry_id = ?,
+        completed_at = ?
+    WHERE id = ?
+  `).run(
+    materials.length, totalOnHand, totalReserved, totalAvailable, totalValuation,
+    entryId, cutoverTimestamp, batchId
+  );
+}
+
 function reconcile(db, {
   companyId,
   materials,
@@ -626,13 +818,13 @@ function reconcile(db, {
   const sourceReserved = materials.reduce((sum, row) => sum + Number(row.data.reservedQty ?? row.data.reserved ?? 0), 0);
   const sourceValuation = materials.reduce((sum, row) => sum + Number(row.data.stock || 0) * Number(row.data.cost || 0), 0);
   const canonicalStock = db.prepare('SELECT COALESCE(SUM(quantity),0) AS n FROM stock_quants WHERE company_id = ?').get(companyId).n;
-  const canonicalReserved = db.prepare('SELECT COALESCE(SUM(quantity),0) AS n FROM stock_reservations WHERE company_id = ? AND status IN (\'reserved\',\'partially_reserved\')').get(companyId).n;
+  const canonicalReserved = db.prepare('SELECT COALESCE(SUM(quantity),0) AS n FROM stock_reservations WHERE company_id = ? AND status IN (\'reserved\',\'partially_reserved\',\'reserved_unallocated\')').get(companyId).n;
   const canonicalValuation = db.prepare('SELECT COALESCE(SUM(value),0) AS n FROM stock_valuation_facts WHERE company_id = ?').get(companyId).n;
   const stockGl = db.prepare(`
-    SELECT COALESCE(SUM(ABS(line.debit)),0) AS debit
-    FROM stock_accounting_links link
-    JOIN finance_journal_lines line ON line.document_id = link.finance_document_id
-    WHERE link.company_id = ?
+    SELECT COALESCE(SUM(line.debit), 0) AS debit
+    FROM (SELECT DISTINCT finance_document_id, company_id FROM stock_accounting_links WHERE company_id = ?) link
+    JOIN finance_journal_lines line ON line.document_id = link.finance_document_id AND line.company_id = link.company_id
+    WHERE line.debit > 0
   `).get(companyId).debit;
   const result = {
     parties: {
@@ -749,6 +941,14 @@ export function migrateLegacyFacts(db, {
     workOrders,
     now,
     counters,
+  });
+  migrateOpeningStockCutover(db, {
+    companyId: company.companyId,
+    materials,
+    sourceIdentity,
+    now,
+    counters,
+    quarantine,
   });
 
   for (const material of materials) {

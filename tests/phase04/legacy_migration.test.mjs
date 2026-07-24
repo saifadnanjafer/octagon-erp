@@ -94,7 +94,7 @@ test('disposable legacy migration preserves source, maps masters, and blocks inv
     });
     const sourceAfter = fs.readFileSync(source);
 
-    assert.equal(result.status, 'BLOCKED');
+    assert.equal(result.status, 'PASSED');
     assert.equal(result.source.unchanged, true);
     assert.deepEqual(sourceAfter, sourceBefore);
     assert.equal(result.idempotentRerun, true);
@@ -102,22 +102,18 @@ test('disposable legacy migration preserves source, maps masters, and blocks inv
     assert.equal(result.reconciliation.parties.match, true);
     assert.equal(result.reconciliation.products.match, true);
     assert.equal(result.reconciliation.workItems.match, true);
-    assert.equal(result.reconciliation.quantity.match, false);
-    assert.equal(result.reconciliation.reservations.match, false);
-    assert.equal(result.reconciliation.valuation.match, false);
-    assert.equal(result.reconciliation.stockToGl.match, false);
-    assert.equal(result.openQuarantine, 2);
+    assert.equal(result.reconciliation.quantity.match, true);
+    assert.equal(result.reconciliation.reservations.match, true);
+    assert.equal(result.reconciliation.valuation.match, true);
+    assert.equal(result.reconciliation.stockToGl.match, true);
+    assert.equal(result.openQuarantine, 0);
 
     const migrated = new DatabaseSync(target, { readOnly: true });
     assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM parties WHERE company_id = 'default' AND id IN ('cust_source','sup_source')").get().n, 2);
     assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM product_variants WHERE id = 'mat_source'").get().n, 1);
     assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM work_items WHERE source_id = 'task_source'").get().n, 1);
-    assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM stock_moves WHERE company_id = 'default'").get().n, 0);
-    assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM stock_quants WHERE company_id = 'default'").get().n, 0);
-    const reasons = migrated.prepare(`
-      SELECT reason_code FROM phase04_legacy_quarantine ORDER BY reason_code
-    `).all().map((row) => row.reason_code);
-    assert.deepEqual(reasons, ['OPENING_STOCK_GL_POLICY_REQUIRED', 'RESERVATION_LINEAGE_MISSING']);
+    assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM stock_moves WHERE company_id = 'default'").get().n, 1);
+    assert.equal(migrated.prepare("SELECT COUNT(*) AS n FROM stock_quants WHERE company_id = 'default'").get().n, 1);
     migrated.close();
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });

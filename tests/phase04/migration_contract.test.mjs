@@ -12,6 +12,7 @@ import {
   runMigrations,
 } from '../../database/migration-runner/index.mjs';
 import { migration as consolidationMigration } from '../../database/migrations/043_phase04_canonical_registry_and_lineage.mjs';
+import { migration as openingCutoverMigration } from '../../database/migrations/044_opening_stock_cutover_and_equity_coa.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const migrationsDir = path.join(repoRoot, 'database', 'migrations');
@@ -25,7 +26,7 @@ function tempWorkspace(prefix) {
   };
 }
 
-test('migration 043 fresh install and rerun are deterministic and carry provenance', async () => {
+test('migration 044 fresh install and rerun are deterministic and carry provenance', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-fresh-');
   try {
     const first = await freshInstall({
@@ -33,7 +34,7 @@ test('migration 043 fresh install and rerun are deterministic and carry provenan
       backupDir: temp.backupDir,
       actor: 'phase04-migration-test',
     });
-    assert.equal(first.executed.at(-1).id, consolidationMigration.id);
+    assert.equal(first.executed.at(-1).id, openingCutoverMigration.id);
     const second = await runMigrations({
       dbPath: temp.dbPath,
       backupDir: temp.backupDir,
@@ -45,10 +46,10 @@ test('migration 043 fresh install and rerun are deterministic and carry provenan
       const provenance = db.prepare(`
         SELECT migration_id, source_provenance
         FROM schema_migrations
-        WHERE migration_id >= '036' AND migration_id <= '043_phase04_canonical_registry_and_lineage'
+        WHERE migration_id >= '036' AND migration_id <= '044_opening_stock_cutover_and_equity_coa'
         ORDER BY migration_id
       `).all();
-      assert.equal(provenance.length, 8);
+      assert.equal(provenance.length, 9);
       assert.equal(provenance.every((row) => Boolean(row.source_provenance)), true);
       assert.equal(db.prepare("SELECT COUNT(*) AS n FROM platform_actions WHERE transaction_owner = 'platform_action_executor'").get().n, 42);
     } finally {
@@ -79,19 +80,19 @@ test('parallel disposable installs use collision-safe backup paths', async () =>
     assert.notEqual(first.backupPath, second.backupPath);
     assert.equal(fs.existsSync(first.backupPath), true);
     assert.equal(fs.existsSync(second.backupPath), true);
-    assert.equal(first.executed.length, 43);
-    assert.equal(second.executed.length, 43);
+    assert.equal(first.executed.length, 44);
+    assert.equal(second.executed.length, 44);
   } finally {
     fs.rmSync(temp.dir, { recursive: true, force: true });
   }
 });
 
-test('sequential upgrade from 042 applies only the 043 consolidation migration', async () => {
+test('sequential upgrade from 042 applies 043 and 044 migrations', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-upgrade-');
   const oldMigrations = path.join(temp.dir, 'database', 'migrations');
   fs.mkdirSync(oldMigrations, { recursive: true });
   try {
-    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && !name.startsWith('043_'))) {
+    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && !name.startsWith('043_') && !name.startsWith('044_'))) {
       fs.copyFileSync(path.join(migrationsDir, file), path.join(oldMigrations, file));
     }
     for (const relative of [
@@ -116,7 +117,10 @@ test('sequential upgrade from 042 applies only the 043 consolidation migration',
       backupDir: temp.backupDir,
       actor: 'phase04-upgrade-test',
     });
-    assert.deepEqual(upgrade.executed.map((row) => row.id), [consolidationMigration.id]);
+    assert.deepEqual(upgrade.executed.map((row) => row.id), [
+      '043_phase04_canonical_registry_and_lineage',
+      '044_opening_stock_cutover_and_equity_coa'
+    ]);
     const status = await migrationStatus({ dbPath: temp.dbPath, migrationsDir });
     assert.equal(status.every((row) => row.status === 'applied'), true);
   } finally {

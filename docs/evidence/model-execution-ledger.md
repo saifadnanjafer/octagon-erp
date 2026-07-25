@@ -231,3 +231,37 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Final closure status:** **CLOSED — INDEPENDENTLY VERIFIED**
 - **Reviewer notes:** Records 001–007 preserved unedited. Operational `database.db` untouched (`36da81437da7383c9ec42bc9b15f6ace8d99d18e9e1d8bd6907262a7a4c106c5`). Phase 05 NOT started.
 
+---
+
+## Record 009 — Unified Platform Expansion Wave 0
+
+- **Agent/runtime:** OpenAI Codex desktop / Windows PowerShell / Node.js `v24.14.1`
+- **Model identity exposed to this execution:** GPT-5
+- **Exact backend build/version:** not exposed to the agent runtime
+- **Reasoning-effort label:** not exposed to the agent runtime
+- **Execution date/time:** 2026-07-26T02:52:06.860+03:00
+- **Starting branch:** `remediation/phase-04-opening-balance-cutover`
+- **Starting commit:** `c315f7976353f3fd483091977136c645cf92e483`
+- **Target branch:** `integration/octagon-unified-platform-expansion`
+- **Workspace:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0`
+- **Assigned scope:** permanently freeze VNext development, preserve original Octagon as the only product, establish source/model/database provenance, then consolidate and expand Octagon through evidence-backed canonical waves
+- **Wave:** Wave 0 — local state, branch, freeze policy, model provenance
+- **Operational database:** read-only; `database.db` SHA256 `36DA81437DA7383C9EC42BC9B15F6ACE8D99D18E9E1D8BD6907262A7A4C106C5`; WAL/SHM/JSON component hashes recorded in `docs/evidence/unified-expansion/starting-state.md`
+- **VNext observed state:** branch `automation/r9-marketplace-distribution`, commit `cf7ae4ed73eac91a325c964178036290bc0736c1`, dirty before this run; read-only inspection only
+- **VNext files salvaged:** none in Wave 0
+- **Donor files inspected/adapted:** none for implementation in Wave 0
+- **Migrations/runtime/UI changes:** none
+- **Tests:** Phase 04 deterministic 43/43 passed; precommit passed; permission regression 35/35 passed
+- **Failure:** combined Phase 01-04 wildcard run timed out after 244 seconds because it included live browser suites; no final result was counted
+- **Current-model mistake:** the initial combined command was too broad and left browser-test child processes/screenshots after wrapper timeout
+- **Rework:** exact current-run process trees stopped; only current-run screenshot artifacts reverted/removed; clean worktree restored before intentional edits; verification split by evidence type
+- **Remaining risks:** real browser status and full prior-phase suite status remain unverified in this checkpoint; historical handoff/evidence drift requires Wave 1 reconciliation
+- **Final classification:** pending Wave 0 post-edit validation and local checkpoint commit
+
+### Record 009 validation addendum
+
+- **Post-edit validation:** `git diff --check` passed; `node scripts/precommit.js` passed
+- **Operational data attestation:** database/WAL/SHM/JSON hashes remained identical to the recorded baseline
+- **VNext attestation:** observed branch, commit, and dirty-status set remained unchanged; no VNext write command was issued
+- **Wave 0 classification:** **WAVE COMPLETE — SAFE TO CONTINUE**
+

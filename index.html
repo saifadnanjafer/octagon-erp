@@ -1950,6 +1950,10 @@
   <script src="services/stateService.js?v=20260514c2"></script>
   <script src="services/permissionService.js?v=20260623-phase6d-v1"></script>
   <script src="services/stockService.js?v=20260614-tenant-service-v1"></script>
+  <!-- Canonical client layer: the single Phase 04 transport from the original
+       shell to the governed platform runtime. Must load before app.js so
+       shell workflows can resolve window.CanonicalClient. -->
+  <script src="services/canonicalClient.js?v=20260726-phase04-canonical-client-v1"></script>
   <script src="services/financeService.js?v=20260713-t2.3-chatter-v1"></script>
   <script src="services/index.js?v=20260614-tenant-service-v1"></script>
   <!-- Custom API Integration for ContactBox Tools -->

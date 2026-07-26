@@ -52,7 +52,11 @@
     'tenant', 'tenant_id', 'tenantId',
     'company', 'company_id', 'companyId',
     'branch', 'branch_id', 'branchId',
-    'role', 'role_id', 'roleId', 'roles',
+    // NOTE: 'roles' is deliberately NOT forbidden. On party:create, `roles`
+    // is a business attribute of the party record (['customer'], ['supplier']),
+    // not the acting user's identity role. The actor's role is derived
+    // server-side from the session and is never read from a command body.
+    'role', 'role_id', 'roleId',
     'permission', 'permissions',
     'session', 'session_id', 'sessionId',
     'impersonator_id', 'impersonatorId',

@@ -23222,28 +23222,48 @@ async function addMaterial() {
 
   try {
     const currentCoId = window.getActiveOrgProfile()?.companyId || '';
-    if (window.RecordService) {
-      const newMat = await RecordService.create('omni.materials', {
-        ...result,
-        companyId: currentCoId,
-        reserved: 0,
-        reservedQty: 0,
-        reservations: [],
-        movements: []
-      });
-      omni.materials.push(newMat);
+
+    // Phase 04 commercial seam. While the server reports COMMERCIAL as not yet
+    // retired, legacyWrite() runs and this behaves exactly as before. Once the
+    // server retires the domain, the adapter posts a canonical product plus an
+    // explicit opening stock move instead, and never both.
+    const legacyWrite = async () => {
+      if (window.RecordService) {
+        const newMat = await RecordService.create('omni.materials', {
+          ...result,
+          companyId: currentCoId,
+          reserved: 0,
+          reservedQty: 0,
+          reservations: [],
+          movements: []
+        });
+        omni.materials.push(newMat);
+      } else {
+        omni.materials.push({ id: makeId('mat'), ...result, companyId: currentCoId, reserved: 0, reservedQty: 0, reservations: [], movements: [] });
+        saveData();
+      }
+      // Record the initial stock as an opening movement so the history is complete from day 1.
+      if (Number(result.stock) > 0) {
+        const created = omni.materials[omni.materials.length - 1];
+        recordStockMovement(created.id, 'in', Number(result.stock), {
+          sourceType: 'manual', ref: 'إنشاء المادة', note: 'رصيد افتتاحي'
+        });
+        saveData();
+      }
+      return omni.materials[omni.materials.length - 1];
+    };
+
+    if (window.CommercialAdapter) {
+      const outcome = await window.CommercialAdapter.createMaterial(result, { legacyWrite });
+      if (outcome.authority === 'canonical') {
+        // Canonical is authoritative; keep the in-memory list as a read
+        // projection so the existing render path still finds the row.
+        omni.materials.push(outcome.material);
+      }
     } else {
-      omni.materials.push({ id: makeId('mat'), ...result, companyId: currentCoId, reserved: 0, reservedQty: 0, reservations: [], movements: [] });
-      saveData();
+      await legacyWrite();
     }
-    // Record the initial stock as an opening movement so the history is complete from day 1.
-    if (Number(result.stock) > 0) {
-      const created = omni.materials[omni.materials.length - 1];
-      recordStockMovement(created.id, 'in', Number(result.stock), {
-        sourceType: 'manual', ref: 'إنشاء المادة', note: 'رصيد افتتاحي'
-      });
-      saveData();
-    }
+
     renderInventoryPage();
   } catch (e) {
     console.error(e);

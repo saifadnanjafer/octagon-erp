@@ -33,6 +33,7 @@ import { registerSalesActions } from './platform/sales/index.mjs';
 import { registerProcurementActions } from './platform/procurement/index.mjs';
 import { registerPosActions } from './platform/pos/index.mjs';
 import { registerWorkItemActions } from './platform/work_items/index.mjs';
+import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -379,6 +380,18 @@ export function handleBootstrap(authority, req, res) {
       { id: 'review_report', permission: 'platform:review_report:save' },
     ],
   });
+  const retirement = createLegacyWriterRetirementGuard(authority.dialect);
+  payload.cutover = {
+    finance: {
+      canonicalAuthority: 'platform.finance',
+      enforced: true,
+    },
+    phase04: {
+      canonicalAuthority: 'platform.commercial',
+      enabled: retirement.cutoverEnabled(),
+      domains: retirement.status(),
+    },
+  };
   return sendJson(res, 200, { success: true, ...payload });
 }
 

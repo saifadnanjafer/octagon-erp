@@ -21,9 +21,10 @@ for metadata, preferences, safe configuration, and compatibility projections.
 ## UE-ADR-004 — Source-safe SQLite acceptance
 
 When the live SQLite database has WAL state, copying only `database.db` is not a
-logical snapshot. Disposable acceptance must consolidate through SQLite's
-read-only connection using `VACUUM INTO` (or an equivalent online backup),
-record DB and WAL hashes before/after, and operate only on the disposable copy.
+logical snapshot. Disposable acceptance must first stage byte copies of
+`database.db` and its WAL without opening the operational path, then consolidate
+that staged pair with `VACUUM INTO`. DB, WAL, SHM, and JSON fingerprints are
+recorded before and after, and only the consolidated disposable copy is writable.
 
 ## UE-ADR-005 — Canonical finance posting
 
@@ -48,3 +49,11 @@ disposable accepted database.
 
 Payroll, attendance, and timesheet collections and behavior remain read-only.
 No later wave may migrate, replace, or write them.
+
+## UE-ADR-009 â€” Two-key legacy-writer retirement
+
+Phase 04 legacy mutation denial is active per domain only when both
+`phase04.canonical_cutover` is enabled and the exact domain row in
+`authority_retirement_locks` is `RETIRED` with the expected canonical target.
+The flag alone, a row alone, a wrong target, or a missing table cannot be
+represented as completed retirement.

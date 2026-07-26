@@ -9,9 +9,12 @@ governed ActionExecutor handlers and HTTP envelopes on isolated databases.
 
 ## Current cutover controls
 
-`server.js:1958-1975` reads `phase04.canonical_cutover` from
-`platform_feature_flags`. Finance generic-write denial is unconditional; Phase
-04 generic-write denial is conditional on that flag.
+`platform/cutover/legacy-writer-retirement.mjs` is the runtime authority for
+Phase 04 legacy-writer denial. `server.js` calls its `enforced(domain)` result.
+Finance generic-write denial is unconditional. A Phase 04 domain is denied only
+when the global cutover flag and its exact retirement lock/target agree.
+`tests/phase04/remediation_phase04.test.mjs` proves that the flag alone, a lock
+for another domain, and a wrong target do not retire the writer.
 
 Read-only inspection of the operational database found no Phase 04 cutover flag
 row and no Phase 04 opening/retirement tables. This is consistent with the
@@ -25,11 +28,11 @@ stock service directly mutates governed Phase 04 facts. No complete
 server-authoritative Phase 04 client adapter was found. Therefore backend
 capability is not equivalent to original-shell cutover.
 
-Finance has an additional split: the server always protects finance generic
-writes, while the browser finance service defaults its canonical flag OFF.
-This can select a legacy client path that the server then rejects. Runtime
-acceptance must exercise both successful canonical actions and rejected legacy
-mutations.
+The authenticated bootstrap now carries server-derived cutover status.
+`services/financeService.js` consumes
+`__octagonBootstrap.cutover.finance.enforced` before old client-local
+overrides, closing the prior default-OFF split. A server-backed Phase 04 stock
+client adapter is still absent, so inventory retirement remains prohibited.
 
 ## Degraded-mode risk
 

@@ -111,6 +111,9 @@ async function testBootstrapPayloadShapeAndRtlIdentity() {
     assert.ok(dbWrite, 'db_write action is present');
     assert.strictEqual(dbWrite.enabled, true, 'owner can db_write');
     assert.ok(payload.counters, 'counters object is present');
+    assert.strictEqual(payload.cutover?.finance?.enforced, true, 'finance client selection is server-authoritative');
+    assert.strictEqual(payload.cutover?.phase04?.enabled, false, 'Phase 04 cutover defaults off');
+    assert.strictEqual(payload.cutover?.phase04?.domains?.INVENTORY?.enforced, false, 'inventory writer remains live before accepted cutover');
   } finally {
     await server.stop();
     for (const f of [jsonPath, jsonPath + '.prev']) { try { fs.unlinkSync(f); } catch {} }

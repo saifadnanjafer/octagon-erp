@@ -2,26 +2,25 @@
 
 ## Critical/current hard-gate risks
 
-1. Phase 04 disposable snapshot ignores live WAL pages.
-2. Opening GL bypasses the Phase 03 finance lifecycle with direct posted-row
-   inserts.
-3. Phase 04 cutover flag remains disabled and writer-retirement claims are not
-   runtime-enforced.
-4. Original-shell stock/reservation/commercial/task writers remain active.
-5. No real Phase 04 browser suite ran after the opening-cutover implementation.
-6. Operational DB is intentionally unmigrated; production cutover is not
+1. The approved opening-inventory accounting date is not present in source or
+   owner instructions. The real disposable migration remains fail-closed with
+   `OPENING_CUTOVER_DATE_REQUIRED`.
+2. Original-shell stock/reservation/commercial/task writers remain active; a
+   complete canonical client adapter is not implemented.
+3. No real Phase 04 browser suite ran after the remediation.
+4. The Phase 04 flag and retirement locks remain inactive in the operational
+   database, as required before acceptance.
+5. Operational DB is intentionally unmigrated; production cutover is not
    authorized.
 
 ## High risks
 
-1. Finance browser service defaults canonical selection OFF while generic
-   finance writes are server-blocked.
-2. Historical `CLOSED`, `FULL COMPLIANCE`, and `independently verified` evidence
+1. Historical `CLOSED`, `FULL COMPLIANCE`, and `independently verified` evidence
    can mislead later agents.
-3. The operational database has active WAL/SHM components; file-only hashes and
-   copies do not represent the complete logical source.
-4. VNext begins dirty; any write or cleanup there could destroy owner/user work.
-5. Current full Phase 01-03 browser status is not refreshed.
+2. The operational database has active WAL/SHM components; future observation
+   must keep using staged byte copies rather than opening the live path.
+3. VNext begins dirty; any write or cleanup there could destroy owner/user work.
+4. Current full Phase 01-03 browser status is not refreshed.
 
 ## Deferred risks
 

@@ -9,6 +9,10 @@ import {
   openMigrationDatabase,
 } from '../../database/migration-runner/index.mjs';
 import { createPlatformAuthority } from '../../platform-runtime-bridge.mjs';
+import {
+  PHASE04_RETIREMENT_LOCKS,
+  createLegacyWriterRetirementGuard,
+} from '../../platform/cutover/legacy-writer-retirement.mjs';
 
 async function withFreshDatabase(name, callback) {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `octagon-phase04-${name}-`));
@@ -88,5 +92,45 @@ test('Phase 04 canonical cutover remains fail-closed until legacy reconciliation
     assert.ok(flag);
     assert.equal(flag.enabled, 0);
     assert.equal(flag.audit_policy, 'required');
+  });
+});
+
+test('Phase 04 legacy writers retire only when both the global flag and exact domain lock are active', async () => {
+  await withFreshDatabase('writer-retirement', (db) => {
+    const guard = createLegacyWriterRetirementGuard(db);
+    assert.equal(guard.cutoverEnabled(), false);
+    for (const domain of Object.keys(PHASE04_RETIREMENT_LOCKS)) {
+      assert.equal(guard.enforced(domain), false);
+    }
+
+    db.prepare(`
+      UPDATE platform_feature_flags
+      SET enabled = 1, updated_at = ?
+      WHERE key = 'phase04.canonical_cutover'
+    `).run(new Date().toISOString());
+    assert.equal(guard.cutoverEnabled(), true);
+    assert.equal(guard.enforced('INVENTORY'), false, 'Flag alone must never retire a writer');
+
+    const inventoryLock = PHASE04_RETIREMENT_LOCKS.INVENTORY;
+    db.prepare(`
+      INSERT INTO authority_retirement_locks (
+        id, authority_key, canonical_target, status, retired_at, reason
+      ) VALUES (?, ?, ?, 'RETIRED', ?, ?)
+    `).run(
+      'retire_inventory_test',
+      inventoryLock.authorityKey,
+      inventoryLock.canonicalTarget,
+      new Date().toISOString(),
+      'disposable test proof',
+    );
+    assert.equal(guard.enforced('INVENTORY'), true);
+    assert.equal(guard.enforced('SALES'), false, 'A lock must not retire a different domain');
+
+    db.prepare(`
+      UPDATE authority_retirement_locks
+      SET canonical_target = 'wrong_target'
+      WHERE authority_key = ?
+    `).run(inventoryLock.authorityKey);
+    assert.equal(guard.enforced('INVENTORY'), false, 'Wrong canonical target must fail closed');
   });
 });

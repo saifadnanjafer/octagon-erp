@@ -90,11 +90,12 @@ test('disposable legacy migration preserves source, maps masters, and blocks inv
     const result = await runDisposableMigration({
       sourceDbPath: source,
       targetDbPath: target,
+      cutoverDate: '2026-07-24',
       keepDisposable: true,
     });
     const sourceAfter = fs.readFileSync(source);
 
-    assert.equal(result.status, 'PASSED');
+    assert.equal(result.status, 'PASSED', JSON.stringify(result, null, 2));
     assert.equal(result.source.unchanged, true);
     assert.deepEqual(sourceAfter, sourceBefore);
     assert.equal(result.idempotentRerun, true);

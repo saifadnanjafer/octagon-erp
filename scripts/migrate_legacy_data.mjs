@@ -14,6 +14,14 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
 import { runMigrations } from '../database/migration-runner/index.mjs';
+import {
+  accountIdByCode,
+  approveDocument,
+  createDocument,
+  getDocument,
+  postDocument,
+  submitDocument,
+} from '../platform/finance/engine.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..');
@@ -25,6 +33,65 @@ function sha256Buffer(value) {
 
 function sha256File(file) {
   return sha256Buffer(fs.readFileSync(file));
+}
+
+function fileFingerprint(file) {
+  if (!fs.existsSync(file)) return null;
+  const stat = fs.statSync(file);
+  return {
+    path: file,
+    sha256: sha256File(file),
+    size: stat.size,
+    modifiedAt: stat.mtime.toISOString(),
+  };
+}
+
+function sourceComponentFingerprints(source) {
+  const siblingJson = path.basename(source).toLowerCase() === 'database.db'
+    ? path.join(path.dirname(source), 'database.json')
+    : null;
+  return {
+    database: fileFingerprint(source),
+    wal: fileFingerprint(`${source}-wal`),
+    shm: fileFingerprint(`${source}-shm`),
+    json: siblingJson ? fileFingerprint(siblingJson) : null,
+  };
+}
+
+function validateCutoverDate(value) {
+  const date = String(value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error('OPENING_CUTOVER_DATE_REQUIRED: provide --cutover-date as YYYY-MM-DD');
+  }
+  const parsed = new Date(`${date}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
+    throw new Error(`OPENING_CUTOVER_DATE_INVALID: ${date}`);
+  }
+  return date;
+}
+
+function createConsolidatedSnapshot(source, target, disposableRoot) {
+  // Opening a WAL-mode database, even read-only, can create empty -wal/-shm
+  // siblings. Stage the byte-identical database and WAL first so the original
+  // directory is never opened by SQLite during snapshot creation.
+  const stagingDir = path.join(disposableRoot, 'source-staging');
+  const stagedSource = path.join(stagingDir, 'database.db');
+  fs.mkdirSync(stagingDir);
+  fs.copyFileSync(source, stagedSource, fs.constants.COPYFILE_EXCL);
+  if (fs.existsSync(`${source}-wal`)) {
+    fs.copyFileSync(`${source}-wal`, `${stagedSource}-wal`, fs.constants.COPYFILE_EXCL);
+  }
+  const sourceDb = new DatabaseSync(stagedSource, { readOnly: true });
+  try {
+    const escapedTarget = target.replaceAll("'", "''");
+    sourceDb.exec(`VACUUM INTO '${escapedTarget}'`);
+  } finally {
+    sourceDb.close();
+    for (const stagedFile of [`${stagedSource}-shm`, `${stagedSource}-wal`, stagedSource]) {
+      if (fs.existsSync(stagedFile)) fs.unlinkSync(stagedFile);
+    }
+    fs.rmdirSync(stagingDir);
+  }
 }
 
 function stableId(prefix, sourceCollection, sourceId) {
@@ -597,15 +664,32 @@ function migrateOpeningStockCutover(db, {
   materials,
   sourceIdentity,
   now,
+  cutoverDate,
   counters,
   quarantine,
 }) {
-  const cutoverTimestamp = now;
+  const cutoverTimestamp = `${cutoverDate}T00:00:00.000Z`;
   const batchId = stableId('p04openbatch', 'opening_stock_batch', sourceIdentity.sha256);
 
-  const warehouse = db.prepare("SELECT id FROM warehouses WHERE company_id = ? OR company_id = '*' ORDER BY id LIMIT 1").get(companyId) || { id: 'wh_main' };
-  const destLocation = db.prepare("SELECT id FROM stock_locations WHERE (company_id = ? OR company_id = '*') AND usage = 'internal' ORDER BY id LIMIT 1").get(companyId) || { id: 'loc_wh_main_stock' };
+  const warehouses = db.prepare("SELECT id FROM warehouses WHERE company_id = ? AND is_active = 1 ORDER BY id").all(companyId);
+  if (warehouses.length !== 1) {
+    throw new Error(`OPENING_CUTOVER_WAREHOUSE_AMBIGUOUS: expected exactly one active warehouse for ${companyId}, found ${warehouses.length}`);
+  }
+  const warehouse = warehouses[0];
+  const locations = db.prepare(`
+    SELECT id FROM stock_locations
+    WHERE company_id = ? AND warehouse_id = ? AND usage = 'internal' AND is_scrap = 0
+    ORDER BY id
+  `).all(companyId, warehouse.id);
+  if (locations.length !== 1) {
+    throw new Error(`OPENING_CUTOVER_LOCATION_AMBIGUOUS: expected exactly one internal stock location for ${warehouse.id}, found ${locations.length}`);
+  }
+  const destLocation = locations[0];
   const sourceLocationId = 'loc_opening_balance';
+  const sourceLocation = db.prepare("SELECT id FROM stock_locations WHERE id = ? AND usage = 'inventory'").get(sourceLocationId);
+  if (!sourceLocation) {
+    throw new Error('OPENING_CUTOVER_SOURCE_LOCATION_MISSING: loc_opening_balance');
+  }
 
   let totalOnHand = 0;
   let totalReserved = 0;
@@ -622,8 +706,8 @@ function migrateOpeningStockCutover(db, {
     ) VALUES (?, ?, ?, ?, ?, ?, 'draft', 0, 0, 0, 0, 0, NULL, 'migration_agent', ?, ?, NULL)
     ON CONFLICT(id) DO NOTHING
   `).run(
-    batchId, companyId, sourceIdentity.sha256, sourceIdentity.path, cutoverTimestamp, cutoverTimestamp,
-    `opening_cutover_${sourceIdentity.sha256}`, cutoverTimestamp
+    batchId, companyId, sourceIdentity.sha256, sourceIdentity.path, sourceIdentity.modifiedAt, cutoverTimestamp,
+    `opening_cutover_${sourceIdentity.sha256}`, now
   );
 
   for (const material of materials) {
@@ -744,41 +828,81 @@ function migrateOpeningStockCutover(db, {
     openingLines.push({ moveId, valFactId, totalValue });
   }
 
-  // 7. Post Opening GL Journal & Document
+  // 7. Post the opening entry only through the canonical Phase 03 finance lifecycle.
   const docId = stableId('fdoc_open', 'opening_stock_gl', batchId);
-  const entryId = stableId('fentry_open', 'opening_stock_gl', batchId);
+  const assetAccountId = accountIdByCode(db, companyId, '104000');
+  const equityAccountId = accountIdByCode(db, companyId, '390000');
+  const openingJournals = db.prepare(`
+    SELECT id FROM finance_journals
+    WHERE company_id = ? AND type = 'opening' AND is_active = 1
+    ORDER BY id
+  `).all(companyId);
+  if (openingJournals.length !== 1) {
+    throw new Error(`OPENING_CUTOVER_JOURNAL_AMBIGUOUS: expected exactly one active opening journal for ${companyId}, found ${openingJournals.length}`);
+  }
+  const openingJournal = openingJournals[0];
+  const period = db.prepare(`
+    SELECT id, status FROM finance_periods
+    WHERE company_id = ? AND start_date <= ? AND end_date >= ?
+    ORDER BY start_date
+  `).all(companyId, cutoverDate, cutoverDate);
+  if (period.length !== 1 || period[0].status !== 'open') {
+    throw new Error(`OPENING_CUTOVER_PERIOD_UNAVAILABLE: ${cutoverDate} must resolve to exactly one open fiscal period`);
+  }
 
-  const assetAccount = db.prepare("SELECT id FROM finance_accounts WHERE code = '104000' OR code = '1200' LIMIT 1").get() || { id: 'acc_104000' };
-  const equityAccount = db.prepare("SELECT id FROM finance_accounts WHERE code = '390000' OR code = '3900' LIMIT 1").get() || { id: 'acc_390000' };
-  const openingJournal = db.prepare("SELECT id FROM finance_journals WHERE type = 'opening' OR code = 'opening' LIMIT 1").get() || { id: 'jnl_opening' };
-
-  db.prepare(`
-    INSERT INTO finance_documents (
-      id, company_id, journal_id, doc_number, move_type, doc_date, post_date, currency, state, created_at, updated_at, created_by
-    ) VALUES (?, ?, ?, ?, 'entry', ?, ?, 'IQD', 'posted', ?, ?, 'migration_agent')
-    ON CONFLICT(id) DO NOTHING
-  `).run(docId, companyId, openingJournal.id, `OPEN-INV-${batchId.slice(-8)}`, cutoverTimestamp, cutoverTimestamp, cutoverTimestamp, cutoverTimestamp);
-
-  db.prepare(`
-    INSERT INTO finance_journal_entries (
-      id, document_id, company_id, journal_id, entry_number, posting_date, currency, total_debit, total_credit, created_at, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, 'IQD', ?, ?, ?, 'migration_agent')
-    ON CONFLICT(id) DO NOTHING
-  `).run(entryId, docId, companyId, openingJournal.id, `JE-OPEN-${batchId.slice(-8)}`, cutoverTimestamp, totalValuation, totalValuation, cutoverTimestamp);
-
-  db.prepare(`
-    INSERT INTO finance_journal_lines (
-      id, journal_entry_id, company_id, document_id, account_id, posting_date, debit, credit, description, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'Opening Inventory Valuation Cutover (Asset)', ?)
-    ON CONFLICT(id) DO NOTHING
-  `).run(stableId('fline_debit', 'opening', batchId), entryId, companyId, docId, assetAccount.id, cutoverTimestamp, totalValuation, cutoverTimestamp);
-
-  db.prepare(`
-    INSERT INTO finance_journal_lines (
-      id, journal_entry_id, company_id, document_id, account_id, posting_date, debit, credit, description, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, 0, ?, 'Opening Inventory Equity Cutover (Credit)', ?)
-    ON CONFLICT(id) DO NOTHING
-  `).run(stableId('fline_credit', 'opening', batchId), entryId, companyId, docId, equityAccount.id, cutoverTimestamp, totalValuation, cutoverTimestamp);
+  const financeContext = {
+    companyId,
+    userId: 'phase04-opening-cutover',
+    now,
+  };
+  let document = getDocument(db, companyId, docId);
+  if (!document) {
+    document = createDocument(db, financeContext, {
+      id: docId,
+      journal_id: openingJournal.id,
+      move_type: 'opening_entry',
+      doc_date: cutoverDate,
+      currency: 'IQD',
+      source_type: 'opening_inventory_cutover',
+      source_id: batchId,
+      source_canonical_key: `opening_inventory_cutover:${sourceIdentity.sha256}`,
+      lines: [
+        {
+          account_id: assetAccountId,
+          debit: totalValuation,
+          credit: 0,
+          description: 'Opening Inventory Valuation Cutover (Asset)',
+        },
+        {
+          account_id: equityAccountId,
+          debit: 0,
+          credit: totalValuation,
+          description: 'Opening Inventory Equity Cutover (Credit)',
+        },
+      ],
+    });
+    submitDocument(db, financeContext, { document_id: document.id });
+    approveDocument(db, financeContext, { document_id: document.id });
+    document = postDocument(db, financeContext, { document_id: document.id });
+  }
+  if (document.state !== 'posted'
+      || document.source_type !== 'opening_inventory_cutover'
+      || document.source_id !== batchId
+      || document.doc_date !== cutoverDate) {
+    throw new Error(`OPENING_CUTOVER_DOCUMENT_CONFLICT: ${docId}`);
+  }
+  const entries = db.prepare(`
+    SELECT id, total_debit, total_credit, hash
+    FROM finance_journal_entries
+    WHERE company_id = ? AND document_id = ?
+  `).all(companyId, docId);
+  if (entries.length !== 1
+      || Number(entries[0].total_debit) !== totalValuation
+      || Number(entries[0].total_credit) !== totalValuation
+      || !entries[0].hash) {
+    throw new Error(`OPENING_CUTOVER_ENTRY_INVALID: ${docId}`);
+  }
+  const entryId = entries[0].id;
 
   for (const line of openingLines) {
     db.prepare(`
@@ -819,13 +943,34 @@ function reconcile(db, {
   const sourceValuation = materials.reduce((sum, row) => sum + Number(row.data.stock || 0) * Number(row.data.cost || 0), 0);
   const canonicalStock = db.prepare('SELECT COALESCE(SUM(quantity),0) AS n FROM stock_quants WHERE company_id = ?').get(companyId).n;
   const canonicalReserved = db.prepare('SELECT COALESCE(SUM(quantity),0) AS n FROM stock_reservations WHERE company_id = ? AND status IN (\'reserved\',\'partially_reserved\',\'reserved_unallocated\')').get(companyId).n;
+  const canonicalAvailable = db.prepare('SELECT COALESCE(SUM(quantity - reserved_quantity),0) AS n FROM stock_quants WHERE company_id = ?').get(companyId).n;
   const canonicalValuation = db.prepare('SELECT COALESCE(SUM(value),0) AS n FROM stock_valuation_facts WHERE company_id = ?').get(companyId).n;
   const stockGl = db.prepare(`
-    SELECT COALESCE(SUM(line.debit), 0) AS debit
+    SELECT COALESCE(SUM(line.debit), 0) AS debit, COALESCE(SUM(line.credit), 0) AS credit
     FROM (SELECT DISTINCT finance_document_id, company_id FROM stock_accounting_links WHERE company_id = ?) link
+    JOIN finance_documents document ON document.id = link.finance_document_id
+      AND document.company_id = link.company_id
+      AND document.source_type = 'opening_inventory_cutover'
     JOIN finance_journal_lines line ON line.document_id = link.finance_document_id AND line.company_id = link.company_id
-    WHERE line.debit > 0
-  `).get(companyId).debit;
+  `).get(companyId);
+  const openingFacts = {
+    sourceMaterials: materials.length,
+    batchLines: db.prepare('SELECT COUNT(*) AS n FROM phase04_opening_stock_lines WHERE company_id = ?').get(companyId).n,
+    stockMoves: db.prepare("SELECT COUNT(*) AS n FROM stock_moves WHERE company_id = ? AND reference = 'OPENING-CUTOVER'").get(companyId).n,
+    valuationFacts: db.prepare(`
+      SELECT COUNT(*) AS n
+      FROM stock_valuation_facts fact
+      JOIN stock_moves move ON move.id = fact.stock_move_id
+      WHERE fact.company_id = ? AND move.reference = 'OPENING-CUTOVER'
+    `).get(companyId).n,
+    financeDocuments: db.prepare("SELECT COUNT(*) AS n FROM finance_documents WHERE company_id = ? AND source_type = 'opening_inventory_cutover'").get(companyId).n,
+    journalEntries: db.prepare(`
+      SELECT COUNT(*) AS n
+      FROM finance_journal_entries entry
+      JOIN finance_documents document ON document.id = entry.document_id
+      WHERE entry.company_id = ? AND document.source_type = 'opening_inventory_cutover'
+    `).get(companyId).n,
+  };
   const result = {
     parties: {
       source: customers.length + suppliers.length,
@@ -841,16 +986,29 @@ function reconcile(db, {
     },
     quantity: { source: sourceStock, canonical: Number(canonicalStock) },
     reservations: { source: sourceReserved, canonical: Number(canonicalReserved) },
+    available: { source: sourceStock - sourceReserved, canonical: Number(canonicalAvailable) },
     valuation: { source: sourceValuation, canonical: Number(canonicalValuation) },
-    stockToGl: { sourceStockValue: sourceValuation, canonicalJournalDebit: Number(stockGl) },
+    stockToGl: {
+      sourceStockValue: sourceValuation,
+      canonicalJournalDebit: Number(stockGl.debit),
+      canonicalJournalCredit: Number(stockGl.credit),
+    },
+    duplicates: openingFacts,
   };
   result.parties.match = result.parties.source === result.parties.canonical;
   result.products.match = result.products.source === result.products.canonical;
   result.workItems.match = result.workItems.source === result.workItems.canonical;
   result.quantity.match = result.quantity.source === result.quantity.canonical;
   result.reservations.match = result.reservations.source === result.reservations.canonical;
+  result.available.match = result.available.source === result.available.canonical;
   result.valuation.match = result.valuation.source === result.valuation.canonical;
-  result.stockToGl.match = result.stockToGl.sourceStockValue === result.stockToGl.canonicalJournalDebit;
+  result.stockToGl.match = result.stockToGl.sourceStockValue === result.stockToGl.canonicalJournalDebit
+    && result.stockToGl.canonicalJournalDebit === result.stockToGl.canonicalJournalCredit;
+  result.duplicates.match = result.duplicates.batchLines === result.duplicates.sourceMaterials
+    && result.duplicates.stockMoves === result.duplicates.sourceMaterials
+    && result.duplicates.valuationFacts === result.duplicates.sourceMaterials
+    && result.duplicates.financeDocuments === 1
+    && result.duplicates.journalEntries === 1;
   return result;
 }
 
@@ -860,6 +1018,7 @@ export function migrateLegacyFacts(db, {
   sourceIdentity,
   disposablePath,
   disposableHashBefore,
+  cutoverDate,
 } = {}) {
   const now = new Date().toISOString();
   const counters = {
@@ -947,6 +1106,7 @@ export function migrateLegacyFacts(db, {
     materials,
     sourceIdentity,
     now,
+    cutoverDate,
     counters,
     quarantine,
   });
@@ -998,6 +1158,7 @@ function parseArgs(argv) {
     if (argv[i] === '--source') out.sourceDbPath = argv[++i];
     else if (argv[i] === '--target') out.targetDbPath = argv[++i];
     else if (argv[i] === '--company-id') out.companyId = argv[++i];
+    else if (argv[i] === '--cutover-date') out.cutoverDate = argv[++i];
     else if (argv[i] === '--keep') out.keepDisposable = true;
   }
   return out;
@@ -1007,24 +1168,34 @@ export async function runDisposableMigration({
   sourceDbPath = DEFAULT_SOURCE,
   targetDbPath = null,
   companyId = null,
+  cutoverDate = null,
   keepDisposable = false,
 } = {}) {
+  const validatedCutoverDate = validateCutoverDate(cutoverDate);
   const source = path.resolve(sourceDbPath);
   if (!fs.existsSync(source)) throw new Error(`Source database not found: ${source}`);
   const sourceStatBefore = fs.statSync(source);
-  const sourceHashBefore = sha256File(source);
+  const sourceComponentsBefore = sourceComponentFingerprints(source);
   const disposableRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'octagon-phase04-migration-'));
   const target = path.resolve(targetDbPath || path.join(disposableRoot, 'database-disposable.db'));
   if (target === source) throw new Error('Disposable target must differ from the source database');
+  if (fs.existsSync(target)) throw new Error(`Disposable target already exists: ${target}`);
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(source, target, fs.constants.COPYFILE_EXCL);
+  createConsolidatedSnapshot(source, target, disposableRoot);
+  const sourceComponentsAfterSnapshot = sourceComponentFingerprints(source);
+  if (canonicalJson(sourceComponentsAfterSnapshot) !== canonicalJson(sourceComponentsBefore)) {
+    throw new Error('SOURCE_CHANGED_DURING_SNAPSHOT: source components changed while the disposable snapshot was created');
+  }
   const targetHashBefore = sha256File(target);
-  if (targetHashBefore !== sourceHashBefore) throw new Error('Disposable copy hash mismatch');
 
   const sourceIdentity = {
     path: source,
-    sha256: sourceHashBefore,
-    size: sourceStatBefore.size,
+    sha256: targetHashBefore,
+    sourceDbSha256: sourceComponentsBefore.database.sha256,
+    sourceWalSha256: sourceComponentsBefore.wal?.sha256 || null,
+    sourceShmSha256: sourceComponentsBefore.shm?.sha256 || null,
+    sourceJsonSha256: sourceComponentsBefore.json?.sha256 || null,
+    size: fs.statSync(target).size,
     modifiedAt: sourceStatBefore.mtime.toISOString(),
   };
   const runId = `p04run_${crypto.randomUUID()}`;
@@ -1046,6 +1217,7 @@ export async function runDisposableMigration({
         sourceIdentity,
         disposablePath: target,
         disposableHashBefore: targetHashBefore,
+        cutoverDate: validatedCutoverDate,
       });
       db.exec('COMMIT;');
     } catch (error) {
@@ -1059,6 +1231,10 @@ export async function runDisposableMigration({
       parties: db.prepare('SELECT COUNT(*) AS n FROM parties WHERE company_id = ?').get(result.company.companyId).n,
       products: db.prepare('SELECT COUNT(*) AS n FROM product_variants WHERE company_id = ?').get(result.company.companyId).n,
       workItems: db.prepare('SELECT COUNT(*) AS n FROM work_items WHERE company_id = ?').get(result.company.companyId).n,
+      openingMoves: db.prepare("SELECT COUNT(*) AS n FROM stock_moves WHERE company_id = ? AND reference = 'OPENING-CUTOVER'").get(result.company.companyId).n,
+      openingValuations: db.prepare("SELECT COUNT(*) AS n FROM stock_valuation_facts WHERE company_id = ? AND fact_type = 'adjustment'").get(result.company.companyId).n,
+      openingReservations: db.prepare("SELECT COUNT(*) AS n FROM stock_reservations WHERE company_id = ? AND source_document_type = 'legacy_opening_reservation'").get(result.company.companyId).n,
+      openingDocuments: db.prepare("SELECT COUNT(*) AS n FROM finance_documents WHERE company_id = ? AND source_type = 'opening_inventory_cutover'").get(result.company.companyId).n,
     };
     db.exec('BEGIN IMMEDIATE;');
     try {
@@ -1068,6 +1244,7 @@ export async function runDisposableMigration({
         sourceIdentity,
         disposablePath: target,
         disposableHashBefore: targetHashBefore,
+        cutoverDate: validatedCutoverDate,
       });
       db.exec('COMMIT;');
       const secondCounts = {
@@ -1076,6 +1253,10 @@ export async function runDisposableMigration({
         parties: db.prepare('SELECT COUNT(*) AS n FROM parties WHERE company_id = ?').get(result.company.companyId).n,
         products: db.prepare('SELECT COUNT(*) AS n FROM product_variants WHERE company_id = ?').get(result.company.companyId).n,
         workItems: db.prepare('SELECT COUNT(*) AS n FROM work_items WHERE company_id = ?').get(result.company.companyId).n,
+        openingMoves: db.prepare("SELECT COUNT(*) AS n FROM stock_moves WHERE company_id = ? AND reference = 'OPENING-CUTOVER'").get(result.company.companyId).n,
+        openingValuations: db.prepare("SELECT COUNT(*) AS n FROM stock_valuation_facts WHERE company_id = ? AND fact_type = 'adjustment'").get(result.company.companyId).n,
+        openingReservations: db.prepare("SELECT COUNT(*) AS n FROM stock_reservations WHERE company_id = ? AND source_document_type = 'legacy_opening_reservation'").get(result.company.companyId).n,
+        openingDocuments: db.prepare("SELECT COUNT(*) AS n FROM finance_documents WHERE company_id = ? AND source_type = 'opening_inventory_cutover'").get(result.company.companyId).n,
       };
       result.idempotentRerun = canonicalJson(firstCounts) === canonicalJson(secondCounts);
       result.rerun = rerun;
@@ -1102,15 +1283,20 @@ export async function runDisposableMigration({
     };
   } finally {
     try { db?.close(); } catch (_) {}
+    if (!result) {
+      if (!targetDbPath && fs.existsSync(target)) fs.unlinkSync(target);
+      if (fs.existsSync(disposableRoot) && fs.readdirSync(disposableRoot).length === 0) {
+        fs.rmdirSync(disposableRoot);
+      }
+    }
   }
 
-  const sourceHashAfter = sha256File(source);
-  const sourceStatAfter = fs.statSync(source);
+  const sourceComponentsAfter = sourceComponentFingerprints(source);
   result.source = {
     ...sourceIdentity,
-    sha256After: sourceHashAfter,
-    sizeAfter: sourceStatAfter.size,
-    unchanged: sourceHashAfter === sourceHashBefore && sourceStatAfter.size === sourceStatBefore.size,
+    componentsBefore: sourceComponentsBefore,
+    componentsAfter: sourceComponentsAfter,
+    unchanged: canonicalJson(sourceComponentsAfter) === canonicalJson(sourceComponentsBefore),
   };
   if (!result.source.unchanged) {
     result.status = 'BLOCKED';
@@ -1122,6 +1308,7 @@ export async function runDisposableMigration({
     fs.rmdirSync(disposableRoot);
     result.disposable.removed = true;
   } else {
+    if (fs.existsSync(disposableRoot)) fs.rmdirSync(disposableRoot);
     result.disposable.removed = false;
   }
 

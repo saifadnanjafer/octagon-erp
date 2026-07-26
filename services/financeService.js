@@ -82,6 +82,8 @@
   // ---------------------------------------------------------------------
 
   function canonicalFinanceEnabled() {
+    const serverDecision = root.__octagonBootstrap?.cutover?.finance?.enforced;
+    if (typeof serverDecision === 'boolean') return serverDecision;
     const flags = root.OCTAGON_FEATURE_FLAGS;
     if (flags && flags.FF_CANONICAL_FINANCE !== undefined) return !!flags.FF_CANONICAL_FINANCE;
     try {

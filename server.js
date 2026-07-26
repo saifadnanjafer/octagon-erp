@@ -65,6 +65,7 @@ let platformAuthority = null;
 let platformApiHandler = null;
 let governanceStrangler = null;
 let governanceCollections = null;
+let legacyWriterRetirement = null;
 const BACKUP_KEEP = 30;
 const AUTO_BACKUP_INTERVAL_MS = 60 * 60 * 1000; // at most one auto-snapshot per hour of activity
 let lastAutoBackupMs = 0;
@@ -1955,24 +1956,12 @@ const server = http.createServer((req, res) => {
     };
   }
 
-  function phase04CanonicalCutoverActive() {
-    if (!dbSync) return false;
-    try {
-      const row = dbSync.prepare(`
-        SELECT enabled FROM platform_feature_flags
-        WHERE key = 'phase04.canonical_cutover'
-      `).get();
-      return row?.enabled === 1;
-    } catch (_) {
-      return false;
-    }
-  }
-
   function canonicalAuthorityEnforced(authority) {
     // Finance was cut over and closed in Phase 03. Phase 04 domains remain
-    // behind the control-plane flag until disposable migration, parity, and
-    // browser evidence pass.
-    return authority?.domain === 'FINANCE' || phase04CanonicalCutoverActive();
+    // behind both the control-plane flag and a domain-specific retirement
+    // lock until disposable migration, parity, and browser evidence pass.
+    return authority?.domain === 'FINANCE'
+      || legacyWriterRetirement?.enforced(authority?.domain) === true;
   }
 
   // API Routes
@@ -2713,6 +2702,8 @@ async function initializeDatabase() {
       const { createPlatformAuthority, mountPlatformApi } = await import('./platform-runtime-bridge.mjs');
       platformAuthority = createPlatformAuthority(dbSync);
       platformApiHandler = await mountPlatformApi(platformAuthority, '/api/v1');
+      const { createLegacyWriterRetirementGuard } = await import('./platform/cutover/legacy-writer-retirement.mjs');
+      legacyWriterRetirement = createLegacyWriterRetirementGuard(dbSync);
       const { createGovernanceStrangler } = await import('./platform/server/governance-strangler.mjs');
       governanceStrangler = createGovernanceStrangler(platformAuthority);
       console.log('Phase 02 platform authority initialized');

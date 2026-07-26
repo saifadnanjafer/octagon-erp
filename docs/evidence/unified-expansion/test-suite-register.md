@@ -21,3 +21,15 @@ real browser evidence.
 Deterministic backend, migration, rollback, WAL, security, HTTP, and atomicity
 proof is green. Real Chromium acceptance through the original shell is still
 missing and remains a hard gate.
+
+## Mandatory publication rerun - 2026-07-26T11:22:48+03:00
+
+- `node --test tests/phase04/*.test.mjs`: exit 0; 47 tests, 47 pass, 0 fail,
+  0 cancelled, 0 skipped, 0 todo.
+- `node tests/phase02/browser-evidence.test.mjs`: exit 0; 3/3 contract-level
+  checks passed.
+- `node scripts/permission-regression.mjs`: exit 0; 35/35 passed.
+- `node scripts/precommit.js`: exit 0; `Octagon precommit passed.`
+- `node scripts/inspect_legacy_opening_snapshot.mjs database.db`: exit 0;
+  `sourceUnchanged: true`, 8 materials, 401 on hand, 86 reserved, 315
+  available, IQD 1,963,000 valuation, no invalid costs.

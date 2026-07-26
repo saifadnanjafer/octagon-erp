@@ -132,3 +132,24 @@ actually proved, including failures and rework.
   remaining Phase 04 client adapters are not canonical; no real browser proof
 - Deferred: activation, operational cutover, Phase 04 browser closure, Waves 3-9
 - Classification: **PARTIAL — REMEDIATION REQUIRED**
+
+## Checkpoint 005 - Mandatory GitHub publication
+
+- Execution date/time: `2026-07-26T11:22:48+03:00`
+- Repository: `saifadnanjafer/octagon-erp`
+- Branch: `integration/octagon-unified-platform-expansion`
+- Starting HEAD: `21483e831dc2b6c89947f5fc2f319095cb742a25`
+- Model identity exposed: GPT-5
+- Exact backend build/version: not exposed by the execution environment
+- Agent/runtime: OpenAI Codex desktop / Windows PowerShell / Node v24.14.1 /
+  npm 11.11.0 / Git 2.53.0.windows.2
+- Tests rerun: Phase 04 47/47; Phase 02 bootstrap contract 3/3; permission
+  regression 35/35; precommit pass; operational source observation unchanged
+- Git audit: nested root, full worktree, all local/remote refs, local-only
+  commits, ignored operational paths, and stash inspected
+- Runtime-data boundary: database, WAL, SHM, JSON, logs, backups, and runtime
+  reports remain excluded
+- VNext: frozen, not selected, not modified
+- Push policy: normal branch push only; no force; no merge to main
+- Remaining product blockers: approved opening accounting date, canonical
+  original-shell Phase 04 adapters, and real Chromium acceptance

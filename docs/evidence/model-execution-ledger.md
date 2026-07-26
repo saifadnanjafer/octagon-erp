@@ -315,3 +315,22 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Blockers:** approved accounting date, durable canonical original-shell Phase
   04 adapters, active disposable locks, and real Chromium acceptance
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 012 - Mandatory GitHub Publication
+
+- **Execution:** 2026-07-26T11:22:48+03:00
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `integration/octagon-unified-platform-expansion`
+- **Model:** GPT-5 exposed identity; exact backend build/version not exposed
+- **Agent/runtime:** OpenAI Codex desktop, Windows PowerShell, Node v24.14.1,
+  npm 11.11.0, Git 2.53.0.windows.2
+- **Verification:** Phase 04 47/47; bootstrap contract 3/3; permissions 35/35;
+  precommit pass; operational source unchanged
+- **Publication safety:** nested root, refs, local-only commits, ignored runtime
+  artifacts, and stash inspected; no runtime data selected
+- **VNext:** permanently frozen and untouched
+- **Push policy:** fast-forward branch publication; no force and no main merge
+- **Residual blockers:** approved opening date, durable canonical Phase 04 UI
+  adapters, and real browser acceptance

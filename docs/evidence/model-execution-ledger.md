@@ -334,3 +334,48 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Push policy:** fast-forward branch publication; no force and no main merge
 - **Residual blockers:** approved opening date, durable canonical Phase 04 UI
   adapters, and real browser acceptance
+
+---
+
+## Record 013 - Phase 04 Original-Shell Finalization (Waves 0-2, 6)
+
+- **Execution:** 2026-07-26T17:57:34Z (2026-07-26 20:57 +03)
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `remediation/phase-04-original-shell-finalization` from `643d930`
+- **Model:** Claude Opus 5 (`claude-opus-5`), extended thinking enabled
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Git Bash on Windows 11 Pro
+  10.0.26200, Node v24.14.1, npm 11.11.0, Git 2.53.0.windows.2
+- **Entry deviation:** worktree was not clean — 57 uncommitted files / ~16k
+  lines of Phase 05 work from an interrupted session. Preserved unchanged to
+  `phase-05/projects-manufacturing-assets-maintenance-fleet` as `cd86a05`
+  (not pushed) before branching. Nothing reset, cleaned, stashed or discarded.
+  That Phase 05 work is UNVERIFIED.
+- **Built:** `services/canonicalClient.js` (canonical transport: server-derived
+  identity only, envelope unwrap, correlation, idempotency, typed errors,
+  optimistic concurrency, server-authoritative cutover resolution, shadow
+  compare, refresh events, 14 query resources + 27 action ids);
+  `services/commercialAdapter.js` (commercial strangler seam, canonical XOR
+  legacy, opening stock posted as a separate governed stock move);
+  `app.js addMaterial` routed through the seam with the legacy path preserved
+  verbatim.
+- **Cutover activated:** NONE. No flag flipped, no retirement lock set, no
+  writer retired. Current runtime behavior is unchanged.
+- **Verification:** Phase 04 finalization 38/38; Phase 04 aggregate 47/47;
+  permission regression 35/35; precommit pass on every commit.
+  **Browser executions: none** — no Chromium process ran.
+- **Own mistakes:** one real product defect introduced and then caught by this
+  session's tests (`roles` wrongly listed in FORBIDDEN_INPUT_KEYS, which would
+  have stripped the party business role from every canonical customer/supplier
+  create); two test-harness defects (vm global fetch, cross-realm deep-equality);
+  one test invocation error (`node --test <dir>` vs the documented glob).
+- **Opening date gate:** searched the full tree; NO owner/source-approved
+  opening accounting date exists. None invented. Guard verified fail-closed at
+  `scripts/migrate_legacy_data.mjs:64`. Real-source migration not attempted.
+- **Operational data:** database.db / -wal / -shm / database.json byte-identical
+  at entry and exit; live SQLite path never opened by a driver.
+- **VNext:** permanently frozen, not inspected, not modified, nothing salvaged.
+- **Push policy:** fast-forward branch publication, local HEAD == remote HEAD
+  verified at each push; no force, no history rewrite, no main merge.
+- **Residual blockers:** approved opening date; real Chromium acceptance;
+  Waves 3, 4, 5, 7, 8 not started; Wave 2 partially wired.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

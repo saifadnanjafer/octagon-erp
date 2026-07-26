@@ -241,6 +241,7 @@
     knowledge_base: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase8d', label: 'Knowledge Base & FAQ' },
     surveys: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase6h', label: 'Surveys' },
     visitors: { sensitivity: 'workshop/operations', riskLevel: 'low', phase: 'phase6h', label: 'Visitor Logs' },
+    canonical_operations: { sensitivity: 'workshop/operations', riskLevel: 'high', phase: 'phase05', label: 'Canonical operations (manufacturing, projects, assets)' },
     marketing: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Marketing' },
     projects: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Project Hub' },
     field_service: { sensitivity: 'workshop/operations', riskLevel: 'medium', phase: 'phase6h', label: 'Field Service' },
@@ -342,6 +343,7 @@
     knowledge_base: [], // public/internal (available for all authenticated roles)
     surveys: ['workshop.user'],
     visitors: ['workshop.user'],
+    canonical_operations: ['workshop.user'],
     marketing: ['workshop.user'],
     projects: ['workshop.user'],
     field_service: ['workshop.user'],

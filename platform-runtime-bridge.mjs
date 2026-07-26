@@ -33,6 +33,12 @@ import { registerSalesActions } from './platform/sales/index.mjs';
 import { registerProcurementActions } from './platform/procurement/index.mjs';
 import { registerPosActions } from './platform/pos/index.mjs';
 import { registerWorkItemActions } from './platform/work_items/index.mjs';
+import { registerManufacturingActions } from './platform/manufacturing/index.mjs';
+import { registerQualityActions } from './platform/quality/index.mjs';
+import { registerProjectActions } from './platform/projects/index.mjs';
+import { registerAssetActions } from './platform/assets/index.mjs';
+import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
+import { registerFleetActions } from './platform/fleet/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
@@ -164,6 +170,15 @@ export function createPlatformAuthority(dialect) {
   registerProcurementActions(actionExecutor);
   registerPosActions(actionExecutor);
   registerWorkItemActions(actionExecutor);
+  // Phase 05 domains. Each registration is behind its Control Plane module
+  // flag, so a disabled domain is denied on the server rather than merely
+  // hidden in the shell.
+  registerManufacturingActions(actionExecutor);
+  registerQualityActions(actionExecutor);
+  registerProjectActions(actionExecutor);
+  registerAssetActions(actionExecutor);
+  registerMaintenanceActions(actionExecutor);
+  registerFleetActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 

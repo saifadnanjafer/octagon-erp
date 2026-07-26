@@ -25,6 +25,7 @@ import { createRepository } from '../data/repositories/index.mjs';
 import { createActionExecutor } from '../kernel/actions/index.mjs';
 import { handleFinanceQuery } from './finance.mjs';
 import { handleCommercialQuery } from './commercial.mjs';
+import { handlePhase05Query, PHASE05_NAMESPACES } from './phase05.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -90,7 +91,9 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
   async function handleCommand(req, res, requestUrl) {
     const pathname = requestUrl.pathname;
     const segments = pathname.slice(prefix.length).split('/').filter(Boolean);
-    if (segments.length < 2) {
+    // A Phase 05 collection route is a single segment (`/api/v1/projects`), so
+    // the two-segment minimum applies only to the older families.
+    if (segments.length < 2 && !PHASE05_NAMESPACES.includes(segments[0])) {
       return sendJson(res, 404, envelope(null, 'not found', null, null));
     }
     const namespace = segments[0];
@@ -167,6 +170,21 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const commercialResult = handleCommercialQuery({ dialect, ctx, namespace, resource, recordId, query });
         if (commercialResult.error) return sendJson(res, commercialResult.status || 404, envelope(null, commercialResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(commercialResult.data, null, commercialResult.meta, ctx.correlationId));
+      }
+
+      // Phase 05 read-side families. Writes stay on /action/:actionId, so the
+      // governed contract (permission, scope, idempotency, audit, outbox) has
+      // exactly one enforcement point.
+      if (PHASE05_NAMESPACES.includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const phase05Result = handlePhase05Query({
+          dialect, ctx, namespace, resource, recordId: segments[3] || segments[2], query,
+        });
+        if (phase05Result.error) {
+          return sendJson(res, phase05Result.status || 404, envelope(null, phase05Result.error, null, ctx.correlationId));
+        }
+        return sendJson(res, 200, envelope(phase05Result.data, null, phase05Result.meta, ctx.correlationId));
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {

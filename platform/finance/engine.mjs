@@ -769,7 +769,11 @@ export function seedChartOfAccounts(dialect, ctx, options = {}) {
     for (let m = 1; m <= 12; m++) {
       const ms = String(m).padStart(2, '0');
       const periodId = `period_${companyId}_2026_${ms}`;
-      const end = new Date(2026, m, 0).toISOString().split('T')[0];
+      // Date.UTC, not the local-time constructor: `new Date(2026, m, 0)` builds
+      // local midnight, and `.toISOString()` then shifts it back a day in every
+      // timezone east of UTC — which left the last day of each month outside
+      // any fiscal period. Corrected forward by migration 049.
+      const end = new Date(Date.UTC(2026, m, 0)).toISOString().slice(0, 10);
       dialect.prepare(`
         INSERT INTO finance_periods (id, company_id, fiscal_year_id, name, start_date, end_date, status, created_at, updated_at, created_by)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

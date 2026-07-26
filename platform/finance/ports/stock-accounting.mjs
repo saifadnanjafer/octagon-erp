@@ -25,6 +25,17 @@ function isInternal(usage) {
   return usage === 'internal' || usage === 'transit';
 }
 
+// Phase 05 manufacturing usages. Goods in these locations are still owned and
+// still valued; they are simply held outside a normal warehouse location. They
+// are deliberately NOT "internal" so that the Phase 04 valuation engine records
+// an issue/receipt fact on every crossing, which is what makes WIP measurable.
+const PRODUCTION_USAGE = 'production';
+const SUBCONTRACTOR_USAGE = 'subcontractor';
+
+function isManufacturingUsage(usage) {
+  return usage === PRODUCTION_USAGE || usage === SUBCONTRACTOR_USAGE;
+}
+
 function requireAccount(db, companyId, accountId, label) {
   if (!accountId) throw new Error(`${label} account mapping is required`);
   const account = db.prepare(`
@@ -35,43 +46,163 @@ function requireAccount(db, companyId, accountId, label) {
   return account.id;
 }
 
+/**
+ * Company-scoped manufacturing account mapping (Control Plane row created by
+ * migration 045). No manufacturing account is ever hard-coded in domain code;
+ * a missing mapping fails closed so a production posting can never silently
+ * land in the wrong account.
+ */
+export function manufacturingMapping(db, companyId) {
+  const hasTable = db.prepare(`
+    SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'manufacturing_account_mappings'
+  `).get();
+  if (!hasTable) return null;
+  return db.prepare('SELECT * FROM manufacturing_account_mappings WHERE company_id = ?').get(companyId) || null;
+}
+
+function manufacturingLeg(db, move, mapping) {
+  const companyId = move.company_id;
+  const required = (accountId, label) => requireAccount(db, companyId, accountId, label);
+  if (!mapping) throw new Error('manufacturing account mapping is required for this company');
+  return {
+    wip: () => required(mapping.wip_account_id, 'work in progress'),
+    subcontractStock: () => required(mapping.subcontract_stock_account_id, 'subcontractor goods'),
+  };
+}
+
+/**
+ * Resolve the manufacturing accounting legs for a move that touches a
+ * production or subcontractor location. Returns null when the move is an
+ * ordinary Phase 04 commercial movement, so the original logic keeps running
+ * untouched.
+ *
+ * Scrap out of WIP is deliberately NOT handled here: a production → scrap move
+ * crosses no internal boundary, so the Phase 04 valuation engine produces no
+ * valuation fact for it and this function is never reached. That write-off is
+ * posted explicitly by `manufacturing/materials.mjs` through the registered
+ * `manufacturing_wip_posting` source-fact contract.
+ */
+function resolveManufacturingPosting(db, move, mapping, ctx) {
+  const sourceUsage = ctx.source_usage;
+  const destinationUsage = ctx.destination_usage;
+
+  if (!isManufacturingUsage(sourceUsage) && !isManufacturingUsage(destinationUsage)) return null;
+
+  const legs = manufacturingLeg(db, move, mapping);
+  const stockAccount = requireAccount(db, move.company_id, ctx.stock_account_id, 'stock valuation');
+
+  // Component issue into production: Dr WIP / Cr Inventory.
+  if (destinationUsage === PRODUCTION_USAGE && isInternal(sourceUsage)) {
+    return {
+      debitAccount: legs.wip(),
+      creditAccount: stockAccount,
+      accountingEvent: 'production_material_issue',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  // Output or component return out of production: Dr Inventory / Cr WIP.
+  if (sourceUsage === PRODUCTION_USAGE && isInternal(destinationUsage)) {
+    return {
+      debitAccount: stockAccount,
+      creditAccount: legs.wip(),
+      accountingEvent: 'production_output_receipt',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  // Supplied components sent to a subcontractor stay an asset of this company.
+  // They are reclassified, never expensed and never treated as a sale.
+  if (destinationUsage === SUBCONTRACTOR_USAGE && isInternal(sourceUsage)) {
+    return {
+      debitAccount: legs.subcontractStock(),
+      creditAccount: stockAccount,
+      accountingEvent: 'subcontract_component_transfer',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  if (sourceUsage === SUBCONTRACTOR_USAGE && isInternal(destinationUsage)) {
+    return {
+      debitAccount: stockAccount,
+      creditAccount: legs.subcontractStock(),
+      accountingEvent: 'subcontract_component_return',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  // Consumption of supplied components at the subcontractor's site.
+  if (sourceUsage === SUBCONTRACTOR_USAGE && destinationUsage === PRODUCTION_USAGE) {
+    return {
+      debitAccount: legs.wip(),
+      creditAccount: legs.subcontractStock(),
+      accountingEvent: 'subcontract_component_consumption',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  if (sourceUsage === PRODUCTION_USAGE && destinationUsage === SUBCONTRACTOR_USAGE) {
+    return {
+      debitAccount: legs.subcontractStock(),
+      creditAccount: legs.wip(),
+      accountingEvent: 'subcontract_wip_transfer',
+      factType: 'manufacturing_wip_posting',
+    };
+  }
+
+  throw new Error(`unsupported manufacturing stock movement: ${sourceUsage} -> ${destinationUsage}`);
+}
+
 export function postStockAccounting(db, ctx, { move, valuationFact }) {
   if (!valuationFact) return { accounting_event: 'internal_transfer', finance_document_id: null };
   const amount = Math.abs(Number(valuationFact.value || 0));
   if (!(amount > 0)) throw new Error('A valued stock operation requires a positive accounting amount');
   const mapping = accountingContext(db, move);
-  const entering = !isInternal(mapping.source_usage) && isInternal(mapping.destination_usage);
-  const leaving = isInternal(mapping.source_usage) && !isInternal(mapping.destination_usage);
-  if (!entering && !leaving) return { accounting_event: 'internal_transfer', finance_document_id: null };
 
-  const stockAccount = requireAccount(db, move.company_id, mapping.stock_account_id, 'stock valuation');
+  const manufacturing = resolveManufacturingPosting(
+    db,
+    move,
+    manufacturingMapping(db, move.company_id),
+    mapping,
+  );
+
   let debitAccount;
   let creditAccount;
   let accountingEvent;
   let factType;
-  if (entering) {
-    debitAccount = stockAccount;
-    if (mapping.source_usage === 'supplier') {
-      creditAccount = requireAccount(db, move.company_id, mapping.stock_input_account_id, 'stock input');
-      accountingEvent = 'stock_receipt';
-    } else if (mapping.source_usage === 'customer') {
-      creditAccount = requireAccount(db, move.company_id, mapping.stock_output_account_id, 'stock output');
-      accountingEvent = 'customer_return';
-    } else {
-      creditAccount = requireAccount(db, move.company_id, mapping.expense_account_id, 'inventory adjustment');
-      accountingEvent = 'inventory_gain';
-    }
-    factType = 'stock_receipt_posting';
+
+  if (manufacturing) {
+    ({ debitAccount, creditAccount, accountingEvent, factType } = manufacturing);
   } else {
-    creditAccount = stockAccount;
-    if (mapping.destination_usage === 'supplier') {
-      debitAccount = requireAccount(db, move.company_id, mapping.stock_input_account_id, 'stock input');
-      accountingEvent = 'supplier_return';
+    const entering = !isInternal(mapping.source_usage) && isInternal(mapping.destination_usage);
+    const leaving = isInternal(mapping.source_usage) && !isInternal(mapping.destination_usage);
+    if (!entering && !leaving) return { accounting_event: 'internal_transfer', finance_document_id: null };
+
+    const stockAccount = requireAccount(db, move.company_id, mapping.stock_account_id, 'stock valuation');
+    if (entering) {
+      debitAccount = stockAccount;
+      if (mapping.source_usage === 'supplier') {
+        creditAccount = requireAccount(db, move.company_id, mapping.stock_input_account_id, 'stock input');
+        accountingEvent = 'stock_receipt';
+      } else if (mapping.source_usage === 'customer') {
+        creditAccount = requireAccount(db, move.company_id, mapping.stock_output_account_id, 'stock output');
+        accountingEvent = 'customer_return';
+      } else {
+        creditAccount = requireAccount(db, move.company_id, mapping.expense_account_id, 'inventory adjustment');
+        accountingEvent = 'inventory_gain';
+      }
+      factType = 'stock_receipt_posting';
     } else {
-      debitAccount = requireAccount(db, move.company_id, mapping.expense_account_id, 'cost of goods sold');
-      accountingEvent = mapping.destination_usage === 'customer' ? 'stock_delivery' : 'inventory_loss';
+      creditAccount = stockAccount;
+      if (mapping.destination_usage === 'supplier') {
+        debitAccount = requireAccount(db, move.company_id, mapping.stock_input_account_id, 'stock input');
+        accountingEvent = 'supplier_return';
+      } else {
+        debitAccount = requireAccount(db, move.company_id, mapping.expense_account_id, 'cost of goods sold');
+        accountingEvent = mapping.destination_usage === 'customer' ? 'stock_delivery' : 'inventory_loss';
+      }
+      factType = 'stock_issue_posting';
     }
-    factType = 'stock_issue_posting';
   }
 
   const posted = postSourceFact(db, ctx, {

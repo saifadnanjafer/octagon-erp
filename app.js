@@ -3063,7 +3063,7 @@ const navGroupPages = {
   core_daily: ['calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
   ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
-  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
+  ops_production: ['canonical_operations', 'op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
   ops_frontline: ['workshop_tv', 'kiosk'],
   finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
   commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty'],
@@ -4061,6 +4061,7 @@ function switchPage(page) {
   }
 
   const pageMap = {
+    canonical_operations: 'pageCanonicalOperations',
     home: 'pageHome',
     calculator: 'pageCalculator',
     import: 'pageImport',
@@ -37118,6 +37119,7 @@ function renderAutomationEngine() {
 // ─── Dynamic HTML View Loader (View Split) ───
 window.ensurePageTemplateLoaded = async function (page) {
   const pageMap = {
+    canonical_operations: 'pageCanonicalOperations',
     home: 'pageHome',
     calculator: 'pageCalculator',
     import: 'pageImport',
@@ -37289,7 +37291,7 @@ window.prefetchAllViews = function () {
     'security_center', 'data_quality', 'training_lms', 'scenario_planner',
     'device_center', 'appointments', 'workshop_ledger',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'knowledge_base', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
-    'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready'
+    'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready', 'canonical_operations'
   ];
   
   let i = 0;

@@ -1,7 +1,9 @@
 # Unified Expansion Starting State
 
-**Captured:** 2026-07-26T02:52:06.860+03:00  
-**Workspace:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0`  
+**Captured:** 2026-07-26T02:52:06.860+03:00
+
+**Workspace:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0`
+
 **Product repository:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`
 
 ## Git baseline

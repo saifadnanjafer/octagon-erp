@@ -1,8 +1,11 @@
 # VNext Permanent Freeze and Salvage Policy
 
-**Owner decision date:** 2026-07-26  
-**Policy status:** ACTIVE  
-**Only product/runtime under development:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`  
+**Owner decision date:** 2026-07-26
+
+**Policy status:** ACTIVE
+
+**Only product/runtime under development:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp`
+
 **Frozen salvage source:** `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-erp-commercial-vnext`
 
 ## Product decision

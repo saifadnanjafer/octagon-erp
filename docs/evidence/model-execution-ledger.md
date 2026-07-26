@@ -265,3 +265,23 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **VNext attestation:** observed branch, commit, and dirty-status set remained unchanged; no VNext write command was issued
 - **Wave 0 classification:** **WAVE COMPLETE — SAFE TO CONTINUE**
 
+---
+
+## Record 010 — Unified Expansion Wave 1 Architecture and Evidence Audit
+
+- **Agent/runtime/model:** OpenAI Codex desktop / GPT-5 exposed identity; exact backend build and reasoning label not exposed
+- **Starting commit:** `dda715cbe29b8a5e32a6c383c44274ef907c41ce`
+- **Branch:** `integration/octagon-unified-platform-expansion`
+- **Wave:** Wave 1 — actual architecture, evidence, authority, and closure audit
+- **Files inspected:** server cutover guards/runtime mount; finance and stock browser services; Phase 04 migration; Phase 04 browser gate; operational SQLite schema/state
+- **Operational data:** opened read-only; DB/WAL/SHM/JSON hashes unchanged
+- **Mistake:** first read-only feature-flag query referenced a non-existent column; corrected by reading table metadata
+- **Disproved claims:** real Phase 04 browser acceptance; active cutover; retired Phase 04 runtime writers; original-shell canonical parity; Phase 03-authority opening posting; WAL-complete disposable snapshot; deployment readiness
+- **Preserved valid work:** Phase 04 canonical backend, migration schema, opening quantity/reservation/valuation reconciliation, deterministic 43/43 suite
+- **Duplicate writers found:** legacy stock/reservation, Phase 04 generic write routes under disabled flag, direct opening GL SQL, client-selectable legacy finance, legacy task/commercial persistence
+- **Phase 05 status:** draft only and held; no Phase 05 code or migration started
+- **VNext:** read-only; no files salvaged or changed in this wave
+- **Migrations/runtime/UI changes:** none
+- **Evidence created:** `phase-04-closure-claim-audit.md`, `canonical-authority-map.md`, `duplicate-authority-retirement.md`, `architecture-decisions.md`, `runtime-integration.md`, `unresolved-risks.md`, `UNIFIED_EXPANSION_CHECKPOINT.md`
+- **Classification:** **WAVE COMPLETE — SAFE TO CONTINUE TO REMEDIATION**
+

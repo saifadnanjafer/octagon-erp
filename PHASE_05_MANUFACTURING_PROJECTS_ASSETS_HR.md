@@ -1,5 +1,11 @@
 # PHASE 05 — MANUFACTURING, PROJECTS, ASSETS & HR
 
+> **HOLD — 2026-07-26 unified-expansion re-audit:** This remains a draft only.
+> Do not start Phase 05 code. The Phase 04 hard gate is reopened by
+> `docs/evidence/unified-expansion/phase-04-closure-claim-audit.md` for
+> WAL-aware disposable migration, canonical finance posting, active
+> writer-retirement proof, original-shell cutover, and real browser acceptance.
+
 **Document status:** DRAFT — awaiting owner approval before any code is written
 **Drafted:** 2026-07-26
 **Governing authority for:** Phase 05 execution

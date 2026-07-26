@@ -63,3 +63,33 @@ actually proved, including failures and rework.
 - Runtime, migration, UI, and business-data changes: none
 - Remote push/main merge: none
 - Wave 0 classification: **WAVE COMPLETE — SAFE TO CONTINUE**
+
+## Checkpoint 003 — Wave 1 architecture and evidence audit
+
+- Starting Wave 1 commit: `dda715cbe29b8a5e32a6c383c44274ef907c41ce`
+- Scope: audit actual architecture, active/duplicate authorities, runtime
+  mounting, Phase 04 closure claims, and Phase 05 conflict risk
+- Runtime files inspected: `server.js`, `platform-runtime-bridge.mjs`,
+  `services/financeService.js`, `services/stockService.js`,
+  `scripts/migrate_legacy_data.mjs`,
+  `tests/phase04/browser_phase04_remediation.mjs`
+- Operational DB inspection: Node SQLite `readOnly:true`; hashes unchanged
+- Read-only query mistake: first query requested a non-existent
+  `rollout_percentage` feature-flag column and failed; corrected with
+  `PRAGMA table_info` and `SELECT *`
+- Finding: the operational DB has no Phase 04 cutover row, retirement-lock
+  table, or opening-batch table; it remains intentionally unmigrated
+- Finding: Phase 04 backend deterministic work is valid, but real browser,
+  active flag, original-shell cutover, and runtime writer retirement are absent
+- Finding: the Phase 04 disposable copy ignores active WAL pages
+- Finding: opening GL rows bypass the Phase 03 finance authority
+- Finding: original stock/reservation services remain direct legacy writers
+- Finding: finance browser selection defaults canonical mode OFF while server
+  generic finance denial is unconditional
+- Documents created: authority map, duplicate retirement audit, architecture
+  decisions, runtime audit, Phase 04 closure-claim audit, risks, checkpoint
+- Historical/status documents corrected: Phase 04 sign-off banner, Phase 05
+  hold banner, `HERE.md`, and `STRUCTURE.md`
+- Runtime/UI/migration/business-data changes: none
+- VNext changes: none
+- Wave 1 classification: **WAVE COMPLETE — SAFE TO CONTINUE TO REMEDIATION**

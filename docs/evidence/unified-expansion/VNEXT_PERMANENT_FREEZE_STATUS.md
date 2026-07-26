@@ -1,6 +1,7 @@
 # VNext Permanent Freeze Status
 
-**Checked:** 2026-07-26  
+**Checked:** 2026-07-26
+
 **Classification:** `FROZEN PROJECT-OWNED SALVAGE SOURCE`
 
 ## Read-only source identity

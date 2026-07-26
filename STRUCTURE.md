@@ -1,5 +1,12 @@
 # Octagon ERP Structure
 
+> **Current authority update — 2026-07-26:** Use
+> `docs/evidence/unified-expansion/canonical-authority-map.md` for live
+> authority status and
+> `docs/evidence/unified-expansion/UNIFIED_EXPANSION_CHECKPOINT.md` for the
+> active continuation. VNext is read-only; Phase 05 is on hold until the reopened
+> Phase 04 hard gate passes.
+
 This system is built as a single-page application (SPA) with a modular architecture for AI-driven operation.
 
 ## Key Files

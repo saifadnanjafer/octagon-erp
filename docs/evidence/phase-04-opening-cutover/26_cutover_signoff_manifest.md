@@ -1,5 +1,13 @@
 # Phase 04 Cutover Sign-Off Manifest
 
+> **Independent re-audit, 2026-07-26:** This historical sign-off is superseded
+> for current execution status by
+> `docs/evidence/unified-expansion/phase-04-closure-claim-audit.md`. The
+> deterministic 43/43 result and opening reconciliation remain credited, but
+> real browser execution, WAL-aware source capture, Phase 03-authority opening
+> posting, active cutover, original-shell parity, and runtime writer retirement
+> were not proven. Current classification: `PARTIAL — REMEDIATION REQUIRED`.
+
 ## Program Name
 **PHASE 04.6 — OPENING STOCK, RESERVATION, VALUATION, GL CUTOVER, LEGACY WRITER RETIREMENT, AND FINAL PHASE 04 CLOSURE**
 

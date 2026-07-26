@@ -1,5 +1,13 @@
 # Octagon ERP - JARVIS Runtime V2 Status
 
+> **Current authority update — 2026-07-26:** Unified platform expansion is active
+> on `integration/octagon-unified-platform-expansion`. VNext is permanently
+> frozen. Phase 05 is on hold. The current checkpoint is
+> `docs/evidence/unified-expansion/UNIFIED_EXPANSION_CHECKPOINT.md`; Phase 04
+> deterministic work is valid but closure is reopened for WAL-aware migration,
+> canonical finance posting, original-shell/writer cutover, and real browser
+> proof. Older phase/feature notes below are historical context.
+
 Welcome to Octagon ERP V4.0 / V6. This sprint focuses on upgrading the AI Assistant into **JARVIS Runtime V2** — a fully integrated, hands-free ERP voice/text operator.
 
 ## Core Assistant Modules

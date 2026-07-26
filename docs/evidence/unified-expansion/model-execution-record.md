@@ -93,3 +93,42 @@ actually proved, including failures and rework.
 - Runtime/UI/migration/business-data changes: none
 - VNext changes: none
 - Wave 1 classification: **WAVE COMPLETE — SAFE TO CONTINUE TO REMEDIATION**
+
+## Checkpoint 004 - Wave 2 migration/runtime remediation
+
+- Execution date/time: `2026-07-26T03:20:14+03:00`
+- Starting commit: `e3cf4e13933f84b4f1e13faf8e71d523d6ddea2c`
+- Implementation commit: `73248c23b5f9751cbdbfaefb6171a1eb44c039fd`
+- Branch: `integration/octagon-unified-platform-expansion`
+- Model/runtime: GPT-5 exposed identity; exact backend build and reasoning label
+  not exposed; Codex desktop; Node `v24.14.1`
+- Wave: Wave 2, partial remediation checkpoint
+- VNext files inspected/salvaged/changed: none / none / none
+- Donor systems inspected/adapted: none
+- Direct adaptation: existing Octagon Phase 03 finance lifecycle reused for
+  opening posting; existing Octagon staged `VACUUM INTO` pattern adapted for
+  DB+WAL consolidation
+- Clean-room adaptation: two-key per-domain legacy-writer retirement guard
+- Migrations added: none; migration 044 remains schema authority
+- Files changed: Phase 04 migration/inspector, retirement guard, server/bootstrap,
+  finance client selector, Phase 02/04 tests, and unified-expansion evidence
+- Operational observation: staged source returned 8 materials, 401 on hand, 86
+  reserved, 315 available, IQD 1,963,000 valuation, zero invalid-cost materials
+- Operational hashes: DB/WAL/SHM/JSON matched the Wave 0 baseline before/after
+- Tests: Phase 04 47/47; Phase 02 bootstrap fallback 3/3; permission regression
+  35/35; precommit passed; `git diff --check` passed
+- Failure: the first implementation opened the fixture source read-only for
+  `VACUUM INTO`; SQLite created empty WAL/SHM siblings and the unchanged-source
+  assertion correctly blocked two tests
+- Current-model mistake: assumed a read-only SQLite open would be filesystem
+  side-effect free
+- Rework: stage DB+WAL byte copies first, open only staging, consolidate there,
+  and prove non-empty WAL-only committed facts migrate while source bytes remain
+  unchanged
+- Additional blocked command: the first ad-hoc PowerShell observation pipeline
+  was rejected by execution policy; replaced with the reviewed reusable
+  `scripts/inspect_legacy_opening_snapshot.mjs`
+- Blockers: no approved accounting cutover date; original-shell inventory and
+  remaining Phase 04 client adapters are not canonical; no real browser proof
+- Deferred: activation, operational cutover, Phase 04 browser closure, Waves 3-9
+- Classification: **PARTIAL — REMEDIATION REQUIRED**

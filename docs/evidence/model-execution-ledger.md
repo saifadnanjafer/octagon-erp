@@ -285,3 +285,33 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Evidence created:** `phase-04-closure-claim-audit.md`, `canonical-authority-map.md`, `duplicate-authority-retirement.md`, `architecture-decisions.md`, `runtime-integration.md`, `unresolved-risks.md`, `UNIFIED_EXPANSION_CHECKPOINT.md`
 - **Classification:** **WAVE COMPLETE — SAFE TO CONTINUE TO REMEDIATION**
 
+
+---
+
+## Record 011 - Unified Expansion Wave 2 Remediation Checkpoint
+
+- **Execution:** 2026-07-26T03:20:14+03:00
+- **Agent/runtime/model:** OpenAI Codex desktop / GPT-5 exposed identity / Node
+  v24.14.1; exact backend build and reasoning label not exposed
+- **Branch:** `integration/octagon-unified-platform-expansion`
+- **Starting commit:** `e3cf4e13933f84b4f1e13faf8e71d523d6ddea2c`
+- **Implementation commit:** `73248c23b5f9751cbdbfaefb6171a1eb44c039fd`
+- **Wave:** Wave 2 partial - opening source, migration, finance lifecycle,
+  runtime retirement, security, atomicity, and evidence
+- **VNext:** frozen and untouched; no Wave 2 inspection or salvage
+- **Donors:** none inspected in Wave 2
+- **Migration result:** DB+WAL staged and consolidated; explicit date required;
+  fake fallbacks removed; opening GL routed through canonical Phase 03 authority
+- **Operational source:** 8 materials / 401 on hand / 86 reserved / 315 available
+  / IQD 1,963,000 / zero invalid costs; DB/WAL/SHM/JSON hashes unchanged
+- **Runtime result:** exact flag+domain-lock retirement guard; authenticated
+  bootstrap controls finance client canonical selection
+- **Tests:** Phase 04 47/47; Phase 02 bootstrap contract 3/3; permission
+  regression 35/35; precommit pass
+- **Failure/mistake:** initial read-only SQLite source open created empty fixture
+  WAL/SHM siblings and caused correct BLOCKED results
+- **Rework:** staging-copy-only open plus non-empty WAL proof; no operational
+  execution occurred during the failed implementation
+- **Blockers:** approved accounting date, durable canonical original-shell Phase
+  04 adapters, active disposable locks, and real Chromium acceptance
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

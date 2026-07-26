@@ -6,27 +6,40 @@
 
 ## Completed
 
-- Wave 0 branch, freeze policy, model provenance, source hashes, and local commit.
-- Wave 1 architecture/evidence audit.
-- VNext confirmed read-only and untouched.
-- Phase 04 deterministic suite re-run: 43/43.
-- Precommit and permission regression: passed, 35/35 permission checks.
-- False closure-equivalent claims identified with code/runtime evidence.
+- Waves 0-1 branch/freeze/provenance and architecture/closure audit.
+- Wave 2 implementation checkpoint `73248c23b5f9751cbdbfaefb6171a1eb44c039fd`.
+- WAL-aware staged snapshot that never opens the operational SQLite path.
+- Current operational source verified unchanged: 8 materials, 401 on hand, 86
+  reserved, 315 available, IQD 1,963,000 valuation, zero invalid costs.
+- Opening finance posting now uses Phase 03 create → submit → approve → post.
+- Explicit cutover date, exact accounts/journal/period/warehouse/location, and
+  component drift all fail closed.
+- Fixture reconciliation proves quantity, reservation, available, valuation,
+  balanced GL, no duplicates, rerun, rollback, and WAL-only committed facts.
+- Two-key per-domain runtime writer retirement and server-authoritative finance
+  client selection.
+- Phase 04 aggregate 47/47; permission regression 35/35; precommit passed.
+- Operational DB/WAL/SHM/JSON hashes remain identical.
 
 ## Not completed
 
-- WAL-aware Phase 04 disposable migration.
-- Opening GL posting through Phase 03 authority.
-- Disposable cutover activation and writer-denial proof.
-- Original-shell canonical UI integration.
-- Real Phase 04 browser acceptance.
-- Refreshed prior-phase browser acceptance.
-- Capability harvest and donor selection.
-- Waves 3-9 implementation.
+- Owner/source-approved opening accounting cutover date.
+- Real operational-source disposable migration and accepted sign-off.
+- Durable original-shell canonical inventory/commercial/work-item adapters.
+- Activation of flag/domain locks on a disposable accepted database.
+- Real Phase 04 Chromium browser acceptance.
+- Complete Wave 3 capability-harvest matrix and later waves.
 
-## Next safest wave
+## Exact blockers
 
-Wave 2: repair the disposable snapshot and opening-finance posting path first,
-then prove cutover, UI, security, concurrency, rollback, reconciliation, and
-real browser gates on an isolated environment. Do not start Phase 05 or broad
-donor harvesting yet.
+1. Selecting an accounting date without owner/source authority would invent a
+   material accounting fact.
+2. Activating inventory retirement before the original UI has a durable
+   canonical draft/edit/validate workflow would make existing workflows fail.
+3. Browser closure before those two facts is invalid.
+
+## Next safest work
+
+Continue Wave 2 by implementing durable canonical stock draft/validate and
+original-shell adapters without activating cutover. The real-source migration
+must remain blocked until the accounting date is supplied.

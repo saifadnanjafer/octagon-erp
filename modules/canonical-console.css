@@ -1,0 +1,248 @@
+/* Canonical Operations console.
+   Scoped under #pageCanonicalConsole so nothing here can leak into the rest of
+   the shell — a past regression came from a module stylesheet publishing an
+   unscoped .btn-secondary rule. */
+
+#pageCanonicalConsole .cc-authority-banner {
+  margin: 0 0 14px;
+}
+
+#pageCanonicalConsole .cc-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #d9d9e3);
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  font-size: 0.86rem;
+}
+
+#pageCanonicalConsole .cc-banner-warn {
+  border-color: #d98324;
+  color: #8a4b00;
+}
+
+#pageCanonicalConsole .cc-banner-note {
+  color: var(--text-muted, #6b6b76);
+  font-size: 0.8rem;
+}
+
+#pageCanonicalConsole .cc-chip {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+#pageCanonicalConsole .cc-chip-on {
+  background: rgba(47, 143, 95, 0.14);
+  color: #1f7a4d;
+  border-color: rgba(47, 143, 95, 0.4);
+}
+
+#pageCanonicalConsole .cc-chip-off {
+  background: rgba(120, 120, 132, 0.12);
+  color: var(--text-muted, #6b6b76);
+  border-color: rgba(120, 120, 132, 0.28);
+}
+
+#pageCanonicalConsole .cc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+#pageCanonicalConsole .cc-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--border-color, #d9d9e3);
+  background: var(--card-bg, #fff);
+  color: var(--text-color, #1e1e24);
+  font-size: 0.87rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+#pageCanonicalConsole .cc-tab:hover {
+  border-color: var(--primary-color, #4a6cf7);
+}
+
+#pageCanonicalConsole .cc-tab.active {
+  background: var(--primary-color, #4a6cf7);
+  border-color: var(--primary-color, #4a6cf7);
+  color: #fff;
+}
+
+#pageCanonicalConsole .cc-tab:focus-visible {
+  outline: 2px solid var(--primary-color, #4a6cf7);
+  outline-offset: 2px;
+}
+
+#pageCanonicalConsole .cc-panel {
+  border: 1px solid var(--border-color, #d9d9e3);
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  padding: 16px;
+}
+
+#pageCanonicalConsole .cc-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+#pageCanonicalConsole .cc-panel-title {
+  margin: 0;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#pageCanonicalConsole .cc-count {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b6b76);
+}
+
+#pageCanonicalConsole .cc-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+  border-radius: 9px;
+  background: rgba(74, 108, 247, 0.08);
+  color: var(--text-color, #1e1e24);
+  font-size: 0.83rem;
+}
+
+#pageCanonicalConsole .cc-create {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+  border: 1px dashed var(--border-color, #d9d9e3);
+  border-radius: 10px;
+}
+
+#pageCanonicalConsole .cc-create-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+#pageCanonicalConsole .cc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  min-width: 170px;
+}
+
+#pageCanonicalConsole .cc-action-id {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted, #6b6b76);
+  background: rgba(120, 120, 132, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+#pageCanonicalConsole .cc-table-wrap {
+  overflow-x: auto;
+}
+
+#pageCanonicalConsole .cc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+#pageCanonicalConsole .cc-table th {
+  text-align: inherit;
+  font-weight: 600;
+  color: var(--text-muted, #6b6b76);
+  font-size: 0.76rem;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color, #d9d9e3);
+  white-space: nowrap;
+}
+
+#pageCanonicalConsole .cc-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color, #ececef);
+}
+
+#pageCanonicalConsole .cc-table tbody tr:hover {
+  background: rgba(120, 120, 132, 0.05);
+}
+
+#pageCanonicalConsole .cc-num {
+  font-variant-numeric: tabular-nums;
+}
+
+#pageCanonicalConsole .cc-state {
+  padding: 26px 16px;
+  text-align: center;
+  color: var(--text-muted, #6b6b76);
+  font-size: 0.88rem;
+}
+
+#pageCanonicalConsole .cc-state-error {
+  text-align: start;
+  border: 1px solid rgba(196, 62, 62, 0.4);
+  background: rgba(196, 62, 62, 0.06);
+  border-radius: 10px;
+  color: var(--text-color, #1e1e24);
+}
+
+#pageCanonicalConsole .cc-state-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#pageCanonicalConsole .cc-state-msg {
+  font-size: 0.85rem;
+}
+
+#pageCanonicalConsole .cc-state-hint,
+#pageCanonicalConsole .cc-corr {
+  margin-top: 6px;
+  font-size: 0.79rem;
+  color: var(--text-muted, #6b6b76);
+}
+
+#pageCanonicalConsole .cc-code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.75rem;
+  background: rgba(196, 62, 62, 0.14);
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+@media (max-width: 640px) {
+  #pageCanonicalConsole .cc-panel { padding: 12px; }
+  #pageCanonicalConsole .cc-tab { flex: 1 1 auto; justify-content: center; }
+  #pageCanonicalConsole .cc-field { min-width: 100%; }
+  #pageCanonicalConsole .cc-create-fields { width: 100%; }
+}

@@ -1,0 +1,27 @@
+<section class="page" id="pageCanonicalConsole">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-diagram-project"></i></span>
+        <span data-i18n-ar="العمليات القانونية الموحّدة" data-i18n-en="Canonical Operations">العمليات القانونية الموحّدة</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="واجهة موحّدة تعمل مباشرة على المحرّك القانوني: المنتجات، الأطراف، المخزون، المبيعات، المشتريات، نقطة البيع، وإدارة العمل. كل قراءة وكل أمر يمرّ عبر الخادم." data-i18n-en="A unified surface driven directly by the canonical engine: products, parties, inventory, sales, procurement, POS and work management. Every read and every command goes through the server.">
+        واجهة موحّدة تعمل مباشرة على المحرّك القانوني: المنتجات، الأطراف، المخزون، المبيعات، المشتريات، نقطة البيع، وإدارة العمل. كل قراءة وكل أمر يمرّ عبر الخادم.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="ccRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Authority banner: shows, per domain, whether the canonical engine is the
+       active write authority. Server-derived; the browser never decides this. -->
+  <div id="ccAuthorityBanner" class="cc-authority-banner"></div>
+
+  <div class="cc-tabs" id="ccTabs" role="tablist"></div>
+
+  <div class="cc-panel" id="ccPanel" aria-live="polite"></div>
+</section>

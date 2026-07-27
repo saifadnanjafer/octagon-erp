@@ -379,3 +379,50 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Residual blockers:** approved opening date; real Chromium acceptance;
   Waves 3, 4, 5, 7, 8 not started; Wave 2 partially wired.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 014 - Original-Shell Visible Expansion (Wave 1)
+
+- **Execution:** 2026-07-26
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Model:** Claude Opus 5 (`claude-opus-5`), extended thinking enabled
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Git Bash on Windows 11 Pro
+  10.0.26200, Node v24.14.1, npm 11.11.0, Git 2.53.0.windows.2
+- **Base commit:** `f5e45ed`, verified a strict descendant of the published
+  `643d930`. Deliberate deviation from "branch from 643d930": `f5e45ed` already
+  contains `services/canonicalClient.js`, the canonical frontend client this
+  assignment requires; rebuilding it from bare `643d930` would have produced two
+  divergent implementations. Nothing from `643d930` is lost.
+- **Delivered:** first visible original-shell module — Canonical Operations
+  console (`canonical_console`). New sidebar entry, `views/canonical_console.html`,
+  `modules/canonical-console.js`, scoped `modules/canonical-console.css`,
+  `pageMap` + prefetch + permission mapping. Eight domain sections (products,
+  parties, inventory balances, warehouses, sales, procurement, POS, work items)
+  each backed by a real canonical query; four backed by real canonical commands
+  (`product:template:create`, `party:create`, `warehouse:create`,
+  `work_item:create`). Bilingual AR/EN with live re-render on language switch.
+- **Deliberately NOT added:** no migrations, no backend modules, no placeholder
+  navigation for unbuilt modules.
+- **Verification:** phase 04 finalization + console 48/48; phase 04 aggregate
+  47/47; permission regression 35/35 (sidebar baseline moved 96 -> 97 because a
+  page was genuinely added; the 100%-coverage invariant is unchanged);
+  precommit pass. Real Chromium: nav entry visible, page opens and self-activates,
+  module mounted, 8 tabs, authority banner, real `/api/v1` call proven by a
+  genuine 401 with correlation id, Arabic RTL and English LTR both correct,
+  mobile 375px with no page-level horizontal overflow.
+- **Not proven:** no authenticated workflow (no test credentials; every canonical
+  read returns 401), no canonical command executed from the browser, no
+  screenshots (screenshot service unavailable in this environment).
+- **Own mistakes:** omitted the non-core-tab self-activate rule on first attempt
+  (page loaded but stayed invisible); used a non-existent language API before
+  switching to the shell's real toggle; initially misread a mobile measurement as
+  a defect in this module when it is a pre-existing shell-wide sidebar condition.
+- **VNext:** not inspected, not modified, nothing salvaged (17 dirty files at
+  entry and exit). No donor repository was opened.
+- **Operational data:** all four files byte-identical at entry and exit; preview
+  runs on a staged disposable copy, live SQLite path never opened.
+- **Residual blockers:** owner test credentials; owner-approved opening
+  accounting date; Waves 2-6 not started.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

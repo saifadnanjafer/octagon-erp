@@ -37244,7 +37244,9 @@ window.ensurePageTemplateLoaded = async function (page) {
     // every navigation to the page.
     import_center: 'pageImportCenter',
     // T6.1: system-settings.js self-renders its shell (id=pageSystemSettings).
-    system_settings: 'pageSystemSettings'
+    system_settings: 'pageSystemSettings',
+    // Visible expansion: canonical operations console (views/canonical_console.html).
+    canonical_console: 'pageCanonicalConsole'
   };
 
   // Pages whose DOM is built entirely by their own JS module (no views/*.html
@@ -37309,7 +37311,8 @@ window.prefetchAllViews = function () {
     'security_center', 'data_quality', 'training_lms', 'scenario_planner',
     'device_center', 'appointments', 'workshop_ledger',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'knowledge_base', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
-    'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready'
+    'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready',
+    'canonical_console'
   ];
   
   let i = 0;

@@ -76,10 +76,14 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector + workshop ledger + system check',
-    () => sidebarPages.size, 96],
+  // Baseline moved 96 -> 97 for the Canonical Operations console added by the
+  // visible-expansion work. Both numbers move together on purpose: the second
+  // case is the real invariant (every sidebar page is explicitly mapped), and
+  // it would fail if a page were added to the nav without a permission entry.
+  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector + workshop ledger + system check + canonical console',
+    () => sidebarPages.size, 97],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 96],
+    () => mappedSidebarPages.length, 97],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

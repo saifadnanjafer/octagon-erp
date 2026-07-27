@@ -201,6 +201,7 @@
     customer_portal: { sensitivity: 'public/customer', riskLevel: 'low', phase: 'core', label: 'Customer portal' },
     calculator: { sensitivity: 'employee_self_service', riskLevel: 'low', phase: 'phase6h', label: 'Smart Calculator' },
     inventory: { sensitivity: 'workshop/inventory', riskLevel: 'high', phase: 'core', label: 'Inventory and stock' },
+    canonical_console: { sensitivity: 'platform/canonical', riskLevel: 'high', phase: 'visible-expansion', label: 'Canonical Operations console' },
     sales: { sensitivity: 'sales/commerce', riskLevel: 'medium', phase: 'core', label: 'Sales' },
     machines: { sensitivity: 'workshop/production', riskLevel: 'medium', phase: 'core', label: 'Machines' },
     equipment: { sensitivity: 'workshop/production', riskLevel: 'medium', phase: 'core', label: 'Equipment' },
@@ -266,6 +267,10 @@
     budgeting: ['finance.manager'],
     tax_compliance: ['finance.manager', 'system.admin'],
     inventory: ['workshop.user'],
+    // Canonical Operations console reads and writes governed Phase 04 facts
+    // through /api/v1; the server enforces the real grant, this is the
+    // page-level gate.
+    canonical_console: ['workshop.manager', 'finance.manager', 'system.admin'],
     employees: ['workshop.user'],
     import: ['workshop.manager'],
     timesheet: ['workshop.user'],

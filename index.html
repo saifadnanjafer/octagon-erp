@@ -67,6 +67,9 @@
   <link rel="stylesheet" href="modules/enterprise-suite.css?v=20260619-departments-v2">
   <link rel="stylesheet" href="modules/canonical-console.css?v=20260726-canonical-console-v1">
   <link rel="stylesheet" href="modules/canonical-inventory.css?v=20260728-canonical-inventory-v1">
+  <link rel="stylesheet" href="modules/products-and-materials.css?v=20260728-pm-v1">
+  <link rel="stylesheet" href="modules/customers-and-suppliers.css?v=20260728-cs-v1">
+  <link rel="stylesheet" href="modules/warehouses-and-locations.css?v=20260728-wl-v1">
   <link rel="stylesheet" href="modules/appointments.css?v=20260622-appt-v1">
   <link rel="stylesheet" href="modules/workshop-ledger.css?v=20260629-wsl-v1">
   <link rel="stylesheet" href="modules/loyalty.css?v=20260622-loy-v1">
@@ -1302,6 +1305,26 @@
               <span class="nav-label" data-i18n-ar="المخزون القانوني" data-i18n-en="Canonical Inventory">المخزون القانوني</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="products" id="navProducts" onclick="switchPage('products')">
+              <span class="nav-icon">🏷️</span>
+              <span class="nav-label" data-i18n-ar="المنتجات والمواد" data-i18n-en="Products &amp; Materials">المنتجات والمواد</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="parties" id="navParties" onclick="switchPage('parties')">
+              <span class="nav-icon">👥</span>
+              <span class="nav-label" data-i18n-ar="العملاء والموردون" data-i18n-en="Customers &amp; Suppliers">العملاء والموردون</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="warehouses" id="navWarehouses" onclick="switchPage('warehouses')">
+              <span class="nav-icon">🏭</span>
+              <span class="nav-label" data-i18n-ar="المستودعات" data-i18n-en="Warehouses">المستودعات</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="locations" id="navLocations" onclick="switchPage('locations')">
+              <span class="nav-icon">📍</span>
+              <span class="nav-label" data-i18n-ar="المواقع" data-i18n-en="Locations">المواقع</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="inventory" id="navInventory" onclick="switchPage('inventory')">
               <span class="nav-icon">🧱</span>
               <span class="nav-label">المخزون والمواد</span>
@@ -2220,7 +2243,11 @@
   <script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>
   <!-- T4.1 (Phase 4): WhatsApp integration cluster, moved verbatim out of app.js.
        Loads AFTER app.js so its runtime references to app.js helpers resolve. -->
-  <script src="modules/whatsapp-integration.js?v=20260713-t4.1-v1"></script>
+  <script src="modules/canonical-console.js?v=20260728-cc-v1"></script>
+  <script src="modules/canonical-inventory.js?v=20260728-ci-v1"></script>
+  <script src="modules/products-and-materials.js?v=20260728-pm-v1"></script>
+  <script src="modules/customers-and-suppliers.js?v=20260728-cs-v1"></script>
+  <script src="modules/warehouses-and-locations.js?v=20260728-wl-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

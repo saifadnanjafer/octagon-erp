@@ -1,0 +1,149 @@
+<section class="page" id="pageCustomersAndSuppliers">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-users-gear"></i></span>
+        <span data-i18n-ar="العملاء والموردون" data-i18n-en="Customers &amp; Suppliers">العملاء والموردون</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="دليل الأطراف التجارية (العملاء، الموردون، الأطراف المزدوجة)، جهات الاتصال، الفروع، العناوين، وشروط التعامل." data-i18n-en="Commercial party directory (customers, suppliers, dual-role parties), contacts, addresses, and payment terms.">
+        دليل الأطراف التجارية (العملاء، الموردون، الأطراف المزدوجة)، جهات الاتصال، الفروع، العناوين، وشروط التعامل.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" id="csCreateBtn" type="button">
+        <i class="fa-solid fa-user-plus"></i>
+        <span data-i18n-ar="إضافة عميل / مورد" data-i18n-en="Add Customer / Supplier">إضافة عميل / مورد</span>
+      </button>
+      <button class="btn btn-secondary" id="csRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="csStateBanner"></div>
+
+  <div class="cs-controls">
+    <div class="cs-search-group">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="csSearchInput" class="form-input" placeholder="بحث بالاسم، الهوية الضريبية، السجل التجاري، الهواتف..." data-i18n-placeholder-ar="بحث بالاسم، الهوية الضريبية، السجل التجاري، الهواتف..." data-i18n-placeholder-en="Search by name, Tax ID, Registration No, phone...">
+    </div>
+    <div class="cs-filter-group">
+      <select id="csRoleFilter" class="form-select">
+        <option value="">جميع الأدوار All Roles</option>
+        <option value="customer">عميل Customer</option>
+        <option value="supplier">مورد Supplier</option>
+        <option value="dual">عميل ومورد Dual Role</option>
+      </select>
+
+      <select id="csCompanyTypeFilter" class="form-select">
+        <option value="">الشخصية Legal Type</option>
+        <option value="company">شركة Organization</option>
+        <option value="individual">فرد Individual</option>
+      </select>
+
+      <label class="cs-checkbox-label">
+        <input type="checkbox" id="csIncludeArchived">
+        <span data-i18n-ar="عرض المؤرشفة" data-i18n-en="Show Archived">عرض المؤرشفة</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="cs-table-card">
+    <div class="table-responsive">
+      <table class="cs-table" id="csPartiesTable">
+        <thead>
+          <tr>
+            <th>الاسم التجاري</th>
+            <th>الاسم القانوني</th>
+            <th>النوع</th>
+            <th>الأدوار</th>
+            <th>الهوية الضريبية</th>
+            <th>السجل التجاري</th>
+            <th>الهاتف / الإيميل</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="csPartiesTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create / Edit Party Modal -->
+  <div id="csPartyModal" class="cs-modal" style="display:none;">
+    <div class="cs-modal-content glass-card">
+      <div class="cs-modal-header">
+        <h3 id="csModalTitle">إضافة طرف تجاري جديد</h3>
+        <button class="cs-modal-close" onclick="closeCsPartyModal()">&times;</button>
+      </div>
+      <form id="csPartyForm" class="cs-form">
+        <input type="hidden" id="csFormPartyId" value="">
+        <div id="csModalErrorBanner"></div>
+
+        <div class="cs-form-grid">
+          <div class="cs-form-field">
+            <label>الاسم التجاري / اسم العميل أو المورد *</label>
+            <input type="text" id="csFormName" required class="form-input" placeholder="اسم الطرف التجاري">
+          </div>
+          <div class="cs-form-field">
+            <label>الاسم القانوني الرسمي Legal Name</label>
+            <input type="text" id="csFormLegalName" class="form-input" placeholder="الاسم الرسمي المكتوب بالرخصة التجارية">
+          </div>
+          <div class="cs-form-field">
+            <label>نوع الكيان Company Type</label>
+            <select id="csFormIsCompany" class="form-select">
+              <option value="1">شركة / مؤسسة Organization</option>
+              <option value="0">فرد / شخص Individual</option>
+            </select>
+          </div>
+          <div class="cs-form-field">
+            <label>الأدوار Commercial Roles *</label>
+            <div style="display:flex; gap:15px; margin-top:8px;">
+              <label class="cs-checkbox-label">
+                <input type="checkbox" id="csRoleCustomer" value="customer" checked> عميل Customer
+              </label>
+              <label class="cs-checkbox-label">
+                <input type="checkbox" id="csRoleSupplier" value="supplier"> مورد Supplier
+              </label>
+            </div>
+          </div>
+          <div class="cs-form-field">
+            <label>الرقم الضريبي Tax ID / TIN</label>
+            <input type="text" id="csFormTaxId" class="form-input" placeholder="300000000000003">
+          </div>
+          <div class="cs-form-field">
+            <label>رقم السجل التجاري CR Number</label>
+            <input type="text" id="csFormRegNum" class="form-input" placeholder="CR-101010101">
+          </div>
+          <div class="cs-form-field">
+            <label>رقم الهاتف Phone</label>
+            <input type="text" id="csFormPhone" class="form-input" placeholder="+964 770 000 0000">
+          </div>
+          <div class="cs-form-field">
+            <label>البريد الإلكتروني Email</label>
+            <input type="email" id="csFormEmail" class="form-input" placeholder="contact@company.iq">
+          </div>
+          <div class="cs-form-field">
+            <label>شروط الدفع Payment Terms</label>
+            <input type="text" id="csFormPaymentTerms" class="form-input" placeholder="نقداً، 30 يوم، إلخ">
+          </div>
+          <div class="cs-form-field">
+            <label>العملة المفضلة Currency</label>
+            <select id="csFormCurrency" class="form-select">
+              <option value="IQD">دينار عراقي IQD</option>
+              <option value="USD">دولار أمريكي USD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cs-form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeCsPartyModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="csSaveSubmitBtn">حفظ الطرف التجاري</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

@@ -577,14 +577,14 @@
   function wireSwitch() {
     if (root.__canonicalConsoleWrapped || typeof root.switchPage !== 'function') return;
     const orig = root.switchPage;
-    root.switchPage = function (page) {
-      const result = orig.apply(this, arguments);
+    root.switchPage = async function (page) {
+      const result = await orig.apply(this, arguments);
       if (page === 'canonical_console') {
-        // Fire and forget: the shell has already revealed the section, we only
-        // need to fill it. Errors are contained so navigation never breaks.
-        Promise.resolve().then(activate).catch((e) => {
+        try {
+          await activate();
+        } catch (e) {
           if (root.console) root.console.warn('Canonical console render error', e);
-        });
+        }
       }
       return result;
     };

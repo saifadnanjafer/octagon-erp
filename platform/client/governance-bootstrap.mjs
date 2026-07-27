@@ -39,6 +39,12 @@ export const DEFAULT_PAGE_CATALOGUE = Object.freeze([
   { id: 'users', route: '/users', labelAr: 'المستخدمون والأدوار', group: 'admin', permission: 'platform:page:users' },
   { id: 'settings', route: '/settings', labelAr: 'الإعدادات', group: 'admin', permission: 'platform:page:settings' },
   { id: 'security', route: '/security', labelAr: 'الأمن والتدقيق', group: 'admin', permission: 'platform:page:security' },
+  { id: 'canonical_console', route: '/canonical_console', labelAr: 'لوحة العمليات القانونية', group: 'governance', permission: 'platform:page:canonical_console' },
+  { id: 'canonical_inventory', route: '/canonical_inventory', labelAr: 'المخزون والمستودعات', group: 'operations', permission: 'platform:page:canonical_inventory' },
+  { id: 'products', route: '/products', labelAr: 'المنتجات والمواد', group: 'master_data', permission: 'platform:page:products' },
+  { id: 'parties', route: '/parties', labelAr: 'العملاء والموردون', group: 'master_data', permission: 'platform:page:parties' },
+  { id: 'warehouses', route: '/warehouses', labelAr: 'المستودعات والمواقع', group: 'operations', permission: 'platform:page:warehouses' },
+  { id: 'locations', route: '/locations', labelAr: 'المواقع المخزنية', group: 'operations', permission: 'platform:page:locations' },
 ]);
 
 export class GovernanceBootstrap {

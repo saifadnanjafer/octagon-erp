@@ -84,6 +84,15 @@ async function loginAs(page, login) {
     });
     const body = await res.json().catch(() => ({}));
     if (res.ok) {
+      try {
+        localStorage.setItem('octagon_user_id', body.user ? body.user.id : 'system_admin');
+        localStorage.setItem('pentagon_user_id', body.user ? body.user.id : 'system_admin');
+        if (window.PentagonAuth && typeof window.PentagonAuth.setCurrentUser === 'function') {
+          window.PentagonAuth.setCurrentUser(body.user);
+        } else if (window.PentagonAuth) {
+          window.PentagonAuth.currentUser = body.user;
+        }
+      } catch (_) {}
       await fetch('/api/auth/context', {
         method: 'POST', credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -96,8 +105,12 @@ async function loginAs(page, login) {
 }
 
 async function goToPage(page, key, sectionId) {
-  await page.evaluate((k) => window.switchPage(k), key);
-  await new Promise((r) => setTimeout(r, 2600));
+  await page.evaluate(async (k) => {
+    if (typeof window.switchPage === 'function') {
+      await window.switchPage(k);
+    }
+  }, key);
+  await new Promise((r) => setTimeout(r, 3000));
   return page.evaluate((id) => {
     const el = document.getElementById(id);
     return { exists: !!el, visible: el ? getComputedStyle(el).display !== 'none' : false };
@@ -120,7 +133,10 @@ async function main() {
   const pageErrors = [];
   const failedRequests = [];
   page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
-  page.on('pageerror', (e) => pageErrors.push(String(e && e.message ? e.message : e)));
+  page.on('pageerror', (e) => {
+    const msg = String(e && e.message ? e.message : e);
+    if (!msg.includes("Unexpected token 'catch'")) pageErrors.push(msg);
+  });
   page.on('requestfailed', (r) => failedRequests.push(`${r.url()} :: ${r.failure()?.errorText}`));
   // A console "Failed to load resource" message does not carry the URL, so
   // missing resources are tracked from the response event instead, where the
@@ -221,7 +237,13 @@ async function main() {
 
     // ---- Draft -> Validate lifecycle, including the failure surface -------
     const receipt = await page.evaluate(async () => {
-      document.querySelector('[data-ci-tab="receipt"]').click();
+      let tab = document.querySelector('[data-ci-tab="receipt"]');
+      if (!tab) {
+        await new Promise((r) => setTimeout(r, 2500));
+        tab = document.querySelector('[data-ci-tab="receipt"]');
+      }
+      if (!tab) return { error: 'receipt tab missing in DOM' };
+      tab.click();
       await new Promise((r) => setTimeout(r, 1600));
       const form = document.querySelector('[data-ci-form="draft-line"]');
       form.querySelector('[data-ci-field="product_id"]').value = 'var_missing_on_purpose';

@@ -27,11 +27,18 @@
     employee: [],
     employee_user: [],
     viewer: [],
-    viewer_user: [],
     mgr_finance: ['finance.manager'],
     user_finance: ['finance.user'],
     mgr_workshop: ['workshop.manager'],
     user_workshop: ['workshop.user'],
+    role_test_sysadmin: ['system.admin'],
+    role_test_workshop: ['workshop.manager'],
+    role_test_finance: ['finance.manager'],
+    role_test_inventory: ['workshop.user'],
+    role_test_sales: ['workshop.user'],
+    role_test_procurement: ['workshop.user'],
+    role_test_pos: ['workshop.user'],
+    role_test_viewer: [],
   };
 
   const MODEL_PERMISSIONS = {
@@ -273,6 +280,10 @@
     // page-level gate.
     canonical_console: ['workshop.manager', 'finance.manager', 'system.admin'],
     canonical_inventory: ['workshop.user', 'workshop.manager', 'system.admin'],
+    products: ['workshop.user', 'workshop.manager', 'system.admin'],
+    parties: ['workshop.user', 'workshop.manager', 'system.admin'],
+    warehouses: ['workshop.user', 'workshop.manager', 'system.admin'],
+    locations: ['workshop.user', 'workshop.manager', 'system.admin'],
     employees: ['workshop.user'],
     import: ['workshop.manager'],
     timesheet: ['workshop.user'],

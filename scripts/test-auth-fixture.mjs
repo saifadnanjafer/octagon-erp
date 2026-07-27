@@ -57,14 +57,14 @@ export const TEST_BRANCH = 'b_octagon_test';
  * `viewer` deliberately gets read only, so denial can be proven, not assumed.
  */
 export const TEST_ROLES = Object.freeze([
-  { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'role_test_sysadmin',   permissions: ['platform:db:read', 'platform:db:write'], isOwner: true },
-  { key: 'workshop',   login: 'test.workshop',   name: 'Test Workshop Manager',     roleId: 'role_test_workshop',   permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'finance',    login: 'test.finance',    name: 'Test Finance Manager',      roleId: 'role_test_finance',    permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'inventory',  login: 'test.inventory',  name: 'Test Inventory Operator',   roleId: 'role_test_inventory',  permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'sales',      login: 'test.sales',      name: 'Test Sales User',           roleId: 'role_test_sales',      permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'procurement',login: 'test.procurement',name: 'Test Procurement User',     roleId: 'role_test_procurement',permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'role_test_pos',        permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',     permissions: ['platform:db:read'] },
+  { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'system.admin',       permissions: ['platform:db:read', 'platform:db:write'], isOwner: true },
+  { key: 'workshop',   login: 'test.workshop',   name: 'Test Workshop Manager',     roleId: 'workshop.manager',   permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'finance',    login: 'test.finance',    name: 'Test Finance Manager',      roleId: 'finance.manager',    permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'inventory',  login: 'test.inventory',  name: 'Test Inventory Operator',   roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'sales',      login: 'test.sales',      name: 'Test Sales User',           roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'procurement',login: 'test.procurement',name: 'Test Procurement User',     roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);
 
 /**
@@ -183,12 +183,80 @@ export function seedTestIdentities(dialect, { dbPath, env = process.env } = {}) 
     });
   }
 
+  // Seed disposable test master data for tests (test UOM category, test base UOM, test product category)
+  dialect.prepare(`
+    INSERT INTO uom_categories (id, name, is_active, created_at)
+    VALUES ('uomcat_test_unit', 'Test Unit Category', 1, ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(now);
+
+  dialect.prepare(`
+    INSERT INTO uoms (id, category_id, name, symbol, uom_type, factor, rounding, is_active, created_at)
+    VALUES ('uom_test_unit', 'uomcat_test_unit', 'Test Unit', 'Pcs', 'reference', 1.0, 0.001, 1, ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(now);
+
+  // Seed stock finance accounts for TEST_COMPANY
+  const insertAccount = dialect.prepare(`
+    INSERT INTO finance_accounts (id, company_id, code, name, type, normal_balance, is_reconcilable, is_active, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?, ?, 'test-auth-fixture')
+    ON CONFLICT(id) DO NOTHING
+  `);
+
+  insertAccount.run('acc_test_stock_val', TEST_COMPANY, '140000', 'Stock Valuation Account', 'asset', 'debit', now, now);
+  insertAccount.run('acc_test_stock_in', TEST_COMPANY, '140100', 'Stock Input Account', 'liability', 'credit', now, now);
+  insertAccount.run('acc_test_stock_out', TEST_COMPANY, '140200', 'Stock Output Account', 'asset', 'debit', now, now);
+  insertAccount.run('acc_test_stock_exp', TEST_COMPANY, '501000', 'COGS Expense Account', 'expense', 'debit', now, now);
+
+  dialect.prepare(`
+    INSERT INTO product_categories (id, company_id, name, code, stock_account_id, stock_input_account_id, stock_output_account_id, expense_account_id, is_active, created_at)
+    VALUES ('pcat_test_general', ?, 'Test General Category', 'CAT-TEST', 'acc_test_stock_val', 'acc_test_stock_in', 'acc_test_stock_out', 'acc_test_stock_exp', 1, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      stock_account_id = excluded.stock_account_id,
+      stock_input_account_id = excluded.stock_input_account_id,
+      stock_output_account_id = excluded.stock_output_account_id,
+      expense_account_id = excluded.expense_account_id
+  `).run(TEST_COMPANY, now);
+
+  // Seed fiscal year & period for TEST_COMPANY
+  const currentYear = new Date().getFullYear();
+  const fyId = `fy_${TEST_COMPANY}_${currentYear}`;
+  dialect.prepare(`
+    INSERT INTO finance_fiscal_years (id, company_id, name, start_date, end_date, status, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, 'open', ?, ?, 'test-auth-fixture')
+    ON CONFLICT DO NOTHING
+  `).run(fyId, TEST_COMPANY, `Fiscal Year ${currentYear}`, `${currentYear}-01-01`, `${currentYear}-12-31`, now, now);
+
+  const fpId = `fp_${TEST_COMPANY}_${currentYear}`;
+  dialect.prepare(`
+    INSERT INTO finance_periods (id, company_id, fiscal_year_id, name, start_date, end_date, status, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, 'Full Year Period', ?, ?, 'open', ?, ?, 'test-auth-fixture')
+    ON CONFLICT DO NOTHING
+  `).run(fpId, TEST_COMPANY, fyId, `${currentYear}-01-01`, `${currentYear}-12-31`, now, now);
+
+  const insertJournal = dialect.prepare(`
+    INSERT INTO finance_journals (id, company_id, code, name, type, default_debit_account_id, default_credit_account_id, created_at, updated_at, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'test-auth-fixture')
+    ON CONFLICT DO NOTHING
+  `);
+  insertJournal.run(`jnl_general_${TEST_COMPANY}`, TEST_COMPANY, 'GEN', 'General Journal', 'general', 'acc_test_stock_val', 'acc_test_stock_val', now, now);
+  insertJournal.run(`jnl_stock_${TEST_COMPANY}`, TEST_COMPANY, 'STK', 'Stock Journal', 'general', 'acc_test_stock_val', 'acc_test_stock_in', now, now);
+
+  const insertLimit = dialect.prepare(`
+    INSERT INTO finance_approval_authority_limits (id, company_id, role_or_user, limit_type, max_amount, created_at, created_by)
+    VALUES (?, ?, ?, 'post', 999999999999.0, ?, 'test-auth-fixture')
+    ON CONFLICT DO NOTHING
+  `);
+  insertLimit.run(`limit_sysadmin_${TEST_COMPANY}`, TEST_COMPANY, 'usr_test_sysadmin', now);
   return {
     users: created,
     password: TEST_PASSWORD,
     tenantId: TEST_TENANT,
     companyId: TEST_COMPANY,
     branchId: TEST_BRANCH,
+    testUomCategoryId: 'uomcat_test_unit',
+    testUomId: 'uom_test_unit',
+    testProductCategoryId: 'pcat_test_general',
   };
 }
 

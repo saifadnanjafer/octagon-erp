@@ -3472,9 +3472,10 @@ function checkLoginStatus() {
   const overlay = document.getElementById('loginOverlay');
   const intro = document.getElementById('introScreen');
   if (!overlay) return;
-  const storedClientId = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
-  const stored = window.__octagonServerSession?.authenticated ? storedClientId : '';
-  if (!stored) {
+  const session = window.__octagonServerSession || {};
+  const current = window.PentagonAuth?.getCurrentUser?.();
+  const isAuthenticated = session.authenticated === true && !!current && current.id && current.id !== 'guest';
+  if (!isAuthenticated) {
     if (intro) {
       intro.style.display = 'flex';
       overlay.style.display = 'none';
@@ -3482,16 +3483,6 @@ function checkLoginStatus() {
       overlay.style.display = 'flex';
     }
     document.body.classList.add('login-required');
-    try {
-      if (typeof omni !== 'undefined' && omni && omni.adminSettings && omni.adminSettings.organization) {
-        const org = omni.adminSettings.organization;
-        const activeCo = (org.companies || []).find(c => c.id === org.activeCompanyId);
-        const branchEl = document.getElementById('introBranch');
-        if (branchEl && activeCo) {
-          branchEl.textContent = activeCo.name || 'الرئيسي';
-        }
-      }
-    } catch (_) {}
   } else {
     overlay.style.display = 'none';
     if (intro) intro.style.display = 'none';
@@ -3576,6 +3567,9 @@ async function syncServerAuthSession(userId, password) {
     updateAuthSessionModeBadge();
     if (res.ok && payload.authenticated) {
       await refreshPlatformBootstrap();
+      if (typeof syncCanonicalSession === 'function') {
+        await syncCanonicalSession();
+      }
     }
     if (!res.ok && !payload.setupRequired) {
       console.warn('Server auth session bridge failed:', payload.error || res.status);
@@ -3599,6 +3593,72 @@ async function refreshPlatformBootstrap() {
     }
   } catch (bErr) {
     console.warn('Server bootstrap fetch failed:', bErr.message || bErr);
+  }
+}
+
+async function syncCanonicalSession() {
+  try {
+    const res = await fetch('/api/auth/session', { credentials: 'same-origin' });
+    if (!res.ok) {
+      window.__octagonServerSession = { authenticated: false, mode: 'unauthenticated' };
+      if (window.PentagonAuth) window.PentagonAuth._currentUserId = '';
+      checkLoginStatus();
+      return null;
+    }
+    const data = await res.json();
+    if (data && data.authenticated && data.user) {
+      window.__octagonServerSession = {
+        authenticated: true,
+        user: data.user,
+        expiresAt: data.expiresAt,
+        mode: 'canonical-session'
+      };
+      if (window.PentagonAuth) {
+        window.PentagonAuth._currentUserId = data.user.id;
+      }
+      if (typeof omni !== 'undefined' && Array.isArray(omni.users)) {
+        let existing = omni.users.find(u => u.id === data.user.id);
+        if (!existing) {
+          existing = {
+            id: data.user.id,
+            name: data.user.name || data.user.displayName || data.user.id,
+            displayName: data.user.name || data.user.displayName || data.user.id,
+            role: data.user.role || (Array.isArray(data.user.roles) ? data.user.roles[0] : 'authenticated'),
+            groups: data.user.groups || (data.user.isOwner ? ['system.admin'] : []),
+            status: 'active',
+            is_active: true
+          };
+          omni.users.push(existing);
+        } else {
+          if (data.user.name) existing.name = data.user.name;
+          if (data.user.displayName) existing.displayName = data.user.displayName;
+        }
+      }
+      await refreshPlatformBootstrap();
+      checkLoginStatus();
+      updateAuthSessionModeBadge();
+      return data.user;
+    } else {
+      window.__octagonServerSession = { authenticated: false, mode: 'unauthenticated' };
+      if (window.PentagonAuth) window.PentagonAuth._currentUserId = '';
+      checkLoginStatus();
+      updateAuthSessionModeBadge();
+      return null;
+    }
+  } catch (err) {
+    console.warn('Canonical session sync error:', err);
+    window.__octagonServerSession = { authenticated: false, mode: 'error' };
+    checkLoginStatus();
+    return null;
+  }
+}
+window.syncCanonicalSession = syncCanonicalSession;
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { syncCanonicalSession(); });
+  } else {
+    syncCanonicalSession();
   }
 }
 
@@ -3815,12 +3875,7 @@ async function performLogout() {
     localStorage.removeItem('pentagon_user_id');
     localStorage.removeItem('omni_current_user_id');
   }
-  const overlay = document.getElementById('loginOverlay');
-  if (overlay) overlay.style.display = 'none';
-  const intro = document.getElementById('introScreen');
-  if (intro) intro.style.display = 'flex';
-  document.body.classList.add('login-required');
-  updateAuthSessionModeBadge();
+  await syncCanonicalSession();
   showToast('تم تسجيل الخروج.', 'info');
 }
 
@@ -4134,7 +4189,13 @@ function switchPage(page) {
     sales: 'pageSales',
     help_manual: 'pageHelpManual',
     customer_portal: 'pageCustomerPortal',
-    equipment: 'pageEquipment'
+    equipment: 'pageEquipment',
+    products: 'pageProductsAndMaterials',
+    parties: 'pageCustomersAndSuppliers',
+    warehouses: 'pageWarehouses',
+    locations: 'pageLocations',
+    canonical_console: 'pageCanonicalConsole',
+    canonical_inventory: 'pageCanonicalInventory'
   };
   const navMap = {
     home: 'navHome',
@@ -4169,7 +4230,11 @@ function switchPage(page) {
     sales: 'navSales',
     help_manual: 'navHelpManual',
     customer_portal: 'navCustomerPortal',
-    equipment: 'navEquipment'
+    equipment: 'navEquipment',
+    products: 'navProducts',
+    parties: 'navParties',
+    warehouses: 'navWarehouses',
+    locations: 'navLocations'
   };
 
   const pageEl = document.getElementById(pageMap[page]);
@@ -4184,6 +4249,9 @@ function switchPage(page) {
   // app alive. (This cannot interrupt an infinite loop — those are fixed per-page — but it
   // stops the far more common "one bad render wedges everything" class of failure.)
   try {
+    if (page === 'products' && typeof window.initProductsAndMaterialsModule === 'function') window.initProductsAndMaterialsModule();
+  if (page === 'parties' && typeof window.initCustomersAndSuppliersModule === 'function') window.initCustomersAndSuppliersModule();
+  if ((page === 'warehouses' || page === 'locations') && typeof window.initWarehousesAndLocationsModule === 'function') window.initWarehousesAndLocationsModule();
   if (page === 'calculator') { undockCalculatorToOwnPage(); refreshCalcEmpDropdown(); }
   if (page === 'timesheet') renderTimesheet();
   if (page === 'report') renderReport();
@@ -37288,8 +37356,11 @@ window.ensurePageTemplateLoaded = async function (page) {
     system_settings: 'pageSystemSettings',
     // Visible expansion: canonical operations console (views/canonical_console.html).
     canonical_console: 'pageCanonicalConsole',
-    // Visible expansion: canonical inventory & warehouses (views/canonical_inventory.html).
-    canonical_inventory: 'pageCanonicalInventory'
+    canonical_inventory: 'pageCanonicalInventory',
+    products: 'pageProductsAndMaterials',
+    parties: 'pageCustomersAndSuppliers',
+    warehouses: 'pageWarehouses',
+    locations: 'pageLocations'
   };
 
   // Pages whose DOM is built entirely by their own JS module (no views/*.html
@@ -37317,7 +37388,14 @@ window.ensurePageTemplateLoaded = async function (page) {
   window.__viewLoadsInFlight.add(id);
 
   try {
-    const res = await fetch(`/views/${page}.html`);
+    const viewFileNameMap = {
+      products: 'products_and_materials',
+      parties: 'customers_and_suppliers',
+      warehouses: 'warehouses_and_locations',
+      locations: 'warehouses_and_locations'
+    };
+    const viewFile = viewFileNameMap[page] || page;
+    const res = await fetch(`/views/${viewFile}.html`);
     if (res.ok) {
       const text = await res.text();
       const temp = document.createElement('div');

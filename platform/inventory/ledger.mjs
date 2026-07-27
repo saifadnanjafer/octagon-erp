@@ -190,10 +190,18 @@ export function getQuantBalance(db, { company_id = '*', product_id, location_id 
   }
 
   const res = db.prepare(sql).get(...params);
+  const onHand = res && res.on_hand ? Number(res.on_hand) : 0.0;
+  const reserved = res && res.reserved ? Number(res.reserved) : 0.0;
+  const available = onHand - reserved;
+
   return {
-    onHand: res && res.on_hand ? res.on_hand : 0.0,
-    reserved: res && res.reserved ? res.reserved : 0.0,
-    available: (res && res.on_hand ? res.on_hand : 0.0) - (res && res.reserved ? res.reserved : 0.0),
+    onHand,
+    reserved,
+    available,
+    on_hand: onHand,
+    quantity: onHand,
+    reserved_quantity: reserved,
+    available_quantity: available,
   };
 }
 

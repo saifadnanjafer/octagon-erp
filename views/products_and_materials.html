@@ -1,0 +1,149 @@
+<section class="page" id="pageProductsAndMaterials">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+        <span data-i18n-ar="المنتجات والمواد" data-i18n-en="Products &amp; Materials">المنتجات والمواد</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة بطاقات المنتجات، المواد الأولية، الخدمات، تصنيفات الفئات، وحدات القياس، والتوافر المخزني." data-i18n-en="Manage product cards, raw materials, services, categories, UOMs, and warehouse availability.">
+        إدارة بطاقات المنتجات، المواد الأولية، الخدمات، تصنيفات الفئات، وحدات القياس، والتوافر المخزني.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" id="pmCreateBtn" type="button">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n-ar="إضافة منتج / مادة" data-i18n-en="Add Product / Material">إضافة منتج / مادة</span>
+      </button>
+      <button class="btn btn-secondary" id="pmRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="pmStateBanner"></div>
+
+  <div class="pm-controls">
+    <div class="pm-search-group">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="pmSearchInput" class="form-input" placeholder="بحث بالاسم، الرمز SKU، أو الباركود..." data-i18n-placeholder-ar="بحث بالاسم، الرمز SKU، أو الباركود..." data-i18n-placeholder-en="Search by name, SKU, or barcode...">
+    </div>
+    <div class="pm-filter-group">
+      <select id="pmCategoryFilter" class="form-select">
+        <option value="">جميع الفئات All Categories</option>
+      </select>
+      <select id="pmTypeFilter" class="form-select">
+        <option value="">جميع الأنواع All Types</option>
+        <option value="storable">منتج مخزني Storable</option>
+        <option value="consumable">مادة استهلاكية Consumable</option>
+        <option value="service">خدمة Service</option>
+      </select>
+      <select id="pmUomFilter" class="form-select">
+        <option value="">جميع وحدات القياس All UOMs</option>
+      </select>
+      <label class="pm-checkbox-label">
+        <input type="checkbox" id="pmIncludeArchived">
+        <span data-i18n-ar="عرض المؤرشفة" data-i18n-en="Show Archived">عرض المؤرشفة</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="pm-table-card">
+    <div class="table-responsive">
+      <table class="pm-table" id="pmProductsTable">
+        <thead>
+          <tr>
+            <th>SKU / الرمز</th>
+            <th>الباركود</th>
+            <th>اسم المنتج / المادة</th>
+            <th>الفئة</th>
+            <th>النوع</th>
+            <th>الوحدة</th>
+            <th>التكلفة المعيارية</th>
+            <th>المتاح بالمخزن</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="pmProductsTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create / Edit Product Modal -->
+  <div id="pmProductModal" class="pm-modal" style="display:none;">
+    <div class="pm-modal-content glass-card">
+      <div class="pm-modal-header">
+        <h3 id="pmModalTitle">إضافة منتج جديد</h3>
+        <button class="pm-modal-close" onclick="closePmProductModal()">&times;</button>
+      </div>
+      <form id="pmProductForm" class="pm-form">
+        <input type="hidden" id="pmFormProductId" value="">
+        <div class="pm-form-grid">
+          <div class="pm-form-field">
+            <label>اسم المنتج (عربي) *</label>
+            <input type="text" id="pmFormNameAr" required class="form-input" placeholder="اسم المنتج بالعربية">
+          </div>
+          <div class="pm-form-field">
+            <label>اسم المنتج (إنجليزي)</label>
+            <input type="text" id="pmFormNameEn" class="form-input" placeholder="English Product Name">
+          </div>
+          <div class="pm-form-field">
+            <label>رمز SKU / المرجع الداخلي *</label>
+            <input type="text" id="pmFormSku" required class="form-input" placeholder="SKU-1001">
+          </div>
+          <div class="pm-form-field">
+            <label>الباركود Barcode</label>
+            <input type="text" id="pmFormBarcode" class="form-input" placeholder="6291000000000">
+          </div>
+          <div class="pm-form-field">
+            <label>التصنيف / الفئة Category *</label>
+            <select id="pmFormCategory" required class="form-select"></select>
+          </div>
+          <div class="pm-form-field">
+            <label>نوع المنتج Product Type</label>
+            <select id="pmFormType" class="form-select">
+              <option value="storable">منتج مخزني Storable Product</option>
+              <option value="consumable">مادة استهلاكية Consumable Material</option>
+              <option value="service">خدمة Service</option>
+            </select>
+          </div>
+          <div class="pm-form-field">
+            <label>وحدة القياس الأساسية Base UOM *</label>
+            <select id="pmFormUom" required class="form-select"></select>
+          </div>
+          <div class="pm-form-field">
+            <label>وحدة الشراء Purchase UOM</label>
+            <select id="pmFormPurchaseUom" class="form-select"></select>
+          </div>
+          <div class="pm-form-field">
+            <label>سعر البيع المرجعي List Price</label>
+            <input type="number" step="0.001" id="pmFormListPrice" class="form-input" value="0.000">
+          </div>
+          <div class="pm-form-field">
+            <label>التكلفة القياسية Standard Cost</label>
+            <input type="number" step="0.001" id="pmFormStandardPrice" class="form-input" value="0.000">
+          </div>
+          <div class="pm-form-field">
+            <label>سياسة التتبع Tracking Policy</label>
+            <select id="pmFormTracking" class="form-select">
+              <option value="none">بدون تتبع No Tracking</option>
+              <option value="lot">تتبع برقم الشحنة By Lot</option>
+              <option value="serial">تتبع بالرقم التسلسلي By Serial</option>
+            </select>
+          </div>
+          <div class="pm-form-field full-width">
+            <label>الوصف Description</label>
+            <textarea id="pmFormDescription" class="form-input" rows="2" placeholder="تفاصيل ومواصفات المنتج..."></textarea>
+          </div>
+        </div>
+        <div class="pm-form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closePmProductModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="pmSaveSubmitBtn">حفظ البيانات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

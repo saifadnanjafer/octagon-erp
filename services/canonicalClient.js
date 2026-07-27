@@ -217,6 +217,9 @@
 
     if (!res.ok || payload.success === false) {
       const { code, message } = splitServerError(payload.error || `canonical API error (HTTP ${res.status})`);
+      if (res.status === 401 && typeof root.syncCanonicalSession === 'function') {
+        root.syncCanonicalSession().catch(() => {});
+      }
       throw new CanonicalError(message, {
         status: res.status,
         code,

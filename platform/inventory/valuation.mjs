@@ -254,6 +254,8 @@ export function getProductValuation(db, { company_id = '*', product_id }) {
     product_id,
     inventory_qty: projection.quantity,
     inventory_value: projection.value,
+    on_hand_qty: projection.quantity,
+    total_valuation: projection.value,
     unit_cost: projection.quantity > 0 ? projection.value / projection.quantity : 0,
   };
 }

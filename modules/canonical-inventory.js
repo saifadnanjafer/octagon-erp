@@ -674,12 +674,14 @@
   function wireSwitch() {
     if (root.__canonicalInventoryWrapped || typeof root.switchPage !== 'function') return;
     const orig = root.switchPage;
-    root.switchPage = function (page) {
-      const result = orig.apply(this, arguments);
+    root.switchPage = async function (page) {
+      const result = await orig.apply(this, arguments);
       if (page === 'canonical_inventory') {
-        Promise.resolve().then(activate).catch((e) => {
+        try {
+          await activate();
+        } catch (e) {
           if (root.console) root.console.warn('Canonical inventory render error', e);
-        });
+        }
       }
       return result;
     };

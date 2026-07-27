@@ -31,39 +31,54 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
   if ((namespace === 'commercial' && resource === 'parties') || namespace === 'parties') {
     const role = query.role || null;
     const search = query.search || null;
-    const rows = getParties(dialect, { company_id, role, search });
+    const include_archived = query.include_archived === 'true' || query.include_archived === '1';
+    const rows = getParties(dialect, { company_id, role, search, include_archived });
     return { data: rows, meta: { total: rows.length } };
   }
 
   // 2. Commercial Products
   if ((namespace === 'commercial' && resource === 'products') || namespace === 'products') {
     const category_id = query.category_id || null;
+    const type = query.type || null;
+    const uom_id = query.uom_id || null;
     const search = query.search || null;
-    const rows = getProducts(dialect, { company_id, category_id, search });
+    const include_archived = query.include_archived === 'true' || query.include_archived === '1';
+    const rows = getProducts(dialect, { company_id, category_id, type, uom_id, search, include_archived });
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 3. Commercial UOMs
+  // 3. Product Categories
+  if ((namespace === 'commercial' && (resource === 'product_categories' || resource === 'product-categories')) || namespace === 'product_categories' || namespace === 'product-categories') {
+    const rows = dialect.prepare(`SELECT * FROM product_categories WHERE company_id = ? OR company_id = '*' ORDER BY name ASC`).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+
+  // 4. Commercial UOMs & UOM Categories
   if ((namespace === 'commercial' && resource === 'uoms') || namespace === 'uoms') {
     const category_id = query.category_id || null;
-    const rows = getUoms(dialect, { category_id });
+    const include_archived = query.include_archived === 'true' || query.include_archived === '1';
+    const rows = getUoms(dialect, { category_id, include_archived });
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if ((namespace === 'commercial' && (resource === 'uom_categories' || resource === 'uom-categories')) || namespace === 'uom_categories' || namespace === 'uom-categories') {
+    const rows = dialect.prepare(`SELECT * FROM uom_categories ORDER BY name ASC`).all();
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 4. Inventory Warehouses
+  // 5. Inventory Warehouses
   if ((namespace === 'inventory' && resource === 'warehouses') || namespace === 'warehouses') {
     const rows = getWarehouses(dialect, { company_id, branch_id: ctx?.branchId || null });
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 5. Inventory Locations
+  // 6. Inventory Locations
   if ((namespace === 'inventory' && resource === 'locations') || namespace === 'locations') {
     const warehouse_id = query.warehouse_id || recordId || null;
     const rows = getLocations(dialect, { company_id, warehouse_id });
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 6. Inventory Quant Balances
+  // 7. Inventory Quant Balances
   if ((namespace === 'inventory' && (resource === 'quants' || resource === 'balances')) || namespace === 'quants') {
     const product_id = query.product_id;
     const location_id = query.location_id || null;
@@ -71,7 +86,7 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: balance, meta: { total: 1 } };
   }
 
-  // 7. Inventory operations, reservations, valuation, and traceability
+  // 8. Inventory operations, reservations, valuation, and traceability
   if (namespace === 'inventory' && resource === 'operations') {
     const rows = dialect.prepare(`
       SELECT * FROM stock_moves
@@ -102,7 +117,7 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 8. Sales Orders
+  // 9. Sales Orders
   if ((namespace === 'sales' && resource === 'orders') || namespace === 'sales-orders') {
     if (recordId) {
       const doc = getSaleOrder(dialect, recordId);
@@ -113,7 +128,7 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 9. Purchase Orders
+  // 10. Purchase Orders
   if ((namespace === 'procurement' && resource === 'orders') || namespace === 'purchase-orders') {
     if (recordId) {
       const doc = getPurchaseOrder(dialect, recordId);
@@ -124,7 +139,7 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 10. POS orders
+  // 11. POS orders
   if (namespace === 'pos' && resource === 'orders') {
     if (recordId) {
       const doc = getPosOrder(dialect, recordId);
@@ -135,7 +150,7 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 11. Work Items / Tasks
+  // 12. Work Items / Tasks
   if (namespace === 'work-items' || namespace === 'work_items' || resource === 'work-items') {
     if (recordId) {
       const doc = getWorkItem(dialect, recordId);

@@ -1,0 +1,197 @@
+<!-- Warehouses View -->
+<section class="page" id="pageWarehouses">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-warehouse"></i></span>
+        <span data-i18n-ar="المستودعات" data-i18n-en="Warehouses">المستودعات</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة المستودعات الرئيسية والفرعية، رموز المستودعات، النوع، والتوزيع الجغرافي." data-i18n-en="Manage main and branch warehouses, warehouse codes, types, and geographic distribution.">
+        إدارة المستودعات الرئيسية والفرعية، رموز المستودعات، النوع، والتوزيع الجغرافي.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" id="whCreateBtn" type="button">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n-ar="إضافة مستودع" data-i18n-en="Add Warehouse">إضافة مستودع</span>
+      </button>
+      <button class="btn btn-secondary" id="whRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="whStateBanner"></div>
+
+  <div class="wh-table-card">
+    <div class="table-responsive">
+      <table class="wh-table" id="whWarehousesTable">
+        <thead>
+          <tr>
+            <th>الرمز Code</th>
+            <th>اسم المستودع</th>
+            <th>الفرع Branch</th>
+            <th>النوع Type</th>
+            <th>الموقع الرئيسي View Location</th>
+            <th>موقع المخزون Stock Location</th>
+            <th>الافتراضي Default</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="whWarehousesTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Warehouse Modal -->
+  <div id="whWarehouseModal" class="wh-modal" style="display:none;">
+    <div class="wh-modal-content glass-card">
+      <div class="wh-modal-header">
+        <h3 id="whModalTitle">إضافة مستودع جديد</h3>
+        <button class="wh-modal-close" onclick="closeWhModal()">&times;</button>
+      </div>
+      <form id="whWarehouseForm" class="wh-form">
+        <input type="hidden" id="whFormId" value="">
+        <div class="wh-form-grid">
+          <div class="wh-form-field">
+            <label>اسم المستودع *</label>
+            <input type="text" id="whFormName" required class="form-input" placeholder="المستودع الرئيسي">
+          </div>
+          <div class="wh-form-field">
+            <label>رمز المستودع Code *</label>
+            <input type="text" id="whFormCode" required class="form-input" placeholder="WH01">
+          </div>
+          <div class="wh-form-field">
+            <label>نوع المستودع Type</label>
+            <select id="whFormType" class="form-select">
+              <option value="physical">مستودع فعلي Physical Warehouse</option>
+              <option value="virtual">مستودع افتراضي Virtual Warehouse</option>
+              <option value="transit">مستودع ترانزيت Transit Warehouse</option>
+            </select>
+          </div>
+          <div class="wh-form-field">
+            <label class="wh-checkbox-label" style="margin-top:28px;">
+              <input type="checkbox" id="whFormIsDefault"> مستودع افتراضي للفرع Default Warehouse
+            </label>
+          </div>
+        </div>
+        <div class="wh-form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeWhModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="whSaveSubmitBtn">حفظ المستودع</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Locations View -->
+<section class="page" id="pageLocations">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-sitemap"></i></span>
+        <span data-i18n-ar="مواقع المخزون" data-i18n-en="Stock Locations">مواقع المخزون</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="شجرة الهيكل التنظيمي للمواقع والتخزين (أرفف، ممرات، مناطق استلام، تسليم، تالف، وترانزيت)." data-i18n-en="Hierarchical location structure (racks, aisles, receiving, shipping, scrap, transit).">
+        شجرة الهيكل التنظيمي للمواقع والتخزين (أرفف، ممرات، مناطق استلام، تسليم، تالف، وترانزيت).
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" id="locCreateBtn" type="button">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n-ar="إضافة موقع" data-i18n-en="Add Location">إضافة موقع</span>
+      </button>
+      <button class="btn btn-secondary" id="locRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="locStateBanner"></div>
+
+  <div class="loc-controls">
+    <select id="locWarehouseFilter" class="form-select">
+      <option value="">جميع المستودعات All Warehouses</option>
+    </select>
+    <select id="locUsageFilter" class="form-select">
+      <option value="">جميع الاستخدامات All Usages</option>
+      <option value="internal">موقع داخلي Internal Location</option>
+      <option value="view">موقع تجميعي View</option>
+      <option value="customer">موقع عميل Customer Location</option>
+      <option value="supplier">موقع مورد Supplier Location</option>
+      <option value="inventory">موقع جرد/تسوية Inventory Loss/Gain</option>
+      <option value="production">موقع إنتاج Production Location</option>
+      <option value="scrap">موقع تالف Scrap Location</option>
+      <option value="transit">موقع ترانزيت Transit Location</option>
+    </select>
+  </div>
+
+  <div class="loc-table-card">
+    <div class="table-responsive">
+      <table class="loc-table" id="locLocationsTable">
+        <thead>
+          <tr>
+            <th>المسار الكامل Complete Path</th>
+            <th>اسم الموقع Location Name</th>
+            <th>الموقع الأب Parent Location</th>
+            <th>الاستخدام Usage</th>
+            <th>السعة Capacity</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="locLocationsTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Location Modal -->
+  <div id="locLocationModal" class="loc-modal" style="display:none;">
+    <div class="loc-modal-content glass-card">
+      <div class="loc-modal-header">
+        <h3 id="locModalTitle">إضافة موقع مخزون جديد</h3>
+        <button class="loc-modal-close" onclick="closeLocModal()">&times;</button>
+      </div>
+      <form id="locLocationForm" class="loc-form">
+        <input type="hidden" id="locFormId" value="">
+        <div class="loc-form-grid">
+          <div class="loc-form-field">
+            <label>اسم الموقع Location Name *</label>
+            <input type="text" id="locFormName" required class="form-input" placeholder="Bin 01 / Shelf A">
+          </div>
+          <div class="loc-form-field">
+            <label>الموقع الأب Parent Location</label>
+            <select id="locFormParent" class="form-select"></select>
+          </div>
+          <div class="loc-form-field">
+            <label>نوع الاستخدام Location Usage *</label>
+            <select id="locFormUsage" required class="form-select">
+              <option value="internal">موقع تخزين داخلي Internal Location</option>
+              <option value="view">موقع تجميعي View</option>
+              <option value="customer">موقع عميل Customer Location</option>
+              <option value="supplier">موقع مورد Supplier Location</option>
+              <option value="inventory">موقع تسوية جرد Inventory Loss/Gain</option>
+              <option value="production">موقع إنتاج Production</option>
+              <option value="scrap">موقع تالف Scrap</option>
+              <option value="transit">موقع ترانزيت Transit</option>
+            </select>
+          </div>
+          <div class="loc-form-field">
+            <label>المستودع المالي / التشغيلي Warehouse</label>
+            <select id="locFormWarehouse" class="form-select"></select>
+          </div>
+        </div>
+        <div class="loc-form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeLocModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" id="locSaveSubmitBtn">حفظ الموقع</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,150 @@
+/* Customers & Suppliers Module Scoped Styles */
+
+#pageCustomersAndSuppliers {
+  padding: 20px;
+}
+
+#pageCustomersAndSuppliers .cs-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+}
+
+#pageCustomersAndSuppliers .cs-search-group {
+  position: relative;
+  flex: 1 1 300px;
+}
+
+#pageCustomersAndSuppliers .cs-search-group .search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #94a3b8);
+}
+
+#pageCustomersAndSuppliers .cs-search-group input {
+  padding-right: 36px;
+  width: 100%;
+}
+
+#pageCustomersAndSuppliers .cs-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#pageCustomersAndSuppliers .cs-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+}
+
+#pageCustomersAndSuppliers .cs-table-card {
+  background: var(--bg-card, rgba(15, 23, 42, 0.6));
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#pageCustomersAndSuppliers .cs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+#pageCustomersAndSuppliers .cs-table th {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 14px;
+  text-align: right;
+  font-weight: 600;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#pageCustomersAndSuppliers .cs-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#pageCustomersAndSuppliers .cs-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+#pageCustomersAndSuppliers .cs-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+#pageCustomersAndSuppliers .cs-modal-content {
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#pageCustomersAndSuppliers .cs-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+#pageCustomersAndSuppliers .cs-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #f8fafc;
+}
+
+#pageCustomersAndSuppliers .cs-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+#pageCustomersAndSuppliers .cs-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+#pageCustomersAndSuppliers .cs-form-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+#pageCustomersAndSuppliers .cs-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}

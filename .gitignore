@@ -110,3 +110,9 @@ finance_html.txt
 
 # Multi-agent runtime locks
 coordination/verify.lock
+
+# Browser acceptance runtime artifacts (screenshots, traces, videos).
+# Raw runs may capture session cookies or disposable credentials, so the whole
+# runtime directory stays untracked. Selected secret-free screenshots are
+# copied into docs/evidence/ deliberately.
+/test-artifacts/

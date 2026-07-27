@@ -525,3 +525,58 @@ This ledger maintains a chronological, permanent record of AI model executions a
   screenshots in this environment; Checkpoints C-F not started; no Phase 04
   domain retired.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 017 - Real Chromium acceptance + mobile sidebar fix
+
+- **Execution:** 2026-07-28
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Starting commit:** `1207bb02352874e90f6097e40ecaa3398c3a01b0`
+- **Model:** Claude Opus 5 (`claude-opus-5`), extended thinking enabled
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Windows 11 Pro 10.0.26200,
+  Node v24.14.1, Git 2.53.0.windows.2
+- **Corrected a standing excuse:** previous checkpoints claimed screenshots were
+  unavailable. That was wrong — Puppeteer 25.3.0 with Chromium 150.0.7871.24 was
+  already installed. `scripts/browser-acceptance.mjs` now drives real Chromium
+  and writes real PNGs to disk. Playwright is NOT installed; Puppeteer was used
+  rather than adding an equivalent dependency.
+- **Result:** 23 passed / 0 failed / 0 skipped, 9 screenshots, exit 0.
+  Proven end-to-end from the real UI: `party:create`, `warehouse:create`,
+  Draft->Validate staging with zero persistence, atomic rollback with a visible
+  per-line reason, Arabic RTL, English LTR, tablet, mobile, and a server-side
+  403 for the restricted viewer.
+- **Shell defect fixed (affected EVERY page):** `body.sidebar-collapsed` was
+  toggled by app.js but had no CSS rule anywhere, so the collapse was a no-op;
+  and style.css:2270 forced the sidebar to 240px with !important below 700px,
+  leaving #mainContent about 115px on a 375px viewport. Added
+  `modules/shell-mobile-sidebar.css` (off-canvas drawer below 768px, RTL-aware,
+  reduced-motion aware) and a drawer-width default in app.js that does not
+  overwrite the stored desktop preference. Measured result: mainContent
+  115px -> 375px of a 375px viewport.
+- **Own mistakes this run:** (1) asserted `warehouse:create` on a
+  timing-sensitive DOM row count and reported a false failure while the record
+  existed on the server — switched to verifying against the canonical list;
+  (2) the first screenshots photographed the shell's legacy login overlay rather
+  than the modules, with a success toast visible in the corner proving the
+  command had run underneath — the harness now dismisses that gate, which
+  affects visibility only and not authorisation; (3) tried to triage 404s from
+  console text that carries no URL — now tracked from the response event and
+  allowlisted by exact pathname.
+- **Product observation:** the legacy client-side login gate
+  (localStorage `octagon_user_id`) and the canonical server session are two
+  independent notions of "logged in". A canonically-authorised user is still
+  shown the legacy overlay.
+- **Verification:** phase 04 finalization 83/83; phase 04 aggregate 47/47;
+  permission regression 35/35; browser acceptance 23/23; precommit pass.
+- **Migrations added:** none. Latest remains 044 on this branch.
+- **VNext:** not inspected, not modified, nothing salvaged (17 dirty at entry and
+  exit). No donor repository opened.
+- **Operational data:** all four files byte-identical at entry and exit.
+- **Not done:** separate Products and Parties module pages (both are still
+  console tabs); no edit/archive/restore actions anywhere; no successful stock
+  receipt (no governed command exists to create a UOM category or product
+  category); no delivery/transfer/return/adjustment/cycle-count/replenishment/
+  valuation/stock-to-GL workflows; no concurrency or failure-injection suite.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

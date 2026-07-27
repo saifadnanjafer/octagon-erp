@@ -203,8 +203,49 @@ function toggleSidebarCompact() {
 }
 window.toggleSidebarCompact = toggleSidebarCompact;
 
+// Below this width the sidebar is an off-canvas drawer (see
+// modules/shell-mobile-sidebar.css) and must start closed, otherwise it
+// overlays the whole page on open and — before that stylesheet existed — left
+// #mainContent about 115px wide on a 375px viewport.
+const SIDEBAR_DRAWER_MAX_WIDTH = 768;
+
+function isSidebarDrawerWidth() {
+  try {
+    return window.matchMedia(`(max-width: ${SIDEBAR_DRAWER_MAX_WIDTH}px)`).matches;
+  } catch (_) {
+    return window.innerWidth <= SIDEBAR_DRAWER_MAX_WIDTH;
+  }
+}
+
 function initSidebarCompactToggle() {
-  applySidebarCompactState(localStorage.getItem('octagon-sidebar-collapsed') === '1');
+  const stored = localStorage.getItem('octagon-sidebar-collapsed') === '1';
+  // On drawer widths the sidebar always starts closed regardless of the stored
+  // desktop preference. The user's explicit desktop choice is preserved in
+  // localStorage and is not overwritten here — applySidebarCompactState would
+  // persist it, so the drawer default is applied to the class only.
+  if (isSidebarDrawerWidth()) {
+    document.body.classList.add('sidebar-collapsed');
+    const btn = document.getElementById('sidebarToggleBtn');
+    if (btn) btn.setAttribute('aria-pressed', 'true');
+  } else {
+    applySidebarCompactState(stored);
+  }
+
+  // Crossing the breakpoint should not strand the drawer open over content.
+  let wasDrawer = isSidebarDrawerWidth();
+  window.addEventListener('resize', () => {
+    const nowDrawer = isSidebarDrawerWidth();
+    if (nowDrawer === wasDrawer) return;
+    wasDrawer = nowDrawer;
+    if (nowDrawer) {
+      document.body.classList.add('sidebar-collapsed');
+    } else {
+      document.body.classList.toggle(
+        'sidebar-collapsed',
+        localStorage.getItem('octagon-sidebar-collapsed') === '1',
+      );
+    }
+  });
 }
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initSidebarCompactToggle);

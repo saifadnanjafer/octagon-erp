@@ -88,6 +88,31 @@ process.env.OCTAGON_SQLITE_DB_FILE = staged.sqlite;
 process.env.OCTAGON_DB_FILE = staged.json;
 process.env.PORT = process.env.PORT || '8080';
 
+// Optional disposable test identities, for authenticated browser acceptance.
+// Only ever runs against the staged copy above — scripts/test-auth-fixture.mjs
+// independently refuses any path in the repository root, so this cannot reach
+// operational data even if this launcher were misused.
+let fixtureManifestPath = null;
+if (process.env.OCTAGON_TEST_FIXTURE === '1') {
+  try {
+    const { openMigrationDatabase, runMigrations } = await import('../database/migration-runner/index.mjs');
+    const { seedTestIdentities, writeFixtureManifest } = await import('./test-auth-fixture.mjs');
+    // The staged copy may predate the current migration set; bring it up first
+    // so the identity/authorization tables the fixture writes to exist.
+    await runMigrations({ dbPath: staged.sqlite, direction: 'up', actor: 'preview-fixture' });
+    const seedDb = openMigrationDatabase(staged.sqlite);
+    try {
+      const seeded = seedTestIdentities(seedDb, { dbPath: staged.sqlite });
+      fixtureManifestPath = writeFixtureManifest(path.join(stageDir, 'fixture-users.json'), seeded);
+    } finally {
+      seedDb.close();
+    }
+  } catch (error) {
+    console.error(`[preview] FATAL: test fixture seeding failed: ${error && error.message}`);
+    process.exit(1);
+  }
+}
+
 function cleanup() {
   try {
     fs.rmSync(stageDir, { recursive: true, force: true });
@@ -104,6 +129,10 @@ console.log(`[preview]   staged ${copied} file(s) -> ${stageDir}`);
 console.log(`[preview]   sqlite sha256 ${String(stagedHash).slice(0, 16)}… (matches operational source)`);
 console.log('[preview]   operational database.db is NOT open and cannot be written by this process');
 console.log(`[preview]   port ${process.env.PORT}`);
+if (fixtureManifestPath) {
+  console.log('[preview]   DISPOSABLE TEST IDENTITIES SEEDED (8 roles) — throwaway, temp db only');
+  console.log(`[preview]   manifest ${fixtureManifestPath}`);
+}
 
 // Start the real server unchanged. Requiring it keeps everything in one
 // process so the port is owned by this PID.

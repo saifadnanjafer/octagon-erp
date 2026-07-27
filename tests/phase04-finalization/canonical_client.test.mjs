@@ -133,7 +133,7 @@ test('every command carries an idempotency key and correlation id', async () => 
   const client = loadClient();
   await client.stock.postMove({ reference: 'RCPT-1', product_qty: 3 });
   const { init, url } = calls[0];
-  assert.equal(url, '/api/v1/action/stock%3Amove%3Apost');
+  assert.equal(url, '/api/v1/action/stock:move:post', 'action id must NOT be percent-encoded: the server reads the raw pathname segment');
   assert.ok(init.headers['x-idempotency-key'], 'idempotency header required');
   assert.ok(init.headers['x-correlation-id'], 'correlation header required');
   const body = JSON.parse(init.body);
@@ -376,7 +376,7 @@ test('action ids match the registered canonical action surface', async () => {
     calls = [];
     await invoke();
     assert.equal(
-      decodeURIComponent(calls[0].url),
+      calls[0].url,
       `/api/v1/action/${actionId}`,
       `expected action id ${actionId}`,
     );

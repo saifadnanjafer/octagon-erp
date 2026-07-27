@@ -85,7 +85,7 @@ test('domain cut over: canonical runs, legacy is never called', async () => {
   assert.equal(legacyRan, 0, 'legacy writer must not run once the domain is cut over');
   assert.equal(outcome.authority, 'canonical');
   assert.equal(calls.length, 1);
-  assert.equal(decodeURIComponent(calls[0].url), '/api/v1/action/product:template:create');
+  assert.equal(calls[0].url, '/api/v1/action/product:template:create');
 });
 
 test('opening stock is posted as a separate governed stock move, not a product field', async () => {
@@ -101,8 +101,8 @@ test('opening stock is posted as a separate governed stock move, not a product f
   );
 
   assert.equal(calls.length, 2, 'product create then opening move');
-  assert.equal(decodeURIComponent(calls[0].url), '/api/v1/action/product:template:create');
-  assert.equal(decodeURIComponent(calls[1].url), '/api/v1/action/stock:move:post');
+  assert.equal(calls[0].url, '/api/v1/action/product:template:create');
+  assert.equal(calls[1].url, '/api/v1/action/stock:move:post');
 
   const productBody = JSON.parse(calls[0].init.body);
   assert.equal(productBody.stock, undefined, 'governed quantity must never ride on a product create');

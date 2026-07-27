@@ -242,11 +242,34 @@
   // -------------------------------------------------------------------
 
   function mayAccess(domain) {
+    // ADVISORY ONLY, AND FAIL-OPEN.
+    //
+    // The server is the permission authority: every query and command is
+    // evaluated against the session-derived context and answered with 401/403
+    // when it must be. This check exists purely so the UI does not invite a
+    // denial it already knows about.
+    //
+    // It must never be the thing that blocks access. PermissionService reads
+    // the LEGACY user store; a user authenticated canonically (session cookie)
+    // has no legacy identity, so checkPage() returns false for everything and
+    // an authoritative-looking gate here would hide the entire page from a
+    // perfectly authorised user. That is exactly what happened before this
+    // comment existed.
+    //
+    // So: hide a tab only when a legacy user is actually present AND that
+    // legacy policy positively denies it. No legacy user, or no opinion, means
+    // show the tab and let the server decide.
     try {
       const ps = root.PermissionService;
-      if (ps && typeof ps.checkPage === 'function') return ps.checkPage(domain.permission) !== false;
-    } catch (_) { /* default open; server still decides */ }
-    return true;
+      if (!ps || typeof ps.checkPage !== 'function') return true;
+      const legacyUserId = root.localStorage && root.localStorage.getItem
+        ? root.localStorage.getItem('octagon_user_id')
+        : null;
+      if (!legacyUserId) return true;
+      return ps.checkPage(domain.permission) !== false;
+    } catch (_) {
+      return true;
+    }
   }
 
   // -------------------------------------------------------------------
@@ -364,7 +387,23 @@
     return `<div class="cc-table-wrap"><table class="cc-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
+  // Render generation guard.
+  //
+  // renderPanel() is triggered from several places at once: page activation,
+  // tab clicks, language switches and octagon:canonical-changed. Each call
+  // writes a loading skeleton, awaits a network read, then writes its result.
+  // Without sequencing, a slower earlier call can land after a faster later
+  // one and leave the panel showing a stale skeleton forever — which is
+  // exactly what happened during browser verification.
+  //
+  // Every call takes a ticket; only the holder of the newest ticket is allowed
+  // to write to the DOM.
+  let renderGeneration = 0;
+
   async function renderPanel() {
+    const generation = ++renderGeneration;
+    const isStale = () => generation !== renderGeneration;
+
     const el = document.getElementById('ccPanel');
     if (!el) return;
     const domain = DOMAINS.find((d) => d.key === activeKey) || DOMAINS[0];
@@ -378,7 +417,11 @@
       return;
     }
 
-    el.innerHTML = skeleton(tx({ ar: 'جارٍ التحميل…', en: 'Loading…' }));
+    // Only show the skeleton if the panel has no usable content yet; otherwise
+    // a background refresh would blank a working table for no reason.
+    if (!el.querySelector('.cc-table, .cc-state-empty, .cc-state-error')) {
+      el.innerHTML = skeleton(tx({ ar: 'جارٍ التحميل…', en: 'Loading…' }));
+    }
 
     let rows = [];
     let failure = null;
@@ -387,6 +430,10 @@
     } catch (err) {
       failure = err;
     }
+
+    // A newer render started while this one was awaiting the network. Abandon
+    // this result rather than overwriting fresher content.
+    if (isStale()) return;
 
     const note = domain.note
       ? `<div class="cc-note"><i class="fa-solid fa-circle-info"></i> ${escapeHtml(tx(domain.note))}</div>`

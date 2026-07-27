@@ -426,3 +426,54 @@ This ledger maintains a chronological, permanent record of AI model executions a
 - **Residual blockers:** owner test credentials; owner-approved opening
   accounting date; Waves 2-6 not started.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 015 - Visible Expansion Checkpoint A (authenticated fixture)
+
+- **Execution:** 2026-07-27/28
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Starting commit:** `8848963a39941f8e2dd7102abaa7cb9f2d6e1add`
+- **Model:** Claude Opus 5 (`claude-opus-5`), extended thinking enabled
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Git Bash on Windows 11 Pro
+  10.0.26200, Node v24.14.1, npm 11.11.0, Git 2.53.0.windows.2
+- **Delivered:** disposable authenticated test fixture
+  (`scripts/test-auth-fixture.mjs`, `scripts/preview-authenticated-server.mjs`,
+  `octagon-preview-auth` launch config) with three independent safety guards and
+  no bypass. Eight throwaway roles in an isolated tenant; the viewer is
+  deliberately read-only so denial can be proven.
+- **Milestone:** the first canonical command ever executed from the original
+  Octagon shell UI. A real `submit` on the page's own form drove
+  form -> module -> CanonicalClient -> POST /api/v1/action/party:create ->
+  ActionExecutor -> atomic transaction -> UI refresh. Rows 0 -> 1, rendered row
+  "شركة الاختبار التجارية — supplier". A restricted viewer on the same page was
+  allowed to read and DENIED 403 on write with the server's Arabic message.
+- **Three real bugs found by browser testing and fixed:**
+  1. `services/canonicalClient.js` percent-encoded the action id, so the server
+     (which reads the undecoded pathname) answered ACTION_NOT_REGISTERED for
+     `party%3Acreate`. Every canonical command had been broken since Wave 1 and
+     was masked by 401s. Worse, the Wave 1/2 tests asserted the ENCODED url and
+     therefore locked in the defect; those assertions were corrected to the
+     literal the server requires.
+  2. `modules/canonical-console.js` treated the legacy PermissionService as
+     authoritative, so a canonically-authenticated user with no legacy identity
+     saw zero tabs. Gate made advisory and fail-open, matching the rule that the
+     browser must never determine authoritative permission.
+  3. `modules/canonical-console.js` had no render sequencing; concurrent renders
+     from navigation, tab clicks and events could leave a permanent loading
+     skeleton. Added a render-generation guard.
+- **Verification:** phase 04 finalization 68/68 (was 48, +20 fixture); phase 04
+  aggregate 47/47; permission regression 35/35; precommit pass.
+  Chromium: authenticated login, company-scope switch, canonical read, canonical
+  WRITE through the real UI with visible refresh, and role-based 403 denial.
+- **VNext:** not inspected, not modified, nothing salvaged (17 dirty at entry and
+  exit). No donor repository opened.
+- **Operational data:** all four files byte-identical at entry and exit; the
+  authenticated run used a staged disposable copy only.
+- **Residual blockers:** Checkpoints B-F not started (distinct module pages for
+  Products/Parties/Inventory/Sales/Procurement/POS/Work/Admin, then Projects,
+  Manufacturing, Quality, Assets, Maintenance, Fleet); screenshots still
+  unavailable in this environment; owner-approved opening accounting date still
+  absent.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

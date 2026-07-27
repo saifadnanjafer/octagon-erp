@@ -125,7 +125,7 @@ test('every create action id exists on the canonical client surface', async () =
     await d.create.submit(client, { name: 'x', title: 'x', code: 'C', roles: 'customer' });
     assert.equal(calls.length, 1, `${d.key} create must issue exactly one request`);
     assert.equal(
-      decodeURIComponent(calls[0].url),
+      calls[0].url,
       `/api/v1/action/${d.create.actionId}`,
       `${d.key} sends a different action than it declares`,
     );

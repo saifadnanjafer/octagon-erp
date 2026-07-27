@@ -251,7 +251,14 @@
     const clean = stripForbidden(input);
     const idempotencyKey = options.idempotencyKey || clean.idempotency_key || newIdempotencyKey(actionId);
     delete clean.idempotency_key;
-    const result = await request(`${API_PREFIX}/action/${encodeURIComponent(actionId)}`, {
+    // Do NOT encodeURIComponent the action id. The server reads it from
+    // requestUrl.pathname, which is not percent-decoded, and looks the literal
+    // segment up in platform_actions. Encoding turns `party:create` into
+    // `party%3Acreate` and the lookup fails with ACTION_NOT_REGISTERED.
+    // services/financeService.js has always sent these unencoded; this matches
+    // that contract. Action ids are fixed internal tokens ([a-z_]+:[a-z_:]+),
+    // never user input, so there is nothing to escape.
+    const result = await request(`${API_PREFIX}/action/${actionId}`, {
       method: 'POST',
       body: { ...clean, idempotency_key: idempotencyKey },
       idempotencyKey,

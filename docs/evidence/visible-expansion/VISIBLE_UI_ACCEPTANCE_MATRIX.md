@@ -67,19 +67,39 @@ opened.
 | Mobile with sidebar collapsed | **PASS** | content 295px, tabs fit, no overflow |
 | No console errors from this module | **PASS** | only pre-existing `401` and `saveData` guard messages |
 
-### What is NOT proven
+### Superseded by Wave 2A — now PROVEN
 
-- **No authenticated workflow ran.** Every canonical read returned `401`
-  because there is no session. Creating or guessing a credential is not
-  something this agent will do; authenticated browser flows need owner-supplied
-  test credentials. Prior sessions hit the same wall — Phase 02/03 browser
-  evidence also records reproducibly failing login transitions.
-- **No canonical command has been executed from the browser.** The command path
-  is wired and unit-proven, but a real create against disposable data still
-  requires a session.
+The two items below were unproven when this matrix was first written. The
+disposable authenticated fixture closed both. Full detail in
+`authenticated-browser-fixture.md`.
+
+| Previously unproven | Status now |
+|---|---|
+| No authenticated workflow ran | **PASS** — `test.sysadmin` logged in (200), company scope set, canonical read succeeded |
+| No canonical command executed from the browser | **PASS** — `party:create` executed via a real form submit; rows 0 → 1; row rendered `شركة الاختبار التجارية — supplier` |
+| Permission denial only demonstrable as 401 | **PASS** — `test.viewer` allowed to read, **denied 403** on write with the server's Arabic message |
+
+Wave 2A also revealed that **every canonical command had been broken since Wave
+1**: the client percent-encoded the action id, so the server answered
+`ACTION_NOT_REGISTERED`. The 401s had masked it, and the unit tests asserted the
+encoded URL and so locked the defect in. Fixed, with the assertions corrected to
+the literal contract.
+
+### What is still NOT proven
+
 - **No screenshots.** The screenshot service times out on this app because the
   Browser pane is not compositing frames in this environment. DOM measurements
   are given instead, and are reported as DOM measurements — not as screenshots.
+- **Only the console page exists.** Distinct module pages for Products, Parties,
+  Inventory, Sales, Procurement, POS, Work Management and Administration are not
+  built (Checkpoints B–C), and Projects/Manufacturing/Quality/Assets/
+  Maintenance/Fleet are not started (Checkpoints D–E).
+- **Only `party:create` has been executed end-to-end.** The other three wired
+  commands (`product:template:create`, `warehouse:create`, `work_item:create`)
+  are unit-proven and now use a correct URL, but have not been driven through
+  the UI against live disposable data.
+- **No inventory, sales, procurement or POS lifecycle workflow exists.** Those
+  domains remain read surfaces.
 - **Mobile default is poor for the whole shell.** At 375px the sidebar keeps its
   full 260px, leaving `mainContent` at 115px. This affects **every** page, not
   this one; collapsing the sidebar fixes it. Pre-existing, flagged separately,

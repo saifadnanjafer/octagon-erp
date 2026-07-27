@@ -477,3 +477,51 @@ This ledger maintains a chronological, permanent record of AI model executions a
   unavailable in this environment; owner-approved opening accounting date still
   absent.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 016 - Visible Expansion Checkpoint B (Inventory & WMS)
+
+- **Execution:** 2026-07-28
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Starting commit:** `b74f41f33cf20d0ba2316270eb1b7cb2dff4a9d6`
+- **Model:** Claude Opus 5 (`claude-opus-5`), extended thinking enabled
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Git Bash on Windows 11 Pro
+  10.0.26200, Node v24.14.1, npm 11.11.0, Git 2.53.0.windows.2
+- **Delivered:** second distinct visible module — Canonical Inventory &
+  Warehouses (`canonical_inventory`), new sidebar entry "المخزون القانوني", with
+  seven surfaces: warehouses, locations, stock receipt, balances & valuation,
+  movements, reservations, traceability. Real Draft -> Validate lifecycle.
+- **Proven in a real authenticated browser:** page mounts and self-activates;
+  seven tabs render; `warehouse:create` executed through the real form (rows
+  0 -> 1, engine auto-created view/input/output/stock locations);
+  `stock:location:create` executed; draft staging issued ZERO action requests;
+  a failing Validate kept the line in the draft and persisted ZERO stock moves;
+  the per-line failure surfaced with code INPUT_MISSING_FIELD and its reason.
+- **Latent console defect fixed:** the Canonical Operations inventory tab called
+  /inventory/quants without the required product_id, so it rendered a
+  permanently empty grid with no error. Repointed to /inventory/operations,
+  which is a genuine list; per-product balance/valuation lookup now lives on the
+  dedicated inventory page.
+- **Own mistakes corrected:** validation failure was only a transient toast, so
+  an operator could not see why a line failed — added a durable per-line result
+  table; that surface then immediately revealed the receipt form never collected
+  the server-required `uom_id`, which was added and threaded through validation,
+  staging and the command; one test asserted a comment across a line break and
+  was made whitespace-normalised.
+- **Verification:** phase 04 finalization 83/83 (was 68, +15 inventory); phase 04
+  aggregate 47/47; permission regression 35/35 (sidebar baseline 97 -> 98 for the
+  new page; the 100%-coverage invariant unchanged); precommit pass.
+- **Genuine gap found:** a product cannot be bootstrapped from the UI —
+  `product:template:create` needs `category_id` and `uom_id`, but the action
+  surface has no governed command for creating a UOM category or a product
+  category. Consequently no successful stock receipt has posted; the receipt
+  path is proven only up to correct server rejection and rollback.
+- **VNext:** not inspected, not modified, nothing salvaged (17 dirty at entry and
+  exit). No donor repository opened.
+- **Operational data:** all four files byte-identical at entry and exit.
+- **Residual blockers:** no successful stock receipt (see gap above); no
+  screenshots in this environment; Checkpoints C-F not started; no Phase 04
+  domain retired.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

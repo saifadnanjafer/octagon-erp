@@ -202,6 +202,7 @@
     calculator: { sensitivity: 'employee_self_service', riskLevel: 'low', phase: 'phase6h', label: 'Smart Calculator' },
     inventory: { sensitivity: 'workshop/inventory', riskLevel: 'high', phase: 'core', label: 'Inventory and stock' },
     canonical_console: { sensitivity: 'platform/canonical', riskLevel: 'high', phase: 'visible-expansion', label: 'Canonical Operations console' },
+    canonical_inventory: { sensitivity: 'workshop/inventory', riskLevel: 'high', phase: 'visible-expansion', label: 'Canonical Inventory and Warehouses' },
     sales: { sensitivity: 'sales/commerce', riskLevel: 'medium', phase: 'core', label: 'Sales' },
     machines: { sensitivity: 'workshop/production', riskLevel: 'medium', phase: 'core', label: 'Machines' },
     equipment: { sensitivity: 'workshop/production', riskLevel: 'medium', phase: 'core', label: 'Equipment' },
@@ -271,6 +272,7 @@
     // through /api/v1; the server enforces the real grant, this is the
     // page-level gate.
     canonical_console: ['workshop.manager', 'finance.manager', 'system.admin'],
+    canonical_inventory: ['workshop.user', 'workshop.manager', 'system.admin'],
     employees: ['workshop.user'],
     import: ['workshop.manager'],
     timesheet: ['workshop.user'],

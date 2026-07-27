@@ -1,0 +1,150 @@
+/* Canonical Inventory & Warehouses.
+   Every rule is scoped under #pageCanonicalInventory so nothing leaks into the
+   rest of the shell. */
+
+#pageCanonicalInventory .ci-authority-banner { margin: 0 0 14px; }
+
+#pageCanonicalInventory .ci-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color, #d9d9e3);
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  font-size: 0.86rem;
+}
+#pageCanonicalInventory .ci-banner-warn { border-color: #d98324; color: #8a4b00; }
+#pageCanonicalInventory .ci-banner-note { color: var(--text-muted, #6b6b76); font-size: 0.8rem; }
+
+#pageCanonicalInventory .ci-chip {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font-size: 0.74rem; font-weight: 600; border: 1px solid transparent; white-space: nowrap;
+}
+#pageCanonicalInventory .ci-chip-on {
+  background: rgba(47, 143, 95, 0.14); color: #1f7a4d; border-color: rgba(47, 143, 95, 0.4);
+}
+#pageCanonicalInventory .ci-chip-off {
+  background: rgba(120, 120, 132, 0.12); color: var(--text-muted, #6b6b76); border-color: rgba(120, 120, 132, 0.28);
+}
+
+#pageCanonicalInventory .ci-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+#pageCanonicalInventory .ci-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 9px;
+  border: 1px solid var(--border-color, #d9d9e3);
+  background: var(--card-bg, #fff); color: var(--text-color, #1e1e24);
+  font-size: 0.87rem; font-family: inherit; cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+#pageCanonicalInventory .ci-tab:hover { border-color: var(--primary-color, #4a6cf7); }
+#pageCanonicalInventory .ci-tab.active {
+  background: var(--primary-color, #4a6cf7); border-color: var(--primary-color, #4a6cf7); color: #fff;
+}
+#pageCanonicalInventory .ci-tab:focus-visible {
+  outline: 2px solid var(--primary-color, #4a6cf7); outline-offset: 2px;
+}
+
+#pageCanonicalInventory .ci-panel {
+  border: 1px solid var(--border-color, #d9d9e3);
+  border-radius: 12px; background: var(--card-bg, #fff); padding: 16px;
+}
+#pageCanonicalInventory .ci-panel-head { margin-bottom: 12px; }
+#pageCanonicalInventory .ci-panel-title {
+  margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;
+}
+#pageCanonicalInventory .ci-sub {
+  margin: 18px 0 8px; font-size: 0.92rem; color: var(--text-muted, #6b6b76);
+}
+#pageCanonicalInventory .ci-count { font-size: 0.85rem; color: var(--text-muted, #6b6b76); }
+
+#pageCanonicalInventory .ci-note {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 9px 12px; margin-bottom: 12px; border-radius: 9px;
+  background: rgba(74, 108, 247, 0.08); font-size: 0.83rem;
+}
+
+#pageCanonicalInventory .ci-form {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+  padding: 12px; margin-bottom: 14px;
+  border: 1px dashed var(--border-color, #d9d9e3); border-radius: 10px;
+}
+#pageCanonicalInventory .ci-form-fields {
+  display: flex; flex-wrap: wrap; gap: 10px; flex: 1 1 auto;
+}
+#pageCanonicalInventory .ci-field {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 0.8rem; min-width: 150px;
+}
+
+#pageCanonicalInventory .ci-action-id {
+  font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem;
+  color: var(--text-muted, #6b6b76); background: rgba(120, 120, 132, 0.1);
+  padding: 3px 8px; border-radius: 6px;
+}
+
+#pageCanonicalInventory .ci-draft-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px; margin: 14px 0 8px;
+}
+#pageCanonicalInventory .ci-draft-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px;
+}
+
+#pageCanonicalInventory .ci-metrics {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; margin-bottom: 12px;
+}
+#pageCanonicalInventory .ci-metric {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--border-color, #d9d9e3);
+  background: var(--card-bg, #fff);
+}
+#pageCanonicalInventory .ci-metric-label {
+  font-size: 0.76rem; color: var(--text-muted, #6b6b76);
+}
+#pageCanonicalInventory .ci-metric-value {
+  font-size: 1.4rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+
+#pageCanonicalInventory .ci-table-wrap { overflow-x: auto; }
+#pageCanonicalInventory .ci-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+#pageCanonicalInventory .ci-table th {
+  text-align: inherit; font-weight: 600; color: var(--text-muted, #6b6b76);
+  font-size: 0.76rem; padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color, #d9d9e3); white-space: nowrap;
+}
+#pageCanonicalInventory .ci-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border-color, #ececef);
+}
+#pageCanonicalInventory .ci-table tbody tr:hover { background: rgba(120, 120, 132, 0.05); }
+#pageCanonicalInventory .ci-num { font-variant-numeric: tabular-nums; }
+
+#pageCanonicalInventory .ci-state {
+  padding: 24px 16px; text-align: center;
+  color: var(--text-muted, #6b6b76); font-size: 0.88rem;
+}
+#pageCanonicalInventory .ci-state-error {
+  text-align: start; border: 1px solid rgba(196, 62, 62, 0.4);
+  background: rgba(196, 62, 62, 0.06); border-radius: 10px;
+  color: var(--text-color, #1e1e24);
+}
+#pageCanonicalInventory .ci-state-title {
+  font-weight: 600; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+#pageCanonicalInventory .ci-state-msg { font-size: 0.85rem; }
+#pageCanonicalInventory .ci-state-hint,
+#pageCanonicalInventory .ci-corr {
+  margin-top: 6px; font-size: 0.79rem; color: var(--text-muted, #6b6b76);
+}
+#pageCanonicalInventory .ci-code {
+  font-family: ui-monospace, Consolas, monospace; font-size: 0.75rem;
+  background: rgba(196, 62, 62, 0.14); padding: 2px 7px; border-radius: 5px;
+}
+
+@media (max-width: 640px) {
+  #pageCanonicalInventory .ci-panel { padding: 12px; }
+  #pageCanonicalInventory .ci-tab { flex: 1 1 auto; justify-content: center; }
+  #pageCanonicalInventory .ci-field { min-width: 100%; }
+  #pageCanonicalInventory .ci-form-fields { width: 100%; }
+}

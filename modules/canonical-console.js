@@ -122,19 +122,24 @@
       label: { ar: 'المخزون والمستودعات', en: 'Inventory & Warehouses' },
       cutoverDomain: 'INVENTORY',
       permission: 'inventory',
-      load: (c) => c.stock.balances({ limit: 100 }),
+      // Movement history, NOT balances. /inventory/quants requires a
+      // product_id and returns a single balance object rather than a list, so
+      // calling it here rendered a permanently empty grid. Per-product balance
+      // and valuation lookup lives on the dedicated Canonical Inventory page.
+      load: (c) => c.stock.operations({ limit: 100 }),
       columns: [
+        { key: 'reference', label: { ar: 'المرجع', en: 'Reference' } },
         { key: 'product_id', label: { ar: 'المنتج', en: 'Product' } },
-        { key: 'location_id', label: { ar: 'الموقع', en: 'Location' } },
-        { key: 'quantity', label: { ar: 'المتوفر', en: 'On hand' }, numeric: true },
-        { key: 'reserved_quantity', label: { ar: 'المحجوز', en: 'Reserved' }, numeric: true },
-        { key: 'available_quantity', label: { ar: 'القابل للاستخدام', en: 'Available' }, numeric: true },
+        { key: 'product_qty', label: { ar: 'الكمية', en: 'Qty' }, numeric: true },
+        { key: 'location_id', label: { ar: 'من', en: 'From' } },
+        { key: 'location_dest_id', label: { ar: 'إلى', en: 'To' } },
+        { key: 'state', label: { ar: 'الحالة', en: 'State' } },
       ],
       // Quantities are read-only here on purpose: stock changes only through
       // an explicit governed lifecycle command, never through a grid edit.
       note: {
-        ar: 'الأرصدة للقراءة فقط. تتغيّر الكميات فقط عبر أوامر حركة مخزنية محكومة.',
-        en: 'Balances are read-only. Quantities change only through governed stock commands.',
+        ar: 'سجل الحركات للقراءة فقط. تتغيّر الكميات فقط عبر أوامر حركة مخزنية محكومة. للأرصدة والتقييم استخدم صفحة المخزون القانوني.',
+        en: 'Movement history is read-only. Quantities change only through governed stock commands. For balances and valuation use the Canonical Inventory page.',
       },
     },
     {

@@ -80,10 +80,10 @@ const CASES = [
   // visible-expansion work. Both numbers move together on purpose: the second
   // case is the real invariant (every sidebar page is explicitly mapped), and
   // it would fail if a page were added to the nav without a permission entry.
-  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector + workshop ledger + system check + canonical console',
-    () => sidebarPages.size, 97],
+  ['sidebar baseline reflects Phase 7J/7L pages + Telegram connector + workshop ledger + system check + canonical console + canonical inventory',
+    () => sidebarPages.size, 98],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 97],
+    () => mappedSidebarPages.length, 98],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

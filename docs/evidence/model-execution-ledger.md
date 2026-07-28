@@ -620,3 +620,55 @@ This ledger maintains a chronological, permanent record of AI model executions a
   PostgreSQL runtime proof; broad Phase 04 cutover; owner-approved opening
   inventory accounting date.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 019 — Checkpoint C final closure
+
+- **Execution:** 2026-07-28
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Mandated starting commit:** `85d201783bfd056242445c3b9db8f13d56cf2e94`
+- **C6 starting commit:** `a7248dc73f1208c1dbada6066550caeb41ea3aa7`
+- **Ending scope commit:**
+  `42a873e7b5d9022175a421d6f605fef9484bf787`
+- **Model/version:** GPT-5 Codex
+- **Agent/runtime:** Codex desktop; Windows PowerShell; Node v24.18.0
+- **Reasoning level:** high
+- **Delivered:** visible Sales, Procurement, POS, nine-view Work Management,
+  and nineteen-area Administration/Module Control in the original shell;
+  cross-domain integration, reports, rollback, concurrency, and Chromium.
+- **Files inspected:** current domain/action/API/client/UI modules, migrations
+  043–050, Phase 01–04 and Checkpoint C tests, browser runners, evidence
+  registers, operational hashes, and frozen VNext HEAD/status.
+- **Files changed:** `app.js`; migration 051; Checkpoint C Sales, Procurement,
+  and migration tests; Phase 02/03 browser tests; Phase 04
+  current/historical-contract tests and fixture; required final evidence.
+- **Migrations:** 046 Sales, 047 Procurement, 048 POS, 049 Work Management, 050
+  Control Plane, and 051 forward correction of `control_plane.lifecycle_policy`
+  from invalid `governed` to `generic`.
+- **VNext:** rechecked read-only, unchanged at
+  `cf7ae4ed73eac91a325c964178036290bc0736c1`. C6 salvaged no code. C1–C5
+  project-owned salvage remains recorded.
+- **Donors:** no donor opened or adapted in C6; no third-party code copied.
+- **Verification:** Phase 01 10/10 outer (80 internal); Phase 02 10/10 outer
+  (200 internal) plus browser 12/12; Phase 03 11/11 outer (138 internal) plus
+  browser 9/9; Phase 04 47/47; Phase 04 finalization 99/99; Checkpoint C
+  100/100; permission 35/35; precommit pass.
+- **Browser:** Chrome/150.0.7871.24; final Checkpoint C 90/90. Trace:
+  `test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/`; 56 reviewed PNGs.
+- **Failures/mistakes/rework:** forward migration 051 corrected migration 050's
+  policy; owner groups are merged after legacy reload using `isOwner`; Phase
+  02/03 session/responsive harnesses were stabilized; Phase 04 tests now
+  isolate 043/044 and additive aliases; RFQ fixtures supply line facts. An
+  empty Phase 01 list accidentally triggered broad discovery; that rejected
+  run was replaced by the exact green suite.
+- **Operational data:** DB/WAL/SHM/JSON hashes remained byte-identical. Browser
+  mutations used disposable staging. Generated regression artifacts were moved
+  recoverably to the shared COMPANY archive.
+- **Deferred:** approved opening-inventory date; broad production writer
+  retirement; PostgreSQL execution; production backup execution.
+- **Push result:** scope commit pushed normally; local, tracking, and GitHub
+  remote matched `42a873e7b5d9022175a421d6f605fef9484bf787`.
+- **Independent verification:** not claimed.
+- **Classification:** **CHECKPOINT C COMPLETE — SAFE TO CONTINUE**

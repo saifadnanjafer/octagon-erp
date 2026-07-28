@@ -25,6 +25,51 @@ export const PHASE04_RETIREMENT_LOCKS = Object.freeze({
   },
 });
 
+// Checkpoint F: the Checkpoint D/E domains shipped a canonical backend but no
+// retirement lock definition, so there was no mechanism by which their legacy
+// writers could ever be retired — `enforced()` returned false for an unknown
+// domain and would have kept doing so forever. Declaring them here does not
+// enable enforcement (that still needs phase04.canonical_cutover plus a RETIRED
+// lock row); it makes them lockable and reportable.
+export const CHECKPOINT_DE_RETIREMENT_LOCKS = Object.freeze({
+  PROJECT: {
+    authorityKey: 'PROJECT_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'operations_projects',
+  },
+  ENGINEERING: {
+    authorityKey: 'ENGINEERING_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'operations_engineering',
+  },
+  MANUFACTURING: {
+    authorityKey: 'MANUFACTURING_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'operations_manufacturing',
+  },
+  QUALITY: {
+    authorityKey: 'QUALITY_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'operations_quality',
+  },
+  ASSET: {
+    authorityKey: 'ASSET_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'assets_management',
+  },
+  MAINTENANCE: {
+    authorityKey: 'MAINTENANCE_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'operations_maintenance',
+  },
+  FLEET: {
+    authorityKey: 'FLEET_CANONICAL_AUTHORITY_REQUIRED',
+    canonicalTarget: 'fleet_telematics',
+  },
+});
+
+// Every domain the guard knows how to retire. PHASE04_RETIREMENT_LOCKS is kept
+// as a separate named export because existing Phase 04 tests assert against it
+// exactly.
+export const RETIREMENT_LOCKS = Object.freeze({
+  ...PHASE04_RETIREMENT_LOCKS,
+  ...CHECKPOINT_DE_RETIREMENT_LOCKS,
+});
+
 export function createLegacyWriterRetirementGuard(dialect) {
   if (!dialect || typeof dialect.prepare !== 'function') {
     throw new Error('Legacy writer retirement guard requires a database dialect');
@@ -44,7 +89,7 @@ export function createLegacyWriterRetirementGuard(dialect) {
   }
 
   function lockFor(domain) {
-    const expected = PHASE04_RETIREMENT_LOCKS[String(domain || '').toUpperCase()];
+    const expected = RETIREMENT_LOCKS[String(domain || '').toUpperCase()];
     if (!expected) return null;
     try {
       return dialect.prepare(`
@@ -59,7 +104,7 @@ export function createLegacyWriterRetirementGuard(dialect) {
 
   function enforced(domain) {
     if (!cutoverEnabled()) return false;
-    const expected = PHASE04_RETIREMENT_LOCKS[String(domain || '').toUpperCase()];
+    const expected = RETIREMENT_LOCKS[String(domain || '').toUpperCase()];
     if (!expected) return false;
     const lock = lockFor(domain);
     return lock?.status === 'RETIRED' && lock.canonical_target === expected.canonicalTarget;
@@ -67,14 +112,14 @@ export function createLegacyWriterRetirementGuard(dialect) {
 
   function status() {
     const enabled = cutoverEnabled();
-    return Object.fromEntries(Object.keys(PHASE04_RETIREMENT_LOCKS).map((domain) => {
+    return Object.fromEntries(Object.keys(RETIREMENT_LOCKS).map((domain) => {
       const lock = lockFor(domain);
       return [domain, {
         cutoverEnabled: enabled,
         lock: lock || null,
         enforced: enabled
           && lock?.status === 'RETIRED'
-          && lock.canonical_target === PHASE04_RETIREMENT_LOCKS[domain].canonicalTarget,
+          && lock.canonical_target === RETIREMENT_LOCKS[domain].canonicalTarget,
       }];
     }));
   }

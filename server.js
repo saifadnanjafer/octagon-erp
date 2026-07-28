@@ -35,6 +35,14 @@ const jarvisSecurity = require('./server-jarvis-security');
 // generators only, never posts finance/payroll directly (AI-governance
 // philosophy: deterministic-first, approval-gated writes).
 const { installOctagonScheduler } = require('./server-scheduler');
+// Checkpoint F: the canonical authority map was extracted out of the request
+// handler so its coverage can be asserted by a test. Behaviour is unchanged —
+// same table, same matchers, same lookup. See the module header for why.
+const {
+  CANONICAL_AUTHORITY_COLLECTIONS,
+  canonicalAuthorityForCollection,
+  canonicalAuthorityError,
+} = require('./platform/cutover/canonical-authority-map.js');
 
 let DatabaseSync;
 try {
@@ -1872,88 +1880,6 @@ const server = http.createServer((req, res) => {
       sendJson(res, error.message === 'Payload too large' ? 413 : 500, { success: false, error: error.message || 'Webhook body read failed' });
     });
     return;
-  }
-
-  const CANONICAL_AUTHORITY_COLLECTIONS = [
-    {
-      domain: 'FINANCE',
-      paths: [
-        'finance.accounts', 'finance.transactions', 'finance.journals', 'finance.documents',
-        'finance.document_lines', 'finance.journal_entries', 'finance.journal_lines',
-        'finance.locks', 'finance.periods', 'finance.taxes', 'finance.currencies',
-        'finance.exchange_rates', 'finance.payments', 'finance.allocations',
-        'finance.bank_statements', 'finance.cashboxes', 'finance.budgets', 'finance.expenses',
-        'account_moves', 'accounts', 'omni.finance_accounts', 'omni.account_moves',
-      ],
-      matches: (lower) => (
-        lower === 'finance'
-        || (lower.startsWith('finance.') && lower !== 'finance.customers')
-        || lower.startsWith('finance_')
-        || lower.startsWith('omni.finance_')
-        || ['account_moves', 'accounts', 'omni.account_moves'].includes(lower)
-      ),
-    },
-    {
-      domain: 'COMMERCIAL',
-      paths: [
-        'finance.customers', 'customers', 'suppliers', 'contacts',
-        'omni.materials', 'materials', 'omni.suppliers',
-      ],
-      matches: (lower) => [
-        'finance.customers', 'customers', 'suppliers', 'contacts',
-        'omni.materials', 'materials', 'omni.suppliers',
-      ].includes(lower),
-    },
-    {
-      domain: 'INVENTORY',
-      paths: [
-        'stock_moves', 'quants', 'transfers', 'locations', 'warehouses',
-        'omni.lots', 'omni.serials', 'omni.packages',
-      ],
-      matches: (lower) => [
-        'stock_moves', 'quants', 'transfers', 'locations', 'warehouses',
-        'omni.lots', 'omni.serials', 'omni.packages',
-      ].includes(lower),
-    },
-    {
-      domain: 'SALES',
-      paths: ['salesOrders', 'omni.salesOrders', 'omni.crm', 'leads'],
-      matches: (lower) => ['salesorders', 'omni.salesorders', 'omni.crm', 'leads'].includes(lower),
-    },
-    {
-      domain: 'PROCUREMENT',
-      paths: ['purchaseOrders', 'omni.purchaseOrders'],
-      matches: (lower) => ['purchaseorders', 'omni.purchaseorders'].includes(lower),
-    },
-    {
-      domain: 'POS',
-      paths: ['posOrders', 'omni.posOrders', 'pos'],
-      matches: (lower) => ['posorders', 'omni.posorders', 'pos'].includes(lower),
-    },
-    {
-      domain: 'WORK_ITEM',
-      paths: ['tasks', 'omni.kanban.cards', 'omni.taskManager'],
-      matches: (lower) => (
-        lower === 'tasks'
-        || lower === 'omni.kanban.cards'
-        || lower === 'omni.taskmanager'
-        || lower.startsWith('omni.taskmanager.')
-      ),
-    },
-  ];
-
-  function canonicalAuthorityForCollection(colName) {
-    if (!colName) return null;
-    const lower = String(colName).toLowerCase();
-    return CANONICAL_AUTHORITY_COLLECTIONS.find(({ matches }) => matches(lower)) || null;
-  }
-
-  function canonicalAuthorityError(authority) {
-    return {
-      ok: false,
-      code: `${authority.domain}_CANONICAL_AUTHORITY_REQUIRED`,
-      error: `Governed ${authority.domain.toLowerCase()} facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId`,
-    };
   }
 
   function canonicalAuthorityEnforced(authority) {

@@ -8,7 +8,11 @@ Checkpoint **D1 (Projects and Project Costing)** is delivered, wired into the
 original Octagon shell, and proven by 23 passing tests plus a live
 authenticated run against a disposable database.
 
-Checkpoints **D2–D6 and E1–E3 are not implemented.** No scaffolding, no
+Checkpoint **D2 (Engineering, BOM, Routings, Work Centers, MRP)** is also
+delivered and proven — see `engineering-bom-routing.md` and
+`mrp-and-planning.md`.
+
+Checkpoints **D3, D4 and E1–E3 are not implemented.** No scaffolding, no
 placeholder navigation, and no empty pages were added for them — per the
 assignment, a page enters navigation only when it has a real workflow.
 
@@ -16,7 +20,8 @@ assignment, a page enters navigation only when it has a real workflow.
 
 | Checkpoint | Scope | Status |
 |---|---|---|
-| **D1** | Projects, phases, milestones, WBS, tasks, cost codes, budget, commitments, change orders, risks, issues, documents, billing, profitability, resource view, reports | **COMPLETE** |
+| **D1** | Projects, phases, milestones, WBS, tasks, cost codes, budget, commitments, change orders, risks, issues, documents, billing, profitability, resource view, reports | **COMPLETE** (commit `5f18230`, published) |
+| **D2** | Engineering, versioned BOMs, ECOs, work centers, versioned routings, MRP | **COMPLETE** (commit `72faccd`, published) |
 
 Evidence: `projects.md`, `frozen-zone-attestation.md`,
 `test-suite-register.md`, `starting-state.md`.
@@ -36,17 +41,14 @@ Evidence: `projects.md`, `frozen-zone-attestation.md`,
 
 | Checkpoint | Scope | Status |
 |---|---|---|
-| D2 | Engineering, BOM, routings | **NOT STARTED** |
-| D3 | MRP and planning | **NOT STARTED** |
-| D4 | Manufacturing orders | **NOT STARTED** |
-| D5 | Shop floor and work orders | **NOT STARTED** |
-| D6 | Quality | **NOT STARTED** |
+| D3 | Manufacturing orders, work orders, shop floor, WIP, production costing | **NOT STARTED** |
+| D4 | Quality | **NOT STARTED** |
 | — | Subcontract manufacturing | **NOT STARTED** |
 | E1 | Asset register | **NOT STARTED** |
 | E2 | Maintenance | **NOT STARTED** |
 | E3 | Fleet and telemetry adapters | **NOT STARTED** |
 
-Migrations 053–060 were **not** written. The migration tip is **052**.
+Migrations 054–060 were **not** written. The migration tip is **053**.
 
 ## Groundwork confirmed for the remaining checkpoints
 
@@ -97,3 +99,22 @@ Recorded so the next session does not re-derive it:
    not yet applicable.
 5. Investigate the pre-existing `tests/phase02/browser-live-evidence` failure
    (fails at the source commit too).
+
+
+## D2 addendum
+
+Migration **053** — 15 tables, 2 modules (`operations_engineering`,
+`operations_mrp`), 14 entities, 24 governed actions. A visible 12-area
+Engineering & Material Planning workspace mounts on `#pageMrp`.
+
+Key contracts proven: versioned BOM/routing immutability with separation of
+duties and automatic supersession; ECOs that open a governed revision rather
+than editing an approved version in place; one standard-cost authority shared
+by Projects and Manufacturing; and MRP that emits governed proposals only —
+never a commitment and never a stock move.
+
+A previous record is corrected here: the D1 report's duplicate-`switchPage`
+claim was wrong. See `dispatcher-audit.md`, locked by
+`tests/checkpoint-d-e/shell_dispatcher.test.mjs`.
+
+Next session starts from `HANDOFF.md`.

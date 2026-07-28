@@ -8,6 +8,10 @@ aggregate is double-counted.
 | Suite | Command | Exit | Pass | Fail | Skip | Proves |
 |---|---|---|---|---|---|---|
 | Projects lifecycle | `node --test tests/checkpoint-d-e/projects_lifecycle.test.mjs` | 0 | **23** | 0 | 0 | Project register, status state machine, templates, canonical Work Item delegation, budget/commitment governance, change orders, frozen-zone denial, milestone + T&M + fixed-price billing rules, derived costing and profitability, reports, scope spoofing denial, idempotency |
+| Engineering / BOM / Routing / MRP | `node --test tests/checkpoint-d-e/engineering_bom_routing_mrp.test.mjs` | 0 | **19** | 0 | 0 | BOM lifecycle + separation of duties, empty-version and self-reference guards, approved-version immutability, automatic supersession, revision copying, consumed-version lock, phantom child requirement, work-centre rate mirroring into the single standard-cost authority, routing lifecycle + operation time/sequence/subcontract guards, ECO opening a governed revision, make-requires-approved-BOM, lot sizing, multi-level explosion with internal-only netting, safety stock, no-open-demand denial, proposal hand-off with no commitment, reports, scope spoofing denial, idempotency |
+| Shell dispatcher | `node --test tests/checkpoint-d-e/shell_dispatcher.test.mjs` | 0 | **8** | 0 | 0 | `app.js` declares exactly one `switchPage`; the only duplicate top-level function is the unrelated `renderAttendanceCalendar`; the template guard is single and idempotent; every canonical module wraps rather than replaces the dispatcher, delegates to the original, gates activation on `ensurePageTemplateLoaded`, is re-entry guarded, and mounts on a real page host |
+
+**Checkpoint D/E total: 50 pass / 0 fail** (`node --test "tests/checkpoint-d-e/*.test.mjs"`).
 
 ## Existing regressions (re-run on this branch)
 

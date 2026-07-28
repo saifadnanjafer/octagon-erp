@@ -192,6 +192,35 @@ Final combined C1+C2+C3 trace:
 `test-artifacts/checkpoint-c-2026-07-28T03-51-11-913Z/`, 58/58 in
 `Chrome/150.0.7871.24`.
 
+## Checkpoint C4 — canonical Work Management (2026-07-28)
+
+| Gate | Result |
+|---|---|
+| Original Task Manager replaced by canonical workspace | PASS |
+| Duplicate Kanban and Workshop TV navigation retired | PASS |
+| Nine required operating views visible | PASS |
+| Create, assign, subtask and dependency | PASS |
+| Five-level importance, watchers and canonical links | PASS |
+| Working search, group and sort controls | PASS |
+| My Tasks filtered by server-derived user identity | PASS |
+| Versioned Kanban drag/drop | PASS |
+| Same-record Calendar movement | PASS |
+| Dependency/subtask-gated completion | PASS |
+| Recurrence, SLA, aging and inactivity behavior | PASS |
+| Team workload and completion reports | PASS |
+| Workshop TV and mobile views | PASS |
+| Workshop operational role succeeds | PASS |
+| Restricted viewer denied server-side | PASS |
+| Arabic RTL / English LTR | PASS |
+| Desktop / tablet 768 / mobile 375 | PASS |
+| No page-level mobile overflow | PASS |
+| No unexpected browser/runtime/resource error | PASS |
+| Evidence screenshots | PASS — 12 PNGs |
+
+Final combined C1+C2+C3+C4 trace:
+`test-artifacts/checkpoint-c-2026-07-28T05-26-01-449Z/`, 73/73 in
+`Chrome/150.0.7871.24`.
+
 ## Acceptance gate status
 
 | Gate | Status |

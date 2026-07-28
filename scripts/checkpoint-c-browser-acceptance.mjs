@@ -1,6 +1,7 @@
 // Checkpoint C authenticated Chromium acceptance.
 //
-// Current implemented chapters: C1 Sales, C2 Procurement, and C3 POS.
+// Current implemented chapters: C1 Sales, C2 Procurement, C3 POS, and
+// C4 Work Management.
 // The same runner is extended by later C2-C6 chapters so one final trace
 // proves the complete visible expansion without double-counting earlier runs.
 //
@@ -26,6 +27,7 @@ fs.mkdirSync(traceDir, { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'sales'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'procurement'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'pos'), { recursive: true });
+fs.mkdirSync(path.join(screenshotRoot, 'work-management'), { recursive: true });
 
 const results = [];
 const screenshots = [];
@@ -38,6 +40,28 @@ function record(name, status, detail = '') {
 
 async function screenshot(page, name, chapter = 'sales') {
   await page.waitForFunction(() => !document.querySelector('#toastContainer .toast'), { timeout: 10000 });
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.documentElement.scrollLeft = 0;
+    document.body.scrollTop = 0;
+    document.body.scrollLeft = 0;
+    for (const selector of ['#mainContent', '.main-content', '.content-area', '.cwm-kanban', '.cwm-phone > div']) {
+      const node = document.querySelector(selector);
+      if (node) {
+        node.scrollTop = 0;
+        node.scrollLeft = 0;
+      }
+    }
+    let ancestor = document.querySelector('#pageTaskManager');
+    while (ancestor) {
+      ancestor.scrollTop = 0;
+      ancestor.scrollLeft = 0;
+      ancestor = ancestor.parentElement;
+    }
+    document.querySelector('.cwm-shell')?.scrollIntoView({ block: 'start', inline: 'start' });
+  });
+  await new Promise((resolve) => setTimeout(resolve, 80));
   const target = path.join(screenshotRoot, chapter, `${name}.png`);
   await page.screenshot({ path: target, fullPage: false });
   screenshots.push(path.relative(repoRoot, target).replace(/\\/g, '/'));
@@ -102,6 +126,67 @@ async function openPos(page) {
   });
   await page.waitForSelector('.cpos-shell', { visible: true, timeout: 30000 });
   await page.waitForFunction(() => !document.querySelector('.cpos-shell .cpos-loading'), { timeout: 30000 });
+}
+
+async function openWorkManagement(page, tab = 'task_manager') {
+  await page.evaluate(async (activeTab) => {
+    document.documentElement.lang = 'ar';
+    document.documentElement.dir = 'rtl';
+    if (typeof window.switchPage === 'function') await window.switchPage('task_manager');
+    if (window.CanonicalWorkManagement && activeTab !== 'task_manager') {
+      window.CanonicalWorkManagement.state.active = activeTab;
+      window.CanonicalWorkManagement.render();
+    }
+  }, tab);
+  await page.waitForSelector('.cwm-shell', { visible: true, timeout: 30000 });
+  await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading, { timeout: 30000 });
+}
+
+async function clickWorkTab(page, tab) {
+  await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading, { timeout: 30000 });
+  await page.evaluate((key) => document.querySelector(`[data-cwm-tab="${key}"]`)?.click(), tab);
+  await page.waitForFunction((key) =>
+    document.querySelector(`[data-cwm-tab="${key}"]`)?.classList.contains('active'), {}, tab);
+}
+
+async function submitWorkForm(page, selector, values = {}) {
+  const result = await page.$eval(selector, (form, payload) => {
+    const { formValues, formSelector } = payload;
+    for (const [name, value] of Object.entries(formValues)) {
+      if (form.elements[name]) form.elements[name].value = value;
+    }
+    const invalid = [...form.querySelectorAll(':invalid')].map((input) => ({
+      name: input.name,
+      value: input.value,
+      message: input.validationMessage,
+    }));
+    if (invalid.length) return { valid: false, invalid };
+    window.CanonicalWorkManagement.state.notice = null;
+    window.CanonicalWorkManagement.state.error = null;
+    const work = window.CanonicalWorkManagement;
+    const controllers = {
+      '[data-cwm-form="create"]': 'submitCreateForm',
+      '[data-cwm-form="assign"]': 'submitAssignForm',
+      '[data-cwm-form="subtask"]': 'submitSubtaskForm',
+      '[data-cwm-form="dependency"]': 'submitDependencyForm',
+      '[data-cwm-form="due"]': 'submitDueForm',
+    };
+    const controller = controllers[formSelector];
+    if (controller && typeof work[controller] === 'function') work[controller](form);
+    else form.requestSubmit();
+    return { valid: true, invalid: [] };
+  }, { formValues: values, formSelector: selector });
+  if (!result.valid) throw new Error(`Work Management form is invalid: ${selector} ${JSON.stringify(result.invalid)}`);
+  await page.waitForFunction(() => {
+    const work = window.CanonicalWorkManagement;
+    return work && !work.state.loading && Boolean(work.state.notice || work.state.error);
+  }, { timeout: 30000 });
+  const status = await page.evaluate(() => ({
+    notice: window.CanonicalWorkManagement.state.notice,
+    error: window.CanonicalWorkManagement.state.error,
+  }));
+  if (status.error) throw new Error(`Work Management form failed: ${status.error}`);
+  return status.notice;
 }
 
 async function clickPosTab(page, tab) {
@@ -894,6 +979,263 @@ async function main() {
       !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED/i.test(entry));
     record('C3 browser runtime has no unexpected errors', c3RelevantErrors.length ? 'FAIL' : 'PASS',
       c3RelevantErrors.slice(0, 5).join(' | '));
+
+    // ------------------------------------------------------------------
+    // C4 — Canonical Work Management visible acceptance
+    // ------------------------------------------------------------------
+    browserErrors.length = 0;
+    const workAdmin = await login(page, 'test.sysadmin');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openWorkManagement(page);
+    record('C4 admin authenticates', workAdmin.authenticated ? 'PASS' : 'FAIL', `HTTP ${workAdmin.status}`);
+    const workTabs = await page.$$eval('[data-cwm-tab]', (nodes) => nodes.map((node) => node.dataset.cwmTab));
+    record('C4 Work Management exposes 9 canonical operating views', workTabs.length === 9 ? 'PASS' : 'FAIL', workTabs.join(','));
+    const legacyWorkNavHidden = await page.evaluate(() => ['navKanban', 'navWorkshopTv'].every((id) => {
+      const node = document.getElementById(id);
+      return node && (node.hidden || getComputedStyle(node).display === 'none');
+    }));
+    record('C4 duplicate legacy Kanban and Workshop TV navigation retired', legacyWorkNavHidden ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c4-01-work-management-dashboard-ar-desktop', 'work-management');
+
+    const dueBase = new Date(Date.now() + (5 * 86_400_000)).toISOString().slice(0, 10);
+    const dueMoved = new Date(Date.now() + (8 * 86_400_000)).toISOString().slice(0, 10);
+    const blockerTitle = `C4 Browser Predecessor ${Date.now().toString(36)}`;
+    await page.type('[data-cwm-form="create"] [name="title"]', blockerTitle);
+    await page.$eval('[data-cwm-form="create"] [name="due_date"]', (input, value) => { input.value = value; }, dueBase);
+    await page.select('[data-cwm-form="create"] [name="importance"]', '5');
+    await page.$eval('[data-cwm-form="create"]', (form, values) => {
+      form.elements.title.value = values.title;
+      form.elements.due_date.value = values.due;
+      form.elements.importance.value = '5';
+    }, { title: blockerTitle, due: dueBase });
+    await submitWorkForm(page, '[data-cwm-form="create"]', {
+      title: blockerTitle,
+      due_date: dueBase,
+      importance: '5',
+    });
+    const blockerId = await poll(page, async (title) =>
+      (await window.CanonicalClient.workItems.list({ limit: 500 })).find((row) => row.title === title)?.id || null,
+    { args: [blockerTitle] });
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+
+    const taskTitle = `C4 Browser Main Task ${Date.now().toString(36)}`;
+    await page.type('[data-cwm-form="create"] [name="title"]', taskTitle);
+    await page.type('[data-cwm-form="create"] [name="description"]', 'Canonical browser lifecycle task');
+    await page.$eval('[data-cwm-form="create"] [name="due_date"]', (input, value) => { input.value = value; }, dueBase);
+    await page.select('[data-cwm-form="create"] [name="priority"]', 'urgent');
+    await page.select('[data-cwm-form="create"] [name="importance"]', '5');
+    await page.type('[data-cwm-form="create"] [name="watchers"]', 'usr_test_sysadmin, usr_test_workshop');
+    await page.type('[data-cwm-form="create"] [name="project_ref"]', 'C4-PROJECT');
+    await page.type('[data-cwm-form="create"] [name="sales_ref"]', 'C4-SO');
+    await page.type('[data-cwm-form="create"] [name="procurement_ref"]', 'C4-PO');
+    await page.type('[data-cwm-form="create"] [name="quality_ref"]', 'C4-QC');
+    await page.type('[data-cwm-form="create"] [name="maintenance_ref"]', 'C4-MAINT');
+    await page.type('[data-cwm-form="create"] [name="checklist"]', 'Safety, Tools, Quality');
+    await page.$eval('[data-cwm-form="create"]', (form, values) => {
+      for (const [name, value] of Object.entries(values)) {
+        if (form.elements[name]) form.elements[name].value = value;
+      }
+    }, {
+      title: taskTitle,
+      description: 'Canonical browser lifecycle task',
+      due_date: dueBase,
+      priority: 'urgent',
+      importance: '5',
+      watchers: 'usr_test_sysadmin, usr_test_workshop',
+      project_ref: 'C4-PROJECT',
+      sales_ref: 'C4-SO',
+      procurement_ref: 'C4-PO',
+      quality_ref: 'C4-QC',
+      maintenance_ref: 'C4-MAINT',
+      checklist: 'Safety, Tools, Quality',
+    });
+    await submitWorkForm(page, '[data-cwm-form="create"]', {
+      title: taskTitle,
+      description: 'Canonical browser lifecycle task',
+      due_date: dueBase,
+      priority: 'urgent',
+      importance: '5',
+      watchers: 'usr_test_sysadmin, usr_test_workshop',
+      project_ref: 'C4-PROJECT',
+      sales_ref: 'C4-SO',
+      procurement_ref: 'C4-PO',
+      quality_ref: 'C4-QC',
+      maintenance_ref: 'C4-MAINT',
+      checklist: 'Safety, Tools, Quality',
+    });
+    const taskId = await poll(page, async (title) =>
+      (await window.CanonicalClient.workItems.list({ limit: 500 })).find((row) => row.title === title)?.id || null,
+    { args: [taskTitle] });
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+
+    await page.$eval('[data-cwm-form="assign"] [name="assigned_user_id"]', (input) => { input.value = 'usr_test_workshop'; });
+    await page.$eval('[data-cwm-form="assign"] [name="assigned_team_id"]', (input) => { input.value = 'team-workshop'; });
+    await submitWorkForm(page, '[data-cwm-form="assign"]', {
+      assigned_user_id: 'usr_test_workshop',
+      assigned_team_id: 'team-workshop',
+    });
+    const assignedTask = await poll(page, async (id) => {
+      const row = await window.CanonicalClient.workItems.get(id);
+      return row.assigned_user_id === 'usr_test_workshop' ? row : null;
+    }, { args: [taskId] });
+    record('C4 visible task creation and assignment use one canonical record',
+      assignedTask.assigned_team_id === 'team-workshop' ? 'PASS' : 'FAIL', taskId);
+    await screenshot(page, 'c4-02-task-created-assigned-ar', 'work-management');
+
+    const subtaskTitle = `C4 Browser Subtask ${Date.now().toString(36)}`;
+    await page.type('[data-cwm-form="subtask"] [name="title"]', subtaskTitle);
+    await submitWorkForm(page, '[data-cwm-form="subtask"]', { title: subtaskTitle });
+    const subtaskId = await poll(page, async (title) =>
+      (await window.CanonicalClient.workItems.list({ limit: 500 })).find((row) => row.title === title)?.id || null,
+    { args: [subtaskTitle] });
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+    await page.select('[data-cwm-form="dependency"] [name="blocker_work_item_id"]', blockerId);
+    await submitWorkForm(page, '[data-cwm-form="dependency"]', { blocker_work_item_id: blockerId });
+    const dependentTask = await poll(page, async ({ taskId: id, blockerId: blocker }) => {
+      const row = await window.CanonicalClient.workItems.get(id);
+      return row.dependencies.some((dep) => dep.blocker_work_item_id === blocker) ? row : null;
+    }, { args: [{ taskId, blockerId }] });
+    record('C4 visible subtask, predecessor, successor, watchers, and five-level importance',
+      dependentTask.subtasks.some((row) => row.id === subtaskId) && dependentTask.importance === 5 ? 'PASS' : 'FAIL',
+      `${subtaskId} -> ${blockerId}`);
+    await screenshot(page, 'c4-03-subtask-dependency-ar', 'work-management');
+
+    await clickWorkTab(page, 'kanban');
+    await page.evaluate(({ id }) => {
+      const source = document.querySelector(`[data-cwm-task="${id}"]`);
+      const target = document.querySelector('[data-cwm-drop="in_progress"]');
+      const transfer = new DataTransfer();
+      source.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: transfer }));
+      target.dispatchEvent(new DragEvent('dragover', { bubbles: true, dataTransfer: transfer }));
+      window.CanonicalWorkManagement.moveTask(id, 'in_progress');
+      source.dispatchEvent(new DragEvent('dragend', { bubbles: true, dataTransfer: transfer }));
+    }, { id: taskId });
+    const movedTask = await poll(page, async (id) => {
+      const row = await window.CanonicalClient.workItems.get(id);
+      return row.stage === 'in_progress' ? row : null;
+    }, { args: [taskId] });
+    record('C4 visible Kanban drag-and-drop performs a versioned canonical transition',
+      movedTask.status === 'in_progress' ? 'PASS' : 'FAIL', `${movedTask.stage}/${movedTask.version}`);
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+    await screenshot(page, 'c4-04-kanban-moved-ar', 'work-management');
+
+    await clickWorkTab(page, 'task_manager');
+    await page.evaluate((id) => document.querySelector(`[data-cwm-task="${id}"]`)?.click(), taskId);
+    await page.$eval('[data-cwm-form="due"] [name="due_date"]', (input, value) => { input.value = value; }, dueMoved);
+    await submitWorkForm(page, '[data-cwm-form="due"]', { due_date: dueMoved });
+    const datedTask = await poll(page, async ({ id, due }) => {
+      const row = await window.CanonicalClient.workItems.get(id);
+      return String(row.due_date || '').startsWith(due) ? row : null;
+    }, { args: [{ id: taskId, due: dueMoved }] });
+    await clickWorkTab(page, 'calendar');
+    const calendarVisible = await page.$eval('.cwm-calendar', (node, title) => node.textContent.includes(title), taskTitle);
+    record('C4 visible calendar movement preserves the same canonical Work Item',
+      calendarVisible && datedTask.id === taskId ? 'PASS' : 'FAIL', datedTask.due_date);
+    await screenshot(page, 'c4-05-calendar-moved-ar', 'work-management');
+
+    await page.evaluate(async ({ blocker, subtask }) => {
+      const client = window.CanonicalClient.workItems;
+      const blockerRow = await client.get(blocker);
+      await client.complete({ id: blocker, expected_version: blockerRow.version });
+      const subtaskRow = await client.get(subtask);
+      await client.complete({ id: subtask, expected_version: subtaskRow.version });
+    }, { blocker: blockerId, subtask: subtaskId });
+    await clickWorkTab(page, 'task_manager');
+    await page.evaluate((id) => {
+      window.CanonicalWorkManagement.state.selectedId = id;
+      window.CanonicalWorkManagement.refresh();
+    }, taskId);
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+    await page.$eval(`[data-cwm-complete="${taskId}"]`, (button) => {
+      window.CanonicalWorkManagement.completeTask(
+        button.dataset.cwmComplete,
+        Number(button.dataset.version),
+      );
+    });
+    const completedTask = await poll(page, async (id) => {
+      const row = await window.CanonicalClient.workItems.get(id);
+      return row.status === 'done' ? row : null;
+    }, { args: [taskId] });
+    record('C4 visible completion enforces predecessors/subtasks and records 100% progress',
+      Number(completedTask.progress) === 100 ? 'PASS' : 'FAIL', `${completedTask.status}/${completedTask.progress}`);
+    await screenshot(page, 'c4-06-completed-task-ar', 'work-management');
+
+    await clickWorkTab(page, 'workload');
+    const workloadCards = await page.$$('.cwm-workload article');
+    record('C4 canonical workload and completion reports are visible', workloadCards.length > 0 ? 'PASS' : 'FAIL', String(workloadCards.length));
+    await screenshot(page, 'c4-07-team-workload-ar', 'work-management');
+    await clickWorkTab(page, 'workshop_tv');
+    const tvVisible = await page.$eval('.cwm-tv', (node) => node.textContent.length > 30);
+    record('C4 Workshop TV reads the canonical Work Item authority', tvVisible ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c4-08-workshop-tv-ar', 'work-management');
+
+    await page.evaluate(() => {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+      window.CanonicalWorkManagement.activate('task_manager');
+    });
+    await page.waitForFunction(() => window.CanonicalWorkManagement && !window.CanonicalWorkManagement.state.loading);
+    const workDirection = await page.$eval('.cwm-shell', (node) => ({
+      dir: node.dir,
+      text: node.textContent.includes('Canonical Work Management'),
+    }));
+    record('C4 English LTR surface', workDirection.dir === 'ltr' && workDirection.text ? 'PASS' : 'FAIL', JSON.stringify(workDirection));
+    await screenshot(page, 'c4-09-work-management-en-ltr', 'work-management');
+    await page.setViewport({ width: 768, height: 1024, deviceScaleFactor: 1 });
+    await screenshot(page, 'c4-10-work-management-tablet-768', 'work-management');
+    await page.setViewport({ width: 375, height: 812, deviceScaleFactor: 1 });
+    await screenshot(page, 'c4-11-work-management-mobile-375', 'work-management');
+    const workOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2);
+    record('C4 mobile has no page-level horizontal overflow', workOverflow ? 'PASS' : 'FAIL');
+
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+    const workshopUser = await login(page, 'test.workshop');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openWorkManagement(page);
+    const roleTaskTitle = `C4 Workshop Role ${Date.now().toString(36)}`;
+    await page.type('[data-cwm-form="create"] [name="title"]', roleTaskTitle);
+    await page.$eval('[data-cwm-form="create"] [name="due_date"]', (input, value) => { input.value = value; }, dueBase);
+    await page.$eval('[data-cwm-form="create"]', (form, values) => {
+      form.elements.title.value = values.title;
+      form.elements.due_date.value = values.due;
+    }, { title: roleTaskTitle, due: dueBase });
+    await submitWorkForm(page, '[data-cwm-form="create"]', {
+      title: roleTaskTitle,
+      due_date: dueBase,
+    });
+    await poll(page, async (title) =>
+      (await window.CanonicalClient.workItems.list({ limit: 500 })).some((row) => row.title === title),
+    { args: [roleTaskTitle] });
+    record('C4 operational Workshop role can create canonical tasks', workshopUser.authenticated ? 'PASS' : 'FAIL');
+
+    const workViewer = await login(page, 'test.viewer');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openWorkManagement(page);
+    await page.type('[data-cwm-form="create"] [name="title"]', `C4 Viewer Denied ${Date.now().toString(36)}`);
+    await page.$eval('[data-cwm-form="create"] [name="due_date"]', (input, value) => { input.value = value; }, dueBase);
+    await page.$eval('[data-cwm-form="create"]', (form, values) => {
+      form.elements.title.value = values.title;
+      form.elements.due_date.value = values.due;
+    }, { title: `C4 Viewer Denied ${Date.now().toString(36)}`, due: dueBase });
+    await page.$eval('[data-cwm-form="create"]', (form, values) => {
+      form.elements.title.value = values.title;
+      form.elements.due_date.value = values.due;
+      window.CanonicalWorkManagement.submitCreateForm(form);
+    }, { title: `C4 Viewer Denied ${Date.now().toString(36)}`, due: dueBase });
+    await page.waitForSelector('.cwm-error', { visible: true, timeout: 30000 });
+    const workDenial = await page.$eval('.cwm-error', (node) => node.textContent);
+    record('C4 restricted viewer mutation denied server-side',
+      /not authorized|permission|صلاحية|PERMISSION_DENIED/i.test(workDenial) ? 'PASS' : 'FAIL',
+      workDenial.replace(/\s+/g, ' ').trim());
+    await screenshot(page, 'c4-12-viewer-server-denial', 'work-management');
+
+    const c4RelevantErrors = browserErrors.filter((entry) =>
+      !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED/i.test(entry));
+    record('C4 browser runtime has no unexpected errors', c4RelevantErrors.length ? 'FAIL' : 'PASS',
+      c4RelevantErrors.slice(0, 5).join(' | '));
   } finally {
     const trace = {
       runId,

@@ -58,3 +58,23 @@ Final raw trace:
 
 Final C1+C2+C3 raw trace:
 `test-artifacts/checkpoint-c-2026-07-28T03-51-11-913Z/checkpoint-c-browser-results.json`.
+
+## C4 Work Management
+
+| Artifact | Purpose | Review |
+|---|---|---|
+| `screenshots-c/work-management/c4-01-work-management-dashboard-ar-desktop.png` | canonical Work Management landing, Arabic RTL | PASS |
+| `screenshots-c/work-management/c4-02-task-created-assigned-ar.png` | canonical task create and assignment | PASS |
+| `screenshots-c/work-management/c4-03-subtask-dependency-ar.png` | subtask, watcher, importance and dependency relations | PASS |
+| `screenshots-c/work-management/c4-04-kanban-moved-ar.png` | versioned Kanban transition | PASS |
+| `screenshots-c/work-management/c4-05-calendar-moved-ar.png` | same-record calendar due-date movement | PASS |
+| `screenshots-c/work-management/c4-06-completed-task-ar.png` | gated completion at 100 percent | PASS |
+| `screenshots-c/work-management/c4-07-team-workload-ar.png` | workload and completion report | PASS |
+| `screenshots-c/work-management/c4-08-workshop-tv-ar.png` | canonical live Workshop TV | PASS |
+| `screenshots-c/work-management/c4-09-work-management-en-ltr.png` | English LTR | PASS |
+| `screenshots-c/work-management/c4-10-work-management-tablet-768.png` | tablet | PASS |
+| `screenshots-c/work-management/c4-11-work-management-mobile-375.png` | mobile without page overflow | PASS |
+| `screenshots-c/work-management/c4-12-viewer-server-denial.png` | server-derived viewer denial | PASS |
+
+Final C1+C2+C3+C4 raw trace:
+`test-artifacts/checkpoint-c-2026-07-28T05-26-01-449Z/checkpoint-c-browser-results.json`.

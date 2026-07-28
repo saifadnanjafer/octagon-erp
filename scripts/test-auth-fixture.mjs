@@ -58,7 +58,13 @@ export const TEST_BRANCH = 'b_octagon_test';
  */
 export const TEST_ROLES = Object.freeze([
   { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'system.admin',       permissions: ['platform:db:read', 'platform:db:write'], isOwner: true },
-  { key: 'workshop',   login: 'test.workshop',   name: 'Test Workshop Manager',     roleId: 'workshop.manager',   permissions: ['platform:db:read', 'platform:db:write'] },
+  {
+    key: 'workshop',
+    login: 'test.workshop',
+    name: 'Test Workshop Manager',
+    roleId: 'workshop.manager',
+    permissions: ['platform:db:read', 'platform:db:write', 'task:write', 'task:approve'],
+  },
   { key: 'finance',    login: 'test.finance',    name: 'Test Finance Manager',      roleId: 'finance.manager',    permissions: ['platform:db:read', 'platform:db:write'] },
   { key: 'inventory',  login: 'test.inventory',  name: 'Test Inventory Operator',   roleId: 'inventory.operator', permissions: ['platform:db:read', 'platform:db:write'] },
   {

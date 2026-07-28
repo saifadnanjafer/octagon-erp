@@ -580,3 +580,43 @@ This ledger maintains a chronological, permanent record of AI model executions a
   category); no delivery/transfer/return/adjustment/cycle-count/replenishment/
   valuation/stock-to-GL workflows; no concurrency or failure-injection suite.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 018 — Visible Expansion Checkpoint C1-C4 cumulative
+
+- **Execution:** 2026-07-28
+- **Repository/branch:** `saifadnanjafer/octagon-erp` /
+  `build/octagon-original-shell-visible-expansion`
+- **Mandated starting commit:** `85d201783bfd056242445c3b9db8f13d56cf2e94`
+- **Checkpoint C4 base:** `af140d8bf6319359a6c786935f233e544eab6753`
+- **Model:** GPT-5 Codex
+- **Agent/runtime:** Codex desktop, Windows PowerShell, Node v24.18.0
+- **Delivered through C4:** canonical Sales, Procurement, POS and nine-view
+  Work Management workspaces in the original shell. C4 preserves the existing
+  Work Item authority and adds assignment, stage transition, subtasks,
+  dependencies, recurrence, SLA, reports, My Tasks identity scope, audit and
+  outbox.
+- **Migration:** `049_work_item_operating_views.mjs`; deterministic fresh,
+  sequential-from-048, rerun, down/up and injected-failure rollback.
+- **Source selection:** current Octagon selected; frozen VNext Project/SLA,
+  Odoo 19 Project Task (LGPL-3.0) and ERPNext Task (GPL-3.0) inspected
+  read-only. Behavior was clean-room adapted; no donor code copied.
+- **Verification:** C4 17/17; all Checkpoint C 73/73; Phase 04 finalization
+  99/99; permission regression 35/35; precommit pass. Authenticated Chromium
+  `Chrome/150.0.7871.24`: 73/73 combined and 15/15 C4.
+- **Failures/rework:** corrected invalid `/work-items` client routes, delayed
+  legacy-shell rerender listener loss, empty post-completion workload proof,
+  Arabic viewer-denial matcher, an initially incorrect precommit script
+  filename, and reuse of a mutated disposable preview for one screenshot replay.
+  The preview was discarded; the actual precommit gate and fresh-staging
+  Chromium rerun passed.
+- **VNext:** frozen and unchanged at
+  `cf7ae4ed73eac91a325c964178036290bc0736c1`; pre-existing frozen notices and
+  handoff changes untouched.
+- **Operational data:** `database.db`, WAL, SHM and JSON remained
+  byte-identical. All browser mutations used a staged disposable copy.
+- **Deferred:** C5 Administration/Module Control; C6 cross-domain closure;
+  PostgreSQL runtime proof; broad Phase 04 cutover; owner-approved opening
+  inventory accounting date.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

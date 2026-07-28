@@ -16,3 +16,11 @@ was not opened.
 All browser mutations targeted the staged disposable copy. These ignored
 runtime files are not staged for Git. The same byte counts, timestamps, and
 SHA-256 values were re-recorded after the final C3 browser run.
+
+## C4 re-observation
+
+After migration 049 tests and the final authenticated C1-C4 Chromium replay,
+the four operational files retained the exact byte counts, timestamps and
+SHA-256 values shown above. The preview staged the source into the operating
+system temporary directory and logged that operational `database.db` was not
+open. All Work Item mutations occurred in that disposable copy.

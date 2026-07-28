@@ -147,3 +147,29 @@ preview runs on a staged disposable copy.
 Wave 1 of six is delivered and visible. `IMPLEMENTED` is not claimable: five of
 six waves are not started, no authenticated browser workflow ran, and no
 canonical command has been executed from the UI.
+
+## Checkpoint C4 execution addendum — 2026-07-28
+
+| Item | Value |
+|---|---|
+| Model | GPT-5 Codex |
+| Agent/runtime | Codex desktop; Windows PowerShell; Node v24.18.0 |
+| Branch | `build/octagon-original-shell-visible-expansion` |
+| Checkpoint base | `af140d8bf6319359a6c786935f233e544eab6753` |
+| Migration | `049_work_item_operating_views.mjs` |
+| Chromium | Chrome/150.0.7871.24; 73/73 combined, 15/15 C4 |
+| Deterministic tests | C4 17/17; Checkpoint C 73/73; Phase 04 finalization 99/99; permission 35/35; precommit pass |
+| VNext | frozen, inspected read-only, unchanged at `cf7ae4ed73eac91a325c964178036290bc0736c1` |
+| Operational data | byte-identical; staged disposable copies only |
+| Classification | PARTIAL — REMEDIATION REQUIRED |
+
+Delivered nine canonical Work Management views, versioned assignments and
+transitions, subtasks, dependency cycle prevention, recurrence, SLA, aging,
+inactivity, reports, audit/outbox, server-scoped My Tasks and original-shell
+responsive UI.
+
+Browser-driven corrections included the invalid Work Item client path, a
+delayed-shell rerender that replaced form listeners, an empty workload state
+after completion, the viewer-denial text matcher, and a reused disposable
+preview that invalidated one POS cash expectation before the fresh-staging
+rerun passed. C5 and C6 remain open.

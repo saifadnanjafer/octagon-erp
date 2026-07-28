@@ -73,3 +73,32 @@ mobile; operational POS-role open/sell/reconcile; restricted viewer denial; and
 no unexpected browser/runtime/resource error.
 
 Twelve secret-free POS PNGs were directly written and manually reviewed.
+
+## C4 Work Management
+
+| Item | Value |
+|---|---|
+| Runner | `scripts/checkpoint-c-browser-acceptance.mjs` |
+| Base URL | `http://127.0.0.1:8097` |
+| Chromium | `Chrome/150.0.7871.24` |
+| Database | staged disposable copy with migration 049 |
+| Trace | `test-artifacts/checkpoint-c-2026-07-28T05-26-01-449Z/` |
+| Combined result | **73 passed / 0 failed / 0 skipped** |
+| C4 chapter | **15 passed / 0 failed / 0 skipped** |
+
+Proven: nine visible canonical views; retirement of duplicate legacy Kanban and
+Workshop TV navigation; create and assign; five-level importance and watchers;
+subtask and dependency relations; optimistic Kanban transition; calendar
+movement on the same record; predecessor/subtask-gated completion; workload and
+completion reporting; Workshop TV; Arabic RTL, English LTR, tablet and mobile;
+Workshop-role mutation; restricted-viewer server denial; and no unexpected
+browser/runtime/resource error.
+
+Twelve secret-free Work Management PNGs were directly written. The first replay
+also exposed and corrected an invalid client route and a delayed-shell rerender
+race; the registered final trace was produced after both corrections.
+
+One later screenshot-only replay incorrectly reused an already-mutated staging
+copy and therefore reported POS cash `275/100/-175` (72/73). That staging copy
+was discarded. The registered trace above was rerun from a fresh byte-staged
+database and passed 73/73 with POS cash `100/100/0`.

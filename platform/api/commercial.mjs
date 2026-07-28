@@ -20,7 +20,7 @@ import { getPurchaseRequest } from '../procurement/lifecycle.mjs';
 import { getRequisition } from '../procurement/governance.mjs';
 import { getRfq, getSupplierQuotation, compareSupplierQuotations } from '../procurement/rfq.mjs';
 import { getPosOrder, getPosSession } from '../pos/session.mjs';
-import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
+import { getWorkItemView, listWorkItemViews, workItemReport } from '../work_items/lifecycle.mjs';
 
 /**
  * Dispatch a GET /api/v1/:namespace/:resource[/:id] query.
@@ -689,12 +689,21 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
 
   // 12. Work Items / Tasks
   if (namespace === 'work-items' || namespace === 'work_items' || resource === 'work-items') {
+    if (resource === 'reports') {
+      const report = query.report || 'overdue';
+      const rows = workItemReport(dialect, ctx, report);
+      return { data: rows, meta: { total: rows.length, report } };
+    }
     if (recordId) {
-      const doc = getWorkItem(dialect, recordId);
-      if (!doc || doc.company_id !== company_id) return { error: 'Work Item not found', status: 404 };
+      let doc;
+      try {
+        doc = getWorkItemView(dialect, recordId, company_id);
+      } catch (_) {
+        return { error: 'Work Item not found', status: 404 };
+      }
       return { data: doc, meta: null };
     }
-    const rows = listWorkItems(dialect, ctx, query);
+    const rows = listWorkItemViews(dialect, ctx, query);
     return { data: rows, meta: { total: rows.length } };
   }
 

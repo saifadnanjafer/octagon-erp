@@ -23,7 +23,10 @@ test('migration 048 fresh install, rerun, provenance, schema, and registry are d
   const temp = workspace('octagon-c3-migration-fresh-');
   try {
     const first = await freshInstall({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'c3-migration' });
-    assert.equal(first.executed.at(-1).id, posMigration.id);
+    assert.ok(
+      first.executed.some((row) => row.id === posMigration.id),
+      'fresh install must include migration 048 even when later migrations exist',
+    );
     assert.equal((await runMigrations({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'c3-rerun' })).executed.length, 0);
     const db = openMigrationDatabase(temp.dbPath);
     try {
@@ -55,7 +58,7 @@ test('sequential upgrade from migration 047 applies only migration 048', async (
   const oldMigrations = path.join(temp.dir, 'database', 'migrations');
   fs.mkdirSync(oldMigrations, { recursive: true });
   try {
-    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && !name.startsWith('048_'))) {
+    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && Number.parseInt(name.slice(0, 3), 10) < 48)) {
       fs.copyFileSync(path.join(migrationsDir, file), path.join(oldMigrations, file));
     }
     for (const relative of [
@@ -69,9 +72,13 @@ test('sequential upgrade from migration 047 applies only migration 048', async (
       fs.copyFileSync(path.join(repoRoot, relative), target);
     }
     await runMigrations({ dbPath: temp.dbPath, migrationsDir: oldMigrations, backupDir: temp.backupDir, actor: 'c3-upgrade' });
-    const result = await runMigrations({ dbPath: temp.dbPath, migrationsDir, backupDir: temp.backupDir, actor: 'c3-upgrade' });
+    fs.copyFileSync(
+      path.join(migrationsDir, '048_pos_atomic_workflows.mjs'),
+      path.join(oldMigrations, '048_pos_atomic_workflows.mjs'),
+    );
+    const result = await runMigrations({ dbPath: temp.dbPath, migrationsDir: oldMigrations, backupDir: temp.backupDir, actor: 'c3-upgrade' });
     assert.deepEqual(result.executed.map((row) => row.id), [posMigration.id]);
-    assert.equal((await migrationStatus({ dbPath: temp.dbPath, migrationsDir })).every((row) => row.status === 'applied'), true);
+    assert.equal((await migrationStatus({ dbPath: temp.dbPath, migrationsDir: oldMigrations })).every((row) => row.status === 'applied'), true);
   } finally {
     fs.rmSync(temp.dir, { recursive: true, force: true });
   }

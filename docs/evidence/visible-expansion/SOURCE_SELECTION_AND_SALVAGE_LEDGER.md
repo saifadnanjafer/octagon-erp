@@ -91,6 +91,26 @@ Target paths include migration 046, `platform/sales/lifecycle.mjs`,
 
 Frozen VNext remained read-only.
 
+## Checkpoint C4 addendum — Work Item consolidation (2026-07-28)
+
+The inspection was narrow and read-only. No donor or frozen file was modified
+and no third-party code was copied.
+
+| Source | Exact paths inspected | Ownership / license | Decision |
+|---|---|---|---|
+| Current Octagon | `database/migrations/042_canonical_work_item_and_authority_retirement.mjs`; `043_phase04_canonical_registry_and_lineage.mjs`; `platform/work_items/work_items.mjs`; `platform/work_items/index.mjs`; legacy Task Manager/Kanban/Calendar/Workshop TV views and renderers | project-owned, proprietary | selected authority and shell conventions |
+| Frozen Octagon VNext | `vnext/server/modules/projects/project-engine.js`; `migrations/617_r3_services_helpdesk.mjs`; `migrations/620_r3_sla_business_clock.mjs` | project-owned, proprietary | dependency and SLA behavior reference only |
+| Odoo 19 | `addons/project/models/project_task.py`; `addons/project/static/src/views/project_task_kanban/project_task_kanban_renderer.js` | LGPL-3.0 | interaction comparison only; no code copied |
+| ERPNext develop | `erpnext/projects/doctype/task/task.py`; `task.js`; `task.json` | GPL-3.0 | lifecycle and dependency comparison only; no code copied |
+
+Selected approach: retain Octagon's canonical Work Item table, ActionExecutor,
+audit, outbox, idempotency and company scope, then clean-room add the missing
+operating fields, relations, reports and original-shell views.
+
+Target paths include migration 049, `platform/work_items/lifecycle.mjs`,
+`platform/api/commercial.mjs`, `services/canonicalClient.js`, and
+`modules/canonical-work-management.*`.
+
 ## Checkpoint C2 addendum — Procurement lifecycle (2026-07-28)
 
 Targeted files were inspected read-only. No donor repository was broadly

@@ -37,3 +37,16 @@ Command:
 
 Result: **4 passed, 0 failed, 0 skipped**. All databases are generated under
 the OS temporary directory.
+
+## Checkpoint C4
+
+| Migration | Purpose | Fresh | Sequential | Rerun | Down/up | Failure rollback |
+|---|---|---:|---:|---:|---:|---:|
+| `049_work_item_operating_views` | canonical Work Item operating-view fields, events, recurrence/SLA/link metadata and registered lifecycle actions | PASS | PASS from 048 | PASS | PASS | PASS |
+
+Command:
+`node --test tests/checkpoint-c/migration_049.test.mjs`
+
+Result: **4 passed, 0 failed, 0 skipped**. Migration 048's sequential fixture
+was explicitly bounded through 048 after 049 became the newest migration.
+Generated SQLite databases live only under the OS temporary directory.

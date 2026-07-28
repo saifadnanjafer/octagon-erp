@@ -147,3 +147,28 @@ Remaining risks after C3:
 Frozen project-owned VNext POS sources plus Odoo 19 and ERPNext POS sources were
 inspected read-only. Only clean-room behavior was implemented; no third-party
 code was copied.
+
+## Checkpoint C4 status addendum — 2026-07-28
+
+The following earlier statements are now superseded:
+
+- Work Management is no longer split across visible Task Manager, Kanban and
+  Workshop TV authorities.
+- The complete Work Item lifecycle executed in authenticated Chromium.
+- Canonical subtasks, dependencies, calendar movement, gated completion,
+  workload and Workshop TV are visibly proven.
+- C4 screenshots are available and reviewed.
+
+Remaining risks after C4:
+
+1. C5 Administration/Module Control and C6 final closure remain open.
+2. The owner-approved opening-inventory accounting date remains absent;
+   operational migration stays fail-closed.
+3. Broad Phase 04 writer retirement/cutover remains unauthorized and unclaimed.
+4. Legacy task code remains present for compatibility; route ownership is
+   retired only while the canonical Work Management module is active.
+5. PostgreSQL execution is not proven. Migration 049 follows portable design,
+   but executable migration proof is SQLite.
+
+Frozen project-owned VNext Project/SLA sources plus Odoo 19 and ERPNext Task
+sources were inspected read-only. Only clean-room behavior was implemented.

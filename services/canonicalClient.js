@@ -533,10 +533,17 @@
   };
 
   const workItems = {
-    list: (params) => query('/work-items', params),
-    get: (id) => query(`/work-items/${encodeURIComponent(id)}`),
+    list: (params) => query('/work-items/items', params),
+    get: (id) => query(`/work-items/items/${encodeURIComponent(id)}`),
+    report: (report, params) => query('/work-items/reports', { ...(params || {}), report }),
     create: (input, opts) => action('work_item:create', input, { ...opts, domain: 'WORK_ITEM' }),
     update: (input, opts) => action('work_item:update', input, { ...opts, domain: 'WORK_ITEM' }),
+    assign: (input, opts) => action('work_item:assign', input, { ...opts, domain: 'WORK_ITEM' }),
+    transition: (input, opts) => action('work_item:transition', input, { ...opts, domain: 'WORK_ITEM' }),
+    addSubtask: (input, opts) => action('work_item:add_subtask', input, { ...opts, domain: 'WORK_ITEM' }),
+    addDependency: (input, opts) => action('work_item:add_dependency', input, { ...opts, domain: 'WORK_ITEM' }),
+    complete: (input, opts) => action('work_item:complete', input, { ...opts, domain: 'WORK_ITEM' }),
+    cancel: (input, opts) => action('work_item:cancel', input, { ...opts, domain: 'WORK_ITEM' }),
     approve: (input, opts) => action('work_item:approve', input, { ...opts, domain: 'WORK_ITEM' }),
     remove: (input, opts) => action('work_item:delete', input, { ...opts, domain: 'WORK_ITEM' }),
   };

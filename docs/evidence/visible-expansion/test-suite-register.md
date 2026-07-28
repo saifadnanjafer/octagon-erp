@@ -45,3 +45,23 @@ The aggregate initially exposed that the older C2 migration test assumed 047
 would remain the newest file. Its fixture now explicitly stages the migration
 set through 047, preserving the intended sequential-upgrade contract after 048
 was added. The corrected aggregate is 57/57 with no skipped tests.
+
+## Checkpoint C4
+
+| Suite | Exact command | Result | Duration | What it proves |
+|---|---|---:|---:|---|
+| C4 migration/lifecycle/UI plus inherited Work Item contract | `node --test tests/checkpoint-c/canonical_work_management_ui.test.mjs tests/checkpoint-c/migration_049.test.mjs tests/checkpoint-c/work_item_lifecycle.test.mjs tests/phase04/canonical_work_items.test.mjs` | 17/17 | 8.648s | migration, nine views, identity-scoped My Tasks, relations, lifecycle, recurrence, SLA, rollback and concurrency |
+| All Checkpoint C | `$files=Get-ChildItem tests/checkpoint-c -Filter '*.test.mjs'; node --test $files` | 73/73 | 12.417s | C1-C4 deterministic coexistence, atomicity, idempotency, company scope and visible contracts |
+| Phase 04 finalization | `$files=Get-ChildItem tests/phase04-finalization -Filter '*.test.mjs'; node --test $files` | 99/99 | 12.733s | inherited canonical client, fixture, master-data, WMS, valuation and rollback regression |
+| Permission regression | `node scripts/permission-regression.mjs` | 35/35 | <1s | 102 mapped pages and role/action policy |
+| Authenticated Chromium | `BASE_URL=http://127.0.0.1:8097 node scripts/checkpoint-c-browser-acceptance.mjs` | 73/73 combined; 15/15 C4 | 251.8s | original-shell C1-C4 workflows, role enforcement, RTL/LTR and responsive UI |
+| Precommit | `node scripts/precommit.js` | PASS | <1s | repository and blocked-path safety |
+
+An incorrect attempted command, `node scripts/precommit-check.mjs`, failed
+because that file does not exist. The repository's actual gate is
+`scripts/precommit.js`; it passed. No test was weakened and no suite count is
+double-counted.
+
+A later screenshot replay reused an already-mutated staging copy and failed
+only the POS cash expectation (72/73). The disposable copy was discarded; the
+registered fresh-staging rerun passed 73/73. The failed run is not counted.

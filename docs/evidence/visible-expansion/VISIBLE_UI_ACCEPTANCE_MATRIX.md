@@ -251,6 +251,22 @@ Final combined C1+C2+C3+C4+C5 trace:
 
 ## Acceptance gate status
 
+### Final Checkpoint C acceptance — 2026-07-28
+
+| Surface | Original-shell route | Primary lifecycle | Role proof | RTL/LTR | Responsive | Result |
+|---|---|---|---|---|---|---:|
+| Sales | `sales` | quotation → confirm → reserve → deliver → invoice → return | admin/operator/viewer denial | yes | desktop/tablet/mobile | PASS |
+| Procurement | `procurement` | request → RFQ/comparison → PO → receipt → match → bill → return | admin/operator/viewer denial | yes | desktop/tablet/mobile | PASS |
+| POS | `pos` | open → sale/payment/stock/Finance → refund → reconcile/close | admin/operator/viewer denial | yes | desktop/tablet/mobile | PASS |
+| Work Management | `task_manager` | task/dependency → Kanban/calendar → complete → TV/reports | admin/operator/viewer denial | yes | desktop/tablet/mobile | PASS |
+| Administration | `admin_panel` | assign/enable/disable/license → deny → restore | admin/viewer denial | yes | desktop/tablet/mobile | PASS |
+
+Final browser trace: 90/90, Chrome/150.0.7871.24,
+`test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/`.
+
+All commands mutated only a disposable staged copy. Screenshot roots are under
+`docs/evidence/visible-expansion/screenshots-c/`.
+
 | Gate | Status |
 |---|---|
 | `index.html` changed intentionally | yes — nav button, CSS link, script tag |

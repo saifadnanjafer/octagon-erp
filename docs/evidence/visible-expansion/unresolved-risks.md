@@ -201,3 +201,27 @@ Remaining risks after C5:
 Frozen project-owned VNext Control Plane sources plus Odoo 19 settings and
 ERPNext configuration sources were inspected read-only. Only clean-room
 behavior was implemented.
+
+## Checkpoint C6 final risk position — 2026-07-28
+
+C6 is no longer open. Sales, Procurement, POS, Work Management,
+Administration, cross-domain rollback/concurrency, and authenticated Chromium
+are complete within Checkpoint C.
+
+Remaining non-blocking boundaries:
+
+1. The owner-approved opening-inventory accounting date is absent. Operational
+   opening-stock migration remains fail-closed; no date was invented.
+2. Broad production Phase 04 writer retirement/cutover was not authorized and
+   is not claimed.
+3. PostgreSQL execution is unproven; executable evidence is SQLite on
+   disposable databases.
+4. Legacy compatibility files remain; original route ownership is canonical
+   while delivered modules are active.
+5. Production backup execution was not performed.
+6. This evidence is produced by the implementation agent, not an independent
+   verifier.
+
+No critical/high defect remains in the delivered scope.
+
+**CHECKPOINT C COMPLETE — SAFE TO CONTINUE**

@@ -70,6 +70,16 @@ Additional governed behavior:
 Chromium: `Chrome/150.0.7871.24`.
 
 Raw trace:
+
+## C6 closure addendum
+
+Sales remains green in the 100/100 Checkpoint C aggregate and final 90/90
+Chromium run. New rollback proof covers confirmation-outbox and
+invoice-request-outbox failures across order, reservation, demand, picking,
+fiscal, Finance, audit, outbox, and idempotency facts. See
+`sales-inventory-finance-integration.md` and
+`concurrency-and-atomicity-c.md`.
+
 `test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/checkpoint-c-browser-results.json`
 (gitignored; no cookies or credentials are copied into evidence).
 

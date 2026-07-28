@@ -78,3 +78,10 @@ Raw trace:
 
 This closes C2 only. It does not claim C3–C6 or broad Phase 04 writer
 retirement.
+
+## C6 closure addendum
+
+Procurement remains green in the 100/100 Checkpoint C aggregate and final
+90/90 Chromium run. C6 adds injected three-way-match and supplier-bill outbox
+failures proving matches, lines, exceptions, invoice registry, fiscal, Finance,
+commitment/order, audit, outbox, and idempotency roll back together.

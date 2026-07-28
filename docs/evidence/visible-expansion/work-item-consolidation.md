@@ -53,3 +53,10 @@ its own canonical Calendar tab.
 
 No third-party code was copied. VNext Work/Project and SLA sources were used
 only as read-only behavior references.
+
+## C6 closure
+
+The consolidated Work Item authority passed the final 100/100 aggregate and
+90/90 Chromium replay. Phase 02 browser regression also passed 12/12 after its
+responsive contract was aligned to the intentional closed off-canvas drawer at
+768px and below.

@@ -36,3 +36,10 @@ identities. Operational hashes after C2 are identical to the C1 baseline.
 
 The missing owner-approved opening inventory accounting date remains
 fail-closed and was not invented. It is unrelated to the disposable C2 proof.
+
+## C6 rollback closure
+
+Injected three-way-match outbox failure leaves no match header, lines, variance
+exceptions, invoice registry, audit, outbox, or idempotency residue.
+Supplier-bill outbox failure leaves no fiscal, Finance, commitment/order,
+audit, outbox, or idempotency residue. The final aggregate is 100/100.

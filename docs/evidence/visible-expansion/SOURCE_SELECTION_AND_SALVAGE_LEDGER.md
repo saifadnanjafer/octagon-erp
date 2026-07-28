@@ -91,6 +91,15 @@ Target paths include migration 046, `platform/sales/lifecycle.mjs`,
 
 Frozen VNext remained read-only.
 
+## C6 closure selection — 2026-07-28
+
+C6 introduced no new donor harvest and copied no third-party code. It used
+current Octagon canonical Sales, Procurement, POS, Work Item, Control Plane,
+ActionExecutor, Finance, Inventory, Payment, Audit, and Outbox sources.
+Migration 051 corrects migration 050 forward without editing history. Phase 04
+test updates isolate the 043/044 historical contract and additive current
+schemas. Frozen VNext was only rechecked for unchanged HEAD/status.
+
 ## Checkpoint C5 addendum — Administration and Module Control (2026-07-28)
 
 The inspection remained targeted and read-only. No frozen or third-party file

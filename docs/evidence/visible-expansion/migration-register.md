@@ -64,3 +64,17 @@ Result: **4 passed, 0 failed, 0 skipped**. Migration 049's fresh-install
 assertion was made future-safe by locating its own ID rather than assuming it
 would remain the final repository migration. Generated SQLite databases remain
 under the OS temporary directory.
+
+## Migration 051 — Checkpoint C6
+
+`051_checkpoint_c_control_entity_policy.mjs`
+
+- owner `platform.kernel`; version `1.30.0`;
+- depends on `050_control_plane_module_management`;
+- required transaction; SQLite executable proof and portable design;
+- changes only invalid `control_plane.lifecycle_policy` from `governed` to
+  registered `generic`;
+- down refuses to restore the invalid value.
+
+Focused migration 050/051 plus entity-registry result: **9/9 outer PASS**.
+The final migration-inclusive Checkpoint C aggregate is **100/100**.

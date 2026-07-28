@@ -7,6 +7,15 @@ import { after, before, test } from 'node:test';
 import { freshInstall, openMigrationDatabase } from '../../database/migration-runner/index.mjs';
 import { createPlatformAuthority } from '../../platform-runtime-bridge.mjs';
 
+const phase04MigrationSource = fs.readFileSync(
+  new URL('../../database/migrations/043_phase04_canonical_registry_and_lineage.mjs', import.meta.url),
+  'utf8',
+);
+const phase04ActionBlock = phase04MigrationSource.match(/const ACTIONS = \[([\s\S]*?)\n\];/)?.[1] || '';
+const phase04ActionIds = new Set(
+  [...phase04ActionBlock.matchAll(/^\s*\['([^']+)',/gm)].map((match) => match[1]),
+);
+
 let tempDir;
 let dialect;
 let authority;
@@ -47,8 +56,9 @@ test('fresh install registers the complete Phase 04 action contract and live han
     FROM platform_actions
     WHERE transaction_owner = 'platform_action_executor'
     ORDER BY id
-  `).all();
+  `).all().filter((row) => phase04ActionIds.has(row.id));
 
+  assert.equal(phase04ActionIds.size, 42);
   assert.equal(rows.length, 42);
   for (const row of rows) {
     assert.equal(row.kind, 'domain');

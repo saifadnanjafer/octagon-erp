@@ -45,6 +45,14 @@ restored`. The restricted viewer cannot read or mutate the Control Plane.
 
 ## Safety
 
+## C6 correction and final proof
+
+Migration 051 corrects `control_plane.lifecycle_policy` from unregistered
+`governed` to `generic`. Four executable scenarios cover fresh/rerun,
+sequential 050→051, refusal to restore the invalid value on down/up, and
+injected update failure. Final Administration browser proof is in the 90/90
+trace.
+
 Migration 050 has fresh-install, sequential 049→050, rerun, down/up, and
 injected-failure coverage. All executable migration tests use generated SQLite
 files under the operating-system temporary directory. No operational database

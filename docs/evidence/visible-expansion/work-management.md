@@ -53,3 +53,10 @@ C4 is complete, but Checkpoint C is not. C5 Administration/Module Control and
 C6 final cross-domain closure remain. PostgreSQL execution, broad Phase 04
 cutover and the owner-approved opening-inventory accounting date remain
 unproven or blocked. Operational files were never written.
+
+## C6 closure addendum
+
+Work Management is included in the final 100/100 deterministic and 90/90
+Chromium gates. One authority powers all nine views; transition rollback,
+stale-version denial, idempotency, dependency gating, recurrence, SLA,
+workload, Calendar, Kanban, mobile, and Workshop TV remain green.

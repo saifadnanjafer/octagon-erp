@@ -101,3 +101,17 @@ Final C1+C2+C3+C4+C5 raw trace:
 
 All C5 PNGs were reviewed directly. They contain disposable fixture facts only,
 with no cookies, passwords, API-key hashes, secrets, or operational records.
+
+## Final C6 artifact registration
+
+- Trace: `test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/`
+- Result JSON:
+  `test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/checkpoint-c-browser-results.json`
+- Chromium: Chrome/150.0.7871.24; result 90/90.
+- Reviewed screenshot roots: `screenshots-c/sales`, `procurement`, `pos`,
+  `work-management`, and `administration` (56 registered PNGs total).
+
+The final replay regenerated the direct screenshot paths; the reviewed tracked
+PNGs were retained to avoid binary churn. C6 Phase 02/03 regression artifacts
+were moved recoverably to the shared COMPANY project-artifact archive and were
+not staged.

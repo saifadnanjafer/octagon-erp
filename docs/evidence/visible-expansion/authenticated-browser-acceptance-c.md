@@ -128,3 +128,18 @@ feature-card handle across the UI's intentional rerender. The runner now issues
 the same canonical browser command and explicitly refreshes the UI. A fresh
 byte-staged rerun—not the mutated first staging copy—produced the registered
 90/90 trace.
+
+## Final C6 replay — 2026-07-28
+
+| Item | Result |
+|---|---|
+| Command | `$env:BASE_URL='http://127.0.0.1:8097'; node scripts/checkpoint-c-browser-acceptance.mjs` |
+| Chromium | `Chrome/150.0.7871.24` |
+| Result | **90/90 PASS** |
+| Duration | 333.6 seconds |
+| Trace | `test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/checkpoint-c-browser-results.json` |
+| Fixture | staged DB/WAL/SHM/JSON plus disposable identities |
+
+The replay covered every C1–C5 workflow, operational roles, restricted-viewer
+server denial, Arabic RTL, English LTR, desktop, tablet, mobile, and browser
+runtime-error checks. The preview process was stopped and port 8097 closed.

@@ -366,6 +366,121 @@ test('purchase order approval outbox failure leaves no approval or commitment', 
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM purchase_commitments WHERE purchase_order_id = ?').get(po.id).n, 0);
 });
 
+test('three-way match outbox failure rolls back match lines, exceptions, invoice registry, audit, and idempotency', () => {
+  const catalog = seed('MATCH-ROLLBACK');
+  const chain = requestToConfirmedOrder(catalog, 'MATCH-ROLLBACK', {
+    quantity: 2,
+    unitPrice: 30,
+    qualityRequired: false,
+  });
+  const line = chain.po.lines[0];
+  const receipt = execute('procurement:receipt:post', {
+    purchase_order_id: chain.po.id,
+    picking_id: chain.pickingId,
+    lines: [{ purchase_order_line_id: line.id, quantity: 2 }],
+  });
+  const before = {
+    matches: db.prepare('SELECT COUNT(*) AS n FROM three_way_matches').get().n,
+    lines: db.prepare('SELECT COUNT(*) AS n FROM three_way_match_lines').get().n,
+    exceptions: db.prepare('SELECT COUNT(*) AS n FROM three_way_match_exceptions').get().n,
+    invoices: db.prepare('SELECT COUNT(*) AS n FROM supplier_invoice_registry').get().n,
+    audit: db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n,
+    idempotency: db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n,
+  };
+  db.exec(`
+    CREATE TRIGGER checkpoint_c6_fail_match_outbox
+    BEFORE INSERT ON platform_outbox
+    WHEN NEW.payload LIKE '%procurement:threewaymatch:perform%'
+    BEGIN SELECT RAISE(ABORT, 'injected three-way match outbox failure'); END;
+  `);
+  try {
+    assert.throws(
+      () => execute('procurement:threewaymatch:perform', {
+        purchase_order_id: chain.po.id,
+        receipt_picking_id: receipt.picking.id,
+        supplier_invoice_number: `SUP-MATCH-ROLLBACK-${Date.now()}`,
+        bill_lines: [{
+          purchase_order_line_id: line.id,
+          quantity: 2,
+          unit_price: 30,
+          currency: 'IQD',
+        }],
+      }),
+      /injected three-way match outbox failure/,
+    );
+  } finally {
+    db.exec('DROP TRIGGER IF EXISTS checkpoint_c6_fail_match_outbox');
+  }
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM three_way_matches').get().n, before.matches);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM three_way_match_lines').get().n, before.lines);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM three_way_match_exceptions').get().n, before.exceptions);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM supplier_invoice_registry').get().n, before.invoices);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n, before.audit);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n, before.idempotency);
+});
+
+test('supplier-bill outbox failure rolls back fiscal, Finance, commitment, audit, and idempotency consequences', () => {
+  const catalog = seed('BILL-ROLLBACK');
+  const chain = requestToConfirmedOrder(catalog, 'BILL-ROLLBACK', {
+    quantity: 2,
+    unitPrice: 30,
+    qualityRequired: false,
+  });
+  const line = chain.po.lines[0];
+  const receipt = execute('procurement:receipt:post', {
+    purchase_order_id: chain.po.id,
+    picking_id: chain.pickingId,
+    lines: [{ purchase_order_line_id: line.id, quantity: 2 }],
+  });
+  execute('procurement:threewaymatch:perform', {
+    purchase_order_id: chain.po.id,
+    receipt_picking_id: receipt.picking.id,
+    supplier_invoice_number: `SUP-BILL-ROLLBACK-${Date.now()}`,
+    bill_lines: [{
+      purchase_order_line_id: line.id,
+      quantity: 2,
+      unit_price: 30,
+      currency: 'IQD',
+    }],
+  });
+  const before = {
+    requests: db.prepare(`
+      SELECT COUNT(*) AS n FROM commercial_fiscal_requests
+      WHERE request_type = 'supplier_bill' AND source_document_id = ?
+    `).get(chain.po.id).n,
+    financeDocuments: db.prepare('SELECT COUNT(*) AS n FROM finance_documents').get().n,
+    journalLines: db.prepare('SELECT COUNT(*) AS n FROM finance_journal_lines').get().n,
+    commitment: db.prepare('SELECT * FROM purchase_commitments WHERE purchase_order_id = ?').get(chain.po.id),
+    order: db.prepare('SELECT * FROM purchase_orders WHERE id = ?').get(chain.po.id),
+    audit: db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n,
+    idempotency: db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n,
+  };
+  db.exec(`
+    CREATE TRIGGER checkpoint_c6_fail_bill_outbox
+    BEFORE INSERT ON platform_outbox
+    WHEN NEW.payload LIKE '%procurement:bill_request:create%'
+    BEGIN SELECT RAISE(ABORT, 'injected supplier bill outbox failure'); END;
+  `);
+  try {
+    assert.throws(
+      () => execute('procurement:bill_request:create', { purchase_order_id: chain.po.id }),
+      /injected supplier bill outbox failure/,
+    );
+  } finally {
+    db.exec('DROP TRIGGER IF EXISTS checkpoint_c6_fail_bill_outbox');
+  }
+  assert.equal(db.prepare(`
+    SELECT COUNT(*) AS n FROM commercial_fiscal_requests
+    WHERE request_type = 'supplier_bill' AND source_document_id = ?
+  `).get(chain.po.id).n, before.requests);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM finance_documents').get().n, before.financeDocuments);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM finance_journal_lines').get().n, before.journalLines);
+  assert.deepEqual(db.prepare('SELECT * FROM purchase_commitments WHERE purchase_order_id = ?').get(chain.po.id), before.commitment);
+  assert.deepEqual(db.prepare('SELECT * FROM purchase_orders WHERE id = ?').get(chain.po.id), before.order);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n, before.audit);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n, before.idempotency);
+});
+
 test('idempotency and duplicate approval/receipt concurrency each produce one fact set', async () => {
   const catalog = seed('E');
   const po = execute('procurement:order:create', {

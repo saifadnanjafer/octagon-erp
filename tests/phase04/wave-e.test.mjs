@@ -29,14 +29,37 @@ test('Wave E: RFQ, Supplier Bidding, and Contract Award', async () => {
   const db = await setupDb();
   const supp1 = parties.createParty(db, { name: 'Supplier A', roles: ['supplier'] });
   const supp2 = parties.createParty(db, { name: 'Supplier B', roles: ['supplier'] });
+  const uomCat = uom.createUomCategory(db, { name: 'RFQ Units' });
+  const unitUom = uom.createUom(db, { category_id: uomCat.id, name: 'RFQ Piece' });
+  const category = products.createProductCategory(db, { name: 'RFQ Materials' });
+  const product = products.createProductTemplate(db, {
+    name: 'RFQ Material',
+    category_id: category.id,
+    uom_id: unitUom.id,
+    sku: 'RFQ-MAT-001',
+  });
 
-  const rfqObj = rfq.createRfq(db, { name: 'RFQ-2026-009' });
-
-  const quote1 = rfq.submitSupplierQuotation(db, { rfq_id: rfqObj.id, supplier_id: supp1.id, total_amount: 12000 });
-  const quote2 = rfq.submitSupplierQuotation(db, { rfq_id: rfqObj.id, supplier_id: supp2.id, total_amount: 10500 });
+  const rfqObj = rfq.createRfq(db, {
+    company_id: '*',
+    name: 'RFQ-2026-009',
+    supplier_ids: [supp1.id, supp2.id],
+    lines: [{ product_id: product.default_variant_id, quantity: 100, uom_id: unitUom.id }],
+  });
+  const quote1 = rfq.submitSupplierQuotation(db, {
+    company_id: '*',
+    rfq_id: rfqObj.id,
+    supplier_id: supp1.id,
+    lines: [{ rfq_line_id: rfqObj.lines[0].id, unit_price: 120 }],
+  });
+  const quote2 = rfq.submitSupplierQuotation(db, {
+    company_id: '*',
+    rfq_id: rfqObj.id,
+    supplier_id: supp2.id,
+    lines: [{ rfq_line_id: rfqObj.lines[0].id, unit_price: 105 }],
+  });
 
   // Award lower bid (Supplier B)
-  const awarded = rfq.awardSupplierQuotation(db, { rfq_id: rfqObj.id, quotation_id: quote2.id });
+  const awarded = rfq.awardSupplierQuotation(db, { company_id: '*', quotation_id: quote2.id });
   assert.equal(awarded.is_awarded, 1);
   assert.equal(awarded.supplier_id, supp2.id);
 });

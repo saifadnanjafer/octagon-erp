@@ -81,3 +81,24 @@ The first aggregate produced 91/92 because the older migration 049 test assumed
 049 remained the repository tail. It now verifies migration 049 by ID, as the
 048 test already does. The fresh rerun passed 92/92; no assertion about 049's
 own schema, provenance, rollback, or sequencing was removed.
+
+## Checkpoint C6 final register
+
+| Suite | Exact command | Result | Duration |
+|---|---|---:|---:|
+| Phase 01 | exact migration-runner plus `tests/unit/*.test.mjs` list | 10/10 outer; 80 internal | 37.7s |
+| Phase 02 non-browser | Phase 02 files excluding live browser | 10/10 outer; 200 internal | 137.0s |
+| Phase 02 Chromium | `node --test tests/phase02/browser-live-evidence.test.mjs` | 12/12 | 205.7s |
+| Phase 03 non-browser | Phase 03 files excluding Finance browser | 11/11 outer; 138 internal | 88.8s |
+| Phase 03 Chromium | `node --test tests/phase03/finance-browser-evidence.test.mjs` | 9/9 | 149.1s |
+| Phase 04 | `$files=Get-ChildItem tests/phase04 -Filter '*.test.mjs'; node --test $files` | 47/47 | 25.9s |
+| Phase 04 finalization | `$files=Get-ChildItem tests/phase04-finalization -Filter '*.test.mjs'; node --test $files` | 99/99 | 9.2s |
+| Checkpoint C | `$files=Get-ChildItem tests/checkpoint-c -Filter '*.test.mjs'; node --test $files` | 100/100 | 24.5s |
+| Permission regression | `node scripts/permission-regression.mjs` | 35/35 | 1.1s |
+| Checkpoint C Chromium | `$env:BASE_URL='http://127.0.0.1:8097'; node scripts/checkpoint-c-browser-acceptance.mjs` | 90/90 | 333.6s |
+| Precommit | `node scripts/precommit.js` | PASS | 3.3s |
+
+No skipped tests and no aggregate/component double counting. An incorrect
+empty Phase 01 file list triggered broad discovery and unrelated legacy-script
+failures; that run is rejected and not counted. The exact Phase 01 list was
+rerun green.

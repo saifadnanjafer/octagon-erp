@@ -97,8 +97,13 @@ test('stock receipt is immutable, idempotent, valued, and rebuildable', () => {
   assert.equal(valuationFact.value, 250);
 
   ledger.rebuildStockQuants(db, { company_id: 'default' });
+  const balance = ledger.getQuantBalance(db, {
+    company_id: 'default',
+    product_id: productId,
+    location_id: warehouse.lot_stock_id,
+  });
   assert.deepEqual(
-    ledger.getQuantBalance(db, { company_id: 'default', product_id: productId, location_id: warehouse.lot_stock_id }),
+    { onHand: balance.onHand, reserved: balance.reserved, available: balance.available },
     { onHand: 10, reserved: 0, available: 10 },
   );
 });
@@ -174,8 +179,13 @@ test('reservation serialization prevents over-allocation and supports partial re
   assert.equal(partial.status, 'partially_reserved');
 
   ledger.rebuildStockQuants(db, { company_id: 'default' });
+  const balance = ledger.getQuantBalance(db, {
+    company_id: 'default',
+    product_id: productId,
+    location_id: warehouse.lot_stock_id,
+  });
   assert.deepEqual(
-    ledger.getQuantBalance(db, { company_id: 'default', product_id: productId, location_id: warehouse.lot_stock_id }),
+    { onHand: balance.onHand, reserved: balance.reserved, available: balance.available },
     { onHand: 10, reserved: 10, available: 0 },
   );
 

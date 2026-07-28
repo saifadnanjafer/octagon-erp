@@ -64,3 +64,10 @@ LTR, tablet, mobile, and viewer denial.
 This closes C3 only. C4 Work Management, C5 Administration/Module Control, and
 C6 cross-domain closure remain open. The operational database was not migrated
 or written; all browser mutations targeted a disposable staged copy.
+
+## C6 closure addendum
+
+POS is included in the final 100/100 deterministic and 90/90 Chromium gates.
+The full injected-failure matrix remains green across payment, stock,
+valuation, Finance, cashbox, audit, and outbox. See
+`pos-stock-payment-finance-integration.md`.

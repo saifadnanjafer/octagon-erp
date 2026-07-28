@@ -207,3 +207,42 @@ Corrections during execution:
    verifies its own ID, and the aggregate rerun passed 92/92.
 
 C6 remains open.
+
+## Checkpoint C6 final execution addendum — 2026-07-28
+
+| Item | Value |
+|---|---|
+| Executing model | GPT-5 Codex |
+| Agent/runtime | Codex desktop; Windows PowerShell; Node v24.18.0 |
+| Reasoning | high |
+| Branch | `build/octagon-original-shell-visible-expansion` |
+| Checkpoint base | `a7248dc73f1208c1dbada6066550caeb41ea3aa7` |
+| Starting program SHA | `85d201783bfd056242445c3b9db8f13d56cf2e94` |
+| Migrations | 046–051; 051 is the forward-only lifecycle-policy correction |
+| VNext | frozen and unchanged at `cf7ae4ed73eac91a325c964178036290bc0736c1` |
+| Chromium | Chrome/150.0.7871.24; 90/90 |
+| Classification | CHECKPOINT C COMPLETE — SAFE TO CONTINUE |
+
+Changed C6 source/tests include `app.js`, migration 051, Sales and Procurement
+rollback cases, Phase 02/03 browser harness stabilization, and Phase 04
+historical-contract fixtures. No new donor code was used in C6.
+
+Final verification: Phase 01 10/10 outer (80 internal); Phase 02 non-browser
+10/10 outer (200 internal); Phase 02 browser 12/12; Phase 03 non-browser 11/11
+outer (138 internal); Phase 03 browser 9/9; Phase 04 47/47; Phase 04
+finalization 99/99; Checkpoint C 100/100; permission 35/35; Checkpoint C
+Chromium 90/90.
+
+Failures and rework are retained: migration 050 seeded an invalid entity
+lifecycle value and was corrected forward by 051; post-login legacy reload
+replaced canonical owner groups and was corrected using server `isOwner`; old
+Phase 04 tests assumed migration 044 and 42 actions remained the repository
+tail and now isolate their historical contract; responsive tests verify the
+intentional off-canvas drawer. One incorrect empty Phase 01 file list triggered
+broad Node discovery; that run is rejected and not counted. The exact Phase 01
+list was rerun green.
+
+Raw trace:
+`test-artifacts/checkpoint-c-2026-07-28T07-34-22-151Z/checkpoint-c-browser-results.json`.
+
+This record is implementation-agent evidence, not independent verification.

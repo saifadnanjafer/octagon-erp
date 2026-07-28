@@ -13,6 +13,7 @@ import {
 } from '../../database/migration-runner/index.mjs';
 import { migration as consolidationMigration } from '../../database/migrations/043_phase04_canonical_registry_and_lineage.mjs';
 import { migration as openingCutoverMigration } from '../../database/migrations/044_opening_stock_cutover_and_equity_coa.mjs';
+import { stageMigrationTree } from './migration-fixture.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const migrationsDir = path.join(repoRoot, 'database', 'migrations');
@@ -29,14 +30,17 @@ function tempWorkspace(prefix) {
 test('migration 044 fresh install and rerun are deterministic and carry provenance', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-fresh-');
   try {
+    const phase04Migrations = stageMigrationTree(temp.dir, 'phase04-tree', 44);
     const first = await freshInstall({
       dbPath: temp.dbPath,
+      migrationsDir: phase04Migrations,
       backupDir: temp.backupDir,
       actor: 'phase04-migration-test',
     });
     assert.equal(first.executed.at(-1).id, openingCutoverMigration.id);
     const second = await runMigrations({
       dbPath: temp.dbPath,
+      migrationsDir: phase04Migrations,
       backupDir: temp.backupDir,
       actor: 'phase04-migration-test',
     });
@@ -63,16 +67,19 @@ test('migration 044 fresh install and rerun are deterministic and carry provenan
 test('parallel disposable installs use collision-safe backup paths', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-parallel-');
   try {
+    const phase04Migrations = stageMigrationTree(temp.dir, 'phase04-tree', 44);
     const dbPathA = path.join(temp.dir, 'parallel-a.db');
     const dbPathB = path.join(temp.dir, 'parallel-b.db');
     const [first, second] = await Promise.all([
       freshInstall({
         dbPath: dbPathA,
+        migrationsDir: phase04Migrations,
         backupDir: temp.backupDir,
         actor: 'phase04-parallel-a',
       }),
       freshInstall({
         dbPath: dbPathB,
+        migrationsDir: phase04Migrations,
         backupDir: temp.backupDir,
         actor: 'phase04-parallel-b',
       }),
@@ -89,22 +96,9 @@ test('parallel disposable installs use collision-safe backup paths', async () =>
 
 test('sequential upgrade from 042 applies 043 and 044 migrations', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-upgrade-');
-  const oldMigrations = path.join(temp.dir, 'database', 'migrations');
-  fs.mkdirSync(oldMigrations, { recursive: true });
   try {
-    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && !name.startsWith('043_') && !name.startsWith('044_'))) {
-      fs.copyFileSync(path.join(migrationsDir, file), path.join(oldMigrations, file));
-    }
-    for (const relative of [
-      path.join('platform', 'server', 'governance-collections.mjs'),
-      path.join('platform', 'identity', 'users', 'index.mjs'),
-      path.join('platform', 'identity', 'passwords', 'index.mjs'),
-      path.join('platform', 'kernel', 'entities', 'default-entities.json'),
-    ]) {
-      const target = path.join(temp.dir, relative);
-      fs.mkdirSync(path.dirname(target), { recursive: true });
-      fs.copyFileSync(path.join(repoRoot, relative), target);
-    }
+    const oldMigrations = stageMigrationTree(temp.dir, 'phase03-tree', 42);
+    const phase04Migrations = stageMigrationTree(temp.dir, 'phase04-tree', 44);
     await runMigrations({
       dbPath: temp.dbPath,
       migrationsDir: oldMigrations,
@@ -113,7 +107,7 @@ test('sequential upgrade from 042 applies 043 and 044 migrations', async () => {
     });
     const upgrade = await runMigrations({
       dbPath: temp.dbPath,
-      migrationsDir,
+      migrationsDir: phase04Migrations,
       backupDir: temp.backupDir,
       actor: 'phase04-upgrade-test',
     });
@@ -121,7 +115,7 @@ test('sequential upgrade from 042 applies 043 and 044 migrations', async () => {
       '043_phase04_canonical_registry_and_lineage',
       '044_opening_stock_cutover_and_equity_coa'
     ]);
-    const status = await migrationStatus({ dbPath: temp.dbPath, migrationsDir });
+    const status = await migrationStatus({ dbPath: temp.dbPath, migrationsDir: phase04Migrations });
     assert.equal(status.every((row) => row.status === 'applied'), true);
   } finally {
     fs.rmSync(temp.dir, { recursive: true, force: true });
@@ -131,7 +125,13 @@ test('sequential upgrade from 042 applies 043 and 044 migrations', async () => {
 test('migration 043 down/up rollback is safe on a disposable database', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-rollback-');
   try {
-    await freshInstall({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'phase04-rollback-test' });
+    const phase04Migrations = stageMigrationTree(temp.dir, 'phase04-tree', 44);
+    await freshInstall({
+      dbPath: temp.dbPath,
+      migrationsDir: phase04Migrations,
+      backupDir: temp.backupDir,
+      actor: 'phase04-rollback-test',
+    });
     const db = openMigrationDatabase(temp.dbPath);
     try {
       db.exec('BEGIN IMMEDIATE;');
@@ -156,7 +156,13 @@ test('migration 043 down/up rollback is safe on a disposable database', async ()
 test('injected registry failure rolls back every migration 043 effect', async () => {
   const temp = tempWorkspace('octagon-phase04-migration-failure-');
   try {
-    await freshInstall({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'phase04-failure-test' });
+    const phase04Migrations = stageMigrationTree(temp.dir, 'phase04-tree', 44);
+    await freshInstall({
+      dbPath: temp.dbPath,
+      migrationsDir: phase04Migrations,
+      backupDir: temp.backupDir,
+      actor: 'phase04-failure-test',
+    });
     const db = openMigrationDatabase(temp.dbPath);
     try {
       db.exec('BEGIN IMMEDIATE;');

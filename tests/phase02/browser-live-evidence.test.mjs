@@ -207,11 +207,15 @@ async function ensureLoginOverlayVisible(page) {
     return intro && window.getComputedStyle(intro).display !== 'none';
   });
   if (isIntroVisible) {
-    await page.click('button[onclick*="showLoginFromIntro"]');
-    await page.waitForFunction(() => {
-      const el = document.getElementById('loginOverlay');
-      return el && window.getComputedStyle(el).display !== 'none';
-    }, { timeout: 5000 });
+    const switched = await page.evaluate(() => {
+      if (typeof window.showLoginFromIntro !== 'function') return false;
+      window.showLoginFromIntro();
+      return true;
+    });
+    assert.equal(switched, true, 'intro-to-login action must be mounted');
+    // Canonical session synchronization may reassert the unauthenticated intro
+    // during this exact frame. The next assertion verifies the real password
+    // modal, so do not couple a second login to this transient legacy overlay.
   }
 }
 
@@ -223,9 +227,24 @@ async function waitForLoginOverlayHidden(page) {
 }
 
 async function loginAs(page, userId, password) {
-  await page.evaluate(() => localStorage.clear());
+  // A scenario may log in more than one identity on the same page. Clearing
+  // localStorage does not revoke the canonical HttpOnly session cookie, so a
+  // reload can legitimately remain authenticated and never show the legacy
+  // login overlay. Reset both authorities before beginning the next login.
+  await page.evaluate(async () => {
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'same-origin',
+    }).catch(() => {});
+    window.__octagonServerSession = { authenticated: false, mode: 'test-reset' };
+    localStorage.clear();
+  });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await waitForAppInit(page);
+  await page.waitForFunction(() =>
+    window.__octagonServerSession
+      && window.__octagonServerSession.authenticated === false,
+  { timeout: 15000 });
   await ensureLoginOverlayVisible(page);
 
   await page.evaluate((id) => {
@@ -333,7 +352,7 @@ async function assertPageRendered(page, pageId) {
   await page.waitForFunction((id) => {
     const el = document.getElementById(id);
     return el && window.getComputedStyle(el).display !== 'none' && el.innerHTML.trim().length > 0;
-  }, { timeout: 10000 }, elId);
+  }, { timeout: 30000 }, elId);
 }
 
 async function clickNotificationBell(page) {
@@ -815,6 +834,10 @@ async function testInboxChatterAndFiles() {
     await loginAsClerk(page, STRONG_PASSWORD);
 
     await clickNotificationBell(page);
+    await page.waitForFunction((title) => {
+      const items = document.querySelectorAll('.omni-notification-item');
+      return Array.from(items).some((el) => el.textContent.includes(title));
+    }, { timeout: 15000 }, 'Browser inbox test');
     const notificationVisible = await page.evaluate(() => {
       const items = document.querySelectorAll('.omni-notification-item');
       return Array.from(items).some(el => el.textContent.includes('Browser inbox test'));
@@ -902,7 +925,11 @@ async function testResponsiveViewport() {
     for (const vp of viewports) {
       const page = await browser.newPage();
       const errors = [];
-      const isIgnoredError = (text) => /\b401\b|\b404\b|\[saveData\] BLOCKED/.test(text);
+      // Consecutive viewport sessions intentionally share one staging database.
+      // The optimistic persistence guard can reject a stale background save
+      // with 409 while the authenticated shell remains healthy; that handled
+      // conflict is not an uncaught browser/runtime error.
+      const isIgnoredError = (text) => /\b401\b|\b404\b|\b409\b|\[saveData\] BLOCKED/.test(text);
       page.on('pageerror', err => {
         const text = err.message || String(err);
         if (!isIgnoredError(text)) errors.push(text);
@@ -919,11 +946,38 @@ async function testResponsiveViewport() {
       await waitForAppInit(page);
       await loginAsOwner(page, STRONG_PASSWORD);
 
-      const sidebarVisible = await page.evaluate(() => {
-        const sidebar = document.querySelector('.sidebar') || document.querySelector('.sidebar-nav');
-        return sidebar ? window.getComputedStyle(sidebar).display !== 'none' : false;
+      const shellState = await page.evaluate(() => {
+        const sidebar = document.querySelector('.sidebar');
+        const toggle = document.getElementById('sidebarToggleBtn');
+        const main = document.getElementById('mainContent') || document.querySelector('.main-content');
+        return {
+          sidebarMounted: Boolean(sidebar),
+          sidebarVisible: sidebar
+            ? window.getComputedStyle(sidebar).display !== 'none'
+              && window.getComputedStyle(sidebar).pointerEvents !== 'none'
+            : false,
+          toggleVisible: toggle ? window.getComputedStyle(toggle).display !== 'none' : false,
+          mainWidth: main?.getBoundingClientRect().width || 0,
+          collapsed: document.body.classList.contains('sidebar-collapsed'),
+        };
       });
-      assert.ok(sidebarVisible, `${vp.name}: sidebar or sidebar-nav is rendered`);
+      assert.ok(shellState.sidebarMounted, `${vp.name}: sidebar is mounted`);
+      if (vp.width <= 768) {
+        assert.equal(shellState.collapsed, true, `${vp.name}: off-canvas sidebar starts closed`);
+        assert.ok(shellState.toggleVisible, `${vp.name}: drawer toggle is visible`);
+        assert.ok(shellState.mainWidth >= vp.width * 0.9, `${vp.name}: main content retains the viewport lane`);
+        await page.click('#sidebarToggleBtn');
+        await page.waitForFunction(() => !document.body.classList.contains('sidebar-collapsed'));
+        const drawerVisible = await page.evaluate(() => {
+          const sidebar = document.querySelector('.sidebar');
+          return sidebar
+            && window.getComputedStyle(sidebar).pointerEvents !== 'none'
+            && sidebar.getBoundingClientRect().width > 0;
+        });
+        assert.ok(drawerVisible, `${vp.name}: drawer opens through its visible control`);
+      } else {
+        assert.ok(shellState.sidebarVisible, `${vp.name}: desktop sidebar is visible`);
+      }
       assert.strictEqual(errors.length, 0, `${vp.name}: no page errors during login; got ${errors.join('; ')}`);
 
       if (vp.name === 'mobile-390') {

@@ -71,3 +71,11 @@ C5 is complete; C6 cross-domain closure remains. PostgreSQL execution, broad
 Phase 04 writer retirement, production cutover, and the owner-approved opening
 inventory accounting date are not claimed. Operational files were never
 written.
+
+## C6 closure addendum
+
+Administration is included in the final 100/100 deterministic and 90/90
+Chromium gates. Migration 051 forward-corrects the `control_plane` entity
+lifecycle policy from invalid `governed` to valid `generic` without editing
+migration 050. Fresh/rerun, 050→051, safe down/up, and injected-failure tests
+pass.

@@ -563,6 +563,99 @@ test('failure injection: delivery outbox failure rolls back stock, reservation, 
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM sale_delivery_events WHERE sale_order_id = ?').get(quotation.id).n, before.events);
 });
 
+test('failure injection: confirmation outbox failure leaves no order, reservation, demand, or picking transition', () => {
+  const seed = seedCatalog('CONFIRM-ROLLBACK', { stockQty: 3 });
+  const quotation = execute('sales:quotation:create', {
+    partner_id: seed.customer.id,
+    lines: [{ product_id: seed.variantId, product_uom_qty: 3, price_unit: 100 }],
+  }, ik('quoteConfirmRollback'));
+  const before = {
+    order: db.prepare('SELECT * FROM sale_orders WHERE id = ?').get(quotation.id),
+    reservations: db.prepare('SELECT COUNT(*) AS n FROM stock_reservations WHERE source_document_id = ?').get(quotation.id).n,
+    demands: db.prepare('SELECT COUNT(*) AS n FROM sale_fulfilment_demands WHERE sale_order_id = ?').get(quotation.id).n,
+    pickings: db.prepare('SELECT COUNT(*) AS n FROM stock_pickings WHERE origin = ?').get(quotation.name).n,
+    audit: db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n,
+    idempotency: db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n,
+  };
+  db.exec(`
+    CREATE TRIGGER checkpoint_c6_fail_confirmation_outbox
+    BEFORE INSERT ON platform_outbox
+    WHEN NEW.payload LIKE '%sales:order:confirm%'
+    BEGIN SELECT RAISE(ABORT, 'injected sales confirmation outbox failure'); END;
+  `);
+  try {
+    assert.throws(
+      () => execute('sales:order:confirm', {
+        order_id: quotation.id,
+        warehouse_id: seed.warehouse.id,
+      }, ik('confirmRollback')),
+      /injected sales confirmation outbox failure/,
+    );
+  } finally {
+    db.exec('DROP TRIGGER IF EXISTS checkpoint_c6_fail_confirmation_outbox');
+  }
+  assert.deepEqual(db.prepare('SELECT * FROM sale_orders WHERE id = ?').get(quotation.id), before.order);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM stock_reservations WHERE source_document_id = ?').get(quotation.id).n, before.reservations);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM sale_fulfilment_demands WHERE sale_order_id = ?').get(quotation.id).n, before.demands);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM stock_pickings WHERE origin = ?').get(quotation.name).n, before.pickings);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n, before.audit);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n, before.idempotency);
+});
+
+test('failure injection: invoice-request outbox failure rolls back fiscal and Finance consequences', () => {
+  const seed = seedCatalog('INVOICE-ROLLBACK', { stockQty: 2 });
+  const quotation = execute('sales:quotation:create', {
+    partner_id: seed.customer.id,
+    lines: [{ product_id: seed.variantId, product_uom_qty: 2, price_unit: 100 }],
+  }, ik('quoteInvoiceRollback'));
+  const confirmation = execute('sales:order:confirm', {
+    order_id: quotation.id,
+    warehouse_id: seed.warehouse.id,
+  }, ik('confirmInvoiceRollback'));
+  execute('sales:delivery:post', {
+    order_id: quotation.id,
+    picking_id: confirmation.delivery_picking_id,
+    lines: [{ sale_order_line_id: quotation.lines[0].id, quantity: 2 }],
+  }, ik('deliverInvoiceRollback'));
+  const before = {
+    requests: db.prepare(`
+      SELECT COUNT(*) AS n FROM commercial_fiscal_requests
+      WHERE request_type = 'customer_invoice' AND source_document_id = ?
+    `).get(quotation.id).n,
+    financeDocuments: db.prepare('SELECT COUNT(*) AS n FROM finance_documents').get().n,
+    journalLines: db.prepare('SELECT COUNT(*) AS n FROM finance_journal_lines').get().n,
+    fulfilment: db.prepare('SELECT * FROM sale_order_line_fulfilment WHERE sale_order_line_id = ?').get(quotation.lines[0].id),
+    audit: db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n,
+    idempotency: db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n,
+  };
+  db.exec(`
+    CREATE TRIGGER checkpoint_c6_fail_invoice_outbox
+    BEFORE INSERT ON platform_outbox
+    WHEN NEW.payload LIKE '%sales:invoice_request:create%'
+    BEGIN SELECT RAISE(ABORT, 'injected sales invoice outbox failure'); END;
+  `);
+  try {
+    assert.throws(
+      () => execute('sales:invoice_request:create', { order_id: quotation.id }, ik('invoiceRollback')),
+      /injected sales invoice outbox failure/,
+    );
+  } finally {
+    db.exec('DROP TRIGGER IF EXISTS checkpoint_c6_fail_invoice_outbox');
+  }
+  assert.equal(db.prepare(`
+    SELECT COUNT(*) AS n FROM commercial_fiscal_requests
+    WHERE request_type = 'customer_invoice' AND source_document_id = ?
+  `).get(quotation.id).n, before.requests);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM finance_documents').get().n, before.financeDocuments);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM finance_journal_lines').get().n, before.journalLines);
+  assert.deepEqual(
+    db.prepare('SELECT * FROM sale_order_line_fulfilment WHERE sale_order_line_id = ?').get(quotation.lines[0].id),
+    before.fulfilment,
+  );
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM platform_audit_log').get().n, before.audit);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM action_idempotency').get().n, before.idempotency);
+});
+
 test('concurrency: duplicate confirm and duplicate approve each have exactly one winner', async () => {
   const seed = seedCatalog('J', { stockQty: 4 });
   const quotation = execute('sales:quotation:create', {

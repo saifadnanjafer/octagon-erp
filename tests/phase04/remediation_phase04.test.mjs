@@ -13,14 +13,17 @@ import {
   PHASE04_RETIREMENT_LOCKS,
   createLegacyWriterRetirementGuard,
 } from '../../platform/cutover/legacy-writer-retirement.mjs';
+import { stageMigrationTree } from './migration-fixture.mjs';
 
 async function withFreshDatabase(name, callback) {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `octagon-phase04-${name}-`));
   const dbPath = path.join(tempDir, 'test.db');
   let db;
   try {
+    const migrationsDir = stageMigrationTree(tempDir, 'phase04-tree', 44);
     const migrationResult = await freshInstall({
       dbPath,
+      migrationsDir,
       backupDir: path.join(tempDir, 'backups'),
       actor: `phase04-${name}`,
     });
@@ -34,8 +37,11 @@ async function withFreshDatabase(name, callback) {
 
 test('Phase 04 remediation fresh install applies every migration without swallowing failures', async () => {
   await withFreshDatabase('fresh-install', (db, result) => {
-    assert.equal(result.executed.length, 44);
-    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n, 44);
+    assert.ok(result.executed.some((row) => row.id === '044_opening_stock_cutover_and_equity_coa'));
+    assert.equal(
+      db.prepare("SELECT COUNT(*) AS n FROM schema_migrations WHERE migration_id <= '044_opening_stock_cutover_and_equity_coa'").get().n,
+      44,
+    );
     assert.equal(db.prepare(`
       SELECT COUNT(*) AS n
       FROM platform_modules
@@ -58,6 +64,11 @@ test('Phase 04 remediation fresh install applies every migration without swallow
       SELECT COUNT(*) AS n
       FROM platform_actions
       WHERE transaction_owner = 'platform_action_executor'
+        AND module_id IN (
+          'commercial_core', 'stock_inventory', 'stock_wms',
+          'commercial_sales', 'commercial_procurement',
+          'commercial_cutover', 'work_item_canonical'
+        )
     `).get().n, 42);
   });
 });
@@ -69,6 +80,11 @@ test('Phase 04 action registry is backed by live Action Executor handlers', asyn
       SELECT id
       FROM platform_actions
       WHERE transaction_owner = 'platform_action_executor'
+        AND module_id IN (
+          'commercial_core', 'stock_inventory', 'stock_wms',
+          'commercial_sales', 'commercial_procurement',
+          'commercial_cutover', 'work_item_canonical'
+        )
       ORDER BY id
     `).all().map((row) => row.id);
     assert.equal(registered.length, 42);

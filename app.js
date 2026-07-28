@@ -3802,11 +3802,15 @@ async function performLogin(userId) {
 
     if (!omni || !Array.isArray(omni.users)) normalizeOmniUsersRolesPermissions();
     omni.users = Array.isArray(omni.users) ? omni.users : [];
-    const resolvedGroups = (Array.isArray(payload.user?.groups) && payload.user.groups.length > 0)
-      ? payload.user.groups
-      : ((Array.isArray(listedUser.groups) && listedUser.groups.length > 0)
-          ? listedUser.groups
-          : (userId === 'system_admin' || userId === 'admin' || userId === 'system' ? ['system.admin', 'finance.manager', 'workshop.manager'] : ['system.user']));
+    const resolvedGroups = payload.user?.isOwner
+      ? ['system.admin', 'finance.manager', 'workshop.manager']
+      : ((Array.isArray(payload.user?.groups) && payload.user.groups.length > 0)
+          ? payload.user.groups
+          : ((Array.isArray(listedUser.groups) && listedUser.groups.length > 0)
+              ? listedUser.groups
+              : (userId === 'system_admin' || userId === 'admin' || userId === 'system'
+                  ? ['system.admin', 'finance.manager', 'workshop.manager']
+                  : ['system.user'])));
 
     let userObj = omni.users.find(user => user.id === userId);
     if (!userObj) {
@@ -3833,7 +3837,23 @@ async function performLogin(userId) {
     localStorage.setItem('octagon_user_id', userId);
     localStorage.setItem('omni_current_user_id', userId);
     await loadData();
-    if (!omni.users.some(user => user.id === userId)) omni.users.push(userObj);
+    // loadData replaces the legacy omni store. Merge the server-resolved
+    // identity back into that fresh store before PermissionService evaluates
+    // the user; otherwise an older group-less record with the same id wins and
+    // valid Finance/Workshop/Admin access fails closed after a successful login.
+    let loadedUser = omni.users.find(user => user.id === userId);
+    if (!loadedUser) {
+      omni.users.push(userObj);
+      loadedUser = userObj;
+    } else {
+      loadedUser.name = payload.user?.name || loadedUser.name || displayName;
+      loadedUser.displayName = payload.user?.name || loadedUser.displayName || displayName;
+      loadedUser.role = payload.user?.role || loadedUser.role || 'authenticated';
+      loadedUser.groups = resolvedGroups;
+      loadedUser.status = 'active';
+      loadedUser.is_active = true;
+      loadedUser.sessionStartedAt = userObj.sessionStartedAt;
+    }
     switchAuthUser(userId, true);
     showToast('Login successful.', 'success');
     const overlay = document.getElementById('loginOverlay');

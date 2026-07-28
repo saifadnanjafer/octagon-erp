@@ -173,3 +173,37 @@ delayed-shell rerender that replaced form listeners, an empty workload state
 after completion, the viewer-denial text matcher, and a reused disposable
 preview that invalidated one POS cash expectation before the fresh-staging
 rerun passed. C5 and C6 remain open.
+
+## Checkpoint C5 execution addendum — 2026-07-28
+
+| Item | Value |
+|---|---|
+| Model | GPT-5 Codex |
+| Agent/runtime | Codex desktop; Windows PowerShell; Node v24.18.0 |
+| Branch | `build/octagon-original-shell-visible-expansion` |
+| Checkpoint base | `fa9f6b89cc4f761f3d96e2242149c574b1e27865` |
+| Migration | `050_control_plane_module_management.mjs` |
+| Chromium | Chrome/150.0.7871.24; 90/90 combined, 17/17 C5 |
+| Deterministic tests | C5 20/20; Checkpoint C 92/92; Phase 04 finalization 99/99; permission 35/35; precommit PASS |
+| VNext | frozen, inspected read-only, unchanged at `cf7ae4ed73eac91a325c964178036290bc0736c1` |
+| Operational data | byte-identical; staged disposable copies only |
+| Classification | PARTIAL — C5 COMPLETE, C6 OPEN |
+
+Delivered the nineteen-area Control Plane workspace, server-enforced optional
+module access, versioned company/branch assignment, licensing, feature and job
+actions, health/configuration/navigation projections, secret-safe API-key
+reads, audit/outbox/idempotency, and original-shell responsive UI.
+
+Corrections during execution:
+
+1. localization initially queried a nonexistent generic `code` column; the
+   query now uses the actual localization schema;
+2. early Control Plane actions used a null audit entity; migration 050 now
+   registers a `control_plane` entity and actions reference it;
+3. Puppeteer retained a feature-card handle across an intentional UI rerender;
+   the acceptance step now invokes the same canonical browser command and
+   explicitly refreshes;
+4. migration 049's older test assumed it remained the final migration; it now
+   verifies its own ID, and the aggregate rerun passed 92/92.
+
+C6 remains open.

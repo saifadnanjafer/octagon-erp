@@ -78,3 +78,26 @@ Final C1+C2+C3 raw trace:
 
 Final C1+C2+C3+C4 raw trace:
 `test-artifacts/checkpoint-c-2026-07-28T05-26-01-449Z/checkpoint-c-browser-results.json`.
+
+## C5 Administration and Module Control
+
+| Artifact | Purpose | Review |
+|---|---|---|
+| `screenshots-c/administration/c5-01-module-control-ar-desktop.png` | nineteen-area Control Plane and module facts, Arabic RTL | PASS |
+| `screenshots-c/administration/c5-02-module-assigned-navigation-visible-ar.png` | company assignment and visible navigation preview | PASS |
+| `screenshots-c/administration/c5-03-module-disabled-navigation-hidden-ar.png` | disabled status, blocked health, hidden navigation | PASS |
+| `screenshots-c/administration/c5-04-disabled-module-server-denial-ar.png` | UI feedback after direct server denial | PASS |
+| `screenshots-c/administration/c5-05-module-reenabled-access-restored-ar.png` | restored status, navigation, and action access | PASS |
+| `screenshots-c/administration/c5-06-unlicensed-module-denial-ar.png` | explicit unlicensed state and denial | PASS |
+| `screenshots-c/administration/c5-07-feature-flags-ar.png` | governed feature registry | PASS |
+| `screenshots-c/administration/c5-08-health-ar.png` | module and service health registry | PASS |
+| `screenshots-c/administration/c5-09-administration-en-ltr.png` | English LTR | PASS |
+| `screenshots-c/administration/c5-10-administration-tablet-768.png` | tablet | PASS |
+| `screenshots-c/administration/c5-11-administration-mobile-375.png` | mobile without page-level overflow | PASS |
+| `screenshots-c/administration/c5-12-viewer-control-plane-denial.png` | restricted viewer server denial | PASS |
+
+Final C1+C2+C3+C4+C5 raw trace:
+`test-artifacts/checkpoint-c-2026-07-28T05-53-33-383Z/checkpoint-c-browser-results.json`.
+
+All C5 PNGs were reviewed directly. They contain disposable fixture facts only,
+with no cookies, passwords, API-key hashes, secrets, or operational records.

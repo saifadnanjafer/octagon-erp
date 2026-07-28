@@ -50,3 +50,17 @@ Command:
 Result: **4 passed, 0 failed, 0 skipped**. Migration 048's sequential fixture
 was explicitly bounded through 048 after 049 became the newest migration.
 Generated SQLite databases live only under the OS temporary directory.
+
+## Checkpoint C5
+
+| Migration | Purpose | Fresh | Sequential | Rerun | Down/up | Failure rollback |
+|---|---|---:|---:|---:|---:|---:|
+| `050_control_plane_module_management` | versioned module assignment, licensing, backup-run metadata, reversible test module/view, and registered Control Plane actions | PASS | PASS from 049 | PASS | PASS | PASS |
+
+Command:
+`node --test tests/checkpoint-c/migration_050.test.mjs`
+
+Result: **4 passed, 0 failed, 0 skipped**. Migration 049's fresh-install
+assertion was made future-safe by locating its own ID rather than assuming it
+would remain the final repository migration. Generated SQLite databases remain
+under the OS temporary directory.

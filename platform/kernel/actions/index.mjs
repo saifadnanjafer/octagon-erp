@@ -20,6 +20,7 @@
 'use strict';
 
 import crypto from 'node:crypto';
+import { assertModuleAccess } from '../../control_plane/index.mjs';
 import { DocumentLifecycle, createDocumentLifecycle } from '../../governance/document-state/index.mjs';
 
 export class ActionError extends Error {
@@ -323,6 +324,7 @@ export class ActionExecutor {
     };
 
     const context = this.#contextDefaults(ctx);
+    assertModuleAccess(this.dialect, normalized.module_id, context);
     validateInputSchema(normalized.input_schema, input);
 
     const idempotency = this.#checkIdempotency(normalized, input, context);

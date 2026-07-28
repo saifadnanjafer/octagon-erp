@@ -1,7 +1,7 @@
 // Checkpoint C authenticated Chromium acceptance.
 //
 // Current implemented chapters: C1 Sales, C2 Procurement, C3 POS, and
-// C4 Work Management.
+// C4 Work Management, and C5 Administration / Module Control.
 // The same runner is extended by later C2-C6 chapters so one final trace
 // proves the complete visible expansion without double-counting earlier runs.
 //
@@ -28,6 +28,7 @@ fs.mkdirSync(path.join(screenshotRoot, 'sales'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'procurement'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'pos'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'work-management'), { recursive: true });
+fs.mkdirSync(path.join(screenshotRoot, 'administration'), { recursive: true });
 
 const results = [];
 const screenshots = [];
@@ -46,7 +47,7 @@ async function screenshot(page, name, chapter = 'sales') {
     document.documentElement.scrollLeft = 0;
     document.body.scrollTop = 0;
     document.body.scrollLeft = 0;
-    for (const selector of ['#mainContent', '.main-content', '.content-area', '.cwm-kanban', '.cwm-phone > div']) {
+    for (const selector of ['#mainContent', '.main-content', '.content-area', '.cwm-kanban', '.cwm-phone > div', '.cadm-table-wrap']) {
       const node = document.querySelector(selector);
       if (node) {
         node.scrollTop = 0;
@@ -59,7 +60,7 @@ async function screenshot(page, name, chapter = 'sales') {
       ancestor.scrollLeft = 0;
       ancestor = ancestor.parentElement;
     }
-    document.querySelector('.cwm-shell')?.scrollIntoView({ block: 'start', inline: 'start' });
+    document.querySelector('.cwm-shell, .cadm-shell')?.scrollIntoView({ block: 'start', inline: 'start' });
   });
   await new Promise((resolve) => setTimeout(resolve, 80));
   const target = path.join(screenshotRoot, chapter, `${name}.png`);
@@ -147,6 +148,33 @@ async function clickWorkTab(page, tab) {
   await page.evaluate((key) => document.querySelector(`[data-cwm-tab="${key}"]`)?.click(), tab);
   await page.waitForFunction((key) =>
     document.querySelector(`[data-cwm-tab="${key}"]`)?.classList.contains('active'), {}, tab);
+}
+
+async function openAdministration(page, tab = 'modules') {
+  await page.evaluate(async (activeTab) => {
+    document.documentElement.lang = 'ar';
+    document.documentElement.dir = 'rtl';
+    if (typeof window.switchPage === 'function') await window.switchPage('admin_panel');
+    if (window.CanonicalAdministration && activeTab !== 'modules') {
+      window.CanonicalAdministration.activate(activeTab);
+    }
+  }, tab);
+  await page.waitForSelector('.cadm-shell', { visible: true, timeout: 30000 });
+  await page.waitForFunction(() =>
+    window.CanonicalAdministration && !window.CanonicalAdministration.state.loading,
+  { timeout: 30000 });
+}
+
+async function clickAdminTab(page, tab) {
+  await page.waitForFunction(() =>
+    window.CanonicalAdministration && !window.CanonicalAdministration.state.loading,
+  { timeout: 30000 });
+  await page.evaluate((key) => document.querySelector(`[data-admin-tab="${key}"]`)?.click(), tab);
+  await page.waitForFunction((key) =>
+    window.CanonicalAdministration
+      && !window.CanonicalAdministration.state.loading
+      && document.querySelector(`[data-admin-tab="${key}"]`)?.classList.contains('active'),
+  { timeout: 30000 }, tab);
 }
 
 async function submitWorkForm(page, selector, values = {}) {
@@ -1236,6 +1264,197 @@ async function main() {
       !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED/i.test(entry));
     record('C4 browser runtime has no unexpected errors', c4RelevantErrors.length ? 'FAIL' : 'PASS',
       c4RelevantErrors.slice(0, 5).join(' | '));
+
+    // ------------------------------------------------------------------
+    // C5 — Administration and Module Control visible acceptance
+    // ------------------------------------------------------------------
+    browserErrors.length = 0;
+    const adminUser = await login(page, 'test.sysadmin');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openAdministration(page);
+    record('C5 administrator authenticates', adminUser.authenticated ? 'PASS' : 'FAIL', `HTTP ${adminUser.status}`);
+
+    const adminTabs = await page.$$eval('[data-admin-tab]', (nodes) => nodes.map((node) => node.dataset.adminTab));
+    record('C5 Administration exposes all 19 governed areas',
+      adminTabs.length === 19 ? 'PASS' : 'FAIL', adminTabs.join(','));
+    const testModulePresent = await page.$('[data-admin-module="checkpoint_c_test_module"]');
+    record('C5 checkpoint module is visible with health and dependency facts', testModulePresent ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c5-01-module-control-ar-desktop', 'administration');
+
+    const assignmentSucceeded = await page.evaluate(() =>
+      window.CanonicalAdministration.assignModule('checkpoint_c_test_module'));
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration
+        && !window.CanonicalAdministration.state.loading
+        && !document.querySelector('[data-module-nav="checkpoint_c_test_module"]')?.hidden,
+    { timeout: 30000 });
+    record('C5 company assignment exposes the module navigation preview',
+      assignmentSucceeded ? 'PASS' : 'FAIL', companyId);
+    await screenshot(page, 'c5-02-module-assigned-navigation-visible-ar', 'administration');
+
+    const initialPing = await page.evaluate(async () => {
+      try {
+        const result = await window.CanonicalClient.controlPlane.testPing();
+        return { ok: true, result };
+      } catch (error) {
+        return { ok: false, status: error.status, code: error.code, message: error.message };
+      }
+    });
+    record('C5 enabled and assigned module is accessible server-side',
+      initialPing.ok ? 'PASS' : 'FAIL', JSON.stringify(initialPing));
+
+    const disabled = await page.evaluate(() =>
+      window.CanonicalAdministration.setModuleStatus('checkpoint_c_test_module', false));
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration
+        && !window.CanonicalAdministration.state.loading
+        && document.querySelector('[data-module-toggle="checkpoint_c_test_module"]')?.dataset.enabled === '0'
+        && document.querySelector('[data-module-nav="checkpoint_c_test_module"]')?.hidden,
+    { timeout: 30000 });
+    record('C5 disabling a module removes its navigation preview', disabled ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c5-03-module-disabled-navigation-hidden-ar', 'administration');
+
+    const disabledDenial = await page.evaluate(async () => {
+      try {
+        await window.CanonicalClient.controlPlane.testPing();
+        return { denied: false };
+      } catch (error) {
+        return { denied: true, status: error.status, code: error.code, message: error.message };
+      }
+    });
+    record('C5 disabled module is denied by the server',
+      disabledDenial.denied && disabledDenial.status === 403 && disabledDenial.code === 'MODULE_NOT_ENABLED'
+        ? 'PASS' : 'FAIL',
+      JSON.stringify(disabledDenial));
+    await page.evaluate(() => window.CanonicalAdministration.testPing());
+    await page.waitForSelector('.cadm-error', { visible: true, timeout: 30000 });
+    await screenshot(page, 'c5-04-disabled-module-server-denial-ar', 'administration');
+
+    const reenabled = await page.evaluate(() =>
+      window.CanonicalAdministration.setModuleStatus('checkpoint_c_test_module', true));
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration
+        && !window.CanonicalAdministration.state.loading
+        && document.querySelector('[data-module-toggle="checkpoint_c_test_module"]')?.dataset.enabled === '1'
+        && !document.querySelector('[data-module-nav="checkpoint_c_test_module"]')?.hidden,
+    { timeout: 30000 });
+    const restoredPing = await page.evaluate(async () => {
+      try {
+        await window.CanonicalClient.controlPlane.testPing();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    });
+    record('C5 re-enabling restores navigation and server access',
+      reenabled && restoredPing ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c5-05-module-reenabled-access-restored-ar', 'administration');
+
+    const unlicensed = await page.evaluate(() =>
+      window.CanonicalAdministration.setLicense('checkpoint_c_test_module', 'unlicensed'));
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration && !window.CanonicalAdministration.state.loading,
+    { timeout: 30000 });
+    const licenseDenial = await page.evaluate(async () => {
+      try {
+        await window.CanonicalClient.controlPlane.testPing();
+        return { denied: false };
+      } catch (error) {
+        return { denied: true, status: error.status, code: error.code, message: error.message };
+      }
+    });
+    record('C5 unlicensed module is denied by the server',
+      unlicensed && licenseDenial.status === 403 && licenseDenial.code === 'MODULE_UNLICENSED'
+        ? 'PASS' : 'FAIL',
+      JSON.stringify(licenseDenial));
+    await screenshot(page, 'c5-06-unlicensed-module-denial-ar', 'administration');
+
+    const relicensed = await page.evaluate(() =>
+      window.CanonicalAdministration.setLicense('checkpoint_c_test_module', 'active'));
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration && !window.CanonicalAdministration.state.loading,
+    { timeout: 30000 });
+    const licensedPing = await page.evaluate(async () => {
+      try {
+        await window.CanonicalClient.controlPlane.testPing();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    });
+    record('C5 active license restores server access', relicensed && licensedPing ? 'PASS' : 'FAIL');
+
+    await page.evaluate(() => window.CanonicalClient.controlPlane.setFeature({
+      key: 'checkpoint_c.test_feature',
+      module_id: 'checkpoint_c_test_module',
+      enabled: true,
+    }));
+    await clickAdminTab(page, 'feature-flags');
+    const featureVisible = await page.$('[data-admin-feature="checkpoint_c.test_feature"]');
+    record('C5 feature flag creation is visible in the governed workspace', featureVisible ? 'PASS' : 'FAIL');
+    await page.evaluate(async () => {
+      await window.CanonicalClient.controlPlane.setFeature({
+        key: 'checkpoint_c.test_feature',
+        module_id: 'checkpoint_c_test_module',
+        enabled: false,
+      });
+      await window.CanonicalAdministration.refresh();
+    });
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration
+        && !window.CanonicalAdministration.state.loading
+        && document.querySelector('[data-admin-feature="checkpoint_c.test_feature"] [data-feature-toggle]')?.dataset.enabled === '0',
+    { timeout: 30000 });
+    record('C5 feature enable and disable mutation is server-backed', 'PASS', 'checkpoint_c.test_feature');
+    await screenshot(page, 'c5-07-feature-flags-ar', 'administration');
+
+    await clickAdminTab(page, 'health');
+    const healthRows = await page.$$('.cadm-generic tbody tr');
+    record('C5 module and service health is visible', healthRows.length > 0 ? 'PASS' : 'FAIL', String(healthRows.length));
+    await screenshot(page, 'c5-08-health-ar', 'administration');
+
+    await page.evaluate(() => {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+      window.CanonicalAdministration.activate('modules');
+    });
+    await page.waitForFunction(() =>
+      window.CanonicalAdministration && !window.CanonicalAdministration.state.loading,
+    { timeout: 30000 });
+    const administrationDirection = await page.$eval('.cadm-shell', (node) => ({
+      dir: node.dir,
+      text: node.textContent.includes('Administration & Module Control'),
+    }));
+    record('C5 English LTR surface',
+      administrationDirection.dir === 'ltr' && administrationDirection.text ? 'PASS' : 'FAIL',
+      JSON.stringify(administrationDirection));
+    await screenshot(page, 'c5-09-administration-en-ltr', 'administration');
+    await page.setViewport({ width: 768, height: 1024, deviceScaleFactor: 1 });
+    await screenshot(page, 'c5-10-administration-tablet-768', 'administration');
+    await page.setViewport({ width: 375, height: 812, deviceScaleFactor: 1 });
+    await screenshot(page, 'c5-11-administration-mobile-375', 'administration');
+    const adminOverflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2);
+    record('C5 mobile has no page-level horizontal overflow', adminOverflow ? 'PASS' : 'FAIL');
+
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+    const adminViewer = await login(page, 'test.viewer');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openAdministration(page);
+    await page.waitForSelector('.cadm-error', { visible: true, timeout: 30000 });
+    const adminDenial = await page.$eval('.cadm-error', (node) => node.textContent);
+    record('C5 restricted viewer Control Plane access denied server-side',
+      adminViewer.authenticated && /not authorized|permission|صلاحية|PERMISSION_DENIED/i.test(adminDenial)
+        ? 'PASS' : 'FAIL',
+      adminDenial.replace(/\s+/g, ' ').trim());
+    await screenshot(page, 'c5-12-viewer-control-plane-denial', 'administration');
+
+    const c5RelevantErrors = browserErrors.filter((entry) =>
+      !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED|MODULE_NOT_ENABLED|MODULE_UNLICENSED/i.test(entry));
+    record('C5 browser runtime has no unexpected errors', c5RelevantErrors.length ? 'FAIL' : 'PASS',
+      c5RelevantErrors.slice(0, 5).join(' | '));
   } finally {
     const trace = {
       runId,

@@ -25,6 +25,7 @@ import { createRepository } from '../data/repositories/index.mjs';
 import { createActionExecutor } from '../kernel/actions/index.mjs';
 import { handleFinanceQuery } from './finance.mjs';
 import { handleCommercialQuery } from './commercial.mjs';
+import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -161,6 +162,13 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 200, envelope(financeResult.data, null, financeResult.meta, ctx.correlationId));
       }
 
+      if (namespace === 'control-plane' && resource && req.method === 'GET') {
+        if (!requirePermission('control:admin')) return;
+        const controlResult = handleControlPlaneQuery({ dialect, ctx, resource, recordId });
+        if (controlResult.error) return sendJson(res, controlResult.status || 404, envelope(null, controlResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(controlResult.data, null, { total: Array.isArray(controlResult.data) ? controlResult.data.length : 1 }, ctx.correlationId));
+      }
+
       if (['commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
@@ -189,7 +197,7 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
           // denial evidence (period locks, authority limits, cashbox caps) is
           // distinguishable from server faults.
           if (actionError && typeof actionError.code === "string" && actionError.code) {
-            const denial = /AUTHORITY|PERMISSION|NO_GRANT|DENIED/.test(actionError.code);
+            const denial = /AUTHORITY|PERMISSION|NO_GRANT|DENIED|MODULE_NOT_ENABLED|MODULE_UNLICENSED/.test(actionError.code);
             return sendJson(
               res,
               actionError.statusCode || (denial ? 403 : 422),

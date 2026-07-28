@@ -24,3 +24,13 @@ the four operational files retained the exact byte counts, timestamps and
 SHA-256 values shown above. The preview staged the source into the operating
 system temporary directory and logged that operational `database.db` was not
 open. All Work Item mutations occurred in that disposable copy.
+
+## C5 re-observation
+
+After migration 050 tests, two authenticated browser attempts, the final fresh
+C1-C5 replay, and all deterministic regression gates, the four operational
+files retained the exact byte counts, timestamps, and SHA-256 values in the
+baseline table. The registered preview log reported a source SQLite hash match
+before staging and explicitly reported that operational `database.db` was not
+open. All module, assignment, licensing, feature, and role mutations occurred
+only in disposable temporary copies.

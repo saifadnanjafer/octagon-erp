@@ -102,3 +102,29 @@ One later screenshot-only replay incorrectly reused an already-mutated staging
 copy and therefore reported POS cash `275/100/-175` (72/73). That staging copy
 was discarded. The registered trace above was rerun from a fresh byte-staged
 database and passed 73/73 with POS cash `100/100/0`.
+
+## C5 Administration and Module Control
+
+| Item | Value |
+|---|---|
+| Runner | `scripts/checkpoint-c-browser-acceptance.mjs` |
+| Base URL | `http://127.0.0.1:8097` |
+| Chromium | `Chrome/150.0.7871.24` |
+| Database | fresh staged disposable copy with migration 050 |
+| Trace | `test-artifacts/checkpoint-c-2026-07-28T05-53-33-383Z/` |
+| Combined result | **90 passed / 0 failed / 0 skipped** |
+| C5 chapter | **17 passed / 0 failed / 0 skipped** |
+
+Proven: nineteen Administration areas; module health and dependency facts;
+company assignment and navigation preview; successful enabled-module action;
+navigation removal and `403 MODULE_NOT_ENABLED` after disable; restored
+navigation and action after re-enable; `403 MODULE_UNLICENSED`; active-license
+recovery; governed feature flag creation/disable; health records; Arabic RTL,
+English LTR, tablet and mobile; restricted-viewer server denial; and no
+unexpected browser/runtime/resource error.
+
+The first C5 attempt reached 84/84 recorded passes before Puppeteer retained a
+feature-card handle across the UI's intentional rerender. The runner now issues
+the same canonical browser command and explicitly refreshes the UI. A fresh
+byte-staged rerun—not the mutated first staging copy—produced the registered
+90/90 trace.

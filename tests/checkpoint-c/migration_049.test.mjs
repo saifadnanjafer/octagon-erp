@@ -35,7 +35,10 @@ test('migration 049 fresh install, rerun, provenance, columns, events, and regis
   const temp = workspace('octagon-c4-migration-fresh-');
   try {
     const first = await freshInstall({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'c4-migration' });
-    assert.equal(first.executed.at(-1).id, workItemMigration.id);
+    assert.ok(
+      first.executed.some((row) => row.id === workItemMigration.id),
+      'fresh install must include migration 049 even when later migrations exist',
+    );
     assert.equal((await runMigrations({ dbPath: temp.dbPath, backupDir: temp.backupDir, actor: 'c4-rerun' })).executed.length, 0);
     const db = openMigrationDatabase(temp.dbPath);
     try {

@@ -65,3 +65,19 @@ double-counted.
 A later screenshot replay reused an already-mutated staging copy and failed
 only the POS cash expectation (72/73). The disposable copy was discarded; the
 registered fresh-staging rerun passed 73/73. The failed run is not counted.
+
+## Checkpoint C5
+
+| Suite | Exact command | Result | Duration | What it proves |
+|---|---|---:|---:|---|
+| C5 Administration, migration, domain and inherited Control Plane | `node --test tests/checkpoint-c/canonical_administration_ui.test.mjs tests/checkpoint-c/migration_050.test.mjs tests/checkpoint-c/control_plane_administration.test.mjs tests/unit/control-plane.test.mjs` | 20/20 | 15.498s | 19 areas, scoped reads, no secrets, module/feature/job/license actions, access denial/recovery, dependencies, idempotency and rollback |
+| All Checkpoint C | `$files=Get-ChildItem tests/checkpoint-c -Filter '*.test.mjs'; node --test $files` | 92/92 | 12.365s | C1-C5 deterministic coexistence and migration sequencing |
+| Phase 04 finalization | `$files=Get-ChildItem tests/phase04-finalization -Filter '*.test.mjs'; node --test $files` | 99/99 | 12.267s | inherited canonical client, auth fixture, master data, WMS, valuation and rollback regression |
+| Permission regression | `node scripts/permission-regression.mjs` | 35/35 | <1s | 102 mapped pages and role/action policy |
+| Authenticated Chromium | `BASE_URL=http://127.0.0.1:8097 node scripts/checkpoint-c-browser-acceptance.mjs` | 90/90 combined; 17/17 C5 | 298.0s | module assignment, navigation, server denial/recovery, licensing, feature, health, roles, RTL/LTR and responsive UI |
+| Precommit | `node scripts/precommit.js` | PASS | <1s | repository and blocked-path safety |
+
+The first aggregate produced 91/92 because the older migration 049 test assumed
+049 remained the repository tail. It now verifies migration 049 by ID, as the
+048 test already does. The fresh rerun passed 92/92; no assertion about 049's
+own schema, provenance, rollback, or sequencing was removed.

@@ -548,6 +548,21 @@
     remove: (input, opts) => action('work_item:delete', input, { ...opts, domain: 'WORK_ITEM' }),
   };
 
+  const controlPlane = {
+    list: (resource, params) => query(`/control-plane/${encodeURIComponent(resource)}`, params),
+    getModule: (id) => query(`/control-plane/module/${encodeURIComponent(id)}`),
+    setModuleStatus: (input, opts) => action('control:module:set_status', input, { ...opts, domain: 'CONTROL_PLANE' }),
+    setFeature: (input, opts) => action('control:feature:set', input, { ...opts, domain: 'CONTROL_PLANE' }),
+    assignModule: (input, opts) => action('control:module:assign', input, { ...opts, domain: 'CONTROL_PLANE' }),
+    setLicense: (input, opts) => action('control:license:set', input, {
+      ...opts,
+      domain: 'CONTROL_PLANE',
+      allowedBusinessKeys: ['company_id'],
+    }),
+    setJob: (input, opts) => action('control:job:set', input, { ...opts, domain: 'CONTROL_PLANE' }),
+    testPing: (input = {}, opts) => action('control:test:ping', input, { ...opts, domain: 'CONTROL_PLANE' }),
+  };
+
   const CanonicalClient = {
     // transport
     request,
@@ -581,6 +596,7 @@
     procurement,
     pos,
     workItems,
+    controlPlane,
 
     // exposed for tests and diagnostics
     _internal: { stripForbidden, splitServerError, buildQueryString, FORBIDDEN_INPUT_KEYS },

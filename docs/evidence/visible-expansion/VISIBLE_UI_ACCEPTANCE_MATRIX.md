@@ -221,6 +221,34 @@ Final combined C1+C2+C3+C4 trace:
 `test-artifacts/checkpoint-c-2026-07-28T05-26-01-449Z/`, 73/73 in
 `Chrome/150.0.7871.24`.
 
+## Checkpoint C5 — Administration and Module Control (2026-07-28)
+
+| Gate | Result |
+|---|---|
+| Original Administration page replaced by canonical workspace | PASS |
+| Nineteen required governed areas visible | PASS |
+| Module status, dependencies, health and warnings | PASS |
+| Company assignment and navigation preview | PASS |
+| Enabled module direct server action | PASS |
+| Disable removes navigation | PASS |
+| Disabled module direct action receives `403 MODULE_NOT_ENABLED` | PASS |
+| Re-enable restores navigation and direct action | PASS |
+| Unlicensed module receives `403 MODULE_UNLICENSED` | PASS |
+| Active license restores access | PASS |
+| Feature flag create and disable | PASS |
+| Package/plan, settings, sequences, integrations, jobs, audit, backups and localization surfaces | PASS |
+| API-key response excludes hashes and secrets | PASS |
+| Restricted viewer denied server-side | PASS |
+| Arabic RTL / English LTR | PASS |
+| Desktop / tablet 768 / mobile 375 | PASS |
+| No page-level mobile overflow | PASS |
+| No unexpected browser/runtime/resource error | PASS |
+| Evidence screenshots | PASS — 12 PNGs |
+
+Final combined C1+C2+C3+C4+C5 trace:
+`test-artifacts/checkpoint-c-2026-07-28T05-53-33-383Z/`, 90/90 in
+`Chrome/150.0.7871.24`.
+
 ## Acceptance gate status
 
 | Gate | Status |

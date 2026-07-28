@@ -91,6 +91,30 @@ Target paths include migration 046, `platform/sales/lifecycle.mjs`,
 
 Frozen VNext remained read-only.
 
+## Checkpoint C5 addendum — Administration and Module Control (2026-07-28)
+
+The inspection remained targeted and read-only. No frozen or third-party file
+was modified, and no donor code was copied.
+
+| Source | Exact paths inspected | Ownership / license | Decision |
+|---|---|---|---|
+| Current Octagon | `database/migrations/001_platform_kernel_bootstrap.mjs`, `005_platform_kernel_control_plane.mjs`, `006_identity_authority.mjs`, `007_authorization_registry.mjs`, `008_settings_secrets_policies.mjs`, `019_fiscal_positions_and_iraq_localization.mjs`; platform kernel modules/jobs/health; feature flags; identity/users; organizations/memberships; authorization/roles; legacy Administration/marketplace/settings surfaces | project-owned, proprietary | selected Control Plane authority, scope, permission, audit, job, health, and original-shell conventions |
+| Frozen Octagon VNext | `vnext/server/modules/module-lifecycle.js`; `module-framework.js`; `packs/pack-sdk-engine.js`; `migrations/619_r3_control_plane_contracts.mjs` | project-owned, proprietary | behavior reference only |
+| Odoo 19 | `addons/web/static/src/webclient/settings_form_view/` | LGPL-3.0 | settings interaction comparison only; no code copied |
+| ERPNext develop | targeted system-settings and user-permission files | GPL-3.0 | configuration and scope comparison only; no code copied |
+
+Selected approach: extend the existing Octagon module, feature, job, health,
+identity, authorization, audit, outbox, and ActionExecutor authorities. Add
+only the missing assignment/license facts and a clean-room original-shell
+Administration projection.
+
+Target paths include migration 050, `platform/control_plane/index.mjs`,
+`platform/kernel/actions/index.mjs`, `platform/api/index.mjs`,
+`services/canonicalClient.js`, and `modules/canonical-administration.*`.
+
+Frozen VNext remained read-only at
+`cf7ae4ed73eac91a325c964178036290bc0736c1`.
+
 ## Checkpoint C4 addendum — Work Item consolidation (2026-07-28)
 
 The inspection was narrow and read-only. No donor or frozen file was modified

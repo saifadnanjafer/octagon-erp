@@ -57,7 +57,7 @@ export const TEST_BRANCH = 'b_octagon_test';
  * `viewer` deliberately gets read only, so denial can be proven, not assumed.
  */
 export const TEST_ROLES = Object.freeze([
-  { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'system.admin',       permissions: ['platform:db:read', 'platform:db:write'], isOwner: true },
+  { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'system.admin',       permissions: ['platform:db:read', 'platform:db:write', 'control:admin'], isOwner: true },
   {
     key: 'workshop',
     login: 'test.workshop',

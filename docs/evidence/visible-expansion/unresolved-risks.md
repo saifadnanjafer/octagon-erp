@@ -172,3 +172,32 @@ Remaining risks after C4:
 
 Frozen project-owned VNext Project/SLA sources plus Odoo 19 and ERPNext Task
 sources were inspected read-only. Only clean-room behavior was implemented.
+
+## Checkpoint C5 status addendum — 2026-07-28
+
+The following earlier statements are now superseded:
+
+- Administration is no longer a legacy-only page.
+- Nineteen scoped Control Plane areas are visible.
+- Optional module disable, navigation removal, direct server denial, recovery,
+  license denial/recovery, feature flags, health, and restricted-viewer denial
+  executed in authenticated Chromium.
+- C5 screenshots are available and reviewed.
+
+Remaining risks after C5:
+
+1. C6 cross-domain closure remains open.
+2. The owner-approved opening-inventory accounting date remains absent;
+   operational migration stays fail-closed.
+3. Broad Phase 04 writer retirement/cutover remains unauthorized and unclaimed.
+4. Legacy Administration/marketplace/settings code remains for compatibility;
+   the original Administration route is canonical while the C5 authority is
+   active.
+5. PostgreSQL execution is not proven. Migration 050 follows portable design,
+   but executable migration proof is SQLite.
+6. Backups are represented as governed run metadata and configuration status;
+   this checkpoint did not execute or claim a production backup.
+
+Frozen project-owned VNext Control Plane sources plus Odoo 19 settings and
+ERPNext configuration sources were inspected read-only. Only clean-room
+behavior was implemented.

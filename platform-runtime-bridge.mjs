@@ -33,6 +33,7 @@ import { registerSalesActions } from './platform/sales/index.mjs';
 import { registerProcurementActions } from './platform/procurement/index.mjs';
 import { registerPosActions } from './platform/pos/index.mjs';
 import { registerWorkItemActions } from './platform/work_items/index.mjs';
+import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
@@ -164,6 +165,7 @@ export function createPlatformAuthority(dialect) {
   registerProcurementActions(actionExecutor);
   registerPosActions(actionExecutor);
   registerWorkItemActions(actionExecutor);
+  registerControlPlaneActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 

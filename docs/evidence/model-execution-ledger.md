@@ -1103,3 +1103,130 @@ and remote SHA verified equal after each. No force push. No history rewrite.
 
 - **Independent verification:** not claimed as production certification.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Checkpoint H — HTTP proof, release health, operational gate (2026-07-29)
+
+- **Model:** Claude Opus 5 (`claude-opus-5`).
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Windows 11 Pro
+  10.0.26200, Node v24.18.0.
+- **Reasoning level:** extended thinking enabled.
+- **Execution date:** 2026-07-29.
+- **Starting SHA:** `7bcf7960aa9bf892ff06eab91fff83f14a54f23a` (local and
+  upstream verified at entry; migration tip 062 confirmed; 6 Checkpoint G test
+  files confirmed).
+- **Final SHA:** the closing commit on
+  `review/octagon-unified-release-candidate`; local and remote verified equal
+  after every push.
+
+### HTTP writer-refusal proof — CLOSED
+Real `server.js` spawned on a disposable OS-allocated port against a disposable
+database with canonical cutover ACTIVE, authenticated as **owner** so a 403
+cannot be misread as a permission failure. **40 observed HTTP refusals**: 20
+governed collections across all 14 domains x `POST /api/collection` and
+`POST /api/record`, each returning 403 with the exact
+`<DOMAIN>_CANONICAL_AUTHORITY_REQUIRED` code and naming
+`POST /api/v1/action/:actionId`. `POST /api/db` returned 409 naming the
+offending collection; a bare full-sync POST was bounced; unauthenticated writes
+blocked. **Frozen-zone negative control passed** — `employees`,
+`omni.employeeAttendance`, `omni.workshopTimesheetCases` and `omni.jobOrders`
+are NOT refused. Nothing reached the database: 0 rows, 0 outbox events, 0 audit
+rows with `result='success'`.
+
+### Browser lifecycle proof — NOT DONE
+`scripts/release-candidate-browser-acceptance.mjs` was not built; no domain
+lifecycle was driven through Chromium; `screenshots/` left empty rather than
+padded. No lifecycle proof claimed.
+
+### Failure-injection coverage — UNCHANGED
+Command boundary: 22/22 named workflows (Checkpoint G). Mid-lifecycle: still
+only the stock path. Not extended.
+
+### Concurrency coverage — UNCHANGED
+4 of 18 named scenarios (Checkpoint G), plus cross-process idempotency,
+warehouse uniqueness and post-race integrity. Not extended.
+
+### Release Health — CLOSED for server diagnostics
+`platform/operations/release-health.mjs`, 27 signals from real state,
+`GET /api/release/health` permission-gated and **proven reachable over HTTP**.
+Status vocabulary healthy/warning/blocked/unknown/not_executed. Enforced by
+mostly-negative tests: PostgreSQL runtime can never be healthy and cannot
+inherit green from the adapter; opening-inventory stays blocked; an
+un-activated cutover warns; an unreadable source reports unknown; the shipped
+`checkpoint_c_test_module` is surfaced as a warning. Administration **UI page
+not built**.
+
+### Warehouse duplicate-gate result — CLEAR, with a larger finding
+**NO DUPLICATES — MIGRATION 062 OPERATIONAL GATE CLEAR.** WAL-aware disposable
+copy, `readOnly: true`, and read-only enforcement **proved** (a write attempt
+returned "attempt to write a readonly database"). 0 warehouses, 0 duplicate
+groups, 0 null/empty codes.
+**The larger finding:** the operational database is at migration tip
+`045_governed_master_data_and_inventory_actions` (45 applied) against a
+repository tip of 062 — **seventeen migrations behind**. `platform_actions` 190
+vs 330, `platform_modules` 9 vs 18, `assets` table absent, and every canonical
+business table empty. The live workshop runs on the legacy JSON layer, not the
+canonical schema. Migration 062 cannot be applied alone, and the gate must be
+re-run after 046-062 populates the table. Owner decision.
+
+### PostgreSQL runtime — NOT EXECUTED, ENVIRONMENT UNAVAILABLE
+Re-checked once: no `psql`/`pg_ctl`/`postgres`/`initdb` on PATH, `pg` not
+installed, `OCTAGON_POSTGRES_URL` unset, TCP 5432 closed. Adapter and
+portability tests remain green (22/22). Reported as `not_executed` by the health
+endpoint, enforced by test.
+
+### Migrations
+**None added.** 001-062 not edited (`git diff` over
+`database/migrations/` is empty). Migration 063 was considered for Release
+Health persistence and deliberately not written — the report is computed live,
+so persisting it would add a second source of truth with no consumer.
+
+### Files changed
+`platform/operations/release-health.mjs` (new), `server.js` (one new route),
+`tests/checkpoint-h/http_legacy_writer_refusal.test.mjs` (new),
+`tests/checkpoint-h/release_health.test.mjs` (new),
+`docs/evidence/checkpoint-h-final-release/*` (20 files).
+
+### VNext fingerprint
+HEAD `cf7ae4ed73eac91a325c964178036290bc0736c1`, 17 dirty paths, fingerprint
+`bf69e28926ceee96c7b568e1748626dab2afb30ffa42fd7970e2ac1e6779eec6` — identical
+at entry and exit, and identical across Checkpoints F, G and H.
+
+### Tests
+**510 pass / 0 fail** across every repository suite: Checkpoint H 62,
+Checkpoint G 85, Checkpoint F 27, Checkpoint D/E 56, Checkpoint C 100,
+Phase 04 47, Phase 04 finalization 100, Phase 03 12, Phase 02 (serial) 11,
+migration 1, unit 9. Permission regression 35/35.
+
+### Failures, current-agent mistakes and rework
+- My audit-residue assertion used a `payload` column that does not exist on
+  `platform_audit_log` (it has `resource_id`, `before_value`, `after_value`,
+  `result`). Corrected to the real schema and **strengthened** — it now also
+  asserts no audit row records a refused write as `result='success'`.
+- I expected `domain_lock_state` to read `0/14` before cutover; it reads `1/14`
+  because FINANCE is enforced unconditionally since Phase 03. My expectation was
+  wrong, not the module.
+- `applied_migration_count` reported **healthy** against an unmigrated database,
+  because the ledger table is created on open so the count is a known 0. A
+  database with zero migrations applied is not healthy; the module now reports
+  it **blocked**. Both of these were caught by my own tests, which is what they
+  were written for.
+
+### Blockers
+C1 (CRITICAL) the operational database is 17 migrations behind and its canonical
+tables are empty — the verified system and the running system are not the same
+system; H1 no lifecycle browser proof; H2 mid-lifecycle injection covers 1 path;
+H3 14 of 18 concurrency scenarios unexercised; H4 PostgreSQL runtime; H5 legacy
+UI pages will break rather than adapt at cutover, and their call sites are not
+enumerated.
+
+### Push result
+All commits pushed to `origin/review/octagon-unified-release-candidate`; local
+and remote SHA verified equal after each. No force push. No history rewrite.
+**`main` was not merged.** Operational data byte-identical at entry and exit;
+the operational database was opened read-only exactly once, with enforcement
+proved.
+
+- **Independent verification:** not claimed as production certification.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

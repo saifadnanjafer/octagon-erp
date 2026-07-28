@@ -27,6 +27,11 @@ import { handleFinanceQuery } from './finance.mjs';
 import { handleCommercialQuery } from './commercial.mjs';
 import { handleProjectsQuery } from './projects.mjs';
 import { handleEngineeringQuery } from './engineering.mjs';
+import { handleManufacturingQuery } from '../manufacturing/index.mjs';
+import { handleQualityQuery } from '../quality/index.mjs';
+import { handleAssetsQuery } from '../assets/index.mjs';
+import { handleMaintenanceQuery } from '../maintenance/index.mjs';
+import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 
 export class ApiError extends Error {
@@ -178,6 +183,46 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const engResult = handleEngineeringQuery({ dialect, ctx, namespace, resource, recordId, query });
         if (engResult.error) return sendJson(res, engResult.status || 404, envelope(null, engResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(engResult.data, null, engResult.meta, ctx.correlationId));
+      }
+
+      if (['manufacturing', 'production-orders', 'work-orders', 'shop-floor'].includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const mfgResult = handleManufacturingQuery({ dialect, ctx, resource: resource || namespace, recordId, query });
+        if (mfgResult.error) return sendJson(res, mfgResult.status || 404, envelope(null, mfgResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(mfgResult.data, null, mfgResult.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'quality' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const qResult = handleQualityQuery({ dialect, ctx, resource, recordId, query });
+        if (qResult.error) return sendJson(res, qResult.status || 404, envelope(null, qResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(qResult.data, null, qResult.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'assets' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const astResult = handleAssetsQuery({ dialect, ctx, resource, recordId, query });
+        if (astResult.error) return sendJson(res, astResult.status || 404, envelope(null, astResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(astResult.data, null, astResult.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'maintenance' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const mntResult = handleMaintenanceQuery({ dialect, ctx, resource, recordId, query });
+        if (mntResult.error) return sendJson(res, mntResult.status || 404, envelope(null, mntResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(mntResult.data, null, mntResult.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'fleet' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const fltResult = handleFleetQuery({ dialect, ctx, resource, recordId, query });
+        if (fltResult.error) return sendJson(res, fltResult.status || 404, envelope(null, fltResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(fltResult.data, null, fltResult.meta, ctx.correlationId));
       }
 
       if (namespace === 'control-plane' && resource && req.method === 'GET') {

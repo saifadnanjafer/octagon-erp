@@ -1,0 +1,201 @@
+{
+  "suite": "phase-03/finance-browser-evidence",
+  "generatedBy": "tests/phase03/finance-browser-evidence.test.mjs",
+  "runCommand": "node tests/phase03/finance-browser-evidence.test.mjs",
+  "runStartedAt": "2026-07-28T14:31:20.181Z",
+  "runFinishedAt": "2026-07-28T14:34:58.559Z",
+  "durationMs": 218378,
+  "git": {
+    "branch": "build/octagon-projects-manufacturing-assets-maintenance-fleet",
+    "commit": "5f18230a71243b7f72ded0149a800fd1630154a0"
+  },
+  "consoleErrorAllowlist": "/\\b401\\b|\\b404\\b|\\b409\\b|\\[saveData\\] BLOCKED/",
+  "totals": {
+    "scenarios": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "scopeNote": "Proves the SPA shell plus the canonical Browser->API->Phase02-authz->finance-engine path. Most finance UI remains legacy-backed; fiscal close UI, reversal UI, bank import UI, payments UI, budget UI and report cutover are NOT covered by this suite.",
+  "scenarios": [
+    {
+      "id": "P03-BR-01",
+      "name": "login and logout issue and revoke the session cookie",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:31:20.898Z",
+      "status": "PASS",
+      "durationMs": 30843,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-01_2026-07-28T14-31-48-126Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-28T14:31:51.741Z"
+    },
+    {
+      "id": "P03-BR-02",
+      "name": "finance navigation renders for an authorized user",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:31:51.741Z",
+      "status": "PASS",
+      "durationMs": 28324,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-02_2026-07-28T14-32-16-993Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "Observation (UI timing, fails closed): in a fresh disposable store the finance nav button can remain hidden immediately after login until the first post-login render re-applies permissions (enforceUIPermissions). It self-heals on navigation and never fails open. Recorded for Phase 04 hardening backlog."
+      ],
+      "error": null,
+      "finishedAt": "2026-07-28T14:32:20.065Z"
+    },
+    {
+      "id": "P03-BR-03",
+      "name": "role-based denial proven from the page context (API-level)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:32:20.065Z",
+      "status": "PASS",
+      "durationMs": 24857,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-03_2026-07-28T14-32-42-756Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "Menu gating (app.js PLATFORM_PAGE_NAV_MAP) does not cover the finance nav button; finance nav visible for clerk: false. Denial is therefore proven at the API layer from the page context (403 on finance_account:create)."
+      ],
+      "error": null,
+      "finishedAt": "2026-07-28T14:32:44.922Z"
+    },
+    {
+      "id": "P03-BR-04",
+      "name": "finance page renders with no pageerror and no console errors",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:32:44.922Z",
+      "status": "PASS",
+      "durationMs": 36033,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-04_2026-07-28T14-33-09-803Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "allowlistedConsoleErrors": 142,
+      "finishedAt": "2026-07-28T14:33:20.955Z"
+    },
+    {
+      "id": "P03-BR-05",
+      "name": "canonical runtime round trip from the page context",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:33:20.955Z",
+      "status": "PASS",
+      "durationMs": 18229,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-05_2026-07-28T14-33-34-238Z_desktop-1366_ar.png"
+      ],
+      "notes": [
+        "created account code: 199702",
+        "accounts visible: 16"
+      ],
+      "error": null,
+      "finishedAt": "2026-07-28T14:33:39.184Z"
+    },
+    {
+      "id": "P03-BR-06",
+      "name": "unauthenticated fetch to finance API is denied (401)",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:33:39.184Z",
+      "status": "PASS",
+      "durationMs": 15525,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-06_2026-07-28T14-33-47-977Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-28T14:33:54.709Z"
+    },
+    {
+      "id": "P03-BR-07",
+      "name": "Arabic RTL render and English LTR switch",
+      "viewport": "desktop-1366",
+      "locale": "ar+en",
+      "startedAt": "2026-07-28T14:33:54.709Z",
+      "status": "PASS",
+      "durationMs": 17579,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-28T14-34-07-459Z_desktop-1366_ar.png",
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-07_2026-07-28T14-34-09-174Z_desktop-1366_en.png"
+      ],
+      "notes": [],
+      "error": null,
+      "finishedAt": "2026-07-28T14:34:12.288Z"
+    },
+    {
+      "id": "P03-BR-08",
+      "name": "desktop and mobile viewports render the finance page",
+      "viewport": "desktop-1366+mobile-375",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:34:12.288Z",
+      "status": "PASS",
+      "durationMs": 26678,
+      "consoleErrors": null,
+      "pageErrors": null,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-08_2026-07-28T14-34-25-587Z_desktop-1366_ar.png",
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-08_2026-07-28T14-34-37-363Z_mobile-375_ar.png"
+      ],
+      "notes": [
+        "Each viewport runs against a fresh disposable server and canonical identity session. At 768px and below the shell is verified as a closed off-canvas drawer with a visible toggle."
+      ],
+      "error": null,
+      "perViewport": [
+        {
+          "viewport": "desktop-1366",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "allowlistedConsoleErrors": 138
+        },
+        {
+          "viewport": "mobile-375",
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "allowlistedConsoleErrors": 140
+        }
+      ],
+      "finishedAt": "2026-07-28T14:34:38.966Z"
+    },
+    {
+      "id": "P03-BR-09",
+      "name": "unrelated pages still render after finance operations",
+      "viewport": "desktop-1366",
+      "locale": "ar",
+      "startedAt": "2026-07-28T14:34:38.966Z",
+      "status": "PASS",
+      "durationMs": 19593,
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "screenshots": [
+        "docs\\evidence\\phase-03\\browser-screenshots\\P03-BR-09_2026-07-28T14-34-55-163Z_desktop-1366_ar.png"
+      ],
+      "notes": [],
+      "error": null,
+      "allowlistedConsoleErrors": 144,
+      "finishedAt": "2026-07-28T14:34:58.559Z"
+    }
+  ]
+}

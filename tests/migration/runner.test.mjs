@@ -103,11 +103,28 @@ async function testConcurrentRunLock() {
   console.log('PASS: concurrentRunLock');
 }
 
-async function testPostgresDialectStub() {
+async function testPostgresDialectFailsClosed() {
+  // Checkpoint G replaced the Phase 01 stub with a real adapter, so this test
+  // no longer pins the message "PostgreSQL dialect is not yet configured" —
+  // that string asserted the *limitation* the adapter removed.
+  //
+  // The assertion it protects is unchanged and is still exact: without a
+  // connection string the dialect must refuse to open rather than silently
+  // proceed. It is now an async rejection with a machine-readable code, which
+  // is a stronger contract than a message regex.
   const { createDialect } = await import('../../database/dialects/index.mjs');
   const dialect = createDialect('postgres');
-  assert.throws(() => dialect.open(), /PostgreSQL dialect is not yet configured/);
-  console.log('PASS: postgresDialectStub');
+
+  await assert.rejects(
+    () => dialect.open(),
+    (err) => err?.code === 'PG_NO_CONNECTION_STRING',
+    'PostgreSQL dialect opened without a connection string',
+  );
+
+  // And it must not pretend to be usable before connecting.
+  assert.throws(() => dialect.requireClient(), (err) => err?.code === 'PG_NOT_CONNECTED');
+
+  console.log('PASS: postgresDialectFailsClosed');
 }
 
 async function main() {
@@ -118,7 +135,7 @@ async function main() {
   await testMissingDependency();
   await testDownRollback();
   await testConcurrentRunLock();
-  await testPostgresDialectStub();
+  await testPostgresDialectFailsClosed();
   console.log('\nAll migration runner tests passed.');
 }
 

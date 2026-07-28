@@ -84,6 +84,7 @@
   <link rel="stylesheet" href="modules/sales-commercial-pack.css?v=20260626-sc7j-v1">
   <link rel="stylesheet" href="modules/canonical-sales.css?v=20260728-checkpoint-c1-v1">
   <link rel="stylesheet" href="modules/canonical-projects.css?v=20260728-checkpoint-d1-v1">
+  <link rel="stylesheet" href="modules/canonical-engineering.css?v=20260728-checkpoint-d2-v1">
   <link rel="stylesheet" href="modules/pos-deepening.css?v=20260626-posd-v1">
   <link rel="stylesheet" href="modules/omni-communications.css?v=20260626-comm-v1">
   <link rel="stylesheet" href="modules/implementation-methodology.css?v=20260626-im7k-v1">
@@ -2024,7 +2025,7 @@
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260728-checkpoint-d1-projects-v29"></script>
+  <script src="app.js?v=20260728-checkpoint-d2-engineering-v30"></script>
   <!-- T4.2 (Phase 4): Command Center cluster, moved verbatim out of app.js.
        Loads immediately AFTER app.js and BEFORE modules that wrap renderCommandCenter. -->
   <script src="modules/command-center.js?v=20260714-t4.2-v2"></script>
@@ -2269,6 +2270,10 @@
        Work Items; cost and profitability are derived server-side from
        canonical facts. Finance stays the only GL writer. -->
   <script src="modules/canonical-projects.js?v=20260728-checkpoint-d1-v2"></script>
+  <!-- Checkpoint D2: visible Engineering / BOM / Routing / Work Center / MRP
+       workspace. Versioned BOMs and routings; MRP emits governed proposals
+       only and never commits or moves stock. -->
+  <script src="modules/canonical-engineering.js?v=20260728-checkpoint-d2-v1"></script>
   <!-- Checkpoint C5: final Administration renderer uses the canonical Control
        Plane and enforces module/license decisions on the server. -->
   <script src="modules/canonical-administration.js?v=20260728-checkpoint-c5-v1"></script>

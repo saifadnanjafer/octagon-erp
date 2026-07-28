@@ -764,3 +764,94 @@ This ledger maintains a chronological, permanent record of AI model executions a
   invented, did not block this work).
 - **Independent verification:** not claimed.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Checkpoint D2 — Engineering, BOM, Routings, Work Centers, MRP
+
+- **Executing model:** Claude Opus 5 (`claude-opus-5`), knowledge cutoff May 2026.
+- **Agent/runtime:** Claude Code (Anthropic official CLI) on the Claude Agent
+  SDK, Windows 11 Pro 10.0.26200, Node.js v24.18.0.
+- **Reasoning level:** extended thinking enabled, default budget.
+- **Execution date:** 2026-07-28.
+- **D1 recovery (R0):** D1 required **no recovery**. `git ls-remote origin`
+  (querying GitHub directly, not the local cache) returned
+  `5f18230a71243b7f72ded0149a800fd1630154a0` for
+  `refs/heads/build/octagon-projects-manufacturing-assets-maintenance-fleet`,
+  identical to local HEAD. Working tree clean, no unpushed commits, stash
+  untouched (1 pre-existing entry). D1 tests re-run: 23/23 pass. The
+  assignment's premise that D1 was "not yet reliably published" was not
+  accurate and is recorded as such rather than acted on destructively.
+- **Source branch / SHA:** `build/octagon-original-shell-visible-expansion` /
+  `6adcd0df19788867c336d5020fe0d15cb7a123bb`
+- **Target branch:** `build/octagon-projects-manufacturing-assets-maintenance-fleet`
+- **Checkpoints:** D2 only. D3 (manufacturing orders / shop floor / WIP), D4
+  (quality / subcontract), E1 (assets), E2 (maintenance), E3 (fleet) were
+  **not started**.
+- **Files inspected:** migrations 034/036/037/052 and the migration runner;
+  `platform/inventory/ledger.mjs`, `platform/kernel/actions/domain-handler.mjs`,
+  `platform/api/index.mjs`, `services/canonicalClient.js`, `index.html`,
+  `app.js`, `modules/canonical-projects.js`, `modules/appointments.js`,
+  `scripts/test-auth-fixture.mjs`, `scripts/preview-*`.
+- **Files changed:** new — migration `053_engineering_bom_routing_mrp.mjs`;
+  `platform/engineering/{bom,routing,mrp,index}.mjs`;
+  `platform/api/engineering.mjs`; `modules/canonical-engineering.{js,css}`;
+  `tests/checkpoint-d-e/{engineering_bom_routing_mrp,shell_dispatcher}.test.mjs`;
+  evidence `engineering-bom-routing.md`, `mrp-and-planning.md`,
+  `dispatcher-audit.md`. Modified — `platform-runtime-bridge.mjs`,
+  `platform/api/index.mjs`, `services/canonicalClient.js`, `index.html`,
+  `scripts/test-auth-fixture.mjs`,
+  `tests/phase04-finalization/test_auth_fixture.test.mjs`.
+- **Migrations:** 053 only (15 tables, 2 modules, 14 entities, 24 actions).
+  001–052 untouched. Tip is now 053; 054–060 not written.
+- **VNext paths inspected (read-only):** `migrations/615_r3_manufacturing_core.mjs`
+  (19 lines), `vnext/server/modules/manufacturing/manufacturing-engine.js`
+  (4 lines), `vnext/server/modules/manufacturing/mrp-engine.js` (92 lines).
+- **VNext code salvaged:** **none.** The manufacturing donors are stubs; the
+  mrp-engine was read for explosion shape only and shares no code. VNext HEAD
+  `cf7ae4ed73eac91a325c964178036290bc0736c1`, worktree left in the
+  already-dirty state it was found in. Nothing written, cleaned, or branched.
+- **Donor paths inspected:** none opened. Versioned-BOM, phantom-explosion and
+  routing-operation concepts modelled behaviourally after Odoo 19 Community
+  `mrp` and ERPNext `manufacturing` from prior knowledge only.
+- **Direct adaptations:** none. **Clean-room adaptations:** all of D2.
+- **Tests:** Checkpoint D/E 42/42 (D1 23 + D2 engineering 19 — the 8 dispatcher
+  tests were added after this count and bring it to 50). Regressions on this
+  branch: Checkpoint C 100/0, Phase 04 47/0, Phase 04 finalization 100/0,
+  Phase 03 12/0.
+- **Browser runs:** real Chromium against a **disposable** database
+  (`scripts/preview-authenticated-server.mjs`, port 8093), authenticated as
+  the new `test.manufacturing` manufacturing-manager role. Full chain over
+  real HTTP: work centre -> BOM create -> submit -> self-approval DENIED (403
+  BOM_SELF_APPROVAL_DENIED) -> approve as a second actor -> edit-after-approve
+  DENIED (409 BOM_VERSION_NOT_DRAFT) -> routing with operation inheriting the
+  work-centre rate -> routing self-approval DENIED -> MRP policies, demand and
+  run producing 2 requirements and 2 proposals with
+  `created_financial_commitment: false`, `created_stock_movement: false`, and
+  0 purchase orders in the database. Workspace verified mounted on `#pageMrp`
+  (12 tabs, 6 KPIs, RTL, real BOM row). **No screenshot or trace artefacts
+  captured** — the Checkpoint D/E Puppeteer acceptance runner is still not
+  written.
+- **Failures found and fixed (this agent's own mistakes):** MRP netting used
+  the canonical `getQuantBalance()`, which sums every location and therefore
+  nets a supplier receipt to zero; the test caught it (`on_hand 0, expected
+  10`) and it was fixed with an internal-locations-only `internalBalance()`.
+- **Corrections to a previous record:** the D1 report's claim that `app.js`
+  has duplicate `switchPage` definitions was **wrong**. There is exactly one;
+  the only duplicate top-level function is the unrelated, untouched
+  `renderAttendanceCalendar`. Documented in
+  `docs/evidence/checkpoint-d-e/dispatcher-audit.md` and locked by
+  `tests/checkpoint-d-e/shell_dispatcher.test.mjs` (8/8). The previous ledger
+  entry was not edited.
+- **Rework:** the fixture roster assertion moved from 9 to an exact 10 for the
+  new `manufacturing_manager` role (still an exact assertion).
+- **Operational data:** `database.db` MD5 `ab024b2cbf46837d966cdf2966fc7441`
+  and `database.json` MD5 `644bc345d38d9dc1a826018ed5d4aecf` — byte-identical
+  before and after.
+- **Blockers:** PostgreSQL **not executed** (no isolated runtime available);
+  production backup/restore **not executed** by policy.
+- **Deferred:** D3, D4, E1, E2, E3; migrations 054–060; the Chromium
+  acceptance runner and its screenshot/trace artefacts; dedicated concurrency,
+  failure-injection and rollback suites.
+- **Independent verification:** not claimed.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

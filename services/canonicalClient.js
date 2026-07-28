@@ -524,6 +524,58 @@
     approveBilling: (input, opts) => action('projects:billing:approve', input, { ...opts, domain: 'PROJECTS' }),
   };
 
+  // Checkpoint D2 — canonical Engineering / BOM / Routing / MRP transport.
+  const engineering = {
+    dashboard: () => query('/engineering/dashboard'),
+    listBoms: (params) => query('/boms/list', params),
+    getBom: (id) => query(`/boms/detail/${encodeURIComponent(id)}`),
+    listBomVersions: (params) => query('/boms/versions', params),
+    listBomLines: (params) => query('/boms/lines', params),
+    listRoutings: (params) => query('/routings/list', params),
+    getRouting: (id) => query(`/routings/detail/${encodeURIComponent(id)}`),
+    listRoutingOperations: (params) => query('/routings/operations', params),
+    listWorkCenters: (params) => query('/work-centers/list', params),
+    listWorkCenterResources: (params) => query('/work-centers/resources', params),
+    listChangeOrders: (params) => query('/engineering/change-orders', params),
+
+    createBom: (input, opts) => action('engineering:bom:create', input, { ...opts, domain: 'ENGINEERING' }),
+    addBomLine: (input, opts) => action('engineering:bom:add_line', input, { ...opts, domain: 'ENGINEERING' }),
+    removeBomLine: (input, opts) => action('engineering:bom:remove_line', input, { ...opts, domain: 'ENGINEERING' }),
+    submitBom: (input, opts) => action('engineering:bom:submit', input, { ...opts, domain: 'ENGINEERING' }),
+    approveBom: (input, opts) => action('engineering:bom:approve', input, { ...opts, domain: 'ENGINEERING' }),
+    rejectBom: (input, opts) => action('engineering:bom:reject', input, { ...opts, domain: 'ENGINEERING' }),
+    newBomRevision: (input, opts) => action('engineering:bom:new_revision', input, { ...opts, domain: 'ENGINEERING' }),
+    supersedeBom: (input, opts) => action('engineering:bom:supersede', input, { ...opts, domain: 'ENGINEERING' }),
+    createEco: (input, opts) => action('engineering:eco:create', input, { ...opts, domain: 'ENGINEERING' }),
+    approveEco: (input, opts) => action('engineering:eco:approve', input, { ...opts, domain: 'ENGINEERING' }),
+    rejectEco: (input, opts) => action('engineering:eco:reject', input, { ...opts, domain: 'ENGINEERING' }),
+    createWorkCenter: (input, opts) => action('engineering:work_center:create', input, { ...opts, domain: 'ENGINEERING' }),
+    updateWorkCenter: (input, opts) => action('engineering:work_center:update', input, { ...opts, domain: 'ENGINEERING' }),
+    addWorkCenterResource: (input, opts) => action('engineering:work_center:add_resource', input, { ...opts, domain: 'ENGINEERING' }),
+    createRouting: (input, opts) => action('engineering:routing:create', input, { ...opts, domain: 'ENGINEERING' }),
+    addRoutingOperation: (input, opts) => action('engineering:routing:add_operation', input, { ...opts, domain: 'ENGINEERING' }),
+    submitRouting: (input, opts) => action('engineering:routing:submit', input, { ...opts, domain: 'ENGINEERING' }),
+    approveRouting: (input, opts) => action('engineering:routing:approve', input, { ...opts, domain: 'ENGINEERING' }),
+    newRoutingRevision: (input, opts) => action('engineering:routing:new_revision', input, { ...opts, domain: 'ENGINEERING' }),
+  };
+
+  const mrp = {
+    listPolicies: (params) => query('/mrp/policies', params),
+    listDemand: (params) => query('/mrp/demand', params),
+    listRuns: (params) => query('/mrp/runs', params),
+    listRequirements: (params) => query('/mrp/requirements', params),
+    listProposals: (params) => query('/mrp/proposals', params),
+    listShortages: (params) => query('/mrp/shortages', params),
+    worklist: (params) => query('/mrp/worklist', params),
+    report: (report, params) => query('/mrp/reports', { ...(params || {}), report }),
+
+    setPolicy: (input, opts) => action('mrp:policy:set', input, { ...opts, domain: 'MRP' }),
+    recordDemand: (input, opts) => action('mrp:demand:record', input, { ...opts, domain: 'MRP' }),
+    run: (input, opts) => action('mrp:run:execute', input || {}, { ...opts, domain: 'MRP' }),
+    approveProposal: (input, opts) => action('mrp:proposal:approve', input, { ...opts, domain: 'MRP' }),
+    rejectProposal: (input, opts) => action('mrp:proposal:reject', input, { ...opts, domain: 'MRP' }),
+  };
+
   const procurement = {
     listRequests: (params) => query('/procurement/requests', params),
     getRequest: (id) => query(`/procurement/requests/${encodeURIComponent(id)}`),
@@ -646,6 +698,8 @@
     reservations,
     sales,
     projects,
+    engineering,
+    mrp,
     procurement,
     pos,
     workItems,

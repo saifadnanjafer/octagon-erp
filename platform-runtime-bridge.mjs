@@ -34,6 +34,7 @@ import { registerProcurementActions } from './platform/procurement/index.mjs';
 import { registerPosActions } from './platform/pos/index.mjs';
 import { registerWorkItemActions } from './platform/work_items/index.mjs';
 import { registerProjectActions } from './platform/projects/index.mjs';
+import { registerEngineeringActions } from './platform/engineering/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
@@ -167,6 +168,7 @@ export function createPlatformAuthority(dialect) {
   registerPosActions(actionExecutor);
   registerWorkItemActions(actionExecutor);
   registerProjectActions(actionExecutor);
+  registerEngineeringActions(actionExecutor);
   registerControlPlaneActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });

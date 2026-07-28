@@ -52,7 +52,7 @@ export const TEST_COMPANY = 'c_octagon_test';
 export const TEST_BRANCH = 'b_octagon_test';
 
 /**
- * The eight disposable roles required for browser acceptance.
+ * The disposable roles required for browser acceptance.
  * `permissions` are real permission tokens the canonical API checks.
  * `viewer` deliberately gets read only, so denial can be proven, not assumed.
  */
@@ -111,6 +111,20 @@ export const TEST_ROLES = Object.freeze([
       'task:write',
     ],
   },
+  {
+    key: 'manufacturing_manager',
+    login: 'test.manufacturing',
+    name: 'Test Manufacturing Manager',
+    roleId: 'manufacturing.manager',
+    permissions: [
+      'platform:db:read', 'platform:db:write',
+      'engineering:bom:write', 'engineering:bom:approve',
+      'engineering:routing:write', 'engineering:routing:approve',
+      'engineering:work_center:write',
+      'mrp:plan:write', 'mrp:plan:approve',
+      'task:write',
+    ],
+  },
   { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);
 
@@ -157,7 +171,7 @@ export function assertFixtureAllowed({ dbPath, env = process.env } = {}) {
 function nowIso() { return new Date().toISOString(); }
 
 /**
- * Seed tenant/company/branch, the eight disposable users, their roles and
+ * Seed tenant/company/branch, the disposable users, their roles and
  * grants. Idempotent: safe to call twice on the same disposable database.
  *
  * @returns {{users: Array, password: string, tenantId: string, companyId: string}}

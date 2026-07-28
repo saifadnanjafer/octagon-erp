@@ -133,11 +133,11 @@ test('there is no override or force flag', () => {
 // reviewed change rather than something that drifts in unnoticed.
 test('seeding creates every disposable role', () => {
   const seeded = seedTestIdentities(db, { dbPath, env: ALLOWED_ENV });
-  assert.equal(seeded.users.length, 9);
+  assert.equal(seeded.users.length, 10);
   const keys = seeded.users.map((u) => u.key).sort();
   assert.deepStrictEqual(keys, [
-    'finance', 'inventory', 'pos', 'procurement', 'project_manager',
-    'sales', 'sysadmin', 'viewer', 'workshop',
+    'finance', 'inventory', 'manufacturing_manager', 'pos', 'procurement',
+    'project_manager', 'sales', 'sysadmin', 'viewer', 'workshop',
   ]);
 });
 

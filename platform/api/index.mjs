@@ -26,6 +26,7 @@ import { createActionExecutor } from '../kernel/actions/index.mjs';
 import { handleFinanceQuery } from './finance.mjs';
 import { handleCommercialQuery } from './commercial.mjs';
 import { handleProjectsQuery } from './projects.mjs';
+import { handleEngineeringQuery } from './engineering.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 
 export class ApiError extends Error {
@@ -169,6 +170,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const projectsResult = handleProjectsQuery({ dialect, ctx, resource, recordId, query });
         if (projectsResult.error) return sendJson(res, projectsResult.status || 404, envelope(null, projectsResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(projectsResult.data, null, projectsResult.meta, ctx.correlationId));
+      }
+
+      if (['engineering', 'boms', 'routings', 'work-centers', 'mrp'].includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const engResult = handleEngineeringQuery({ dialect, ctx, namespace, resource, recordId, query });
+        if (engResult.error) return sendJson(res, engResult.status || 404, envelope(null, engResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(engResult.data, null, engResult.meta, ctx.correlationId));
       }
 
       if (namespace === 'control-plane' && resource && req.method === 'GET') {

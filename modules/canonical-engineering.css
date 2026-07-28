@@ -1,0 +1,366 @@
+/* Checkpoint D2 — canonical Engineering & MRP workspace.
+ *
+ * Every selector is scoped under .ce-* / [data-ce-workspace]. No bare element
+ * or global class selectors, so this file can never leak styling into the rest
+ * of the original shell (see the earlier .btn-secondary contrast regression).
+ * Theme-aware: colours come from the shell's CSS custom properties with
+ * explicit fallbacks so both light and dark skins stay legible.
+ */
+
+.ce-workspace {
+  --ce-surface: var(--card-bg, var(--surface, #ffffff));
+  --ce-ink: var(--text-primary, var(--text, #1f2733));
+  --ce-muted: var(--text-secondary, #667085);
+  --ce-line: var(--border-color, rgba(120, 130, 150, 0.22));
+  --ce-accent: var(--primary-color, #2f6fed);
+  --ce-warn: var(--warning-color, #c77700);
+  --ce-danger: var(--danger-color, #c0392b);
+  --ce-ok: var(--success-color, #1e8e5a);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  color: var(--ce-ink);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------- hero */
+
+.ce-workspace .ce-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border: 1px solid var(--ce-line);
+  border-radius: 14px;
+  background: var(--ce-surface);
+}
+.ce-workspace .ce-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ce-muted);
+  margin-bottom: 6px;
+}
+.ce-workspace .ce-hero h2 { margin: 0 0 6px; font-size: 22px; }
+.ce-workspace .ce-hero p { margin: 0; color: var(--ce-muted); max-width: 62ch; }
+.ce-workspace .ce-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.ce-workspace .ce-authority,
+.ce-workspace .ce-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ce-line);
+  font-size: 12px;
+  color: var(--ce-muted);
+  background: transparent;
+}
+.ce-workspace .ce-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-line);
+  background: transparent;
+  color: var(--ce-ink);
+  cursor: pointer;
+}
+.ce-workspace .ce-icon-btn:hover { border-color: var(--ce-accent); color: var(--ce-accent); }
+
+/* ---------------------------------------------------------------- tabs */
+
+.ce-workspace .ce-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--ce-line);
+  border-radius: 12px;
+  background: var(--ce-surface);
+}
+.ce-workspace .ce-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ce-muted);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.ce-workspace .ce-tabs button:hover { color: var(--ce-ink); border-color: var(--ce-line); }
+.ce-workspace .ce-tabs button.active {
+  color: #fff;
+  background: var(--ce-accent);
+  border-color: var(--ce-accent);
+}
+
+/* -------------------------------------------------------------- panels */
+
+.ce-workspace .ce-body { display: flex; flex-direction: column; gap: 16px; }
+.ce-workspace .ce-panel {
+  padding: 16px 18px;
+  border: 1px solid var(--ce-line);
+  border-radius: 12px;
+  background: var(--ce-surface);
+}
+.ce-workspace .ce-panel h3 { margin: 0 0 12px; font-size: 15px; }
+.ce-workspace .ce-hint {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-line);
+  color: var(--ce-muted);
+  font-size: 12px;
+  background: transparent;
+}
+.ce-workspace .ce-notice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--ce-ok);
+  color: var(--ce-ok);
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------------- kpis */
+
+.ce-workspace .ce-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+.ce-workspace .ce-kpi {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--ce-line);
+  border-radius: 12px;
+  background: var(--ce-surface);
+}
+.ce-workspace .ce-kpi i { font-size: 20px; color: var(--ce-accent); }
+.ce-workspace .ce-kpi strong { display: block; font-size: 19px; line-height: 1.2; }
+.ce-workspace .ce-kpi span { display: block; font-size: 12px; color: var(--ce-muted); }
+.ce-workspace .ce-kpi small { display: block; font-size: 11px; color: var(--ce-muted); opacity: 0.8; }
+
+/* ---------------------------------------------------------------- forms */
+
+.ce-workspace .ce-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.ce-workspace .ce-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ce-muted);
+}
+.ce-workspace .ce-form input,
+.ce-workspace .ce-form select {
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-line);
+  background: transparent;
+  color: var(--ce-ink);
+  font-size: 13px;
+  min-height: 36px;
+}
+.ce-workspace .ce-form input:focus,
+.ce-workspace .ce-form select:focus {
+  outline: 2px solid var(--ce-accent);
+  outline-offset: 1px;
+}
+.ce-workspace .ce-form button {
+  min-height: 36px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-accent);
+  background: var(--ce-accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+.ce-workspace .ce-form button:disabled { opacity: 0.55; cursor: not-allowed; }
+.ce-workspace .ce-form button.ce-secondary {
+  background: transparent;
+  color: var(--ce-accent);
+}
+
+/* --------------------------------------------------------------- tables */
+
+.ce-workspace .ce-table-wrap { overflow-x: auto; }
+.ce-workspace .ce-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 520px;
+}
+.ce-workspace .ce-table th,
+.ce-workspace .ce-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--ce-line);
+  text-align: start;
+  vertical-align: middle;
+}
+.ce-workspace .ce-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ce-muted);
+  font-weight: 600;
+}
+.ce-workspace .ce-table tbody tr:hover { background: color-mix(in srgb, var(--ce-accent) 7%, transparent); }
+.ce-workspace .ce-row-active { background: color-mix(in srgb, var(--ce-accent) 12%, transparent); }
+.ce-workspace .ce-row-warn { background: color-mix(in srgb, var(--ce-warn) 12%, transparent); }
+.ce-workspace .ce-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ce-workspace .ce-link {
+  padding: 4px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--ce-line);
+  background: transparent;
+  color: var(--ce-accent);
+  cursor: pointer;
+  font-size: 12px;
+}
+.ce-workspace .ce-link:hover { border-color: var(--ce-accent); }
+.ce-workspace .ce-link.ce-danger { color: var(--ce-danger); }
+.ce-workspace .ce-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ce-muted);
+}
+
+/* --------------------------------------------------------------- badges */
+
+.ce-workspace .ce-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--ce-line);
+  font-size: 11px;
+  color: var(--ce-muted);
+  white-space: nowrap;
+}
+.ce-workspace .ce-state-active,
+.ce-workspace .ce-state-approved,
+.ce-workspace .ce-state-achieved,
+.ce-workspace .ce-state-completed,
+.ce-workspace .ce-state-released,
+.ce-workspace .ce-state-resolved,
+.ce-workspace .ce-state-invoiced { color: var(--ce-ok); border-color: var(--ce-ok); }
+.ce-workspace .ce-state-draft,
+.ce-workspace .ce-state-planned,
+.ce-workspace .ce-state-pending,
+.ce-workspace .ce-state-submitted { color: var(--ce-muted); }
+.ce-workspace .ce-state-on-hold,
+.ce-workspace .ce-state-on_hold,
+.ce-workspace .ce-state-partially-released,
+.ce-workspace .ce-state-partially_released,
+.ce-workspace .ce-state-high,
+.ce-workspace .ce-state-revised { color: var(--ce-warn); border-color: var(--ce-warn); }
+.ce-workspace .ce-state-cancelled,
+.ce-workspace .ce-state-rejected,
+.ce-workspace .ce-state-missed,
+.ce-workspace .ce-state-critical { color: var(--ce-danger); border-color: var(--ce-danger); }
+
+/* ------------------------------------------------------------ wbs tree */
+
+.ce-workspace .ce-wbs ul { list-style: none; margin: 0; padding-inline-start: 18px; }
+.ce-workspace .ce-wbs > ul { padding-inline-start: 0; }
+.ce-workspace .ce-wbs-level > li { margin: 6px 0; border-inline-start: 2px solid var(--ce-line); padding-inline-start: 12px; }
+.ce-workspace .ce-wbs-node { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ce-workspace .ce-wbs-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ce-muted); }
+.ce-workspace .ce-wbs-tasks { margin: 4px 0; }
+.ce-workspace .ce-wbs-tasks li {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ce-muted);
+  padding: 3px 0;
+}
+.ce-workspace .ce-docs { list-style: none; margin: 0; padding: 0; }
+.ce-workspace .ce-docs li { display: flex; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--ce-line); }
+
+/* --------------------------------------------------------- report tabs */
+
+.ce-workspace .ce-report-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.ce-workspace .ce-report-tabs button {
+  padding: 7px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-line);
+  background: transparent;
+  color: var(--ce-muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+.ce-workspace .ce-report-tabs button.active {
+  color: #fff;
+  background: var(--ce-accent);
+  border-color: var(--ce-accent);
+}
+
+/* -------------------------------------------------------------- states */
+
+.ce-workspace .ce-state {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 34px 18px;
+  border: 1px dashed var(--ce-line);
+  border-radius: 12px;
+  color: var(--ce-muted);
+}
+.ce-workspace .ce-state i { font-size: 26px; opacity: 0.75; }
+.ce-workspace .ce-state strong { color: var(--ce-ink); font-size: 14px; }
+.ce-workspace .ce-state span { font-size: 12px; }
+.ce-workspace .ce-error { border-style: solid; border-color: var(--ce-danger); color: var(--ce-danger); }
+.ce-workspace .ce-error strong { color: var(--ce-danger); }
+.ce-workspace .ce-error button {
+  padding: 7px 15px;
+  border-radius: 9px;
+  border: 1px solid var(--ce-danger);
+  background: transparent;
+  color: var(--ce-danger);
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------- responsive */
+
+@media (max-width: 900px) {
+  .ce-workspace { padding: 12px; }
+  .ce-workspace .ce-hero { flex-direction: column; }
+  .ce-workspace .ce-tabs button span { display: none; }
+  .ce-workspace .ce-tabs button { padding: 9px 11px; }
+}
+@media (max-width: 600px) {
+  .ce-workspace .ce-form { grid-template-columns: 1fr; }
+  .ce-workspace .ce-kpis { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}

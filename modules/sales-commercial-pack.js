@@ -191,6 +191,7 @@
   }
 
   function renderPanel() {
+    if (root.__canonicalSalesAuthorityActive === true) return;
     const host = document.getElementById('salesCrmBody') || document.getElementById('pageSales');
     if (!host) return;
     const m = model();

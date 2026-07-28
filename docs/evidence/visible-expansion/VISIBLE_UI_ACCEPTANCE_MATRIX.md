@@ -105,6 +105,32 @@ the literal contract.
   this one; collapsing the sidebar fixes it. Pre-existing, flagged separately,
   not changed here.
 
+## Checkpoint C1 — canonical Sales (2026-07-28)
+
+The earlier statement that Sales was a read-only console tab is superseded.
+
+| Gate | Result |
+|---|---|
+| Original Sales page replaced by canonical workspace | PASS |
+| Delayed Phase 7J legacy pack retired | PASS |
+| 11 required Sales areas visible | PASS |
+| Full lead-to-return/credit-note browser lifecycle | PASS |
+| Opportunity follow-up activity | PASS |
+| Project/attachment/profitability/timeline order detail | PASS |
+| Explicit warehouse selection | PASS |
+| Inventory delivery consequence | PASS |
+| Finance invoice and credit-note consequences | PASS |
+| Sales operational role succeeds | PASS |
+| Restricted viewer denied server-side | PASS |
+| Arabic RTL / English LTR | PASS |
+| Desktop / tablet 768 / mobile 375 | PASS |
+| No page-level mobile overflow | PASS |
+| No unexpected browser/runtime/resource error | PASS |
+| Evidence screenshots | PASS — 8 PNGs |
+
+Trace: `test-artifacts/checkpoint-c-2026-07-28T02-17-32-594Z/`,
+20/20 in `Chrome/150.0.7871.24`.
+
 ## Acceptance gate status
 
 | Gate | Status |

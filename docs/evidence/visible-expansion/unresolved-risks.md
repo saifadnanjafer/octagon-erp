@@ -67,9 +67,28 @@
    conversion of the 79 legacy commercial call sites needs incremental browser
    verification after each step.
 
+## Checkpoint C1 status addendum — 2026-07-28
+
+The following earlier statements are superseded:
+
+- Sales is no longer a read-only console surface.
+- Sales lifecycle commands executed end-to-end in authenticated Chromium.
+- Screenshots are available and manually reviewed.
+- The product/UOM/category bootstrap gap no longer blocks disposable Sales
+  acceptance because governed category actions are available on this branch.
+
+Remaining hard risks:
+
+1. The owner-approved opening inventory accounting date is still absent.
+   Operational-source migration remains fail-closed.
+2. Phase 04 domain retirement/cutover is still not authorized or claimed.
+3. Checkpoints C2–C6 remain open at this point in branch history.
+4. Legacy writers remain outside the now-retired Sales page; later proof gates
+   must pass before any broad cutover classification.
+
 ## Deferred
 
-Donor licensing and later-domain authority risks are not assessed. No donor
-repository has been opened in any checkpoint so far, and VNext has not been
-inspected — the gaps encountered have been wiring and action-surface gaps, not
-missing capability.
+Later-domain donor licensing and authority risks remain to be assessed in their
+own checkpoints. For C1, the frozen project-owned VNext Sales engine plus Odoo
+19 and ERPNext Sales lifecycle sources were inspected read-only; only clean-room
+behavior was adapted, and no donor code was copied.

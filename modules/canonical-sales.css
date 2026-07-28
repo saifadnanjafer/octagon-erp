@@ -1,0 +1,615 @@
+#pageSales .cs-workspace {
+  --cs-accent: #0ea5e9;
+  --cs-accent-2: #14b8a6;
+  --cs-border: color-mix(in srgb, var(--text, #e5e7eb) 14%, transparent);
+  --cs-panel: color-mix(in srgb, var(--bg-card, #111827) 94%, transparent);
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  color: var(--text, #e5e7eb);
+}
+
+#pageSales .cs-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  padding: clamp(20px, 3vw, 34px);
+  border: 1px solid var(--cs-border);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(14, 165, 233, .22), transparent 38%),
+    radial-gradient(circle at 88% 90%, rgba(20, 184, 166, .16), transparent 38%),
+    var(--cs-panel);
+  box-shadow: 0 20px 55px rgba(2, 8, 23, .22);
+}
+
+#pageSales .cs-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+#pageSales .cs-hero h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.05;
+}
+
+#pageSales .cs-hero p,
+#pageSales .cs-card-head p {
+  margin: 8px 0 0;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.65;
+}
+
+#pageSales .cs-hero-actions,
+#pageSales .cs-actions,
+#pageSales .cs-report-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+#pageSales .cs-authority {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid rgba(45, 212, 191, .35);
+  border-radius: 999px;
+  background: rgba(20, 184, 166, .1);
+  color: #5eead4;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#pageSales .cs-icon-btn,
+#pageSales .cs-small,
+#pageSales .cs-form button,
+#pageSales .cs-state button,
+#pageSales .cs-report-tabs button {
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-card, #111827) 78%, white 4%);
+  color: var(--text, #e5e7eb);
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+#pageSales .cs-icon-btn {
+  width: 40px;
+  height: 40px;
+}
+
+#pageSales .cs-icon-btn:hover,
+#pageSales .cs-small:hover,
+#pageSales .cs-form button:hover,
+#pageSales .cs-state button:hover,
+#pageSales .cs-report-tabs button:hover,
+#pageSales .cs-report-tabs button.active {
+  border-color: rgba(56, 189, 248, .55);
+  background: rgba(14, 165, 233, .15);
+  transform: translateY(-1px);
+}
+
+#pageSales .cs-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  scrollbar-width: thin;
+}
+
+#pageSales .cs-tabs button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--cs-border);
+  border-radius: 13px;
+  background: var(--cs-panel);
+  color: var(--text-muted, #94a3b8);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+#pageSales .cs-tabs button.active {
+  border-color: rgba(56, 189, 248, .55);
+  background: linear-gradient(135deg, rgba(14, 165, 233, .2), rgba(20, 184, 166, .12));
+  color: #e0f2fe;
+  box-shadow: inset 0 -2px 0 var(--cs-accent);
+}
+
+#pageSales .cs-body,
+#pageSales .cs-grid-two {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+#pageSales .cs-grid-two {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+#pageSales .cs-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#pageSales .cs-kpi,
+#pageSales .cs-card,
+#pageSales .cs-drawer {
+  border: 1px solid var(--cs-border);
+  border-radius: 18px;
+  background: var(--cs-panel);
+  box-shadow: 0 14px 35px rgba(2, 8, 23, .12);
+}
+
+#pageSales .cs-kpi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+}
+
+#pageSales .cs-kpi > i {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: rgba(14, 165, 233, .14);
+  color: #38bdf8;
+}
+
+#pageSales .cs-kpi div {
+  display: grid;
+  min-width: 0;
+}
+
+#pageSales .cs-kpi strong {
+  overflow: hidden;
+  font-size: 22px;
+  text-overflow: ellipsis;
+}
+
+#pageSales .cs-kpi span {
+  color: var(--text, #e5e7eb);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#pageSales .cs-kpi small {
+  color: var(--text-muted, #94a3b8);
+}
+
+#pageSales .cs-card,
+#pageSales .cs-drawer {
+  min-width: 0;
+  padding: clamp(16px, 2.4vw, 24px);
+}
+
+#pageSales .cs-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+#pageSales .cs-card-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#pageSales .cs-table-wrap {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+}
+
+#pageSales .cs-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+#pageSales .cs-table th,
+#pageSales .cs-table td {
+  padding: 12px 13px;
+  border-bottom: 1px solid var(--cs-border);
+  text-align: start;
+  vertical-align: middle;
+}
+
+#pageSales .cs-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: color-mix(in srgb, var(--bg-card, #111827) 96%, black 4%);
+  color: var(--text-muted, #94a3b8);
+  font-size: 10px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+#pageSales .cs-table tr:last-child td {
+  border-bottom: 0;
+}
+
+#pageSales .cs-table tbody tr:hover {
+  background: rgba(56, 189, 248, .045);
+}
+
+#pageSales .cs-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7dd3fc;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#pageSales .cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--cs-border);
+  border-radius: 999px;
+  background: rgba(148, 163, 184, .1);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+#pageSales [class*="cs-state-done"],
+#pageSales [class*="cs-state-sale"],
+#pageSales [class*="cs-state-accepted"],
+#pageSales [class*="cs-state-approved"],
+#pageSales [class*="cs-state-posted"],
+#pageSales [class*="cs-state-reserved"],
+#pageSales [class*="cs-state-won"] {
+  border-color: rgba(52, 211, 153, .35);
+  background: rgba(16, 185, 129, .1);
+  color: #6ee7b7;
+}
+
+#pageSales [class*="cs-state-cancel"],
+#pageSales [class*="cs-state-lost"],
+#pageSales [class*="cs-state-shortage"] {
+  border-color: rgba(248, 113, 113, .35);
+  background: rgba(239, 68, 68, .1);
+  color: #fca5a5;
+}
+
+#pageSales [class*="cs-state-partial"],
+#pageSales [class*="cs-state-sent"],
+#pageSales [class*="cs-state-open"] {
+  border-color: rgba(251, 191, 36, .35);
+  background: rgba(245, 158, 11, .1);
+  color: #fcd34d;
+}
+
+#pageSales .cs-context {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 16px;
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  background: rgba(14, 165, 233, .06);
+}
+
+#pageSales .cs-context label {
+  display: grid;
+  gap: 6px;
+  min-width: min(360px, 100%);
+  color: var(--text-muted, #94a3b8);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+#pageSales .cs-context label span i {
+  margin-inline-end: 7px;
+}
+
+#pageSales .cs-context select {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  background: var(--surface, #111827);
+  color: var(--text, #e5e7eb);
+}
+
+#pageSales .cs-context small {
+  color: var(--text-muted, #94a3b8);
+}
+
+#pageSales .cs-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#pageSales .cs-form-inline {
+  grid-template-columns: 2fr 1fr 1fr auto;
+  align-items: end;
+}
+
+#pageSales .cs-form label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text-muted, #94a3b8);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+#pageSales .cs-form input,
+#pageSales .cs-form select,
+#pageSales .cs-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  outline: 0;
+  background: color-mix(in srgb, var(--bg, #0f172a) 82%, transparent);
+  color: var(--text, #e5e7eb);
+  font: inherit;
+}
+
+#pageSales .cs-form input:focus,
+#pageSales .cs-form select:focus,
+#pageSales .cs-form textarea:focus {
+  border-color: rgba(56, 189, 248, .7);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, .12);
+}
+
+#pageSales .cs-form button {
+  min-height: 41px;
+  padding: 0 16px;
+  border-color: rgba(56, 189, 248, .4);
+  background: linear-gradient(135deg, rgba(14, 165, 233, .95), rgba(13, 148, 136, .9));
+  color: white;
+  font-weight: 800;
+}
+
+#pageSales .cs-form button i {
+  margin-inline-end: 7px;
+}
+
+#pageSales .cs-span-two {
+  grid-column: span 2;
+}
+
+#pageSales .cs-small {
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+#pageSales .cs-small.cs-success {
+  border-color: rgba(52, 211, 153, .4);
+  color: #6ee7b7;
+}
+
+#pageSales .cs-small.cs-danger {
+  border-color: rgba(248, 113, 113, .4);
+  color: #fca5a5;
+}
+
+#pageSales .cs-lifecycle {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#pageSales .cs-lifecycle li {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  position: relative;
+  text-align: center;
+}
+
+#pageSales .cs-lifecycle li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  inset-inline-start: 65%;
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(56, 189, 248, .65), transparent);
+}
+
+#pageSales .cs-lifecycle li > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  z-index: 1;
+  border: 1px solid rgba(56, 189, 248, .4);
+  border-radius: 50%;
+  background: #0f293d;
+  color: #7dd3fc;
+  font-weight: 900;
+}
+
+#pageSales .cs-lifecycle strong,
+#pageSales .cs-lifecycle small {
+  display: block;
+  font-size: 10px;
+}
+
+#pageSales .cs-lifecycle small {
+  color: var(--text-muted, #94a3b8);
+}
+
+#pageSales .cs-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 170px;
+  padding: 24px;
+  border: 1px dashed var(--cs-border);
+  border-radius: 16px;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+}
+
+#pageSales .cs-empty {
+  flex-direction: column;
+}
+
+#pageSales .cs-error {
+  border-color: rgba(248, 113, 113, .4);
+  background: rgba(239, 68, 68, .06);
+  color: #fca5a5;
+}
+
+#pageSales .cs-state p {
+  margin: 5px 0;
+}
+
+#pageSales .cs-state button {
+  padding: 8px 12px;
+}
+
+#pageSales .cs-notice {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 11px 14px;
+  border: 1px solid rgba(52, 211, 153, .32);
+  border-radius: 12px;
+  background: rgba(16, 185, 129, .08);
+  color: #6ee7b7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#pageSales .cs-drawer {
+  margin-top: 18px;
+  border-color: rgba(56, 189, 248, .3);
+  background: color-mix(in srgb, var(--bg-card, #111827) 96%, #0ea5e9 4%);
+}
+
+#pageSales .cs-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#pageSales .cs-meta-grid span {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 11px;
+}
+
+#pageSales .cs-meta-grid b {
+  color: var(--text, #e5e7eb);
+}
+
+#pageSales .cs-report-tabs {
+  margin-bottom: 16px;
+}
+
+#pageSales .cs-report-tabs button {
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 11px;
+}
+
+[dir="ltr"] #pageSales .cs-lifecycle li:not(:last-child)::after {
+  background: linear-gradient(90deg, rgba(56, 189, 248, .65), transparent);
+}
+
+[dir="rtl"] #pageSales .cs-lifecycle li:not(:last-child)::after {
+  background: linear-gradient(270deg, rgba(56, 189, 248, .65), transparent);
+}
+
+@media (max-width: 1100px) {
+  #pageSales .cs-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #pageSales .cs-grid-two {
+    grid-template-columns: 1fr;
+  }
+  #pageSales .cs-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #pageSales .cs-form-inline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #pageSales .cs-lifecycle {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  #pageSales .cs-lifecycle li::after {
+    display: none;
+  }
+  #pageSales .cs-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  #pageSales .cs-hero {
+    flex-direction: column;
+  }
+  #pageSales .cs-hero-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  #pageSales .cs-authority {
+    max-width: calc(100% - 52px);
+  }
+  #pageSales .cs-kpis,
+  #pageSales .cs-form,
+  #pageSales .cs-form-inline,
+  #pageSales .cs-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  #pageSales .cs-span-two {
+    grid-column: auto;
+  }
+  #pageSales .cs-context {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  #pageSales .cs-lifecycle {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #pageSales .cs-card,
+  #pageSales .cs-drawer {
+    padding: 14px;
+    border-radius: 14px;
+  }
+}

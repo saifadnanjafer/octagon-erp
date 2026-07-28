@@ -68,3 +68,25 @@ VNext is the first place to look, and that inspection will be recorded here.
 No donor repository was read. Odoo and NocoBase are named above only as
 conceptual alternatives that were considered and rejected on architectural
 grounds, not inspected file by file.
+
+## Checkpoint C1 addendum — Sales lifecycle (2026-07-28)
+
+This supersedes the Wave 1 statement that VNext and donor sources were not
+opened. They were inspected read-only for C1. No donor file was modified and no
+third-party code was copied.
+
+| Source | Exact paths inspected | Ownership / license | Decision |
+|---|---|---|---|
+| Frozen Octagon VNext | `vnext/server/modules/sales/sales-engine.js`; `vnext/client/modules/sales/index.js`; `migrations/612_r3_sales_core.mjs` | project-owned, proprietary | behavior reference only; clean-room adaptation |
+| Odoo 19 | `addons/sale/models/sale_order.py`; `addons/sale/models/sale_order_line.py`; `addons/crm/models/crm_lead.py`; related tests/views | LGPL-3.0 | comparison only; no code copied |
+| ERPNext develop | `erpnext/selling/doctype/quotation/quotation.py`; `erpnext/selling/doctype/sales_order/sales_order.py` | GPL-3.0 | comparison only; no code copied |
+
+Selected approach: preserve Octagon's canonical ActionExecutor, Inventory,
+Finance, outbox, audit, idempotency, and original-shell conventions, then
+clean-room implement the missing Sales lifecycle and visible workspace.
+
+Target paths include migration 046, `platform/sales/lifecycle.mjs`,
+`platform/sales/orders.mjs`, `platform/api/commercial.mjs`,
+`services/canonicalClient.js`, and `modules/canonical-sales.*`.
+
+Frozen VNext remained read-only.

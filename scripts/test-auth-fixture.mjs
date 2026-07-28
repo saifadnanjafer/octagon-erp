@@ -60,10 +60,19 @@ export const TEST_ROLES = Object.freeze([
   { key: 'sysadmin',   login: 'test.sysadmin',   name: 'Test System Administrator', roleId: 'system.admin',       permissions: ['platform:db:read', 'platform:db:write'], isOwner: true },
   { key: 'workshop',   login: 'test.workshop',   name: 'Test Workshop Manager',     roleId: 'workshop.manager',   permissions: ['platform:db:read', 'platform:db:write'] },
   { key: 'finance',    login: 'test.finance',    name: 'Test Finance Manager',      roleId: 'finance.manager',    permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'inventory',  login: 'test.inventory',  name: 'Test Inventory Operator',   roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'sales',      login: 'test.sales',      name: 'Test Sales User',           roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'procurement',login: 'test.procurement',name: 'Test Procurement User',     roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
-  { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'workshop.user',      permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'inventory',  login: 'test.inventory',  name: 'Test Inventory Operator',   roleId: 'inventory.operator', permissions: ['platform:db:read', 'platform:db:write'] },
+  {
+    key: 'sales',
+    login: 'test.sales',
+    name: 'Test Sales User',
+    roleId: 'sales.user',
+    permissions: [
+      'platform:db:read', 'platform:db:write', 'crm:lead:write',
+      'sales:order:write', 'sales:invoice:write', 'sales:commission:write',
+    ],
+  },
+  { key: 'procurement',login: 'test.procurement',name: 'Test Procurement User',     roleId: 'procurement.user',   permissions: ['platform:db:read', 'platform:db:write'] },
+  { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'pos.operator',       permissions: ['platform:db:read', 'platform:db:write'] },
   { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);
 

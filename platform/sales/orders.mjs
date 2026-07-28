@@ -2,10 +2,20 @@ import crypto from 'node:crypto';
 import { calculateUnitPrice } from '../commercial/pricing.mjs';
 import { createPicking } from '../wms/operations.mjs';
 import { reserveStock } from '../inventory/reservations.mjs';
-import { postSourceFact } from '../finance/engine.mjs';
+import { postSourceFact, computeTax } from '../finance/engine.mjs';
 
 function makeId(prefix = 'so') {
   return `${prefix}_${crypto.randomBytes(8).toString('hex')}`;
+}
+
+function parseAttachments(value) {
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
 }
 
 export function createQuotation(db, quotationData) {
@@ -16,6 +26,10 @@ export function createQuotation(db, quotationData) {
     pricelist_id = null,
     currency_id = 'IQD',
     order_date = new Date().toISOString().split('T')[0],
+    validity_date = null,
+    notes = '',
+    attachments = [],
+    project_ref = null,
     lines = [],
   } = quotationData;
 
@@ -33,17 +47,19 @@ export function createQuotation(db, quotationData) {
 
   db.prepare(`
     INSERT INTO sale_orders (
-      id, company_id, name, partner_id, pricelist_id, currency_id, state, amount_untaxed, amount_tax, amount_total, order_date, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, 'draft', 0.0, 0.0, 0.0, ?, ?)
-  `).run(orderId, company_id, name, partner_id, pricelist_id, currency_id, order_date, now);
+      id, company_id, name, partner_id, pricelist_id, currency_id, state, amount_untaxed, amount_tax, amount_total, order_date, created_at,
+      quotation_state, validity_date, notes, attachments, project_ref
+    ) VALUES (?, ?, ?, ?, ?, ?, 'draft', 0.0, 0.0, 0.0, ?, ?, 'draft', ?, ?, ?, ?)
+  `).run(orderId, company_id, name, partner_id, pricelist_id, currency_id, order_date, now, validity_date, String(notes || ''), JSON.stringify(attachments || []), project_ref || null);
 
   const insertLine = db.prepare(`
     INSERT INTO sale_order_lines (
       id, order_id, product_id, name, product_uom_qty, qty_delivered, qty_invoiced,
-      product_uom, price_unit, discount, price_subtotal, price_total, tax_id, created_at
-    ) VALUES (?, ?, ?, ?, ?, 0.0, 0.0, ?, ?, ?, ?, ?, ?, ?)
+      product_uom, price_unit, discount, price_subtotal, price_total, tax_id, tax_amount, created_at
+    ) VALUES (?, ?, ?, ?, ?, 0.0, 0.0, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
+  let discountTotal = 0;
   for (const line of lines) {
     const variant = db.prepare(`
       SELECT v.*, t.uom_id FROM product_variants v
@@ -57,7 +73,19 @@ export function createQuotation(db, quotationData) {
     const discount = line.discount !== undefined ? Number(line.discount) : pricingQuote.discount;
     const qty = Number(line.product_uom_qty || 1.0);
     const subtotal = qty * priceUnit * (1 - discount / 100);
-    const total = subtotal; // Tax can be applied via line tax_id if provided
+    discountTotal += qty * priceUnit * (discount / 100);
+
+    // Tax is computed through the canonical finance engine on the discounted
+    // line base, mirroring the pos:order:process tax-trace path. Untaxed
+    // lines keep the historical total = subtotal behavior.
+    let taxAmount = 0;
+    if (line.tax_id) {
+      const taxQuote = computeTax(db, { companyId: company_id }, {
+        lines: [{ tax_id: line.tax_id, price_unit: subtotal, quantity: 1, description: line.name || variant.name }],
+      });
+      taxAmount = Number(taxQuote.total_tax);
+    }
+    const total = subtotal + taxAmount;
 
     insertLine.run(
       makeId('sol'),
@@ -71,33 +99,70 @@ export function createQuotation(db, quotationData) {
       subtotal,
       total,
       line.tax_id || '',
+      taxAmount,
       now
     );
   }
 
   recalculateOrderTotals(db, orderId);
+  db.prepare('UPDATE sale_orders SET discount_total = ? WHERE id = ?').run(discountTotal, orderId);
   return getSaleOrder(db, orderId);
 }
 
 export function getSaleOrder(db, id) {
   const order = db.prepare(`SELECT * FROM sale_orders WHERE id = ?`).get(id);
   if (!order) return null;
-  const lines = db.prepare(`SELECT * FROM sale_order_lines WHERE order_id = ?`).all(id);
-  return { ...order, lines };
+  const lines = db.prepare(`
+    SELECT sol.*,
+           COALESCE(f.delivered_quantity, sol.qty_delivered, 0) AS delivered_quantity,
+           COALESCE(f.invoiced_quantity, sol.qty_invoiced, 0) AS invoiced_quantity
+    FROM sale_order_lines sol
+    LEFT JOIN sale_order_line_fulfilment f ON f.sale_order_line_id = sol.id
+    WHERE sol.order_id = ?
+    ORDER BY sol.created_at, sol.id
+  `).all(id);
+  const cost = lines.reduce((sum, line) => {
+    const variant = db.prepare('SELECT standard_price FROM product_variants WHERE id = ?').get(line.product_id);
+    return sum + Number(line.product_uom_qty || 0) * Number(variant?.standard_price || 0);
+  }, 0);
+  let timeline = [];
+  try {
+    timeline = db.prepare(`
+      SELECT action, result, failure_code, actor_id, occurred_at
+      FROM platform_audit_log
+      WHERE resource_id = ? OR after_value LIKE ?
+      ORDER BY occurred_at, id
+      LIMIT 100
+    `).all(id, `%${id}%`);
+  } catch (_) {
+    timeline = [];
+  }
+  return {
+    ...order,
+    attachments: parseAttachments(order.attachments),
+    lines,
+    profitability: {
+      revenue: Number(order.amount_untaxed || 0),
+      cost,
+      margin: Number(order.amount_untaxed || 0) - cost,
+    },
+    timeline,
+    payment_balance_link: { page: 'finance', partner_id: order.partner_id },
+  };
 }
 
 function recalculateOrderTotals(db, orderId) {
   const res = db.prepare(`
-    SELECT SUM(price_subtotal) as untaxed, SUM(price_total) as total FROM sale_order_lines WHERE order_id = ?
+    SELECT SUM(price_subtotal) as untaxed, SUM(tax_amount) as tax, SUM(price_total) as total FROM sale_order_lines WHERE order_id = ?
   `).get(orderId);
 
   const untaxed = res && res.untaxed ? res.untaxed : 0.0;
+  const tax = res && res.tax ? res.tax : 0.0;
   const total = res && res.total ? res.total : 0.0;
-  const tax = total - untaxed;
 
   db.prepare(`
-    UPDATE sale_orders SET amount_untaxed = ?, amount_tax = ?, amount_total = ? WHERE id = ?
-  `).run(untaxed, tax, total, orderId);
+    UPDATE sale_orders SET amount_untaxed = ?, amount_tax = ?, amount_total = ?, tax_total = ? WHERE id = ?
+  `).run(untaxed, tax, total, tax, orderId);
 }
 
 export function confirmSalesOrder(db, {
@@ -156,25 +221,36 @@ export function confirmSalesOrder(db, {
 
   const now = new Date().toISOString();
   for (const line of order.lines) {
-    const reservation = reserveStock(db, {
-      company_id,
-      branch_id,
-      warehouse_id,
-      location_id: wh.lot_stock_id,
-      product_id: line.product_id,
-      source_document_type: 'sale_order',
-      source_document_id: order.id,
-      source_line_id: line.id,
-      quantity: line.product_uom_qty,
-      priority: 10,
-      idempotency_key: `${idempotency_key}:reservation:${line.id}`,
-      actor,
-    });
+    // Reservation is best-effort partial: lines that cannot be fully covered
+    // are recorded as shortages so sales:order:reserve can re-attempt them
+    // once stock arrives, instead of failing the whole confirmation.
+    let reservation = null;
+    let demandStatus = 'shortage';
+    try {
+      reservation = reserveStock(db, {
+        company_id,
+        branch_id,
+        warehouse_id,
+        location_id: wh.lot_stock_id,
+        product_id: line.product_id,
+        source_document_type: 'sale_order',
+        source_document_id: order.id,
+        source_line_id: line.id,
+        quantity: line.product_uom_qty,
+        priority: 10,
+        allow_partial: true,
+        idempotency_key: `${idempotency_key}:reservation:${line.id}`,
+        actor,
+      });
+      demandStatus = Number(reservation.quantity) >= Number(line.product_uom_qty) ? 'reserved' : 'partially_reserved';
+    } catch (err) {
+      if (!String(err && err.message ? err.message : err).startsWith('Available stock insufficient')) throw err;
+    }
     db.prepare(`
       INSERT INTO sale_fulfilment_demands (
         id, company_id, sale_order_id, sale_order_line_id, warehouse_id,
         product_id, demanded_quantity, reservation_id, picking_id, status, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'reserved', ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       `sfd_${crypto.randomUUID()}`,
       company_id,
@@ -183,8 +259,9 @@ export function confirmSalesOrder(db, {
       warehouse_id,
       line.product_id,
       line.product_uom_qty,
-      reservation.id,
+      reservation ? reservation.id : null,
       picking.id,
+      demandStatus,
       now,
     );
   }

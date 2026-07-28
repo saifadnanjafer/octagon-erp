@@ -13633,7 +13633,7 @@ function saveData(skipAutomation = false) {
       // full-sync write, so declare it.
       headers: { 'Content-Type': 'application/json', 'X-Octagon-Full-Sync': 'yes' },
       body: jsonPayload
-    }).then(res => {
+    }).then(async res => {
       if (res.ok) {
         _lastFileSaveOk = true;
         if (_serverDownWarned) {
@@ -13647,6 +13647,21 @@ function saveData(skipAutomation = false) {
         // through the same endpoint after the session is established.
         _lastFileSaveOk = false;
         console.debug('[saveData] skipped server persistence until login session is established.');
+      } else if (res.status === 409) {
+        const rejection = await res.clone().json().catch(() => ({}));
+        if (/_CANONICAL_AUTHORITY_REQUIRED$/.test(String(rejection.code || ''))) {
+          // Canonical cutover intentionally rejects a stale legacy full-state
+          // projection. The guard is working; this is not a dead server and
+          // must not paint a false connectivity error over canonical pages.
+          _lastFileSaveOk = false;
+          console.debug(`[saveData] canonical writer guard active (${rejection.code}); legacy full sync skipped.`);
+          return;
+        }
+        _lastFileSaveOk = false;
+        if (!_serverDownWarned) {
+          _serverDownWarned = true;
+          showToast(rejection.error || 'Save rejected to protect governed data integrity.', 'error');
+        }
       } else {
         _lastFileSaveOk = false;
         if (!_serverDownWarned) {

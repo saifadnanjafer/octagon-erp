@@ -1732,6 +1732,27 @@ const server = http.createServer((req, res) => {
     });
   }
 
+  // Checkpoint H: server-derived Release Health diagnostics. Every value is
+  // computed from real state (migration ledger, action/module registry, cutover
+  // controller, outbox/audit, git refs). Signals that cannot be computed report
+  // `unknown`, and work nobody has done reports `not_executed` — never green.
+  if (requestUrl.pathname === '/api/release/health' && req.method === 'GET') {
+    const guard = requirePermission(req, res, 'platform:db:read');
+    if (!guard.ok) return;
+    import('./platform/operations/release-health.mjs')
+      .then(({ buildReleaseHealth }) => {
+        const dialect = platformAuthority ? platformAuthority.dialect : dbSync;
+        if (!dialect) return sendJson(res, 503, { ok: false, error: 'No database dialect available' });
+        return sendJson(res, 200, buildReleaseHealth({
+          dialect,
+          dbPath: SQLITE_DB_FILE,
+          root: __dirname,
+        }));
+      })
+      .catch((err) => sendJson(res, 500, { ok: false, error: err.message || 'release health failed' }));
+    return;
+  }
+
   if (requestUrl.pathname === '/api/release/status' && req.method === 'GET') {
     const liveSessions = platformAuthority
       ? platformAuthority.dialect.prepare("SELECT COUNT(*) AS n FROM identity_sessions WHERE revoked_at IS NULL AND absolute_expires_at > datetime('now')").get().n

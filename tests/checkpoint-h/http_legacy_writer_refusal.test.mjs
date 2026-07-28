@@ -314,6 +314,36 @@ test('no refused write left a record, an audit success, or an outbox event', () 
   }
 });
 
+test('GET /api/release/health is reachable and reports real server state', async () => {
+  const res = await fetch(`${base}/api/release/health`, { headers: { Cookie: cookies } });
+  assert.equal(res.status, 200, `release health returned ${res.status}`);
+  const report = await res.json();
+
+  assert.ok(Array.isArray(report.signals) && report.signals.length > 20,
+    `expected a full signal set, got ${report.signals?.length}`);
+
+  const byId = (id) => report.signals.find((s) => s.id === id);
+
+  // It must reflect THIS server's state: cutover is active on this fixture.
+  assert.equal(byId('canonical_cutover_mode').value, 'active',
+    'release health does not see the cutover active on the fixture it is serving');
+  const [enforced, total] = byId('domain_lock_state').value.split('/').map(Number);
+  assert.equal(enforced, total, `release health reports ${enforced}/${total} domains enforced`);
+
+  // And it must still refuse to go green on unproven work.
+  assert.equal(byId('postgres_runtime').status, 'not_executed');
+  assert.equal(byId('opening_inventory_gate').status, 'blocked');
+
+  // Real build metadata, read from git refs by the server process.
+  const sha = byId('commit_sha');
+  if (sha.status === 'healthy') assert.match(sha.value, /^[0-9a-f]{40}$/);
+});
+
+test('GET /api/release/health requires a session', async () => {
+  const res = await fetch(`${base}/api/release/health`);
+  assert.ok(res.status === 401 || res.status === 403, `unauthenticated health read returned ${res.status}`);
+});
+
 test('the write-guard log recorded the refusals', () => {
   // Refusals must be observable operationally, not just to the caller.
   const logPath = path.join(ROOT, 'server-write-guard.log');

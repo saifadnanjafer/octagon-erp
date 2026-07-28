@@ -1,5 +1,12 @@
 import crypto from 'node:crypto';
-import { computeTax, postSourceFact, recordCashCount, closeCashShift } from '../finance/engine.mjs';
+import {
+  computeTax,
+  postSourceFact,
+  createCashbox,
+  openCashShift,
+  recordCashCount,
+  closeCashShift,
+} from '../finance/engine.mjs';
 import { executeStockOperation } from '../inventory/operations.mjs';
 
 function makeId(prefix) {
@@ -15,13 +22,122 @@ function financeContext(payload) {
   };
 }
 
+function recordSessionEvent(db, {
+  company_id,
+  session_id,
+  event_type,
+  reference_type = null,
+  reference_id = null,
+  amount = 0,
+  details = {},
+  actor = null,
+}) {
+  db.prepare(`
+    INSERT INTO pos_session_events (
+      id, company_id, session_id, event_type, reference_type, reference_id,
+      amount, details, actor, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    makeId('posevt'), company_id, session_id, event_type, reference_type,
+    reference_id, Number(amount || 0), JSON.stringify(details), actor,
+    new Date().toISOString(),
+  );
+}
+
+export function configurePosTerminal(db, payload) {
+  const {
+    company_id,
+    branch_id = null,
+    actor,
+    name,
+    warehouse_id,
+    cash_account_id,
+    currency_id = 'IQD',
+  } = payload;
+  const warehouse = db.prepare('SELECT id FROM warehouses WHERE id = ? AND company_id = ?').get(warehouse_id, company_id);
+  if (!warehouse) throw new Error('POS terminal warehouse is outside the active company');
+  if (branch_id && !db.prepare(`
+    SELECT 1 FROM warehouse_branch_scopes
+    WHERE warehouse_id = ? AND company_id = ? AND branch_id = ?
+  `).get(warehouse_id, company_id, branch_id)) {
+    throw new Error('POS terminal warehouse is outside the active branch scope');
+  }
+  const cashbox = createCashbox(db, financeContext(payload), {
+    name: `${String(name).trim()} Cashbox`,
+    gl_account_id: cash_account_id,
+    branch_id,
+    custodian_user_id: actor,
+    currency: currency_id,
+  });
+  const id = makeId('posterm');
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO pos_terminals (
+      id, company_id, branch_id, name, warehouse_id, cashbox_id,
+      currency_id, is_active, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+  `).run(id, company_id, branch_id, String(name).trim(), warehouse_id, cashbox.id, currency_id, now, now);
+  return db.prepare('SELECT * FROM pos_terminals WHERE id = ?').get(id);
+}
+
+export function configurePaymentMethod(db, payload) {
+  const method = String(payload.payment_method_id || '').trim().toLowerCase();
+  if (!method || method === 'cash') throw new Error('Configure a non-cash POS payment method');
+  const account = db.prepare(`
+    SELECT id FROM finance_accounts WHERE id = ? AND company_id = ? AND is_active = 1
+  `).get(payload.gl_account_id, payload.company_id);
+  if (!account) throw new Error('POS payment account is outside the active company');
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO pos_payment_method_configs (
+      company_id, payment_method_id, gl_account_id, active, updated_at
+    ) VALUES (?, ?, ?, 1, ?)
+    ON CONFLICT(company_id, payment_method_id) DO UPDATE SET
+      gl_account_id=excluded.gl_account_id, active=1, updated_at=excluded.updated_at
+  `).run(payload.company_id, method, account.id, now);
+  return db.prepare(`
+    SELECT * FROM pos_payment_method_configs
+    WHERE company_id = ? AND payment_method_id = ?
+  `).get(payload.company_id, method);
+}
+
 export function openPosSession(db, {
   company_id,
+  branch_id = null,
+  actor,
   name = 'Main POS Terminal',
   user_id,
   cash_shift_id,
+  terminal_id = null,
+  warehouse_id = null,
+  opening_cash = 0,
 }) {
   if (!user_id) throw new Error('Authenticated user is required to open a POS session');
+  let terminal = null;
+  if (terminal_id) {
+    terminal = db.prepare(`
+      SELECT * FROM pos_terminals
+      WHERE id = ? AND company_id = ? AND is_active = 1
+    `).get(terminal_id, company_id);
+    if (!terminal) throw new Error('POS terminal is outside the active company or inactive');
+    if (branch_id && terminal.branch_id && terminal.branch_id !== branch_id) {
+      throw new Error('POS terminal is outside the active branch scope');
+    }
+    if (!cash_shift_id) {
+      const opened = openCashShift(db, {
+        companyId: company_id,
+        branchId: branch_id,
+        userId: user_id,
+        now: new Date().toISOString(),
+      }, {
+        cashbox_id: terminal.cashbox_id,
+        opening_balance: Number(opening_cash || 0),
+      });
+      cash_shift_id = opened.id;
+    }
+    name = terminal.name;
+    warehouse_id = terminal.warehouse_id;
+  }
   const shift = db.prepare(`
     SELECT shift.*, cashbox.id AS cashbox_id, cashbox.is_active
     FROM finance_cash_shifts shift
@@ -32,19 +148,40 @@ export function openPosSession(db, {
     throw new Error('POS session requires an active canonical cash shift');
   }
   if (shift.opened_by !== user_id) throw new Error('POS cashier must own the active cash shift');
+  const existing = db.prepare(`
+    SELECT id FROM pos_sessions
+    WHERE company_id = ? AND user_id = ? AND state = 'opened'
+  `).get(company_id, user_id);
+  if (existing) throw new Error('POS cashier already has an open session');
 
   const id = makeId('sess');
   const now = new Date().toISOString();
   db.prepare(`
-    INSERT INTO pos_sessions (id, company_id, name, user_id, state, start_at, created_at)
-    VALUES (?, ?, ?, ?, 'opened', ?, ?)
-  `).run(id, company_id, name, user_id, now, now);
+    INSERT INTO pos_sessions (
+      id, company_id, name, user_id, state, start_at, created_at,
+      terminal_id, branch_id, warehouse_id, cash_shift_id, opening_cash
+    ) VALUES (?, ?, ?, ?, 'opened', ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id, company_id, name, user_id, now, now, terminal?.id || null,
+    branch_id, warehouse_id || terminal?.warehouse_id || null, shift.id,
+    Number(opening_cash || shift.opening_balance || 0),
+  );
   db.prepare(`
     INSERT INTO pos_session_finance_links (
       session_id, company_id, cashbox_id, cash_shift_id, created_at
     ) VALUES (?, ?, ?, ?, ?)
   `).run(id, company_id, shift.cashbox_id, shift.id, now);
-  return db.prepare('SELECT * FROM pos_sessions WHERE id = ?').get(id);
+  recordSessionEvent(db, {
+    company_id,
+    session_id: id,
+    event_type: 'opened',
+    reference_type: 'finance_cash_shift',
+    reference_id: shift.id,
+    amount: Number(opening_cash || shift.opening_balance || 0),
+    details: { terminal_id: terminal?.id || null, warehouse_id: warehouse_id || terminal?.warehouse_id || null },
+    actor: actor || user_id,
+  });
+  return getPosSession(db, id);
 }
 
 export function processPosOrder(db, payload) {
@@ -92,16 +229,24 @@ export function processPosOrder(db, payload) {
   if (!lines.length || !payments.length) throw new Error('POS order requires lines and payments');
 
   const orderId = makeId('poso');
-  const orderName = `POS/${Date.now().toString().slice(-8)}`;
+  const receiptSequence = db.prepare(`
+    SELECT COUNT(*) AS n FROM pos_orders WHERE company_id = ?
+  `).get(company_id).n + 1;
+  const orderName = `POS/${String(receiptSequence).padStart(6, '0')}`;
+  const receiptNumber = `${new Date().getUTCFullYear()}-${String(receiptSequence).padStart(6, '0')}`;
   const now = new Date().toISOString();
   db.prepare(`
     INSERT INTO pos_orders (
-      id, company_id, session_id, name, partner_id, amount_total, state, created_at
-    ) VALUES (?, ?, ?, ?, ?, 0, 'draft', ?)
-  `).run(orderId, company_id, session_id, orderName, partner_id, now);
+      id, company_id, session_id, name, partner_id, amount_total, state, created_at,
+      order_kind, warehouse_id, cashier_id, currency_id, receipt_number
+    ) VALUES (?, ?, ?, ?, ?, 0, 'draft', ?, 'sale', ?, ?, 'IQD', ?)
+  `).run(orderId, company_id, session_id, orderName, partner_id, now, warehouse_id, actor, receiptNumber);
 
   const preparedLines = [];
   let amountTotal = 0;
+  let amountUntaxed = 0;
+  let amountTax = 0;
+  let amountDiscount = 0;
   for (const inputLine of lines) {
     const product = db.prepare(`
       SELECT variant.id, variant.name, template.uom_id, template.list_price,
@@ -120,6 +265,7 @@ export function processPosOrder(db, payload) {
     const discount = Number(inputLine.discount || 0);
     if (discount < 0 || discount > 100) throw new Error('POS discount must be between 0 and 100');
     const discountedPrice = unitPrice * (1 - discount / 100);
+    amountDiscount += (unitPrice - discountedPrice) * qty;
     const taxId = db.prepare(`
       SELECT tax_id FROM pos_product_tax_configs
       WHERE company_id = ? AND product_id = ?
@@ -137,9 +283,9 @@ export function processPosOrder(db, payload) {
     db.prepare(`
       INSERT INTO pos_order_lines (
         id, pos_order_id, product_id, qty, price_unit,
-        discount, price_subtotal, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(lineId, orderId, product.id, qty, unitPrice, discount, taxQuote.total_amount, now);
+        discount, price_subtotal, created_at, tax_amount, price_total
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(lineId, orderId, product.id, qty, unitPrice, discount, taxQuote.total_base, now, taxQuote.total_tax, taxQuote.total_amount);
     db.prepare(`
       INSERT INTO pos_order_line_tax_traces (
         pos_order_line_id, company_id, tax_id, pricing_source,
@@ -147,6 +293,8 @@ export function processPosOrder(db, payload) {
       ) VALUES (?, ?, ?, 'canonical_product_list_price', ?, ?)
     `).run(lineId, company_id, taxId, JSON.stringify(taxQuote), now);
     amountTotal += taxQuote.total_amount;
+    amountUntaxed += taxQuote.total_base;
+    amountTax += taxQuote.total_tax;
     preparedLines.push({ inputLine, product, qty, lineId, taxQuote });
   }
 
@@ -174,6 +322,7 @@ export function processPosOrder(db, payload) {
     }
     if (!accountId) throw new Error(`POS payment method is not configured: ${method}`);
     const amount = Number(payment.amount);
+    if (!(amount > 0) || !Number.isFinite(amount)) throw new Error('POS payment amount must be positive');
     insertPayment.run(makeId('posp'), orderId, method, amount, now);
     debitLines.push({ account_id: accountId, debit: amount, credit: 0, partner_id, description: `${orderName}:${method}` });
   }
@@ -253,7 +402,21 @@ export function processPosOrder(db, payload) {
       pos_order_id, company_id, finance_document_id, cash_shift_id, created_at
     ) VALUES (?, ?, ?, ?, ?)
   `).run(orderId, company_id, posted.document_id, session.cash_shift_id, now);
-  db.prepare("UPDATE pos_orders SET amount_total = ?, state = 'paid' WHERE id = ?").run(amountTotal, orderId);
+  db.prepare(`
+    UPDATE pos_orders SET amount_total = ?, amount_untaxed = ?, amount_tax = ?,
+      amount_discount = ?, state = 'paid', completed_at = ?
+    WHERE id = ?
+  `).run(amountTotal, amountUntaxed, amountTax, amountDiscount, now, orderId);
+  recordSessionEvent(db, {
+    company_id,
+    session_id,
+    event_type: 'sale',
+    reference_type: 'pos_order',
+    reference_id: orderId,
+    amount: amountTotal,
+    details: { receipt_number: receiptNumber, payment_methods: payments.map((payment) => payment.payment_method_id || 'cash') },
+    actor,
+  });
   return getPosOrder(db, orderId);
 }
 
@@ -277,8 +440,50 @@ export function closePosSession(db, payload) {
     actual_closing_balance: count.counted_amount,
   });
   const now = new Date().toISOString();
-  db.prepare("UPDATE pos_sessions SET state = 'closed', stop_at = ? WHERE id = ?").run(now, session.id);
-  return { session: db.prepare('SELECT * FROM pos_sessions WHERE id = ?').get(session.id), cash_shift: closed, cash_count: count };
+  const totals = db.prepare(`
+    SELECT
+      COALESCE(SUM(CASE WHEN order_kind = 'sale' AND state = 'paid' THEN amount_total ELSE 0 END), 0) AS sales,
+      COALESCE(SUM(CASE WHEN order_kind = 'refund' AND state = 'refunded' THEN amount_total ELSE 0 END), 0) AS refunds
+    FROM pos_orders WHERE session_id = ?
+  `).get(session.id);
+  db.prepare(`
+    UPDATE pos_sessions SET state = 'closed', stop_at = ?, expected_cash = ?,
+      counted_cash = ?, variance = ?, closed_by = ?
+    WHERE id = ?
+  `).run(now, count.expected_amount, count.counted_amount, count.variance, payload.actor, session.id);
+  const reconciliationId = makeId('posrec');
+  db.prepare(`
+    INSERT INTO pos_reconciliations (
+      id, company_id, session_id, cash_shift_id, opening_amount, sales_amount,
+      refunds_amount, expected_amount, counted_amount, variance, status, actor, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    reconciliationId, payload.company_id, session.id, session.cash_shift_id,
+    Number(session.opening_cash || 0), Number(totals.sales || 0), Number(totals.refunds || 0),
+    count.expected_amount, count.counted_amount, count.variance,
+    Math.abs(count.variance) <= 0.0001 ? 'balanced' : 'variance', payload.actor, now,
+  );
+  recordSessionEvent(db, {
+    company_id: payload.company_id,
+    session_id: session.id,
+    event_type: 'cash_count',
+    reference_type: 'pos_reconciliation',
+    reference_id: reconciliationId,
+    amount: count.counted_amount,
+    details: count,
+    actor: payload.actor,
+  });
+  recordSessionEvent(db, {
+    company_id: payload.company_id,
+    session_id: session.id,
+    event_type: 'closed',
+    reference_type: 'finance_cash_shift',
+    reference_id: session.cash_shift_id,
+    amount: count.counted_amount,
+    details: closed,
+    actor: payload.actor,
+  });
+  return { session: getPosSession(db, session.id), cash_shift: closed, cash_count: count, reconciliation: db.prepare('SELECT * FROM pos_reconciliations WHERE id = ?').get(reconciliationId) };
 }
 
 export function getPosOrder(db, id) {
@@ -287,5 +492,25 @@ export function getPosOrder(db, id) {
   const lines = db.prepare('SELECT * FROM pos_order_lines WHERE pos_order_id = ?').all(id);
   const payments = db.prepare('SELECT * FROM pos_payments WHERE pos_order_id = ?').all(id);
   const finance = db.prepare('SELECT * FROM pos_order_finance_links WHERE pos_order_id = ?').get(id) || null;
-  return { ...order, lines, payments, finance };
+  const refund = db.prepare(`
+    SELECT * FROM pos_refunds WHERE original_order_id = ? OR refund_order_id = ?
+    ORDER BY created_at DESC LIMIT 1
+  `).get(id, id) || null;
+  return { ...order, lines, payments, finance, refund };
+}
+
+export function getPosSession(db, id) {
+  const session = db.prepare(`
+    SELECT session.*, link.cashbox_id, link.cash_shift_id,
+      shift.status AS cash_shift_status, shift.expected_closing_balance,
+      shift.actual_closing_balance
+    FROM pos_sessions session
+    LEFT JOIN pos_session_finance_links link ON link.session_id = session.id
+    LEFT JOIN finance_cash_shifts shift ON shift.id = link.cash_shift_id
+    WHERE session.id = ?
+  `).get(id);
+  if (!session) return null;
+  const events = db.prepare('SELECT * FROM pos_session_events WHERE session_id = ? ORDER BY created_at, id').all(id);
+  const reconciliation = db.prepare('SELECT * FROM pos_reconciliations WHERE session_id = ?').get(id) || null;
+  return { ...session, events, reconciliation };
 }

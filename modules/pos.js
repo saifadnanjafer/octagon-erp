@@ -297,6 +297,7 @@
   }
 
   function render() {
+    if (window.__canonicalPosAuthorityActive === true) return;
     const body = document.getElementById('posBody');
     if (!body) return;
     ensureData();

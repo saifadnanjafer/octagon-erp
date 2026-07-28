@@ -61,6 +61,7 @@
   <link rel="stylesheet" href="modules/advanced-inventory.css?v=20260626-advinv-v1">
   <link rel="stylesheet" href="modules/procurement.css?v=20260613-prc-v1">
   <link rel="stylesheet" href="modules/canonical-procurement.css?v=20260728-checkpoint-c2-v1">
+  <link rel="stylesheet" href="modules/canonical-pos.css?v=20260728-checkpoint-c3-v1">
   <link rel="stylesheet" href="modules/project-management.css?v=20260613-pj-v1">
   <link rel="stylesheet" href="modules/approvals.css?v=20260613-ap-v1">
   <link rel="stylesheet" href="modules/field-service.css?v=20260613-fs-v1">
@@ -1506,7 +1507,7 @@
               <span class="nav-label">العقود والموافقات</span>
               <span class="nav-indicator"></span>
             </button>
-            <button class="nav-btn" data-page="pos_deepening" id="navPOSDeepening" onclick="switchPage('pos_deepening')">
+            <button class="nav-btn" data-page="pos_deepening" id="navPOSDeepening" onclick="switchPage('pos_deepening')" hidden>
               <span class="nav-icon">🪙</span>
               <span class="nav-label">إدارة نقطة البيع</span>
               <span class="nav-indicator"></span>
@@ -2255,6 +2256,9 @@
   <script src="modules/products-and-materials.js?v=20260728-pm-v1"></script>
   <script src="modules/customers-and-suppliers.js?v=20260728-cs-v1"></script>
   <script src="modules/warehouses-and-locations.js?v=20260728-wl-v1"></script>
+  <!-- Checkpoint C3: final POS renderer loads after every legacy/vertical
+       wrapper so the canonical workspace remains the definitive route owner. -->
+  <script src="modules/canonical-pos.js?v=20260728-checkpoint-c3-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

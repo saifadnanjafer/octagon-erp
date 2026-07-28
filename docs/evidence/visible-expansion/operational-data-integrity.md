@@ -1,6 +1,6 @@
 # Operational Data Integrity — Checkpoint C
 
-## C1 baseline and C2 post-acceptance hashes
+## C1 baseline through C3 post-acceptance hashes
 
 The preview launcher byte-staged four files to a temporary directory, verified
 the SQLite hash against the source, and logged that operational `database.db`
@@ -15,4 +15,4 @@ was not opened.
 
 All browser mutations targeted the staged disposable copy. These ignored
 runtime files are not staged for Git. The same byte counts, timestamps, and
-SHA-256 values were re-recorded after the final C2 browser run.
+SHA-256 values were re-recorded after the final C3 browser run.

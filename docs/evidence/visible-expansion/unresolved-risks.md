@@ -120,3 +120,30 @@ Remaining risks after C2:
 For C2, frozen project-owned VNext Procurement plus Odoo 19 and ERPNext Buying
 sources were inspected read-only. Only clean-room behavior was implemented; no
 third-party code was copied.
+
+## Checkpoint C3 status addendum — 2026-07-28
+
+The following earlier statements are now superseded:
+
+- POS is no longer a legacy or read-only surface.
+- Terminal, session, split-tender sale, receipt, refund, stock restoration,
+  credit-note, and reconciliation workflows executed end-to-end in
+  authenticated Chromium.
+- POS audit/outbox consequences and operational-role access are visibly proven.
+- C3 screenshots are available and manually reviewed.
+
+Remaining risks after C3:
+
+1. The owner-approved opening inventory accounting date is still absent.
+   Operational-source migration remains fail-closed.
+2. Broad Phase 04 domain retirement remains unauthorized and is not claimed.
+3. C4 Work Management, C5 Administration/Module Control, and C6 final closure
+   remain open.
+4. Legacy POS implementation files remain present for compatibility; route and
+   page ownership are retired while canonical POS is active.
+5. PostgreSQL execution is not proven. Migration 048 follows portable schema
+   design, but this checkpoint's executable migration proof is SQLite.
+
+Frozen project-owned VNext POS sources plus Odoo 19 and ERPNext POS sources were
+inspected read-only. Only clean-room behavior was implemented; no third-party
+code was copied.

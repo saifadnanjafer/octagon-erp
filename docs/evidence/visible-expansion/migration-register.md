@@ -25,3 +25,15 @@ Command:
 Result: **4 passed, 0 failed, 0 skipped**. The sequential C1 migration fixture
 was also isolated explicitly to migrations 045→046 so later migrations cannot
 invalidate its contract.
+
+## Checkpoint C3
+
+| Migration | Purpose | Fresh | Sequential | Rerun | Down/up | Failure rollback |
+|---|---|---:|---:|---:|---:|---:|
+| `048_pos_atomic_workflows` | terminal/cashbox configuration, receipt/refund lineage, session events, reconciliation facts, richer POS fields, and registered actions | PASS | PASS from 047 | PASS | PASS | PASS |
+
+Command:
+`node --test tests/checkpoint-c/migration_048.test.mjs`
+
+Result: **4 passed, 0 failed, 0 skipped**. All databases are generated under
+the OS temporary directory.

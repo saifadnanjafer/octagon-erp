@@ -115,11 +115,12 @@
    * Remove server-owned keys from a command payload. Returns a new object;
    * the caller's input is never mutated.
    */
-  function stripForbidden(input) {
+  function stripForbidden(input, allowedBusinessKeys = []) {
     const clean = {};
     const rejected = [];
+    const allowed = new Set(allowedBusinessKeys);
     Object.keys(input || {}).forEach((key) => {
-      if (FORBIDDEN_INPUT_KEYS.indexOf(key) !== -1) {
+      if (FORBIDDEN_INPUT_KEYS.indexOf(key) !== -1 && !allowed.has(key)) {
         rejected.push(key);
         return;
       }
@@ -251,7 +252,7 @@
    * retried click cannot double-post.
    */
   async function action(actionId, input = {}, options = {}) {
-    const clean = stripForbidden(input);
+    const clean = stripForbidden(input, options.allowedBusinessKeys || []);
     const idempotencyKey = options.idempotencyKey || clean.idempotency_key || newIdempotencyKey(actionId);
     delete clean.idempotency_key;
     // Do NOT encodeURIComponent the action id. The server reads it from
@@ -511,9 +512,24 @@
 
   const pos = {
     listOrders: (params) => query('/pos/orders', params),
+    getOrder: (id) => query(`/pos/orders/${encodeURIComponent(id)}`),
+    listSessions: (params) => query('/pos/sessions', params),
+    getSession: (id) => query(`/pos/sessions/${encodeURIComponent(id)}`),
+    listTerminals: (params) => query('/pos/terminals', params),
+    listPaymentMethods: (params) => query('/pos/payment-methods', params),
+    listRefunds: (params) => query('/pos/refunds', params),
+    listReconciliations: (params) => query('/pos/reconciliations', params),
+    listAuditOutbox: (params) => query('/pos/audit-outbox', params),
+    report: (report, params) => query('/pos/reports', { ...(params || {}), report }),
+    configureTerminal: (input, opts) => action('pos:terminal:configure', input, { ...opts, domain: 'POS' }),
+    configurePaymentMethod: (input, opts) => action('pos:payment_method:configure', input, { ...opts, domain: 'POS' }),
     openSession: (input, opts) => action('pos:session:open', input, { ...opts, domain: 'POS' }),
-    closeSession: (input, opts) => action('pos:session:close', input, { ...opts, domain: 'POS' }),
-    processOrder: (input, opts) => action('pos:order:process', input, { ...opts, domain: 'POS' }),
+    // `session_id` is a POS business-record foreign key for these actions,
+    // not authentication state. Actor identity still comes only from the
+    // secure cookie and every other scope field remains stripped.
+    closeSession: (input, opts) => action('pos:session:close', input, { ...opts, domain: 'POS', allowedBusinessKeys: ['session_id'] }),
+    processOrder: (input, opts) => action('pos:order:process', input, { ...opts, domain: 'POS', allowedBusinessKeys: ['session_id'] }),
+    refundOrder: (input, opts) => action('pos:order:refund', input, { ...opts, domain: 'POS', allowedBusinessKeys: ['session_id'] }),
   };
 
   const workItems = {

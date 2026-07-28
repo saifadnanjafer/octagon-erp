@@ -161,6 +161,37 @@ Final combined C1+C2 trace:
 `test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/`, 42/42 in
 `Chrome/150.0.7871.24`.
 
+## Checkpoint C3 — canonical POS (2026-07-28)
+
+The earlier statement that POS had no canonical lifecycle workflow is
+superseded.
+
+| Gate | Result |
+|---|---|
+| Original POS page replaced by canonical workspace | PASS |
+| Legacy POS/deepening route ownership retired | PASS |
+| 10 required POS areas visible | PASS |
+| Terminal configuration creates a canonical Finance cashbox | PASS |
+| Session opening creates a canonical Finance cash shift | PASS |
+| Catalogue, search, barcode foundation, and warehouse availability | PASS |
+| Split cash/card sale and fiscal receipt | PASS |
+| Tax, discount, payment, and receipt totals persisted | PASS |
+| Partial refund restores Inventory stock | PASS |
+| Refund posts canonical Finance credit-note consequences | PASS |
+| Expected/counted/variance reconciliation closes at 100/100/0 | PASS |
+| Audit/outbox consequences visible | PASS |
+| POS operational role opens, sells, and reconciles | PASS |
+| Restricted viewer denied server-side | PASS |
+| Arabic RTL / English LTR | PASS |
+| Desktop / tablet 768 / mobile 375 | PASS |
+| No page-level mobile overflow | PASS |
+| No unexpected browser/runtime/resource error | PASS |
+| Evidence screenshots | PASS — 12 PNGs |
+
+Final combined C1+C2+C3 trace:
+`test-artifacts/checkpoint-c-2026-07-28T03-51-11-913Z/`, 58/58 in
+`Chrome/150.0.7871.24`.
+
 ## Acceptance gate status
 
 | Gate | Status |

@@ -51,3 +51,25 @@ unexpected browser/runtime/resource error.
 Twelve secret-free Procurement PNGs were directly written and manually
 reviewed. Raw profiles, cookies, fixture manifests, logs, and credentials remain
 outside Git.
+
+## C3 Point of Sale
+
+| Item | Value |
+|---|---|
+| Runner | `scripts/checkpoint-c-browser-acceptance.mjs` |
+| Base URL | `http://127.0.0.1:8097` |
+| Chromium | `Chrome/150.0.7871.24` |
+| Database | staged disposable copy with migration 048 |
+| Trace | `test-artifacts/checkpoint-c-2026-07-28T03-51-11-913Z/` |
+| Combined result | **58 passed / 0 failed / 0 skipped** |
+| C3 chapter | **16 passed / 0 failed / 0 skipped** |
+
+Proven: ten complete POS areas; duplicate legacy POS navigation retirement;
+terminal/cashbox configuration; cashier session and opening cash; catalogue,
+barcode foundation, and Inventory availability; split cash/card sale; fiscal
+receipt; stock-restoring return and card refund; derived expected cash, count,
+variance, and close; visible audit/outbox; Arabic RTL, English LTR, tablet and
+mobile; operational POS-role open/sell/reconcile; restricted viewer denial; and
+no unexpected browser/runtime/resource error.
+
+Twelve secret-free POS PNGs were directly written and manually reviewed.

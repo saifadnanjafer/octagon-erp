@@ -38,3 +38,23 @@ cookies, passwords, or production records.
 
 Final raw trace:
 `test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/checkpoint-c-browser-results.json`.
+
+## C3 Point of Sale
+
+| Artifact | Purpose | Review |
+|---|---|---|
+| `screenshots-c/pos/c3-01-pos-dashboard-ar-desktop.png` | canonical POS landing and atomic path, Arabic RTL | PASS |
+| `screenshots-c/pos/c3-02-session-open-cashbox-ar.png` | terminal, cashier session, and opening cash | PASS |
+| `screenshots-c/pos/c3-03-catalogue-availability-ar.png` | catalogue search and Inventory availability | PASS |
+| `screenshots-c/pos/c3-04-split-payment-sale-ar.png` | visible split cash/card sale and success state | PASS |
+| `screenshots-c/pos/c3-05-fiscal-receipt-register-ar.png` | completed receipt register | PASS |
+| `screenshots-c/pos/c3-06-return-refund-ar.png` | canonical return/refund register | PASS |
+| `screenshots-c/pos/c3-07-session-reconciliation-ar.png` | opening/sales/refunds/expected/counted/variance | PASS |
+| `screenshots-c/pos/c3-08-audit-outbox-ar.png` | action audit and atomic outbox evidence | PASS |
+| `screenshots-c/pos/c3-09-pos-en-ltr.png` | English LTR | PASS |
+| `screenshots-c/pos/c3-10-pos-tablet-768.png` | tablet | PASS |
+| `screenshots-c/pos/c3-11-pos-mobile-375.png` | mobile without page overflow | PASS |
+| `screenshots-c/pos/c3-12-viewer-server-denial.png` | server-derived viewer denial | PASS |
+
+Final C1+C2+C3 raw trace:
+`test-artifacts/checkpoint-c-2026-07-28T03-51-11-913Z/checkpoint-c-browser-results.json`.

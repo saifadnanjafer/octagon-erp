@@ -273,6 +273,10 @@
   };
 
   function activatePage() {
+    if (window.__canonicalPosAuthorityActive === true) {
+      if (typeof window.switchPage === 'function') window.switchPage('pos');
+      return;
+    }
     document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('page-active'); });
     document.querySelectorAll('.nav-btn').forEach(function (n) { n.classList.remove('active'); });
     var page = document.getElementById('pagePOSDeepening');

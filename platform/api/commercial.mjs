@@ -19,7 +19,7 @@ import { getPurchaseOrder } from '../procurement/orders.mjs';
 import { getPurchaseRequest } from '../procurement/lifecycle.mjs';
 import { getRequisition } from '../procurement/governance.mjs';
 import { getRfq, getSupplierQuotation, compareSupplierQuotations } from '../procurement/rfq.mjs';
-import { getPosOrder } from '../pos/session.mjs';
+import { getPosOrder, getPosSession } from '../pos/session.mjs';
 import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
 
 /**
@@ -575,6 +575,116 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     }
     const rows = dialect.prepare('SELECT * FROM pos_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100').all(company_id);
     return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && resource === 'sessions') {
+    if (recordId) {
+      const doc = getPosSession(dialect, recordId);
+      if (!doc || doc.company_id !== company_id) return { error: 'POS session not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare(`
+      SELECT session.*, link.cashbox_id, link.cash_shift_id,
+        shift.status AS cash_shift_status
+      FROM pos_sessions session
+      LEFT JOIN pos_session_finance_links link ON link.session_id = session.id
+      LEFT JOIN finance_cash_shifts shift ON shift.id = link.cash_shift_id
+      WHERE session.company_id = ?
+      ORDER BY session.created_at DESC LIMIT 100
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && resource === 'terminals') {
+    const rows = dialect.prepare(`
+      SELECT terminal.*, warehouse.name AS warehouse_name,
+        cashbox.name AS cashbox_name, cashbox.gl_account_id AS cash_account_id
+      FROM pos_terminals terminal
+      JOIN warehouses warehouse ON warehouse.id = terminal.warehouse_id
+      JOIN finance_cashboxes cashbox ON cashbox.id = terminal.cashbox_id
+      WHERE terminal.company_id = ? ORDER BY terminal.name
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && (resource === 'payment-methods' || resource === 'payment_methods')) {
+    const rows = dialect.prepare(`
+      SELECT config.*, account.code AS account_code, account.name AS account_name
+      FROM pos_payment_method_configs config
+      JOIN finance_accounts account ON account.id = config.gl_account_id
+      WHERE config.company_id = ? ORDER BY config.payment_method_id
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && resource === 'refunds') {
+    const rows = dialect.prepare(`
+      SELECT refund.*, original.receipt_number AS original_receipt_number,
+        returned.receipt_number AS refund_receipt_number,
+        returned.amount_total
+      FROM pos_refunds refund
+      JOIN pos_orders original ON original.id = refund.original_order_id
+      JOIN pos_orders returned ON returned.id = refund.refund_order_id
+      WHERE refund.company_id = ? ORDER BY refund.created_at DESC
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && resource === 'reconciliations') {
+    const rows = dialect.prepare(`
+      SELECT reconciliation.*, session.name AS session_name,
+        session.user_id AS cashier_id
+      FROM pos_reconciliations reconciliation
+      JOIN pos_sessions session ON session.id = reconciliation.session_id
+      WHERE reconciliation.company_id = ? ORDER BY reconciliation.created_at DESC
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'pos' && (resource === 'audit-outbox' || resource === 'audit_outbox')) {
+    const audit = dialect.prepare(`
+      SELECT id, action, resource, resource_id, correlation_id, occurred_at,
+        actor_id, source_channel, result
+      FROM platform_audit_log
+      WHERE company_id = ? AND action LIKE 'action.execute.pos:%'
+      ORDER BY occurred_at DESC LIMIT 100
+    `).all(company_id);
+    const outbox = dialect.prepare(`
+      SELECT id, event_type, aggregate_id, correlation_id, actor_id,
+        created_at, status, attempts
+      FROM platform_outbox
+      WHERE company_id = ? AND payload LIKE '%"actionId":"pos:%'
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id);
+    return { data: { audit, outbox }, meta: { total: audit.length + outbox.length } };
+  }
+  if (namespace === 'pos' && resource === 'reports') {
+    const report = query.report || 'daily-sales';
+    let rows;
+    if (report === 'payment-methods') {
+      rows = dialect.prepare(`
+        SELECT payment.payment_method_id,
+          SUM(CASE WHEN order_doc.order_kind = 'sale' THEN payment.amount ELSE 0 END) AS sales_amount,
+          SUM(CASE WHEN order_doc.order_kind = 'refund' THEN payment.amount ELSE 0 END) AS refund_amount,
+          COUNT(*) AS payment_count
+        FROM pos_payments payment
+        JOIN pos_orders order_doc ON order_doc.id = payment.pos_order_id
+        WHERE order_doc.company_id = ?
+        GROUP BY payment.payment_method_id ORDER BY sales_amount DESC
+      `).all(company_id);
+    } else if (report === 'cashier-performance') {
+      rows = dialect.prepare(`
+        SELECT cashier_id, COUNT(*) AS order_count,
+          SUM(CASE WHEN order_kind = 'sale' THEN amount_total ELSE -amount_total END) AS net_sales
+        FROM pos_orders WHERE company_id = ? AND state IN ('paid','refunded')
+        GROUP BY cashier_id ORDER BY net_sales DESC
+      `).all(company_id);
+    } else {
+      rows = dialect.prepare(`
+        SELECT substr(completed_at, 1, 10) AS sale_date,
+          SUM(CASE WHEN order_kind = 'sale' THEN amount_total ELSE -amount_total END) AS net_sales,
+          SUM(CASE WHEN order_kind = 'sale' THEN amount_tax ELSE -amount_tax END) AS net_tax,
+          COUNT(*) AS document_count
+        FROM pos_orders
+        WHERE company_id = ? AND state IN ('paid','refunded')
+        GROUP BY substr(completed_at, 1, 10) ORDER BY sale_date DESC
+      `).all(company_id);
+    }
+    return { data: rows, meta: { total: rows.length, report } };
   }
 
   // 12. Work Items / Tasks

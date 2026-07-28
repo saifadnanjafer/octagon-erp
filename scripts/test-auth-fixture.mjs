@@ -83,7 +83,13 @@ export const TEST_ROLES = Object.freeze([
       'purchase:match:write', 'purchase:bill:write',
     ],
   },
-  { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'pos.operator',       permissions: ['platform:db:read', 'platform:db:write'] },
+  {
+    key: 'pos',
+    login: 'test.pos',
+    name: 'Test POS Operator',
+    roleId: 'pos.operator',
+    permissions: ['platform:db:read', 'platform:db:write', 'pos:session:write', 'pos:order:write'],
+  },
   { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);
 
@@ -268,6 +274,10 @@ export function seedTestIdentities(dialect, { dbPath, env = process.env } = {}) 
     ON CONFLICT DO NOTHING
   `);
   insertLimit.run(`limit_sysadmin_${TEST_COMPANY}`, TEST_COMPANY, 'usr_test_sysadmin', now);
+  // POS sale/refund posts a canonical fiscal document inside the POS action.
+  // The disposable operational POS role therefore needs an explicit posting
+  // ceiling; this grants no extra API permission and remains temp-fixture only.
+  insertLimit.run(`limit_pos_${TEST_COMPANY}`, TEST_COMPANY, 'usr_test_pos', now);
   return {
     users: created,
     password: TEST_PASSWORD,

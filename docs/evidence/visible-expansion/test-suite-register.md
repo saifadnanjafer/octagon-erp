@@ -29,3 +29,19 @@ Counts are not double-counted across rows.
 No aggregate and component counts are added together. There were no skipped
 tests. Raw Chromium artifacts remain gitignored; reviewed PNGs are registered
 separately.
+
+## Checkpoint C3
+
+| Suite | Exact command | Result | Duration | What it proves |
+|---|---|---:|---:|---|
+| POS migration/lifecycle/UI plus inherited POS contract | `node --test tests/checkpoint-c/canonical_pos_ui.test.mjs tests/checkpoint-c/migration_048.test.mjs tests/checkpoint-c/pos_atomic_lifecycle.test.mjs tests/phase04/canonical_pos.test.mjs` | 14/14 | 6.296s | C3 migration, atomic sale/refund/reconciliation, visible contract, and inherited governed POS behavior |
+| All Checkpoint C | `$files = Get-ChildItem tests/checkpoint-c -Filter '*.test.mjs'; node --test $files` | 57/57 | 9.824s | C1+C2+C3 migrations, lifecycle, atomicity, rollback, idempotency, concurrency, and visible contracts coexist |
+| Phase 04 finalization | `$files = Get-ChildItem tests/phase04-finalization -Filter '*.test.mjs'; node --test $files` | 99/99 | 11.795s | inherited canonical client, auth fixture, master data, WMS, valuation, and rollback regression |
+| Permission regression | `node scripts/permission-regression.mjs` | 35/35 | 0.879s | page map and role/action policy remain intact |
+| Authenticated Chromium | `BASE_URL=http://127.0.0.1:8097 node scripts/checkpoint-c-browser-acceptance.mjs` | 58/58 combined; 16/16 C3 | recorded in trace | real original-shell terminal/session/sale/receipt/refund/reconciliation workflows, role denial, and responsive UI |
+| Precommit | `node scripts/precommit.js` | PASS | 1.117s | repository and blocked-path safety |
+
+The aggregate initially exposed that the older C2 migration test assumed 047
+would remain the newest file. Its fixture now explicitly stages the migration
+set through 047, preserving the intended sequential-upgrade contract after 048
+was added. The corrected aggregate is 57/57 with no skipped tests.

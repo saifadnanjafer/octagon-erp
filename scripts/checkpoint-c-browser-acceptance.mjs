@@ -1,6 +1,6 @@
 // Checkpoint C authenticated Chromium acceptance.
 //
-// Current implemented chapters: C1 Sales and C2 Procurement.
+// Current implemented chapters: C1 Sales, C2 Procurement, and C3 POS.
 // The same runner is extended by later C2-C6 chapters so one final trace
 // proves the complete visible expansion without double-counting earlier runs.
 //
@@ -25,6 +25,7 @@ const screenshotRoot = path.join(repoRoot, 'docs', 'evidence', 'visible-expansio
 fs.mkdirSync(traceDir, { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'sales'), { recursive: true });
 fs.mkdirSync(path.join(screenshotRoot, 'procurement'), { recursive: true });
+fs.mkdirSync(path.join(screenshotRoot, 'pos'), { recursive: true });
 
 const results = [];
 const screenshots = [];
@@ -93,6 +94,23 @@ async function openProcurement(page) {
   await page.waitForFunction(() => !document.querySelector('[data-cp-workspace] .cp-loading'), { timeout: 30000 });
 }
 
+async function openPos(page) {
+  await page.evaluate(async () => {
+    document.documentElement.lang = 'ar';
+    document.documentElement.dir = 'rtl';
+    if (typeof window.switchPage === 'function') await window.switchPage('pos');
+  });
+  await page.waitForSelector('.cpos-shell', { visible: true, timeout: 30000 });
+  await page.waitForFunction(() => !document.querySelector('.cpos-shell .cpos-loading'), { timeout: 30000 });
+}
+
+async function clickPosTab(page, tab) {
+  await page.waitForFunction(() => window.CanonicalPOS && !window.CanonicalPOS.state.loading, { timeout: 30000 });
+  await page.evaluate((key) => document.querySelector(`[data-cpos-tab="${key}"]`)?.click(), tab);
+  await page.waitForFunction((key) =>
+    document.querySelector(`[data-cpos-tab="${key}"]`)?.classList.contains('active'), {}, tab);
+}
+
 async function poll(page, fn, { timeout = 30000, interval = 350, args = [] } = {}) {
   const started = Date.now();
   while (Date.now() - started < timeout) {
@@ -120,8 +138,14 @@ async function seedCatalog(page) {
     // The test company is intentionally empty. Seed only the six accounts the
     // disposable product/stock/sales chain needs, through the governed Finance
     // actions; reuse fixture chart rows when present and never write directly.
+    const cash = await ensureAccount({
+      code: '101000', name: 'C3 Test Cash', type: 'asset',
+    });
     const receivable = await ensureAccount({
       code: '103000', name: 'C1 Test Receivable', type: 'receivable', is_reconcilable: true,
+    });
+    const card = await ensureAccount({
+      code: '102000', name: 'C3 Test Card Clearing', type: 'asset',
     });
     const stock = await ensureAccount({
       code: '104000', name: 'C1 Test Stock Valuation', type: 'asset',
@@ -181,7 +205,9 @@ async function seedCatalog(page) {
     return {
       suffix,
       accountIds: {
+        cash: cash.id,
         receivable: receivable.id,
+        card: card.id,
         stock: stock.id,
         stockInput: stockInput.id,
         income: income.id,
@@ -690,6 +716,184 @@ async function main() {
       !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED/i.test(entry));
     record('C2 browser runtime has no unexpected errors', c2RelevantErrors.length ? 'FAIL' : 'PASS',
       c2RelevantErrors.slice(0, 5).join(' | '));
+
+    // ------------------------------------------------------------------
+    // C3 — Canonical POS visible acceptance
+    // ------------------------------------------------------------------
+    browserErrors.length = 0;
+    const posAdmin = await login(page, 'test.sysadmin');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openPos(page);
+    record('C3 admin authenticates', posAdmin.authenticated ? 'PASS' : 'FAIL', `HTTP ${posAdmin.status}`);
+    const posTabs = await page.$$eval('[data-cpos-tab]', (nodes) => nodes.map((node) => node.dataset.cposTab));
+    record('C3 POS exposes 10 complete operating areas', posTabs.length === 10 ? 'PASS' : 'FAIL', posTabs.join(','));
+    const legacyPosHidden = await page.$eval('#navPOSDeepening', (node) => node.hidden || getComputedStyle(node).display === 'none');
+    record('C3 duplicate legacy POS navigation retired', legacyPosHidden ? 'PASS' : 'FAIL');
+    await screenshot(page, 'c3-01-pos-dashboard-ar-desktop', 'pos');
+
+    await page.evaluate(async ({ cardAccountId }) => {
+      const configured = await window.CanonicalClient.pos.listPaymentMethods();
+      if (!configured.some((row) => row.payment_method_id === 'card')) {
+        await window.CanonicalClient.pos.configurePaymentMethod({
+          payment_method_id: 'card',
+          gl_account_id: cardAccountId,
+        });
+      }
+    }, { cardAccountId: fixture.accountIds.card });
+    await clickPosTab(page, 'sessions');
+    const terminalName = `C3 Browser Terminal ${Date.now().toString(36)}`;
+    await page.$eval('[data-cpos-form="terminal"] [name="name"]', (input) => { input.value = ''; });
+    await page.type('[data-cpos-form="terminal"] [name="name"]', terminalName);
+    await page.select('[data-cpos-form="terminal"] [name="warehouse_id"]', fixture.warehouseId);
+    await page.select('[data-cpos-form="terminal"] [name="cash_account_id"]', fixture.accountIds.cash);
+    await page.evaluate(() => document.querySelector('[data-cpos-form="terminal"]')?.requestSubmit());
+    const terminalId = await poll(page, async (name) =>
+      (await window.CanonicalClient.pos.listTerminals()).find((row) => row.name === name)?.id || null,
+    { args: [terminalName] });
+    await page.waitForFunction(() => window.CanonicalPOS && !window.CanonicalPOS.state.loading);
+    record('C3 visible terminal and canonical cashbox configuration', 'PASS', terminalId);
+
+    await page.select('[data-cpos-form="open-session"] [name="terminal_id"]', terminalId);
+    await page.$eval('[data-cpos-form="open-session"] [name="opening_cash"]', (input) => { input.value = '50'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="open-session"]')?.requestSubmit());
+    const adminSessionId = await poll(page, async (terminal) =>
+      (await window.CanonicalClient.pos.listSessions()).find((row) => row.terminal_id === terminal && row.state === 'opened')?.id || null,
+    { args: [terminalId] });
+    await page.waitForFunction(() => window.CanonicalPOS && !window.CanonicalPOS.state.loading);
+    record('C3 visible cashier session opens with opening cash', 'PASS', adminSessionId);
+    await screenshot(page, 'c3-02-session-open-cashbox-ar', 'pos');
+
+    await clickPosTab(page, 'catalogue');
+    await page.type('[data-cpos-search]', fixture.suffix);
+    const visibleProducts = await page.$$eval('.cpos-product:not([hidden])', (nodes) => nodes.length);
+    record('C3 visible catalogue search, barcode foundation, and availability', visibleProducts > 0 ? 'PASS' : 'FAIL', String(visibleProducts));
+    await screenshot(page, 'c3-03-catalogue-availability-ar', 'pos');
+
+    await clickPosTab(page, 'cart');
+    await page.select('[data-cpos-form="sale"] [name="partner_id"]', fixture.customerId);
+    await page.select('[data-cpos-form="sale"] [name="product_id"]', fixture.productId);
+    await page.$eval('[data-cpos-form="sale"] [name="qty"]', (input) => { input.value = '1'; });
+    await page.$eval('[data-cpos-form="sale"] [name="cash_amount"]', (input) => { input.value = '50'; });
+    await page.$eval('[data-cpos-form="sale"] [name="card_amount"]', (input) => { input.value = '75'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="sale"]')?.requestSubmit());
+    const posOrderId = await poll(page, async ({ sessionId, productId }) => {
+      const rows = await window.CanonicalClient.pos.listOrders();
+      for (const row of rows.filter((item) => item.session_id === sessionId && item.order_kind === 'sale')) {
+        const detail = await window.CanonicalClient.pos.getOrder(row.id);
+        if (detail.lines.some((line) => line.product_id === productId)) return row.id;
+      }
+      return null;
+    }, { args: [{ sessionId: adminSessionId, productId: fixture.productId }] });
+    const posOrder = await page.evaluate((id) => window.CanonicalClient.pos.getOrder(id), posOrderId);
+    const posPaymentMethods = posOrder.payments.map((payment) => payment.payment_method_id).sort().join(',');
+    record('C3 visible split cash/card sale commits atomically', posPaymentMethods === 'card,cash' ? 'PASS' : 'FAIL', `${posOrder.receipt_number} · ${posPaymentMethods}`);
+    await screenshot(page, 'c3-04-split-payment-sale-ar', 'pos');
+
+    await clickPosTab(page, 'receipts');
+    await page.waitForSelector(`[data-cpos-receipt="${posOrderId}"]`, { visible: true, timeout: 30000 });
+    record('C3 fiscal receipt visible and printable', 'PASS', posOrder.receipt_number);
+    await screenshot(page, 'c3-05-fiscal-receipt-register-ar', 'pos');
+
+    await clickPosTab(page, 'returns');
+    await page.select('[data-cpos-form="refund"] [name="original_order_id"]', posOrderId);
+    await page.$eval('[data-cpos-form="refund"] [name="original_order_line_id"]', (input, value) => { input.value = value; }, posOrder.lines[0].id);
+    await page.$eval('[data-cpos-form="refund"] [name="qty"]', (input) => { input.value = '1'; });
+    await page.select('[data-cpos-form="refund"] [name="payment_method_id"]', 'card');
+    await page.$eval('[data-cpos-form="refund"] [name="amount"]', (input) => { input.value = '125'; });
+    await page.$eval('[data-cpos-form="refund"] [name="reason"]', (input) => { input.value = 'C3 browser customer return'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="refund"]')?.requestSubmit());
+    const refundOrderId = await poll(page, async (originalId) =>
+      (await window.CanonicalClient.pos.listRefunds()).find((row) => row.original_order_id === originalId)?.refund_order_id || null,
+    { args: [posOrderId] });
+    await page.waitForFunction(() => window.CanonicalPOS && !window.CanonicalPOS.state.loading);
+    record('C3 visible return restores stock and posts card refund', 'PASS', refundOrderId);
+    await screenshot(page, 'c3-06-return-refund-ar', 'pos');
+
+    await clickPosTab(page, 'sessions');
+    await page.$eval('[data-cpos-form="close-session"] [name="counted_amount"]', (input) => { input.value = '100'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="close-session"]')?.requestSubmit());
+    const adminReconciliation = await poll(page, async (sessionId) =>
+      (await window.CanonicalClient.pos.listReconciliations()).find((row) => row.session_id === sessionId) || null,
+    { args: [adminSessionId] });
+    record('C3 visible cash count, expected balance, variance, and close',
+      Number(adminReconciliation.variance) === 0 ? 'PASS' : 'FAIL',
+      `${adminReconciliation.expected_amount}/${adminReconciliation.counted_amount}/${adminReconciliation.variance}`);
+    await clickPosTab(page, 'reconciliation');
+    await screenshot(page, 'c3-07-session-reconciliation-ar', 'pos');
+    await clickPosTab(page, 'audit');
+    const auditCounts = await page.evaluate(() => ({
+      audit: window.CanonicalPOS.state.rows.audit.length,
+      outbox: window.CanonicalPOS.state.rows.outbox.length,
+    }));
+    record('C3 visible audit and outbox evidence', auditCounts.audit > 0 && auditCounts.outbox > 0 ? 'PASS' : 'FAIL', JSON.stringify(auditCounts));
+    await screenshot(page, 'c3-08-audit-outbox-ar', 'pos');
+
+    await page.evaluate(() => {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+      window.CanonicalPOS.activate();
+    });
+    await page.waitForFunction(() => window.CanonicalPOS && !window.CanonicalPOS.state.loading);
+    const posDirection = await page.$eval('.cpos-shell', (node) => ({
+      dir: node.dir,
+      text: node.textContent.includes('Canonical Point of Sale'),
+    }));
+    record('C3 English LTR surface', posDirection.dir === 'ltr' && posDirection.text ? 'PASS' : 'FAIL', JSON.stringify(posDirection));
+    await screenshot(page, 'c3-09-pos-en-ltr', 'pos');
+    await page.setViewport({ width: 768, height: 1024, deviceScaleFactor: 1 });
+    await screenshot(page, 'c3-10-pos-tablet-768', 'pos');
+    await page.setViewport({ width: 375, height: 812, deviceScaleFactor: 1 });
+    await screenshot(page, 'c3-11-pos-mobile-375', 'pos');
+    const posOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2);
+    record('C3 mobile has no page-level horizontal overflow', posOverflow ? 'PASS' : 'FAIL');
+
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+    const posUser = await login(page, 'test.pos');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openPos(page);
+    await clickPosTab(page, 'sessions');
+    await page.select('[data-cpos-form="open-session"] [name="terminal_id"]', terminalId);
+    await page.$eval('[data-cpos-form="open-session"] [name="opening_cash"]', (input) => { input.value = '0'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="open-session"]')?.requestSubmit());
+    const roleSessionId = await poll(page, async (terminal) =>
+      (await window.CanonicalClient.pos.listSessions()).find((row) => row.terminal_id === terminal && row.state === 'opened')?.id || null,
+    { args: [terminalId] });
+    await clickPosTab(page, 'cart');
+    await page.select('[data-cpos-form="sale"] [name="partner_id"]', fixture.customerId);
+    await page.select('[data-cpos-form="sale"] [name="product_id"]', fixture.productId);
+    await page.$eval('[data-cpos-form="sale"] [name="cash_amount"]', (input) => { input.value = '125'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="sale"]')?.requestSubmit());
+    await poll(page, async (sessionId) =>
+      (await window.CanonicalClient.pos.listOrders()).some((row) => row.session_id === sessionId && row.state === 'paid'),
+    { args: [roleSessionId] });
+    await clickPosTab(page, 'sessions');
+    await page.$eval('[data-cpos-form="close-session"] [name="counted_amount"]', (input) => { input.value = '125'; });
+    await page.evaluate(() => document.querySelector('[data-cpos-form="close-session"]')?.requestSubmit());
+    await poll(page, async (sessionId) =>
+      (await window.CanonicalClient.pos.listReconciliations()).some((row) => row.session_id === sessionId),
+    { args: [roleSessionId] });
+    record('C3 operational POS role can open, sell, and reconcile', posUser.authenticated ? 'PASS' : 'FAIL', roleSessionId);
+
+    const posViewer = await login(page, 'test.viewer');
+    await page.reload({ waitUntil: 'networkidle2' });
+    await dismissLegacyGate(page);
+    await openPos(page);
+    await clickPosTab(page, 'sessions');
+    await page.select('[data-cpos-form="open-session"] [name="terminal_id"]', terminalId);
+    await page.evaluate(() => document.querySelector('[data-cpos-form="open-session"]')?.requestSubmit());
+    await page.waitForSelector('.cpos-error', { visible: true, timeout: 30000 });
+    const posDenial = await page.$eval('.cpos-error', (node) => node.textContent);
+    record('C3 restricted viewer mutation denied server-side',
+      /not authorized|صلاحية|PERMISSION_DENIED/i.test(posDenial) ? 'PASS' : 'FAIL',
+      posDenial.replace(/\s+/g, ' ').trim());
+    await screenshot(page, 'c3-12-viewer-server-denial', 'pos');
+
+    const c3RelevantErrors = browserErrors.filter((entry) =>
+      !/favicon\.ico|ERR_ABORTED|Failed to load resource|403 \(Forbidden\)|PERMISSION_DENIED/i.test(entry));
+    record('C3 browser runtime has no unexpected errors', c3RelevantErrors.length ? 'FAIL' : 'PASS',
+      c3RelevantErrors.slice(0, 5).join(' | '));
   } finally {
     const trace = {
       runId,

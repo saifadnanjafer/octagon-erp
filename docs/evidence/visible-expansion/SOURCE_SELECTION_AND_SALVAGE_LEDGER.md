@@ -112,3 +112,25 @@ the existing Procurement governance/RFQ/order/matching modules,
 `modules/canonical-procurement.*`.
 
 Frozen VNext remained read-only at its pre-existing dirty state.
+
+## Checkpoint C3 addendum — POS lifecycle and reconciliation (2026-07-28)
+
+The source inspection was narrow and read-only. No donor file was modified and
+no third-party code was copied.
+
+| Source | Exact paths inspected | Ownership / license | Decision |
+|---|---|---|---|
+| Frozen Octagon VNext | `vnext/server/modules/pos/pos-engine.js`; `migrations/631_r6_pos_v2.mjs`; `migrations/903_r9_retail_pos.mjs` through `906_r9_retail_pos*.mjs`; related retail pack files | project-owned, proprietary | behavior reference only; no VNext client POS index existed |
+| Odoo 19 | `addons/point_of_sale/models/pos_order.py`; `addons/point_of_sale/models/pos_session.py`; `addons/point_of_sale/tests/test_point_of_sale_flow.py` | LGPL-3.0 | lifecycle and reconciliation comparison only; no code copied |
+| ERPNext develop | `erpnext/accounts/doctype/pos_invoice/pos_invoice.py`; `erpnext/selling/page/point_of_sale/` | GPL-3.0 | validation and interaction comparison only; no code copied |
+
+Selected approach: preserve Octagon's canonical ActionExecutor, Finance,
+Inventory, audit, outbox, idempotency, and original-shell conventions, then
+clean-room implement terminal configuration, sessions, split tender, receipts,
+refund lineage, stock restoration, and cash reconciliation.
+
+Target paths include migration 048, `platform/pos/session.mjs`,
+`platform/pos/refunds.mjs`, `platform/api/commercial.mjs`,
+`services/canonicalClient.js`, and `modules/canonical-pos.*`.
+
+Frozen VNext remained read-only.

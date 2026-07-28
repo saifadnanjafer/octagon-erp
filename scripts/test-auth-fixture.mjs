@@ -96,6 +96,21 @@ export const TEST_ROLES = Object.freeze([
     roleId: 'pos.operator',
     permissions: ['platform:db:read', 'platform:db:write', 'pos:session:write', 'pos:order:write'],
   },
+  // Checkpoint D/E disposable roles. Each is deliberately scoped to its own
+  // domain so authenticated Chromium acceptance can prove that a project
+  // manager cannot post manufacturing, a quality user cannot bill, and so on.
+  {
+    key: 'project_manager',
+    login: 'test.project',
+    name: 'Test Project Manager',
+    roleId: 'projects.manager',
+    permissions: [
+      'platform:db:read', 'platform:db:write',
+      'projects:project:write', 'projects:budget:write', 'projects:budget:approve',
+      'projects:effort:write', 'projects:billing:write', 'projects:billing:approve',
+      'task:write',
+    ],
+  },
   { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);
 

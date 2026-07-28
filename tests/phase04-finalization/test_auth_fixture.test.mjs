@@ -127,13 +127,29 @@ test('there is no override or force flag', () => {
 
 // --- seeding behaviour ----------------------------------------------------
 
-test('seeding creates all eight disposable roles', () => {
+// Checkpoint D/E adds domain roles so authenticated acceptance can prove
+// per-domain authorization (e.g. a project manager is not a POS operator).
+// The roster is asserted exactly, so adding a role stays a deliberate,
+// reviewed change rather than something that drifts in unnoticed.
+test('seeding creates every disposable role', () => {
   const seeded = seedTestIdentities(db, { dbPath, env: ALLOWED_ENV });
-  assert.equal(seeded.users.length, 8);
+  assert.equal(seeded.users.length, 9);
   const keys = seeded.users.map((u) => u.key).sort();
   assert.deepStrictEqual(keys, [
-    'finance', 'inventory', 'pos', 'procurement', 'sales', 'sysadmin', 'viewer', 'workshop',
+    'finance', 'inventory', 'pos', 'procurement', 'project_manager',
+    'sales', 'sysadmin', 'viewer', 'workshop',
   ]);
+});
+
+test('the project manager role carries only Projects permissions', () => {
+  const pm = TEST_ROLES.find((r) => r.key === 'project_manager');
+  assert.ok(pm, 'project_manager role must exist');
+  assert.ok(pm.permissions.includes('projects:project:write'));
+  assert.ok(pm.permissions.includes('projects:budget:approve'));
+  // Scoped: a project manager must NOT inherit other domains' authority.
+  for (const foreign of ['control:admin', 'pos:session:write', 'sales:order:write']) {
+    assert.ok(!pm.permissions.includes(foreign), `project manager must not hold ${foreign}`);
+  }
 });
 
 test('seeded users can actually authenticate with the fixture password', () => {
@@ -212,7 +228,7 @@ test('the manifest is written outside the repository and carries a warning', () 
   writeFixtureManifest(target, seeded);
   const parsed = JSON.parse(fs.readFileSync(target, 'utf8'));
   assert.match(parsed.warning, /DISPOSABLE/);
-  assert.equal(parsed.users.length, 8);
+  assert.equal(parsed.users.length, TEST_ROLES.length);
   assert.ok(!path.resolve(target).startsWith(path.join(repoRoot, 'docs')),
     'credentials must never be written into committed docs');
 });

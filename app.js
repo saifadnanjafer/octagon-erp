@@ -4311,6 +4311,10 @@ function switchPage(page) {
   if (page === 'sales') renderSalesCrmPage();
   if (page === 'customer_portal') renderCustomerPortal();
   if (page === 'equipment') renderEquipmentPage();
+  // Checkpoint D1: the canonical Projects workspace defines
+  // window.renderProjectsPage. Guarded so the shell still opens the page if
+  // the module has not loaded yet.
+  if (page === 'projects' && typeof renderProjectsPage === 'function') renderProjectsPage();
   } catch (err) {
     console.error(`[switchPage] render failed for "${page}":`, err);
     if (typeof showToast === 'function') showToast('تعذّر فتح هذه الصفحة بسبب خطأ — تم احتواؤه حتى لا يتوقف البرنامج بالكامل. جرّب صفحة أخرى أو أعد التحميل.', 'error');

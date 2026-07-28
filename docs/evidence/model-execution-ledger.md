@@ -672,3 +672,95 @@ This ledger maintains a chronological, permanent record of AI model executions a
   remote matched `42a873e7b5d9022175a421d6f605fef9484bf787`.
 - **Independent verification:** not claimed.
 - **Classification:** **CHECKPOINT C COMPLETE — SAFE TO CONTINUE**
+
+---
+
+## Checkpoint D1 — Projects and Project Costing
+
+- **Executing model:** Claude Opus 5 (`claude-opus-5`), knowledge cutoff May 2026.
+- **Agent/runtime:** Claude Code (Anthropic official CLI) on the Claude Agent
+  SDK, Windows 11 Pro 10.0.26200, Node.js v24.18.0.
+- **Reasoning level:** extended thinking enabled, default budget.
+- **Execution date:** 2026-07-28.
+- **Source branch:** `build/octagon-original-shell-visible-expansion`
+- **Source SHA:** `6adcd0df19788867c336d5020fe0d15cb7a123bb`
+- **Target branch:** `build/octagon-projects-manufacturing-assets-maintenance-fleet`
+- **Branch base:** `6adcd0df19788867c336d5020fe0d15cb7a123bb` — local and remote
+  source SHAs were identical and nothing descended from it.
+- **Checkpoints attempted:** D1 only. D2–D6, subcontract, and E1–E3 were **not
+  started**.
+- **Files inspected:** migration runner and migrations 001/014/032/034/037/
+  042/046/050/051; `platform/kernel/actions/*`, `platform/api/*`,
+  `platform/sales/*`, `platform/inventory/index.mjs`,
+  `platform/work_items/*`, `platform/finance/engine.mjs`,
+  `platform/control_plane/index.mjs`, `platform-runtime-bridge.mjs`,
+  `services/canonicalClient.js`, `modules/canonical-sales.js`,
+  `modules/appointments.js`, `index.html`, `app.js`, Checkpoint C tests,
+  `scripts/preview-*`, `scripts/test-auth-fixture.mjs`,
+  `scripts/checkpoint-c-browser-acceptance.mjs`.
+- **Files changed:** new — migration `052_projects_and_project_costing.mjs`;
+  `platform/projects/{errors,projects,budget,effort,costing,billing,index}.mjs`;
+  `platform/api/projects.mjs`; `modules/canonical-projects.{js,css}`;
+  `tests/checkpoint-d-e/projects_lifecycle.test.mjs`; six evidence documents.
+  Modified — `platform-runtime-bridge.mjs`, `platform/api/index.mjs`,
+  `services/canonicalClient.js`, `index.html`, `app.js`,
+  `scripts/test-auth-fixture.mjs`, `.claude/launch.json`,
+  `tests/checkpoint-c/migration_051.test.mjs`,
+  `tests/phase04-finalization/test_auth_fixture.test.mjs`.
+- **Migrations:** 052 only. 001–051 untouched. Tip is now 052.
+- **VNext paths inspected (read-only):** `vnext/server/modules/projects/
+  project-engine.js` (17 lines), `vnext/server/modules/manufacturing/
+  {manufacturing-engine,mrp-engine}.js`, `vnext/server/modules/shopfloor/
+  {quality-engine,maintenance-engine}.js`, `migrations/615_r3_manufacturing_
+  core.mjs`, `migrations/704_r7_quality.mjs`, `migrations/705_r7_
+  maintenance.mjs`.
+- **VNext code salvaged:** **none.** The project-owned Projects donor is a
+  17-line stub with no reusable lifecycle. VNext HEAD
+  `cf7ae4ed73eac91a325c964178036290bc0736c1`; its worktree was **already dirty
+  when found** and was not modified, cleaned, reset, or branched.
+- **Donor paths inspected:** none opened this checkpoint. Odoo 19 Community
+  `project`/`sale_project` and ERPNext `projects` informed lifecycle
+  *concepts* behaviourally from prior knowledge only.
+- **Direct adaptations:** none. **Clean-room adaptations:** all of D1.
+- **Tests:** Projects lifecycle 23/23 (new). Regressions re-run on this branch:
+  Checkpoint C 100/100, Phase 04 47/47, Phase 04 finalization 100/100,
+  Phase 03 12/12, migration 1/1, unit 9/9. Phase 02 10 pass / 1 fail.
+- **Browser runs:** real Chromium via the in-app browser against a **disposable**
+  database (`scripts/preview-authenticated-server.mjs`, port 8091),
+  authenticated as the new `test.project` project-manager role. Full chain
+  executed over real HTTP: create → activate → cost code → budget → approve →
+  commitment → task (canonical work item) → effort → milestone → achieve →
+  billing request → derived profitability → budget-vs-actual. Workspace
+  verified mounted in the original shell (18 tabs, 6 KPIs, RTL, legacy markup
+  gone). **No screenshot or trace artefacts were captured** — the Checkpoint
+  D/E Puppeteer acceptance runner was not written.
+- **Failures found and fixed (this agent's own mistakes):** (1) registered
+  governed actions before registering the owning module → FK failure;
+  (2) used an invalid `platform_modules.kind` value `business` → CHECK failure;
+  (3) declared `project_id` schema-required on `projects:effort:record`, which
+  would have blocked manufacturing-anchored effort; (4) queried a
+  non-existent `finance_documents.total_amount` column — corrected to sum
+  `finance_document_lines.debit`; (5) a Windows path-decoding bug in a test;
+  (6) placed the canonical render dispatch in a shadowed `switchPage` copy and
+  hit the async view-template race — fixed with the established module
+  `switchPage` wrap.
+- **Rework:** two existing tests corrected (not weakened) — the 051 "is last
+  migration" assertion became "is applied", and the fixture roster assertion
+  moved from 8 to an exact 9 with a new scoped-permission test added.
+- **Pre-existing failure recorded:** `tests/phase02/browser-live-evidence.test.mjs`
+  fails at the source commit `6adcd0d` (10/12) as well as on this branch
+  (11/12). Verified in a temporary worktree at the source commit. Not caused
+  by this work.
+- **Operational data:** `database.db` MD5 `ab024b2cbf46837d966cdf2966fc7441`
+  and `database.json` MD5 `644bc345d38d9dc1a826018ed5d4aecf` — byte-identical
+  before and after. All work used disposable staged copies.
+- **Blockers:** PostgreSQL **not executed** — no isolated PostgreSQL runtime
+  available in this environment. Production backup/restore **not executed** by
+  policy.
+- **Deferred:** Checkpoints D2–D6, subcontract manufacturing, and E1–E3;
+  migrations 053–060; the Checkpoint D/E Chromium acceptance runner and its
+  screenshot/trace artefacts; dedicated concurrency, failure-injection, and
+  rollback suites; the approved opening-inventory accounting date (not
+  invented, did not block this work).
+- **Independent verification:** not claimed.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

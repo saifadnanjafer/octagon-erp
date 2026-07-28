@@ -55,7 +55,14 @@ test('migration 051 fresh install and rerun preserve a readable complete entity 
       backupDir: temp.backupDir,
       actor: 'c6-policy-fresh',
     });
-    assert.equal(first.executed.at(-1).id, policyMigration.id);
+    // 051 must be applied by a fresh install. It was the migration tip when
+    // Checkpoint C closed; later checkpoints append beyond it, so assert
+    // inclusion rather than "is last" — the proof this test exists for is
+    // that 051 runs and leaves a readable entity registry behind.
+    assert.ok(
+      first.executed.some((entry) => entry.id === policyMigration.id),
+      'fresh install must apply migration 051',
+    );
     assert.equal((await runMigrations({
       dbPath: temp.dbPath,
       backupDir: temp.backupDir,

@@ -1,0 +1,366 @@
+/* Checkpoint D1 — canonical Projects workspace.
+ *
+ * Every selector is scoped under .cp-* / [data-cp-workspace]. No bare element
+ * or global class selectors, so this file can never leak styling into the rest
+ * of the original shell (see the earlier .btn-secondary contrast regression).
+ * Theme-aware: colours come from the shell's CSS custom properties with
+ * explicit fallbacks so both light and dark skins stay legible.
+ */
+
+.cp-workspace {
+  --cp-surface: var(--card-bg, var(--surface, #ffffff));
+  --cp-ink: var(--text-primary, var(--text, #1f2733));
+  --cp-muted: var(--text-secondary, #667085);
+  --cp-line: var(--border-color, rgba(120, 130, 150, 0.22));
+  --cp-accent: var(--primary-color, #2f6fed);
+  --cp-warn: var(--warning-color, #c77700);
+  --cp-danger: var(--danger-color, #c0392b);
+  --cp-ok: var(--success-color, #1e8e5a);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  color: var(--cp-ink);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------------------------- hero */
+
+.cp-workspace .cp-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border: 1px solid var(--cp-line);
+  border-radius: 14px;
+  background: var(--cp-surface);
+}
+.cp-workspace .cp-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cp-muted);
+  margin-bottom: 6px;
+}
+.cp-workspace .cp-hero h2 { margin: 0 0 6px; font-size: 22px; }
+.cp-workspace .cp-hero p { margin: 0; color: var(--cp-muted); max-width: 62ch; }
+.cp-workspace .cp-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.cp-workspace .cp-authority,
+.cp-workspace .cp-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--cp-line);
+  font-size: 12px;
+  color: var(--cp-muted);
+  background: transparent;
+}
+.cp-workspace .cp-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-line);
+  background: transparent;
+  color: var(--cp-ink);
+  cursor: pointer;
+}
+.cp-workspace .cp-icon-btn:hover { border-color: var(--cp-accent); color: var(--cp-accent); }
+
+/* ---------------------------------------------------------------- tabs */
+
+.cp-workspace .cp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--cp-line);
+  border-radius: 12px;
+  background: var(--cp-surface);
+}
+.cp-workspace .cp-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--cp-muted);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.cp-workspace .cp-tabs button:hover { color: var(--cp-ink); border-color: var(--cp-line); }
+.cp-workspace .cp-tabs button.active {
+  color: #fff;
+  background: var(--cp-accent);
+  border-color: var(--cp-accent);
+}
+
+/* -------------------------------------------------------------- panels */
+
+.cp-workspace .cp-body { display: flex; flex-direction: column; gap: 16px; }
+.cp-workspace .cp-panel {
+  padding: 16px 18px;
+  border: 1px solid var(--cp-line);
+  border-radius: 12px;
+  background: var(--cp-surface);
+}
+.cp-workspace .cp-panel h3 { margin: 0 0 12px; font-size: 15px; }
+.cp-workspace .cp-hint {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-line);
+  color: var(--cp-muted);
+  font-size: 12px;
+  background: transparent;
+}
+.cp-workspace .cp-notice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--cp-ok);
+  color: var(--cp-ok);
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------------- kpis */
+
+.cp-workspace .cp-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+.cp-workspace .cp-kpi {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--cp-line);
+  border-radius: 12px;
+  background: var(--cp-surface);
+}
+.cp-workspace .cp-kpi i { font-size: 20px; color: var(--cp-accent); }
+.cp-workspace .cp-kpi strong { display: block; font-size: 19px; line-height: 1.2; }
+.cp-workspace .cp-kpi span { display: block; font-size: 12px; color: var(--cp-muted); }
+.cp-workspace .cp-kpi small { display: block; font-size: 11px; color: var(--cp-muted); opacity: 0.8; }
+
+/* ---------------------------------------------------------------- forms */
+
+.cp-workspace .cp-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.cp-workspace .cp-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--cp-muted);
+}
+.cp-workspace .cp-form input,
+.cp-workspace .cp-form select {
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-line);
+  background: transparent;
+  color: var(--cp-ink);
+  font-size: 13px;
+  min-height: 36px;
+}
+.cp-workspace .cp-form input:focus,
+.cp-workspace .cp-form select:focus {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 1px;
+}
+.cp-workspace .cp-form button {
+  min-height: 36px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-accent);
+  background: var(--cp-accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+.cp-workspace .cp-form button:disabled { opacity: 0.55; cursor: not-allowed; }
+.cp-workspace .cp-form button.cp-secondary {
+  background: transparent;
+  color: var(--cp-accent);
+}
+
+/* --------------------------------------------------------------- tables */
+
+.cp-workspace .cp-table-wrap { overflow-x: auto; }
+.cp-workspace .cp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 520px;
+}
+.cp-workspace .cp-table th,
+.cp-workspace .cp-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--cp-line);
+  text-align: start;
+  vertical-align: middle;
+}
+.cp-workspace .cp-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--cp-muted);
+  font-weight: 600;
+}
+.cp-workspace .cp-table tbody tr:hover { background: color-mix(in srgb, var(--cp-accent) 7%, transparent); }
+.cp-workspace .cp-row-active { background: color-mix(in srgb, var(--cp-accent) 12%, transparent); }
+.cp-workspace .cp-row-warn { background: color-mix(in srgb, var(--cp-warn) 12%, transparent); }
+.cp-workspace .cp-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-workspace .cp-link {
+  padding: 4px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--cp-line);
+  background: transparent;
+  color: var(--cp-accent);
+  cursor: pointer;
+  font-size: 12px;
+}
+.cp-workspace .cp-link:hover { border-color: var(--cp-accent); }
+.cp-workspace .cp-link.cp-danger { color: var(--cp-danger); }
+.cp-workspace .cp-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--cp-muted);
+}
+
+/* --------------------------------------------------------------- badges */
+
+.cp-workspace .cp-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--cp-line);
+  font-size: 11px;
+  color: var(--cp-muted);
+  white-space: nowrap;
+}
+.cp-workspace .cp-state-active,
+.cp-workspace .cp-state-approved,
+.cp-workspace .cp-state-achieved,
+.cp-workspace .cp-state-completed,
+.cp-workspace .cp-state-released,
+.cp-workspace .cp-state-resolved,
+.cp-workspace .cp-state-invoiced { color: var(--cp-ok); border-color: var(--cp-ok); }
+.cp-workspace .cp-state-draft,
+.cp-workspace .cp-state-planned,
+.cp-workspace .cp-state-pending,
+.cp-workspace .cp-state-submitted { color: var(--cp-muted); }
+.cp-workspace .cp-state-on-hold,
+.cp-workspace .cp-state-on_hold,
+.cp-workspace .cp-state-partially-released,
+.cp-workspace .cp-state-partially_released,
+.cp-workspace .cp-state-high,
+.cp-workspace .cp-state-revised { color: var(--cp-warn); border-color: var(--cp-warn); }
+.cp-workspace .cp-state-cancelled,
+.cp-workspace .cp-state-rejected,
+.cp-workspace .cp-state-missed,
+.cp-workspace .cp-state-critical { color: var(--cp-danger); border-color: var(--cp-danger); }
+
+/* ------------------------------------------------------------ wbs tree */
+
+.cp-workspace .cp-wbs ul { list-style: none; margin: 0; padding-inline-start: 18px; }
+.cp-workspace .cp-wbs > ul { padding-inline-start: 0; }
+.cp-workspace .cp-wbs-level > li { margin: 6px 0; border-inline-start: 2px solid var(--cp-line); padding-inline-start: 12px; }
+.cp-workspace .cp-wbs-node { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cp-workspace .cp-wbs-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--cp-muted); }
+.cp-workspace .cp-wbs-tasks { margin: 4px 0; }
+.cp-workspace .cp-wbs-tasks li {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--cp-muted);
+  padding: 3px 0;
+}
+.cp-workspace .cp-docs { list-style: none; margin: 0; padding: 0; }
+.cp-workspace .cp-docs li { display: flex; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--cp-line); }
+
+/* --------------------------------------------------------- report tabs */
+
+.cp-workspace .cp-report-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-workspace .cp-report-tabs button {
+  padding: 7px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-line);
+  background: transparent;
+  color: var(--cp-muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+.cp-workspace .cp-report-tabs button.active {
+  color: #fff;
+  background: var(--cp-accent);
+  border-color: var(--cp-accent);
+}
+
+/* -------------------------------------------------------------- states */
+
+.cp-workspace .cp-state {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 34px 18px;
+  border: 1px dashed var(--cp-line);
+  border-radius: 12px;
+  color: var(--cp-muted);
+}
+.cp-workspace .cp-state i { font-size: 26px; opacity: 0.75; }
+.cp-workspace .cp-state strong { color: var(--cp-ink); font-size: 14px; }
+.cp-workspace .cp-state span { font-size: 12px; }
+.cp-workspace .cp-error { border-style: solid; border-color: var(--cp-danger); color: var(--cp-danger); }
+.cp-workspace .cp-error strong { color: var(--cp-danger); }
+.cp-workspace .cp-error button {
+  padding: 7px 15px;
+  border-radius: 9px;
+  border: 1px solid var(--cp-danger);
+  background: transparent;
+  color: var(--cp-danger);
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------- responsive */
+
+@media (max-width: 900px) {
+  .cp-workspace { padding: 12px; }
+  .cp-workspace .cp-hero { flex-direction: column; }
+  .cp-workspace .cp-tabs button span { display: none; }
+  .cp-workspace .cp-tabs button { padding: 9px 11px; }
+}
+@media (max-width: 600px) {
+  .cp-workspace .cp-form { grid-template-columns: 1fr; }
+  .cp-workspace .cp-kpis { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}

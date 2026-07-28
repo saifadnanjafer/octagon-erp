@@ -855,3 +855,119 @@ This ledger maintains a chronological, permanent record of AI model executions a
   failure-injection and rollback suites.
 - **Independent verification:** not claimed.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Checkpoint F — unified release verification (2026-07-28)
+
+- **Model:** Claude Opus 5 (`claude-opus-5`).
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Windows 11 Pro
+  10.0.26200, Node v24.18.0.
+- **Reasoning level:** extended thinking enabled.
+- **Source branch:** `build/octagon-projects-manufacturing-assets-maintenance-fleet`
+- **Source SHA:** `487409a3dfa4fc99acb14da45809f9168a55a588`
+- **Review branch:** `review/octagon-unified-release-candidate`
+- **Final SHA:** see the closing commit on that branch; local and remote SHA
+  verified equal after every push.
+
+### Claims verified
+Checkpoint D/E 56/56; Checkpoint C 100/100; Phase 04 47/47; Phase 04
+finalization 100/100; Phase 03 12/12; Migration 1/1; Unit 9/9; permission
+regression 35/35. Migrations 001–060 present with no duplicate prefix; fresh
+install applies all 60; sequential upgrade applies 60; rerun is idempotent
+(`executed: []`). Runtime registry: 330 actions with **0** duplicate ids, 158
+entities with **0** competing module ownership, `audit_policy='required'` on
+every action, no action with `idempotency_policy='none'`. Cross-domain
+integrity by foreign key: `parties` referenced by 20 tables including
+`sale_orders`/`purchase_orders`/`projects`; `product_variants` by 39 including
+`stock_quants`/`sale_order_lines`/`pos_order_lines`; `work_items` by
+`mfg_production_orders`/`mfg_work_orders`/`quality_capas`/`maintenance_orders`/
+`fleet_trips`; `assets` by `maintenance_orders`/`fleet_vehicles`. Atomicity:
+rejected actions leave no orphan row and **no outbox event**. Idempotency:
+repeat key → one record, distinct keys never conflated, durable
+`action_idempotency` ledger.
+
+### Claims rejected
+- **"134/134 repository tests"** — no suite or combination yields 134; the real
+  repository total is **363 (362 pass / 1 fail)**. The claim is wrong.
+- **"8/8 Checkpoint D/E Chromium checks"** — **NOT PROVEN**; the runner does
+  not exist and no D/E screenshots exist on disk.
+- **"No competing writer for canonical facts"** — **false**. On a fresh install
+  `phase04.canonical_cutover=0` and `authority_retirement_locks` is empty, so
+  only FINANCE is enforced; six Phase 04 domains keep live legacy writers.
+- The inherited `checkpoint-d-e/test-suite-register.md` is stale — reports 50
+  (actual 56) and calls five existing, passing suites "not written".
+- The Phase 02 "pre-existing product failure" is a **test isolation defect**:
+  `browser-live-evidence.test.mjs` passes in isolation (1/1, exit 0) and fails
+  only under the glob run.
+
+### Primary defect found
+The seven Checkpoint D/E domains had **no canonical-authority entry and no
+retirement lock at all**, so their legacy collections (`omni.workOrders`,
+`omni.boms`, `omni.assets`, `omni.fleet`, `omni.projects`) could not be refused
+by the legacy write routes even in principle, and `enforced()` treated them as
+unknown domains — they could never have been retired.
+
+### Files changed
+`platform/cutover/canonical-authority-map.js` (new),
+`platform/cutover/legacy-writer-retirement.mjs`, `server.js` (−90/+8, pure
+extraction), `tests/checkpoint-f/*` (3 new suites, 27 tests),
+`docs/evidence/checkpoint-f-release-verification/*` (22 files).
+
+### Forward migrations
+**None.** Remediation was achieved without schema change and is inert at
+runtime. No historical migration was rewritten.
+
+### Results
+- **Tests:** Checkpoint F 27/27. Post-change regression: Checkpoint C 100/100,
+  Phase 04 47/47, Phase 04 finalization 100/100, Checkpoint D/E 56/56 — no
+  regression.
+- **Chromium:** lifecycle acceptance **not run**; no browser proof claimed.
+- **PostgreSQL:** **BLOCKED BY IMPLEMENTATION** — no binaries on PATH, and
+  `database/dialects/postgres-dialect.mjs` is a fail-closed stub whose every
+  method throws. 297 `STRICT` declarations are SQLite-only.
+- **Backup/restore:** **not executed**.
+- **Operational data:** SHA-256 identical entry→exit —
+  `database.db` `1437550f…d1f2`, `-wal` `4f7a1f51…c5ec`,
+  `-shm` `62dac42e…fa18`, `database.json` `2e4d7d91…c700a1`.
+- **VNext:** frozen. HEAD `cf7ae4ed73eac91a325c964178036290bc0736c1`, 17 dirty
+  paths, porcelain fingerprint `bf69e289…9eec6` — identical at entry and exit.
+  Read once for provenance; no donor code used.
+
+### Current-agent mistakes and rework
+- Two assertions in the new cross-domain suite failed on first run because I
+  assumed columns and a table that do not exist (`parties.name_en`,
+  `is_customer`, `is_supplier`; table `organization_companies`). The schema was
+  correct and my assumptions were wrong. Corrected to the real contract —
+  `party_roles` and `platform_companies` — which produced a **stronger**
+  assertion (dual-role party = one `parties` row + two `party_roles` rows). No
+  product code was changed to make a test pass.
+- First Checkpoint F test invocation passed a directory instead of a glob and
+  failed to resolve; corrected to `tests/checkpoint-f/*.test.mjs`.
+- Re-running Phase 02 and Phase 03 to verify inherited claims **regenerated
+  browser artefacts** (4→12 modified, 9→29 untracked). None were committed and
+  none were reverted; disclosed in `artifact-hygiene.md`.
+
+### Corrections to previous records
+The Phase 02 failure classification is corrected from a product defect to a
+test-harness isolation defect. No previous ledger record was edited.
+
+### Blockers
+C1 legacy writers live for 12 of 13 domains (owner-gated cutover); H1 no
+lifecycle browser proof; H2 backup/restore not exercised; H3 multi-process
+concurrency unproven; H4 PostgreSQL unimplemented; H5 failure injection covers
+3 of 20 named points.
+
+### Deferred
+Lifecycle Chromium acceptance for all 13 domains; disposable backup/restore;
+multi-process concurrency; down-migration execution; release-health view;
+per-module UI state matrix; full 13-role permission matrix; M1 test module
+shipped enabled (needs owner review because disabling it edits a passing test).
+
+### Push result
+All commits pushed to `origin/review/octagon-unified-release-candidate`; local
+and remote SHA verified equal after each push. No force push. No history
+rewrite. **`main` was not merged.**
+
+- **Independent verification:** not claimed as production certification.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

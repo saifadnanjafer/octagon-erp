@@ -971,3 +971,135 @@ rewrite. **`main` was not merged.**
 
 - **Independent verification:** not claimed as production certification.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Checkpoint G — canonical cutover and release closure (2026-07-29)
+
+- **Model:** Claude Opus 5 (`claude-opus-5`).
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Windows 11 Pro
+  10.0.26200, Node v24.18.0.
+- **Reasoning level:** extended thinking enabled.
+- **Starting branch:** `review/octagon-unified-release-candidate`
+- **Starting SHA:** `81801c4ef7fc3e75ce952abe7dae4ec3b621d6cc` (verified local
+  and upstream at entry)
+- **Ending SHA:** the closing commit on the same branch; local and remote
+  verified equal after every push.
+
+### Cutover work
+Built `platform/cutover/canonical-cutover-controller.mjs` — status, dryRun,
+assessDomain/validateDomain, activateDomain, activateAll, rollbackAttempt,
+attempts, safety. Three independent guards, **no bypass flag**:
+`OCTAGON_DISPOSABLE_FIXTURE=1`, `OCTAGON_RUNTIME_MODE != production`, and a
+database-path identity guard that refuses operational basenames outright and
+treats anything not provably disposable as operational. Migration 061 adds
+`canonical_cutover_attempts` (REFUSED attempts recorded, so refusals are
+auditable) and `canonical_cutover_approvals` (created EMPTY — production stays
+fail-closed). Disposable rehearsal: **14/14 canonical authorities enforced, 0
+conflicts**, persisting across handle reopen, migration rerun and
+backup/restore. **Cutover was activated on disposable databases only.**
+
+### Writer retirement
+All 28 governed legacy collections resolve to an enforced authority after the
+disposable cutover, verified through `createLegacyWriterRetirementGuard` — the
+same constructor `server.js` consults. Nine frozen-zone paths, including
+`omni.jobOrders`, remain claimed by no authority. **Decision-layer proof only:
+no HTTP round trip was executed** (blocker H2).
+
+### Browser workflows
+**None.** `scripts/release-candidate-browser-acceptance.mjs` was not built and
+no domain lifecycle was driven through Chromium. No lifecycle proof is claimed;
+`screenshots/` is empty rather than padded.
+
+### Failure injection
+All **22 named workflows** given individual results, plus audit, outbox, a
+registry guard and post-run consistency — 26/26. Entry-point precondition
+injection; mid-lifecycle fault injection still covers only the stock path.
+
+### Multi-process concurrency
+Real separate OS processes with independent connections, released against a
+wall-clock barrier; distinct pids asserted. 5/5. No oversubscription
+(reserved+available always equalled on-hand under 16-demanded-against-10), one
+record per idempotency key across 4 processes, integrity ok. 4 of 18 named
+cases exercised.
+
+### Backup/restore
+10/10 on disposable databases. Byte-identical restore, migrations applied,
+schema fingerprint match, 19 table counts, stock-to-GL and valuation links,
+audit and outbox chains, **all 13 cutover locks survive**, Arabic intact, no
+sessions or `secret_values` copied.
+
+### PostgreSQL
+**Adapter: implemented**, 22/22 unit tests. **Runtime: NOT EXECUTED** — `pg` is
+not a dependency and no server was reachable; the adapter has never executed a
+statement against a live PostgreSQL server. Portability layer neutralises the
+297-`STRICT` blocker, verified across all 47 migration files that use it.
+
+### Migrations
+`061_canonical_cutover_controller`, `062_warehouse_code_uniqueness`. Both
+dialect-neutral. **001-060 not edited.**
+
+### Files changed
+`platform/cutover/canonical-cutover-controller.mjs` (new),
+`database/migrations/061`, `062` (new), `database/dialects/postgres-dialect.mjs`
+(rewritten from stub), `database/dialects/sql-portability.mjs` (new),
+`tests/helpers/allocate-port.mjs` (new), `tests/checkpoint-g/*` (6 files),
+`tests/phase02/*` + `tests/phase03/*` (37 port call sites),
+`tests/migration/runner.test.mjs`, `package.json`,
+`docs/evidence/checkpoint-g-release-closure/*` (24 files).
+
+### VNext
+Frozen. HEAD `cf7ae4ed73eac91a325c964178036290bc0736c1`, 17 dirty paths,
+fingerprint `bf69e289...9eec6` — identical at entry and exit. Read twice, for
+the fingerprint only.
+
+### Tests
+**448 pass / 0 fail across every repository suite** — Phase 02 (serial) 11,
+Phase 03 12, Phase 04 47, Phase 04 finalization 100, Checkpoint C 100,
+Checkpoint D/E 56, Checkpoint F 27, **Checkpoint G 85**, migration 1, unit 9.
+Permission regression 35/35. First time in this arc every suite is green.
+
+### Failures, current-agent mistakes and rework
+- **I misdiagnosed the Phase 02 aggregate failure.** I identified overlapping
+  random port ranges, fixed 37 call sites, and the aggregate still failed. The
+  real cause was `TimeoutError: Waiting failed: 30000ms exceeded` — resource
+  starvation from parallel Chromium launches. Serial execution fixed it
+  (11/11, exit 0). The port fix is kept as a genuine latent-defect fix, and the
+  wrong first diagnosis is recorded everywhere it appears.
+- **The warehouse concurrency test failed and I did not relax it.** I verified
+  the duplicate reproduced *sequentially* before concluding it was a missing
+  constraint rather than a race, then fixed the product with migration 062.
+- **Three of my assertions were wrong about the schema.** `assets` uses
+  `asset_number`/`name_ar`; companies live in `platform_companies`; and my
+  secret-column NAME heuristic falsely flagged `platform_settings.secret`, a
+  one-character boolean flag — migration 008 is explicit that secret values live
+  in `secret_values` by reference. Each was corrected to the real contract, and
+  each corrected check is stronger than what I first wrote.
+- **One test updated:** `testPostgresDialectStub` pinned the message
+  "PostgreSQL dialect is not yet configured" — the limitation this checkpoint
+  removed. Re-pointed at `PG_NO_CONNECTION_STRING` / `PG_NOT_CONNECTED`, a
+  stronger machine-readable contract. Changed because the implementation
+  improved, not to hide a failure.
+- A bash heredoc batch corrupted `tests/helpers/allocate-port.mjs` by matching
+  its own doc comment and self-importing; rewritten cleanly.
+
+### Blockers
+H1 no lifecycle browser proof; H2 writer refusal not observed over HTTP; H3
+cutover never rehearsed against production-shaped data (and migration 062 will
+refuse to apply if the operational database holds duplicate warehouse codes —
+**check before upgrading**); H4 PostgreSQL runtime; H5 mid-lifecycle injection
+covers 1 of 22; H6 14 of 18 concurrency cases unexercised.
+
+### Deferred
+Release Health view; per-module UI state matrix; full 13-role permission matrix;
+client-side legacy call-site enumeration; browser-authoritative calculation
+audit; cross-process Chromium mutex; runner artefact relocation; the
+`checkpoint_c_test_module` shipped-enabled defect.
+
+### Push result
+All commits pushed to `origin/review/octagon-unified-release-candidate`; local
+and remote SHA verified equal after each. No force push. No history rewrite.
+**`main` was not merged.** Operational data byte-identical at entry and exit.
+
+- **Independent verification:** not claimed as production certification.
+- **Classification:** **PARTIAL — REMEDIATION REQUIRED**

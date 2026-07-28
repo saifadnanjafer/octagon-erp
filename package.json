@@ -1,4 +1,18 @@
 {
+  "scripts": {
+    "//": "Checkpoint G — the browser-driving gates MUST run serially. node --test runs test FILES in parallel; several Phase 02/03 files start a full Octagon server AND a Chromium instance, the machine saturates, and a 30s Puppeteer wait times out ('role-specific navigation hides privileged pages'). That is resource starvation, not a product defect. Running these gates with --test-concurrency=1 makes them pass (Phase 02: 11/11, exit 0). Do not 'fix' a timeout here by raising the wait.",
+    "test:phase02": "node --test --test-concurrency=1 \"tests/phase02/*.test.mjs\"",
+    "test:phase03": "node --test --test-concurrency=1 \"tests/phase03/*.test.mjs\"",
+    "test:phase04": "node --test \"tests/phase04/*.test.mjs\"",
+    "test:phase04-finalization": "node --test \"tests/phase04-finalization/*.test.mjs\"",
+    "test:checkpoint-c": "node --test \"tests/checkpoint-c/*.test.mjs\"",
+    "test:checkpoint-d-e": "node --test \"tests/checkpoint-d-e/*.test.mjs\"",
+    "test:checkpoint-f": "node --test \"tests/checkpoint-f/*.test.mjs\"",
+    "test:checkpoint-g": "node --test \"tests/checkpoint-g/*.test.mjs\"",
+    "test:migration": "node --test \"tests/migration/*.test.mjs\"",
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "test:permissions": "node scripts/permission-regression.mjs"
+  },
   "dependencies": {
     "dotenv": "17.4.2"
   },

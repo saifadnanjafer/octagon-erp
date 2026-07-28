@@ -321,6 +321,7 @@
     if (activeTab === 'dashboard') renderDashboard(); else if (activeTab === 'suppliers') renderSuppliers(); else renderList();
   }
   function render() {
+    if (window.__canonicalProcurementAuthorityActive === true) return;
     const body = document.getElementById('procurementBody'); if (!body) return;
     const tabs = [['dashboard', '📊 اللوحة'], ['orders', '📦 أوامر الشراء'], ['suppliers', '🏭 الموردون']];
     body.innerHTML = `<div class="prc-tabs">${tabs.map(([k, l]) => `<button class="prc-tab-btn ${activeTab === k ? 'active' : ''}" onclick="prcOpenTab('${k}')">${l}</button>`).join('')}</div>

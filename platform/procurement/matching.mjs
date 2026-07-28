@@ -255,5 +255,10 @@ export function createSupplierBillRequest(db, {
     SET finance_document_id = ?, status = 'posted', updated_at = ?
     WHERE id = ?
   `).run(posted.document_id, new Date().toISOString(), billRequestId);
+  db.prepare(`
+    UPDATE purchase_commitments SET state = 'closed'
+    WHERE company_id = ? AND purchase_order_id = ?
+  `).run(company_id, po.id);
+  db.prepare('UPDATE purchase_orders SET closed_at = ? WHERE id = ?').run(new Date().toISOString(), po.id);
   return { ...requestPayload, finance_document_id: posted.document_id, status: 'posted' };
 }

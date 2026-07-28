@@ -71,7 +71,18 @@ export const TEST_ROLES = Object.freeze([
       'sales:order:write', 'sales:invoice:write', 'sales:commission:write',
     ],
   },
-  { key: 'procurement',login: 'test.procurement',name: 'Test Procurement User',     roleId: 'procurement.user',   permissions: ['platform:db:read', 'platform:db:write'] },
+  {
+    key: 'procurement',
+    login: 'test.procurement',
+    name: 'Test Procurement User',
+    roleId: 'procurement.user',
+    permissions: [
+      'platform:db:read', 'platform:db:write',
+      'purchase:requisition:write', 'purchase:requisition:approve',
+      'purchase:rfq:write', 'purchase:order:write', 'purchase:order:approve',
+      'purchase:match:write', 'purchase:bill:write',
+    ],
+  },
   { key: 'pos',        login: 'test.pos',        name: 'Test POS Operator',         roleId: 'pos.operator',       permissions: ['platform:db:read', 'platform:db:write'] },
   { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
 ]);

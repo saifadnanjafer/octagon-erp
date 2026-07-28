@@ -70,7 +70,7 @@ Additional governed behavior:
 Chromium: `Chrome/150.0.7871.24`.
 
 Raw trace:
-`test-artifacts/checkpoint-c-2026-07-28T02-17-32-594Z/checkpoint-c-browser-results.json`
+`test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/checkpoint-c-browser-results.json`
 (gitignored; no cookies or credentials are copied into evidence).
 
 This closes C1 only. It does not claim C2–C6 or legacy-writer cutover.

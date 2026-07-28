@@ -90,3 +90,25 @@ Target paths include migration 046, `platform/sales/lifecycle.mjs`,
 `services/canonicalClient.js`, and `modules/canonical-sales.*`.
 
 Frozen VNext remained read-only.
+
+## Checkpoint C2 addendum — Procurement lifecycle (2026-07-28)
+
+Targeted files were inspected read-only. No donor repository was broadly
+rescanned, no donor file was modified, and no third-party code was copied.
+
+| Source | Exact paths inspected | Ownership / license | Decision |
+|---|---|---|---|
+| Frozen Octagon VNext | `vnext/server/modules/procurement/procurement-engine.js`; `vnext/client/modules/procurement/index.js`; `migrations/613_r3_procurement_core.mjs` | project-owned, proprietary | behavior reference only; clean-room adaptation into original Octagon |
+| Odoo 19 | `addons/purchase/models/purchase_order.py`; `addons/purchase/models/purchase_order_line.py`; related purchase views | LGPL-3.0 | lifecycle comparison only; no code copied |
+| ERPNext develop | `erpnext/buying/doctype/request_for_quotation/request_for_quotation.py`; `supplier_quotation.py`; `purchase_order.py` | GPL-3.0 | comparison and validation concepts only; no code copied |
+
+Selected approach: extend Octagon's existing Procurement ActionExecutor domain
+and preserve canonical Inventory, Finance, Parties, Products, Warehouses,
+audit, outbox, idempotency, and original-shell conventions.
+
+Target paths include migration 047, `platform/procurement/lifecycle.mjs`,
+the existing Procurement governance/RFQ/order/matching modules,
+`platform/api/commercial.mjs`, `services/canonicalClient.js`, and
+`modules/canonical-procurement.*`.
+
+Frozen VNext remained read-only at its pre-existing dirty state.

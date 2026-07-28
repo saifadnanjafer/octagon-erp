@@ -92,3 +92,31 @@ Later-domain donor licensing and authority risks remain to be assessed in their
 own checkpoints. For C1, the frozen project-owned VNext Sales engine plus Odoo
 19 and ERPNext Sales lifecycle sources were inspected read-only; only clean-room
 behavior was adapted, and no donor code was copied.
+
+## Checkpoint C2 status addendum — 2026-07-28
+
+The following earlier statements are now superseded:
+
+- Procurement is no longer a read-only console surface.
+- Procurement lifecycle commands executed end-to-end in authenticated
+  Chromium.
+- Canonical Inventory receipt/quality and Finance supplier-bill/return
+  consequences are visibly proven.
+- C2 screenshots are available and manually reviewed.
+
+Remaining risks after C2:
+
+1. The owner-approved opening inventory accounting date is still absent.
+   Operational-source migration remains fail-closed.
+2. Broad Phase 04 domain retirement remains unauthorized and is not claimed.
+3. C3 POS, C4 Work Management, C5 Administration/Module Control, and C6 final
+   closure remain open.
+4. Legacy procurement code still exists outside the original Procurement page;
+   the page-level legacy renderer is retired only while canonical Procurement
+   is active.
+5. PostgreSQL execution is not proven. Migration 047 follows portable schema
+   design, but this checkpoint's executable migration proof is SQLite.
+
+For C2, frozen project-owned VNext Procurement plus Odoo 19 and ERPNext Buying
+sources were inspected read-only. Only clean-room behavior was implemented; no
+third-party code was copied.

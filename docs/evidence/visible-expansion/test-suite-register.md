@@ -14,3 +14,18 @@
 | `scripts/precommit.js` | blocked-path and repository safety gate | PASS |
 
 Counts are not double-counted across rows.
+
+## Checkpoint C2
+
+| Suite | Exact command | Result | Duration | What it proves |
+|---|---|---:|---:|---|
+| All Checkpoint C | `$files = Get-ChildItem tests/checkpoint-c -Filter '*.test.mjs'; node --test $files` | 44/44 | 10.631s | C1+C2 migrations, lifecycle, atomicity, scope, concurrency, and visible contracts coexist |
+| Procurement migration/lifecycle/UI subset | `node --test tests/checkpoint-c/canonical_procurement_ui.test.mjs tests/checkpoint-c/migration_047.test.mjs tests/checkpoint-c/procurement_lifecycle.test.mjs` | 17/17 | 5.131s | C2-specific deterministic proof |
+| Phase 04 finalization | `$files = Get-ChildItem tests/phase04-finalization -Filter '*.test.mjs'; node --test $files` | 99/99 | 8.213s | inherited canonical client, auth fixture, master data, WMS, valuation, and rollback regression |
+| Permission regression | `node scripts/permission-regression.mjs` | 35/35 | <1s | page map and role/action policy remain intact |
+| Authenticated Chromium | `BASE_URL=http://127.0.0.1:8097 node scripts/checkpoint-c-browser-acceptance.mjs` | 42/42 combined; 22/22 C2 | 128.9s | real original-shell admin/role/viewer workflows and responsive UI |
+| Precommit | `node scripts/precommit.js` | PASS | <1s | repository and blocked-path safety |
+
+No aggregate and component counts are added together. There were no skipped
+tests. Raw Chromium artifacts remain gitignored; reviewed PNGs are registered
+separately.

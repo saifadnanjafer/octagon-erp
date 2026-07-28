@@ -65,7 +65,10 @@ test('migration 046 fresh install and rerun are deterministic and carry provenan
       backupDir: temp.backupDir,
       actor: 'checkpoint-c-migration-test',
     });
-    assert.equal(first.executed.at(-1).id, salesLifecycleMigration.id);
+    assert.ok(
+      first.executed.some((row) => row.id === salesLifecycleMigration.id),
+      'fresh install must include migration 046 even when later migrations exist',
+    );
     const second = await runMigrations({
       dbPath: temp.dbPath,
       backupDir: temp.backupDir,
@@ -118,10 +121,14 @@ test('migration 046 fresh install and rerun are deterministic and carry provenan
 test('sequential upgrade from 045 applies only migration 046', async () => {
   const temp = tempWorkspace('octagon-checkpoint-c-migration-upgrade-');
   const oldMigrations = path.join(temp.dir, 'database', 'migrations');
+  const targetMigrations = path.join(temp.dir, 'database', 'target-migrations');
   fs.mkdirSync(oldMigrations, { recursive: true });
+  fs.mkdirSync(targetMigrations, { recursive: true });
   try {
-    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name) && !name.startsWith('046_'))) {
-      fs.copyFileSync(path.join(migrationsDir, file), path.join(oldMigrations, file));
+    for (const file of fs.readdirSync(migrationsDir).filter((name) => /^\d+_.+\.mjs$/.test(name))) {
+      const number = Number(file.slice(0, 3));
+      if (number <= 45) fs.copyFileSync(path.join(migrationsDir, file), path.join(oldMigrations, file));
+      if (number <= 46) fs.copyFileSync(path.join(migrationsDir, file), path.join(targetMigrations, file));
     }
     for (const relative of [
       path.join('platform', 'server', 'governance-collections.mjs'),
@@ -141,12 +148,12 @@ test('sequential upgrade from 045 applies only migration 046', async () => {
     });
     const upgrade = await runMigrations({
       dbPath: temp.dbPath,
-      migrationsDir,
+      migrationsDir: targetMigrations,
       backupDir: temp.backupDir,
       actor: 'checkpoint-c-upgrade-test',
     });
     assert.deepEqual(upgrade.executed.map((row) => row.id), [salesLifecycleMigration.id]);
-    const status = await migrationStatus({ dbPath: temp.dbPath, migrationsDir });
+    const status = await migrationStatus({ dbPath: temp.dbPath, migrationsDir: targetMigrations });
     assert.equal(status.every((row) => row.status === 'applied'), true);
   } finally {
     fs.rmSync(temp.dir, { recursive: true, force: true });

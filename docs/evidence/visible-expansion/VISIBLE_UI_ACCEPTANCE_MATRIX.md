@@ -128,8 +128,38 @@ The earlier statement that Sales was a read-only console tab is superseded.
 | No unexpected browser/runtime/resource error | PASS |
 | Evidence screenshots | PASS — 8 PNGs |
 
-Trace: `test-artifacts/checkpoint-c-2026-07-28T02-17-32-594Z/`,
+Trace: `test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/`,
 20/20 in `Chrome/150.0.7871.24`.
+
+## Checkpoint C2 — canonical Procurement (2026-07-28)
+
+The earlier statement that Procurement was a read-only console tab is
+superseded.
+
+| Gate | Result |
+|---|---|
+| Original Procurement page replaced by canonical workspace | PASS |
+| Legacy Procurement renderer retires under canonical authority | PASS |
+| 12 required Procurement areas plus reports visible | PASS |
+| Request → requisition → RFQ → two quotations → comparison → award | PASS |
+| Awarded quotation → PO approval/commitment/confirmation | PASS |
+| Quality requirement propagated across the lifecycle | PASS |
+| Canonical Inventory receipt and quality consequence | PASS |
+| Clean three-way match and mismatch worklist | PASS |
+| Canonical Finance supplier bill consequence | PASS |
+| Supplier return/debit-note consequence | PASS |
+| Supplier score and reports | PASS |
+| Procurement operational role succeeds | PASS |
+| Restricted viewer denied server-side | PASS |
+| Arabic RTL / English LTR | PASS |
+| Desktop / tablet 768 / mobile 375 | PASS |
+| No page-level mobile overflow | PASS |
+| No unexpected browser/runtime/resource error | PASS |
+| Evidence screenshots | PASS — 12 PNGs |
+
+Final combined C1+C2 trace:
+`test-artifacts/checkpoint-c-2026-07-28T03-06-05-015Z/`, 42/42 in
+`Chrome/150.0.7871.24`.
 
 ## Acceptance gate status
 

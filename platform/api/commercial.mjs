@@ -16,6 +16,9 @@ import { getSaleOrder } from '../sales/orders.mjs';
 import { getOpportunity } from '../sales/lifecycle.mjs';
 import { getCustomerOpenItems } from '../finance/engine.mjs';
 import { getPurchaseOrder } from '../procurement/orders.mjs';
+import { getPurchaseRequest } from '../procurement/lifecycle.mjs';
+import { getRequisition } from '../procurement/governance.mjs';
+import { getRfq, getSupplierQuotation, compareSupplierQuotations } from '../procurement/rfq.mjs';
 import { getPosOrder } from '../pos/session.mjs';
 import { getWorkItem, listWorkItems } from '../work_items/work_items.mjs';
 
@@ -352,7 +355,68 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length, report: 'pipeline' } };
   }
 
-  // 10. Purchase Orders
+  // 10. Procurement lifecycle
+  if (namespace === 'procurement' && (resource === 'requests' || resource === 'purchase-requests')) {
+    if (recordId) {
+      const doc = getPurchaseRequest(dialect, recordId);
+      if (!doc || doc.company_id !== company_id) return { error: 'Purchase request not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare(`
+      SELECT * FROM purchase_requests
+      WHERE company_id = ? AND (? IS NULL OR state = ?)
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id, query.state || null, query.state || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'requisitions') {
+    if (recordId) {
+      const doc = getRequisition(dialect, recordId);
+      if (!doc || doc.company_id !== company_id) return { error: 'Purchase requisition not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare(`
+      SELECT * FROM purchase_requisitions
+      WHERE company_id = ? AND (? IS NULL OR state = ?)
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id, query.state || null, query.state || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'rfqs') {
+    if (recordId) {
+      const doc = getRfq(dialect, recordId);
+      if (!doc || doc.company_id !== company_id) return { error: 'RFQ not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare(`
+      SELECT * FROM purchase_rfqs
+      WHERE company_id = ? AND (? IS NULL OR state = ?)
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id, query.state || null, query.state || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && (resource === 'supplier-quotations' || resource === 'supplier_quotations')) {
+    if (recordId) {
+      const doc = getSupplierQuotation(dialect, recordId);
+      const rfq = doc ? dialect.prepare('SELECT company_id FROM purchase_rfqs WHERE id = ?').get(doc.rfq_id) : null;
+      if (!doc || rfq?.company_id !== company_id) return { error: 'Supplier quotation not found', status: 404 };
+      return { data: doc, meta: null };
+    }
+    const rows = dialect.prepare(`
+      SELECT q.* FROM supplier_quotations q
+      JOIN purchase_rfqs r ON r.id = q.rfq_id
+      WHERE r.company_id = ? AND (? IS NULL OR q.rfq_id = ?)
+      ORDER BY q.created_at DESC LIMIT 100
+    `).all(company_id, query.rfq_id || null, query.rfq_id || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'comparison') {
+    if (!query.rfq_id) return { error: 'rfq_id is required', status: 400 };
+    const rfq = dialect.prepare('SELECT id FROM purchase_rfqs WHERE id = ? AND company_id = ?').get(query.rfq_id, company_id);
+    if (!rfq) return { error: 'RFQ not found', status: 404 };
+    const rows = compareSupplierQuotations(dialect, query.rfq_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
   if ((namespace === 'procurement' && resource === 'orders') || namespace === 'purchase-orders') {
     if (recordId) {
       const doc = getPurchaseOrder(dialect, recordId);
@@ -361,6 +425,145 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     }
     const rows = dialect.prepare('SELECT * FROM purchase_orders WHERE company_id = ? ORDER BY created_at DESC LIMIT 100').all(company_id);
     return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'receipts') {
+    const rows = dialect.prepare(`
+      SELECT e.*, p.reference, p.origin, p.location_id, p.location_dest_id
+      FROM purchase_receipt_events e
+      JOIN purchase_orders po ON po.id = e.purchase_order_id
+      JOIN stock_pickings p ON p.id = e.picking_id
+      WHERE po.company_id = ? AND (? IS NULL OR e.purchase_order_id = ?)
+      ORDER BY e.created_at DESC LIMIT 100
+    `).all(company_id, query.purchase_order_id || null, query.purchase_order_id || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && (resource === 'quality-checks' || resource === 'quality_checks')) {
+    const rows = dialect.prepare(`
+      SELECT q.* FROM purchase_quality_checks q
+      JOIN purchase_receipt_events e ON e.id = q.receipt_event_id
+      WHERE e.company_id = ? AND (? IS NULL OR e.purchase_order_id = ?)
+      ORDER BY q.created_at DESC LIMIT 100
+    `).all(company_id, query.purchase_order_id || null, query.purchase_order_id || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'matches') {
+    const rows = dialect.prepare(`
+      SELECT m.*,
+        (SELECT COUNT(*) FROM three_way_match_exceptions e WHERE e.match_id = m.id) AS exception_count
+      FROM three_way_matches m
+      WHERE m.company_id = ? AND (? IS NULL OR m.purchase_order_id = ?)
+      ORDER BY m.created_at DESC LIMIT 100
+    `).all(company_id, query.purchase_order_id || null, query.purchase_order_id || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && (resource === 'mismatch-worklist' || resource === 'mismatches')) {
+    const rows = dialect.prepare(`
+      SELECT e.*, m.purchase_order_id, m.match_status
+      FROM three_way_match_exceptions e
+      JOIN three_way_matches m ON m.id = e.match_id
+      WHERE m.company_id = ? AND e.approval_status = 'pending'
+      ORDER BY e.created_at, e.id LIMIT 100
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && (resource === 'bill-requests' || resource === 'bill_requests')) {
+    const rows = dialect.prepare(`
+      SELECT * FROM commercial_fiscal_requests
+      WHERE company_id = ? AND request_type IN ('supplier_bill','supplier_debit_note')
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'returns') {
+    const rows = dialect.prepare(`
+      SELECT * FROM purchase_returns
+      WHERE company_id = ? AND (? IS NULL OR purchase_order_id = ?)
+      ORDER BY created_at DESC LIMIT 100
+    `).all(company_id, query.purchase_order_id || null, query.purchase_order_id || null);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'commitments') {
+    const rows = dialect.prepare(`
+      SELECT * FROM purchase_commitments
+      WHERE company_id = ? ORDER BY created_at DESC LIMIT 100
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && (resource === 'supplier-performance' || resource === 'scorecards')) {
+    const rows = dialect.prepare(`
+      SELECT s.*, p.name AS supplier_name
+      FROM supplier_scorecards s JOIN parties p ON p.id = s.supplier_id
+      WHERE s.company_id = ? ORDER BY s.created_at DESC LIMIT 100
+    `).all(company_id);
+    return { data: rows, meta: { total: rows.length } };
+  }
+  if (namespace === 'procurement' && resource === 'reports') {
+    const report = query.report || 'by-supplier';
+    let rows;
+    if (report === 'open-commitments') {
+      rows = dialect.prepare(`
+        SELECT po.supplier_id, COUNT(*) AS commitments, SUM(c.amount) AS amount
+        FROM purchase_commitments c
+        JOIN purchase_orders po ON po.id = c.purchase_order_id
+        WHERE c.company_id = ? AND c.state = 'open'
+        GROUP BY po.supplier_id ORDER BY amount DESC
+      `).all(company_id);
+    } else if (report === 'overdue-receipts') {
+      rows = dialect.prepare(`
+        SELECT po.id, po.name, po.supplier_id, po.expected_date,
+          SUM(pol.product_qty) AS ordered,
+          SUM(COALESCE(f.received_quantity, 0)) AS received
+        FROM purchase_orders po
+        JOIN purchase_order_lines pol ON pol.order_id = po.id
+        LEFT JOIN purchase_order_line_fulfilment f ON f.purchase_order_line_id = pol.id
+        WHERE po.company_id = ? AND po.state = 'purchase'
+          AND po.expected_date IS NOT NULL AND po.expected_date < ?
+        GROUP BY po.id HAVING received < ordered ORDER BY po.expected_date
+      `).all(company_id, new Date().toISOString().slice(0, 10));
+    } else if (report === 'supplier-price-comparison') {
+      rows = dialect.prepare(`
+        SELECT q.supplier_id, l.product_id, AVG(l.unit_price) AS average_price,
+          MIN(l.unit_price) AS lowest_price, MAX(l.unit_price) AS highest_price
+        FROM supplier_quotation_lines l
+        JOIN supplier_quotations q ON q.id = l.quotation_id
+        JOIN purchase_rfqs r ON r.id = q.rfq_id
+        WHERE r.company_id = ? GROUP BY q.supplier_id, l.product_id
+        ORDER BY l.product_id, average_price
+      `).all(company_id);
+    } else if (report === 'match-variances') {
+      rows = dialect.prepare(`
+        SELECT e.exception_code, COUNT(*) AS exception_count
+        FROM three_way_match_exceptions e
+        JOIN three_way_matches m ON m.id = e.match_id
+        WHERE m.company_id = ? GROUP BY e.exception_code
+        ORDER BY exception_count DESC
+      `).all(company_id);
+    } else if (report === 'supplier-performance') {
+      rows = dialect.prepare(`
+        SELECT supplier_id, AVG(on_time_score) AS on_time_score,
+          AVG(quality_score) AS quality_score, AVG(price_score) AS price_score,
+          AVG(overall_score) AS overall_score
+        FROM supplier_scorecards WHERE company_id = ?
+        GROUP BY supplier_id ORDER BY overall_score DESC
+      `).all(company_id);
+    } else if (report === 'return-rates') {
+      rows = dialect.prepare(`
+        SELECT po.supplier_id, COUNT(DISTINCT pr.id) AS returns,
+          SUM(prl.quantity) AS returned_quantity
+        FROM purchase_returns pr
+        JOIN purchase_orders po ON po.id = pr.purchase_order_id
+        JOIN purchase_return_lines prl ON prl.purchase_return_id = pr.id
+        WHERE pr.company_id = ? AND pr.state = 'done'
+        GROUP BY po.supplier_id ORDER BY returned_quantity DESC
+      `).all(company_id);
+    } else {
+      rows = dialect.prepare(`
+        SELECT supplier_id, COUNT(*) AS order_count, SUM(amount_total) AS total
+        FROM purchase_orders WHERE company_id = ?
+        GROUP BY supplier_id ORDER BY total DESC
+      `).all(company_id);
+    }
+    return { data: rows, meta: { total: rows.length, report } };
   }
 
   // 11. POS orders

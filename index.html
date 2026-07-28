@@ -60,6 +60,7 @@
   <link rel="stylesheet" href="modules/finance-close.css?v=20260626-finclose-v1">
   <link rel="stylesheet" href="modules/advanced-inventory.css?v=20260626-advinv-v1">
   <link rel="stylesheet" href="modules/procurement.css?v=20260613-prc-v1">
+  <link rel="stylesheet" href="modules/canonical-procurement.css?v=20260728-checkpoint-c2-v1">
   <link rel="stylesheet" href="modules/project-management.css?v=20260613-pj-v1">
   <link rel="stylesheet" href="modules/approvals.css?v=20260613-ap-v1">
   <link rel="stylesheet" href="modules/field-service.css?v=20260613-fs-v1">
@@ -2225,6 +2226,8 @@
   <!-- Checkpoint C1: final Sales renderer loads after the legacy commercial
        overlays so every visible mutation goes through CanonicalClient. -->
   <script src="modules/canonical-sales.js?v=20260728-checkpoint-c1-v1"></script>
+  <!-- Checkpoint C2: final Procurement renderer retires the legacy local writer. -->
+  <script src="modules/canonical-procurement.js?v=20260728-checkpoint-c2-v1"></script>
   <script src="modules/pos-deepening.js?v=20260626-posd-v1"></script>
   <script src="modules/omni-communications.js?v=20260626-comm-v1"></script>
   <script src="modules/implementation-methodology.js?v=20260626-im7k-v1"></script>

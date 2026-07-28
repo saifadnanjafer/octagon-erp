@@ -60,7 +60,7 @@ export function createQuotation(db, quotationData) {
   `);
 
   let discountTotal = 0;
-  for (const line of lines) {
+  for (const [lineIndex, line] of lines.entries()) {
     const variant = db.prepare(`
       SELECT v.*, t.uom_id FROM product_variants v
       JOIN product_templates t ON v.template_id = t.id WHERE v.id = ?
@@ -100,7 +100,7 @@ export function createQuotation(db, quotationData) {
       total,
       line.tax_id || '',
       taxAmount,
-      now
+      new Date(Date.parse(now) + lineIndex).toISOString(),
     );
   }
 

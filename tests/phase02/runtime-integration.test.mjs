@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setup, cleanup, run, seedOrg, STRONG_PASSWORD } from './harness.mjs';
 import { openMigrationDatabase } from '../../database/migration-runner/index.mjs';
+import { allocatePort } from '../helpers/allocate-port.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -92,7 +93,7 @@ async function testServerStartsAndLoginWorks() {
   const org = seedOrg(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('runtime-integration');
-  const port = 18080 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -131,7 +132,7 @@ async function testUnauthenticatedRoutesAreBlocked() {
   seedOrg(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('runtime-blocked');
-  const port = 18180 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -173,7 +174,7 @@ async function testClerkIsDeniedPrivilegedActions() {
   const org = seedOrg(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('runtime-clerk');
-  const port = 18280 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {

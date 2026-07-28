@@ -32,6 +32,7 @@ import { createRoleAdministration } from '../../platform/authorization/roles/ind
 import { createPermissionRegistry } from '../../platform/authorization/registry/index.mjs';
 import { createPermissionEvaluator } from '../../platform/authorization/evaluator/index.mjs';
 import { createPolicyEngine } from '../../platform/policies/index.mjs';
+import { allocatePort } from '../helpers/allocate-port.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -370,7 +371,7 @@ async function testRtlAndLoginBootstrap() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live');
-  const port = 18580 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -411,7 +412,7 @@ async function testRoleSpecificNavigation() {
   grantClerkLimitedRole(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-roles');
-  const port = 18680 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -454,7 +455,7 @@ async function testDirectApiDenialForHiddenAction() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-api');
-  const port = 18780 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -505,7 +506,7 @@ async function testLoginAndLogout() {
   grantClerkLimitedRole(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-login-logout');
-  const port = 18880 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -548,7 +549,7 @@ async function testSessionRevocation() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-session');
-  const port = 18980 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -605,7 +606,7 @@ async function testTenantCompanyIsolation() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-isolation');
-  const port = 19080 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -656,7 +657,7 @@ async function testFieldMasking() {
   grantOwnerFieldMetadataRole(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-masking');
-  const port = 19180 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -695,7 +696,7 @@ async function testWorkflowAndApproval() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-approval');
-  const port = 19280 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -775,7 +776,7 @@ async function testInboxChatterAndFiles() {
   grantClerkLimitedRole(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-inbox');
-  const port = 19380 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -868,7 +869,7 @@ async function testEnglishLtrLanguageSwitch() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-locale');
-  const port = 19480 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -910,7 +911,7 @@ async function testResponsiveViewport() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-responsive');
-  const port = 19580 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();
@@ -1002,7 +1003,7 @@ async function testUnrelatedPageRegression() {
   fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-live-regression');
-  const port = 19680 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   const browser = await launchBrowser();

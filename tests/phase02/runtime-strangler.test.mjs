@@ -16,6 +16,7 @@ import { setup, cleanup, run, seedOrg, STRONG_PASSWORD } from './harness.mjs';
 import { openMigrationDatabase, runMigrations } from '../../database/migration-runner/index.mjs';
 import { reconcileGovernance, GOVERNED_PATHS } from '../../platform/server/governance-collections.mjs';
 import { migration as migration013 } from '../../database/migrations/013_governance_collection_cutover.mjs';
+import { allocatePort } from '../helpers/allocate-port.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -228,7 +229,7 @@ async function testFullSyncAndCanonicalReads() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('strangler-sync');
-  const port = 18380 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -307,7 +308,7 @@ async function testCollectionAndRecordStrangle() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('strangler-coll');
-  const port = 18480 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -357,7 +358,7 @@ async function testSyncDeletion() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('strangler-delete');
-  const port = 18580 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -399,7 +400,7 @@ async function testReconciliation() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('strangler-recon');
-  const port = 18680 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -503,7 +504,7 @@ async function testSetPasswordAndContext() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('strangler-pw-ctx');
-  const port = 18780 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {

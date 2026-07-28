@@ -15,6 +15,7 @@ import net from 'node:net';
 import { setup, cleanup, run, seedOrg, STRONG_PASSWORD } from './harness.mjs';
 import { openMigrationDatabase } from '../../database/migration-runner/index.mjs';
 import { GOVERNED_PATHS } from '../../platform/server/governance-collections.mjs';
+import { allocatePort } from '../helpers/allocate-port.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -233,7 +234,7 @@ async function testBodyOverrideIgnoredOnDb() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-db-override');
-  const port = 19080 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -267,7 +268,7 @@ async function testBodyOverrideIgnoredOnApiV1() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-api-override');
-  const port = 19180 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -306,7 +307,7 @@ async function testUnauthenticatedRoutesBlocked() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-unauth');
-  const port = 19280 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -338,7 +339,7 @@ async function testLocalhostBypassBlocked() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-localhost');
-  const port = 19380 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -374,7 +375,7 @@ async function testWhatsAppFailClosed() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-whatsapp');
-  const port = 19480 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   // Explicitly clear WhatsApp secrets so fail-closed path is exercised.
   const server = await startServer({ dbPath, jsonPath, port, envExtra: { WHATSAPP_APP_SECRET: '', WHATSAPP_VERIFY_TOKEN: '' } });
@@ -412,7 +413,7 @@ async function testStaticPathTraversalBlocked() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-traversal');
-  const port = 19580 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -439,7 +440,7 @@ async function testFailClosedWriteGuard() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-write-guard');
-  const port = 19680 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -462,7 +463,7 @@ async function testRevokedSessionRejected() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-revoke');
-  const port = 19780 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -484,7 +485,7 @@ async function testClerkDeniedPrivilegedActions() {
   grantClerkHomePage(dialect, org.userClerk, org.companyA1);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-clerk');
-  const port = 19880 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -522,7 +523,7 @@ async function testCrossTenantShape() {
   `).run(org.companyB1, JSON.stringify({ message: 'beta tenant log', level: 'info' }), now, now);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-tenant');
-  const port = 19980 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -543,7 +544,7 @@ async function testSecretsHygiene() {
   const org = seedOrg(dialect); fixMembershipIds(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('adv-secrets');
-  const port = 20080 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {

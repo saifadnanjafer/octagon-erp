@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { setup, cleanup, run, seedOrg, STRONG_PASSWORD } from './harness.mjs';
 import { openMigrationDatabase } from '../../database/migration-runner/index.mjs';
 import { DEFAULT_PAGE_CATALOGUE } from '../../platform/client/governance-bootstrap.mjs';
+import { allocatePort } from '../helpers/allocate-port.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -85,7 +86,7 @@ async function testBootstrapPayloadShapeAndRtlIdentity() {
   const org = seedOrg(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-evidence');
-  const port = 18380 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {
@@ -126,7 +127,7 @@ async function testBootstrapPageCatalogueMatchesServerContract() {
   seedOrg(dialect);
   dialect.close();
   const jsonPath = tmpJsonPath('browser-catalogue');
-  const port = 18480 + Math.floor(Math.random() * 1000);
+  const port = await allocatePort();
   const base = `http://127.0.0.1:${port}`;
   const server = await startServer({ dbPath, jsonPath, port });
   try {

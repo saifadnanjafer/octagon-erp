@@ -145,9 +145,13 @@ export function resolveStartupMigrationPolicy(dbPath, { env = process.env, pendi
     case DATABASE_CLASS.PRODUCTION:
       // Never auto-apply. When nothing is pending, startup is a pure read and the
       // server runs normally.
+      // Owner decision (2026-07-30): a behind-tip operational database enters a
+      // restricted diagnostic runtime rather than refusing to start, so the
+      // administrator can still authenticate and read migration readiness.
+      // Business routes stay closed — see platform/operations/health-only-mode.mjs.
       return pendingCount === 0
         ? { autoMigrate: false, mode: 'status_only', classification, reason: 'operational database already at repository tip' }
-        : { autoMigrate: false, mode: 'refuse', classification, reason: 'operational database has pending migrations; explicit authorisation required' };
+        : { autoMigrate: false, mode: 'health_only', classification, reason: 'operational database has pending migrations; explicit authorisation required' };
 
     case DATABASE_CLASS.STAGED_CLONE:
     case DATABASE_CLASS.DISPOSABLE_FIXTURE:
@@ -191,16 +195,21 @@ export async function enforceStartupMigrationPolicy(dbPath, { env = process.env,
     migrationsApplied: [],
   };
 
+  // `refuse` remains for identities we cannot classify at all: an unknown
+  // database must not even reach a diagnostic runtime bound to it.
   if (decision.mode === 'refuse') {
     throw new StartupMigrationPolicyError(
-      pending.length
-        ? `Refusing to start: ${pending.length} pending migration(s) on a ${decision.classification.class} database. ` +
-            'Startup must not migrate operational data. Run the explicit, owner-authorised migration command after a ' +
-            'verified backup and a staged rehearsal.'
-        : `Refusing to start: ${decision.reason}.`,
+      `Refusing to start: ${decision.reason}.`,
       'OPERATIONAL_MIGRATION_AUTHORIZATION_REQUIRED',
       report
     );
+  }
+
+  // Health-only: the process starts, but only the diagnostic allowlist is served.
+  if (decision.mode === 'health_only') {
+    report.healthOnly = true;
+    report.restartRequiredAfterResolution = true;
+    return report;
   }
 
   if (decision.mode === 'apply' && pending.length) {

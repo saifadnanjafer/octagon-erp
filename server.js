@@ -70,6 +70,20 @@ const USE_SQLITE = !SQLITE_DISABLED && (process.env.USE_SQLITE === 'true' || fs.
 
 let dbSync = null;
 let platformAuthority = null;
+
+// Health-only mode authority. server.js is CommonJS and the module is ESM, so it
+// is loaded via dynamic import during bootstrap. Until then the stub reports the
+// mode inactive, which is the safe default: it cannot accidentally block routes
+// before the migration policy has actually run.
+let octagonHealthOnly = {
+  isHealthOnlyActive: () => false,
+  activateHealthOnlyMode: () => {},
+  getHealthOnlyState: () => ({ active: false }),
+  evaluateHealthOnlyRequest: () => ({ allowed: true }),
+  healthOnlyDenialBody: () => ({ ok: false, code: 'SYSTEM_HEALTH_ONLY_MODE' }),
+  publicModePayload: () => ({ ok: true, mode: 'normal', available: true }),
+  migrationReadinessPayload: () => ({ ok: true, mode: 'normal' }),
+};
 let platformApiHandler = null;
 let governanceStrangler = null;
 let governanceCollections = null;
@@ -1618,6 +1632,26 @@ jarvisSecurity.init({
 
 let octagonScheduler = null;
 
+/**
+ * Resolve the caller's identity for health-only decisions.
+ *
+ * Uses the canonical session authority — there is no alternate auth path here.
+ * Returns null for anonymous or invalid sessions, which downgrades the caller to
+ * the non-sensitive availability payload.
+ */
+function resolveHealthOnlyIdentity(req) {
+  if (!platformAuthority || typeof platformAuthority.resolveContext !== 'function') return null;
+  try {
+    const ctx = platformAuthority.resolveContext(req, { touch: false });
+    if (!ctx) return null;
+    const user = platformAuthority.users?.get?.(ctx.actorId) ?? null;
+    if (!user) return null;
+    return { id: user.id, login: user.login, isOwner: user.is_owner === 1 || user.is_owner === true };
+  } catch (_) {
+    return null;
+  }
+}
+
 const server = http.createServer((req, res) => {
   // Inspect the raw request target before URL parsing normalizes dot segments.
   // Otherwise `/../server.js` can become `/server.js` before the resolved-path
@@ -1633,6 +1667,40 @@ const server = http.createServer((req, res) => {
     return sendJson(res, 403, { error: 'Security constraint: invalid path' });
   }
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+
+  // Health-only mode gate. This MUST be the first routing decision: when the
+  // operational database has pending migrations the application must not run
+  // business logic against a schema its code does not expect. Default deny —
+  // only the diagnostic allowlist proceeds, and the refusal happens before any
+  // domain handler, including the security/scheduler/sequence handlers below.
+  if (octagonHealthOnly.isHealthOnlyActive()) {
+    if (requestUrl.pathname === '/api/system/mode') {
+      return sendJson(res, 200, octagonHealthOnly.publicModePayload());
+    }
+    // The normal app shell must never render in this mode — serving index.html
+    // would show the full module navigation for a system that cannot serve it.
+    if ((requestUrl.pathname === '/' || requestUrl.pathname === '/index.html') && req.method === 'GET') {
+      try {
+        const blockedScreen = fs.readFileSync(path.join(__dirname, 'health-only.html'));
+        res.writeHead(503, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+        return res.end(blockedScreen);
+      } catch (_) {
+        return sendJson(res, 503, octagonHealthOnly.healthOnlyDenialBody(null));
+      }
+    }
+    const identity = resolveHealthOnlyIdentity(req);
+    const verdict = octagonHealthOnly.evaluateHealthOnlyRequest(req.method, requestUrl.pathname, identity);
+    if (!verdict.allowed) {
+      return sendJson(res, verdict.status || 503, {
+        ...octagonHealthOnly.healthOnlyDenialBody(identity),
+        code: verdict.code,
+        reason: verdict.reason,
+      });
+    }
+    if (requestUrl.pathname === '/api/migration/readiness' && req.method === 'GET') {
+      return sendJson(res, 200, octagonHealthOnly.migrationReadinessPayload());
+    }
+  }
 
   // Security hardening 2026-07-05: /api/jarvis/* (server-side tool gate,
   // approvals, grants) and /api/ai/* (provider proxy — keys stay in .env).
@@ -2629,6 +2697,7 @@ async function initializeDatabase() {
       // route becomes writable.
       const { enforceStartupMigrationPolicy } = await import('./database/migration-runner/startup-policy.mjs');
       const { migrationStatus } = await import('./database/migration-runner/index.mjs');
+      octagonHealthOnly = await import('./platform/operations/health-only-mode.mjs');
       const startupMigrationReport = await enforceStartupMigrationPolicy(SQLITE_DB_FILE, {
         migrationStatus,
         runMigrations,
@@ -2641,6 +2710,25 @@ async function initializeDatabase() {
         console.log(
           `Migrations pending (${startupMigrationReport.pendingCount}) on a ${startupMigrationReport.databaseClass} database; ` +
           'not applied automatically.'
+        );
+      }
+
+      // Owner decision: a behind-tip operational database serves a restricted
+      // diagnostic runtime instead of refusing to boot. Business routes stay
+      // closed until an authorized migration runs and the process is restarted.
+      if (startupMigrationReport.healthOnly) {
+        octagonHealthOnly.activateHealthOnlyMode({
+          reason: 'operational database has pending migrations; owner authorization required',
+          databaseClass: startupMigrationReport.databaseClass,
+          appliedTip: startupMigrationReport.appliedTip,
+          repositoryTip: startupMigrationReport.repositoryTip,
+          pendingCount: startupMigrationReport.pendingCount,
+          pendingMigrations: startupMigrationReport.pendingMigrations,
+          enteredAt: new Date().toISOString(),
+        });
+        console.warn(
+          `Octagon is starting in HEALTH-ONLY MODE: ${startupMigrationReport.pendingCount} pending migration(s). ` +
+          'Business routes are closed. Release Health and migration readiness remain available to the system administrator.'
         );
       }
 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>أوكتاغون — صيانة النظام / Octagon — System Maintenance</title>
+<style>
+  :root{--bg:#0f1720;--card:#18222e;--line:#2a3847;--fg:#e8eef5;--muted:#9fb0c3;
+        --warn:#f0b429;--warn-bg:#3a2f12;--ok:#3ddc97;--bad:#ff6b6b;}
+  @media (prefers-color-scheme: light){
+    :root{--bg:#f4f7fa;--card:#fff;--line:#dde5ee;--fg:#16212e;--muted:#5a6b7d;--warn-bg:#fdf5e2;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font-family:"Segoe UI",Tahoma,system-ui,sans-serif;line-height:1.6;
+       min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .wrap{width:100%;max-width:760px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#2b6cb0,#4299e1);
+        display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px}
+  h1{font-size:1.35rem;margin:0}
+  .sub{color:var(--muted);font-size:.9rem}
+  .banner{background:var(--warn-bg);border:1px solid var(--warn);border-radius:10px;padding:16px;margin-bottom:20px}
+  .banner strong{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  td:first-child{color:var(--muted);width:52%}
+  .val{font-family:ui-monospace,Consolas,monospace}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:600}
+  .pill.blocked{background:rgba(255,107,107,.15);color:var(--bad)}
+  .pill.ok{background:rgba(61,220,151,.15);color:var(--ok)}
+  .pill.gate{background:rgba(240,180,41,.15);color:var(--warn)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  button{font:inherit;padding:10px 18px;border-radius:9px;border:1px solid var(--line);
+         background:transparent;color:var(--fg);cursor:pointer}
+  button.primary{background:#2b6cb0;border-color:#2b6cb0;color:#fff}
+  .ltr{direction:ltr;text-align:left}
+  .en{color:var(--muted);font-size:.85rem}
+  #login{display:none}
+  .field{margin-bottom:12px}
+  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+  input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);
+        background:var(--bg);color:var(--fg);font:inherit}
+  .err{color:var(--bad);font-size:.87rem;min-height:1.2em}
+  @media (max-width:560px){.card{padding:20px}td:first-child{width:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card">
+    <div class="brand">
+      <div class="logo">أ</div>
+      <div>
+        <h1>أوكتاغون — تفويض الصيانة مطلوب</h1>
+        <div class="sub ltr en">Octagon — System maintenance authorization required</div>
+      </div>
+    </div>
+
+    <div class="banner">
+      <strong>النظام في وضع التشخيص فقط.</strong>
+      قاعدة البيانات التشغيلية بحاجة إلى ترحيل معتمد من المالك. جميع شاشات العمل
+      والعمليات معطّلة حتى يتم التفويض وإعادة تشغيل النظام.
+      <div class="ltr en" style="margin-top:8px">
+        <strong>Health-only mode.</strong> The operational database has pending migrations that
+        require owner authorization. All business routes are closed. A clean restart is required
+        after the migration is authorized and applied.
+      </div>
+    </div>
+
+    <div id="login">
+      <div class="field">
+        <label for="u">اسم المستخدم / Username</label>
+        <input id="u" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="p">كلمة المرور / Password</label>
+        <input id="p" type="password" autocomplete="current-password">
+      </div>
+      <div class="err" id="loginErr"></div>
+      <div class="actions">
+        <button class="primary" id="loginBtn">تسجيل الدخول / Sign in</button>
+      </div>
+    </div>
+
+    <div id="diag" style="display:none">
+      <table id="diagTable"></table>
+      <div class="actions">
+        <button class="primary" id="recheck">إعادة الفحص / Re-check</button>
+        <button id="health">صحة الإصدار / Release Health</button>
+        <button id="logout">خروج / Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card sub ltr en" style="font-size:.82rem">
+    Automatic startup migrations are disabled. Migrating an operational database requires an
+    explicit, owner-approved command with a verified backup and a completed staged rehearsal.
+  </div>
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const rows = [
+  ['وضع التشغيل / Runtime mode', d => pill('blocked','health-only')],
+  ['إصدار الترحيل الحالي / Current migration tip', d => mono(d.currentMigrationTip)],
+  ['إصدار المستودع / Repository tip', d => mono(d.repositoryMigrationTip)],
+  ['ترحيلات معلّقة / Pending migrations', d => mono(d.pendingMigrationCount)],
+  ['الترحيل التلقائي / Automatic startup migration', d => pill('ok','disabled')],
+  ['تفويض الترحيل / Migration authorization', d => pill('gate','required')],
+  ['تحويل النظام الأساسي / Canonical cutover', d => pill('ok','inactive')],
+  ['خط أساس البصمات / Checksum baseline', d => pill('gate','owner authorization required')],
+  ['تاريخ رصيد المخزون / Opening-inventory date', d => pill('gate','owner decision pending')],
+  ['إعادة التشغيل مطلوبة / Restart required', d => pill('gate','yes')],
+];
+const mono = v => '<span class="val">' + (v == null ? '—' : String(v)) + '</span>';
+const pill = (k,t) => '<span class="pill '+k+'">'+t+'</span>';
+
+async function loadDiagnostics(){
+  const r = await fetch('/api/migration/readiness');
+  if (r.status !== 200) { showLogin(); return; }
+  const d = await r.json();
+  $('diagTable').innerHTML = rows.map(([label,fn]) =>
+    '<tr><td>'+label+'</td><td>'+fn(d)+'</td></tr>').join('');
+  $('login').style.display = 'none';
+  $('diag').style.display = '';
+}
+
+function showLogin(){ $('login').style.display=''; $('diag').style.display='none'; }
+
+async function init(){
+  try {
+    const s = await (await fetch('/api/auth/session')).json();
+    if (s && s.authenticated) return loadDiagnostics();
+  } catch(_) {}
+  showLogin();
+}
+
+$('loginBtn').onclick = async () => {
+  $('loginErr').textContent = '';
+  const r = await fetch('/api/auth/login', {
+    method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ userId: $('u').value, password: $('p').value })
+  });
+  if (r.status === 200) { $('p').value=''; return loadDiagnostics(); }
+  const j = await r.json().catch(()=>({}));
+  $('loginErr').textContent = j.error || 'تعذر تسجيل الدخول / Sign-in failed';
+};
+$('recheck').onclick = loadDiagnostics;
+$('health').onclick = () => window.location.href = '/api/release/health';
+$('logout').onclick = async () => { await fetch('/api/auth/logout',{method:'POST'}); showLogin(); };
+
+init();
+</script>
+</body>
+</html>

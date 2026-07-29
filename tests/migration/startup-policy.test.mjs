@@ -112,28 +112,30 @@ async function testOperationalBehindRefusesAndChangesNothing() {
     .filter((s) => s.status === 'applied').map((s) => s.id);
   assert.strictEqual(beforeApplied.length, 1, 'fixture must leave migrations pending');
 
-  await assert.rejects(
-    () =>
-      enforceStartupMigrationPolicy(db, {
-        env: {},
-        migrationStatus: (o) => migrationStatus({ ...o, migrationsDir: migs }),
-        runMigrations: (o) => runMigrations({ ...o, migrationsDir: migs }),
-      }),
-    (err) =>
-      err instanceof StartupMigrationPolicyError &&
-      err.code === 'OPERATIONAL_MIGRATION_AUTHORIZATION_REQUIRED' &&
-      err.details.pendingCount === 2,
-    'operational database with pending migrations must fail closed'
-  );
+  // Owner decision 2026-07-30: a behind-tip operational database enters
+  // health-only mode rather than refusing to boot. The safety property is
+  // unchanged — zero migrations run and the database is untouched — but the
+  // administrator can still reach diagnostics.
+  const report = await enforceStartupMigrationPolicy(db, {
+    env: {},
+    migrationStatus: (o) => migrationStatus({ ...o, migrationsDir: migs }),
+    runMigrations: (o) => runMigrations({ ...o, migrationsDir: migs }),
+  });
 
-  assert.strictEqual(fileHash(db), beforeHash, 'refused startup must not modify the database');
+  assert.strictEqual(report.healthOnly, true, 'operational database with pending migrations must enter health-only mode');
+  assert.strictEqual(report.mode, 'health_only');
+  assert.strictEqual(report.pendingCount, 2);
+  assert.strictEqual(report.restartRequiredAfterResolution, true);
+  assert.deepStrictEqual(report.migrationsApplied, [], 'health-only must apply zero migrations');
+
+  assert.strictEqual(fileHash(db), beforeHash, 'health-only startup must not modify the database');
   const afterApplied = (await migrationStatus({ dbPath: db, migrationsDir: migs }))
     .filter((s) => s.status === 'applied').map((s) => s.id);
   assert.deepStrictEqual(afterApplied, beforeApplied, 'migration ledger must be unchanged');
 
   fs.rmSync(dir, { recursive: true, force: true });
   fs.rmSync(migs, { recursive: true, force: true });
-  console.log('PASS: operationalBehindRefusesAndChangesNothing');
+  console.log('PASS: operationalBehindEntersHealthOnlyAndChangesNothing');
 }
 
 async function testDisposableAutoMigrates() {
@@ -203,8 +205,10 @@ async function testEnvironmentVariableAloneCannotAuthorise() {
   assert.strictEqual(c.class, DATABASE_CLASS.OPERATIONAL, 'operational basename wins over every environment flag');
 
   const decision = resolveStartupMigrationPolicy(db, { env: hostileEnv, pendingCount: 5 });
-  assert.strictEqual(decision.autoMigrate, false);
-  assert.strictEqual(decision.mode, 'refuse');
+  // The safety property is autoMigrate=false. The mode is health_only since the
+  // owner chose a restricted diagnostic runtime over a hard stop.
+  assert.strictEqual(decision.autoMigrate, false, 'no environment flag may enable auto-migration on an operational database');
+  assert.strictEqual(decision.mode, 'health_only');
 
   fs.rmSync(dir, { recursive: true, force: true });
   console.log('PASS: environmentVariableAloneCannotAuthorise');
@@ -230,8 +234,8 @@ async function testProductionClassification() {
   const db = path.join(dir, 'anything.db');
   assert.strictEqual(classifyDatabase(db, { NODE_ENV: 'production' }).class, DATABASE_CLASS.PRODUCTION);
   const decision = resolveStartupMigrationPolicy(db, { env: { NODE_ENV: 'production' }, pendingCount: 3 });
-  assert.strictEqual(decision.autoMigrate, false);
-  assert.strictEqual(decision.mode, 'refuse');
+  assert.strictEqual(decision.autoMigrate, false, 'production must never auto-migrate');
+  assert.strictEqual(decision.mode, 'health_only');
   fs.rmSync(dir, { recursive: true, force: true });
   console.log('PASS: productionClassification');
 }
@@ -303,12 +307,14 @@ async function testRealChainOperationalRefusalAtTip045Shape() {
   assert.strictEqual(pending.length, 17, 'fixture must be 17 migrations behind, as the operational database was');
 
   const beforeHash = fileHash(db);
-  await assert.rejects(
-    () => enforceStartupMigrationPolicy(db, { env: {}, migrationStatus, runMigrations }),
-    (err) => err.code === 'OPERATIONAL_MIGRATION_AUTHORIZATION_REQUIRED' && err.details.pendingCount === 17,
-    'the exact incident scenario must now fail closed'
-  );
-  assert.strictEqual(fileHash(db), beforeHash, 'refused startup must leave the database untouched');
+  const report = await enforceStartupMigrationPolicy(db, { env: {}, migrationStatus, runMigrations });
+
+  // The incident scenario: before the fix this silently migrated. Now it enters
+  // health-only mode and applies nothing.
+  assert.strictEqual(report.healthOnly, true, 'the exact incident scenario must enter health-only mode');
+  assert.strictEqual(report.pendingCount, 17);
+  assert.deepStrictEqual(report.migrationsApplied, [], 'zero migrations may be applied');
+  assert.strictEqual(fileHash(db), beforeHash, 'health-only startup must leave the database untouched');
 
   fs.rmSync(dir, { recursive: true, force: true });
   console.log('PASS: realChainOperationalRefusalAtTip045Shape (17 pending, refused, unchanged)');

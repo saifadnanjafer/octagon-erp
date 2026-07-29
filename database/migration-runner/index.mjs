@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createDialect, inferDialect } from '../dialects/index.mjs';
+import { applyPreDownCompatibility } from './rollback-compatibility.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const defaultMigrationsDir = path.resolve(here, '../migrations');
@@ -327,6 +328,7 @@ export async function runMigrations({
       const effectiveBackupDir = backupDir || path.resolve(path.dirname(dbPath), '../migration-backups');
       const backupPath = selected.length ? backupBeforeMigration(dialect, dbPath, effectiveBackupDir) : null;
       const executed = [];
+      const compatibilityApplied = [];
 
       // A rollback run is atomic as a whole: every step commits together or none
       // does. Without this an interrupted teardown leaves the database at neither
@@ -363,6 +365,11 @@ export async function runMigrations({
               migration.sourceProvenance
             );
           } else {
+            // Historical migrations are immutable. Where a recorded down() is
+            // unsafe against populated data, the dependency resolution lives in
+            // the runner-owned compatibility layer, not in the migration file.
+            const compat = applyPreDownCompatibility(dialect, migration.id, effectiveDialectName);
+            if (compat) compatibilityApplied.push(compat);
             migration.down(dialect, ctx);
             dialect.prepare('DELETE FROM schema_migrations WHERE migration_id = ?').run(migration.id);
           }
@@ -401,6 +408,7 @@ export async function runMigrations({
         backupPath,
         executed,
         rollback: rollbackPlan ? { mode: rollbackPlan.mode, resultingTip: rollbackPlan.resultingTip } : null,
+        compatibilityApplied,
         status,
       };
     } finally {

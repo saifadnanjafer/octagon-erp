@@ -137,14 +137,106 @@ assertion is retained and one was added:
 The incident-reproduction case still runs the real 62-migration chain 17
 migrations behind and asserts zero applied with the file unchanged.
 
-## Not done
+## Browser proof — COMPLETED 2026-07-30
 
-- **Browser proof of the blocked screen (§6 case 10) was not performed.** The
-  operational database is at tip 062 — current — so health-only does not
-  activate against it, and the containment rules forbid starting the operational
-  server. Proving the rendered screen needs a disposable behind-tip clone served
-  on an isolated port; that is outstanding and is not claimed.
-- Release Health UI integration of these signals (§23) remains pending.
+The gap flagged in the previous revision is now closed.
+
+### Isolated fixture
+
+A disposable clone was rolled back 6 migrations (tip `056_quality_management_and_subcontracting`,
+6 behind repository tip `062_warehouse_code_uniqueness`), had its
+`cutover_staged_fixture` marker removed so it would classify as operational, and
+was renamed `database.db` inside `temp/health-only-proof/`.
+
+`scripts/health-only-proof-server.mjs` sets the database paths **itself** rather
+than via `launch.json`, and refuses to run if the target resolves to the
+operational database. This matters: if an environment field were silently
+ignored, the server would have attached to the live database on another port —
+the dual-server hazard. The launcher logged its actual targets, which were
+verified before any request was made.
+
+### Server boot — the policy fired
+
+```
+sqlite : .../temp/health-only-proof/database.db
+port   : 8099
+Migrations pending (6) on a production database; not applied automatically.
+Octagon is starting in HEALTH-ONLY MODE: 6 pending migration(s).
+Business routes are closed. Release Health and migration readiness remain
+available to the system administrator.
+```
+
+Operational `database.db` verified byte-identical immediately afterwards.
+
+### HTTP results
+
+| Caller | Route | Status | Code |
+|---|---|---|---|
+| anonymous | `GET /api/system/mode` | 200 | availability only, no diagnostics |
+| anonymous | `GET /api/release/health` | **403** | `HEALTH_ONLY_ADMIN_REQUIRED` |
+| anonymous | `GET /api/migration/readiness` | **403** | `HEALTH_ONLY_ADMIN_REQUIRED` |
+| anonymous | `POST /api/db` | **503** | `SYSTEM_HEALTH_ONLY_MODE` |
+| anonymous | `GET /` | **503** | blocked screen, 7,008 bytes |
+| **admin** | `POST /api/auth/login` | **200** | `isOwner: true` |
+| **admin** | `GET /api/migration/readiness` | **200** | full diagnostics |
+| **admin** | `GET /api/release/health` | **200** | permitted |
+| **admin** | `POST /api/db` | **503** | `SYSTEM_HEALTH_ONLY_MODE` — authority does not unlock business routes |
+| **admin** | `GET /api/inventory/items` | **503** | `SYSTEM_HEALTH_ONLY_MODE` |
+
+Admin readiness payload: mode `health_only`, current tip `056_…`, repository tip
+`062_…`, pending 6 with all six IDs, `automaticStartupMigration: disabled`,
+`operationalMigrationAuthorization: required`, `restartRequiredAfterResolution: true`.
+Leak check across the payload for `password|hash|salt|token|cookie|secret`: **clean**.
+
+### Rendered screen
+
+Blocked screen renders with the Octagon brand, the Arabic status heading with its
+English counterpart, all 10 diagnostic rows, and the login / re-check / Release
+Health / sign-out actions. **No module navigation is present** — the normal app
+shell never loads.
+
+Mobile viewport: 10 rows intact, **no horizontal overflow**. In-browser
+`fetch('/inventory.html')` → **503**, `fetch('/api/inventory/items')` → **503**
+with `SYSTEM_HEALTH_ONLY_MODE`.
+
+Screenshots captured in-session (desktop and mobile, authenticated diagnostic
+state). No credential value appears in any screenshot — the password field is
+masked and the diagnostics carry no secret material.
+
+### Two defects found by this proof
+
+Both were real, and neither was visible to the unit tests:
+
+1. **Admin was denied its own diagnostics.** `resolveHealthOnlyIdentity()` in
+   `server.js` read `user.is_owner`, but `UserDirectory.get()` returns camelCase
+   `isOwner` as a boolean. The raw column name yielded `undefined`, so every
+   administrator was treated as non-admin and received 403 on Release Health and
+   readiness. Fixed; re-verified end to end.
+
+2. **RTL corrupted migration IDs.** Migration IDs begin with digits
+   (`056_quality…`). Inside the RTL document the bidi algorithm moved the leading
+   number to the visual end, rendering `quality_management_and_subcontracting_056`
+   — a wrong version number on a maintenance screen whose purpose is reporting the
+   version. Fixed with `dir="ltr"` plus `unicode-bidi: isolate`; both tips now
+   render verbatim.
+
+The first defect is the reason this proof was worth doing: the unit tests passed
+against the module contract while the server wiring silently denied the only user
+the mode exists to serve.
+
+### Disposable fixture credential
+
+The staged clone redacts credentials, so `system_admin` had none in the fixture
+and login initially returned 401 — correct snapshot behaviour, not a product
+bug. A **disposable** fixture-only credential was seeded through the same
+canonical reset script. **The owner's operational credential was neither used in
+the fixture nor changed.**
+
+## Still not done
+
+- Release Health UI integration of these signals into Administration (§23).
+- Tablet viewport and an explicit restricted-user browser case (both covered at
+  the unit level, not in-browser).
 
 ## Operational data
 

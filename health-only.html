@@ -26,7 +26,7 @@
   table{width:100%;border-collapse:collapse;font-size:.92rem}
   td{padding:9px 4px;border-bottom:1px solid var(--line);vertical-align:top}
   td:first-child{color:var(--muted);width:52%}
-  .val{font-family:ui-monospace,Consolas,monospace}
+  .val{font-family:ui-monospace,Consolas,monospace;unicode-bidi:isolate;display:inline-block}
   .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:600}
   .pill.blocked{background:rgba(255,107,107,.15);color:var(--bad)}
   .pill.ok{background:rgba(61,220,151,.15);color:var(--ok)}
@@ -115,7 +115,10 @@ const rows = [
   ['تاريخ رصيد المخزون / Opening-inventory date', d => pill('gate','owner decision pending')],
   ['إعادة التشغيل مطلوبة / Restart required', d => pill('gate','yes')],
 ];
-const mono = v => '<span class="val">' + (v == null ? '—' : String(v)) + '</span>';
+// Migration IDs start with digits ("056_quality..."). Inside an RTL document the
+// bidi algorithm moves that leading number to the visual end, so the ID reads as
+// "quality..._056". Isolate these values as LTR so they render verbatim.
+const mono = v => '<span class="val" dir="ltr">' + (v == null ? '—' : String(v)) + '</span>';
 const pill = (k,t) => '<span class="pill '+k+'">'+t+'</span>';
 
 async function loadDiagnostics(){

@@ -1646,7 +1646,9 @@ function resolveHealthOnlyIdentity(req) {
     if (!ctx) return null;
     const user = platformAuthority.users?.get?.(ctx.actorId) ?? null;
     if (!user) return null;
-    return { id: user.id, login: user.login, isOwner: user.is_owner === 1 || user.is_owner === true };
+    // UserDirectory.get() returns camelCase `isOwner` as a boolean. Reading the
+    // raw column name here silently yields undefined and denies every admin.
+    return { id: user.id, login: user.login, isOwner: user.isOwner === true };
   } catch (_) {
     return null;
   }

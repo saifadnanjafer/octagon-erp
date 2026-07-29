@@ -104,6 +104,14 @@ Transaction rolled back; `warehouses` returned to 0 rows. No test data persisted
 
 **Severity: HIGH. Blocks any claim of clean rollback proof for the migration chain.**
 
+> **STATUS UPDATE (2026-07-29): REMEDIATED.** Fixed in the rollback-remediation
+> slice on this branch. Investigation found three root causes, not one — the FK
+> error was a symptom, and a second runtime-data dependency chain sat behind it.
+> Rollback is now targetable, atomic and fail-closed, verified end-to-end on a
+> disposable clone of this same populated database.
+> See [`rollback-remediation.md`](rollback-remediation.md).
+> The analysis below is preserved as the original finding.
+
 ### What happened
 
 `node scripts/migrate.mjs down --db <copy>` was run against a copy of the

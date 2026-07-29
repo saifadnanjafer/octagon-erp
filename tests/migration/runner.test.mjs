@@ -70,7 +70,17 @@ async function testMissingDependency() {
 async function testDownRollback() {
   const db = tmpDb('rollback');
   await freshInstall({ dbPath: db });
-  const down = await runMigrations({ dbPath: db, direction: 'down' });
+
+  // A fresh install seeds real rows (chart of accounts, journals, periods), so
+  // the database counts as populated. Since Checkpoint I, an unqualified
+  // full-chain rollback on populated data is refused; total teardown must be
+  // confirmed explicitly. See tests/migration/rollback-remediation.test.mjs.
+  await assert.rejects(
+    () => runMigrations({ dbPath: db, direction: 'down' }),
+    (err) => err instanceof MigrationRunnerError && err.code === 'FULL_CHAIN_ROLLBACK_REFUSED'
+  );
+
+  const down = await runMigrations({ dbPath: db, direction: 'down', allowFullChain: true });
   assert.ok(down.migrations.length >= 1);
   assert.ok(down.migrations.includes('001_platform_kernel_bootstrap'));
   const status = await migrationStatus({ dbPath: db });

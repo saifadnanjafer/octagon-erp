@@ -149,6 +149,106 @@ export function backupBeforeMigration(dialect, dbPath, backupDir) {
   return backupPath;
 }
 
+/**
+ * Filenames that identify the operational Octagon datastore. Rollback is
+ * destructive and is refused against these outright.
+ *
+ * The guard is deliberately narrow: it blocks the `down` direction only. Forward
+ * migration of the operational database remains possible, because that is a
+ * legitimate owner-authorised action. Undoing migrations on live data is not.
+ */
+const OPERATIONAL_DB_BASENAMES = new Set(['database.db', 'database.json']);
+
+export function isOperationalDatabasePath(dbPath) {
+  return OPERATIONAL_DB_BASENAMES.has(path.basename(path.resolve(dbPath)));
+}
+
+function assertRollbackAllowed(dbPath) {
+  if (isOperationalDatabasePath(dbPath)) {
+    throw new MigrationRunnerError(
+      `Refusing to roll back the operational database at "${dbPath}". ` +
+        'Rollback is destructive and is only permitted against a disposable clone.',
+      'OPERATIONAL_ROLLBACK_REFUSED',
+      { dbPath }
+    );
+  }
+}
+
+/**
+ * Decide which applied migrations a `down` run should unwind.
+ *
+ * Selection modes, most specific first:
+ *   target  — unwind everything applied strictly AFTER `target`; tip becomes `target`
+ *   steps   — unwind the N most recently ordered applied migrations
+ *   neither — full-chain rollback (refused on populated data unless allowFullChain)
+ *
+ * `appliedInOrder` must be in forward dependency order; the caller reverses.
+ */
+export function resolveRollbackSelection({ appliedInOrder, target = null, steps = null, allowFullChain = false, isPopulated = false }) {
+  if (target !== null && steps !== null) {
+    throw new MigrationRunnerError('Specify either target or steps for rollback, not both', 'AMBIGUOUS_ROLLBACK_SELECTION', { target, steps });
+  }
+
+  if (target !== null) {
+    const index = appliedInOrder.findIndex((migration) => migration.id === target);
+    if (index === -1) {
+      throw new MigrationRunnerError(
+        `Rollback target "${target}" is not an applied migration`,
+        'UNKNOWN_ROLLBACK_TARGET',
+        { target, appliedTip: appliedInOrder.at(-1)?.id ?? null }
+      );
+    }
+    return { selection: appliedInOrder.slice(index + 1), mode: 'target', resultingTip: target };
+  }
+
+  if (steps !== null) {
+    const count = Number(steps);
+    if (!Number.isInteger(count) || count < 1) {
+      throw new MigrationRunnerError('Rollback steps must be a positive integer', 'INVALID_ROLLBACK_STEPS', { steps });
+    }
+    if (count > appliedInOrder.length) {
+      throw new MigrationRunnerError(
+        `Cannot roll back ${count} migrations; only ${appliedInOrder.length} are applied`,
+        'ROLLBACK_STEPS_EXCEED_APPLIED',
+        { steps: count, applied: appliedInOrder.length }
+      );
+    }
+    const selection = appliedInOrder.slice(appliedInOrder.length - count);
+    return { selection, mode: 'steps', resultingTip: appliedInOrder[appliedInOrder.length - count - 1]?.id ?? null };
+  }
+
+  // No target and no steps: this would unwind the entire chain.
+  if (isPopulated && !allowFullChain) {
+    throw new MigrationRunnerError(
+      'Refusing full-chain rollback on a populated database. ' +
+        'Pass an explicit target or steps, or set allowFullChain to confirm total teardown.',
+      'FULL_CHAIN_ROLLBACK_REFUSED',
+      { applied: appliedInOrder.length }
+    );
+  }
+  return { selection: [...appliedInOrder], mode: 'full-chain', resultingTip: null };
+}
+
+/**
+ * A database is "populated" when it carries business rows beyond the migration
+ * bookkeeping table itself. Used to decide whether an unqualified full-chain
+ * rollback is safe to perform without explicit confirmation.
+ */
+export function databaseIsPopulated(dialect) {
+  const tables = dialect
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name <> 'schema_migrations'")
+    .all()
+    .map((row) => row.name);
+  for (const table of tables) {
+    try {
+      if (dialect.prepare(`SELECT 1 FROM "${table}" LIMIT 1`).get()) return true;
+    } catch {
+      // Unreadable table cannot prove emptiness; skip rather than assume.
+    }
+  }
+  return false;
+}
+
 function acquireLockFile(lockPath) {
   try {
     fs.mkdirSync(lockPath, { recursive: false });
@@ -175,7 +275,11 @@ export async function runMigrations({
   backupDir,
   dialectName = null,
   actor = 'system',
+  target = null,
+  steps = null,
+  allowFullChain = false,
 }) {
+  if (direction === 'down') assertRollbackAllowed(dbPath);
   const effectiveDialectName = dialectName || inferDialect(dbPath);
   const lockDir = path.resolve(path.dirname(dbPath), `.migration-lock-${Buffer.from(dbPath).toString('base64url')}`);
   if (!acquireLockFile(lockDir)) {
@@ -187,9 +291,22 @@ export async function runMigrations({
       const migrations = resolveMigrationOrder(await loadMigrations(migrationsDir));
       const appliedRows = dialect.prepare('SELECT migration_id FROM schema_migrations ORDER BY migration_id').all();
       const applied = new Set(appliedRows.map((row) => row.migration_id));
-      const selected = direction === 'up'
-        ? migrations.filter((migration) => !applied.has(migration.id))
-        : migrations.filter((migration) => applied.has(migration.id)).reverse();
+      let selected;
+      let rollbackPlan = null;
+      if (direction === 'up') {
+        selected = migrations.filter((migration) => !applied.has(migration.id));
+      } else {
+        const appliedInOrder = migrations.filter((migration) => applied.has(migration.id));
+        rollbackPlan = resolveRollbackSelection({
+          appliedInOrder,
+          target,
+          steps,
+          allowFullChain,
+          isPopulated: databaseIsPopulated(dialect),
+        });
+        // Unwind newest-first so dependants are removed before their dependencies.
+        selected = [...rollbackPlan.selection].reverse();
+      }
 
       if (dryRun) {
         return {
@@ -198,6 +315,7 @@ export async function runMigrations({
           dialect: effectiveDialectName,
           migrations: selected.map((migration) => migration.id),
           backupPath: null,
+          rollback: rollbackPlan ? { mode: rollbackPlan.mode, resultingTip: rollbackPlan.resultingTip } : null,
           status: migrations.map((migration) => ({ id: migration.id, status: applied.has(migration.id) ? 'applied' : 'pending' })),
         };
       }
@@ -210,9 +328,27 @@ export async function runMigrations({
       const backupPath = selected.length ? backupBeforeMigration(dialect, dbPath, effectiveBackupDir) : null;
       const executed = [];
 
+      // A rollback run is atomic as a whole: every step commits together or none
+      // does. Without this an interrupted teardown leaves the database at neither
+      // the original tip nor a clean lower tip.
+      //
+      // `defer_foreign_keys` postpones FK enforcement to the outermost COMMIT, so
+      // tables may be dropped in any order within the run. This is the
+      // dependency-safe strategy for teardown: by commit time both the parent and
+      // its dependants are gone, including self-referencing parents.
+      const outerTransaction = direction === 'down' && selected.length > 0;
+      if (outerTransaction) {
+        dialect.exec('BEGIN IMMEDIATE;');
+        dialect.exec('PRAGMA defer_foreign_keys = ON;');
+      }
+
+      try {
       for (const migration of selected) {
         const start = Date.now();
-        const runInsideTransaction = migration.transactionPolicy === 'required';
+        // Inside an outer transaction the individual migration must not open its
+        // own; SQLite has no nested transactions and atomicity is already
+        // guaranteed by the enclosing one.
+        const runInsideTransaction = migration.transactionPolicy === 'required' && !outerTransaction;
         if (runInsideTransaction) dialect.exec('BEGIN IMMEDIATE;');
         try {
           const ctx = { actor, dialect: effectiveDialectName };
@@ -243,12 +379,30 @@ export async function runMigrations({
           );
         }
       }
+      if (outerTransaction) dialect.exec('COMMIT;');
+      } catch (error) {
+        // Fail closed: discard every step of a failed rollback so the caller is
+        // left with the database exactly as it was before the attempt.
+        if (outerTransaction) {
+          try { dialect.exec('ROLLBACK;'); } catch (_) {}
+        }
+        throw error;
+      }
 
       const status = migrations.map((migration) => ({
         id: migration.id,
         status: dialect.prepare('SELECT 1 FROM schema_migrations WHERE migration_id = ?').get(migration.id) ? 'applied' : 'pending',
       }));
-      return { direction, dryRun, dialect: effectiveDialectName, migrations: selected.map((m) => m.id), backupPath, executed, status };
+      return {
+        direction,
+        dryRun,
+        dialect: effectiveDialectName,
+        migrations: selected.map((m) => m.id),
+        backupPath,
+        executed,
+        rollback: rollbackPlan ? { mode: rollbackPlan.mode, resultingTip: rollbackPlan.resultingTip } : null,
+        status,
+      };
     } finally {
       dialect.close();
     }

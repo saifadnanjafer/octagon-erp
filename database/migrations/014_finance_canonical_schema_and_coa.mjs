@@ -52,6 +52,14 @@ export const migration = {
   },
 
   down(dialect) {
+    // finance_accounts.parent_id is a self-referencing foreign key. DROP TABLE
+    // performs an implicit DELETE FROM, so a populated chart of accounts whose
+    // rows point at their own parents violates the constraint immediately and
+    // aborts the teardown.
+    //
+    // Break the self-reference before dropping so this rollback is safe whether
+    // or not the caller has deferred foreign keys.
+    dialect.exec(`UPDATE finance_accounts SET parent_id = NULL WHERE parent_id IS NOT NULL;`);
     dialect.exec(`
       DROP TRIGGER IF EXISTS t_finance_journal_lines_no_delete;
       DROP TRIGGER IF EXISTS t_finance_journal_lines_no_update;
@@ -72,6 +80,18 @@ export const migration = {
     dialect.prepare('DELETE FROM platform_actions WHERE module_id = ?').run(MODULE_ID);
     dialect.prepare('DELETE FROM x_doc_state_defs WHERE entity = ?').run('finance_document');
     dialect.prepare('DELETE FROM platform_entities WHERE module_id = ?').run(MODULE_ID);
+    // Settings form a two-level dependency chain that must be unwound
+    // innermost-first:
+    //     settings_values.key -> platform_settings.key -> platform_modules.id
+    //
+    // Settings may be registered against this module at runtime rather than by a
+    // migration, so they are not cleaned up by any later migration's down(). If
+    // they are left behind, deleting the module row below leaves dangling
+    // references that abort the rollback at commit time.
+    dialect
+      .prepare('DELETE FROM settings_values WHERE key IN (SELECT key FROM platform_settings WHERE module_id = ?)')
+      .run(MODULE_ID);
+    dialect.prepare('DELETE FROM platform_settings WHERE module_id = ?').run(MODULE_ID);
     dialect.prepare('DELETE FROM platform_modules WHERE id = ?').run(MODULE_ID);
   }
 };

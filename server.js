@@ -2585,9 +2585,11 @@ async function initializeDatabase() {
         );
       `);
 
-      // Phase 02: apply the canonical migration suite (001–012). The legacy
-      // auth_sessions table is created by migration 012 only when migrating an
-      // existing database and is dropped once migration is complete.
+      // Load the migration runner. Whether any migration actually runs at startup
+      // is decided by the startup migration policy below — NOT here, and not
+      // unconditionally. The legacy auth_sessions table is created by migration
+      // 012 only when migrating an existing database and is dropped once
+      // migration is complete.
       const { runMigrations } = await import('./database/migration-runner/index.mjs');
       const rowCountBeforeMigrations = dbSync.prepare("SELECT COUNT(*) as count FROM metadata").get().count +
         dbSync.prepare("SELECT COUNT(*) as count FROM collections").get().count;
@@ -2615,9 +2617,31 @@ async function initializeDatabase() {
         if (!xCols.includes('version')) dbSync.exec("ALTER TABLE x_records ADD COLUMN version INTEGER NOT NULL DEFAULT 1;");
       }
 
-      const migrationResult = await runMigrations({ dbPath: SQLITE_DB_FILE, direction: 'up', actor: 'system' });
-      if (migrationResult.migrations.length) {
-        console.log('Migrations applied:', migrationResult.migrations.join(', '));
+      // Startup must NOT decide on its own to migrate. On 2026-07-29 this call
+      // was an unconditional runMigrations({direction:'up'}) and it silently took
+      // the operational database from tip 045 to tip 062 when the server was
+      // started to verify an administrator credential. See
+      // docs/evidence/checkpoint-i-operational-cutover-readiness/operational-auto-migration-incident.md
+      //
+      // The policy authority classifies the database by identity and only allows
+      // automatic forward migration on provably disposable stores. An operational
+      // database with pending migrations fails closed here, before any business
+      // route becomes writable.
+      const { enforceStartupMigrationPolicy } = await import('./database/migration-runner/startup-policy.mjs');
+      const { migrationStatus } = await import('./database/migration-runner/index.mjs');
+      const startupMigrationReport = await enforceStartupMigrationPolicy(SQLITE_DB_FILE, {
+        migrationStatus,
+        runMigrations,
+        actor: 'system',
+      });
+      globalThis.__octagonStartupMigrationReport = startupMigrationReport;
+      if (startupMigrationReport.migrationsApplied.length) {
+        console.log('Migrations applied:', startupMigrationReport.migrationsApplied.join(', '));
+      } else if (startupMigrationReport.pendingCount) {
+        console.log(
+          `Migrations pending (${startupMigrationReport.pendingCount}) on a ${startupMigrationReport.databaseClass} database; ` +
+          'not applied automatically.'
+        );
       }
 
     } catch (sqliteInitError) {

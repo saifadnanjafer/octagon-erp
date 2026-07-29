@@ -1,0 +1,381 @@
+{
+  "manifestVersion": 1,
+  "acceptedSourceCommit": "5cdf68bea374d93ccd547b8821875f3d70a9a402",
+  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
+  "acceptanceReason": "Checkpoint I1B: migrations 001-062 accepted as historical and immutable after restoring 014 to its original source. Compatibility behaviour lives in database/migration-runner/rollback-compatibility.mjs, not in migration files.",
+  "migrationCount": 62,
+  "migrations": [
+    {
+      "migrationId": "001_platform_kernel_bootstrap",
+      "relativePath": "database/migrations/001_platform_kernel_bootstrap.mjs",
+      "algorithm": "sha256",
+      "checksum": "784b2d66e4384471e88c6a88550c676994063934b790edb5a44c67b282d0cb3a"
+    },
+    {
+      "migrationId": "002_platform_kernel_entities_and_storage",
+      "relativePath": "database/migrations/002_platform_kernel_entities_and_storage.mjs",
+      "algorithm": "sha256",
+      "checksum": "78cfb445bcf4960a4c7f3a95ffe4e3b4033ab3bf0cb187c5960e742c3c0b33d0"
+    },
+    {
+      "migrationId": "003_platform_kernel_actions_and_lifecycle",
+      "relativePath": "database/migrations/003_platform_kernel_actions_and_lifecycle.mjs",
+      "algorithm": "sha256",
+      "checksum": "3d8e8cc634dca0572bb762f61088102e44a1bed427aac8c8ed62cc8c76fd7a66"
+    },
+    {
+      "migrationId": "004_platform_kernel_views",
+      "relativePath": "database/migrations/004_platform_kernel_views.mjs",
+      "algorithm": "sha256",
+      "checksum": "cefff70c34a332815c33e6ad4010ecbbd4ef6ea8435f981f999caca261f93189"
+    },
+    {
+      "migrationId": "005_platform_kernel_control_plane",
+      "relativePath": "database/migrations/005_platform_kernel_control_plane.mjs",
+      "algorithm": "sha256",
+      "checksum": "00183bb8576ebce3f9b81e9fcab7d045ddb5a17559f43f650f29a2c65780b20d"
+    },
+    {
+      "migrationId": "006_identity_authority",
+      "relativePath": "database/migrations/006_identity_authority.mjs",
+      "algorithm": "sha256",
+      "checksum": "aed57337c1d205d2cc5185e476e73adb7559000acd82e27ebabe69d137dc9999"
+    },
+    {
+      "migrationId": "007_authorization_registry",
+      "relativePath": "database/migrations/007_authorization_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "36fe545be4f9c51a53c2031d2236ad3fbcb0e1ee736c0d828dd02ed95f18c9b8"
+    },
+    {
+      "migrationId": "008_settings_secrets_policies",
+      "relativePath": "database/migrations/008_settings_secrets_policies.mjs",
+      "algorithm": "sha256",
+      "checksum": "6b8f9973872d8f4f4514297d822bbf9c2c659a180ebb7c57d729f29bbfd29a50"
+    },
+    {
+      "migrationId": "009_workflow_approvals_sla",
+      "relativePath": "database/migrations/009_workflow_approvals_sla.mjs",
+      "algorithm": "sha256",
+      "checksum": "cff74d5062a6ef8392c046831280623acfd6fa8f3a5ee52e924815fc04374824"
+    },
+    {
+      "migrationId": "010_collaboration_files_jobs",
+      "relativePath": "database/migrations/010_collaboration_files_jobs.mjs",
+      "algorithm": "sha256",
+      "checksum": "bd0489c1947a20a428957026d1ba5e4b8d31075cbdcae4e166bc6f098ad58337"
+    },
+    {
+      "migrationId": "011_service_identity_authorization",
+      "relativePath": "database/migrations/011_service_identity_authorization.mjs",
+      "algorithm": "sha256",
+      "checksum": "1b809d3a37179dddbec163b26a6470ff497e2c855f24521b6c55cd6356b29488"
+    },
+    {
+      "migrationId": "012_runtime_authority_cutover",
+      "relativePath": "database/migrations/012_runtime_authority_cutover.mjs",
+      "algorithm": "sha256",
+      "checksum": "3754dff7371928ccf9e8128bf3b6b25cd915a57013779e73ce8e1001721a794c"
+    },
+    {
+      "migrationId": "013_governance_collection_cutover",
+      "relativePath": "database/migrations/013_governance_collection_cutover.mjs",
+      "algorithm": "sha256",
+      "checksum": "328d8b49814ae4e8c4790b46f9b1a5760857c414f9338c20826bef3730ba2806"
+    },
+    {
+      "migrationId": "014_finance_canonical_schema_and_coa",
+      "relativePath": "database/migrations/014_finance_canonical_schema_and_coa.mjs",
+      "algorithm": "sha256",
+      "checksum": "56908adcd510e20b2d6dfe0c994007582f1d94b56ba67581a0ccf2fcabd573b5"
+    },
+    {
+      "migrationId": "015_finance_document_lifecycle",
+      "relativePath": "database/migrations/015_finance_document_lifecycle.mjs",
+      "algorithm": "sha256",
+      "checksum": "0173db21d274e763112c7c8edf3f7fd451de8195b46cda3db45c8933959eccec"
+    },
+    {
+      "migrationId": "016_accounting_dimensions",
+      "relativePath": "database/migrations/016_accounting_dimensions.mjs",
+      "algorithm": "sha256",
+      "checksum": "60645991cb5e436bdd21185d0cacac5285dbfcab45c2c29337449d1e911f60a3"
+    },
+    {
+      "migrationId": "017_currency_and_exchange_rates",
+      "relativePath": "database/migrations/017_currency_and_exchange_rates.mjs",
+      "algorithm": "sha256",
+      "checksum": "c3fe313595238cc4259e84035c93e0635dc3dc109a4e622620ce7904dc2c7a96"
+    },
+    {
+      "migrationId": "018_tax_definition_and_calculation",
+      "relativePath": "database/migrations/018_tax_definition_and_calculation.mjs",
+      "algorithm": "sha256",
+      "checksum": "ff0c47374a710485fd76b29230cbfd782cb437275fa5835ca8c4d2a5d682b97c"
+    },
+    {
+      "migrationId": "019_fiscal_positions_and_iraq_localization",
+      "relativePath": "database/migrations/019_fiscal_positions_and_iraq_localization.mjs",
+      "algorithm": "sha256",
+      "checksum": "f22df8e4e1c1846f6c01a8694a5f61109361e0973d7b0656ac1c67b83842247f"
+    },
+    {
+      "migrationId": "020_accounts_receivable_subledger",
+      "relativePath": "database/migrations/020_accounts_receivable_subledger.mjs",
+      "algorithm": "sha256",
+      "checksum": "81d1d566ac195242ea34fb939b118eaa2d958db4016bd7be687d638e9d24f8b4"
+    },
+    {
+      "migrationId": "021_accounts_payable_subledger",
+      "relativePath": "database/migrations/021_accounts_payable_subledger.mjs",
+      "algorithm": "sha256",
+      "checksum": "561cb6f0578213e2b8683aa5adc7caf2e7a4b0fd0381186da6f1e7cc2c263a41"
+    },
+    {
+      "migrationId": "022_payment_documents",
+      "relativePath": "database/migrations/022_payment_documents.mjs",
+      "algorithm": "sha256",
+      "checksum": "f541a38862e74cc3653d22055741e6afcba03508da9dd8dd664f2424caaaea8a"
+    },
+    {
+      "migrationId": "023_payment_allocation_and_writeoffs",
+      "relativePath": "database/migrations/023_payment_allocation_and_writeoffs.mjs",
+      "algorithm": "sha256",
+      "checksum": "388aae46aea9a053425601c35ce8ea1c20c9d70569049cf4c1ec0957b60a4ad7"
+    },
+    {
+      "migrationId": "024_open_item_reconciliation_engine",
+      "relativePath": "database/migrations/024_open_item_reconciliation_engine.mjs",
+      "algorithm": "sha256",
+      "checksum": "80f8050333d2ab2281f0c0163f44dac34f22ed7e2f6aaa4c48a32ce117f0dfcb"
+    },
+    {
+      "migrationId": "025_banking_and_statement_import",
+      "relativePath": "database/migrations/025_banking_and_statement_import.mjs",
+      "algorithm": "sha256",
+      "checksum": "ca7f60c927e29efc96c09f2d5e9951abab654f2da680a285a0e7b3a983040816"
+    },
+    {
+      "migrationId": "026_cashboxes_and_petty_cash",
+      "relativePath": "database/migrations/026_cashboxes_and_petty_cash.mjs",
+      "algorithm": "sha256",
+      "checksum": "32d26aacc878d63d4c89d4aa0355a5dd1f8c5e1fac3d0da191f8d6f4d3403e81"
+    },
+    {
+      "migrationId": "027_payment_terms_and_installments",
+      "relativePath": "database/migrations/027_payment_terms_and_installments.mjs",
+      "algorithm": "sha256",
+      "checksum": "6a043aa5887f063715c04a375f6850618ff630aaaa70abb016341b3ac0dbc69c"
+    },
+    {
+      "migrationId": "028_credit_exposure_and_policy",
+      "relativePath": "database/migrations/028_credit_exposure_and_policy.mjs",
+      "algorithm": "sha256",
+      "checksum": "4c6f0c674df7a05f18fcd1fa57c37e9d655d71c46884d526cc6f1e8201ab7ac6"
+    },
+    {
+      "migrationId": "029_budgeting_foundation",
+      "relativePath": "database/migrations/029_budgeting_foundation.mjs",
+      "algorithm": "sha256",
+      "checksum": "809802f4601be5823d29b955195a8b66cd463d9769991e3cd9cb5d6fc8525e9a"
+    },
+    {
+      "migrationId": "030_expense_claims_and_advances",
+      "relativePath": "database/migrations/030_expense_claims_and_advances.mjs",
+      "algorithm": "sha256",
+      "checksum": "8791ce3d70888745a4afb0a4b84c94d38fc5a5979a3e757df5fb7f422e6da829"
+    },
+    {
+      "migrationId": "031_canonical_financial_reports",
+      "relativePath": "database/migrations/031_canonical_financial_reports.mjs",
+      "algorithm": "sha256",
+      "checksum": "c8808a8955cc331bc01bfb33d80dabc02a20f7cf9c2aac0b2817b099d2f3e5f2"
+    },
+    {
+      "migrationId": "032_asset_accounting_interface",
+      "relativePath": "database/migrations/032_asset_accounting_interface.mjs",
+      "algorithm": "sha256",
+      "checksum": "e60bc1dccf145dce8c0b548dbdf6a7878dd11386cecd5d0db288f211ed92a8dc"
+    },
+    {
+      "migrationId": "033_legacy_finance_migration_registry",
+      "relativePath": "database/migrations/033_legacy_finance_migration_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "db5328da2a2739a09547620c78cf5a0ccc517d440316227ba6a2713f23aadb77"
+    },
+    {
+      "migrationId": "034_cross_module_source_fact_adapters",
+      "relativePath": "database/migrations/034_cross_module_source_fact_adapters.mjs",
+      "algorithm": "sha256",
+      "checksum": "247a08329cde583c307074575ddddf8d2ce23f2ae55790c31488ee3645901676"
+    },
+    {
+      "migrationId": "035_governed_finance_cutover_and_tax_attribution",
+      "relativePath": "database/migrations/035_governed_finance_cutover_and_tax_attribution.mjs",
+      "algorithm": "sha256",
+      "checksum": "4d1900f9b1d0a030951a4fa24c84f942c88c6b02e546404a07b2337460c3bb39"
+    },
+    {
+      "migrationId": "036_party_product_uom_pricing_foundation",
+      "relativePath": "database/migrations/036_party_product_uom_pricing_foundation.mjs",
+      "algorithm": "sha256",
+      "checksum": "0b7cecf26cabb374738640e7525823afbb7401839cf77bee26973b9e84fae5ef"
+    },
+    {
+      "migrationId": "037_warehouse_stock_ledger_valuation",
+      "relativePath": "database/migrations/037_warehouse_stock_ledger_valuation.mjs",
+      "algorithm": "sha256",
+      "checksum": "e47f5dce93e439ab633de98ec394b731812b7e75ffa560850bc8c9ec8f613d59"
+    },
+    {
+      "migrationId": "038_wms_operations_cycle_counts_landed_cost",
+      "relativePath": "database/migrations/038_wms_operations_cycle_counts_landed_cost.mjs",
+      "algorithm": "sha256",
+      "checksum": "61827fc0038059990ee90c625323362c89bd9d86ac28645991f6be64d3365ca9"
+    },
+    {
+      "migrationId": "039_crm_sales_contracts_commissions",
+      "relativePath": "database/migrations/039_crm_sales_contracts_commissions.mjs",
+      "algorithm": "sha256",
+      "checksum": "885af35b9194937ed81c905ffc4eef658f1bb3b83d6c75da99747cd7b18a0a98"
+    },
+    {
+      "migrationId": "040_suppliers_procurement_threeway_match",
+      "relativePath": "database/migrations/040_suppliers_procurement_threeway_match.mjs",
+      "algorithm": "sha256",
+      "checksum": "d7b01111557a6b84fcc5cfab3b6cc1560dd7371593bd196e783579097be79404"
+    },
+    {
+      "migrationId": "041_pos_foundation_and_commercial_cutover",
+      "relativePath": "database/migrations/041_pos_foundation_and_commercial_cutover.mjs",
+      "algorithm": "sha256",
+      "checksum": "58de55706f8e603640e94b04d6d11ec2a6dbc75c784238c8789855c9adf5295a"
+    },
+    {
+      "migrationId": "042_canonical_work_item_and_authority_retirement",
+      "relativePath": "database/migrations/042_canonical_work_item_and_authority_retirement.mjs",
+      "algorithm": "sha256",
+      "checksum": "80c3f9304aa9602c1f10c8c2d7115ea6d9f46686fa53f792d4b48af54cfc73e8"
+    },
+    {
+      "migrationId": "043_phase04_canonical_registry_and_lineage",
+      "relativePath": "database/migrations/043_phase04_canonical_registry_and_lineage.mjs",
+      "algorithm": "sha256",
+      "checksum": "43f058356a5c1a3f276c5a3d9d6cfb0b5110f7e4e5a4f8bae7accc918b74c93b"
+    },
+    {
+      "migrationId": "044_opening_stock_cutover_and_equity_coa",
+      "relativePath": "database/migrations/044_opening_stock_cutover_and_equity_coa.mjs",
+      "algorithm": "sha256",
+      "checksum": "dd1da2c56f79b5fd99c9a83137590a0f26139afd9ef9cb77f0fb096a883f80e8"
+    },
+    {
+      "migrationId": "045_governed_master_data_and_inventory_actions",
+      "relativePath": "database/migrations/045_governed_master_data_and_inventory_actions.mjs",
+      "algorithm": "sha256",
+      "checksum": "6128083d8e3fbc9c59de4a5678be2a5462d450091f078e48f99f99bab034b236"
+    },
+    {
+      "migrationId": "046_sales_lifecycle_expansion",
+      "relativePath": "database/migrations/046_sales_lifecycle_expansion.mjs",
+      "algorithm": "sha256",
+      "checksum": "eba479e886892a4a200ce867e55d18c8ae6af7ee02b90f2fb7f15e4b9df14c24"
+    },
+    {
+      "migrationId": "047_procurement_lifecycle_expansion",
+      "relativePath": "database/migrations/047_procurement_lifecycle_expansion.mjs",
+      "algorithm": "sha256",
+      "checksum": "44f529deef81b1cc974f1e7a721e1e7f5a85fa64a5b3e6c10199259aac8f5818"
+    },
+    {
+      "migrationId": "048_pos_atomic_workflows",
+      "relativePath": "database/migrations/048_pos_atomic_workflows.mjs",
+      "algorithm": "sha256",
+      "checksum": "f9d3685fc0fefef351ac22167584643fdec05f7dead9671d979062b809483be4"
+    },
+    {
+      "migrationId": "049_work_item_operating_views",
+      "relativePath": "database/migrations/049_work_item_operating_views.mjs",
+      "algorithm": "sha256",
+      "checksum": "0bba3a5d8eb6ae0149e8c746e1592c534d6ea20a0ff5d54f3b988417e0e05217"
+    },
+    {
+      "migrationId": "050_control_plane_module_management",
+      "relativePath": "database/migrations/050_control_plane_module_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "ec7f66332c66a758806bfa7a2abd976937c78d2b8e8a2928f00174ebaa520660"
+    },
+    {
+      "migrationId": "051_checkpoint_c_control_entity_policy",
+      "relativePath": "database/migrations/051_checkpoint_c_control_entity_policy.mjs",
+      "algorithm": "sha256",
+      "checksum": "682f2d658b0d666364e67aa68325cc2561e0a85f1dec95e3bb068e7d34d684f9"
+    },
+    {
+      "migrationId": "052_projects_and_project_costing",
+      "relativePath": "database/migrations/052_projects_and_project_costing.mjs",
+      "algorithm": "sha256",
+      "checksum": "2b145ed56e98e2135d482c22de5918df67d1fe47a48ab07e6540717625c23bf3"
+    },
+    {
+      "migrationId": "053_engineering_bom_routing_mrp",
+      "relativePath": "database/migrations/053_engineering_bom_routing_mrp.mjs",
+      "algorithm": "sha256",
+      "checksum": "101626cdeadeb87bd73b7ecd4c26c974d06570d877918a1ab20fb8a70426d6da"
+    },
+    {
+      "migrationId": "054_mrp_and_manufacturing_orders",
+      "relativePath": "database/migrations/054_mrp_and_manufacturing_orders.mjs",
+      "algorithm": "sha256",
+      "checksum": "89a4dcb42f258cbf035b0fe47d0d17dd09305d187e60998f7dedc453b941871d"
+    },
+    {
+      "migrationId": "055_work_orders_shop_floor_and_production_cost",
+      "relativePath": "database/migrations/055_work_orders_shop_floor_and_production_cost.mjs",
+      "algorithm": "sha256",
+      "checksum": "246cdd40971e6a1cfede09398070d8e01fd3c1ff4bdad39b7837ab5f050b9f9a"
+    },
+    {
+      "migrationId": "056_quality_management_and_subcontracting",
+      "relativePath": "database/migrations/056_quality_management_and_subcontracting.mjs",
+      "algorithm": "sha256",
+      "checksum": "37ecab2dd4eca7ffea315cd3bffaa65be05240cc9f5e11a8350db9779f3e1be0"
+    },
+    {
+      "migrationId": "057_assets_and_depreciation_schedules",
+      "relativePath": "database/migrations/057_assets_and_depreciation_schedules.mjs",
+      "algorithm": "sha256",
+      "checksum": "d150994f06cbf5336fa73837b3e006e767f1a18e315f35998ed2dbd06d2820e4"
+    },
+    {
+      "migrationId": "058_maintenance_management",
+      "relativePath": "database/migrations/058_maintenance_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "c70bfa6204ee7ef8d50c3bf8c26d54de81d738fdd0d494624abe23d2f0cb68f4"
+    },
+    {
+      "migrationId": "059_fleet_and_telematics",
+      "relativePath": "database/migrations/059_fleet_and_telematics.mjs",
+      "algorithm": "sha256",
+      "checksum": "058430bc20e186c2852819316889b2371571639bc6970162c08260b634f4a567"
+    },
+    {
+      "migrationId": "060_subcontract_and_cross_domain_closure",
+      "relativePath": "database/migrations/060_subcontract_and_cross_domain_closure.mjs",
+      "algorithm": "sha256",
+      "checksum": "6900d84c720fe0f93809854ea14326866773f24bcc7a6e2071cb7e5c1fa59834"
+    },
+    {
+      "migrationId": "061_canonical_cutover_controller",
+      "relativePath": "database/migrations/061_canonical_cutover_controller.mjs",
+      "algorithm": "sha256",
+      "checksum": "61dd919e632818ae761dca3a1f0fe0d753e226c64fe407ba662525216d930fa1"
+    },
+    {
+      "migrationId": "062_warehouse_code_uniqueness",
+      "relativePath": "database/migrations/062_warehouse_code_uniqueness.mjs",
+      "algorithm": "sha256",
+      "checksum": "e3ca0537de8506670d1ffa7e7e8febeea83cc5955ddc89a49e48c206e9cfe58f"
+    }
+  ]
+}

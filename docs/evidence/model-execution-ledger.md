@@ -1230,3 +1230,93 @@ proved.
 
 - **Independent verification:** not claimed as production certification.
 - **Classification:** **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record — Checkpoint I, Continuations 2–4 (2026-07-29 → 2026-07-30)
+
+**Executing model:** claude-opus-5
+**Agent/runtime:** Claude Code (Claude Agent SDK)
+**Starting SHA:** `2c1e79d9f127b537583c8a09ebc1615593fdc9a2`
+**Branch:** `cutover/octagon-operational-canonical-migration`
+
+### Correction to the immediately preceding record
+
+The Continuation-2 report stated **"Operational tip remains 045."** That claim
+was true when measured and became false at `2026-07-29T21:07:43Z`, before the
+report was written. Prior records are not edited; this is the correction.
+
+### Operational auto-migration incident — agent responsibility
+
+I started the Octagon application to perform the credential login verification
+that Continuation-2 §3.4 required. Octagon's startup path
+(`server.js:2618`) calls `runMigrations({ direction: 'up' })` unconditionally,
+which applied migrations **046 through 062** to the operational database.
+
+- **Timestamps:** all 17 within `21:07:43.010Z` → `21:07:43.656Z`
+- **Ledger actor:** `system`
+- **Operational tip:** 045 → **062**
+- **Tables:** 268 → **353** (~85 empty tables added)
+- **Integrity:** `integrity_check` ok, `foreign_key_check` 0 violations
+- **Legacy data:** 4,067 rows / 37 collections — unchanged
+- **Canonical business tables:** all 0 rows — no data migrated
+- **`authority_retirement_locks`:** 0 — cutover NOT activated
+- **Business-data loss:** none identified
+
+**My mistake:** I verified the migration tip before starting the server and did
+not re-verify after stopping it, so I reported a state I had not re-measured.
+
+**Not solely my mistake:** the constraint was unenforceable while that startup
+path existed. The operational database would have reached 062 on the owner's next
+normal application start regardless of agent involvement.
+
+### Work completed
+
+- **I1A** — owner-authorised `system_admin` credential reset via canonical scrypt
+  service; verified 200/401/401 against the real server; 2 sessions revoked;
+  policy evaluated and exception recorded rather than skipped; global policy
+  unchanged; zero plaintext in repository.
+- **I1B** — migration 014 restored byte-identical to source SHA
+  (`425c14c0f378a934092b22f01bc6075b83d2f144`); migrations 001–062 verified
+  unmodified; rollback compatibility relocated to runner-owned
+  `rollback-compatibility.mjs`; realistic populated-clone rollback re-proven.
+- **I1D-1** — incident containment: corrected baseline recorded, WAL-consistent
+  forensic snapshot taken outside the repository, incident documented.
+
+### Operational mutation scope
+
+Two operational changes total, both recorded:
+
+1. **Authorised:** `system_admin` credential + 2 session revocations + 1 redacted
+   audit event.
+2. **Unintended:** migrations 046–062 (schema only).
+
+No operational rollback was attempted. The `OPERATIONAL_ROLLBACK_REFUSED` guard
+functioned correctly and was not circumvented. No WAL manipulation. No canonical
+cutover activation. No business facts written.
+
+### Corrected operational baseline
+
+```
+database.db      75cfc408ab7e224ea03294dfb6757afc326dc0c74cce16e099ffddd193524e8b
+database.db-wal  63ea57446e283a53a17bccc52a04dc33570120208b65c09f9c05ea0f52173b21
+database.db-shm  38619b106aab11d7e23fd17466714fdee55e9b76ac76536fdd71c151d052d743
+database.json    2e4d7d91b15b053d276cf1b5ac2b73524be3bd73da096e5ba925724b61c700a1
+```
+
+### Rework
+
+Continuation-2 required reversing my own Continuation-1 decision to edit
+migration 014; that edit was correct in behaviour but wrong in location, and I1B
+is the corrective commit. Two test-harness errors of mine (unset environment
+variable, wrong login field name) were corrected and re-run rather than reported
+as product defects.
+
+### VNext
+
+Frozen and unchanged: `cf7ae4ed73eac91a325c964178036290bc0736c1`, 17 pre-existing
+dirty files untouched.
+
+### Classification
+
+**PARTIAL — REMEDIATION REQUIRED**

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "extendsManifest": "accepted-063-forward.json",
+  "acceptedSourceCommit": "00e60a8d894ed5e4b9a613246fe1b46264e20550",
+  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
+  "acceptanceReason": "Module Expansion Wave 1 M1: control-plane registration and permission namespaces for the eight Wave 1 modules. Accepted after proving apply, rollback, re-apply and idempotency on a disposable database.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "064_module_expansion_wave1_registry",
+      "relativePath": "database/migrations/064_module_expansion_wave1_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "422ab9e77908c7277c6601e9dd0d1d0419b4eff229b06f0d9d48ea86efb09719"
+    }
+  ],
+  "checksumNormalisation": "line endings normalised to LF before hashing"
+}

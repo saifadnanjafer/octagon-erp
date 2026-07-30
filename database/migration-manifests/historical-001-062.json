@@ -9,67 +9,67 @@
       "migrationId": "001_platform_kernel_bootstrap",
       "relativePath": "database/migrations/001_platform_kernel_bootstrap.mjs",
       "algorithm": "sha256",
-      "checksum": "784b2d66e4384471e88c6a88550c676994063934b790edb5a44c67b282d0cb3a"
+      "checksum": "eaa2037ccbe2d37aadef83ae4e2814f9764ad3adf8fc824ff2f403421e731f7d"
     },
     {
       "migrationId": "002_platform_kernel_entities_and_storage",
       "relativePath": "database/migrations/002_platform_kernel_entities_and_storage.mjs",
       "algorithm": "sha256",
-      "checksum": "78cfb445bcf4960a4c7f3a95ffe4e3b4033ab3bf0cb187c5960e742c3c0b33d0"
+      "checksum": "543cbf7f97ab34f1de6d0ea1ff5fb260801a1d621d30b5d83fcac27a1f814d7f"
     },
     {
       "migrationId": "003_platform_kernel_actions_and_lifecycle",
       "relativePath": "database/migrations/003_platform_kernel_actions_and_lifecycle.mjs",
       "algorithm": "sha256",
-      "checksum": "3d8e8cc634dca0572bb762f61088102e44a1bed427aac8c8ed62cc8c76fd7a66"
+      "checksum": "86e1edefca264836c1d0e7010b49745d9e15a5153a94bcbe9fa275e7bc037b9d"
     },
     {
       "migrationId": "004_platform_kernel_views",
       "relativePath": "database/migrations/004_platform_kernel_views.mjs",
       "algorithm": "sha256",
-      "checksum": "cefff70c34a332815c33e6ad4010ecbbd4ef6ea8435f981f999caca261f93189"
+      "checksum": "c0136247b1244aea6a412e2bcdf42e79ebefa0f66b2502d9a397bba6e71c67fb"
     },
     {
       "migrationId": "005_platform_kernel_control_plane",
       "relativePath": "database/migrations/005_platform_kernel_control_plane.mjs",
       "algorithm": "sha256",
-      "checksum": "00183bb8576ebce3f9b81e9fcab7d045ddb5a17559f43f650f29a2c65780b20d"
+      "checksum": "5ed37aba92b2edac21aa48c7801d4e87e6461a1a1d63161ec6f59f5e9396e5ef"
     },
     {
       "migrationId": "006_identity_authority",
       "relativePath": "database/migrations/006_identity_authority.mjs",
       "algorithm": "sha256",
-      "checksum": "aed57337c1d205d2cc5185e476e73adb7559000acd82e27ebabe69d137dc9999"
+      "checksum": "597a22a2683449224856640bc65c0089fa25a12dd4b878b1def4a4608366f12c"
     },
     {
       "migrationId": "007_authorization_registry",
       "relativePath": "database/migrations/007_authorization_registry.mjs",
       "algorithm": "sha256",
-      "checksum": "36fe545be4f9c51a53c2031d2236ad3fbcb0e1ee736c0d828dd02ed95f18c9b8"
+      "checksum": "01d4dc862e56552806b6ad7eb76b10628e78270adc69ee8a12de18334bbad76c"
     },
     {
       "migrationId": "008_settings_secrets_policies",
       "relativePath": "database/migrations/008_settings_secrets_policies.mjs",
       "algorithm": "sha256",
-      "checksum": "6b8f9973872d8f4f4514297d822bbf9c2c659a180ebb7c57d729f29bbfd29a50"
+      "checksum": "24f3935780fb2079e6eb6f59ab383069d351fe00b06c637f1f05754635268cb1"
     },
     {
       "migrationId": "009_workflow_approvals_sla",
       "relativePath": "database/migrations/009_workflow_approvals_sla.mjs",
       "algorithm": "sha256",
-      "checksum": "cff74d5062a6ef8392c046831280623acfd6fa8f3a5ee52e924815fc04374824"
+      "checksum": "aff7ab5048b6edbfb38e712848d126f307d80b10b58358e605552be4639f2632"
     },
     {
       "migrationId": "010_collaboration_files_jobs",
       "relativePath": "database/migrations/010_collaboration_files_jobs.mjs",
       "algorithm": "sha256",
-      "checksum": "bd0489c1947a20a428957026d1ba5e4b8d31075cbdcae4e166bc6f098ad58337"
+      "checksum": "5ceb3fc72f344222bdcc6f9c17642bb8532d4334daaef3c766341608c857cd30"
     },
     {
       "migrationId": "011_service_identity_authorization",
       "relativePath": "database/migrations/011_service_identity_authorization.mjs",
       "algorithm": "sha256",
-      "checksum": "1b809d3a37179dddbec163b26a6470ff497e2c855f24521b6c55cd6356b29488"
+      "checksum": "264baf830184838d68cf98b6d4db33912102ea6fdee54e39cb2c32feb58f5982"
     },
     {
       "migrationId": "012_runtime_authority_cutover",
@@ -87,7 +87,7 @@
       "migrationId": "014_finance_canonical_schema_and_coa",
       "relativePath": "database/migrations/014_finance_canonical_schema_and_coa.mjs",
       "algorithm": "sha256",
-      "checksum": "56908adcd510e20b2d6dfe0c994007582f1d94b56ba67581a0ccf2fcabd573b5"
+      "checksum": "867698ac29cf4f8f32d884e06ad252d3f2a5d9a6e2cd2285854aabb6347bda87"
     },
     {
       "migrationId": "015_finance_document_lifecycle",
@@ -377,5 +377,8 @@
       "algorithm": "sha256",
       "checksum": "e3ca0537de8506670d1ffa7e7e8febeea83cc5955ddc89a49e48c206e9cfe58f"
     }
-  ]
+  ],
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "checksumMethodRevisedAt": "2026-07-30",
+  "checksumMethodRevisionReason": "Raw-byte hashing was not portable: Git normalises line endings on checkout, so a linked worktree failed immutability for files with zero content changes (proven by git diff against the accepted source commit). Content was NOT re-accepted; only the hashing method changed."
 }

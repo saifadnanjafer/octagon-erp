@@ -18,8 +18,22 @@ const REPO_ROOT = path.resolve('.');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'database/migration-manifests/historical-001-062.json');
 const MIGRATIONS_DIR = path.join(REPO_ROOT, 'database/migrations');
 
+/**
+ * Hash migration source with line endings normalised to LF.
+ *
+ * Git normalises line endings on checkout (core.autocrlf), so the raw bytes of a
+ * migration file differ between a Windows worktree and a Linux one — and even
+ * between two worktrees of the SAME repository on the same machine. Hashing raw
+ * bytes made the manifest non-portable: a linked worktree failed immutability
+ * for files nobody had edited.
+ *
+ * Normalising before hashing keeps the guarantee that matters (the source did
+ * not change) without asserting a property nobody intended (the file was
+ * checked out with identical line endings).
+ */
 function sha256(file) {
-  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const normalised = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+  return crypto.createHash('sha256').update(normalised, 'utf8').digest('hex');
 }
 
 function loadManifest() {

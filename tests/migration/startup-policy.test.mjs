@@ -269,7 +269,11 @@ async function testServerBootstrapUsesPolicyAuthority() {
 
   // Strip comments before scanning: the incident write-up in server.js quotes the
   // old call verbatim, and a prose mention is not a call site.
+  // Normalise line endings first: with CRLF, `//.*$` cannot match because `.`
+  // stops at the \r and `$` never lands, so comments survive stripping and the
+  // incident write-up quoting the old call is mistaken for a real call site.
   const code = server
+    .replace(/\r\n/g, '\n')
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .split('\n')
     .map((line) => line.replace(/(^|[^:'"`])\/\/.*$/, '$1'))

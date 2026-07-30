@@ -13,5 +13,8 @@
       "algorithm": "sha256",
       "checksum": "deb060c0992fbb9282959f396649ff6bd23d7f1eaf34669fba38204e3e8c9c24"
     }
-  ]
+  ],
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "checksumMethodRevisedAt": "2026-07-30",
+  "checksumMethodRevisionReason": "Raw-byte hashing was not portable: Git normalises line endings on checkout, so a linked worktree failed immutability for files with zero content changes (proven by git diff against the accepted source commit). Content was NOT re-accepted; only the hashing method changed."
 }

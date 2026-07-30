@@ -27,7 +27,9 @@ async function testAppliesAsTip() {
   await freshInstall({ dbPath: p });
   const applied = (await migrationStatus({ dbPath: p })).filter((s) => s.status === 'applied').map((s) => s.id);
   assert.ok(applied.includes(MIG));
-  assert.strictEqual(applied.at(-1), MIG, 'CRM migration must be the tip');
+  // 066_crm_activity_subject_unification now extends this CRM further and is
+  // the actual tip; 065 no longer is, but must still be applied.
+  assert.strictEqual(applied.at(-1), '066_crm_activity_subject_unification', 'CRM activity-unification migration must be the tip');
   drop(p);
   console.log(`PASS: appliesAsTip (${applied.length} migrations)`);
 }
@@ -187,7 +189,9 @@ async function testRerunIsIdempotent() {
 async function testRollbackAndReapply() {
   const p = tmp('rollback');
   await freshInstall({ dbPath: p });
-  await runMigrations({ dbPath: p, direction: 'down', steps: 1 });
+  // Unwind both 066 (now the tip) and 065, to reach pre-065 state exactly as
+  // this test originally intended before 066 was added above it.
+  await runMigrations({ dbPath: p, direction: 'down', steps: 2 });
 
   let db = open(p);
   const after = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((r) => r.name));
@@ -204,7 +208,7 @@ async function testRollbackAndReapply() {
   db.close();
 
   const up = await runMigrations({ dbPath: p, direction: 'up' });
-  assert.deepStrictEqual(up.migrations, [MIG], 're-apply restores CRM');
+  assert.deepStrictEqual(up.migrations, [MIG, '066_crm_activity_subject_unification'], 're-apply restores CRM and its activity unification');
 
   db = open(p);
   assert.strictEqual(db.prepare('SELECT COUNT(*) n FROM crm_pipeline_stages').get().n, 6, 'seed restored exactly once');
@@ -220,10 +224,10 @@ async function testExistingDataSurvivesTheUpgrade() {
   await runMigrations({ dbPath: p, direction: 'up', target: '064_module_expansion_wave1_registry' })
     .catch(async () => { await freshInstall({ dbPath: p }); });
 
-  // Build the "already has data" state at tip 064.
+  // Build the "already has data" state at tip 064 — unwind both 065 and 066.
   const p2 = tmp('upgrade2');
   await freshInstall({ dbPath: p2 });
-  await runMigrations({ dbPath: p2, direction: 'down', steps: 1 });
+  await runMigrations({ dbPath: p2, direction: 'down', steps: 2 });
 
   let w = new DatabaseSync(p2);
   const now = new Date().toISOString();

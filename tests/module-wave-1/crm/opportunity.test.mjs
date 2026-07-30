@@ -277,19 +277,37 @@ async function testActivityLifecycle() {
 
   assert.throws(() => scheduleActivity(db, { ...CTX, summary: 'x' }), (e) => e.code === 'VALIDATION_FAILED');
   assert.throws(() => scheduleActivity(db, { ...CTX, opportunity_id: opp.id }), (e) => e.code === 'VALIDATION_FAILED');
-  // Documented schema limitation: an opportunity with no source lead cannot
-  // carry an activity, and says so rather than inventing a sentinel lead.
+  // Migration 066 unified the Activity authority: crm_activities.lead_id is now
+  // nullable and a subject_type CHECK enforces exactly one primary subject. An
+  // Opportunity with NO source lead can now carry an Activity directly — this
+  // used to fail loudly (see docs/evidence/.../activity-schema-limitation.md).
   const orphan = mkOpp(db, { name: 'بلا عميل محتمل' });
+  const direct = scheduleActivity(db, { ...CTX, opportunity_id: orphan.id, summary: 'متابعة مباشرة' }).activity;
+  assert.strictEqual(direct.opportunity_id, orphan.id);
+  assert.strictEqual(direct.lead_id, null, 'a direct opportunity has no source lead to resolve');
+  assert.strictEqual(db.prepare('SELECT subject_type FROM crm_activities WHERE id = ?').get(direct.id).subject_type, 'opportunity');
+
+  // A caller cannot supply more than one subject reference at once.
   assert.throws(
-    () => scheduleActivity(db, { ...CTX, opportunity_id: orphan.id, summary: 'x' }),
-    (e) => e.code === 'VALIDATION_FAILED' && /lead_id is NOT NULL/.test(e.message)
+    () => scheduleActivity(db, { ...CTX, opportunity_id: opp.id, lead_id: 'lead_x', summary: 'x' }),
+    (e) => e.code === 'VALIDATION_FAILED'
   );
+
+  // A direct Party-linked activity (no lead, no opportunity) is also supported.
+  const partyActivity = scheduleActivity(db, { ...CTX, party_id: 'party_1', summary: 'زيارة عميل' }).activity;
+  assert.strictEqual(partyActivity.party_id, 'party_1');
+  assert.strictEqual(db.prepare('SELECT subject_type FROM crm_activities WHERE id = ?').get(partyActivity.id).subject_type, 'party');
+
   assert.throws(() => scheduleActivity(db, { ...CTX, opportunity_id: opp.id, summary: 'x', activity_type: 'telepathy' }), (e) => e.code === 'VALIDATION_FAILED');
 
   const past = new Date(Date.now() - 86400000).toISOString();
   const a = scheduleActivity(db, { ...CTX, opportunity_id: opp.id, summary: 'اتصال', activity_type: 'call', due_at: past }).activity;
   assert.strictEqual(a.state, 'planned');
   assert.strictEqual(a.overdue, true, 'overdue is derived from due date and state, not stored');
+  // Activities for an opportunity converted from a lead still carry lead_id for
+  // lineage, even though the primary subject is the opportunity.
+  assert.strictEqual(a.lead_id, opp.lead_id, 'converted-lead opportunity activities keep lead lineage');
+  assert.strictEqual(db.prepare('SELECT subject_type FROM crm_activities WHERE id = ?').get(a.id).subject_type, 'opportunity');
 
   assignActivity(db, { ...CTX, activity_id: a.id, assigned_user_id: 'sales_1' });
   assert.strictEqual(getActivity(db, a.id).assigned_user_id, 'sales_1');

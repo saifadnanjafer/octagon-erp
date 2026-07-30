@@ -1346,3 +1346,40 @@ dirty files untouched.
 - **Final closure status:** **OBJECTIVELY COMPLETE & STAGED ACTIVATION READY**
 - **Reviewer notes:** Executed under strict operational safety guidelines: `database.db` and operational paths were treated as READ ONLY. No normal server was started against operational paths. No operational cutover activation was performed. Administrator credentials remained unchanged (`system_admin`).
 
+---
+
+## Record 008 — Module Expansion Wave 1, CRM Continuation 4 (M2.5E only)
+
+- **Model:** Sonnet 5 (`claude-sonnet-5`)
+- **Agent/runtime:** Claude Code (Claude Agent SDK), Windows 11 Pro 10.0.26200, Node.js v24.18.0, Git Bash
+- **Execution date:** 2026-07-30
+- **Repository:** `saifadnanjafer/octagon-erp`
+- **Worktree:** `octagon-module-expansion-wave-1`
+- **Starting branch:** `build/octagon-module-expansion-wave-1`
+- **Starting SHA:** `40f1ec9ba63b7c9f21f8885cc01a5c75e9eb0e6b` — verified local == remote == expected before any work began (entry verification per the assignment's own Section 3)
+- **Phase:** Module Expansion Wave 1 — CRM continuation. Assignment scope was M2.5E through M2.10 (Activity unification, ActionExecutor registration, runtime permissions, HTTP queries, Customer 360, reporting, original-shell UI, atomicity, concurrency, Chromium acceptance) — a 25-section, multi-day spec.
+- **Activity migration:** `066_crm_activity_subject_unification` — rebuilds `crm_activities` with a nullable `lead_id` and a `subject_type` (`lead`/`opportunity`/`party`) CHECK constraint enforcing exactly one primary subject; imports and retires `crm_opportunity_activities` as a writable table, replacing it with a read-only compatibility view. Manifest: `accepted-066-crm-activity-unification.json`. Populated-data proof, rerun idempotency, `PRAGMA foreign_key_check` cleanliness, and an honest rollback policy (restores original shape when possible; refuses via typed `IrreversibleActivityDataError` rather than silently dropping a direct Party-subject row it cannot split back) are all covered by `tests/module-wave-1/crm/activity-unification-migration.test.mjs` (6/6 pass).
+- **Prior CRM services:** preserved and green — no change to Lead/Opportunity/Pipeline/Duplicate/Scoring/Conversion/Sales-integration/Work-Item-integration logic beyond the Activity subject model.
+- **Actions (ActionExecutor registration):** NOT done this checkpoint. Confirmed zero of the requested underscore-segmented `crm:lead_*`/`crm:opportunity_*`/`crm:activity_*`/`crm:pipeline_*` ids exist. Only the pre-existing, unrelated legacy colon-segmented ids (`crm:lead:convert`, `crm:opportunity:update_stage`, `crm:opportunity:add_activity`, `crm:opportunity:close`, registered in `platform/sales/index.mjs`) exist. This dual-authority condition is recorded in `docs/evidence/module-expansion-wave-1/crm/unresolved-risks.md` as a discovery made while investigating the Activity schema, not something this checkpoint introduced or resolved.
+- **Permissions:** NOT done this checkpoint.
+- **HTTP queries:** NOT done this checkpoint.
+- **Customer 360:** NOT done this checkpoint.
+- **Scoring:** unchanged (already existed from prior CRM work; not touched).
+- **Reporting:** NOT done this checkpoint.
+- **UI:** NOT done this checkpoint.
+- **Atomicity:** not newly proven this checkpoint beyond the migration's own transactional up()/down() and the pre-existing Opportunity stage-change atomicity test, which remains green.
+- **Failure injection:** NOT done this checkpoint.
+- **Concurrency:** NOT done this checkpoint (multi-process suites).
+- **Browser:** NOT run this checkpoint — no Chromium acceptance was attempted.
+- **Tests:** `tests/module-wave-1/crm/*.test.mjs` 4 files, all pass (domain 14, migration 8, opportunity 11 + new activity coverage, activity-unification-migration 6 new); `tests/migration/*.test.mjs` 5 files, 5 pass; `tests/module-expansion/registry.test.mjs` 6/6; `tests/checkpoint-c/migration_046.test.mjs` 4/4 (fixed, not weakened — see below); `tests/unit/*.test.mjs` 9 files, all pass; `tests/checkpoint-d-e/*.test.mjs` 56/56; `tests/phase04/*.test.mjs` 47/47; `scripts/permission-regression.mjs` 35/35; `scripts/precommit.js` passed.
+- **Test files updated for the new tip (not weakened):** `opportunity.test.mjs` (the "Lead-less Opportunity Activity throws" assertion now asserts it succeeds, plus new subject-exclusivity and Party-Activity coverage), `domain.test.mjs` (added `subject_type` to one manual `crm_activities` INSERT — a schema requirement, not a behavior change), `migration.test.mjs` and `registry.test.mjs` (tip/rollback-step-count assertions updated for 066 sitting above 065), `checkpoint-c/migration_046.test.mjs` (unwinds/reapplies 066 around its direct, runner-bypassing manual calls to `046.down()`/`046.up()`, since `crm_opportunity_activities` is now a view there — migration 046 itself was NOT edited).
+- **Pre-existing, unrelated failure found and left untouched:** `tests/checkpoint-f/canonical_authority_coverage.test.mjs` — `module 'appointments' has no declared canonical authority domain`. Verified via `git stash` to be present on the pre-066 baseline; out of scope for this checkpoint.
+- **Agent mistakes this run:** none required correction after implementation — the two collision points (checkpoint-c's runner-bypassing test, and the tip/rollback step counts in three other test files) were anticipated and fixed proactively while running the regression sweep, before any were reported back as failures needing a second pass.
+- **Rework:** none.
+- **Telegram worktree:** not touched, not inspected this checkpoint (no operation in this session read or wrote outside `octagon-module-expansion-wave-1`).
+- **Operational safety:** no operational database exists in this worktree (verified by the pre-existing `noOperationalDatabaseInThisWorktree` test, still passing); no server was started against any operational path.
+- **Administrator credential:** unchanged.
+- **VNext:** not inspected, not modified this checkpoint.
+- **Remaining blockers:** M2.5F (Activity service is done, but no ActionExecutor registration exists to reach it from outside a direct function call) through M2.10 in full — ActionExecutor registration (~44 actions), runtime permissions, HTTP query layer, Customer 360, scoring/reporting surfaces, original-shell UI, atomicity/failure-injection/concurrency suites, and Chromium acceptance. The dual Opportunity-write-authority condition recorded in `unresolved-risks.md` should be resolved as part of M2.5G, not deferred further.
+- **Classification: PARTIAL — REMEDIATION REQUIRED.** M3–M10 were not claimed complete. `main` was not merged.
+

@@ -161,8 +161,8 @@ async function testLeadMergeKeepsHistory() {
   const survivor = mk(db, { name: 'الناجي', email: 'dup@x.iq' });
   const loser = mk(db, { name: 'المكرر', phone: '07709998888', organization_name: 'ورشة' });
 
-  db.prepare(`INSERT INTO crm_activities (id,company_id,lead_id,activity_type,summary,done,state,created_at,created_by)
-              VALUES ('act_1',?,?,'call','مكالمة',0,'planned',?,?)`).run(CO, loser.id, new Date().toISOString(), 'u');
+  db.prepare(`INSERT INTO crm_activities (id,company_id,subject_type,lead_id,activity_type,summary,done,state,created_at,created_by)
+              VALUES ('act_1',?,'lead',?,'call','مكالمة',0,'planned',?,?)`).run(CO, loser.id, new Date().toISOString(), 'u');
   db.prepare(`INSERT INTO crm_interactions (id,company_id,lead_id,channel,direction,occurred_at,summary,recorded_by,created_at)
               VALUES ('int_1',?,?,'phone','inbound',?,'اتصال','u',?)`).run(CO, loser.id, new Date().toISOString(), new Date().toISOString());
 

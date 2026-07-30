@@ -32,41 +32,48 @@ export function scheduleActivity(db, input) {
   if (!input.summary || !String(input.summary).trim()) fail(CRM_ERRORS.VALIDATION_FAILED, 'activity summary is required', { field: 'summary' });
   const type = input.activity_type ?? 'call';
   if (!ACTIVITY_TYPES.includes(type)) fail(CRM_ERRORS.VALIDATION_FAILED, `unknown activity type ${type}`, { allowed: ACTIVITY_TYPES });
-  if (!input.lead_id && !input.opportunity_id && !input.party_id) {
-    fail(CRM_ERRORS.VALIDATION_FAILED, 'an activity must reference a lead, opportunity or party', {});
+
+  // Migration 066 unified the Activity authority: crm_activities.lead_id is now
+  // nullable and a subject_type CHECK enforces exactly one PRIMARY subject
+  // (lead, opportunity, or party). The caller supplies exactly one of the three
+  // reference fields; an opportunity that came from a Lead conversion still gets
+  // its source lead_id resolved and stored for lineage, but the primary subject
+  // (and what the CHECK constraint validates against) is the opportunity.
+  const suppliedSubjects = ['lead_id', 'opportunity_id', 'party_id'].filter((f) => input[f]);
+  if (suppliedSubjects.length === 0) {
+    fail(CRM_ERRORS.VALIDATION_FAILED, 'an activity must reference exactly one of lead, opportunity or party', {});
+  }
+  if (suppliedSubjects.length > 1) {
+    fail(CRM_ERRORS.VALIDATION_FAILED, 'an activity must reference exactly one of lead, opportunity or party, not several', { supplied: suppliedSubjects });
   }
 
-  // SCHEMA CONSTRAINT (migration 039): crm_activities.lead_id is NOT NULL with a
-  // foreign key to crm_leads. An activity therefore has to hang off a lead.
-  //
-  // For an opportunity that came from a conversion we can resolve its source
-  // lead, which covers the normal path. An opportunity created directly has no
-  // lead, and there is no honest way to store its activity in this table —
-  // migration 039 did not anticipate it, and 046 added a separate
-  // crm_opportunity_activities table instead. Rather than invent a sentinel
-  // lead id, that case fails loudly and is recorded as requiring a forward
-  // migration. See docs/evidence/.../activities.md.
-  let leadId = input.lead_id ?? null;
-  if (!leadId && input.opportunity_id) {
+  let subjectType;
+  let leadId = null;
+  let opportunityId = null;
+  let partyId = null;
+  if (input.opportunity_id) {
+    subjectType = 'opportunity';
+    opportunityId = input.opportunity_id;
     const opp = db.prepare('SELECT lead_id FROM crm_opportunities WHERE id = ?').get(input.opportunity_id);
-    leadId = opp?.lead_id ?? null;
-  }
-  if (!leadId) {
-    fail(CRM_ERRORS.VALIDATION_FAILED,
-      'crm_activities.lead_id is NOT NULL (migration 039); this activity has no resolvable lead. ' +
-      'Opportunity-only activities require a forward migration relaxing that constraint.',
-      { schemaConstraint: 'crm_activities.lead_id NOT NULL', opportunityId: input.opportunity_id ?? null });
+    if (!opp) fail(CRM_ERRORS.OPPORTUNITY_NOT_FOUND, `unknown opportunity ${input.opportunity_id}`, { opportunityId: input.opportunity_id });
+    leadId = opp.lead_id ?? null; // lineage only, not the primary subject
+  } else if (input.lead_id) {
+    subjectType = 'lead';
+    leadId = input.lead_id;
+  } else {
+    subjectType = 'party';
+    partyId = input.party_id;
   }
 
   const id = newId('act');
   const ts = now();
   db.prepare(`
     INSERT INTO crm_activities (
-      id, company_id, lead_id, opportunity_id, party_id, activity_type, summary, detail,
+      id, company_id, subject_type, lead_id, opportunity_id, party_id, activity_type, summary, detail,
       due_at, due_date, assigned_user_id, state, priority, done, created_at, created_by, updated_at
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?, 'planned', ?, 0, ?, ?, ?)
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'planned', ?, 0, ?, ?, ?)
   `).run(
-    id, companyId, leadId, input.opportunity_id ?? null, input.party_id ?? null,
+    id, companyId, subjectType, leadId, opportunityId, partyId,
     type, input.summary, input.detail ?? '',
     input.due_at ?? null, input.due_at ? String(input.due_at).slice(0, 10) : null,
     input.assigned_user_id ?? actor, input.priority ?? 'normal', ts, actor, ts

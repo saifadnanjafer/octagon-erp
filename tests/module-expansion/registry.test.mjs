@@ -167,8 +167,9 @@ async function testRollbackAndRerun() {
   const dbPath = tmpDb('rollback');
   await freshInstall({ dbPath });
 
-  // 065 (CRM) now sits on top of 064, so unwinding the registry means two steps.
-  await runMigrations({ dbPath, direction: 'down', steps: 2 });
+  // 065 (CRM) and 066 (CRM activity unification) now sit on top of 064, so
+  // unwinding the registry means three steps.
+  await runMigrations({ dbPath, direction: 'down', steps: 3 });
   let db = open(dbPath);
   const gone = db.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='table' AND name='module_expansion_registry'").get().n;
   assert.strictEqual(gone, 0, 'registry table must be dropped on rollback');
@@ -180,7 +181,11 @@ async function testRollbackAndRerun() {
 
   // Re-apply, then prove idempotency.
   const up = await runMigrations({ dbPath, direction: 'up' });
-  assert.deepStrictEqual(up.migrations, ['064_module_expansion_wave1_registry', '065_crm_pipeline_leads_opportunities_and_activities']);
+  assert.deepStrictEqual(up.migrations, [
+    '064_module_expansion_wave1_registry',
+    '065_crm_pipeline_leads_opportunities_and_activities',
+    '066_crm_activity_subject_unification',
+  ]);
   const again = await runMigrations({ dbPath, direction: 'up' });
   assert.deepStrictEqual(again.migrations, [], 'rerun must apply nothing');
 

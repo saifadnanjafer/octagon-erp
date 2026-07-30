@@ -105,11 +105,21 @@ export function getOpportunity(db, id) {
   return { ...opportunity, activities };
 }
 
+// crm_opportunity_activities was retired as a writable table by migration 066
+// (066_crm_activity_subject_unification): it survives only as a read-only
+// compatibility view over crm_activities. Every write here goes to the unified
+// table instead, tagged subject_type='opportunity' like every other opportunity
+// Activity. company_id and any source-lead lineage are resolved from the
+// opportunity itself since this legacy call site never carried company_id.
 function logOpportunityActivity(db, opportunityId, activityType, summary) {
+  const opp = db.prepare('SELECT company_id, lead_id FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  const ts = new Date().toISOString();
   db.prepare(`
-    INSERT INTO crm_opportunity_activities (id, opportunity_id, activity_type, summary, done, due_date, created_at)
-    VALUES (?, ?, ?, ?, 1, NULL, ?)
-  `).run(makeId('act'), opportunityId, activityType, summary, new Date().toISOString());
+    INSERT INTO crm_activities (
+      id, company_id, subject_type, lead_id, opportunity_id, activity_type, summary,
+      done, state, due_date, created_at, created_by, updated_at
+    ) VALUES (?, ?, 'opportunity', ?, ?, ?, ?, 1, 'completed', NULL, ?, 'system', ?)
+  `).run(makeId('act'), opp?.company_id ?? '*', opp?.lead_id ?? null, opportunityId, activityType, summary, ts, ts);
 }
 
 // ---------------------------------------------------------------------------
@@ -197,23 +207,29 @@ export function updateOpportunityStage(db, input) {
 
 export function addOpportunityActivity(db, input) {
   const { id, summary, activity_type = 'follow_up', due_date = null, done = false, company_id } = input;
-  const opportunity = db.prepare('SELECT id FROM crm_opportunities WHERE id = ? AND company_id = ?').get(id, company_id);
+  const opportunity = db.prepare('SELECT id, lead_id FROM crm_opportunities WHERE id = ? AND company_id = ?').get(id, company_id);
   if (!opportunity) fail(`Opportunity not found: ${id}`, 'OPPORTUNITY_NOT_FOUND');
   const text = String(summary || '').trim();
   if (!text) fail('Activity summary is required', 'ACTIVITY_SUMMARY_REQUIRED');
   const activityId = makeId('act');
+  const ts = new Date().toISOString();
   db.prepare(`
-    INSERT INTO crm_opportunity_activities (
-      id, opportunity_id, activity_type, summary, done, due_date, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO crm_activities (
+      id, company_id, subject_type, lead_id, opportunity_id, activity_type, summary,
+      done, state, due_date, created_at, created_by, updated_at
+    ) VALUES (?, ?, 'opportunity', ?, ?, ?, ?, ?, ?, ?, ?, 'system', ?)
   `).run(
     activityId,
+    company_id,
+    opportunity.lead_id ?? null,
     id,
     String(activity_type || 'follow_up'),
     text,
     done ? 1 : 0,
+    done ? 'completed' : 'planned',
     due_date || null,
-    new Date().toISOString(),
+    ts,
+    ts,
   );
   return getOpportunity(db, id);
 }

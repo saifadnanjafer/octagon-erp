@@ -17,6 +17,13 @@ import {
   runMigrations,
 } from '../../database/migration-runner/index.mjs';
 import { migration as salesLifecycleMigration } from '../../database/migrations/046_sales_lifecycle_expansion.mjs';
+// Migration 066 turned crm_opportunity_activities from a table 046 owns into a
+// read-only compatibility VIEW over the unified crm_activities. These tests
+// call 046's down()/up() directly, bypassing the dependency-aware runner (which
+// would normally unwind 066 before 046 and reapply it after) — so the same
+// unwind/reapply has to happen manually here, or 046.down() fails trying to
+// DROP TABLE a name that is now a view.
+import { migration as activityUnificationMigration } from '../../database/migrations/066_crm_activity_subject_unification.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const migrationsDir = path.join(repoRoot, 'database', 'migrations');
@@ -167,6 +174,7 @@ test('migration 046 down/up rollback is safe on a disposable database', async ()
     const db = openMigrationDatabase(temp.dbPath);
     try {
       db.exec('BEGIN IMMEDIATE;');
+      activityUnificationMigration.down(db, { dialect: 'sqlite' });
       salesLifecycleMigration.down(db, { dialect: 'sqlite' });
       db.exec('COMMIT;');
       for (const table of NEW_TABLES) {
@@ -183,6 +191,7 @@ test('migration 046 down/up rollback is safe on a disposable database', async ()
 
       db.exec('BEGIN IMMEDIATE;');
       salesLifecycleMigration.up(db, { dialect: 'sqlite' });
+      activityUnificationMigration.up(db, { dialect: 'sqlite' });
       db.exec('COMMIT;');
       for (const table of NEW_TABLES) {
         assert.equal(db.prepare('SELECT COUNT(*) AS n FROM sqlite_master WHERE name = ?').get(table).n, 1, `table ${table} must be recreated`);
@@ -209,6 +218,7 @@ test('injected registry failure rolls back every migration 046 effect', async ()
     const db = openMigrationDatabase(temp.dbPath);
     try {
       db.exec('BEGIN IMMEDIATE;');
+      activityUnificationMigration.down(db, { dialect: 'sqlite' });
       salesLifecycleMigration.down(db, { dialect: 'sqlite' });
       db.exec('COMMIT;');
       db.exec(`

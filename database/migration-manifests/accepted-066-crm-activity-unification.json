@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "extendsManifest": "accepted-065-crm.json",
+  "acceptedSourceCommit": "40f1ec9ba63b7c9f21f8885cc01a5c75e9eb0e6b",
+  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "acceptanceReason": "Wave 1 M2.5E: rebuilds crm_activities so lead_id is nullable and a subject_type CHECK enforces exactly one primary subject (lead, opportunity, or party), fixing the documented limitation that an Opportunity with no source Lead could not carry an Activity. Imports and retires crm_opportunity_activities as a writable table, replacing it with a read-only compatibility view. Accepted after proving apply, rerun idempotency, populated-data upgrade with row-count and foreign-key proofs, rollback restoring pre-migration shape, and refusal (not silent data loss) when a direct Party-subject Activity has no home in either original table.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "066_crm_activity_subject_unification",
+      "relativePath": "database/migrations/066_crm_activity_subject_unification.mjs",
+      "algorithm": "sha256",
+      "checksum": "cea490f1b9e7964f25fe3ee359bb57e76fb0dce73da83ad760fd7c0532f66fa7"
+    }
+  ]
+}

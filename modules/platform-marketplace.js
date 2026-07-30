@@ -425,8 +425,10 @@
     installHooks();
     if (window.MutationObserver && document.body) {
       const observer = new MutationObserver(function () {
-        if (document.getElementById('integrationHubBody') || document.querySelector('#adminPanelBody .admin-tab-body')) {
-          renderAll();
+        const needsHub = document.getElementById('integrationHubBody') && !document.getElementById('platformMarketplaceWorkspace');
+        const needsAdmin = document.querySelector('#adminPanelBody .admin-tab-body') && !document.getElementById('platformMarketplaceAdminCatalog');
+        if (needsHub || needsAdmin) {
+          scheduleRender();
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });

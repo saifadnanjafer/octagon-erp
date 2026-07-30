@@ -1,0 +1,71 @@
+// CRM typed errors.
+//
+// Every failure a caller can reasonably act on gets its own code. Generic
+// throws are avoided because the HTTP layer, the UI and the concurrency tests
+// all branch on `code` — a message string is not an interface.
+
+export class CrmError extends Error {
+  constructor(message, code, details = {}) {
+    super(message);
+    this.name = 'CrmError';
+    this.code = code;
+    this.details = details;
+  }
+}
+
+export const CRM_ERRORS = Object.freeze({
+  // scope / identity
+  COMPANY_SCOPE_REQUIRED: 'COMPANY_SCOPE_REQUIRED',
+  ACTOR_REQUIRED: 'ACTOR_REQUIRED',
+
+  // validation
+  VALIDATION_FAILED: 'VALIDATION_FAILED',
+  INVALID_EMAIL: 'INVALID_EMAIL',
+  INVALID_PHONE: 'INVALID_PHONE',
+  INVALID_AMOUNT: 'INVALID_AMOUNT',
+
+  // lead lifecycle
+  LEAD_NOT_FOUND: 'LEAD_NOT_FOUND',
+  LEAD_ARCHIVED: 'LEAD_ARCHIVED',
+  LEAD_ALREADY_CONVERTED: 'LEAD_ALREADY_CONVERTED',
+  LEAD_NOT_QUALIFIED: 'LEAD_NOT_QUALIFIED',
+  LEAD_IS_DUPLICATE: 'LEAD_IS_DUPLICATE',
+  LEAD_STATE_INVALID: 'LEAD_STATE_INVALID',
+  LEAD_MERGE_SELF: 'LEAD_MERGE_SELF',
+
+  // party
+  PARTY_NOT_FOUND: 'PARTY_NOT_FOUND',
+  PARTY_AMBIGUOUS: 'PARTY_AMBIGUOUS',
+
+  // opportunity
+  OPPORTUNITY_NOT_FOUND: 'OPPORTUNITY_NOT_FOUND',
+  OPPORTUNITY_NOT_OPEN: 'OPPORTUNITY_NOT_OPEN',
+  OPPORTUNITY_WON_IS_FINAL: 'OPPORTUNITY_WON_IS_FINAL',
+  WON_EVIDENCE_REQUIRED: 'WON_EVIDENCE_REQUIRED',
+  LOST_REASON_REQUIRED: 'LOST_REASON_REQUIRED',
+  LOST_REASON_NOT_FOUND: 'LOST_REASON_NOT_FOUND',
+
+  // pipeline / stage
+  PIPELINE_NOT_FOUND: 'PIPELINE_NOT_FOUND',
+  PIPELINE_HAS_NO_OPEN_STAGE: 'PIPELINE_HAS_NO_OPEN_STAGE',
+  STAGE_NOT_FOUND: 'STAGE_NOT_FOUND',
+  STAGE_PIPELINE_MISMATCH: 'STAGE_PIPELINE_MISMATCH',
+  STAGE_INACTIVE: 'STAGE_INACTIVE',
+
+  // activity
+  ACTIVITY_NOT_FOUND: 'ACTIVITY_NOT_FOUND',
+  ACTIVITY_ALREADY_CLOSED: 'ACTIVITY_ALREADY_CLOSED',
+  WORK_ITEM_ALREADY_LINKED: 'WORK_ITEM_ALREADY_LINKED',
+
+  // sales
+  SALE_ORDER_NOT_FOUND: 'SALE_ORDER_NOT_FOUND',
+  QUOTATION_PARTY_MISMATCH: 'QUOTATION_PARTY_MISMATCH',
+  QUOTATION_ALREADY_LINKED: 'QUOTATION_ALREADY_LINKED',
+
+  // concurrency
+  VERSION_CONFLICT: 'VERSION_CONFLICT',
+});
+
+export function fail(code, message, details = {}) {
+  throw new CrmError(message, code, details);
+}

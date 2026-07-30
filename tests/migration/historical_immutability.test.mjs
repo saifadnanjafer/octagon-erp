@@ -141,8 +141,42 @@ async function testEveryMigrationOnDiskIsAccountedFor() {
   console.log(`PASS: everyMigrationOnDiskIsAccountedFor (${onDisk.length} on disk, ${unaccepted.length} forward)`);
 }
 
+async function testForwardMigrationsAreAcceptedNotSilent() {
+  // Forward migrations (063+) are allowed, but must be accepted through their own
+  // manifest rather than simply appearing on disk. The historical manifest is
+  // never edited to absorb them.
+  const dir = path.join(REPO_ROOT, 'database/migration-manifests');
+  const forward = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.json') && f !== 'historical-001-062.json')
+    .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+
+  const accepted = new Map();
+  for (const m of forward) {
+    assert.match(m.acceptedSourceCommit, /^[0-9a-f]{40}$/, 'forward manifest must bind to a commit');
+    assert.ok(m.acceptanceReason && m.acceptanceReason.length > 20, 'forward manifest must record why');
+    for (const e of m.migrations) accepted.set(e.migrationId, e);
+  }
+
+  const onDisk = fs
+    .readdirSync(MIGRATIONS_DIR)
+    .filter((f) => /^\d+_.+\.mjs$/.test(f))
+    .map((f) => f.replace(/\.mjs$/, ''))
+    .filter((id) => Number(id.slice(0, 3)) > 62);
+
+  for (const id of onDisk) {
+    const entry = accepted.get(id);
+    assert.ok(entry, `forward migration "${id}" is on disk but not accepted in any manifest`);
+    const abs = path.join(REPO_ROOT, entry.relativePath);
+    assert.strictEqual(sha256(abs), entry.checksum, `forward migration "${id}" does not match its accepted checksum`);
+  }
+
+  console.log(`PASS: forwardMigrationsAreAcceptedNotSilent (${onDisk.length} forward, all accepted)`);
+}
+
 async function main() {
   await testManifestIsWellFormed();
+  await testForwardMigrationsAreAcceptedNotSilent();
   await testHistoricalMigrationsMatchAcceptedHashes();
   await testMigration014RemainsHistorical();
   await testCompatibilityBehaviourLivesOutsideMigrations();

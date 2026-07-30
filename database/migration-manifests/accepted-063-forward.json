@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "historical-001-062.json",
+  "acceptedSourceCommit": "781c314b12733e9e55a2c7c6db740c2862600f42",
+  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
+  "acceptanceReason": "Checkpoint I5A: forward cutover-governance migration accepted after proving apply, rollback, re-apply and idempotency on a staged clone at tip 062. Historical entries 001-062 are unchanged.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "063_cutover_lineage_quarantine_and_mapping",
+      "relativePath": "database/migrations/063_cutover_lineage_quarantine_and_mapping.mjs",
+      "algorithm": "sha256",
+      "checksum": "deb060c0992fbb9282959f396649ff6bd23d7f1eaf34669fba38204e3e8c9c24"
+    }
+  ]
+}

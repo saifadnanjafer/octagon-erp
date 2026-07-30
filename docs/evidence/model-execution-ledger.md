@@ -1383,3 +1383,33 @@ dirty files untouched.
 - **Remaining blockers:** M2.5F (Activity service is done, but no ActionExecutor registration exists to reach it from outside a direct function call) through M2.10 in full — ActionExecutor registration (~44 actions), runtime permissions, HTTP query layer, Customer 360, scoring/reporting surfaces, original-shell UI, atomicity/failure-injection/concurrency suites, and Chromium acceptance. The dual Opportunity-write-authority condition recorded in `unresolved-risks.md` should be resolved as part of M2.5G, not deferred further.
 - **Classification: PARTIAL — REMEDIATION REQUIRED.** M3–M10 were not claimed complete. `main` was not merged.
 
+---
+
+## Record 009 — Module Expansion Wave 1, CRM Integration-Ready Closure
+
+- **Model:** GPT-5
+- **Exact version:** GPT-5 (exact internal build/version not exposed)
+- **Agent/runtime:** Codex desktop, Windows PowerShell, Node.js v24.18.0
+- **Execution date:** 2026-07-30
+- **Repository:** `saifadnanjafer/octagon-erp`
+- **Worktree:** `octagon-module-expansion-wave-1`
+- **Starting branch:** `build/octagon-module-expansion-wave-1`
+- **Starting SHA:** `0b859a3ed533e454f4d1d9e815fb8dc7ca994e72` — verified local equals remote before work began
+- **CRM closure SHA:** `f3737dc24faef0fbdcb3b57188829f9f92dfe15f` — pushed and verified local equals remote
+- **Module:** CRM (B1)
+- **Migrations:** Existing migrations 065 and 066 reused; no new migration was created. Migration 067 remains the next expected free number and must be reverified at B2 entry.
+- **Canonical authorities reused:** Party, Sales, Work Item, Permissions, Modules, Licensing, Audit, and Outbox.
+- **Actions:** 29 Wave 1 CRM actions registered through ActionExecutor. Shared legacy action ids now resolve to the Wave 1 CRM authority.
+- **Permissions:** Six explicit CRM permissions: `perm_crm_read`, `perm_crm_create`, `perm_crm_update`, `perm_crm_assign`, `perm_crm_convert`, and `perm_crm_manage`.
+- **API:** Governed CRM query routes and ActionExecutor-backed commands.
+- **UI:** The original shell now exposes bilingual Arabic RTL / English LTR CRM dashboard, leads, opportunities, pipeline Kanban, activities, Customer 360, reports, and settings, while preserving the existing Sales workspace.
+- **Lifecycle proof:** Authenticated disposable-database Chromium acceptance proved lead creation, CRM navigation, English LTR switching, 375 px mobile layout without page overflow, and Viewer mutation denial. Deterministic suites cover conversion, opportunity progression, activity scheduling/completion, and quotation handoff.
+- **Tests:** CRM suites 49/49; canonical Sales/CRM shell 12/12; module registry 6/6; permission regression 35/35; precommit and syntax checks passed; authenticated Chromium smoke passed.
+- **Problems encountered:** The prior partial implementation had action definitions not wired into the production runtime, permission ids incorrectly mapped to action ids, activity queries using noncanonical fields, a stage query assuming a nonexistent direct company column, and a forced module-enable write that violated fail-closed licensing.
+- **Model mistakes and rework:** The first Chromium run exposed the stage/company query defect. The query was corrected to scope stages through their pipeline and the complete authenticated smoke was rerun successfully. No failed result was reported as passing.
+- **Deferred hardening:** Advanced analytics, richer interactive calendar behavior, scale/load testing, and the B2–B8 modules remain explicitly deferred.
+- **Operational safety:** No operational database or JSON path existed in or was written by this worktree. Browser acceptance used a fresh temporary database. The Telegram worktree was untouched. The administrator credential was unchanged.
+- **VNext:** Frozen and unchanged at `cf7ae4ed73eac91a325c964178036290bc0736c1`; its 17 pre-existing dirty paths and status fingerprint were unchanged.
+- **Remaining breadth-wave status:** B2 Service & Helpdesk through B8 E-commerce were not started in this closure. The overall breadth wave remains partial and `main` was not merged.
+- **Classification:** **INTEGRATION READY** for CRM only.
+

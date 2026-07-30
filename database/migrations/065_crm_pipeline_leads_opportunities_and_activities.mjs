@@ -372,8 +372,12 @@ export const migration = {
         migration_owner, created_at, updated_at
       ) VALUES (?, ?, ?, 'id', ?, ?, 'commercial', 1, '{}', '{}', 'company',
         'generic', 'scoped', 'registered', 'metadata', 'audit', 1, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET module_id = excluded.module_id, updated_at = excluded.updated_at
+      ON CONFLICT(id) DO NOTHING
     `);
+    // DO NOTHING, not DO UPDATE: `crm_lead` is already registered by an earlier
+    // migration and owned by platform.kernel. Reassigning its module_id would
+    // hand a pre-existing row to this migration, and rollback would then either
+    // orphan it or delete something 065 never created.
     for (const [id, store, ar, en] of [
       ['crm_lead', 'crm_leads', 'عميل محتمل', 'Lead'],
       ['crm_opportunity', 'crm_opportunities', 'فرصة بيع', 'Opportunity'],

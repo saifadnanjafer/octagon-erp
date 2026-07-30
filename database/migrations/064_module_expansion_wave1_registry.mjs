@@ -200,6 +200,7 @@ export const migration = {
         nav_group TEXT NOT NULL,
         permission_namespace TEXT NOT NULL,
         lifecycle TEXT NOT NULL DEFAULT 'planned',
+        module_pre_existed INTEGER NOT NULL DEFAULT 0,
         schema_migration TEXT,
         feature_flags TEXT NOT NULL DEFAULT '{}',
         health_check TEXT,
@@ -236,6 +237,16 @@ export const migration = {
         updated_at = excluded.updated_at
     `);
 
+    // Some Wave 1 ids ALREADY exist: migration 039 registered a `crm` module.
+    // 064 upserts onto it, so down() must not delete a row it did not create —
+    // doing so orphans platform_entities and platform_actions that predate this
+    // migration and fails on the foreign key.
+    const preExisting = new Set(
+      db.prepare(`SELECT id FROM platform_modules WHERE id IN (${WAVE1_MODULES.map(() => '?').join(',')})`)
+        .all(...WAVE1_MODULES.map((m) => m.id))
+        .map((r) => r.id)
+    );
+
     for (const m of WAVE1_MODULES) {
       insertModule.run(
         m.id,
@@ -264,6 +275,8 @@ export const migration = {
         m.id === 'customer_portal' ? 'portal' : (m.id === 'service_helpdesk' ? 'service' : m.id),
         `${m.id}:health`, now, now
       );
+      db.prepare('UPDATE module_expansion_registry SET module_pre_existed = ? WHERE module_id = ?')
+        .run(preExisting.has(m.id) ? 1 : 0, m.id);
     }
 
     const insertPermission = db.prepare(`
@@ -290,15 +303,23 @@ export const migration = {
     const moduleIds = WAVE1_MODULES.map((m) => m.id);
     const placeholders = moduleIds.map(() => '?').join(',');
 
-    // Everything referencing platform_modules goes first. platform_entities may
-    // carry rows for these module ids that were registered by OTHER migrations
-    // (039 and 046 already register CRM entities), so the delete is by module id
-    // rather than by this migration's own ownership — otherwise a deep rollback
-    // drops a module that still has children and fails on the foreign key.
+    // Permissions are wholly owned by this migration and go first.
     db.prepare(`DELETE FROM authorization_permissions WHERE module_id IN (${placeholders})`).run(...moduleIds);
-    db.prepare(`DELETE FROM platform_entities WHERE module_id IN (${placeholders})`).run(...moduleIds);
+
+    // Only delete module rows this migration actually created. A pre-existing id
+    // (039 already registers `crm`) keeps its row and its children: deleting it
+    // would orphan platform_entities and platform_actions that predate Wave 1.
+    // platform_entities is deliberately NOT touched here — 064 registers none.
+    const created = db
+      .prepare('SELECT module_id FROM module_expansion_registry WHERE module_pre_existed = 0')
+      .all()
+      .map((r) => r.module_id)
+      .filter((id) => moduleIds.includes(id));
+
     db.exec('DROP TABLE IF EXISTS module_expansion_registry;');
-    db.prepare(`DELETE FROM platform_modules WHERE id IN (${placeholders})`).run(...moduleIds);
+    if (created.length) {
+      db.prepare(`DELETE FROM platform_modules WHERE id IN (${created.map(() => '?').join(',')})`).run(...created);
+    }
   },
 };
 

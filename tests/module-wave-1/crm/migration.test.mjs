@@ -140,7 +140,20 @@ async function testModuleLifecycleFlips() {
   assert.strictEqual(db.prepare("SELECT lifecycle FROM module_expansion_registry WHERE module_id='crm'").get().lifecycle, 'available');
   assert.strictEqual(db.prepare("SELECT schema_migration FROM module_expansion_registry WHERE module_id='crm'").get().schema_migration, MIG);
   assert.strictEqual(db.prepare("SELECT status FROM platform_modules WHERE id='crm'").get().status, 'installed');
-  assert.ok(db.prepare("SELECT COUNT(*) n FROM platform_entities WHERE module_id='crm'").get().n >= 7);
+  // 065 registers 6 entities. It must NOT claim `crm_lead`, which migration 039
+  // already registered under platform.kernel — hijacking a pre-existing row is
+  // what caused the deep-rollback foreign-key regression.
+  const owned = db.prepare(
+    "SELECT id FROM platform_entities WHERE module_id='crm' AND migration_owner=?"
+  ).all(MIG).map((r) => r.id).sort();
+  assert.deepStrictEqual(owned, [
+    'crm_activity', 'crm_campaign', 'crm_opportunity',
+    'crm_pipeline', 'crm_pipeline_stage', 'crm_sales_team',
+  ], '065 must own exactly its own six entities');
+
+  const lead = db.prepare("SELECT migration_owner FROM platform_entities WHERE id='crm_lead'").get();
+  assert.ok(lead, 'crm_lead entity must still exist');
+  assert.notStrictEqual(lead.migration_owner, MIG, 'crm_lead predates 065 and must not be reassigned to it');
   db.close();
   drop(p);
   console.log('PASS: moduleLifecycleFlips');

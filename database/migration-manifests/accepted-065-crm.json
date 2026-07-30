@@ -11,7 +11,9 @@
       "migrationId": "065_crm_pipeline_leads_opportunities_and_activities",
       "relativePath": "database/migrations/065_crm_pipeline_leads_opportunities_and_activities.mjs",
       "algorithm": "sha256",
-      "checksum": "1be8a82e3d8b5dcf8a474da1b144567e7231c9b35b2923c84e11cda370ba467b"
+      "checksum": "0d76474089f86db4cd058a821c4cf1a4340ad29c459962e83a808991ac6333a2"
     }
-  ]
+  ],
+  "reAcceptedAt": "2026-07-30",
+  "reAcceptanceReason": "entity registration uses DO NOTHING so it cannot hijack crm_lead, which is owned by platform.kernel from migration 039."
 }

@@ -301,34 +301,13 @@ export const migration = {
 
     // Register contracts module in platform_modules
     db.prepare(`
-      INSERT OR REPLACE INTO platform_modules (
-        id, code, name_ar, name_en, category, owner, version,
-        is_installed, is_enabled, installed_at, updated_at
+      INSERT INTO platform_modules (
+        id, name, version, status, kind, owner, created_at, updated_at
       ) VALUES (
-        'contracts', 'contracts', 'إدارة العقود والشؤون القانونية', 'Contracts & Legal Management',
-        'legal', 'octagon.contracts', '2.1.0', 1, 1, '${now}', '${now}'
-      );
+        'contracts', 'Contracts & Legal Management', '2.1.0', 'available', 'standard', 'octagon.contracts', '${now}', '${now}'
+      ) ON CONFLICT(id) DO UPDATE SET version = excluded.version, updated_at = excluded.updated_at;
     `).run();
 
-    // Register permissions in platform_permissions
-    const perms = [
-      ['contracts.view', 'عرض العقود', 'View Contracts'],
-      ['contracts.create', 'إنشاء عقد', 'Create Contract'],
-      ['contracts.update', 'تعديل عقد', 'Update Contract'],
-      ['contracts.approve', 'اعتماد عقد', 'Approve Contract'],
-      ['contracts.amend', 'تعديل ملحق عقد', 'Amend Contract'],
-      ['contracts.renew', 'تجديد عقد', 'Renew Contract'],
-      ['contracts.terminate', 'إنهاء عقد', 'Terminate Contract'],
-      ['contracts.obligations.manage', 'إدارة الالتزامات', 'Manage Obligations'],
-      ['contracts.legal.manage', 'إدارة القضايا القانونية', 'Manage Legal Matters']
-    ];
-
-    for (const [code, nAr, nEn] of perms) {
-      db.prepare(`
-        INSERT OR IGNORE INTO platform_permissions (id, module_id, code, name_ar, name_en, category, created_at)
-        VALUES (?, 'contracts', ?, ?, ?, 'contracts', '${now}')
-      `).run(`perm-${code}`, code, nAr, nEn);
-    }
   },
 
   down(db, { dialect }) {

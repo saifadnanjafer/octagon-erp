@@ -290,8 +290,13 @@ export const migration = {
     const moduleIds = WAVE1_MODULES.map((m) => m.id);
     const placeholders = moduleIds.map(() => '?').join(',');
 
-    // Permissions and role assignments referencing them go before the modules.
+    // Everything referencing platform_modules goes first. platform_entities may
+    // carry rows for these module ids that were registered by OTHER migrations
+    // (039 and 046 already register CRM entities), so the delete is by module id
+    // rather than by this migration's own ownership — otherwise a deep rollback
+    // drops a module that still has children and fails on the foreign key.
     db.prepare(`DELETE FROM authorization_permissions WHERE module_id IN (${placeholders})`).run(...moduleIds);
+    db.prepare(`DELETE FROM platform_entities WHERE module_id IN (${placeholders})`).run(...moduleIds);
     db.exec('DROP TABLE IF EXISTS module_expansion_registry;');
     db.prepare(`DELETE FROM platform_modules WHERE id IN (${placeholders})`).run(...moduleIds);
   },

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "extendsManifest": "accepted-064-wave1.json",
+  "acceptedSourceCommit": "7f5f2046e39cc7f790bdde31d8e5c63a8cf88f67",
+  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "acceptanceReason": "Wave 1 M2: CRM migration extending the existing 039/046 CRM. Accepted after proving apply, rerun idempotency, rollback, re-apply, and that pre-existing lead data survives the upgrade.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "065_crm_pipeline_leads_opportunities_and_activities",
+      "relativePath": "database/migrations/065_crm_pipeline_leads_opportunities_and_activities.mjs",
+      "algorithm": "sha256",
+      "checksum": "1be8a82e3d8b5dcf8a474da1b144567e7231c9b35b2923c84e11cda370ba467b"
+    }
+  ]
+}

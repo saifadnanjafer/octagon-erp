@@ -27,7 +27,9 @@ async function testMigrationAppliesToTip064() {
   const status = await migrationStatus({ dbPath: db });
   const applied = status.filter((s) => s.status === 'applied').map((s) => s.id);
   assert.ok(applied.includes('064_module_expansion_wave1_registry'), '064 must apply');
-  assert.strictEqual(applied.at(-1), '064_module_expansion_wave1_registry', 'tip must be 064');
+  // 064 is the registry foundation, not necessarily the tip: M2 added 065 (CRM)
+  // on top of it. Assert it is applied and ordered before any module schema.
+  assert.ok(applied.indexOf('064_module_expansion_wave1_registry') > -1, '064 must be applied');
 
   fs.unlinkSync(db);
   console.log(`PASS: migrationAppliesToTip064 (${applied.length} applied)`);
@@ -38,7 +40,7 @@ async function testAllEightModulesRegistered() {
   await freshInstall({ dbPath });
   const db = open(dbPath);
 
-  const rows = db.prepare('SELECT module_id, name_ar, name_en, license_key, nav_group, lifecycle FROM module_expansion_registry ORDER BY module_id').all();
+  const rows = db.prepare('SELECT module_id, name_ar, name_en, license_key, nav_group, lifecycle, schema_migration FROM module_expansion_registry ORDER BY module_id').all();
   assert.strictEqual(rows.length, 8, 'exactly eight Wave 1 modules');
   assert.deepStrictEqual(rows.map((r) => r.module_id).sort(), [...WAVE1_MODULE_IDS].sort());
 
@@ -47,8 +49,14 @@ async function testAllEightModulesRegistered() {
     assert.ok(r.name_en && r.name_en.length > 1, `${r.module_id} needs an English name`);
     assert.ok(r.license_key.startsWith('octagon.'), `${r.module_id} needs a license key`);
     assert.ok(r.nav_group, `${r.module_id} needs a navigation group`);
-    // Honest lifecycle: no Wave 1 module has domain schema yet.
-    assert.strictEqual(r.lifecycle, 'planned', `${r.module_id} must not claim to be installable yet`);
+    // A module is 'available' only once its own schema migration has run and
+    // recorded itself; everything else must still be 'planned'.
+    if (r.lifecycle === 'available') {
+      assert.ok(r.schema_migration, `${r.module_id} claims available without a schema migration`);
+    } else {
+      assert.strictEqual(r.lifecycle, 'planned', `${r.module_id} must not claim to be installable yet`);
+      assert.strictEqual(r.schema_migration, null, `${r.module_id} is planned but names a schema migration`);
+    }
   }
 
   // Registered in the real control plane too, not only the wave table.
@@ -60,7 +68,9 @@ async function testAllEightModulesRegistered() {
     // 'available' means registered and known. It must NOT be 'enabled' or
     // 'installed' while the module has no domain schema — that would be a false
     // green in Administration.
-    assert.strictEqual(p.status, 'available', `${p.id} must not be advertised as installed or enabled`);
+    // 'available' = registered, no schema yet. 'installed' = its schema ran.
+    // Neither may be 'enabled' without an entitlement decision.
+    assert.ok(['available','installed'].includes(p.status), `${p.id} unexpected status ${p.status}`);
   }
 
   db.close();
@@ -157,8 +167,8 @@ async function testRollbackAndRerun() {
   const dbPath = tmpDb('rollback');
   await freshInstall({ dbPath });
 
-  // Roll back only 064.
-  await runMigrations({ dbPath, direction: 'down', steps: 1 });
+  // 065 (CRM) now sits on top of 064, so unwinding the registry means two steps.
+  await runMigrations({ dbPath, direction: 'down', steps: 2 });
   let db = open(dbPath);
   const gone = db.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE type='table' AND name='module_expansion_registry'").get().n;
   assert.strictEqual(gone, 0, 'registry table must be dropped on rollback');
@@ -170,7 +180,7 @@ async function testRollbackAndRerun() {
 
   // Re-apply, then prove idempotency.
   const up = await runMigrations({ dbPath, direction: 'up' });
-  assert.deepStrictEqual(up.migrations, ['064_module_expansion_wave1_registry']);
+  assert.deepStrictEqual(up.migrations, ['064_module_expansion_wave1_registry', '065_crm_pipeline_leads_opportunities_and_activities']);
   const again = await runMigrations({ dbPath, direction: 'up' });
   assert.deepStrictEqual(again.migrations, [], 'rerun must apply nothing');
 

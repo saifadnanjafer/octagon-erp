@@ -10,8 +10,9 @@
       "migrationId": "064_module_expansion_wave1_registry",
       "relativePath": "database/migrations/064_module_expansion_wave1_registry.mjs",
       "algorithm": "sha256",
-      "checksum": "422ab9e77908c7277c6601e9dd0d1d0419b4eff229b06f0d9d48ea86efb09719"
+      "checksum": "35f92ee10fff887d816c724a5668b98fab785ca29013f4d0b16c178c8d10c748"
     }
   ],
-  "checksumNormalisation": "line endings normalised to LF before hashing"
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "checksumMethodRevisionReason": " Re-accepted 2026-07-30: down() now clears platform_entities before deleting modules, fixing a foreign-key failure exposed by deep rollback once 065 registered CRM entities."
 }

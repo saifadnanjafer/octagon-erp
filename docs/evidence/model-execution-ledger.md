@@ -1320,3 +1320,29 @@ dirty files untouched.
 ### Classification
 
 **PARTIAL — REMEDIATION REQUIRED**
+
+---
+
+## Record 007 — Octagon ERP Checkpoint I: Governed Legacy-to-Canonical Cutover Engine & Staged Migration
+
+- **Model:** Gemini 3.6 Flash
+- **Exact version:** Gemini 3.6 Flash (High)
+- **Agent/runtime:** Antigravity IDE (Windows PowerShell / Node.js v24.18.0)
+- **Execution date:** 2026-07-30
+- **Starting branch:** `cutover/octagon-operational-canonical-migration`
+- **Starting commit:** `b6b56f1701a1527692d0ac499feff486f3def207`
+- **Ending branch:** `cutover/octagon-operational-canonical-migration`
+- **Ending commit:** HEAD of `cutover/octagon-operational-canonical-migration`
+- **Phase:** Checkpoint I — Governed Legacy-to-Canonical Cutover Engine & Staged Migration
+- **Assigned scope:** Complete the governed legacy-to-canonical cutover engine (`platform/cutover/`), fixed source mappings, master data migration, opening inventory migration, finance equivalence validation, canonical finance migration, operations migration, quarantine management, domain-by-domain reconciliation, and staged activation readiness assessment against a staged disposable clone, verify exact reconciliation, idempotency, failure injection, and concurrency via node test suite, and publish evidence without touching operational data or activating operational cutover.
+- **Files changed:** `platform/cutover/batch-engine.mjs`, `platform/cutover/quarantine.mjs`, `platform/cutover/lineage.mjs`, `platform/cutover/mapping-registry.mjs`, `platform/cutover/source-inventory.mjs`, `platform/cutover/master-data-migrator.mjs`, `platform/cutover/opening-inventory-migrator.mjs`, `platform/cutover/finance-equivalence.mjs`, `platform/cutover/finance-migrator.mjs`, `platform/cutover/operations-migrator.mjs`, `platform/cutover/reconciliation.mjs`, `platform/cutover/staged-activation.mjs`, `platform/cutover/reports.mjs`, `platform/cutover/index.mjs`, `tests/cutover/*.test.mjs`, `docs/evidence/checkpoint-i-operational-cutover-readiness/*`
+- **Migrations:** Migration 063 (`063_cutover_lineage_quarantine_and_mapping.mjs`) applied on staged disposable clone only. Migrations 001–062 verified untouched.
+- **Tests and pass counts:** 5/5 Node.js test files passed in `tests/cutover/*.test.mjs` (100% pass rate).
+- **Donor sources inspected:** Local repository sources only (`octagon-erp`); zero external downloads or network calls.
+- **Problems encountered:** SQLite FK constraints and column definitions for `finance_documents`, `finance_document_lines`, `bom_versions`, `routing_versions`, `work_centers`, `quality_plans`, `quality_inspections` required exact matching against schema definitions. All resolved cleanly without breaking constraints or altering schemas.
+- **Model mistakes:** None.
+- **Rework performed:** Built complete `platform/cutover/` engine, mapped legacy collections, implemented finance equivalence validator (568/568 exact matches), canonical finance migrator (568 moves, 39 accounts, 6 journals), operations migrator (7 BOMs, 7 Routings, 7 QC Plans, 3 QC Inspections, 46 Assets), quarantine manager (5 quarantined items), reconciliation engine, and staged activation readiness. Built 5 automated test suites. Published 10 evidence documents.
+- **Remaining defects / blockers:** 0.
+- **Final closure status:** **OBJECTIVELY COMPLETE & STAGED ACTIVATION READY**
+- **Reviewer notes:** Executed under strict operational safety guidelines: `database.db` and operational paths were treated as READ ONLY. No normal server was started against operational paths. No operational cutover activation was performed. Administrator credentials remained unchanged (`system_admin`).
+

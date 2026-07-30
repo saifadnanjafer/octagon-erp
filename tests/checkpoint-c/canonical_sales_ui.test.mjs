@@ -75,7 +75,8 @@ test('Sales workspace registers after the legacy Sales renderer', () => {
 test('all required visible Sales areas are separate bilingual tabs', () => {
   const { mod } = load();
   const required = [
-    'dashboard', 'leads', 'opportunities', 'quotations', 'orders',
+    'dashboard', 'leads', 'opportunities', 'pipeline', 'activities',
+    'customer-360', 'crm-reports', 'crm-settings', 'quotations', 'orders',
     'reservations', 'deliveries', 'returns', 'invoice-requests',
     'balances', 'reports',
   ];
@@ -83,6 +84,44 @@ test('all required visible Sales areas are separate bilingual tabs', () => {
   for (const tab of mod.TABS) {
     assert.ok(tab.label.ar.trim(), `${tab.key} missing Arabic label`);
     assert.ok(tab.label.en.trim(), `${tab.key} missing English label`);
+  }
+});
+
+test('CRM reads target governed CRM query routes', async () => {
+  const { client, calls } = load();
+  const cases = [
+    [() => client.crm.listLeads(), '/api/v1/crm/leads'],
+    [() => client.crm.listOpportunities(), '/api/v1/crm/opportunities'],
+    [() => client.crm.listActivities(), '/api/v1/crm/activities'],
+    [() => client.crm.listPipelines(), '/api/v1/crm/pipelines'],
+    [() => client.crm.listStages(), '/api/v1/crm/stages'],
+    [() => client.crm.customer360('p1'), '/api/v1/crm/customer_360/p1'],
+    [() => client.crm.listScoringRules(), '/api/v1/crm/scoring_rules'],
+  ];
+  for (const [invoke, expected] of cases) {
+    calls.length = 0;
+    await invoke();
+    assert.equal(calls[0].url, expected);
+    assert.equal(calls[0].init.method, 'GET');
+    assert.equal(calls[0].init.credentials, 'same-origin');
+  }
+});
+
+test('CRM lifecycle commands use Wave 1 action ids', async () => {
+  const { client, calls } = load();
+  const cases = [
+    [() => client.crm.qualifyLead({ lead_id: 'l1' }), 'crm:lead:qualify'],
+    [() => client.crm.convertLead({ lead_id: 'l1', party_id: 'p1' }), 'crm:lead:convert'],
+    [() => client.crm.changeOpportunityStage({ opportunity_id: 'o1', stage_id: 's1' }), 'crm:opportunity:change_stage'],
+    [() => client.crm.requestQuotation({ opportunity_id: 'o1' }), 'crm:opportunity:create_quotation'],
+    [() => client.crm.createActivity({ activity_type: 'call', subject: 'Call', lead_id: 'l1' }), 'crm:activity:create'],
+    [() => client.crm.completeActivity({ activity_id: 'a1' }), 'crm:activity:complete'],
+  ];
+  for (const [invoke, actionId] of cases) {
+    calls.length = 0;
+    await invoke();
+    assert.equal(calls[0].url, `/api/v1/action/${actionId}`);
+    assert.ok(JSON.parse(calls[0].init.body).idempotency_key);
   }
 });
 
@@ -158,7 +197,22 @@ test('module renders loading, empty, validation, authorization and server failur
   assert.match(moduleSource, /isAuthorization/);
   assert.match(moduleSource, /data-cs-form="lead"/);
   assert.match(moduleSource, /data-cs-form="quotation"/);
+  assert.match(moduleSource, /data-cs-form="activity"/);
   assert.match(moduleSource, /state\.error/);
+});
+
+test('CRM shell includes detail, Kanban, activities, Customer 360, reports, and settings', () => {
+  for (const pattern of [
+    /data-cs-lead=/,
+    /data-cs-opportunity-detail=/,
+    /cs-kanban/,
+    /cs-calendar-grid/,
+    /data-cs-customer-360/,
+    /data-cs-crm-report/,
+    /Scoring rules/,
+  ]) {
+    assert.match(moduleSource, pattern);
+  }
 });
 
 test('visible Sales exposes follow-up, pricing, project, attachments, profitability, timeline, and governed delivery controls', () => {

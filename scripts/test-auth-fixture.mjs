@@ -73,7 +73,10 @@ export const TEST_ROLES = Object.freeze([
     name: 'Test Sales User',
     roleId: 'sales.user',
     permissions: [
-      'platform:db:read', 'platform:db:write', 'crm:lead:write',
+      'platform:db:read', 'platform:db:write',
+      'perm_crm_read', 'perm_crm_create', 'perm_crm_update',
+      'perm_crm_assign', 'perm_crm_convert', 'perm_crm_manage',
+      'crm:lead:write',
       'sales:order:write', 'sales:invoice:write', 'sales:commission:write',
     ],
   },
@@ -125,7 +128,7 @@ export const TEST_ROLES = Object.freeze([
       'task:write',
     ],
   },
-  { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read'] },
+  { key: 'viewer',     login: 'test.viewer',     name: 'Test Restricted Viewer',    roleId: 'role_test_viewer',   permissions: ['platform:db:read', 'perm_crm_read'] },
 ]);
 
 /**
@@ -190,6 +193,9 @@ export function seedTestIdentities(dialect, { dbPath, env = process.env } = {}) 
     VALUES (?, ?, ?, 'active', 1, ?) ON CONFLICT(id) DO NOTHING`).run(TEST_COMPANY, TEST_TENANT, 'Octagon Test Co', now);
   dialect.prepare(`INSERT INTO platform_branches (id, company_id, name, status, created_at)
     VALUES (?, ?, ?, 'active', ?) ON CONFLICT(id) DO NOTHING`).run(TEST_BRANCH, TEST_COMPANY, 'Octagon Test Branch', now);
+  // Browser acceptance needs the CRM module active inside this disposable
+  // database. Production/module-control state is never changed by this fixture.
+  dialect.prepare("UPDATE platform_modules SET status='enabled', updated_at=? WHERE id='crm'").run(now);
 
   const users = createUserDirectory(dialect);
   const memberships = createMembershipDirectory(dialect);

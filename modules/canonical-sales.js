@@ -13,12 +13,18 @@
     error: null,
     notice: null,
     selectedOrderId: null,
+    selectedLead: null,
+    selectedOpportunity: null,
+    selectedCustomerId: null,
+    customer360: null,
     selectedWarehouseId: null,
     report: 'pipeline',
+    crmReport: 'pipeline_summary',
     rows: {
       leads: [], opportunities: [], orders: [], reservations: [], deliveries: [],
       returns: [], invoiceRequests: [], balances: [], parties: [], products: [],
       warehouses: [], commissions: [], priceLists: [], report: [],
+      activities: [], pipelines: [], stages: [], scoringRules: [], crmReport: null,
     },
   };
 
@@ -26,6 +32,11 @@
     ['dashboard', 'لوحة المبيعات', 'Sales Dashboard', 'fa-chart-line'],
     ['leads', 'العملاء المحتملون', 'Leads', 'fa-user-plus'],
     ['opportunities', 'الفرص', 'Opportunities', 'fa-filter-circle-dollar'],
+    ['pipeline', 'مسار CRM', 'CRM Pipeline', 'fa-table-columns'],
+    ['activities', 'الأنشطة', 'Activities', 'fa-calendar-check'],
+    ['customer-360', 'العميل 360', 'Customer 360', 'fa-address-card'],
+    ['crm-reports', 'تقارير CRM', 'CRM Reports', 'fa-chart-pie'],
+    ['crm-settings', 'إعدادات CRM', 'CRM Settings', 'fa-sliders'],
     ['quotations', 'عروض الأسعار', 'Quotations', 'fa-file-invoice-dollar'],
     ['orders', 'طلبات المبيعات', 'Sales Orders', 'fa-cart-shopping'],
     ['reservations', 'الحجوزات', 'Reservations', 'fa-boxes-stacked'],
@@ -94,8 +105,8 @@
         <header class="cs-hero">
           <div>
             <span class="cs-eyebrow">${tx('أوكتاغون ERP · دورة تجارية قانونية', 'Octagon ERP · Canonical commercial cycle')}</span>
-            <h2>${tx('المبيعات', 'Sales')}</h2>
-            <p>${tx('من العميل المحتمل إلى الفاتورة والرصيد، عبر المخزون والمالية القانونيين.', 'Lead-to-balance execution through canonical Inventory and Finance.')}</p>
+            <h2>${tx('إدارة علاقات العملاء والمبيعات', 'CRM & Sales')}</h2>
+            <p>${tx('من العميل المحتمل والنشاط إلى الفرصة وعرض السعر، عبر السلطات القانونية نفسها.', 'Lead, activity, opportunity, and quotation execution through the same canonical authorities.')}</p>
           </div>
           <div class="cs-hero-actions">
             <span class="cs-authority"><i class="fa-solid fa-shield-halved"></i>${tx('هوية ونطاق من الخادم', 'Server-derived identity and scope')}</span>
@@ -126,6 +137,8 @@
     const conversion = quotations.length ? Math.round((accepted / quotations.length) * 100) : 0;
     return `
       <div class="cs-kpis">
+        ${kpi(tx('العملاء المحتملون', 'CRM leads'), state.rows.leads.length, tx('ضمن نطاق الشركة', 'company scoped'), 'fa-user-plus')}
+        ${kpi(tx('الأنشطة المفتوحة', 'Open activities'), state.rows.activities.filter((row) => !['completed', 'cancelled'].includes(row.state)).length, tx('متابعات قانونية', 'governed follow-ups'), 'fa-calendar-check')}
         ${kpi(tx('قيمة الفرص', 'Opportunity pipeline'), money(pipeline), tx('فرص مفتوحة', 'open opportunities'), 'fa-filter-circle-dollar')}
         ${kpi(tx('المبيعات المؤكدة', 'Confirmed sales'), money(salesTotal), `${confirmed.length} ${tx('طلب', 'orders')}`, 'fa-chart-line')}
         ${kpi(tx('نسبة قبول العروض', 'Quotation acceptance'), `${conversion}%`, `${accepted}/${quotations.length}`, 'fa-percent')}
@@ -202,12 +215,37 @@
         ${table(
           [tx('الاسم', 'Name'), tx('المرحلة', 'Stage'), tx('القيمة', 'Value'), tx('الاحتمالية', 'Probability'), tx('الإجراء', 'Action')],
           state.rows.leads.map((row) => [
-            esc(row.name), status(row.stage), money(row.expected_revenue), `${Number(row.probability || 0)}%`,
-            row.stage === 'won' || !state.rows.parties.length ? '—' : `<button class="cs-small" data-cs-convert-lead="${esc(row.id)}"><i class="fa-solid fa-arrow-right-arrow-left"></i>${tx('تحويل لفرصة', 'Convert')}</button>`,
+            `<button class="cs-link" data-cs-lead="${esc(row.id)}">${esc(row.name)}</button>`, status(row.stage), money(row.expected_revenue), `${Number(row.probability || 0)}%`,
+            `<div class="cs-actions">
+              ${row.stage === 'new' || row.stage === 'contacted' ? `<button class="cs-small" data-cs-qualify-lead="${esc(row.id)}">${tx('تأهيل', 'Qualify')}</button>` : ''}
+              ${row.stage === 'qualified' && state.rows.parties.length ? `<button class="cs-small" data-cs-convert-lead="${esc(row.id)}"><i class="fa-solid fa-arrow-right-arrow-left"></i>${tx('تحويل لفرصة', 'Convert')}</button>` : ''}
+            </div>`,
           ]),
           tx('لا يوجد عملاء محتملون.', 'No leads found.'),
         )}
-      </section>`;
+      </section>
+      ${renderLeadDetail()}`;
+  }
+
+  function renderLeadDetail() {
+    const row = state.selectedLead;
+    if (!row) return '';
+    const activities = Array.isArray(row.activities) ? row.activities : [];
+    return `<section class="cs-drawer">
+      <div class="cs-card-head"><div><h3>${esc(row.name)}</h3><p>${tx('تفاصيل العميل المحتمل وتاريخ المتابعة.', 'Lead detail and follow-up history.')}</p></div><button class="cs-small" data-cs-close-lead>×</button></div>
+      <div class="cs-meta-grid">
+        <span>${tx('المرجع', 'Reference')}<b>${esc(row.reference || row.id)}</b></span>
+        <span>${tx('المرحلة', 'Stage')}<b>${esc(row.stage)}</b></span>
+        <span>${tx('التقييم', 'Score')}<b>${Number(row.score || 0)}</b></span>
+        <span>${tx('البريد', 'Email')}<b>${esc(row.email || '—')}</b></span>
+      </div>
+      <div class="cs-card-head cs-subhead"><div><h3>${tx('الأنشطة المرتبطة', 'Linked activities')}</h3></div></div>
+      ${table(
+        [tx('الملخص', 'Summary'), tx('النوع', 'Type'), tx('الاستحقاق', 'Due'), tx('الحالة', 'State')],
+        activities.map((activity) => [esc(activity.summary), esc(activity.activity_type), date(activity.due_at || activity.due_date), status(activity.state)]),
+        tx('لا توجد أنشطة مرتبطة.', 'No linked activities.'),
+      )}
+    </section>`;
   }
 
   function renderOpportunities() {
@@ -217,7 +255,7 @@
       ${table(
         [tx('الفرصة', 'Opportunity'), tx('العميل', 'Customer'), tx('المرحلة', 'Stage'), tx('الحالة', 'Status'), tx('القيمة', 'Value'), tx('الإجراءات', 'Actions')],
         state.rows.opportunities.map((row) => [
-          esc(row.name), esc(partyName(row.party_id)), status(row.stage), status(row.status), money(row.expected_value),
+          `<button class="cs-link" data-cs-opportunity-detail="${esc(row.id)}">${esc(row.name)}</button>`, esc(partyName(row.party_id)), status(row.stage), status(row.status), money(row.expected_value),
           row.status !== 'open' ? '—' : `<div class="cs-actions">
             ${stages.filter((s) => s !== row.stage).map((s) => `<button class="cs-small" data-cs-stage="${s}" data-cs-opportunity="${esc(row.id)}">${esc(s)}</button>`).join('')}
             <button class="cs-small" data-cs-opportunity-activity="${esc(row.id)}"><i class="fa-solid fa-calendar-plus"></i>${tx('متابعة', 'Follow-up')}</button>
@@ -227,7 +265,106 @@
         ]),
         tx('لا توجد فرص.', 'No opportunities found.'),
       )}
+    </section>${renderOpportunityDetail()}`;
+  }
+
+  function renderOpportunityDetail() {
+    const row = state.selectedOpportunity;
+    if (!row) return '';
+    return `<section class="cs-drawer">
+      <div class="cs-card-head"><div><h3>${esc(row.name)}</h3><p>${tx('تفاصيل الفرصة القانونية وربط المبيعات.', 'Canonical opportunity detail and Sales link.')}</p></div><button class="cs-small" data-cs-close-opportunity-detail>×</button></div>
+      <div class="cs-meta-grid">
+        <span>${tx('المرجع', 'Reference')}<b>${esc(row.reference || row.id)}</b></span>
+        <span>${tx('العميل', 'Customer')}<b>${esc(partyName(row.party_id))}</b></span>
+        <span>${tx('القيمة المتوقعة', 'Expected value')}<b>${money(row.expected_value)}</b></span>
+        <span>${tx('القيمة المرجحة', 'Weighted value')}<b>${money(row.weighted_revenue)}</b></span>
+      </div>
+      <div class="cs-actions cs-detail-actions">
+        <button class="cs-small" data-cs-request-quotation="${esc(row.id)}"><i class="fa-solid fa-file-invoice-dollar"></i>${tx('طلب عرض سعر قانوني', 'Request canonical quotation')}</button>
+        <button class="cs-small" data-cs-opportunity-activity="${esc(row.id)}"><i class="fa-solid fa-calendar-plus"></i>${tx('جدولة نشاط', 'Schedule activity')}</button>
+      </div>
     </section>`;
+  }
+
+  function renderPipeline() {
+    const openStages = state.rows.stages.filter((stage) => stage.is_active === 1 && stage.is_won !== 1 && stage.is_lost !== 1);
+    if (!openStages.length) return emptyState(tx('لا توجد مراحل CRM مفعلة.', 'No active CRM stages.'));
+    return `<section class="cs-kanban" aria-label="${tx('لوحة مسار CRM', 'CRM pipeline board')}">
+      ${openStages.map((stage) => {
+        const rows = state.rows.opportunities.filter((row) => row.stage_id === stage.id && row.status === 'open');
+        return `<article class="cs-kanban-column">
+          <header><div><strong>${esc(tx(stage.name_ar || stage.code, stage.name_en || stage.code))}</strong><small>${rows.length} · ${money(rows.reduce((sum, row) => sum + Number(row.expected_value || 0), 0))}</small></div></header>
+          <div class="cs-kanban-cards">
+            ${rows.length ? rows.map((row) => `<button class="cs-kanban-card" data-cs-opportunity-detail="${esc(row.id)}">
+              <strong>${esc(row.name)}</strong><span>${esc(partyName(row.party_id))}</span><small>${money(row.expected_value)} · ${Number(row.probability || 0)}%</small>
+            </button>`).join('') : `<div class="cs-kanban-empty">${tx('لا توجد فرص', 'No opportunities')}</div>`}
+          </div>
+        </article>`;
+      }).join('')}
+    </section>${renderOpportunityDetail()}`;
+  }
+
+  function renderActivities() {
+    return `<section class="cs-card">
+      <div class="cs-card-head"><div><h3>${tx('قائمة وتقويم الأنشطة', 'Activity list & calendar')}</h3><p>${tx('مرتبة حسب تاريخ الاستحقاق، مع حالة التنفيذ القانونية.', 'Ordered by due date with governed execution state.')}</p></div></div>
+      <form class="cs-form" data-cs-form="activity">
+        <label><span>${tx('الموضوع', 'Subject')}</span><input name="subject" required></label>
+        <label><span>${tx('النوع', 'Type')}</span><select name="activity_type"><option value="call">call</option><option value="meeting">meeting</option><option value="email">email</option><option value="visit">visit</option><option value="follow_up">follow_up</option></select></label>
+        <label><span>${tx('الاستحقاق', 'Due')}</span><input name="due_at" type="datetime-local" required></label>
+        <label><span>${tx('السجل المرتبط', 'Related record')}</span><select name="subject_ref" required>
+          <option value="">—</option>
+          ${state.rows.leads.map((row) => `<option value="lead:${esc(row.id)}">${tx('عميل محتمل', 'Lead')} · ${esc(row.name)}</option>`).join('')}
+          ${state.rows.opportunities.map((row) => `<option value="opportunity:${esc(row.id)}">${tx('فرصة', 'Opportunity')} · ${esc(row.name)}</option>`).join('')}
+          ${state.rows.parties.map((row) => `<option value="party:${esc(row.id)}">${tx('عميل', 'Customer')} · ${esc(row.name)}</option>`).join('')}
+        </select></label>
+        <button type="submit"><i class="fa-solid fa-calendar-plus"></i>${tx('جدولة', 'Schedule')}</button>
+      </form>
+    </section>
+    <section class="cs-calendar-grid">
+      ${state.rows.activities.length ? state.rows.activities.map((row) => `<article class="cs-calendar-item">
+        <time>${date(row.due_at || row.due_date)}</time><strong>${esc(row.summary)}</strong>
+        <span>${esc(row.activity_type)} · ${status(row.state)}</span>
+        ${!['completed', 'cancelled'].includes(row.state) ? `<button class="cs-small" data-cs-complete-activity="${esc(row.id)}">${tx('إكمال', 'Complete')}</button>` : ''}
+      </article>`).join('') : emptyState(tx('لا توجد أنشطة.', 'No activities.'))}
+    </section>`;
+  }
+
+  function renderCustomer360() {
+    const view = state.customer360;
+    return `<section class="cs-card">
+      <div class="cs-card-head"><div><h3>${tx('العميل 360', 'Customer 360')}</h3><p>${tx('حقائق Party وCRM والمبيعات من مصادرها القانونية.', 'Canonical Party, CRM, and Sales facts in one view.')}</p></div></div>
+      <label class="cs-picker"><span>${tx('العميل', 'Customer')}</span><select data-cs-customer-360><option value="">—</option>${state.rows.parties.map((row) => `<option value="${esc(row.id)}" ${state.selectedCustomerId === row.id ? 'selected' : ''}>${esc(row.name)}</option>`).join('')}</select></label>
+    </section>
+    ${view ? `<section class="cs-card">
+      <div class="cs-kpis">
+        ${kpi(tx('الفرص', 'Opportunities'), view.opportunities.length, view.party.name, 'fa-filter-circle-dollar')}
+        ${kpi(tx('الأنشطة', 'Activities'), view.activities.length, tx('متابعات العميل', 'customer follow-ups'), 'fa-calendar-check')}
+        ${kpi(tx('طلبات المبيعات', 'Sales orders'), view.sales_orders.length, tx('حقائق المبيعات', 'Sales facts'), 'fa-cart-shopping')}
+        ${kpi(tx('قيمة الطلبات المؤكدة', 'Confirmed order value'), money(view.financial_summary.confirmed_orders_value), tx('ملخص من الخادم', 'server-derived summary'), 'fa-coins')}
+      </div>
+    </section>` : emptyState(tx('اختر عميلاً لعرض ملف 360.', 'Select a customer to open the 360 view.'))}`;
+  }
+
+  function renderCrmReports() {
+    const report = state.rows.crmReport;
+    return `<section class="cs-card">
+      <div class="cs-card-head"><div><h3>${tx('تقارير CRM', 'CRM reports')}</h3><p>${tx('الحسابات مشتقة على الخادم.', 'Metrics are derived on the server.')}</p></div></div>
+      <div class="cs-report-tabs">
+        ${[['pipeline_summary', tx('المسار', 'Pipeline')], ['lead_conversion', tx('التحويل', 'Conversion')], ['activity_summary', tx('الأنشطة', 'Activities')]].map(([key, label]) => `<button class="${state.crmReport === key ? 'active' : ''}" data-cs-crm-report="${key}">${label}</button>`).join('')}
+      </div>
+      <pre class="cs-json-report">${esc(JSON.stringify(report || {}, null, 2))}</pre>
+    </section>`;
+  }
+
+  function renderCrmSettings() {
+    return `<div class="cs-grid-two">
+      <section class="cs-card"><div class="cs-card-head"><div><h3>${tx('خطوط ومراحل CRM', 'CRM pipelines & stages')}</h3><p>${tx('إعدادات قانونية للقراءة في هذه الموجة.', 'Governed read-only settings in this wave.')}</p></div></div>
+        ${table([tx('الخط', 'Pipeline'), tx('الرمز', 'Code'), tx('افتراضي', 'Default')], state.rows.pipelines.map((row) => [esc(tx(row.name_ar, row.name_en)), esc(row.code), row.is_default ? '✓' : '—']), tx('لا توجد خطوط.', 'No pipelines.'))}
+      </section>
+      <section class="cs-card"><div class="cs-card-head"><div><h3>${tx('قواعد التقييم', 'Scoring rules')}</h3><p>${tx('قواعد قابلة للتفسير ومشتقة من الخادم.', 'Explainable rules loaded from the server.')}</p></div></div>
+        ${table([tx('القاعدة', 'Rule'), tx('الوزن', 'Weight'), tx('الحالة', 'State')], state.rows.scoringRules.map((row) => [esc(tx(row.name_ar, row.name_en)), Number(row.score_delta ?? row.score_weight ?? 0), row.is_active === 0 ? tx('متوقفة', 'Disabled') : tx('مفعلة', 'Active')]), tx('لا توجد قواعد.', 'No scoring rules.'))}
+      </section>
+    </div>`;
   }
 
   function renderQuotations() {
@@ -412,6 +549,11 @@
     switch (state.active) {
       case 'leads': return renderLeads();
       case 'opportunities': return renderOpportunities();
+      case 'pipeline': return renderPipeline();
+      case 'activities': return renderActivities();
+      case 'customer-360': return renderCustomer360();
+      case 'crm-reports': return renderCrmReports();
+      case 'crm-settings': return renderCrmSettings();
       case 'quotations': return renderQuotations();
       case 'orders': return renderOrders();
       case 'reservations': return renderReservations();
@@ -437,17 +579,21 @@
     shell();
     try {
       const [
-        leads, opportunities, orders, reservations, deliveries, returns,
+        leads, opportunities, activities, pipelines, stages, scoringRules,
+        orders, reservations, deliveries, returns,
         invoiceRequests, balances, parties, products, warehouses, commissions, priceLists,
       ] = await Promise.all([
-        api.sales.listLeads(), api.sales.listOpportunities(), api.sales.listOrders(),
+        api.crm.listLeads(), api.crm.listOpportunities(), api.crm.listActivities(),
+        api.crm.listPipelines(), api.crm.listStages(), api.crm.listScoringRules(),
+        api.sales.listOrders(),
         api.sales.listReservations(), api.sales.listDeliveries(), api.sales.listReturns(),
         api.sales.listInvoiceRequests(), api.sales.listCustomerBalances(),
         api.parties.list({ role: 'customer' }), api.products.list(), api.warehouses.list(),
         api.sales.listCommissions(), api.sales.listPriceLists(),
       ]);
       Object.assign(state.rows, {
-        leads, opportunities, orders, reservations, deliveries, returns,
+        leads, opportunities, activities, pipelines, stages, scoringRules,
+        orders, reservations, deliveries, returns,
         invoiceRequests, balances, parties, products, warehouses, commissions, priceLists,
       });
       if (!warehouses.some((row) => row.id === state.selectedWarehouseId)) {
@@ -461,6 +607,7 @@
         }
       }
       if (state.active === 'reports') state.rows.report = await api.sales.report(state.report);
+      if (state.active === 'crm-reports') state.rows.crmReport = await api.crm.report(state.crmReport);
     } catch (error) {
       state.error = normalizeError(error);
     } finally {
@@ -605,6 +752,12 @@
           try { state.rows.report = await client().sales.report(state.report); }
           catch (error) { state.error = normalizeError(error); }
           finally { state.loading = false; shell(); }
+        } else if (state.active === 'crm-reports') {
+          state.loading = true;
+          shell();
+          try { state.rows.crmReport = await client().crm.report(state.crmReport); }
+          catch (error) { state.error = normalizeError(error); }
+          finally { state.loading = false; shell(); }
         } else shell();
       });
     });
@@ -615,6 +768,38 @@
     const close = el.querySelector('[data-cs-action="close-order"]');
     if (close) close.addEventListener('click', () => { state.selectedOrderId = null; shell(); });
     el.querySelectorAll('[data-cs-order]').forEach((button) => button.addEventListener('click', () => selectOrder(button.dataset.csOrder)));
+    el.querySelectorAll('[data-cs-lead]').forEach((button) => button.addEventListener('click', async () => {
+      try { state.selectedLead = await client().crm.getLead(button.dataset.csLead); shell(); }
+      catch (error) { state.error = normalizeError(error); shell(); }
+    }));
+    el.querySelectorAll('[data-cs-opportunity-detail]').forEach((button) => button.addEventListener('click', async () => {
+      try { state.selectedOpportunity = await client().crm.getOpportunity(button.dataset.csOpportunityDetail); shell(); }
+      catch (error) { state.error = normalizeError(error); shell(); }
+    }));
+    el.querySelectorAll('[data-cs-close-lead]').forEach((button) => button.addEventListener('click', () => { state.selectedLead = null; shell(); }));
+    el.querySelectorAll('[data-cs-close-opportunity-detail]').forEach((button) => button.addEventListener('click', () => { state.selectedOpportunity = null; shell(); }));
+    el.querySelectorAll('[data-cs-qualify-lead]').forEach((button) => button.addEventListener('click', () => command(
+      tx('تم تأهيل العميل المحتمل.', 'Lead qualified.'),
+      () => client().crm.qualifyLead({ lead_id: button.dataset.csQualifyLead }),
+    )));
+    el.querySelectorAll('[data-cs-request-quotation]').forEach((button) => button.addEventListener('click', () => command(
+      tx('تم طلب عرض السعر القانوني.', 'Canonical quotation requested.'),
+      () => client().crm.requestQuotation({ opportunity_id: button.dataset.csRequestQuotation }),
+    )));
+    el.querySelectorAll('[data-cs-complete-activity]').forEach((button) => button.addEventListener('click', () => command(
+      tx('تم إكمال النشاط.', 'Activity completed.'),
+      () => client().crm.completeActivity({ activity_id: button.dataset.csCompleteActivity }),
+    )));
+    el.querySelectorAll('[data-cs-customer-360]').forEach((select) => select.addEventListener('change', async () => {
+      state.selectedCustomerId = select.value || null;
+      state.customer360 = state.selectedCustomerId ? await client().crm.customer360(state.selectedCustomerId) : null;
+      shell();
+    }));
+    el.querySelectorAll('[data-cs-crm-report]').forEach((button) => button.addEventListener('click', async () => {
+      state.crmReport = button.dataset.csCrmReport;
+      state.rows.crmReport = await client().crm.report(state.crmReport);
+      shell();
+    }));
     el.querySelectorAll('[data-cs-finance-link]').forEach((button) => button.addEventListener('click', () => {
       if (typeof root.switchPage === 'function') root.switchPage('finance');
     }));
@@ -633,11 +818,26 @@
     if (leadForm) leadForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const form = new FormData(leadForm);
-      command(tx('تم إنشاء العميل المحتمل.', 'Lead created.'), () => client().sales.createLead({
+      command(tx('تم إنشاء العميل المحتمل.', 'Lead created.'), () => client().crm.createLead({
         name: form.get('name'),
         expected_revenue: Number(form.get('expected_revenue') || 0),
         probability: Number(form.get('probability') || 0),
       }));
+    });
+    const activityForm = el.querySelector('[data-cs-form="activity"]');
+    if (activityForm) activityForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const form = new FormData(activityForm);
+      const [subjectType, subjectId] = String(form.get('subject_ref') || '').split(':');
+      const input = {
+        activity_type: form.get('activity_type'),
+        subject: form.get('subject'),
+        due_at: new Date(String(form.get('due_at'))).toISOString(),
+      };
+      if (subjectType === 'lead') input.lead_id = subjectId;
+      if (subjectType === 'opportunity') input.opportunity_id = subjectId;
+      if (subjectType === 'party') input.party_id = subjectId;
+      command(tx('تمت جدولة النشاط.', 'Activity scheduled.'), () => client().crm.createActivity(input));
     });
     const quotationForm = el.querySelector('[data-cs-form="quotation"]');
     if (quotationForm) {
@@ -675,9 +875,9 @@
           shell();
           return;
         }
-        command(tx('تم تحويل العميل المحتمل إلى فرصة.', 'Lead converted to opportunity.'), () => client().sales.convertLead({
-          id: button.dataset.csConvertLead,
-          partner_id: party.id,
+        command(tx('تم تحويل العميل المحتمل إلى فرصة.', 'Lead converted to opportunity.'), () => client().crm.convertLead({
+          lead_id: button.dataset.csConvertLead,
+          party_id: party.id,
         }));
       });
     });

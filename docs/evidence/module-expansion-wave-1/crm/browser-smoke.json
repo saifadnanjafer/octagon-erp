@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-30T18:44:13.504Z",
+  "baseUrl": "http://127.0.0.1:8097",
+  "checks": {
+    "salesLogin": {
+      "status": 200,
+      "authenticated": true
+    },
+    "tabs": [
+      "dashboard",
+      "leads",
+      "opportunities",
+      "pipeline",
+      "activities",
+      "customer-360",
+      "crm-reports",
+      "crm-settings",
+      "quotations",
+      "orders",
+      "reservations",
+      "deliveries",
+      "returns",
+      "invoice-requests",
+      "balances",
+      "reports"
+    ],
+    "requiredTabs": true,
+    "initialError": false,
+    "leadCreated": true,
+    "tab_pipeline": true,
+    "tab_activities": true,
+    "tab_customer-360": true,
+    "tab_crm-reports": true,
+    "tab_crm-settings": true,
+    "englishLtr": true,
+    "mobileNoPageOverflow": true,
+    "viewerLogin": {
+      "status": 200,
+      "authenticated": true
+    },
+    "viewerMutationDenied": true,
+    "noUnexpectedConsoleErrors": true
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "relevantConsoleErrors": [],
+  "pass": true
+}

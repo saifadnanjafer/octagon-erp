@@ -233,7 +233,7 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       }
 
       if (['crm', 'commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {
-        if (!requirePermission('platform:db:read')) return;
+        if (!requirePermission(namespace === 'crm' ? 'perm_crm_read' : 'platform:db:read')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
         const commercialResult = handleCommercialQuery({ dialect, ctx, namespace, resource, recordId, query });
         if (commercialResult.error) return sendJson(res, commercialResult.status || 404, envelope(null, commercialResult.error, null, ctx.correlationId));

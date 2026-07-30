@@ -2,6 +2,13 @@
 
 **Date:** 2026-07-30 (M2.5E checkpoint)
 
+> **Superseded at CRM Integration-Ready closure:** Risk 1 is fixed by
+> `opportunity-write-authority-map.md`, the delegating compatibility adapters,
+> and `single-write-authority.test.mjs`. Risk 2 remains an intentional read-only
+> compatibility view, not a competing writer. Risk 3 is outside CRM and remains
+> a later-wave regression item. Current CRM deferrals are recorded in
+> `../DEFERRED_INTEGRATION_AND_HARDENING.md`.
+
 ## 1. Two competing Opportunity-lifecycle write authorities (discovered, not fixed)
 
 `platform/sales/lifecycle.mjs` — a pre-Wave-1 module (Checkpoint C / Phase

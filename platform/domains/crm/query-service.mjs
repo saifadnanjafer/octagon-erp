@@ -43,18 +43,20 @@ export function listOpportunities(db, { company_id, stage, status, party_id, sal
   return { rows, total };
 }
 
-export function listActivities(db, { company_id, party_id, lead_id, opportunity_id, status, assigned_to, limit = 100, offset = 0 }) {
+export function listActivities(db, { company_id, party_id, lead_id, opportunity_id, state, status, assigned_user_id, assigned_to, limit = 100, offset = 0 }) {
   const filters = ['company_id = ?'];
   const params = [company_id];
 
   if (party_id) { filters.push('party_id = ?'); params.push(party_id); }
   if (lead_id) { filters.push('lead_id = ?'); params.push(lead_id); }
   if (opportunity_id) { filters.push('opportunity_id = ?'); params.push(opportunity_id); }
-  if (status) { filters.push('status = ?'); params.push(status); }
-  if (assigned_to) { filters.push('assigned_to = ?'); params.push(assigned_to); }
+  const requestedState = state || status;
+  const assignee = assigned_user_id || assigned_to;
+  if (requestedState) { filters.push('state = ?'); params.push(requestedState); }
+  if (assignee) { filters.push('assigned_user_id = ?'); params.push(assignee); }
 
   const where = filters.join(' AND ');
-  const rows = db.prepare(`SELECT * FROM crm_activities WHERE ${where} ORDER BY due_date ASC, created_at DESC LIMIT ? OFFSET ?`).all(...params, Number(limit), Number(offset));
+  const rows = db.prepare(`SELECT * FROM crm_activities WHERE ${where} ORDER BY COALESCE(due_at, due_date, created_at) ASC, created_at DESC LIMIT ? OFFSET ?`).all(...params, Number(limit), Number(offset));
   const total = db.prepare(`SELECT COUNT(*) as n FROM crm_activities WHERE ${where}`).get(...params).n;
 
   return { rows, total };
@@ -66,9 +68,19 @@ export function listPipelines(db, { company_id }) {
 
 export function listPipelineStages(db, { pipeline_id, company_id }) {
   if (pipeline_id) {
-    return db.prepare('SELECT * FROM crm_pipeline_stages WHERE pipeline_id = ? ORDER BY sequence ASC').all(pipeline_id);
+    return db.prepare(`
+      SELECT s.* FROM crm_pipeline_stages s
+      JOIN crm_pipelines p ON p.id = s.pipeline_id
+      WHERE s.pipeline_id = ? AND (p.company_id = ? OR p.company_id = '*')
+      ORDER BY s.sequence ASC
+    `).all(pipeline_id, company_id);
   }
-  return db.prepare("SELECT * FROM crm_pipeline_stages WHERE company_id = ? OR company_id = '*' ORDER BY pipeline_id ASC, sequence ASC").all(company_id);
+  return db.prepare(`
+    SELECT s.* FROM crm_pipeline_stages s
+    JOIN crm_pipelines p ON p.id = s.pipeline_id
+    WHERE p.company_id = ? OR p.company_id = '*'
+    ORDER BY s.pipeline_id ASC, s.sequence ASC
+  `).all(company_id);
 }
 
 // --- Customer 360 View (Section 11) ---
@@ -196,8 +208,10 @@ export function getLeadConversionReport(db, { company_id }) {
 export function getActivitySummaryReport(db, { company_id }) {
   const byType = db.prepare(`
     SELECT activity_type, COUNT(*) as total_count,
-           SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
-           SUM(CASE WHEN status = 'planned' AND due_date < DATE('now') THEN 1 ELSE 0 END) as overdue_count
+           SUM(CASE WHEN state = 'completed' THEN 1 ELSE 0 END) as completed_count,
+           SUM(CASE WHEN state NOT IN ('completed', 'cancelled')
+                         AND COALESCE(due_at, due_date) < DATETIME('now')
+                    THEN 1 ELSE 0 END) as overdue_count
     FROM crm_activities
     WHERE company_id = ?
     GROUP BY activity_type

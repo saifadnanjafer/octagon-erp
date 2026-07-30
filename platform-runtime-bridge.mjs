@@ -30,6 +30,7 @@ import { registerCommercialActions } from './platform/commercial/index.mjs';
 import { registerInventoryActions } from './platform/inventory/index.mjs';
 import { registerWmsActions } from './platform/wms/index.mjs';
 import { registerSalesActions } from './platform/sales/index.mjs';
+import { ensureCrmActionDefinitions, registerCrmActions } from './platform/domains/crm/index.mjs';
 import { registerProcurementActions } from './platform/procurement/index.mjs';
 import { registerPosActions } from './platform/pos/index.mjs';
 import { registerWorkItemActions } from './platform/work_items/index.mjs';
@@ -143,6 +144,10 @@ export function createPlatformAuthority(dialect) {
   // them — unknown tokens fail closed — and the HTTP action route can evaluate
   // them per action. Existing registrations (e.g. page/API defaults) win.
   const ACTION_TOKEN_RE = /^[a-z][a-z0-9_]*(:[a-z0-9_*]+)+$/;
+  // Wave 1 CRM actions must exist before the permission registry is hydrated.
+  // This registers definitions only; it deliberately does not enable the CRM
+  // module, so control-plane disablement remains fail-closed.
+  ensureCrmActionDefinitions(dialect);
   const actionPermissions = dialect.prepare(`
     SELECT DISTINCT required_permission AS id, module_id FROM platform_actions
     WHERE required_permission IS NOT NULL
@@ -169,6 +174,9 @@ export function createPlatformAuthority(dialect) {
   registerInventoryActions(actionExecutor);
   registerWmsActions(actionExecutor);
   registerSalesActions(actionExecutor);
+  // Register after the legacy Sales compatibility actions so shared action IDs
+  // resolve to the Wave 1 CRM services (the single business write authority).
+  registerCrmActions(actionExecutor);
   registerProcurementActions(actionExecutor);
   registerPosActions(actionExecutor);
   registerWorkItemActions(actionExecutor);

@@ -542,6 +542,125 @@
   margin-bottom: 16px;
 }
 
+#pageSales .cs-subhead {
+  margin-top: 22px;
+}
+
+#pageSales .cs-detail-actions {
+  margin-top: 16px;
+}
+
+#pageSales .cs-picker {
+  display: grid;
+  gap: 7px;
+  max-width: 460px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+#pageSales .cs-picker select {
+  padding: 10px 11px;
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  background: var(--surface, #111827);
+  color: var(--text, #e5e7eb);
+}
+
+#pageSales .cs-kanban {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+#pageSales .cs-kanban-column {
+  min-height: 330px;
+  padding: 13px;
+  border: 1px solid var(--cs-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-card, #111827) 92%, transparent);
+}
+
+#pageSales .cs-kanban-column > header {
+  padding: 3px 3px 12px;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+#pageSales .cs-kanban-column > header div,
+#pageSales .cs-kanban-cards {
+  display: grid;
+  gap: 9px;
+}
+
+#pageSales .cs-kanban-column > header small,
+#pageSales .cs-kanban-card span,
+#pageSales .cs-kanban-card small,
+#pageSales .cs-kanban-empty {
+  color: var(--text-muted, #94a3b8);
+  font-size: 10px;
+}
+
+#pageSales .cs-kanban-cards {
+  padding-top: 12px;
+}
+
+#pageSales .cs-kanban-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--cs-border);
+  border-radius: 12px;
+  background: var(--cs-panel);
+  color: var(--text, #e5e7eb);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+#pageSales .cs-kanban-card:hover {
+  border-color: rgba(56, 189, 248, .55);
+  transform: translateY(-1px);
+}
+
+#pageSales .cs-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#pageSales .cs-calendar-item {
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  background: var(--cs-panel);
+}
+
+#pageSales .cs-calendar-item time,
+#pageSales .cs-calendar-item > span {
+  color: var(--text-muted, #94a3b8);
+  font-size: 11px;
+}
+
+#pageSales .cs-json-report {
+  max-height: 520px;
+  overflow: auto;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--cs-border);
+  border-radius: 12px;
+  background: rgba(2, 8, 23, .45);
+  color: #bae6fd;
+  direction: ltr;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
 #pageSales .cs-report-tabs button {
   padding: 8px 11px;
   font: inherit;
@@ -578,6 +697,9 @@
   #pageSales .cs-meta-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  #pageSales .cs-calendar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
@@ -594,7 +716,8 @@
   #pageSales .cs-kpis,
   #pageSales .cs-form,
   #pageSales .cs-form-inline,
-  #pageSales .cs-meta-grid {
+  #pageSales .cs-meta-grid,
+  #pageSales .cs-calendar-grid {
     grid-template-columns: 1fr;
   }
   #pageSales .cs-span-two {

@@ -472,6 +472,37 @@
     markCommissionPaid: (input, opts) => action('sales:commission:mark_paid', input, { ...opts, domain: 'SALES' }),
   };
 
+  const crm = {
+    listLeads: (params) => query('/crm/leads', params),
+    getLead: (id) => query(`/crm/leads/${encodeURIComponent(id)}`),
+    listOpportunities: (params) => query('/crm/opportunities', params),
+    getOpportunity: (id) => query(`/crm/opportunities/${encodeURIComponent(id)}`),
+    listActivities: (params) => query('/crm/activities', params),
+    getActivity: (id) => query(`/crm/activities/${encodeURIComponent(id)}`),
+    listPipelines: (params) => query('/crm/pipelines', params),
+    listStages: (params) => query('/crm/stages', params),
+    customer360: (partyId) => query(`/crm/customer_360/${encodeURIComponent(partyId)}`),
+    listScoringRules: (params) => query('/crm/scoring_rules', params),
+    scoreHistory: (leadId) => query(`/crm/score_history/${encodeURIComponent(leadId)}`),
+    report: (type, params) => query('/crm/reports', { ...(params || {}), type }),
+    createLead: (input, opts) => action('crm:lead:create', input, { ...opts, domain: 'SALES' }),
+    updateLead: (input, opts) => action('crm:lead:update', input, { ...opts, domain: 'SALES' }),
+    qualifyLead: (input, opts) => action('crm:lead:qualify', input, { ...opts, domain: 'SALES' }),
+    disqualifyLead: (input, opts) => action('crm:lead:disqualify', input, { ...opts, domain: 'SALES' }),
+    reopenLead: (input, opts) => action('crm:lead:reopen', input, { ...opts, domain: 'SALES' }),
+    convertLead: (input, opts) => action('crm:lead:convert', input, { ...opts, domain: 'SALES' }),
+    createOpportunity: (input, opts) => action('crm:opportunity:create', input, { ...opts, domain: 'SALES' }),
+    changeOpportunityStage: (input, opts) => action('crm:opportunity:change_stage', input, { ...opts, domain: 'SALES' }),
+    markOpportunityWon: (input, opts) => action('crm:opportunity:mark_won', input, { ...opts, domain: 'SALES' }),
+    markOpportunityLost: (input, opts) => action('crm:opportunity:mark_lost', input, { ...opts, domain: 'SALES' }),
+    reopenOpportunity: (input, opts) => action('crm:opportunity:reopen', input, { ...opts, domain: 'SALES' }),
+    requestQuotation: (input, opts) => action('crm:opportunity:create_quotation', input, { ...opts, domain: 'SALES' }),
+    createActivity: (input, opts) => action('crm:activity:create', input, { ...opts, domain: 'SALES' }),
+    completeActivity: (input, opts) => action('crm:activity:complete', input, { ...opts, domain: 'SALES' }),
+    rescheduleActivity: (input, opts) => action('crm:activity:reschedule', input, { ...opts, domain: 'SALES' }),
+    cancelActivity: (input, opts) => action('crm:activity:cancel', input, { ...opts, domain: 'SALES' }),
+  };
+
   // Checkpoint D1 — canonical Projects transport. Reads go to the governed
   // /projects query surface; every mutation is an ActionExecutor command.
   const projects = {
@@ -697,6 +728,7 @@
     stock,
     reservations,
     sales,
+    crm,
     projects,
     engineering,
     mrp,

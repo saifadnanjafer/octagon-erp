@@ -1,3 +1,12 @@
+# Current authoritative status — 2026-07-30
+
+**Classification: INTEGRATION READY.**
+
+The current decision is recorded in
+`crm/INTEGRATION_READY_DECISION.md`. The historical narrative below is retained
+for provenance; where it says CRM was incomplete, that describes an earlier
+checkpoint and is superseded by the current decision.
+
 # M2 — CRM
 
 **Status: DELIVERED AND FULLY VERIFIED.**

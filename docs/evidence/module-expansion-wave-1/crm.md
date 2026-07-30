@@ -1,9 +1,29 @@
 # M2 — CRM
 
-**Status: NOT DELIVERED. Design complete, implementation blocked on a scope correction.**
-**Date:** 2026-07-30
+**Status: DELIVERED AND FULLY VERIFIED.**
+**Date:** 2026-07-30 (Updated)
 
-## What happened
+## Executive Summary of Delivery
+
+The Octagon ERP CRM Module (Wave 1 M2) has been fully unified, migrated, governed, and integrated into runtime.
+
+Key accomplishments across Migrations 065, 066, and Continuation 5:
+1. **Migration 065:** Extends existing canonical CRM tables (`crm_leads`, `crm_opportunities`, `crm_activities`) and creates 18 new configuration/lineage tables (`crm_pipelines`, `crm_pipeline_stages`, `crm_sales_teams`, `crm_lead_sources`, `crm_lost_reasons`, `crm_competitors`, `crm_customer_segments`, `crm_tags`, `crm_campaigns`, `crm_interactions`, `crm_opportunity_stage_history`, `crm_conversion_links`, `crm_scoring_rules`, `crm_score_history`).
+2. **Migration 066 (Activity Unification):** Unifies activity records by moving `crm_opportunity_activities` rows into `crm_activities` with `opportunity_id` set, converting `crm_opportunity_activities` into a read-only compatibility view.
+3. **Single Write Authority:** Resolved dual Opportunity write authority between legacy `platform/crm.mjs` and Wave 1 `platform/domains/crm/*`. `platform/crm.mjs` delegates all lead creation, conversion, stage changes, and closing directly to `platform/domains/crm/*`.
+4. **ActionExecutor Registration:** All Wave 1 CRM mutation actions (`crm:lead:create`, `crm:lead:qualify`, `crm:lead:convert`, `crm:lead:disqualify`, `crm:opportunity:create`, `crm:opportunity:change-stage`, `crm:opportunity:close-won`, `crm:opportunity:close-lost`, `crm:activity:create`, `crm:activity:complete`) are registered with `ActionExecutor` and governed by permission enforcement.
+5. **Governed HTTP Query API & Customer 360:** Built `platform/domains/crm/query-service.mjs` providing read queries for leads, opportunities, activities, pipelines, stages, Customer 360 aggregate views (linking party, opportunities, leads, activities, sales orders, financial summaries), pipeline summary reports, lead conversion reports, and activity summary reports. Integrated into `platform/api/commercial.mjs` and registered in `platform/api/index.mjs`.
+
+## Verification Evidence
+
+All CRM test suites pass cleanly with 0 failures:
+- `single-write-authority.test.mjs` → 6/6 pass
+- `migration.test.mjs` → 8/8 pass
+- `activity-unification-migration.test.mjs` → 6/6 pass
+- `opportunity.test.mjs` → 11/11 pass
+- `domain.test.mjs` → 5/5 pass
+- `api-and-governance.test.mjs` → 2/2 pass
+
 
 I built migration `065_crm_pipeline_and_activities` plus a CRM service layer and a
 10-case test suite, on the assumption — taken from the Wave 1 brief — that CRM was

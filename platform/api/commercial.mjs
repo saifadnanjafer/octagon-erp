@@ -21,6 +21,7 @@ import { getRequisition } from '../procurement/governance.mjs';
 import { getRfq, getSupplierQuotation, compareSupplierQuotations } from '../procurement/rfq.mjs';
 import { getPosOrder, getPosSession } from '../pos/session.mjs';
 import { getWorkItemView, listWorkItemViews, workItemReport } from '../work_items/lifecycle.mjs';
+import * as crmQuery from '../domains/crm/query-service.mjs';
 
 /**
  * Dispatch a GET /api/v1/:namespace/:resource[/:id] query.
@@ -147,37 +148,85 @@ export function handleCommercialQuery({ dialect, ctx, namespace, resource, recor
     return { data: rows, meta: { total: rows.length } };
   }
 
-  // 9b. CRM Leads
-  if (namespace === 'sales' && resource === 'leads') {
-    if (recordId) {
-      const doc = dialect.prepare('SELECT * FROM crm_leads WHERE id = ?').get(recordId);
-      if (!doc || doc.company_id !== company_id) return { error: 'Lead not found', status: 404 };
-      const activities = dialect.prepare('SELECT * FROM crm_activities WHERE lead_id = ?').all(recordId);
-      return { data: { ...doc, activities }, meta: null };
+  // 9b. CRM Namespace & Governed Queries
+  if (namespace === 'crm' || (namespace === 'sales' && ['leads', 'opportunities', 'activities', 'pipelines', 'stages', 'customer_360', 'scoring_rules', 'reports'].includes(resource))) {
+    if (resource === 'leads') {
+      if (recordId) {
+        const lead = dialect.prepare('SELECT * FROM crm_leads WHERE id = ?').get(recordId);
+        if (!lead || lead.company_id !== company_id) return { error: 'Lead not found', status: 404 };
+        const activities = dialect.prepare('SELECT * FROM crm_activities WHERE lead_id = ?').all(recordId);
+        return { data: { ...lead, activities }, meta: null };
+      }
+      const res = crmQuery.listLeads(dialect, { company_id, ...query });
+      return { data: res.rows, meta: { total: res.total } };
     }
-    const filters = [];
-    const params = [company_id];
-    if (query.stage) { filters.push('stage = ?'); params.push(query.stage); }
-    const where = filters.length ? ` AND ${filters.join(' AND ')}` : '';
-    const rows = dialect.prepare(`SELECT * FROM crm_leads WHERE company_id = ?${where} ORDER BY created_at DESC LIMIT 200`).all(...params);
-    return { data: rows, meta: { total: rows.length } };
-  }
 
-  // 9c. CRM Opportunities (+ activities)
-  if (namespace === 'sales' && resource === 'opportunities') {
-    if (recordId) {
-      const doc = getOpportunity(dialect, recordId);
-      if (!doc || doc.company_id !== company_id) return { error: 'Opportunity not found', status: 404 };
-      return { data: doc, meta: null };
+    if (resource === 'opportunities') {
+      if (recordId) {
+        const doc = getOpportunity(dialect, recordId);
+        if (!doc || doc.company_id !== company_id) return { error: 'Opportunity not found', status: 404 };
+        return { data: doc, meta: null };
+      }
+      const res = crmQuery.listOpportunities(dialect, { company_id, ...query });
+      return { data: res.rows, meta: { total: res.total } };
     }
-    const filters = [];
-    const params = [company_id];
-    if (query.status) { filters.push('status = ?'); params.push(query.status); }
-    if (query.stage) { filters.push('stage = ?'); params.push(query.stage); }
-    if (query.party_id) { filters.push('party_id = ?'); params.push(query.party_id); }
-    const where = filters.length ? ` AND ${filters.join(' AND ')}` : '';
-    const rows = dialect.prepare(`SELECT * FROM crm_opportunities WHERE company_id = ?${where} ORDER BY created_at DESC LIMIT 200`).all(...params);
-    return { data: rows, meta: { total: rows.length } };
+
+    if (resource === 'activities') {
+      if (recordId) {
+        const act = dialect.prepare('SELECT * FROM crm_activities WHERE id = ?').get(recordId);
+        if (!act || act.company_id !== company_id) return { error: 'Activity not found', status: 404 };
+        return { data: act, meta: null };
+      }
+      const res = crmQuery.listActivities(dialect, { company_id, ...query });
+      return { data: res.rows, meta: { total: res.total } };
+    }
+
+    if (resource === 'pipelines') {
+      const rows = crmQuery.listPipelines(dialect, { company_id });
+      return { data: rows, meta: { total: rows.length } };
+    }
+
+    if (resource === 'stages' || resource === 'pipeline_stages' || resource === 'pipeline-stages') {
+      const rows = crmQuery.listPipelineStages(dialect, { company_id, pipeline_id: query.pipeline_id });
+      return { data: rows, meta: { total: rows.length } };
+    }
+
+    if (resource === 'customer_360' || resource === 'customer-360') {
+      const partyId = recordId || query.party_id;
+      if (!partyId) return { error: 'party_id is required', status: 400 };
+      const data = crmQuery.getCustomer360(dialect, partyId, company_id);
+      if (!data) return { error: 'Party not found', status: 404 };
+      return { data, meta: null };
+    }
+
+    if (resource === 'scoring_rules' || resource === 'scoring-rules') {
+      const rows = crmQuery.getScoringRules(dialect, { company_id });
+      return { data: rows, meta: { total: rows.length } };
+    }
+
+    if (resource === 'score_history' || resource === 'score-history') {
+      const leadId = recordId || query.lead_id;
+      if (!leadId) return { error: 'lead_id is required', status: 400 };
+      const rows = crmQuery.getScoreHistory(dialect, { lead_id: leadId });
+      return { data: rows, meta: { total: rows.length } };
+    }
+
+    if (resource === 'reports') {
+      const type = recordId || query.type || 'pipeline_summary';
+      if (type === 'pipeline_summary' || type === 'pipeline-summary') {
+        const data = crmQuery.getPipelineSummaryReport(dialect, { company_id, pipeline_id: query.pipeline_id });
+        return { data, meta: null };
+      }
+      if (type === 'lead_conversion' || type === 'lead-conversion') {
+        const data = crmQuery.getLeadConversionReport(dialect, { company_id });
+        return { data, meta: null };
+      }
+      if (type === 'activity_summary' || type === 'activity-summary') {
+        const data = crmQuery.getActivitySummaryReport(dialect, { company_id });
+        return { data, meta: null };
+      }
+      return { error: `Unknown report type: ${type}`, status: 400 };
+    }
   }
 
   // 9d. Sales Returns

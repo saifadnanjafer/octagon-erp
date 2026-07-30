@@ -15,6 +15,9 @@ import { newId, now, scopeOf, writeAudit, emitEvent } from './shared.mjs';
 export const ACTIVITY_TYPES = Object.freeze(['call', 'meeting', 'email', 'visit', 'follow_up', 'task', 'note', 'reminder']);
 const CLOSED = new Set(['completed', 'cancelled']);
 
+export { scheduleActivity as createActivity };
+export { updateActivity as rescheduleActivity };
+
 export function getActivity(db, id) {
   const a = db.prepare('SELECT * FROM crm_activities WHERE id = ?').get(id);
   if (!a) fail(CRM_ERRORS.ACTIVITY_NOT_FOUND, `unknown activity ${id}`, { activityId: id });
@@ -29,7 +32,8 @@ export function decorate(activity, at = new Date()) {
 
 export function scheduleActivity(db, input) {
   const { companyId, branchId, actor } = scopeOf(input);
-  if (!input.summary || !String(input.summary).trim()) fail(CRM_ERRORS.VALIDATION_FAILED, 'activity summary is required', { field: 'summary' });
+  const summary = input.summary || input.subject;
+  if (!summary || !String(summary).trim()) fail(CRM_ERRORS.VALIDATION_FAILED, 'activity summary is required', { field: 'summary' });
   const type = input.activity_type ?? 'call';
   if (!ACTIVITY_TYPES.includes(type)) fail(CRM_ERRORS.VALIDATION_FAILED, `unknown activity type ${type}`, { allowed: ACTIVITY_TYPES });
 
@@ -74,7 +78,7 @@ export function scheduleActivity(db, input) {
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'planned', ?, 0, ?, ?, ?)
   `).run(
     id, companyId, subjectType, leadId, opportunityId, partyId,
-    type, input.summary, input.detail ?? '',
+    type, summary, input.detail ?? '',
     input.due_at ?? null, input.due_at ? String(input.due_at).slice(0, 10) : null,
     input.assigned_user_id ?? actor, input.priority ?? 'normal', ts, actor, ts
   );

@@ -160,7 +160,8 @@ export function contactLead(db, input) {
 
 export function qualifyLead(db, input) {
   const { companyId, branchId, actor } = scopeOf(input);
-  const lead = getLead(db, input.lead_id);
+  const id = input.lead_id || input.id;
+  const lead = getLead(db, id);
   assertMutable(lead);
   assertVersion(lead, input.expected_version);
   if (lead.stage === 'qualified') return { lead }; // idempotent

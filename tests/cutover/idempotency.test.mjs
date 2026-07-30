@@ -14,17 +14,16 @@ import {
   migrateMasterData, migrateOpeningInventory, validateFinanceEquivalence,
   migrateFinance, migrateOperations, reconcileAll
 } from '../../platform/cutover/index.mjs';
+import { createStagedTestClone, disposeStagedTestClone, operationalHash } from './_staged-clone.mjs';
 
 test('Cutover Engine — Idempotency and Hash Consistency', async (t) => {
   process.env.OCTAGON_DISPOSABLE_FIXTURE = '1';
   process.env.OCTAGON_RUNTIME_MODE = 'test';
 
-  const tmpDb = path.join(os.tmpdir(), `cutover_idempotency_${Date.now()}.db`);
-  if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb);
-
-  const opDb = new SqliteDialect().open('database.db');
-  opDb.backup('database.db', tmpDb);
-  opDb.close();
+  // Read-only WAL-consistent snapshot. Opening the operational database
+  // read-write here used to toggle journal mode and rewrite its header.
+  const operationalBefore = operationalHash();
+  const tmpDb = await createStagedTestClone('cutover_idempotency');
 
   await runMigrations({ dbPath: tmpDb, direction: 'up' });
   const db = openMigrationDatabase(tmpDb);
@@ -68,6 +67,9 @@ test('Cutover Engine — Idempotency and Hash Consistency', async (t) => {
     assert.equal(recon.overallStatus, 'reconciled');
   } finally {
     db.close();
-    if (fs.existsSync(tmpDb)) fs.unlinkSync(tmpDb);
+    disposeStagedTestClone(tmpDb);
+    // The operational database must be byte-identical after this test.
+    assert.equal(operationalHash(), operationalBefore,
+      'cutover test mutated the operational database');
   }
 });

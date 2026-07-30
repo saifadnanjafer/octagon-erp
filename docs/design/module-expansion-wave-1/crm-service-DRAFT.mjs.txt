@@ -1,0 +1,479 @@
+// Octagon CRM — governed lifecycle services over canonical Party and Sales.
+//
+// Design rule that shapes everything here: CRM does not own customers.
+//
+// A Lead holds raw contact details only until it qualifies. Conversion writes a
+// canonical `parties` row (or attaches to an existing one) and from that moment
+// the Party is authoritative for name, phone and email. An Opportunity therefore
+// REQUIRES a party_id — it is impossible to have an opportunity against a
+// customer the rest of Octagon has never heard of.
+//
+// Every lifecycle transition is an explicit command, not a generic update:
+// converting a lead, changing a stage, winning, and losing each have their own
+// preconditions and their own audit trail. A CRUD PATCH on `state` would let a
+// caller skip qualification or resurrect a won deal.
+
+import crypto from 'node:crypto';
+
+const ID = (p) => `${p}_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`;
+const NOW = () => new Date().toISOString();
+
+export class CrmError extends Error {
+  constructor(message, code, details = {}) {
+    super(message);
+    this.name = 'CrmError';
+    this.code = code;
+    this.details = details;
+  }
+}
+
+function requireActor(ctx) {
+  const actor = ctx?.actorId ?? ctx?.userId;
+  if (!actor) throw new CrmError('Actor identity is server-derived and required', 'ACTOR_REQUIRED');
+  return actor;
+}
+
+function companyOf(ctx) {
+  const company = ctx?.companyId ?? ctx?.activeCompanyId;
+  if (!company) throw new CrmError('Company scope is server-derived and required', 'COMPANY_REQUIRED');
+  return company;
+}
+
+/** Next per-company reference, e.g. LEAD-000007. */
+function nextReference(db, table, prefix, companyId) {
+  const row = db.prepare(`SELECT COUNT(*) AS n FROM ${table} WHERE company_id = ?`).get(companyId);
+  return `${prefix}-${String((row?.n ?? 0) + 1).padStart(6, '0')}`;
+}
+
+function normalisePhone(v) {
+  return String(v || '').replace(/[^\d+]/g, '');
+}
+
+function normaliseEmail(v) {
+  return String(v || '').trim().toLowerCase();
+}
+
+// ---------------------------------------------------------------------------
+// Leads
+// ---------------------------------------------------------------------------
+
+/**
+ * Find leads that look like the same demand.
+ *
+ * Returned as candidates, never auto-merged: two people at one company are a
+ * legitimate pair of leads, and silently collapsing them loses a real contact.
+ */
+export function findDuplicateLeads(db, { companyId, email, phone, excludeLeadId = null }) {
+  const e = normaliseEmail(email);
+  const p = normalisePhone(phone);
+  if (!e && !p) return [];
+  const rows = db.prepare(
+    `SELECT id, reference, title, contact_name, email, phone, state
+       FROM crm_leads
+      WHERE company_id = ? AND state NOT IN ('converted','lost')`
+  ).all(companyId);
+  return rows.filter(
+    (r) =>
+      r.id !== excludeLeadId &&
+      ((e && normaliseEmail(r.email) === e) || (p && normalisePhone(r.phone) === p))
+  );
+}
+
+export function createLead(db, input, ctx) {
+  const actor = requireActor(ctx);
+  const companyId = companyOf(ctx);
+  if (!input?.title) throw new CrmError('Lead title is required', 'LEAD_TITLE_REQUIRED');
+
+  const id = ID('lead');
+  const now = NOW();
+  db.prepare(`
+    INSERT INTO crm_leads (
+      id, company_id, branch_id, reference, title, contact_name, company_name,
+      phone, email, source_id, campaign_id, team_id, owner_user_id, score,
+      state, notes, tags, created_at, created_by, updated_at
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'new', ?, ?, ?, ?, ?)
+  `).run(
+    id, companyId, ctx.branchId ?? null,
+    nextReference(db, 'crm_leads', 'LEAD', companyId),
+    input.title, input.contactName ?? '', input.companyName ?? '',
+    input.phone ?? '', input.email ?? '',
+    input.sourceId ?? null, input.campaignId ?? null, input.teamId ?? null,
+    input.ownerUserId ?? actor, Number(input.score ?? 0),
+    input.notes ?? '', JSON.stringify(input.tags ?? []), now, actor, now
+  );
+
+  return {
+    ...db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(id),
+    duplicateCandidates: findDuplicateLeads(db, {
+      companyId, email: input.email, phone: input.phone, excludeLeadId: id,
+    }),
+  };
+}
+
+export function qualifyLead(db, leadId, ctx) {
+  const actor = requireActor(ctx);
+  const lead = db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(leadId);
+  if (!lead) throw new CrmError(`Unknown lead ${leadId}`, 'LEAD_NOT_FOUND');
+  if (lead.state === 'converted') throw new CrmError('Lead is already converted', 'LEAD_ALREADY_CONVERTED', { leadId });
+  if (lead.state === 'lost') throw new CrmError('Reopen the lead before qualifying it', 'LEAD_IS_LOST', { leadId });
+  if (lead.state === 'qualified') return lead; // idempotent
+
+  const now = NOW();
+  db.prepare(`UPDATE crm_leads SET state='qualified', qualified_at=?, qualified_by=?, updated_at=? WHERE id=?`)
+    .run(now, actor, now, leadId);
+  return db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(leadId);
+}
+
+/**
+ * Convert a qualified lead into a canonical Party plus an Opportunity.
+ *
+ * Atomic by construction: the caller wraps this in one transaction, so a failure
+ * anywhere leaves no orphan Party and no half-converted lead.
+ *
+ * `partyId` attaches to an EXISTING canonical Party — the path that prevents
+ * duplicate customers when a known customer sends a new enquiry.
+ */
+export function convertLead(db, leadId, input, ctx) {
+  const actor = requireActor(ctx);
+  const companyId = companyOf(ctx);
+  const now = NOW();
+
+  const lead = db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(leadId);
+  if (!lead) throw new CrmError(`Unknown lead ${leadId}`, 'LEAD_NOT_FOUND');
+  if (lead.state === 'converted') {
+    throw new CrmError('Lead has already been converted', 'LEAD_ALREADY_CONVERTED', {
+      leadId, opportunityId: lead.converted_opportunity_id, partyId: lead.converted_party_id,
+    });
+  }
+  if (lead.state !== 'qualified') {
+    throw new CrmError('Only a qualified lead may be converted', 'LEAD_NOT_QUALIFIED', { leadId, state: lead.state });
+  }
+
+  // --- Party: reuse or create, never duplicate --------------------------
+  let partyId = input?.partyId ?? null;
+  let partyCreated = false;
+
+  if (partyId) {
+    const existing = db.prepare('SELECT id FROM parties WHERE id = ?').get(partyId);
+    if (!existing) throw new CrmError(`Unknown party ${partyId}`, 'PARTY_NOT_FOUND', { partyId });
+  } else {
+    // Match an existing Party on email or phone before creating one.
+    const email = normaliseEmail(lead.email);
+    const phone = normalisePhone(lead.phone);
+    const candidate = db.prepare(
+      `SELECT id FROM parties
+        WHERE company_id = ? AND status = 'active'
+          AND ((? <> '' AND lower(email) = ?) OR (? <> '' AND phone <> '' AND phone = ?))
+        LIMIT 1`
+    ).get(companyId, email, email, phone, lead.phone);
+
+    if (candidate) {
+      partyId = candidate.id;
+    } else {
+      partyId = ID('party');
+      db.prepare(`
+        INSERT INTO parties (id, company_id, is_company, name, status, phone, email, created_at, updated_at)
+        VALUES (?,?,?,?, 'active', ?, ?, ?, ?)
+      `).run(
+        partyId, companyId, lead.company_name ? 1 : 0,
+        lead.company_name || lead.contact_name || lead.title,
+        lead.phone ?? '', lead.email ?? '', now, now
+      );
+      partyCreated = true;
+    }
+  }
+
+  // Customer role is additive: a Party may already be a supplier.
+  const hasRole = db.prepare('SELECT id FROM party_roles WHERE party_id=? AND role=? AND company_id=?')
+    .get(partyId, 'customer', companyId);
+  if (!hasRole) {
+    db.prepare('INSERT INTO party_roles (id, party_id, role, company_id, created_at) VALUES (?,?,?,?,?)')
+      .run(ID('prole'), partyId, 'customer', companyId, now);
+  }
+
+  // --- Opportunity ------------------------------------------------------
+  const pipeline = input?.pipelineId
+    ? db.prepare('SELECT * FROM crm_pipelines WHERE id = ?').get(input.pipelineId)
+    : db.prepare('SELECT * FROM crm_pipelines WHERE company_id=? AND is_default=1 LIMIT 1').get(companyId);
+  if (!pipeline) throw new CrmError('No pipeline available for conversion', 'PIPELINE_NOT_FOUND');
+
+  const stage = db.prepare(
+    'SELECT * FROM crm_pipeline_stages WHERE pipeline_id=? ORDER BY sequence ASC LIMIT 1'
+  ).get(pipeline.id);
+  if (!stage) throw new CrmError('Pipeline has no stages', 'PIPELINE_HAS_NO_STAGES', { pipelineId: pipeline.id });
+
+  const opportunityId = ID('opp');
+  db.prepare(`
+    INSERT INTO crm_opportunities (
+      id, company_id, branch_id, reference, name, party_id, source_lead_id,
+      pipeline_id, stage_id, team_id, owner_user_id, source_id, campaign_id,
+      expected_revenue, currency, probability, forecast_date, state,
+      notes, tags, created_at, created_by, updated_at
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'open', ?, ?, ?, ?, ?)
+  `).run(
+    opportunityId, companyId, lead.branch_id,
+    nextReference(db, 'crm_opportunities', 'OPP', companyId),
+    input?.name ?? lead.title, partyId, lead.id,
+    pipeline.id, stage.id, lead.team_id, lead.owner_user_id ?? actor,
+    lead.source_id, lead.campaign_id,
+    Number(input?.expectedRevenue ?? 0), input?.currency ?? 'IQD',
+    stage.probability, input?.forecastDate ?? null,
+    lead.notes ?? '', lead.tags ?? '[]', now, actor, now
+  );
+
+  db.prepare(`
+    INSERT INTO crm_opportunity_stage_history
+      (id, opportunity_id, from_stage_id, to_stage_id, from_probability, to_probability, changed_at, changed_by, note)
+    VALUES (?,?,NULL,?,NULL,?,?,?,?)
+  `).run(ID('sh'), opportunityId, stage.id, stage.probability, now, actor, 'created by lead conversion');
+
+  db.prepare(`
+    UPDATE crm_leads
+       SET state='converted', converted_at=?, converted_by=?,
+           converted_party_id=?, converted_opportunity_id=?, updated_at=?
+     WHERE id=?
+  `).run(now, actor, partyId, opportunityId, now, leadId);
+
+  return {
+    leadId, partyId, partyCreated, opportunityId,
+    opportunity: db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Opportunities
+// ---------------------------------------------------------------------------
+
+export function assignOpportunity(db, opportunityId, { ownerUserId, teamId }, ctx) {
+  requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  if (opp.state !== 'open') throw new CrmError('Only an open opportunity may be reassigned', 'OPPORTUNITY_NOT_OPEN', { state: opp.state });
+
+  db.prepare('UPDATE crm_opportunities SET owner_user_id=COALESCE(?,owner_user_id), team_id=COALESCE(?,team_id), updated_at=? WHERE id=?')
+    .run(ownerUserId ?? null, teamId ?? null, NOW(), opportunityId);
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+/** Stage change carries the stage's probability onto the opportunity and is journalled. */
+export function changeOpportunityStage(db, opportunityId, stageId, ctx, note = '') {
+  const actor = requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  if (opp.state !== 'open') throw new CrmError('Only an open opportunity may change stage', 'OPPORTUNITY_NOT_OPEN', { state: opp.state });
+
+  const stage = db.prepare('SELECT * FROM crm_pipeline_stages WHERE id = ?').get(stageId);
+  if (!stage) throw new CrmError(`Unknown stage ${stageId}`, 'STAGE_NOT_FOUND');
+  if (stage.pipeline_id !== opp.pipeline_id) {
+    throw new CrmError('Stage belongs to a different pipeline', 'STAGE_PIPELINE_MISMATCH', {
+      stagePipeline: stage.pipeline_id, opportunityPipeline: opp.pipeline_id,
+    });
+  }
+  if (stage.id === opp.stage_id) return opp; // idempotent
+
+  const now = NOW();
+  db.prepare('UPDATE crm_opportunities SET stage_id=?, probability=?, updated_at=? WHERE id=?')
+    .run(stage.id, stage.probability, now, opportunityId);
+  db.prepare(`
+    INSERT INTO crm_opportunity_stage_history
+      (id, opportunity_id, from_stage_id, to_stage_id, from_probability, to_probability, changed_at, changed_by, note)
+    VALUES (?,?,?,?,?,?,?,?,?)
+  `).run(ID('sh'), opportunityId, opp.stage_id, stage.id, opp.probability, stage.probability, now, actor, note);
+
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+export function markOpportunityWon(db, opportunityId, ctx) {
+  const actor = requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  if (opp.state === 'won') return opp; // idempotent
+  if (opp.state !== 'open') throw new CrmError('Only an open opportunity may be won', 'OPPORTUNITY_NOT_OPEN', { state: opp.state });
+
+  const now = NOW();
+  const wonStage = db.prepare('SELECT * FROM crm_pipeline_stages WHERE pipeline_id=? AND is_won=1 ORDER BY sequence DESC LIMIT 1').get(opp.pipeline_id);
+  db.prepare('UPDATE crm_opportunities SET state=?, won_at=?, probability=100, stage_id=COALESCE(?,stage_id), updated_at=? WHERE id=?')
+    .run('won', now, wonStage?.id ?? null, now, opportunityId);
+  if (wonStage && wonStage.id !== opp.stage_id) {
+    db.prepare(`
+      INSERT INTO crm_opportunity_stage_history
+        (id, opportunity_id, from_stage_id, to_stage_id, from_probability, to_probability, changed_at, changed_by, note)
+      VALUES (?,?,?,?,?,100,?,?,'won')
+    `).run(ID('sh'), opportunityId, opp.stage_id, wonStage.id, opp.probability, now, actor);
+  }
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+export function markOpportunityLost(db, opportunityId, lostReasonId, ctx, competitorId = null) {
+  const actor = requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  if (opp.state === 'lost') return opp; // idempotent
+  if (opp.state !== 'open') throw new CrmError('Only an open opportunity may be lost', 'OPPORTUNITY_NOT_OPEN', { state: opp.state });
+
+  // A lost deal without a reason is a lost lesson.
+  if (!lostReasonId) throw new CrmError('A lost reason is required', 'LOST_REASON_REQUIRED');
+  const reason = db.prepare('SELECT id FROM crm_lost_reasons WHERE id = ?').get(lostReasonId);
+  if (!reason) throw new CrmError(`Unknown lost reason ${lostReasonId}`, 'LOST_REASON_NOT_FOUND');
+
+  const now = NOW();
+  db.prepare('UPDATE crm_opportunities SET state=?, lost_at=?, lost_reason_id=?, competitor_id=COALESCE(?,competitor_id), probability=0, updated_at=? WHERE id=?')
+    .run('lost', now, lostReasonId, competitorId, now, opportunityId);
+  db.prepare(`
+    INSERT INTO crm_opportunity_stage_history
+      (id, opportunity_id, from_stage_id, to_stage_id, from_probability, to_probability, changed_at, changed_by, note)
+    VALUES (?,?,?,?,?,0,?,?,'lost')
+  `).run(ID('sh'), opportunityId, opp.stage_id, opp.stage_id, opp.probability, now, actor);
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+export function reopenOpportunity(db, opportunityId, ctx) {
+  const actor = requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  if (opp.state === 'open') return opp;
+  // A won deal has downstream Sales facts; reopening it would desynchronise them.
+  if (opp.state === 'won') throw new CrmError('A won opportunity cannot be reopened', 'OPPORTUNITY_WON_IS_FINAL', { opportunityId });
+
+  const now = NOW();
+  db.prepare('UPDATE crm_opportunities SET state=?, reopened_at=?, lost_at=NULL, lost_reason_id=NULL, updated_at=? WHERE id=?')
+    .run('open', now, now, opportunityId);
+  db.prepare(`
+    INSERT INTO crm_opportunity_stage_history
+      (id, opportunity_id, from_stage_id, to_stage_id, from_probability, to_probability, changed_at, changed_by, note)
+    VALUES (?,?,?,?,0,?,?,?,'reopened')
+  `).run(ID('sh'), opportunityId, opp.stage_id, opp.stage_id, opp.probability, now, actor);
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+/**
+ * Link an opportunity to a canonical quotation.
+ *
+ * CRM never creates the Sales Order itself — the caller supplies an order id
+ * produced by the canonical Sales authority, and CRM records the link on both
+ * sides using the `source_opportunity_id` column Sales already carries.
+ */
+export function linkQuotation(db, opportunityId, saleOrderId, ctx) {
+  requireActor(ctx);
+  const opp = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  if (!opp) throw new CrmError(`Unknown opportunity ${opportunityId}`, 'OPPORTUNITY_NOT_FOUND');
+  const order = db.prepare('SELECT id, partner_id FROM sale_orders WHERE id = ?').get(saleOrderId);
+  if (!order) throw new CrmError(`Unknown sale order ${saleOrderId}`, 'SALE_ORDER_NOT_FOUND');
+  if (order.partner_id !== opp.party_id) {
+    throw new CrmError('Quotation belongs to a different party', 'QUOTATION_PARTY_MISMATCH', {
+      orderParty: order.partner_id, opportunityParty: opp.party_id,
+    });
+  }
+
+  const now = NOW();
+  db.prepare('UPDATE crm_opportunities SET quotation_order_id=?, updated_at=? WHERE id=?').run(saleOrderId, now, opportunityId);
+  db.prepare('UPDATE sale_orders SET source_opportunity_id=? WHERE id=?').run(opportunityId, saleOrderId);
+  return db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(opportunityId);
+}
+
+// ---------------------------------------------------------------------------
+// Activities and reporting
+// ---------------------------------------------------------------------------
+
+export function scheduleActivity(db, input, ctx) {
+  const actor = requireActor(ctx);
+  const companyId = companyOf(ctx);
+  if (!input?.subjectType || !input?.subjectId) throw new CrmError('Activity subject is required', 'ACTIVITY_SUBJECT_REQUIRED');
+  if (!input?.summary) throw new CrmError('Activity summary is required', 'ACTIVITY_SUMMARY_REQUIRED');
+
+  const id = ID('act');
+  const now = NOW();
+  db.prepare(`
+    INSERT INTO crm_activities (
+      id, company_id, subject_type, subject_id, activity_type, summary, detail,
+      due_at, assigned_user_id, state, work_item_id, created_at, created_by, updated_at
+    ) VALUES (?,?,?,?,?,?,?,?,?, 'planned', ?, ?, ?, ?)
+  `).run(
+    id, companyId, input.subjectType, input.subjectId,
+    input.activityType ?? 'call', input.summary, input.detail ?? '',
+    input.dueAt ?? null, input.assignedUserId ?? actor,
+    input.workItemId ?? null, now, actor, now
+  );
+  return db.prepare('SELECT * FROM crm_activities WHERE id = ?').get(id);
+}
+
+export function completeActivity(db, activityId, outcome, ctx) {
+  const actor = requireActor(ctx);
+  const act = db.prepare('SELECT * FROM crm_activities WHERE id = ?').get(activityId);
+  if (!act) throw new CrmError(`Unknown activity ${activityId}`, 'ACTIVITY_NOT_FOUND');
+  if (act.state === 'done') return act;
+  const now = NOW();
+  db.prepare('UPDATE crm_activities SET state=?, completed_at=?, completed_by=?, outcome=?, updated_at=? WHERE id=?')
+    .run('done', now, actor, outcome ?? '', now, activityId);
+  return db.prepare('SELECT * FROM crm_activities WHERE id = ?').get(activityId);
+}
+
+/** Weighted pipeline: expected revenue × stage probability, open deals only. */
+export function getPipelineForecast(db, companyId, pipelineId = null) {
+  const rows = db.prepare(`
+    SELECT o.stage_id, s.name_en AS stage_name, s.sequence, s.probability,
+           COUNT(*) AS opportunity_count,
+           COALESCE(SUM(o.expected_revenue), 0) AS expected_revenue,
+           COALESCE(SUM(o.expected_revenue * o.probability / 100.0), 0) AS weighted_revenue
+      FROM crm_opportunities o
+      JOIN crm_pipeline_stages s ON s.id = o.stage_id
+     WHERE o.company_id = ? AND o.state = 'open'
+       AND (? IS NULL OR o.pipeline_id = ?)
+     GROUP BY o.stage_id, s.name_en, s.sequence, s.probability
+     ORDER BY s.sequence
+  `).all(companyId, pipelineId, pipelineId);
+
+  return {
+    stages: rows,
+    totalExpected: rows.reduce((a, r) => a + r.expected_revenue, 0),
+    totalWeighted: rows.reduce((a, r) => a + r.weighted_revenue, 0),
+    openCount: rows.reduce((a, r) => a + r.opportunity_count, 0),
+  };
+}
+
+/** Customer 360 assembled by reading canonical authorities — CRM stores none of it. */
+export function getCustomer360(db, partyId, companyId) {
+  const party = db.prepare('SELECT * FROM parties WHERE id = ?').get(partyId);
+  if (!party) throw new CrmError(`Unknown party ${partyId}`, 'PARTY_NOT_FOUND');
+  return {
+    party,
+    roles: db.prepare('SELECT role FROM party_roles WHERE party_id = ?').all(partyId).map((r) => r.role),
+    opportunities: db.prepare('SELECT * FROM crm_opportunities WHERE party_id=? ORDER BY created_at DESC').all(partyId),
+    interactions: db.prepare('SELECT * FROM crm_interactions WHERE party_id=? ORDER BY occurred_at DESC LIMIT 50').all(partyId),
+    salesOrders: db.prepare('SELECT id, name, state, amount_total, order_date FROM sale_orders WHERE partner_id=? ORDER BY order_date DESC').all(partyId),
+  };
+}
+
+export function recordInteraction(db, input, ctx) {
+  const actor = requireActor(ctx);
+  const companyId = companyOf(ctx);
+  const id = ID('int');
+  db.prepare(`
+    INSERT INTO crm_interactions
+      (id, company_id, party_id, lead_id, opportunity_id, channel, direction, occurred_at, summary, body, recorded_by, created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+  `).run(
+    id, companyId, input.partyId ?? null, input.leadId ?? null, input.opportunityId ?? null,
+    input.channel ?? 'note', input.direction ?? 'outbound',
+    input.occurredAt ?? NOW(), input.summary ?? '', input.body ?? '', actor, NOW()
+  );
+  return db.prepare('SELECT * FROM crm_interactions WHERE id = ?').get(id);
+}
+
+export function registerCrmActions(actionExecutor, registerDomainHandler) {
+  if (!actionExecutor || !registerDomainHandler) return;
+  const H = {
+    'crm:lead_create': (db, i, ctx) => createLead(db, i, ctx),
+    'crm:lead_qualify': (db, i, ctx) => qualifyLead(db, i.leadId, ctx),
+    'crm:lead_convert': (db, i, ctx) => convertLead(db, i.leadId, i, ctx),
+    'crm:opportunity_assign': (db, i, ctx) => assignOpportunity(db, i.opportunityId, i, ctx),
+    'crm:opportunity_change_stage': (db, i, ctx) => changeOpportunityStage(db, i.opportunityId, i.stageId, ctx, i.note),
+    'crm:opportunity_mark_won': (db, i, ctx) => markOpportunityWon(db, i.opportunityId, ctx),
+    'crm:opportunity_mark_lost': (db, i, ctx) => markOpportunityLost(db, i.opportunityId, i.lostReasonId, ctx, i.competitorId),
+    'crm:opportunity_reopen': (db, i, ctx) => reopenOpportunity(db, i.opportunityId, ctx),
+    'crm:quotation_link': (db, i, ctx) => linkQuotation(db, i.opportunityId, i.saleOrderId, ctx),
+    'crm:activity_schedule': (db, i, ctx) => scheduleActivity(db, i, ctx),
+    'crm:activity_complete': (db, i, ctx) => completeActivity(db, i.activityId, i.outcome, ctx),
+  };
+  for (const [name, fn] of Object.entries(H)) registerDomainHandler(actionExecutor, name, fn);
+}

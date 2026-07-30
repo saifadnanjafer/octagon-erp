@@ -1,0 +1,371 @@
+// 065_crm_pipeline_and_activities.mjs — Module Expansion Wave 1, M2 (CRM).
+//
+// CRM domain schema built OVER the canonical Party authority.
+//
+// The central rule: CRM does not own customers. A Lead is pre-Party demand
+// capture — raw contact details someone typed in, which may or may not turn out
+// to be a real customer. The moment it qualifies, it converts INTO the canonical
+// `parties` table and CRM holds only a reference. There is no CRM customer
+// master, no shadow contact table, and no second name/phone/email of record.
+//
+// `sale_orders.source_opportunity_id` already exists in the canonical Sales
+// schema, so an Opportunity links to a real quotation without either side
+// growing a bridge table.
+//
+// Migrations 001-064 are historical and are not edited.
+// Dialect: SQLite and PostgreSQL — no SQLite-only construct.
+
+const MIGRATION_ID = '065_crm_pipeline_and_activities';
+const MODULE_ID = 'crm';
+
+export const migration = {
+  id: MIGRATION_ID,
+  owner: 'octagon.crm',
+  version: '1.44.0',
+  parent: '064_module_expansion_wave1_registry',
+  dependsOn: ['064_module_expansion_wave1_registry'],
+  dialect: ['sqlite', 'postgres'],
+  transactionPolicy: 'required',
+  rollbackPolicy: 'reversible',
+  sourceProvenance:
+    'Module Expansion Wave 1 M2 — CRM lead/opportunity/pipeline/activity schema over canonical Party and Sales; no duplicate customer master.',
+
+  up(db) {
+    const now = new Date().toISOString();
+
+    // ---- Configuration -----------------------------------------------------
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS crm_sales_teams (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        branch_id TEXT,
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        leader_user_id TEXT,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_team_company_name
+        ON crm_sales_teams(company_id, name_en);
+
+      CREATE TABLE IF NOT EXISTS crm_pipelines (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        team_id TEXT REFERENCES crm_sales_teams(id),
+        is_default INTEGER NOT NULL DEFAULT 0,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_pipeline_company_name
+        ON crm_pipelines(company_id, name_en);
+
+      CREATE TABLE IF NOT EXISTS crm_pipeline_stages (
+        id TEXT PRIMARY KEY,
+        pipeline_id TEXT NOT NULL REFERENCES crm_pipelines(id),
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        sequence INTEGER NOT NULL DEFAULT 0,
+        probability REAL NOT NULL DEFAULT 0,
+        is_won INTEGER NOT NULL DEFAULT 0,
+        is_lost INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_stage_pipeline_seq
+        ON crm_pipeline_stages(pipeline_id, sequence);
+
+      CREATE TABLE IF NOT EXISTS crm_lead_sources (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        code TEXT NOT NULL,
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_source_code
+        ON crm_lead_sources(company_id, code);
+
+      CREATE TABLE IF NOT EXISTS crm_lost_reasons (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        code TEXT NOT NULL,
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_lost_reason_code
+        ON crm_lost_reasons(company_id, code);
+
+      CREATE TABLE IF NOT EXISTS crm_competitors (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        name TEXT NOT NULL,
+        notes TEXT NOT NULL DEFAULT '',
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS crm_customer_segments (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        code TEXT NOT NULL,
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        criteria TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_segment_code
+        ON crm_customer_segments(company_id, code);
+
+      CREATE TABLE IF NOT EXISTS crm_tags (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        name TEXT NOT NULL,
+        colour TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_tag_name
+        ON crm_tags(company_id, name);
+
+      CREATE TABLE IF NOT EXISTS crm_campaigns (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        code TEXT NOT NULL,
+        name_ar TEXT NOT NULL,
+        name_en TEXT NOT NULL,
+        channel TEXT NOT NULL DEFAULT 'other',
+        start_date TEXT,
+        end_date TEXT,
+        budget REAL NOT NULL DEFAULT 0,
+        currency TEXT NOT NULL DEFAULT 'IQD',
+        state TEXT NOT NULL DEFAULT 'draft',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_campaign_code
+        ON crm_campaigns(company_id, code);
+    `);
+
+    // ---- Lead --------------------------------------------------------------
+    // Pre-Party demand capture. `contact_name` / `phone` / `email` live here
+    // ONLY until conversion; afterwards `converted_party_id` is authoritative and
+    // the canonical Party owns the contact facts.
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS crm_leads (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        branch_id TEXT,
+        reference TEXT NOT NULL,
+        title TEXT NOT NULL,
+        contact_name TEXT NOT NULL DEFAULT '',
+        company_name TEXT NOT NULL DEFAULT '',
+        phone TEXT NOT NULL DEFAULT '',
+        email TEXT NOT NULL DEFAULT '',
+        source_id TEXT REFERENCES crm_lead_sources(id),
+        campaign_id TEXT REFERENCES crm_campaigns(id),
+        team_id TEXT REFERENCES crm_sales_teams(id),
+        owner_user_id TEXT,
+        score INTEGER NOT NULL DEFAULT 0,
+        state TEXT NOT NULL DEFAULT 'new',
+        qualified_at TEXT,
+        qualified_by TEXT,
+        converted_at TEXT,
+        converted_by TEXT,
+        converted_party_id TEXT REFERENCES parties(id),
+        converted_opportunity_id TEXT,
+        lost_reason_id TEXT REFERENCES crm_lost_reasons(id),
+        lost_at TEXT,
+        reopened_at TEXT,
+        duplicate_of_lead_id TEXT REFERENCES crm_leads(id),
+        notes TEXT NOT NULL DEFAULT '',
+        tags TEXT NOT NULL DEFAULT '[]',
+        created_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_lead_reference
+        ON crm_leads(company_id, reference);
+      CREATE INDEX IF NOT EXISTS idx_crm_lead_state ON crm_leads(company_id, state);
+      CREATE INDEX IF NOT EXISTS idx_crm_lead_owner ON crm_leads(owner_user_id, state);
+      CREATE INDEX IF NOT EXISTS idx_crm_lead_email ON crm_leads(company_id, email);
+      CREATE INDEX IF NOT EXISTS idx_crm_lead_phone ON crm_leads(company_id, phone);
+    `);
+
+    // ---- Opportunity -------------------------------------------------------
+    // Always attached to a canonical Party. A lead that has not converted cannot
+    // become an opportunity, which is what stops CRM growing its own customer
+    // master.
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS crm_opportunities (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        branch_id TEXT,
+        reference TEXT NOT NULL,
+        name TEXT NOT NULL,
+        party_id TEXT NOT NULL REFERENCES parties(id),
+        source_lead_id TEXT REFERENCES crm_leads(id),
+        pipeline_id TEXT NOT NULL REFERENCES crm_pipelines(id),
+        stage_id TEXT NOT NULL REFERENCES crm_pipeline_stages(id),
+        team_id TEXT REFERENCES crm_sales_teams(id),
+        owner_user_id TEXT,
+        source_id TEXT REFERENCES crm_lead_sources(id),
+        campaign_id TEXT REFERENCES crm_campaigns(id),
+        segment_id TEXT REFERENCES crm_customer_segments(id),
+        competitor_id TEXT REFERENCES crm_competitors(id),
+        expected_revenue REAL NOT NULL DEFAULT 0,
+        currency TEXT NOT NULL DEFAULT 'IQD',
+        probability REAL NOT NULL DEFAULT 0,
+        forecast_date TEXT,
+        state TEXT NOT NULL DEFAULT 'open',
+        won_at TEXT,
+        lost_at TEXT,
+        lost_reason_id TEXT REFERENCES crm_lost_reasons(id),
+        reopened_at TEXT,
+        quotation_order_id TEXT REFERENCES sale_orders(id),
+        notes TEXT NOT NULL DEFAULT '',
+        tags TEXT NOT NULL DEFAULT '[]',
+        created_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crm_opportunity_reference
+        ON crm_opportunities(company_id, reference);
+      CREATE INDEX IF NOT EXISTS idx_crm_opportunity_party ON crm_opportunities(party_id);
+      CREATE INDEX IF NOT EXISTS idx_crm_opportunity_stage ON crm_opportunities(pipeline_id, stage_id);
+      CREATE INDEX IF NOT EXISTS idx_crm_opportunity_state ON crm_opportunities(company_id, state);
+    `);
+
+    // One lead converts once. A partial unique index would be cleaner but is not
+    // portable, so uniqueness on the nullable column is enforced by the engine's
+    // conversion command inside its transaction and asserted by test.
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_crm_opportunity_source_lead
+        ON crm_opportunities(source_lead_id);
+    `);
+
+    // ---- Activity and interaction -----------------------------------------
+    // Activities are CRM-internal reminders. Operational work that consumes
+    // stock, time or money goes to a canonical Work Item via work_item_id
+    // instead of being simulated here.
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS crm_activities (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        subject_type TEXT NOT NULL,
+        subject_id TEXT NOT NULL,
+        activity_type TEXT NOT NULL DEFAULT 'call',
+        summary TEXT NOT NULL,
+        detail TEXT NOT NULL DEFAULT '',
+        due_at TEXT,
+        assigned_user_id TEXT,
+        state TEXT NOT NULL DEFAULT 'planned',
+        completed_at TEXT,
+        completed_by TEXT,
+        outcome TEXT NOT NULL DEFAULT '',
+        work_item_id TEXT,
+        created_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_crm_activity_subject
+        ON crm_activities(subject_type, subject_id);
+      CREATE INDEX IF NOT EXISTS idx_crm_activity_due
+        ON crm_activities(assigned_user_id, state, due_at);
+
+      CREATE TABLE IF NOT EXISTS crm_interactions (
+        id TEXT PRIMARY KEY,
+        company_id TEXT NOT NULL DEFAULT '*',
+        party_id TEXT REFERENCES parties(id),
+        lead_id TEXT REFERENCES crm_leads(id),
+        opportunity_id TEXT REFERENCES crm_opportunities(id),
+        channel TEXT NOT NULL DEFAULT 'note',
+        direction TEXT NOT NULL DEFAULT 'outbound',
+        occurred_at TEXT NOT NULL,
+        summary TEXT NOT NULL,
+        body TEXT NOT NULL DEFAULT '',
+        recorded_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_crm_interaction_party
+        ON crm_interactions(party_id, occurred_at);
+    `);
+
+    // ---- Stage-change history (forecast auditability) ----------------------
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS crm_opportunity_stage_history (
+        id TEXT PRIMARY KEY,
+        opportunity_id TEXT NOT NULL REFERENCES crm_opportunities(id),
+        from_stage_id TEXT,
+        to_stage_id TEXT NOT NULL,
+        from_probability REAL,
+        to_probability REAL,
+        changed_at TEXT NOT NULL,
+        changed_by TEXT NOT NULL,
+        note TEXT NOT NULL DEFAULT ''
+      );
+      CREATE INDEX IF NOT EXISTS idx_crm_stage_history_opp
+        ON crm_opportunity_stage_history(opportunity_id, changed_at);
+    `);
+
+    // ---- Register entities + flip the module lifecycle ---------------------
+    const entity = db.prepare(`
+      INSERT INTO platform_entities (
+        id, module_id, storage_owner, primary_key, label_ar, label_en, section,
+        chatter, fields, relations, scope, lifecycle_policy, query_policy,
+        action_policy, customization_policy, history_policy, api_exposed,
+        migration_owner, created_at, updated_at
+      ) VALUES (?, ?, ?, 'id', ?, ?, 'commercial', 1, '{}', '{}', 'company',
+        'generic', 'scoped', 'registered', 'metadata', 'audit', 1, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET module_id = excluded.module_id, updated_at = excluded.updated_at
+    `);
+    for (const [id, ar, en] of [
+      ['crm_lead', 'عميل محتمل', 'Lead'],
+      ['crm_opportunity', 'فرصة بيع', 'Opportunity'],
+      ['crm_pipeline', 'مسار المبيعات', 'Pipeline'],
+      ['crm_activity', 'نشاط', 'Activity'],
+      ['crm_campaign', 'حملة تسويقية', 'Campaign'],
+    ]) {
+      entity.run(id, MODULE_ID, id === 'crm_lead' ? 'crm_leads' : `${id}s`, ar, en, MIGRATION_ID, now, now);
+    }
+
+    // The module now has real schema, so it becomes installable. This is the
+    // only place that is allowed to move CRM off 'planned'.
+    db.prepare(`
+      UPDATE module_expansion_registry
+      SET lifecycle = 'available', schema_migration = ?, updated_at = ?
+      WHERE module_id = ?
+    `).run(MIGRATION_ID, now, MODULE_ID);
+    db.prepare(`UPDATE platform_modules SET status = 'installed', updated_at = ? WHERE id = ?`).run(now, MODULE_ID);
+  },
+
+  down(db) {
+    const now = new Date().toISOString();
+    db.prepare(`UPDATE module_expansion_registry SET lifecycle = 'planned', schema_migration = NULL, updated_at = ? WHERE module_id = ?`).run(now, MODULE_ID);
+    db.prepare(`UPDATE platform_modules SET status = 'available', updated_at = ? WHERE id = ?`).run(now, MODULE_ID);
+    db.prepare('DELETE FROM platform_entities WHERE module_id = ?').run(MODULE_ID);
+
+    // Children before parents.
+    db.exec(`
+      DROP TABLE IF EXISTS crm_opportunity_stage_history;
+      DROP TABLE IF EXISTS crm_interactions;
+      DROP TABLE IF EXISTS crm_activities;
+      DROP TABLE IF EXISTS crm_opportunities;
+      DROP TABLE IF EXISTS crm_leads;
+      DROP TABLE IF EXISTS crm_campaigns;
+      DROP TABLE IF EXISTS crm_tags;
+      DROP TABLE IF EXISTS crm_customer_segments;
+      DROP TABLE IF EXISTS crm_competitors;
+      DROP TABLE IF EXISTS crm_lost_reasons;
+      DROP TABLE IF EXISTS crm_lead_sources;
+      DROP TABLE IF EXISTS crm_pipeline_stages;
+      DROP TABLE IF EXISTS crm_pipelines;
+      DROP TABLE IF EXISTS crm_sales_teams;
+    `);
+  },
+};

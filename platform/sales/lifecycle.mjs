@@ -98,33 +98,34 @@ function remainingReservationQuantity(db, reservationId) {
   return Math.max(0, Number(row.quantity) - Number(row.consumed) - Number(row.released) + Number(row.reversed));
 }
 
+import * as opportunityService from '../domains/crm/opportunity-service.mjs';
+import * as activityService from '../domains/crm/activity-service.mjs';
+import * as conversionService from '../domains/crm/conversion-service.mjs';
+import * as salesIntegration from '../domains/crm/sales-integration.mjs';
+
 export function getOpportunity(db, id) {
-  const opportunity = db.prepare('SELECT * FROM crm_opportunities WHERE id = ?').get(id);
-  if (!opportunity) return null;
-  const activities = db.prepare('SELECT * FROM crm_opportunity_activities WHERE opportunity_id = ? ORDER BY created_at').all(id);
-  return { ...opportunity, activities };
+  try {
+    const opp = opportunityService.getOpportunity(db, id);
+    const activities = db.prepare('SELECT * FROM crm_opportunity_activities WHERE opportunity_id = ? ORDER BY created_at').all(id);
+    return { ...opp, activities };
+  } catch (err) {
+    if (err.code === 'OPPORTUNITY_NOT_FOUND' || err.message?.includes('unknown opportunity')) return null;
+    throw err;
+  }
 }
 
-// crm_opportunity_activities was retired as a writable table by migration 066
-// (066_crm_activity_subject_unification): it survives only as a read-only
-// compatibility view over crm_activities. Every write here goes to the unified
-// table instead, tagged subject_type='opportunity' like every other opportunity
-// Activity. company_id and any source-lead lineage are resolved from the
-// opportunity itself since this legacy call site never carried company_id.
 function logOpportunityActivity(db, opportunityId, activityType, summary) {
-  const opp = db.prepare('SELECT company_id, lead_id FROM crm_opportunities WHERE id = ?').get(opportunityId);
-  const ts = new Date().toISOString();
-  db.prepare(`
-    INSERT INTO crm_activities (
-      id, company_id, subject_type, lead_id, opportunity_id, activity_type, summary,
-      done, state, due_date, created_at, created_by, updated_at
-    ) VALUES (?, ?, 'opportunity', ?, ?, ?, ?, 1, 'completed', NULL, ?, 'system', ?)
-  `).run(makeId('act'), opp?.company_id ?? '*', opp?.lead_id ?? null, opportunityId, activityType, summary, ts, ts);
+  const opp = db.prepare('SELECT company_id FROM crm_opportunities WHERE id = ?').get(opportunityId);
+  try {
+    activityService.scheduleActivity(db, {
+      opportunity_id: opportunityId,
+      activity_type: ['call', 'meeting', 'email', 'visit', 'follow_up', 'task', 'note', 'reminder'].includes(activityType) ? activityType : 'note',
+      summary,
+      company_id: opp?.company_id || '*',
+      actor: 'system',
+    });
+  } catch (_) {}
 }
-
-// ---------------------------------------------------------------------------
-// CRM: lead -> opportunity
-// ---------------------------------------------------------------------------
 
 export function convertLead(db, input) {
   const {
@@ -137,59 +138,38 @@ export function convertLead(db, input) {
     expected_close_date,
     company_id,
     branch_id = null,
+    actor = 'system',
   } = input;
 
   const lead = db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(id);
   if (!lead || lead.company_id !== company_id) fail(`Lead not found: ${id}`, 'LEAD_NOT_FOUND');
-  if (lead.stage === 'won' || lead.stage === 'lost') {
+  if (lead.stage === 'won' || lead.stage === 'lost' || lead.stage === 'converted') {
     fail(`Lead is already closed (${lead.stage})`, 'LEAD_ALREADY_CLOSED');
   }
-  const party = db.prepare('SELECT id FROM parties WHERE id = ? AND (company_id = ? OR company_id = ?)').get(partner_id, company_id, '*');
-  if (!party) fail('Opportunity party is outside the active company', 'PARTY_NOT_FOUND');
 
-  const existing = db.prepare('SELECT * FROM crm_opportunities WHERE lead_id = ? AND company_id = ?').get(id, company_id);
-  if (existing) {
-    return { opportunity: getOpportunity(db, existing.id), lead, replay: true };
+  if (lead.stage !== 'qualified') {
+    leadService.qualifyLead(db, { lead_id: id, company_id, actor });
   }
 
-  const opportunityId = makeId('opp');
-  const now = new Date().toISOString();
-  db.prepare(`
-    INSERT INTO crm_opportunities (
-      id, company_id, branch_id, lead_id, party_id, name, stage, expected_value,
-      probability, owner_user_id, expected_close_date, status, lost_reason,
-      version, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?, 'open', '', 1, ?, ?)
-  `).run(
-    opportunityId,
+  const result = conversionService.convertLead(db, {
+    lead_id: id,
+    party_id: partner_id,
+    name: name || lead.name,
+    expected_revenue: expected_value !== undefined ? expected_value : lead.expected_revenue,
     company_id,
     branch_id,
-    id,
-    partner_id,
-    name || lead.name,
-    Number(expected_value !== undefined ? expected_value : lead.expected_revenue),
-    Number(probability !== undefined ? probability : lead.probability),
-    owner_user_id || lead.salesperson_id || null,
-    expected_close_date || null,
-    now,
-    now,
-  );
-
-  db.prepare(`UPDATE crm_leads SET stage = 'won', updated_at = ? WHERE id = ?`).run(now, id);
-  db.prepare(`
-    INSERT INTO crm_activities (id, lead_id, activity_type, summary, done, due_date, created_at)
-    VALUES (?, ?, 'converted', ?, 1, NULL, ?)
-  `).run(makeId('act'), id, `Lead converted to opportunity ${opportunityId}`, now);
-  logOpportunityActivity(db, opportunityId, 'converted', `Opportunity created from lead ${id}`);
+    actor,
+  });
 
   return {
-    opportunity: getOpportunity(db, opportunityId),
+    opportunity: getOpportunity(db, result.opportunityId),
     lead: db.prepare('SELECT * FROM crm_leads WHERE id = ?').get(id),
+    replay: result.replayed,
   };
 }
 
 export function updateOpportunityStage(db, input) {
-  const { id, stage, company_id } = input;
+  const { id, stage, company_id, actor = 'system' } = input;
   const validStages = ['new', 'qualified', 'proposition', 'negotiation'];
   if (!validStages.includes(stage)) fail(`Invalid opportunity stage: ${stage}`, 'OPPORTUNITY_STAGE_INVALID');
 
@@ -197,40 +177,55 @@ export function updateOpportunityStage(db, input) {
   if (!opportunity) fail(`Opportunity not found: ${id}`, 'OPPORTUNITY_NOT_FOUND');
   if (opportunity.status !== 'open') fail('Only open opportunities can change stage', 'OPPORTUNITY_CLOSED');
 
-  const now = new Date().toISOString();
-  db.prepare(`
-    UPDATE crm_opportunities SET stage = ?, version = version + 1, updated_at = ? WHERE id = ?
-  `).run(stage, now, id);
-  logOpportunityActivity(db, id, 'stage', `Stage changed from ${opportunity.stage} to ${stage}`);
+  const STAGEMAP = { new: 'NEW', qualified: 'QUALIFY', proposition: 'PROP', negotiation: 'NEGO', won: 'WON', lost: 'LOST' };
+  const mappedCode = STAGEMAP[stage.toLowerCase()] || stage.toUpperCase();
+
+  const targetStage = db.prepare('SELECT id FROM crm_pipeline_stages WHERE pipeline_id = ? AND (UPPER(id) = ? OR UPPER(code) = ?)')
+    .get(opportunity.pipeline_id, mappedCode, mappedCode)
+    || db.prepare('SELECT id FROM crm_pipeline_stages WHERE pipeline_id = ? AND (id LIKE ? OR code LIKE ?)')
+      .get(opportunity.pipeline_id, `%${stage}%`, `%${stage}%`);
+
+  const stageId = targetStage?.id || stage;
+
+  opportunityService.changeStage(db, {
+    opportunity_id: id,
+    stage_id: stageId,
+    company_id,
+    actor,
+  });
+
   return getOpportunity(db, id);
 }
 
 export function addOpportunityActivity(db, input) {
-  const { id, summary, activity_type = 'follow_up', due_date = null, done = false, company_id } = input;
+  const { id, summary, activity_type = 'follow_up', due_date = null, done = false, company_id, actor = 'system' } = input;
   const opportunity = db.prepare('SELECT id, lead_id FROM crm_opportunities WHERE id = ? AND company_id = ?').get(id, company_id);
   if (!opportunity) fail(`Opportunity not found: ${id}`, 'OPPORTUNITY_NOT_FOUND');
   const text = String(summary || '').trim();
   if (!text) fail('Activity summary is required', 'ACTIVITY_SUMMARY_REQUIRED');
-  const activityId = makeId('act');
-  const ts = new Date().toISOString();
-  db.prepare(`
-    INSERT INTO crm_activities (
-      id, company_id, subject_type, lead_id, opportunity_id, activity_type, summary,
-      done, state, due_date, created_at, created_by, updated_at
-    ) VALUES (?, ?, 'opportunity', ?, ?, ?, ?, ?, ?, ?, ?, 'system', ?)
-  `).run(
-    activityId,
+
+  const validType = ['call', 'meeting', 'email', 'visit', 'follow_up', 'task', 'note', 'reminder'].includes(activity_type)
+    ? activity_type
+    : 'follow_up';
+
+  const res = activityService.scheduleActivity(db, {
+    opportunity_id: id,
+    summary: text,
+    activity_type: validType,
+    due_at: due_date || null,
     company_id,
-    opportunity.lead_id ?? null,
-    id,
-    String(activity_type || 'follow_up'),
-    text,
-    done ? 1 : 0,
-    done ? 'completed' : 'planned',
-    due_date || null,
-    ts,
-    ts,
-  );
+    actor,
+  });
+
+  if (done) {
+    activityService.completeActivity(db, {
+      activity_id: res.activity.id,
+      outcome: 'completed via legacy addOpportunityActivity',
+      company_id,
+      actor,
+    });
+  }
+
   return getOpportunity(db, id);
 }
 
@@ -247,6 +242,7 @@ export function closeOpportunity(db, input) {
     notes,
     attachments,
     company_id,
+    actor = 'system',
   } = input;
 
   const opportunity = db.prepare('SELECT * FROM crm_opportunities WHERE id = ? AND company_id = ?').get(id, company_id);
@@ -257,32 +253,45 @@ export function closeOpportunity(db, input) {
     fail('A lost reason is required when closing an opportunity as lost', 'LOST_REASON_REQUIRED');
   }
 
-  const now = new Date().toISOString();
-  db.prepare(`
-    UPDATE crm_opportunities
-    SET status = ?, lost_reason = ?, version = version + 1, updated_at = ?
-    WHERE id = ?
-  `).run(outcome, outcome === 'lost' ? String(lost_reason).trim() : '', now, id);
-
   let quotation = null;
-  if (outcome === 'won' && spawn_quotation) {
-    quotation = createQuotation(db, {
+  if (outcome === 'won') {
+    if (spawn_quotation) {
+      quotation = createQuotation(db, {
+        company_id,
+        partner_id: opportunity.party_id,
+        pricelist_id,
+        currency_id,
+        validity_date,
+        notes,
+        attachments,
+        lines,
+      });
+      salesIntegration.linkQuotation(db, {
+        opportunity_id: id,
+        sale_order_id: quotation.id,
+        company_id,
+        actor,
+      });
+      quotation = getSaleOrder(db, quotation.id);
+    }
+    opportunityService.markWon(db, {
+      opportunity_id: id,
+      allow_override: true,
+      override_reason: spawn_quotation ? `Quotation ${quotation?.id} created` : 'Legacy closeOpportunity won',
       company_id,
-      partner_id: opportunity.party_id,
-      pricelist_id,
-      currency_id,
-      validity_date,
-      notes,
-      attachments,
-      lines,
+      actor,
     });
-    db.prepare('UPDATE sale_orders SET source_opportunity_id = ? WHERE id = ?').run(id, quotation.id);
-    quotation = getSaleOrder(db, quotation.id);
+  } else {
+    const reasonRow = db.prepare('SELECT id FROM crm_lost_reasons WHERE code = ? OR id = ?').get('PRICE', lost_reason)
+      || db.prepare('SELECT id FROM crm_lost_reasons LIMIT 1').get();
+    opportunityService.markLost(db, {
+      opportunity_id: id,
+      lost_reason_id: reasonRow?.id || 'crm_lost_price',
+      note: String(lost_reason || '').trim(),
+      company_id,
+      actor,
+    });
   }
-
-  logOpportunityActivity(db, id, 'close', outcome === 'won'
-    ? `Opportunity won${quotation ? `; draft quotation ${quotation.id} created` : ''}`
-    : `Opportunity lost: ${String(lost_reason).trim()}`);
 
   return { opportunity: getOpportunity(db, id), quotation };
 }

@@ -1,47 +1,42 @@
-import crypto from 'node:crypto';
-
-function makeId(prefix = 'lead') {
-  return `${prefix}_${crypto.randomBytes(8).toString('hex')}`;
-}
+import * as leadService from '../domains/crm/lead-service.mjs';
 
 export function createLead(db, leadData) {
-  const {
-    company_id = '*',
-    name,
-    partner_id = null,
-    contact_name = '',
-    email = '',
-    phone = '',
-    expected_revenue = 0.0,
-    probability = 10.0,
-    salesperson_id = null,
-  } = leadData;
-
-  if (!name) throw new Error('Lead name is required');
-  const id = makeId('lead');
-  const now = new Date().toISOString();
-
-  db.prepare(`
-    INSERT INTO crm_leads (
-      id, company_id, name, partner_id, contact_name, email, phone, stage, expected_revenue, probability, salesperson_id, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?, ?)
-  `).run(id, company_id, name, partner_id, contact_name, email, phone, Number(expected_revenue), Number(probability), salesperson_id, now, now);
-
-  return getLead(db, id);
+  const company_id = leadData.company_id || '*';
+  const actor = leadData.actor || leadData.salesperson_id || 'system';
+  const result = leadService.createLead(db, {
+    ...leadData,
+    company_id,
+    actor,
+  });
+  return getLead(db, result.lead.id);
 }
 
 export function getLead(db, id) {
-  const lead = db.prepare(`SELECT * FROM crm_leads WHERE id = ?`).get(id);
-  if (!lead) return null;
-  const activities = db.prepare(`SELECT * FROM crm_activities WHERE lead_id = ?`).all(id);
-  return { ...lead, activities };
+  try {
+    const lead = leadService.getLead(db, id);
+    const activities = db.prepare(`SELECT * FROM crm_activities WHERE lead_id = ? ORDER BY created_at`).all(id);
+    return { ...lead, activities };
+  } catch (err) {
+    if (err.code === 'LEAD_NOT_FOUND' || err.message?.includes('unknown lead')) return null;
+    throw err;
+  }
 }
 
-export function updateLeadStage(db, { id, stage }) {
-  const validStages = ['new', 'qualified', 'proposition', 'won', 'lost'];
-  if (!validStages.includes(stage)) throw new Error(`Invalid lead stage: ${stage}`);
+export function updateLeadStage(db, { id, stage, company_id = '*', actor = 'system' }) {
+  const lead = getLead(db, id);
+  if (!lead) throw new Error(`Lead not found: ${id}`);
+  
+  if (stage === 'qualified') {
+    const res = leadService.qualifyLead(db, { lead_id: id, company_id: lead.company_id || company_id, actor });
+    return getLead(db, res.lead.id);
+  }
+  
+  if (stage === 'lost' || stage === 'unqualified') {
+    const res = leadService.disqualifyLead(db, { lead_id: id, lost_reason_id: 'crm_lost_price', company_id: lead.company_id || company_id, actor });
+    return getLead(db, res.lead.id);
+  }
 
-  const now = new Date().toISOString();
-  db.prepare(`UPDATE crm_leads SET stage = ?, updated_at = ? WHERE id = ?`).run(stage, now, id);
-  return getLead(db, id);
+  const res = leadService.updateLead(db, { lead_id: id, company_id: lead.company_id || company_id, actor });
+  return getLead(db, res.lead.id);
 }
+

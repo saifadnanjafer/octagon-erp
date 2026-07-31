@@ -17,7 +17,7 @@
 
 | Suite | Command | Result |
 |---|---|---|
-| Final Page Catalog (all: wave2 wiring, governance wiring, module pack center, customization studio, commercial control center, FP-2D centers, FP-2E governance pages, FP-2F configuration/import, page regression) | `node --test --test-concurrency=1 tests/final-page-catalog/*.test.mjs` | **89 / 89 pass** |
+| Final Page Catalog (all: wave2 wiring, governance wiring, module pack center, customization studio, commercial control center, FP-2D centers, FP-2E governance pages, FP-2F configuration/import, FP-2G audit/release, page regression) | `node --test --test-concurrency=1 tests/final-page-catalog/*.test.mjs` | **95 / 95 pass** |
 | Migration | `npm run test:migration` | **5 / 5 pass** |
 | Unit | `npm run test:unit` | **9 / 9 pass** |
 | Precommit | `node scripts/precommit.js` | **passed** |

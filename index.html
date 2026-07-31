@@ -99,6 +99,9 @@
   <link rel="stylesheet" href="modules/fpc-automation-rules.css?v=20260731-fpc-ar-v1">
   <link rel="stylesheet" href="modules/fpc-configuration-center.css?v=20260731-fpc-cc-v1">
   <link rel="stylesheet" href="modules/fpc-data-import-center.css?v=20260731-fpc-dic-v1">
+  <link rel="stylesheet" href="modules/fpc-audit-security-center.css?v=20260731-fpc-asc-v1">
+  <link rel="stylesheet" href="modules/fpc-release-health.css?v=20260731-fpc-rh-v1">
+  <link rel="stylesheet" href="modules/fpc-release-upgrade-center.css?v=20260731-fpc-ruc-v1">
   <link rel="stylesheet" href="modules/implementation-methodology.css?v=20260626-im7k-v1">
   <link rel="stylesheet" href="modules/platform-marketplace.css?v=20260626-pmk-v2">
   <link rel="stylesheet" href="modules/ecommerce-connectors.css?v=20260626-ecom-v1">
@@ -1764,6 +1767,21 @@
               <span class="nav-label">مركز استيراد البيانات</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="audit_security_center" id="navAuditSecurityCenter" onclick="switchPage('audit_security_center')">
+              <span class="nav-icon"><i class="fa-solid fa-shield-halved"></i></span>
+              <span class="nav-label">مركز التدقيق والأمن</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="release_health" id="navReleaseHealth" onclick="switchPage('release_health')">
+              <span class="nav-icon"><i class="fa-solid fa-heart-pulse"></i></span>
+              <span class="nav-label">صحة الإصدار</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="release_upgrade_center" id="navReleaseUpgradeCenter" onclick="switchPage('release_upgrade_center')">
+              <span class="nav-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+              <span class="nav-label">مركز الإصدار والترقية</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="integration_hub" id="navIntegrationHub" onclick="switchPage('integration_hub')">
               <span class="nav-icon"><i class="fa-solid fa-plug-circle-bolt"></i></span>
               <span class="nav-label">مركز التكامل</span>
@@ -2394,6 +2412,10 @@
   <script src="modules/fpc-automation-rules.js?v=20260731-fpc-ar-v1"></script>
   <script src="modules/fpc-configuration-center.js?v=20260731-fpc-cc-v1"></script>
   <script src="modules/fpc-data-import-center.js?v=20260731-fpc-dic-v1"></script>
+  <script src="modules/fpc-audit-security-center.js?v=20260731-fpc-asc-v1"></script>
+  <script src="modules/fpc-release-health.js?v=20260731-fpc-rh-v1"></script>
+  <script src="modules/fpc-release-upgrade-center.js?v=20260731-fpc-ruc-v1"></script>
+  <script src="modules/fpc-integration-hub-governance.js?v=20260731-fpc-ihg-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

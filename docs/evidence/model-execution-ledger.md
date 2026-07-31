@@ -1543,3 +1543,25 @@ dirty files untouched.
 | Failures and rework | none |
 | Remaining blockers | 4 FP-2 pages (integration_hub upgrade, audit_security_center, release_health, release_upgrade_center) |
 | Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |
+
+## Final Page Catalog — FP-2G + FP-2 closure: Audit / Release Health / Release Upgrade / Integration Hub (2026-07-31)
+
+| Field | Value |
+| --- | --- |
+| Model / runtime | Kimi Code CLI (kimi-for-coding), interactive agent session |
+| Starting HEAD | `5564505d95b701a8497cd9625ef54e69acbbaa4e` |
+| Pages added | `audit_security_center`, `release_health`, `release_upgrade_center` (FPC pages: 15 → 18 total incl. FP-1); `integration_hub` upgraded in place (governed section appended, no duplicate) |
+| Backend | none — `audit`, `health`, `backups`, `jobs`, `packages`, `integrations`, `api-keys` all pre-existing control-plane resources |
+| Permissions registered | 3 (`admin/audit`, `admin/release` ×2 pages) |
+| FP-2 page inventory (all 16 canonical IDs) | module_pack_center, organization_center, identity_center, permission_center, authority_governance, workflow_studio, approval_policy_studio, automation_rules, configuration_center, customization_studio, data_import_center, integration_hub (in-place upgrade), audit_security_center, release_health, release_upgrade_center, commercial_control_center — all delivered |
+| Tests | final-page-catalog 95/95 (6 new), migration 5/5, unit 9/9, precommit passed |
+| Closure docs | FP2_CONTROL_PLANE_DECISION.md, control-plane evidence set, R12 browser boundary recorded |
+| Deferred | UI mutation actions for workflow/approval/delegation/automation/custom-field writes (backends exist, actions not yet wired to page UI); synthetic-auth browser smoke (R12) |
+| Operational mutation | none — `octagon-erp/database.db` md5 `1b5abb394768562c69e88e9fb5222139`, WAL 0 bytes |
+| Telegram worktree | untouched (HEAD `0caa4f9`, clean) |
+| Administrator credential | unchanged, not read, not used |
+| VNext | unchanged (HEAD `cf7ae4e`) |
+| main merged | no |
+| Failures and rework | 1 test fixture shape fix (package item requires `key`); no implementation rework |
+| Remaining blockers | R9 (mutation actions), R10 (commercial meters), R12 (browser smoke); FP-3 Finance pages not started |
+| Classification | **FP-2 CONTROL PLANE COMPLETE (read surfaces) — PARTIAL for mutations; READY FOR FP-3 with R9/R10/R12 recorded** |

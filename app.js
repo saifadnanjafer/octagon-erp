@@ -3117,7 +3117,7 @@ const navGroupPages = {
   resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
   intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
   intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
-  admin_org: ['module_pack_center', 'customization_studio', 'commercial_control_center', 'organization_center', 'identity_center', 'permission_center', 'authority_governance', 'workflow_studio', 'approval_policy_studio', 'automation_rules', 'configuration_center', 'data_import_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+  admin_org: ['module_pack_center', 'customization_studio', 'commercial_control_center', 'organization_center', 'identity_center', 'permission_center', 'authority_governance', 'workflow_studio', 'approval_policy_studio', 'automation_rules', 'configuration_center', 'data_import_center', 'audit_security_center', 'release_health', 'release_upgrade_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
 };
 
 function getNavGroupForPage(page) {
@@ -37416,6 +37416,9 @@ window.ensurePageTemplateLoaded = async function (page) {
     automation_rules: 'pageAutomationRules',
     configuration_center: 'pageConfigurationCenter',
     data_import_center: 'pageDataImportCenter',
+    audit_security_center: 'pageAuditSecurityCenter',
+    release_health: 'pageReleaseHealth',
+    release_upgrade_center: 'pageReleaseUpgradeCenter',
     products: 'pageProductsAndMaterials',
     parties: 'pageCustomersAndSuppliers',
     warehouses: 'pageWarehouses',
@@ -37497,7 +37500,8 @@ window.prefetchAllViews = function () {
     'customization_studio', 'commercial_control_center',
     'organization_center', 'identity_center', 'permission_center',
     'authority_governance', 'workflow_studio', 'approval_policy_studio', 'automation_rules',
-    'configuration_center', 'data_import_center'
+    'configuration_center', 'data_import_center',
+    'audit_security_center', 'release_health', 'release_upgrade_center'
   ];
   
   let i = 0;

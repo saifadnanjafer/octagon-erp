@@ -51,3 +51,16 @@ document or a page's existence as proof of a working capability.
 - **`main`:** not merged; not touched.
 - **Local/remote SHA:** equal after every push (verified below and in the
   final report).
+
+## Status update (appended, not edited into the above — see continuation waves)
+
+Since this record was written, two continuation waves have run on later
+branches: a Collaboration/Chatter wiring continuation (item #18 above, now
+built), and a commercial-operations-closure wave that built Returns/RMA
+(item #10 above, now built) as Slice 1 of a planned four-slice program (Credit
+and Collections, Printing/Templates, Sales Commissions remain not started).
+See `VERIFIED_MISSING_MODULE_AND_SERVICE_REGISTER.md` (updated in place) and
+`../commercial-operations-closure/COMMERCIAL_OPERATIONS_CLOSURE_DECISION.md`
+for current status. This wave's own classification above
+(**PARTIAL — VERIFIED MODULE GAPS REMAIN**) still holds — more gaps remain
+built than remain outstanding.

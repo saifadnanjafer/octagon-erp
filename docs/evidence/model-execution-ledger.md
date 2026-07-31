@@ -1682,3 +1682,131 @@ rewrite.
 MODULE GAPS REMAIN (17 of 18 audited candidates not yet built; full
 223-row matrix not exhaustively re-audited this pass — see
 `docs/evidence/research-gap-modules/unresolved-risks.md`).
+
+---
+
+## Record — Collaboration/Chatter wiring continuation (undated gap)
+
+A continuation session built and shipped Collaboration/Chatter wiring
+(commit `87473d9`, "feat(collaboration): complete P0 Collaboration/Chatter
+runtime wiring and test suite" — 12 files, 994 insertions, 3/3 new tests
+passing) on top of the record above. That session did not append its own
+ledger entry here. This gap is noted, not silently backfilled with invented
+details — the commit itself, `docs/evidence/research-gap-modules/P0-collaboration-wiring/`,
+and `git log` are the authoritative record of what it did. Verified
+independently at the start of the next wave (see
+`docs/evidence/commercial-operations-closure/source-checkpoint.md`).
+
+---
+
+## Record — Commercial Operations Closure Wave, Slice 1 (Returns/RMA) (2026-08-01)
+
+- **Model:** Claude Sonnet 5 (`claude-sonnet-5`)
+- **Agent/runtime:** Claude Code (Claude Agent SDK)
+- **Repository:** `saifadnanjafer/octagon-erp`
+- **Source branch / SHA:** `build/octagon-research-gap-modules` @ `87473d9b6bb121c3c5b300cb0c60d00166eea451` (verified independently — see `docs/evidence/commercial-operations-closure/source-checkpoint.md`; the assignment's premise that Notifications and Scheduled Reports were also completed in the preceding continuation was checked and found inaccurate — only Collaboration/Chatter was)
+- **Worktree / branch:** `octagon-commercial-operations-closure` / `build/octagon-commercial-operations-closure` (already existed at entry, forked from the SHA above, already pushed)
+- **Ending local/remote SHA:** recorded after commit below
+
+### Recovered interrupted work
+
+The worktree held 661 lines of uncommitted Returns/RMA work
+(`platform/domains/returns/{rma.mjs,returns-actions.mjs}`,
+`tests/phase02/returns-rma.test.mjs`). Inspected in full rather than reset.
+Real defects found and fixed rather than carried forward:
+
+1. Runtime `CREATE TABLE IF NOT EXISTS` DDL from application code — moved to
+   a real forward migration (`084_returns_rma_consolidation`).
+2. Fabricated fallback reference ids (`rec_fallback_*`, `qncr_fallback_*`,
+   `cn_req_*`, `supp_ret_*`) standing in for real Inventory/Quality/Finance/
+   Procurement effects on failure or when never attempted — removed; a
+   canonical call now either succeeds for real or throws a real, typed
+   error. Proven by dedicated tests (10, 11) plus a real success-path test
+   (15) creating a genuine Finance credit note against a genuine posted
+   invoice.
+3. Broken action registration — `executor.registerDomainHandler(...)` does
+   not exist on `ActionExecutor`; fixed to use the real
+   `registerDomainHandler(executor, actionId, handler)` helper from
+   `platform/kernel/actions/domain-handler.mjs` (the same pattern the
+   immediately-preceding Collaboration wiring used), which also supplies the
+   server-derived-scope enforcement the draft had none of.
+4. No permission enforcement, no idempotency implementation despite
+   declaring it, no transaction wrapping on multi-statement writes — all
+   fixed.
+5. The draft's own test file re-implemented an ad-hoc shadow schema for
+   `quality_inspections` instead of using the real migrated one; fixing this
+   surfaced that the real schema's columns differ from what the draft
+   assumed (`picking_id` does not exist; `inspection_number`,
+   `inspection_type`, `source_type`, `product_id` are required) — caught
+   only by testing against the real schema.
+
+### Work completed
+
+Migration 084 (returns_rma/returns_rma_lines/returns_rma_timeline + module/
+entity/action registration). Domain engine rewired to call real canonical
+authorities: `platform/inventory/wms_workflows.mjs` (receipt), real
+`quality_inspections`/`platform/quality/ncr-capa.mjs` (inspection/NCR),
+`platform/work_items/lifecycle.mjs` (repair), `platform/finance/engine.mjs`
+(refund → real credit note reversing the real original invoice's lines),
+`platform/procurement/lifecycle.mjs` (supplier return, refusal path proven).
+8 actions, 1 query namespace (2 resources), 2 permissions (auto-derived).
+`modules/warranty-rma.js` extended with a real backend-wired "RMA" tab
+(list/create/detail/all lifecycle transitions), old local claims tracking
+tab relabelled but not removed/migrated.
+
+### Tests
+
+New: `tests/phase02/returns-rma.test.mjs`, 15/15. Full `tests/phase02/*`
+regression: same 4 pre-existing failure files as the prior wave
+(`authorization.test.mjs`, `browser-live-evidence.test.mjs`,
+`runtime-strangler.test.mjs`, `security-suite.test.mjs`), none newly
+introduced. Targeted regression (`checkpoint-d-e`, `finance-closure-audit`
+— areas whose modules this slice imports from): 53/56 and 11/14
+respectively; the 3+3 failures are a newly-observed `PERIOD_MISSING`
+fiscal-period class, independently reproduced on the untouched
+`octagon-research-gap-modules` branch this same session — confirmed
+pre-existing, likely caused by the wall-clock date advancing past
+hard-coded/relative fiscal-period test fixtures, unrelated to this slice.
+
+### Failures, current-agent mistakes and rework
+
+Two real mistakes caught by testing against the real (not assumed) schema,
+both fixed before commit: (1) `validatePicking` does not exist in
+`wms_workflows.mjs` — the real export is `validateReceipt`/`validateReturn`,
+taking a payload object, not positional args; (2) `createCreditNote`'s
+`lines` must be `{account_id, debit, credit}` GL pairs (reversing the
+original document's own posted lines), not `{product_id, quantity,
+unit_price}` product data, which the RMA's own line records don't carry an
+account_id for. A separate, unrelated confusion during entry verification
+(a `git log --oneline` output appearing to show a Telegram-bot commit inside
+this branch's ancestry) was investigated and resolved as a shell-output
+artifact from running two `cd`-then-`git` Bash calls concurrently against a
+shared persistent shell, not a real defect — see `source-checkpoint.md`.
+
+### Deferred hardening
+
+`replace`/`refurbish`/`scrap` dispositions have no canonical execution yet
+(decision recorded honestly, no fabricated reference). `return_to_supplier`
+success path not tested end to end (only its honest-refusal path is). No
+live-browser proof for the new UI tab. Old local claims registry not
+migrated/retired. No outbox event beyond the RMA's own timeline.
+
+### Operational safety
+
+Operational data: untouched (this worktree has no operational database).
+Telegram worktree (`octagon-erp`): now on `cutover/octagon-operational-canonical-migration`
+at HEAD `4c7e58b` (its own owner's own dangling work, committed on its own
+branch since the prior wave's `00e60a8` fingerprint — parent verified as
+`00e60a8` via `git log -1 --format=%P`, and the commit exists on no other
+branch) — re-verified unchanged by this wave specifically (before/after this
+wave's own work: same HEAD, same clean status). Administrator credential:
+unchanged, never read. VNext fingerprint
+(`be13a351d8613e3f55de20d7eba75558d2c1bafe80c6cd3e5bf53d590f3a10d2`):
+unchanged. `main` (`8815b00b2c5281167aad3bbe8370270efffb61b8`): not merged,
+not touched.
+
+### Classification
+
+**Slice 1 (Returns/RMA):** INTEGRATION READY. **Slices 2–4 (Credit and
+Collections, Printing/Templates, Sales Commissions):** NOT STARTED.
+**Overall wave:** PARTIAL — COMMERCIAL OPERATIONS REMEDIATION REQUIRED.

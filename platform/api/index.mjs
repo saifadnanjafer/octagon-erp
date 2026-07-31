@@ -30,6 +30,7 @@ import { handleEngineeringQuery } from './engineering.mjs';
 import { handleManufacturingQuery } from '../manufacturing/index.mjs';
 import { handleQualityQuery } from '../quality/index.mjs';
 import { handleAssetsQuery } from '../assets/index.mjs';
+import { handleReturnsQuery } from '../domains/returns/returns-queries.mjs';
 import { handleMaintenanceQuery } from '../maintenance/index.mjs';
 import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
@@ -211,6 +212,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const astResult = handleAssetsQuery({ dialect, ctx, resource, recordId, query });
         if (astResult.error) return sendJson(res, astResult.status || 404, envelope(null, astResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(astResult.data, null, astResult.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'returns' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const retResult = handleReturnsQuery({ dialect, ctx, resource, recordId, query });
+        if (retResult.error) return sendJson(res, retResult.status || 404, envelope(null, retResult.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(retResult.data, null, retResult.meta, ctx.correlationId));
       }
 
       if (namespace === 'maintenance' && req.method === 'GET') {

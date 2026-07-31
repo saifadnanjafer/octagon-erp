@@ -34,15 +34,16 @@ coherent, testable unit rather than two half-finished ones in the same commit
 set, per the assignment's own §11 rule ("Do not begin a second half-built
 module while the first coherent slice is uncommitted").
 
-## Continuation order (unchanged from the verified-missing register)
+## Continuation order — updated after the commercial-operations-closure wave
 
-1. ~~Jobs/scheduler wiring~~ — done.
-2. Collaboration/chatter wiring.
-3. Notification provider completion (now job-queue-driven).
-4. Report dispatch (needs #1, done, plus a new rendering/export capability).
-5. Returns/RMA consolidation (highest business-duplication risk).
-6. Credit/collections UI, print/template consolidation, sales-commission
-   rewire — independent of each other, can proceed in any order.
-7. Master data governance, service entitlements — new modules, need design.
-8. IoT, kiosk, marketplace, workshop pack, tenant provisioning — lower
-   priority per the source matrix's own phase assignments.
+1. ~~Jobs/scheduler wiring~~ — done (research-gap-modules).
+2. ~~Collaboration/chatter wiring~~ — done (research-gap-modules continuation).
+3. ~~Returns/RMA consolidation~~ — done, Integration Ready (commercial-operations-closure Slice 1). Was originally ranked after credit/print/commissions in this list because of its business-duplication risk; the commercial-operations-closure assignment reordered it to run first among the four commercial slices, which this wave followed — see `../commercial-operations-closure/source-checkpoint.md`.
+4. Credit/collections UI — **next**, not started (commercial-operations-closure Slice 2).
+5. Print/template consolidation — not started (Slice 3).
+6. Sales-commission rewire — not started (Slice 4).
+7. Notification provider completion (now job-queue-driven) — still open, not scheduled into any wave yet.
+8. Report dispatch (needs #1, done, plus a new rendering/export capability) — still open.
+9. Master data governance, service entitlements — new modules, need design — still open.
+10. IoT, kiosk, marketplace, workshop pack, tenant provisioning — lower
+    priority per the source matrix's own phase assignments — still open.

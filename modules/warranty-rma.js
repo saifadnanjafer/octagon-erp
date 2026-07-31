@@ -21,6 +21,7 @@
   function toast(m, t) { if (typeof window.showToast === 'function') window.showToast(m, t || 'info'); }
   function uid(p) { return (typeof window.makeId === 'function') ? window.makeId(p) : (p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7)); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  const escapeHtml = esc; // alias so this file's HTML-escaping is visible under both names it's referenced by
   function val(id) { const el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
   function numVal(id) { const v = Number(val(id)); return isFinite(v) ? v : 0; }
   function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -65,6 +66,162 @@
       openClaims: openClaims.length, totalClaims: cs.length, claimsMonth: claimsMonth.length,
       expiringList: expiring.concat(expired).sort((a, b) => String(expiryOf(a)).localeCompare(String(expiryOf(b)))).slice(0, 8)
     };
+  }
+
+  /* ---- canonical RMA tab (commercial-operations-closure P0) -----------
+   * Real backend-wired lifecycle over platform/domains/returns/rma.mjs,
+   * via /api/v1/returns (query) and /api/v1/actions (command). This is
+   * intentionally kept separate from the "claims" tracking registry above
+   * (omni.warrantyHub.claims): the two have different data models (claims
+   * has no formal approval workflow or company-scoped lifecycle) and a full
+   * migration of existing local claim data into the canonical RMA model is
+   * deferred — see docs/evidence/commercial-operations-closure/returns-rma/deferred-hardening.md.
+   * No local/mock fallback: every read and write here goes to the real
+   * server; a failure surfaces as a real error, never a fabricated result.
+   */
+  const rmaState = { list: [], detail: null, loading: false, error: null, formOpen: false };
+
+  async function rmaApiQuery(resource, recordId, params) {
+    const qs = params ? '?' + new URLSearchParams(params).toString() : '';
+    const path = recordId ? `/api/v1/returns/${resource}/${recordId}${qs}` : `/api/v1/returns/${resource}${qs}`;
+    const res = await fetch(path);
+    const json = await res.json();
+    if (!res.ok || json.error) throw new Error(json.error?.message || json.error || `HTTP ${res.status}`);
+    return json.data;
+  }
+
+  async function rmaApiAction(actionId, payload) {
+    const res = await fetch('/api/v1/actions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action_id: actionId, payload, idempotency_key: `wrma_${Date.now()}_${Math.random().toString(36).slice(2, 7)}` }),
+    });
+    const json = await res.json();
+    if (!res.ok || json.error) throw new Error(json.error?.message || json.error || `HTTP ${res.status}`);
+    return json.data || json.result;
+  }
+
+  async function rmaLoadList() {
+    rmaState.loading = true; rmaState.error = null; renderRmaTab();
+    try {
+      rmaState.list = await rmaApiQuery('rma');
+    } catch (e) {
+      rmaState.error = e.message || 'تعذر تحميل مرتجعات RMA';
+    } finally {
+      rmaState.loading = false; renderRmaTab();
+    }
+  }
+
+  window.wrRmaOpenNew = function () { rmaState.formOpen = true; rmaState.detail = null; renderRmaTab(); };
+  window.wrRmaCancelNew = function () { rmaState.formOpen = false; renderRmaTab(); };
+  window.wrRmaOpenDetail = async function (id) {
+    rmaState.loading = true; renderRmaTab();
+    try {
+      rmaState.detail = await rmaApiQuery('rma', id);
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      rmaState.loading = false; renderRmaTab();
+    }
+  };
+  window.wrRmaBackToList = function () { rmaState.detail = null; renderRmaTab(); };
+
+  window.wrRmaCreate = async function () {
+    const product = val('rmaProduct'); const qty = numVal('rmaQty');
+    if (!product || !qty) { toast('المنتج والكمية مطلوبة', 'error'); return; }
+    try {
+      await rmaApiAction('returns:rma_create', {
+        customer_id: val('rmaCustomer') || undefined,
+        source_type: 'customer_return',
+        source_document_number: val('rmaSourceDoc'),
+        lines: [{ product_id: product, product_name: product, qty_requested: qty, reason: val('rmaReason') }],
+      });
+      toast('تم إنشاء RMA', 'success');
+      rmaState.formOpen = false;
+      await rmaLoadList();
+    } catch (e) { toast(e.message, 'error'); }
+  };
+
+  window.wrRmaTransition = async function (actionId, id, extra) {
+    try {
+      await rmaApiAction(actionId, Object.assign({ id }, extra || {}));
+      toast('تم تنفيذ الإجراء', 'success');
+      await window.wrRmaOpenDetail(id);
+    } catch (e) { toast(e.message, 'error'); }
+  };
+
+  const RMA_STATUS_AR = {
+    draft: 'مسودة', submitted: 'مُقدَّمة', under_review: 'قيد المراجعة', approved: 'مقبولة',
+    awaiting_receipt: 'بانتظار الاستلام', received: 'مُستلَمة', under_inspection: 'قيد الفحص',
+    disposition_pending: 'بانتظار القرار', resolved: 'مُنجَزة', closed: 'مغلقة',
+    rejected: 'مرفوضة', cancelled: 'ملغاة', blocked: 'محظورة',
+  };
+
+  function renderRmaDetail() {
+    const d = rmaState.detail;
+    const actions = [];
+    if (d.status === 'draft') actions.push(`<button class="btn-primary" onclick="wrRmaTransition('returns:rma_submit','${d.id}')">تقديم</button>`);
+    if (['submitted', 'under_review'].includes(d.status)) {
+      actions.push(`<button class="btn-primary" onclick="wrRmaTransition('returns:rma_approve','${d.id}')">موافقة</button>`);
+      actions.push(`<button class="wr-mini-btn wr-danger" onclick="wrRmaTransition('returns:rma_reject','${d.id}',{reason:'رفض يدوي'})">رفض</button>`);
+    }
+    if (['approved', 'awaiting_receipt', 'submitted'].includes(d.status)) {
+      actions.push(`<button class="wr-mini-btn" onclick="wrRmaTransition('returns:record_receipt','${d.id}')">تسجيل استلام</button>`);
+    }
+    if (d.status === 'under_inspection') {
+      actions.push(`<button class="wr-mini-btn" onclick="wrRmaTransition('returns:record_inspection','${d.id}',{passes:true})">فحص ناجح</button>`);
+      actions.push(`<button class="wr-mini-btn wr-danger" onclick="wrRmaTransition('returns:record_inspection','${d.id}',{passes:false,condition:'defective'})">فحص فاشل</button>`);
+    }
+    if (d.status === 'disposition_pending') {
+      ['repair', 'replace', 'refund', 'return_to_supplier', 'refurbish', 'scrap'].forEach((disp) => {
+        actions.push(`<button class="wr-mini-btn" onclick="wrRmaTransition('returns:record_disposition','${d.id}',{disposition:'${disp}'})">${disp}</button>`);
+      });
+    }
+    if (d.status === 'resolved') actions.push(`<button class="btn-primary" onclick="wrRmaTransition('returns:rma_close','${d.id}')">إغلاق</button>`);
+
+    return `<div class="wr-panel"><div class="wr-panel-head"><h3>${esc(d.rma_number)}</h3><button class="wr-mini-btn" onclick="wrRmaBackToList()">◀ رجوع للقائمة</button></div>
+      <p><strong>الحالة:</strong> <span class="wr-badge">${esc(RMA_STATUS_AR[d.status] || d.status)}</span>
+      ${d.disposition ? ` · <strong>القرار:</strong> ${esc(d.disposition)}` : ''}</p>
+      <p><strong>العميل:</strong> ${esc(d.customer_id || '—')} · <strong>مصدر المستند:</strong> ${esc(d.source_document_number || '—')}</p>
+      ${d.ncr_id ? `<p><strong>عدم مطابقة (NCR):</strong> ${esc(d.ncr_id)}</p>` : ''}
+      ${d.work_item_id ? `<p><strong>عنصر عمل الإصلاح:</strong> ${esc(d.work_item_id)}</p>` : ''}
+      ${d.credit_note_document_id ? `<p><strong>إشعار دائن:</strong> ${esc(d.credit_note_document_id)}</p>` : ''}
+      <div class="wr-form-actions">${actions.join('')}</div>
+      <h4>البنود</h4>
+      <table class="wr-table"><thead><tr><th>المنتج</th><th>الكمية المطلوبة</th><th>المستلمة</th></tr></thead>
+      <tbody>${(d.lines || []).map((l) => `<tr><td>${esc(l.product_name)}</td><td>${l.qty_requested}</td><td>${l.qty_received}</td></tr>`).join('')}</tbody></table>
+      <h4>السجل الزمني</h4>
+      <table class="wr-table"><thead><tr><th>الإجراء</th><th>المستخدم</th><th>التاريخ</th></tr></thead>
+      <tbody>${(d.timeline || []).map((t) => `<tr><td>${esc(t.action)}</td><td>${esc(t.actor)}</td><td class="wr-muted">${esc(t.created_at)}</td></tr>`).join('')}</tbody></table>
+      </div>`;
+  }
+
+  function renderRmaForm() {
+    return `<div class="wr-panel"><div class="wr-panel-head"><h3>RMA جديد</h3></div>
+      <div class="wr-form-grid">
+        <div><label>معرف العميل *</label><input id="rmaCustomer" class="wr-input"></div>
+        <div><label>رقم المستند المصدر</label><input id="rmaSourceDoc" class="wr-input"></div>
+        <div class="wr-form-full"><label>المنتج *</label><input id="rmaProduct" class="wr-input"></div>
+        <div><label>الكمية *</label><input id="rmaQty" type="number" class="wr-input" value="1"></div>
+        <div class="wr-form-full"><label>السبب</label><input id="rmaReason" class="wr-input"></div>
+      </div>
+      <div class="wr-form-actions"><button class="btn-primary" onclick="wrRmaCreate()">إنشاء</button><button class="wr-mini-btn" onclick="wrRmaCancelNew()">إلغاء</button></div></div>`;
+  }
+
+  function renderRmaTab() {
+    const el = document.getElementById('wrRmaBody'); if (!el) return;
+    if (rmaState.loading) { el.innerHTML = '<div class="wr-empty">جاري التحميل...</div>'; return; }
+    if (rmaState.error) { el.innerHTML = `<div class="wr-empty">${escapeHtml(rmaState.error)}</div>`; return; }
+    if (rmaState.detail) { el.innerHTML = renderRmaDetail(); return; }
+    if (rmaState.formOpen) { el.innerHTML = renderRmaForm(); return; }
+    el.innerHTML = `
+      <div class="wr-toolbar"><button class="btn-primary" onclick="wrRmaOpenNew()">➕ RMA جديد</button></div>
+      <table class="wr-table"><thead><tr><th>الرقم</th><th>العميل</th><th>الحالة</th><th>القرار</th><th></th></tr></thead>
+      <tbody>${rmaState.list.map((r) => `<tr>
+        <td>${esc(r.rma_number)}</td><td>${esc(r.customer_id || '—')}</td>
+        <td>${esc(RMA_STATUS_AR[r.status] || r.status)}</td><td>${esc(r.disposition || '—')}</td>
+        <td><button class="wr-mini-btn" onclick="wrRmaOpenDetail('${r.id}')">فتح</button></td>
+        </tr>`).join('') || '<tr><td colspan="5" class="wr-empty">لا توجد مرتجعات RMA مسجّلة في النظام المعتمد</td></tr>'}</tbody></table>`;
   }
 
   let activeTab = 'dashboard', wEditing = null, cEditing = null, wSearch = '', cSearch = '', cStatusFilter = '';
@@ -231,16 +388,23 @@
   }
 
   function renderTabContent() {
-    const map = { wrDashBody: 'dashboard', wrWtyBody: 'warranties', wrClaimBody: 'claims' };
+    const map = { wrDashBody: 'dashboard', wrWtyBody: 'warranties', wrClaimBody: 'claims', wrRmaBody: 'rma' };
     Object.keys(map).forEach(id => { const e = document.getElementById(id); if (e) e.style.display = map[id] === activeTab ? '' : 'none'; });
-    if (activeTab === 'dashboard') renderDashboard(); else if (activeTab === 'claims') renderClaims(); else renderWarranties();
+    if (activeTab === 'dashboard') renderDashboard();
+    else if (activeTab === 'claims') renderClaims();
+    else if (activeTab === 'rma') { rmaState.formOpen = false; rmaState.detail = null; rmaLoadList(); }
+    else renderWarranties();
   }
   function render() {
     const body = document.getElementById('warrantyBody'); if (!body) return;
     ensureData();
-    const tabs = [['dashboard', '📊 اللوحة'], ['warranties', '🛡️ الضمانات'], ['claims', '↩️ المطالبات/المرتجعات']];
+    const tabs = [
+      ['dashboard', '📊 اللوحة'], ['warranties', '🛡️ الضمانات'],
+      ['claims', '↩️ المطالبات (محلي)'],
+      ['rma', '✅ RMA (النظام المعتمد)'],
+    ];
     body.innerHTML = `<div class="wr-tabs">${tabs.map(([k, l]) => `<button class="wr-tab-btn ${activeTab === k ? 'active' : ''}" onclick="wrOpenTab('${k}')">${l}</button>`).join('')}</div>
-      <div id="wrDashBody"></div><div id="wrWtyBody"></div><div id="wrClaimBody"></div>`;
+      <div id="wrDashBody"></div><div id="wrWtyBody"></div><div id="wrClaimBody"></div><div id="wrRmaBody"></div>`;
     renderTabContent();
   }
   window.renderWarranty = render;

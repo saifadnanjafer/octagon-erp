@@ -52,6 +52,7 @@ import { registerAssetActions } from './platform/assets/index.mjs';
 import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
 import { registerFleetActions } from './platform/fleet/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
+import { registerReturnsActions } from './platform/domains/returns/returns-actions.mjs';
 // Final Page Catalog: the 16 Wave 2 domains. Wave 2 shipped their schema and
 // services but never registered them, so none of their 105 actions could
 // execute. See platform/domains/wave2-actions.mjs.
@@ -248,6 +249,16 @@ export function createPlatformAuthority(dialect) {
     registerCollaborationActions(actionExecutor, { historyService, chatterService });
   } catch (collaborationError) {
     console.error('[platform] Collaboration action registration error:', collaborationError);
+  }
+  // commercial-operations-closure P0: returns/RMA orchestration authority
+  // over the existing canonical Inventory/Quality/Finance/Procurement/WorkItem
+  // authorities. Registration is a no-op on a database whose migration tip
+  // predates 084, matching the Wave 2 / governance fail-open-to-degraded-state
+  // contract below.
+  try {
+    registerReturnsActions(actionExecutor);
+  } catch (returnsError) {
+    console.error('[platform] Returns/RMA action registration error:', returnsError);
   }
   // Wave 2 registers last: its 16 domains extend canonical authorities and must
   // never shadow a core action id. Registration is a no-op on a database whose

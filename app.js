@@ -32211,7 +32211,7 @@ function telegramIgnoreMessage(id) {
   renderTelegramIntegrationPage();
 }
 
-function telegramApproveOutbound(id) {
+function telegramApproveOutboundLegacy(id) {
   if (!telegramCanApprove()) return showToast('ليس لديك صلاحية الموافقة على رسائل تلغرام.', 'warning');
   normalizeTelegramData();
   const out = (omni.telegram.outboundQueue || []).find(o => o.id === id);
@@ -32223,6 +32223,28 @@ function telegramApproveOutbound(id) {
   saveData();
   showToast('تمت الموافقة على المسودة. لن تُرسل تلقائياً (لا يوجد توكن/إرسال مُفعّل).', 'success');
   renderTelegramIntegrationPage();
+}
+
+// Server approval is the only path that may send a Telegram message.
+async function telegramApproveOutbound(id) {
+  if (!telegramCanApprove()) return showToast('Telegram approval permission is required.', 'warning');
+  normalizeTelegramData();
+  const out = (omni.telegram.outboundQueue || []).find(o => o.id === id);
+  if (!out) return;
+  try {
+    const response = await fetch('/api/telegram/approve-and-send', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ outboundId: id }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.success) throw new Error(result.error || 'Telegram send failed');
+    Object.assign(out, result.outbound || {});
+    showToast('Telegram message approved and sent.', 'success');
+    renderTelegramIntegrationPage();
+  } catch (error) {
+    showToast(error.message || 'Telegram send failed.', 'warning');
+  }
 }
 
 function telegramJarvisDraft() {
@@ -32238,12 +32260,35 @@ function telegramJarvisDraft() {
   renderTelegramIntegrationPage();
 }
 
+async function telegramRefreshServerStatus() {
+  if (window.__telegramStatusRefreshing) return;
+  window.__telegramStatusRefreshing = true;
+  try {
+    const response = await fetch('/api/telegram/status', { credentials: 'same-origin' });
+    const result = await response.json().catch(() => ({}));
+    if (response.ok && result.success) {
+      normalizeTelegramData();
+      if (result.config) Object.assign(omni.telegram.config, result.config);
+      if (result.status) Object.assign(omni.telegram.status, result.status);
+      if (result.remote?.bot?.username) omni.telegram.config.botUsername = result.remote.bot.username;
+      omni.telegram.status.bot = result.config?.tokenConfigured ? 'connected' : 'not_configured';
+      omni.telegram.status.serverCheckedAt = new Date().toISOString();
+      renderTelegramIntegrationPage();
+    }
+  } catch (_) {
+    // The page remains usable in local/demo mode when the server is offline.
+  } finally {
+    window.__telegramStatusRefreshing = false;
+  }
+}
+
 function renderTelegramIntegrationPage() {
   normalizeAiIntegrationData();
   const tg = normalizeTelegramData();
   const orgProfile = getActiveOrgProfile();
   const body = document.getElementById('telegramBody');
   if (!body) return;
+  if (!window.__telegramStatusRefreshing && !tg.status.serverCheckedAt) telegramRefreshServerStatus();
 
   const cfg = tg.config;
   const botLabel = { not_configured: 'غير مهيأ', configured: 'مهيأ', connected: 'متصل', error: 'خطأ' }[tg.status.bot] || 'غير مهيأ';
@@ -32290,7 +32335,7 @@ function renderTelegramIntegrationPage() {
       <td>${escapeHtml(createdByLabel[o.createdBy] || o.createdBy)}</td>
       <td>${escapeHtml(o.reason || '—')}</td>
       <td><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${outStatusColor[o.status] || 'var(--text-muted)'};color:#fff;">${escapeHtml(outStatusLabel[o.status] || o.status)}</span></td>
-      <td>${canApprove ? `<button class="btn-mini" onclick="telegramApproveOutbound('${o.id}')" title="موافقة (بدون إرسال تلقائي)">موافقة</button>` : '<span style="color:var(--text-muted);font-size:11px;">—</span>'}</td>
+      <td>${canApprove ? `<button class="btn-mini" onclick="telegramApproveOutbound('${o.id}')" title="موافقة وإرسال عبر Telegram">موافقة وإرسال</button>` : '<span style="color:var(--text-muted);font-size:11px;">—</span>'}</td>
     </tr>`;
   }).join('');
 

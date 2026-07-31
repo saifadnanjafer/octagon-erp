@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const net = require('net');
+const telegramBot = require('./platform/integrations/telegram-bot.cjs');
 
 // Reliability hardening (2026-07-12): this process has no supervisor
 // (no PM2/systemd auto-restart) — before this handler, ANY unhandled
@@ -260,6 +261,8 @@ const WHATSAPP_BODY_LIMIT = 1024 * 1024 * 5;
 const whatsappRateWindowMs = 60 * 1000;
 const whatsappRateLimit = 120;
 const whatsappRateHits = new Map();
+const telegramRateHits = new Map();
+const telegramPollingState = { offset: 0, running: false, timer: null };
 
 function backupTimestamp(date = new Date()) {
   const pad = n => String(n).padStart(2, '0');
@@ -486,8 +489,134 @@ function ensureDbShape(db) {
   if (!Array.isArray(db.omni.whatsappIngestHistory)) db.omni.whatsappIngestHistory = [];
   if (!Array.isArray(db.omni.historyLedger)) db.omni.historyLedger = [];
   if (!Array.isArray(db.omni.migrationsApplied)) db.omni.migrationsApplied = [];
+  if (!db.omni.telegram || typeof db.omni.telegram !== 'object') db.omni.telegram = {};
+  const telegram = db.omni.telegram;
+  if (!telegram.config || typeof telegram.config !== 'object') telegram.config = {};
+  telegram.config = {
+    enabled: Boolean(telegram.config.enabled),
+    mode: telegram.config.mode || 'demo',
+    botUsername: telegram.config.botUsername || '',
+    tokenConfigured: telegram.config.tokenConfigured === true,
+    webhookUrl: telegram.config.webhookUrl || '',
+    allowedChatIds: Array.isArray(telegram.config.allowedChatIds) ? telegram.config.allowedChatIds.map(String) : [],
+    adminChatId: telegram.config.adminChatId || '',
+    managerGroupId: telegram.config.managerGroupId || '',
+    employeeGroupId: telegram.config.employeeGroupId || '',
+    projectGroupMap: telegram.config.projectGroupMap && typeof telegram.config.projectGroupMap === 'object' ? telegram.config.projectGroupMap : {},
+  };
+  if (!Array.isArray(telegram.chats)) telegram.chats = [];
+  if (!Array.isArray(telegram.inbox)) telegram.inbox = [];
+  if (!Array.isArray(telegram.outboundQueue)) telegram.outboundQueue = [];
+  if (!Array.isArray(telegram.activityLog)) telegram.activityLog = [];
+  if (!telegram.status || typeof telegram.status !== 'object') telegram.status = {};
   if (!db.omni.migrationsApplied.includes('server_whatsapp_webhook_v1')) db.omni.migrationsApplied.push('server_whatsapp_webhook_v1');
+  if (!db.omni.migrationsApplied.includes('server_telegram_bot_v1')) db.omni.migrationsApplied.push('server_telegram_bot_v1');
   return db;
+}
+
+function telegramSafeConfig(db) {
+  const shape = ensureDbShape(db);
+  const configured = telegramBot.configured();
+  const configuredIds = telegramBot.allowedChatIds();
+  const config = shape.omni.telegram.config;
+  return {
+    ...config,
+    enabled: configured && config.enabled !== false,
+    tokenConfigured: configured,
+    allowedChatIds: configuredIds.length ? configuredIds : config.allowedChatIds,
+    botToken: undefined,
+    token: undefined,
+    apiKey: undefined,
+  };
+}
+
+function telegramRateLimit(req) {
+  const key = req.socket?.remoteAddress || 'unknown';
+  const now = Date.now();
+  const hit = telegramRateHits.get(key) || { start: now, count: 0 };
+  if (now - hit.start > 60 * 1000) { hit.start = now; hit.count = 0; }
+  hit.count += 1;
+  telegramRateHits.set(key, hit);
+  return hit.count <= 120;
+}
+
+function telegramAppendUpdate(update) {
+  const message = telegramBot.extractMessage(update);
+  if (!message || !telegramBot.isAllowedChatId(message.chatId)) return { accepted: false, reason: 'unsupported_or_disallowed_chat' };
+  const db = ensureDbShape(loadDbForMutation());
+  const tg = db.omni.telegram;
+  if (message.updateId !== null && tg.inbox.some(item => item.updateId === message.updateId)) return { accepted: false, duplicate: true };
+  const existingChat = tg.chats.find(chat => String(chat.chatId) === message.chatId);
+  const chat = existingChat || {
+    id: makeId('tgchat'), chatId: message.chatId, title: message.chatTitle,
+    type: message.chatType, linked: false, firstSeenAt: new Date().toISOString(),
+  };
+  chat.title = message.chatTitle; chat.lastMessageAt = message.receivedAt;
+  if (!existingChat) tg.chats.unshift(chat);
+  const item = {
+    id: makeId('tgin'), sender: message.sender, chat: message.chatTitle, chatId: message.chatId,
+    text: message.text || '[Telegram message without text]', receivedAt: message.receivedAt,
+    attachment: message.attachment, linkedType: 'none', status: 'new', sourceMessageId: message.messageId,
+    updateId: message.updateId, senderId: message.senderId, username: message.username, rawType: message.rawType,
+  };
+  tg.inbox.unshift(item);
+  tg.config.enabled = true; tg.config.mode = process.env.TELEGRAM_POLLING === 'true' ? 'polling' : 'webhook';
+  tg.config.tokenConfigured = telegramBot.configured();
+  tg.status.lastInbound = item.receivedAt; tg.status.lastSync = new Date().toISOString();
+  tg.activityLog.unshift({ id: makeId('tglog'), at: new Date().toISOString(), action: 'message_received', messageId: item.id, actor: 'telegram_bot' });
+  appendHistoryEvent(db, { module: 'telegram', action: 'message_received', actor: 'telegram_bot', source: 'telegram_bot_api', payload: { chatId: message.chatId, messageId: message.messageId, updateId: message.updateId, textLength: message.text.length } });
+  saveDb(db, { actorId: 'telegram_bot', actorName: 'Telegram Bot', actorRole: 'integration' });
+  return { accepted: true, item };
+}
+
+function telegramChatIdForOutbound(outbound, db) {
+  const tg = ensureDbShape(db).omni.telegram;
+  const direct = outbound.chatId || outbound.destinationChatId;
+  if (direct && /^-?\d+$/.test(String(direct))) return String(direct);
+  const destination = String(outbound.destination || '').toLowerCase();
+  const config = tg.config;
+  if (destination.includes('manager')) return config.managerGroupId || config.adminChatId || '';
+  if (destination.includes('employee') || destination.includes('staff')) return config.employeeGroupId || '';
+  if (destination.includes('admin')) return config.adminChatId || '';
+  return '';
+}
+
+async function telegramApproveAndSend(outboundId, actor) {
+  const db = ensureDbShape(loadDbForMutation());
+  const tg = db.omni.telegram;
+  const out = tg.outboundQueue.find(item => item.id === outboundId);
+  if (!out) { const error = new Error('Telegram outbound draft not found'); error.statusCode = 404; throw error; }
+  if (!['draft', 'pending_approval'].includes(out.status)) { const error = new Error('Telegram draft is not awaiting approval'); error.statusCode = 409; throw error; }
+  const chatId = telegramChatIdForOutbound(out, db);
+  if (!chatId) { const error = new Error('Set a numeric chatId on the draft or configure a Telegram destination chat id'); error.statusCode = 400; throw error; }
+  if (!telegramBot.isAllowedChatId(chatId)) { const error = new Error('Telegram chat id is not in TELEGRAM_ALLOWED_CHAT_IDS'); error.statusCode = 403; throw error; }
+  out.status = 'approved'; out.approvedAt = new Date().toISOString(); out.approvedBy = actor?.user?.id || actor?.session?.userId || 'user';
+  try {
+    const sent = await telegramBot.sendMessage({ chatId, text: out.text || out.preview || '' });
+    out.status = 'sent'; out.sentAt = new Date().toISOString(); out.messageId = sent?.message_id || null; out.chatId = chatId; out.lastError = undefined;
+    tg.status.lastOutbound = out.sentAt;
+    tg.activityLog.unshift({ id: makeId('tglog'), at: out.sentAt, action: 'message_sent', outboundId, actor: out.approvedBy });
+    appendHistoryEvent(db, { module: 'telegram', action: 'message_sent', actor: out.approvedBy, source: 'telegram_bot_api', payload: { outboundId, chatId, messageId: out.messageId } });
+    saveDb(db, actor);
+    return out;
+  } catch (error) {
+    out.status = 'failed'; out.failedAt = new Date().toISOString(); out.lastError = error.message;
+    saveDb(db, actor);
+    throw error;
+  }
+}
+
+async function telegramPollingTick() {
+  if (telegramPollingState.running || process.env.TELEGRAM_POLLING !== 'true' || !telegramBot.configured()) return;
+  telegramPollingState.running = true;
+  try {
+    const updates = await telegramBot.getUpdates({ offset: telegramPollingState.offset || undefined, timeout: 10, allowed_updates: ['message', 'edited_message', 'channel_post'] });
+    for (const update of Array.isArray(updates) ? updates : []) {
+      telegramPollingState.offset = Math.max(telegramPollingState.offset, Number(update.update_id || 0) + 1);
+      telegramAppendUpdate(update);
+    }
+  } catch (error) { console.warn('[telegram] polling:', error.message); }
+  finally { telegramPollingState.running = false; telegramPollingState.timer = setTimeout(telegramPollingTick, 1000); }
 }
 
 // --- Safe local persistence engine -----------------------------------------
@@ -1609,6 +1738,9 @@ function apiProtectionMatrix() {
     { endpoint: 'GET|POST /api/restore/dry-run', classification: 'restore dry-run', protection: 'requires platform:backup:restore permission' },
     { endpoint: 'POST /api/restore', classification: 'dangerous destructive restore', protection: 'requires platform:backup:restore permission plus typed confirmation and pre-restore backup' },
     { endpoint: 'GET|POST /api/whatsapp/webhook', classification: 'webhook-special', protection: 'fail-closed verify token + HMAC signature (env-configured) + rate limit' },
+    { endpoint: 'GET /api/telegram/status', classification: 'telegram diagnostic', protection: 'requires platform:db:read; token and remote errors are never returned' },
+    { endpoint: 'POST /api/telegram/approve-and-send', classification: 'approval-gated external write', protection: 'requires platform:db:write + numeric destination + server-side token' },
+    { endpoint: 'POST /api/telegram/webhook', classification: 'webhook-special', protection: 'fail-closed secret header + allowed-chat filter + rate limit' },
     { endpoint: 'GET /api/cron/status', classification: 'read-only scheduler diagnostic', protection: 'requires a valid session' },
     { endpoint: 'POST /api/cron/run', classification: 'scheduler force-run (notification-generator only, no direct finance/payroll writes)', protection: 'requires a valid session' },
     { endpoint: 'POST /api/cron/alerts/dismiss', classification: 'scheduled alert dismissal', protection: 'requires a valid session' },
@@ -1838,6 +1970,47 @@ const server = http.createServer((req, res) => {
       auth: { serverSessionFoundation: true, sessionTtlHours: AUTH_SESSION_TTL_MS / 3600000, activeSessions: liveSessions, apiProtectionFoundation: true, platformAuthority: !!platformAuthority },
       apiProtection: apiProtectionMatrix(),
     });
+  }
+
+  if (requestUrl.pathname === '/api/telegram/status' && req.method === 'GET') {
+    const guard = requirePermission(req, res, 'platform:db:read');
+    if (!guard.ok) return;
+    const db = ensureDbShape(loadDbForMutation());
+    const result = { config: telegramSafeConfig(db), status: db.omni.telegram.status, chats: db.omni.telegram.chats.length, inbox: db.omni.telegram.inbox.length, outbound: db.omni.telegram.outboundQueue.length };
+    if (!telegramBot.configured()) return sendJson(res, 200, { success: true, ...result, remote: { configured: false } });
+    Promise.all([telegramBot.getMe(), telegramBot.getWebhookInfo()]).then(([me, webhook]) => {
+      result.config.botUsername = me?.username || result.config.botUsername;
+      result.config.enabled = true;
+      result.remote = { configured: true, bot: { id: me?.id, username: me?.username, firstName: me?.first_name }, webhook: { url: webhook?.url || '', pendingUpdateCount: webhook?.pending_update_count || 0 } };
+      sendJson(res, 200, { success: true, ...result });
+    }).catch(error => sendJson(res, 200, { success: true, ...result, remote: { configured: true, reachable: false, error: error.message } }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/telegram/webhook' && req.method === 'POST') {
+    if (!telegramRateLimit(req)) return sendJson(res, 429, { success: false, error: 'Rate limit exceeded' });
+    const verification = telegramBot.verifyWebhookSecret(req.headers);
+    if (!verification.enforced) return sendJson(res, 503, { success: false, error: verification.reason });
+    if (!verification.verified) return sendJson(res, 403, { success: false, error: verification.reason });
+    readRequestBody(req).then(rawBody => {
+      let update;
+      try { update = rawBody ? JSON.parse(rawBody) : {}; } catch (_) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+      try { return sendJson(res, 200, { success: true, ...telegramAppendUpdate(update) }); }
+      catch (error) { return sendJson(res, 500, { success: false, error: error.message || 'Telegram webhook failed' }); }
+    }).catch(error => sendJson(res, error.message === 'Payload too large' ? 413 : 500, { success: false, error: error.message || 'Webhook body read failed' }));
+    return;
+  }
+
+  if (requestUrl.pathname === '/api/telegram/approve-and-send' && req.method === 'POST') {
+    const guard = requirePermission(req, res, 'platform:db:write');
+    if (!guard.ok) return;
+    readRequestBody(req, 64 * 1024).then(async rawBody => {
+      let body = {};
+      try { body = rawBody ? JSON.parse(rawBody) : {}; } catch (_) { return sendJson(res, 400, { success: false, error: 'Invalid JSON' }); }
+      try { return sendJson(res, 200, { success: true, outbound: await telegramApproveAndSend(String(body.outboundId || ''), guard) }); }
+      catch (error) { return sendJson(res, error.statusCode || 502, { success: false, error: error.message || 'Telegram send failed' }); }
+    }).catch(error => sendJson(res, 500, { success: false, error: error.message || 'Failed to read request body' }));
+    return;
   }
 
   if (requestUrl.pathname === '/api/tts' && req.method === 'POST') {
@@ -2834,4 +3007,7 @@ async function initializeDatabase() {
     console.log(`  💾 Database file:  ${DB_FILE}`);
     console.log(`  🛡  Safe persistence: atomic writes + .prev snapshot + auto-recovery\n`);
   });
+  // Telegram long polling is opt-in through the local server environment.
+  // It never starts without a server-side token and never exposes that token.
+  setTimeout(telegramPollingTick, 1500);
 })();

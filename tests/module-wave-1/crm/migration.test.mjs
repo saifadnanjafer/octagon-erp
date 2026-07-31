@@ -27,9 +27,18 @@ async function testAppliesAsTip() {
   await freshInstall({ dbPath: p });
   const applied = (await migrationStatus({ dbPath: p })).filter((s) => s.status === 'applied').map((s) => s.id);
   assert.ok(applied.includes(MIG));
-  // 066_crm_activity_subject_unification now extends this CRM further and is
-  // the actual tip; 065 no longer is, but must still be applied.
-  assert.strictEqual(applied.at(-1), '066_crm_activity_subject_unification', 'CRM activity-unification migration must be the tip');
+  // 066_crm_activity_subject_unification extends this CRM further and must be
+  // applied AFTER 065.
+  //
+  // This originally pinned 066 as the migration tip. That assertion was only
+  // ever true while CRM was the newest work: Module Expansion Wave 2 added
+  // 067-082 and the Final Page Catalog added 083, so a tip check now fails for
+  // a reason that has nothing to do with CRM. The invariant this test actually
+  // cares about is ORDERING, so assert ordering and let the tip move.
+  const at065 = applied.indexOf(MIG);
+  const at066 = applied.indexOf('066_crm_activity_subject_unification');
+  assert.ok(at066 !== -1, 'CRM activity-unification migration must be applied');
+  assert.ok(at066 > at065, 'CRM activity-unification migration must apply after 065');
   drop(p);
   console.log(`PASS: appliesAsTip (${applied.length} migrations)`);
 }
@@ -189,9 +198,17 @@ async function testRerunIsIdempotent() {
 async function testRollbackAndReapply() {
   const p = tmp('rollback');
   await freshInstall({ dbPath: p });
-  // Unwind both 066 (now the tip) and 065, to reach pre-065 state exactly as
-  // this test originally intended before 066 was added above it.
-  await runMigrations({ dbPath: p, direction: 'down', steps: 2 });
+  // Reach the pre-065 state.
+  //
+  // This used a positional `steps: 2` ("unwind 066 and 065"), which silently
+  // stopped meaning that the moment anything landed above 066 — Wave 2 added
+  // 067-082 and the Final Page Catalog added 083, so two steps now unwind the
+  // wrong pair. Roll back to an explicit TARGET so the assertion below keeps
+  // testing 065's own down() no matter how much work sits on top.
+  await runMigrations({
+    dbPath: p, direction: 'down',
+    target: '064_module_expansion_wave1_registry', allowFullChain: true,
+  });
 
   let db = open(p);
   const after = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((r) => r.name));
@@ -208,7 +225,14 @@ async function testRollbackAndReapply() {
   db.close();
 
   const up = await runMigrations({ dbPath: p, direction: 'up' });
-  assert.deepStrictEqual(up.migrations, [MIG, '066_crm_activity_subject_unification'], 're-apply restores CRM and its activity unification');
+  // Re-applying from the 064 tip replays everything above it, which now
+  // includes Wave 2 (067-082) and the Final Page Catalog (083). The invariant
+  // this test owns is that CRM's own two migrations come back, in order — not
+  // that they are the only two in the tree.
+  const at065 = up.migrations.indexOf(MIG);
+  const at066 = up.migrations.indexOf('066_crm_activity_subject_unification');
+  assert.ok(at065 !== -1 && at066 !== -1, 're-apply restores CRM and its activity unification');
+  assert.ok(at066 > at065, 'activity unification must re-apply after the CRM pipeline migration');
 
   db = open(p);
   assert.strictEqual(db.prepare('SELECT COUNT(*) n FROM crm_pipeline_stages').get().n, 6, 'seed restored exactly once');
@@ -224,10 +248,14 @@ async function testExistingDataSurvivesTheUpgrade() {
   await runMigrations({ dbPath: p, direction: 'up', target: '064_module_expansion_wave1_registry' })
     .catch(async () => { await freshInstall({ dbPath: p }); });
 
-  // Build the "already has data" state at tip 064 — unwind both 065 and 066.
+  // Build the "already has data" state at tip 064. Target-based for the same
+  // reason as testRollbackAndReapply above.
   const p2 = tmp('upgrade2');
   await freshInstall({ dbPath: p2 });
-  await runMigrations({ dbPath: p2, direction: 'down', steps: 2 });
+  await runMigrations({
+    dbPath: p2, direction: 'down',
+    target: '064_module_expansion_wave1_registry', allowFullChain: true,
+  });
 
   let w = new DatabaseSync(p2);
   const now = new Date().toISOString();

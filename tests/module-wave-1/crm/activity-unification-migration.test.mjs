@@ -15,6 +15,7 @@ import { freshInstall, runMigrations, openMigrationDatabase } from '../../../dat
 import { IrreversibleActivityDataError } from '../../../database/migrations/066_crm_activity_subject_unification.mjs';
 
 const MIG = '066_crm_activity_subject_unification';
+const MIG_065 = '065_crm_pipeline_leads_opportunities_and_activities';
 const CO = 'co_test';
 
 function tmp(n) { return path.join(os.tmpdir(), `octagon-actunify-${n}-${Date.now()}-${process.pid}.db`); }
@@ -28,7 +29,14 @@ function drop(p) { for (const s of ['', '-wal', '-shm']) { try { if (fs.existsSy
 async function buildPre066Fixture(name) {
   const p = tmp(name);
   await freshInstall({ dbPath: p });
-  await runMigrations({ dbPath: p, direction: 'down', steps: 1 }); // land at 065 tip
+  // Land at the 065 tip.
+  //
+  // This was `steps: 1`, which was correct only while 066 was the newest
+  // migration in the tree. Wave 2 (067-082) and the Final Page Catalog (083)
+  // now sit above it, so a single step rolls back 083 and leaves the fixture in
+  // a post-066 state — which then fails on a foreign key. Roll back TO 065
+  // explicitly so the fixture is independent of how much work lands above it.
+  await runMigrations({ dbPath: p, direction: 'down', target: MIG_065, allowFullChain: true });
   const db = openMigrationDatabase(p);
   const ts = new Date().toISOString();
 
@@ -143,7 +151,10 @@ async function testDirectOpportunityActivityAfterMigration() {
 async function testRerunIsIdempotentAndForeignKeysClean() {
   const p = await buildPre066Fixture('rerun');
   const first = await runMigrations({ dbPath: p, direction: 'up' });
-  assert.deepStrictEqual(first.migrations, [MIG]);
+  // The fixture sits at the 065 tip, so applying `up` replays 066 AND
+  // everything above it (Wave 2 067-082, Final Page Catalog 083). This test
+  // owns 066: assert it was applied and applied first, not that it was alone.
+  assert.strictEqual(first.migrations[0], MIG, '066 must be the first migration re-applied from the 065 tip');
 
   const again = await runMigrations({ dbPath: p, direction: 'up' });
   assert.deepStrictEqual(again.migrations, [], 'rerun applies nothing once at tip');
@@ -161,7 +172,8 @@ async function testRollbackRestoresOriginalShapeWhenPossible() {
   const p = await buildPre066Fixture('rollback');
   await runMigrations({ dbPath: p, direction: 'up' });
 
-  await runMigrations({ dbPath: p, direction: 'down', steps: 1 });
+  // Unwind 066 specifically, not "one step" — see buildPre066Fixture.
+  await runMigrations({ dbPath: p, direction: 'down', target: MIG_065, allowFullChain: true });
   const db = openMigrationDatabase(p);
 
   const kind = db.prepare("SELECT type FROM sqlite_master WHERE name = 'crm_opportunity_activities'").get();
@@ -186,7 +198,7 @@ async function testRollbackRestoresOriginalShapeWhenPossible() {
 
   // Forward round trip: re-apply and land on the same logical state.
   const reapplied = await runMigrations({ dbPath: p, direction: 'up' });
-  assert.deepStrictEqual(reapplied.migrations, [MIG]);
+  assert.strictEqual(reapplied.migrations[0], MIG, '066 must be the first migration re-applied after its rollback');
   const db2 = openMigrationDatabase(p);
   assert.strictEqual(db2.prepare('SELECT COUNT(*) n FROM crm_activities').get().n, 3, 'round trip returns to the same row count');
   db2.close();
@@ -207,7 +219,7 @@ async function testRollbackRefusesOnIrreversiblePartyData() {
   db.close();
 
   await assert.rejects(
-    () => runMigrations({ dbPath: p, direction: 'down', steps: 1 }),
+    () => runMigrations({ dbPath: p, direction: 'down', target: MIG_065, allowFullChain: true }),
     (e) => {
       // The runner wraps migration errors; the cause carries the typed error.
       const cause = e.details?.cause ?? e;

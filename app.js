@@ -3075,7 +3075,7 @@ function getEmployeeDailyFinancialSummary(emp, rec, cfg) {
 
 // ─── Page Navigation ───
 const navDomains = [
-  { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
+  { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['home_work', 'core_daily', 'core_records'] },
   { key: 'ops', label: 'التشغيل والورشة', icon: 'fa-industry', groups: ['ops_control', 'ops_production', 'ops_frontline'] },
   { key: 'finance', label: 'المالية', icon: 'fa-building-columns', groups: ['finance_accounts'] },
   { key: 'commercial', label: 'العملاء والقطاعات', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_verticals'] },
@@ -3085,6 +3085,9 @@ const navDomains = [
 ];
 
 const navGroupMeta = {
+  // Final Page Catalog group 1 — Home & Work. The personal surfaces: where you
+  // land, what is assigned to you, and what awaits your decision.
+  home_work: { label: 'الرئيسية والأعمال', domain: 'core', icon: 'fa-house-chimney' },
   core_daily: { label: 'اليومي والموظفون', domain: 'core', icon: 'fa-calendar-check' },
   core_records: { label: 'المدخلات والمخرجات', domain: 'core', icon: 'fa-folder-open' },
   ops_control: { label: 'القيادة وسير العمل', domain: 'ops', icon: 'fa-diagram-project' },
@@ -3101,6 +3104,7 @@ const navGroupMeta = {
 };
 
 const navGroupPages = {
+  home_work: ['enterprise_home', 'my_work', 'unified_inbox'],
   core_daily: ['calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
   ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
@@ -37396,6 +37400,10 @@ window.ensurePageTemplateLoaded = async function (page) {
     // Visible expansion: canonical operations console (views/canonical_console.html).
     canonical_console: 'pageCanonicalConsole',
     canonical_inventory: 'pageCanonicalInventory',
+    // Final Page Catalog — Home & Work group.
+    enterprise_home: 'pageEnterpriseHome',
+    my_work: 'pageMyWork',
+    unified_inbox: 'pageUnifiedInbox',
     products: 'pageProductsAndMaterials',
     parties: 'pageCustomersAndSuppliers',
     warehouses: 'pageWarehouses',
@@ -37472,7 +37480,8 @@ window.prefetchAllViews = function () {
     'device_center', 'appointments', 'workshop_ledger',     'loyalty', 'finance_installments', 'sales_commission', 'sales_contracts', 'sales_price_lists', 'pos_deepening', 'omni_communications', 'esign', 'events', 'knowledge', 'knowledge_base', 'surveys', 'visitors', 'risk_compliance', 'work_orders', 'route_health',
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready',
-    'canonical_console', 'canonical_inventory'
+    'canonical_console', 'canonical_inventory',
+    'enterprise_home', 'my_work', 'unified_inbox'
   ];
   
   let i = 0;

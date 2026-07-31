@@ -30,6 +30,7 @@
 | `employee_mobile` | `pageEmployeeMobile` | `views/employee_mobile.html` | core_daily | yes | `public` | `modules/enterprise-suite.js` | COMPLETE |
 | `employee_ui` | `pageEmployee_ui` | `views/employee_ui.html` | admin_org | yes | `public` | — | COMPLETE |
 | `employees` | `pageEmployees` | `views/employees.html` | core_daily | yes | `workshop.user` | — | COMPLETE |
+| `enterprise_home` | `pageEnterpriseHome` | `views/enterprise_home.html` | home_work | yes | `public` | — | COMPLETE |
 | `equipment` | `pageEquipment` | `views/equipment.html` | ops_production | yes | `workshop.user` | `modules/canonical-maintenance.js` | COMPLETE |
 | `esign` | `pageEsign` | `views/esign.html` | resources_org | yes | `workshop.user` | `modules/esign.js` | COMPLETE |
 | `events` | `pageEvents` | `views/events.html` | commercial_sales | yes | `workshop.user` | `modules/events.js` | COMPLETE |
@@ -61,6 +62,7 @@
 | `mobile_inventory_count` | `pageMobileInventoryCount` | `views/mobile_inventory_count.html` | — | no | **missing** | — | EXISTING — NEEDS UPGRADE |
 | `mrp` | `pageMrp` | `views/mrp.html` | ops_production | yes | `workshop.user` | `modules/canonical-engineering.js`<br>`modules/canonical-manufacturing.js`<br>`modules/mrp.js` | COMPLETE |
 | `multi_entity` | `pageMultiEntity` | `views/multi_entity.html` | admin_org | yes | `system.admin` | `modules/multi-entity.js` | COMPLETE |
+| `my_work` | `pageMyWork` | `views/my_work.html` | home_work | yes | `public` | — | COMPLETE |
 | `nl_reports` | `pageNlReports` | `views/nl_reports.html` | intelligence_core | yes | `workshop.manager, finance.manager` | `modules/nl-reporting.js` | COMPLETE |
 | `omni_communications` | `pageOmniCommunications` | `views/omni_communications.html` | — | yes | `workshop.manager, finance.manager` | `modules/omni-communications.js` | EXISTING — NEEDS UPGRADE |
 | `op_packs` | `pageOpPacks` | `views/op_packs.html` | ops_production | yes | `workshop.user` | — | COMPLETE |
@@ -99,6 +101,7 @@
 | `telegram` | `pageTelegram` | `views/telegram.html` | — | yes | `workshop.manager, finance.manager` | — | EXISTING — NEEDS UPGRADE |
 | `timesheet` | `pageTimesheet` | `views/timesheet.html` | core_daily | yes | `workshop.user` | — | COMPLETE |
 | `training_lms` | `pageTrainingLms` | `views/training_lms.html` | admin_org | yes | `workshop.manager` | — | COMPLETE |
+| `unified_inbox` | `pageUnifiedInbox` | `views/unified_inbox.html` | home_work | yes | `workshop.manager, finance.manager, system.admin` | — | COMPLETE |
 | `visitors` | `pageVisitors` | `views/visitors.html` | resources_org | yes | `workshop.user` | `modules/visitors.js` | COMPLETE |
 | `warehouses` | `pageWarehouses` | `views/warehouses_and_locations.html` | — | yes | `workshop.user, workshop.manager, system.admin` | `modules/warehouses-and-locations.js` | EXISTING — NEEDS UPGRADE |
 | `warranty` | `pageWarranty` | `views/warranty.html` | commercial_sales | yes | `workshop.user` | `modules/warranty-rma.js` | COMPLETE |

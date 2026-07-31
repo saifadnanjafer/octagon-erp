@@ -263,6 +263,15 @@
 
   const PAGE_PERMISSIONS = {
     home: [],
+    // Final Page Catalog — Home & Work.
+    // These are personal surfaces: every authenticated actor has one, and the
+    // ROWS are scoped server-side to that actor. An empty list here means
+    // "any authenticated role may open the page", not "no authorization" —
+    // the governed queries behind it still enforce company scope and
+    // per-module read permissions.
+    enterprise_home: [],
+    my_work: [],
+    unified_inbox: ['workshop.manager', 'finance.manager', 'system.admin'],
     finance: ['finance.user'],
     cashbox: ['finance.user'],
     expenses: ['finance.user'],

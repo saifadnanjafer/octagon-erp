@@ -698,6 +698,57 @@
     testPing: (input = {}, opts) => action('control:test:ping', input, { ...opts, domain: 'CONTROL_PLANE' }),
   };
 
+  // -------------------------------------------------------------------------
+  // Wave 2 domains — Final Page Catalog.
+  //
+  // The 16 Wave 2 domains share one governed read shape
+  // (GET /api/v1/<namespace>/<resource>) and one governed write shape
+  // (POST /api/v1/action/<namespace>:<action>), so they need one thin helper
+  // rather than 16 hand-written client objects.
+  //
+  // `describe()` hits the /_meta descriptor so a page can render a truthful
+  // "module not installed" / "configuration required" state instead of an
+  // empty table that looks like "no data".
+  // -------------------------------------------------------------------------
+  const WAVE2_NAMESPACES = Object.freeze([
+    'contracts', 'subscriptions', 'rental', 'expenses', 'sourcing',
+    'human_capital', 'financial_planning', 'treasury', 'wms', 'plm',
+    'grc', 'hse', 'bi', 'integration', 'iraq_localization', 'ai_copilot',
+  ]);
+
+  const wave2 = {
+    NAMESPACES: WAVE2_NAMESPACES,
+    /** Governed list read. Company scope is applied server-side. */
+    list(namespace, resource, params) {
+      return query(`/${namespace}/${resource}`, params);
+    },
+    /** Governed single-record read. */
+    get(namespace, resource, id) {
+      return query(`/${namespace}/${resource}/${encodeURIComponent(id)}`);
+    },
+    /** What this module exposes: resources, actions, permissions. */
+    describe(namespace) {
+      return query(`/${namespace}/_meta`);
+    },
+    /** Governed command. Action ids are fixed tokens, never user input. */
+    run(actionId, input, opts) {
+      return action(actionId, input || {}, { ...(opts || {}), domain: 'WAVE2' });
+    },
+    /**
+     * Resolve a namespace to a small facade, so a page reads as
+     * `treasury.list('bank-accounts')` rather than repeating the namespace.
+     */
+    domain(namespace) {
+      return {
+        namespace,
+        list: (resource, params) => wave2.list(namespace, resource, params),
+        get: (resource, id) => wave2.get(namespace, resource, id),
+        describe: () => wave2.describe(namespace),
+        run: (actionId, input, opts) => wave2.run(actionId, input, opts),
+      };
+    },
+  };
+
   const CanonicalClient = {
     // transport
     request,
@@ -736,6 +787,7 @@
     pos,
     workItems,
     controlPlane,
+    wave2,
 
     // exposed for tests and diagnostics
     _internal: { stripForbidden, splitServerError, buildQueryString, FORBIDDEN_INPUT_KEYS },

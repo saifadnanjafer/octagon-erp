@@ -1413,3 +1413,43 @@ dirty files untouched.
 - **Remaining breadth-wave status:** B2 Service & Helpdesk through B8 E-commerce were not started in this closure. The overall breadth wave remains partial and `main` was not merged.
 - **Classification:** **INTEGRATION READY** for CRM only.
 
+
+---
+
+## Final Page Catalog — FP-0 + FP-A + FP-1 (2026-07-31)
+
+| Field | Value |
+|---|---|
+| Executing model | claude-opus-5 (Claude Opus 5) |
+| Agent / runtime | Claude Code (Claude Agent SDK), win32, Node v24.18.0 |
+| Repository | saifadnanjafer/octagon-erp |
+| Selected source branch | `build/octagon-module-expansion-wave-2` |
+| Selected source SHA | `237febe23b4192542b4e43e54192c43f88540706` |
+| Final branch | `build/octagon-final-page-catalog` |
+| Worktree | `C:\Users\Zahraa dlbooz\Downloads\odoo-19.0\octagon-final-page-catalog` |
+| Page groups inspected | all 14 navigation groups, all 111 page IDs |
+| Pages existing at entry | 108 |
+| Pages added | 3 (`enterprise_home`, `my_work`, `unified_inbox`) |
+| Pages upgraded | 0 |
+| Pages consolidated | 2 route aliases (`approvals`, `manager_approvals` → `unified_inbox`) |
+| Duplicate pages retired | 0 (aliases retained; retirement conditions recorded) |
+| Pages blocked | 2 (`settings`, `system_check` — permission keys with no page) |
+| Navigation groups | 13 → 14 (added `home_work`) |
+| Queries connected | 130 Wave 2 governed read resources + 3 page query paths |
+| Actions connected | 105 Wave 2 actions + 3 page mutation paths |
+| Permissions connected | 110 Wave 2 permissions + 3 page permissions |
+| Entities registered | 82 (bilingual labels) |
+| Modules registered | 16 (status `installed`) |
+| Shared components | 1 kit (`OctagonPageKit`): 9 states, 12 primitives, `wirePage` mount helper |
+| Browser | real Chromium, disposable DB, port 8137. 3/3 pages activate; API fail-closed on every route; RTL + LTR verified; mobile 375×812 with no overflow; 0 fake-zero KPIs; no error from this wave's code. |
+| Tests | 128 / 128 passing (unit + final-page-catalog + Wave 1 + Wave 2). Older phase/checkpoint suites not run — recorded as risk R7. |
+| Deferred hardening | populated-state browser proof; browser mutation round-trip; bulk-approval policy flag; module-enablement UX; deletion of dead Wave 2 `index.mjs` dialects; PostgreSQL proof; 62 remaining page families; screenshots. |
+| Operational mutation | none — `octagon-erp/database.db` SHA-256 `acfd3ab8…3a4683` unchanged before and after; WAL still 0 bytes |
+| Telegram worktree | untouched — same 4 uncommitted entries, HEAD still `00e60a8` |
+| Administrator credential | unchanged, not read, not printed, not used |
+| VNext | frozen and unchanged — tree fingerprint `be13a351d8613e3f55de20d7eba75558d2c1bafe80c6cd3e5bf53d590f3a10d2` |
+| main merged | no |
+| Failures and rework (current agent) | 6 self-inflicted defects, all caught by tests before commit: (1) inventory scanner anchored on an embedded newline and under-reported 65 pages as BLOCKED; (2) migration 083 re-parented two pre-existing `commercial_procurement` entities via `ON CONFLICT DO UPDATE`, orphaning their actions on rollback — the most serious, a duplicate-authority violation; (3) entity rows seeded with `label_ar = NULL`, rejected by the entity registry and an Arabic-first violation; (4) `fields`/`relations` seeded as `'[]'` where an object is required; (5) `buildQueryIndex` shipped a nonsense permission expression; (6) page controllers called `switchPage` through instead of intercepting, so no page ever received `.page-active`. |
+| Pre-existing defects repaired | 4 stale test assertions (2 CRM migration tests already failing on the Wave 2 baseline; 2 Wave 2 module-status assertions). |
+| Remaining blockers | 62 of 65 target page families unbuilt; `platform_pages` created but unpopulated; `settings`/`system_check` not yet retired. |
+| Classification | **PARTIAL — PAGE BUILD CONTINUATION REQUIRED** |

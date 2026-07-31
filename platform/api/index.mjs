@@ -33,6 +33,7 @@ import { handleAssetsQuery } from '../assets/index.mjs';
 import { handleMaintenanceQuery } from '../maintenance/index.mjs';
 import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
+import { handleWave2Query, WAVE2_NAMESPACES, wave2ReadPermission } from './wave2.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -238,6 +239,23 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const commercialResult = handleCommercialQuery({ dialect, ctx, namespace, resource, recordId, query });
         if (commercialResult.error) return sendJson(res, commercialResult.status || 404, envelope(null, commercialResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(commercialResult.data, null, commercialResult.meta, ctx.correlationId));
+      }
+
+      // Final Page Catalog — governed reads for the 16 Wave 2 domains.
+      // Table, columns, filters and ORDER BY all come from the static registry
+      // in platform/domains/wave2-registry.mjs; the caller supplies only values.
+      // Company scope is ctx.companyId, never a request field.
+      if (WAVE2_NAMESPACES.includes(namespace) && req.method === 'GET') {
+        const readPermission = wave2ReadPermission(namespace);
+        // Both gates apply: the platform read grant AND the module's own view
+        // permission. A user with generic read access still cannot read a
+        // module they are not entitled to.
+        if (!requirePermission('platform:db:read')) return;
+        if (readPermission && !requirePermission(readPermission)) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const w2 = handleWave2Query({ dialect, ctx, namespace, resource, recordId, query });
+        if (w2.error) return sendJson(res, w2.status || 404, envelope(null, w2.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(w2.data, null, w2.meta, ctx.correlationId));
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {

@@ -49,7 +49,12 @@ test('1. Migration 069: Up, rerun, and schema verification', async () => {
 
     const mod = env.db.prepare('SELECT * FROM platform_modules WHERE id = ?').get('rental');
     assert.ok(mod, 'Rental module registered');
-    assert.equal(mod.status, 'available');
+    // Migration 083 (Final Page Catalog) advances a Wave 2 module from
+    // 'available' to 'installed' once its schema migration has run: 'available'
+    // means "declared but not installable", and this module's tables now exist.
+    // Enabling it for a company remains a control-plane decision, so the status
+    // deliberately stops at 'installed' rather than 'enabled'.
+    assert.equal(mod.status, 'installed');
   } finally {
     cleanup(env);
   }

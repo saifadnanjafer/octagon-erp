@@ -42,6 +42,10 @@ import { registerAssetActions } from './platform/assets/index.mjs';
 import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
 import { registerFleetActions } from './platform/fleet/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
+// Final Page Catalog: the 16 Wave 2 domains. Wave 2 shipped their schema and
+// services but never registered them, so none of their 105 actions could
+// execute. See platform/domains/wave2-actions.mjs.
+import { registerWave2Actions } from './platform/domains/wave2-actions.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
@@ -188,6 +192,17 @@ export function createPlatformAuthority(dialect) {
   registerMaintenanceActions(actionExecutor);
   registerFleetActions(actionExecutor);
   registerControlPlaneActions(actionExecutor);
+  // Wave 2 registers last: its 16 domains extend canonical authorities and must
+  // never shadow a core action id. Registration is a no-op on a database whose
+  // migration tip predates 083 (the platform_actions insert is skipped when the
+  // module row is absent), so an older database still boots.
+  try {
+    registerWave2Actions(actionExecutor);
+  } catch (wave2Error) {
+    // A Wave 2 wiring fault must not prevent the platform from booting; the
+    // affected pages will report module_not_installed instead.
+    console.warn('[platform] Wave 2 action registration skipped:', wave2Error && wave2Error.message);
+  }
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 

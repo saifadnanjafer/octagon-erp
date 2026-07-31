@@ -1,0 +1,546 @@
+/* ==========================================================================
+   Octagon Page Kit — Final Page Catalog shared page components.
+
+   Scoping rule (learned the hard way): every selector below is prefixed with
+   .opk-. A module stylesheet that ships an unscoped selector such as
+   `.btn-secondary { color: #fff }` leaks into every page and produces the
+   "white button, white text" class of bug. Nothing here styles a global class.
+
+   Theme: values come from the existing Octagon custom properties, so the kit
+   inherits every skin (including the neumorphism skin) without a second theme
+   system. Where a variable may be missing on an older skin, a fallback is given.
+   ========================================================================== */
+
+/* ----------------------------------------------------------- page header -- */
+
+.opk-header {
+  margin-bottom: 18px;
+}
+
+.opk-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.opk-breadcrumbs button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent-blue, #3b82f6);
+  cursor: pointer;
+}
+
+.opk-breadcrumbs button:hover { text-decoration: underline; }
+
+.opk-header-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.opk-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text, #e2e8f0);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.opk-subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted, #94a3b8);
+  max-width: 70ch;
+}
+
+.opk-context {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.opk-context-item {
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.opk-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ tabs -- */
+
+.opk-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+  scrollbar-width: thin;
+}
+
+.opk-tab {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 10px) var(--radius-md, 10px) 0 0;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.opk-tab:hover {
+  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.05));
+  color: var(--text, #e2e8f0);
+}
+
+.opk-tab.active {
+  color: var(--text, #e2e8f0);
+  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+  border-color: var(--border-glass, rgba(255, 255, 255, 0.08));
+  border-bottom-color: transparent;
+  font-weight: 600;
+}
+
+/* Focus must be visible for keyboard users, on every skin. */
+.opk-tab:focus-visible,
+.opk-header-actions button:focus-visible,
+.opk-row-action:focus-visible,
+.opk-kpi-drill:focus-visible {
+  outline: 2px solid var(--accent-blue, #3b82f6);
+  outline-offset: 2px;
+}
+
+.opk-tab-count {
+  font-style: normal;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.08));
+}
+
+/* ------------------------------------------------------------ filter bar -- */
+
+.opk-filterbar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.opk-search {
+  position: relative;
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.opk-search i {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.opk-search input {
+  width: 100%;
+  padding: 9px 12px;
+  padding-inline-start: 34px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.1));
+  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+  color: var(--text, #e2e8f0);
+  font: inherit;
+  font-size: 13px;
+}
+
+.opk-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+}
+
+.opk-filter select,
+.opk-filter input {
+  padding: 8px 10px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.1));
+  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+  color: var(--text, #e2e8f0);
+  font: inherit;
+  font-size: 13px;
+  min-width: 140px;
+}
+
+/* ------------------------------------------------------------- KPI cards -- */
+
+.opk-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.opk-kpi {
+  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 14px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opk-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+}
+
+.opk-kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text, #e2e8f0);
+  line-height: 1.2;
+}
+
+/* An unavailable KPI must never look like a healthy zero. */
+.opk-kpi-value.opk-kpi-unavailable {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-orange, #f59e0b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opk-kpi-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+}
+
+.opk-kpi-explain {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-muted, #94a3b8);
+}
+
+.opk-kpi-drill {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--accent-blue, #3b82f6);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.opk-kpi-good  { border-inline-start: 3px solid var(--accent-green, #10b981); }
+.opk-kpi-warn  { border-inline-start: 3px solid var(--accent-orange, #f59e0b); }
+.opk-kpi-bad   { border-inline-start: 3px solid var(--accent-red, #ef4444); }
+.opk-kpi-info  { border-inline-start: 3px solid var(--accent-blue, #3b82f6); }
+
+/* ------------------------------------------------------------ data grid -- */
+
+/* Wide tables scroll inside their own container; the page body never
+   scrolls horizontally, on any viewport. */
+.opk-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 14px);
+  background: var(--bg-glass, rgba(255, 255, 255, 0.03));
+  max-width: 100%;
+}
+
+.opk-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 520px;
+}
+
+.opk-grid th,
+.opk-grid td {
+  padding: 10px 12px;
+  text-align: start;
+  border-bottom: 1px solid var(--border-glass, rgba(255, 255, 255, 0.06));
+  vertical-align: middle;
+}
+
+.opk-grid thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted, #94a3b8);
+  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.04));
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.opk-grid tbody tr:last-child td { border-bottom: none; }
+.opk-grid tbody tr:hover { background: var(--bg-glass-hover, rgba(255, 255, 255, 0.04)); }
+
+/* Numeric columns read left-to-right even inside an RTL table. */
+.opk-grid .opk-numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.opk-row-actions {
+  white-space: nowrap;
+  text-align: end;
+}
+
+.opk-row-action {
+  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text, #e2e8f0);
+  /* 34px keeps the hit target usable on touch without dominating the row. */
+  min-width: 34px;
+  min-height: 34px;
+  cursor: pointer;
+  margin-inline-start: 4px;
+}
+
+.opk-row-action:hover { background: var(--accent-blue, #3b82f6); color: #fff; }
+
+.opk-grid-footer {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* --------------------------------------------------------------- badges -- */
+
+.opk-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.08));
+  color: var(--text, #e2e8f0);
+  /* A status must never be conveyed by colour alone: the label is always
+     present, so the badge stays readable in monochrome and to colour-blind
+     users. The border adds a second, non-colour channel. */
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.12));
+}
+
+.opk-badge-active,
+.opk-badge-approved,
+.opk-badge-completed,
+.opk-badge-enabled,
+.opk-badge-issued,
+.opk-badge-released { background: rgba(16, 185, 129, 0.16); color: #34d399; border-color: rgba(16, 185, 129, 0.35); }
+
+.opk-badge-draft,
+.opk-badge-pending,
+.opk-badge-planned,
+.opk-badge-submitted,
+.opk-badge-imported { background: rgba(245, 158, 11, 0.16); color: #fbbf24; border-color: rgba(245, 158, 11, 0.35); }
+
+.opk-badge-cancelled,
+.opk-badge-rejected,
+.opk-badge-failed,
+.opk-badge-expired,
+.opk-badge-blocked { background: rgba(239, 68, 68, 0.16); color: #f87171; border-color: rgba(239, 68, 68, 0.35); }
+
+/* -------------------------------------------------------------- sections -- */
+
+.opk-section {
+  background: var(--bg-glass, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 14px);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.opk-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.opk-section-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #e2e8f0);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------- states -- */
+
+.opk-state {
+  text-align: center;
+  padding: 44px 24px;
+  border-radius: var(--radius-lg, 14px);
+  border: 1px dashed var(--border-glass, rgba(255, 255, 255, 0.12));
+  background: var(--bg-glass, rgba(255, 255, 255, 0.02));
+}
+
+.opk-state-icon { font-size: 34px; margin-bottom: 12px; display: block; }
+
+.opk-state-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #e2e8f0);
+}
+
+.opk-state-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-muted, #94a3b8);
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+.opk-state-detail {
+  margin: 12px auto 0;
+  font-size: 11px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm, 8px);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text-muted, #94a3b8);
+  display: inline-block;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.opk-state-muted   .opk-state-icon { color: var(--text-muted, #94a3b8); }
+.opk-state-info    .opk-state-icon { color: var(--accent-blue, #3b82f6); }
+.opk-state-warning .opk-state-icon { color: var(--accent-orange, #f59e0b); }
+.opk-state-warning { border-color: rgba(245, 158, 11, 0.35); background: rgba(245, 158, 11, 0.05); }
+.opk-state-danger  .opk-state-icon { color: var(--accent-red, #ef4444); }
+.opk-state-danger  { border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.05); }
+
+/* -------------------------------------------------------------- skeleton -- */
+
+.opk-skeleton { display: flex; flex-direction: column; gap: 10px; padding: 6px 0; }
+
+.opk-skeleton-row {
+  height: 40px;
+  border-radius: var(--radius-md, 10px);
+  background: linear-gradient(90deg,
+    var(--bg-glass, rgba(255, 255, 255, 0.04)) 25%,
+    var(--bg-glass-hover, rgba(255, 255, 255, 0.08)) 37%,
+    var(--bg-glass, rgba(255, 255, 255, 0.04)) 63%);
+  background-size: 400% 100%;
+  animation: opk-shimmer 1.4s ease infinite;
+}
+
+@keyframes opk-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* Respect a user who has asked the OS to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  .opk-skeleton-row { animation: none; }
+  .opk-tab { transition: none; }
+}
+
+/* --------------------------------------------------------------- notices -- */
+
+.opk-notice {
+  padding: 11px 15px;
+  border-radius: var(--radius-md, 10px);
+  font-size: 13px;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
+}
+
+.opk-notice-success { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+.opk-notice-warning { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+.opk-notice-danger  { background: rgba(239, 68, 68, 0.12);  color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+.opk-notice-info    { background: rgba(59, 130, 246, 0.12); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+
+/* ------------------------------------------------------------ responsive -- */
+
+@media (max-width: 900px) {
+  .opk-kpi-row { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .opk-header-main { flex-direction: column; align-items: stretch; }
+  .opk-header-actions { width: 100%; }
+  .opk-header-actions button { flex: 1 1 auto; min-height: 42px; }
+  .opk-title { font-size: 18px; }
+  .opk-kpi-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .opk-kpi { padding: 12px; }
+  .opk-kpi-value { font-size: 20px; }
+  .opk-filterbar { gap: 10px; }
+  .opk-filter { flex: 1 1 100%; }
+  .opk-filter select, .opk-filter input { width: 100%; min-height: 42px; }
+  .opk-search input { min-height: 42px; }
+  .opk-section { padding: 14px; }
+  .opk-state { padding: 32px 16px; }
+  /* Touch targets stay >= 42px on mobile without changing desktop density. */
+  .opk-tab { min-height: 42px; }
+  .opk-row-action { min-width: 42px; min-height: 42px; }
+}
+
+/* Light skins: the kit inherits --text/--bg, but the dashed state border and
+   the glass fills need a light-appropriate fallback when a skin does not define
+   the glass variables at all. */
+@media (prefers-color-scheme: light) {
+  body:not([data-theme="dark"]) .opk-grid-wrap,
+  body:not([data-theme="dark"]) .opk-section,
+  body:not([data-theme="dark"]) .opk-kpi {
+    background: var(--bg-card, #ffffff);
+    border-color: var(--border-glass, rgba(15, 23, 42, 0.1));
+  }
+  body:not([data-theme="dark"]) .opk-grid thead th {
+    background: var(--bg-secondary, #f1f5f9);
+  }
+}

@@ -209,10 +209,21 @@ export function collectInventory() {
     };
   });
 
-  // Which register* functions are actually wired into the running runtime?
+  // Which domains are actually wired into the running runtime?
+  //
+  // Two shapes count as wired:
+  //   1. the domain exports its own register* function and the bridge calls it
+  //      (Wave 1 CRM);
+  //   2. the domain is listed in the shared Wave 2 registry, which
+  //      registerWave2Actions() registers in one pass (Final Page Catalog).
   const bridge = read('platform-runtime-bridge.mjs');
+  const wave2Registry = read('platform/domains/wave2-registry.mjs');
+  const wave2Wired = /\bregisterWave2Actions\s*\(/.test(bridge);
   Object.keys(domains).forEach((d) => {
-    domains[d].wired = domains[d].registerFns.some((fn) => new RegExp(`\\b${fn}\\s*\\(`).test(bridge));
+    const own = domains[d].registerFns.some((fn) => new RegExp(`\\b${fn}\\s*\\(`).test(bridge));
+    const viaRegistry = wave2Wired && new RegExp(`from '\\./${d}/service\\.mjs'`).test(wave2Registry);
+    domains[d].wired = own || viaRegistry;
+    domains[d].wiredVia = own ? 'bridge' : (viaRegistry ? 'wave2-registry' : null);
   });
 
   // ---- merge into one page record set --------------------------------------

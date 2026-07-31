@@ -1,12 +1,12 @@
 === OCTAGON FINAL PAGE CATALOG — STARTING INVENTORY ===
-pages discovered : 108
-view fragments   : 103
-nav groups       : 13
-client modules   : 105
-backend domains  : 17 (wired into runtime: 1)
+pages discovered : 111
+view fragments   : 106
+nav groups       : 14
+client modules   : 109
+backend domains  : 17 (wired into runtime: 17)
 
 BLOCKED                      2
-COMPLETE                     87
+COMPLETE                     90
 EXISTING — NEEDS UPGRADE     19
 
 --- pages with blockers ---
@@ -33,19 +33,3 @@ EXISTING — NEEDS UPGRADE     19
   warehouses                 EXISTING — NEEDS UPGRADE     not in any navigation group
 
 --- backend domains NOT wired into the running runtime ---
-  ai_copilot             actions= 5 query-service=no 
-  bi                     actions= 5 query-service=no 
-  contracts              actions= 8 query-service=no 
-  expenses               actions= 8 query-service=no 
-  financial_planning     actions= 7 query-service=no 
-  grc                    actions= 7 query-service=no 
-  hse                    actions= 6 query-service=no 
-  human_capital          actions= 9 query-service=no 
-  integration            actions= 5 query-service=no 
-  iraq_localization      actions= 5 query-service=no 
-  plm                    actions= 6 query-service=no 
-  procurement            actions= 9 query-service=no 
-  rental                 actions= 6 query-service=no 
-  subscriptions          actions= 6 query-service=no 
-  treasury               actions= 6 query-service=no 
-  wms                    actions= 8 query-service=no 

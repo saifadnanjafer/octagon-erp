@@ -102,6 +102,10 @@
   <link rel="stylesheet" href="glass-real.css">
   <link rel="stylesheet" href="force-horizontal.css">
   <link rel="stylesheet" href="ui-contrast-fix.css?v=20260622-contrast-v1">
+  <!-- Final Page Catalog: shared page components. Loaded AFTER ui-contrast-fix
+       so a skin cannot re-break the kit's contrast, and every selector inside
+       it is .opk- prefixed so it can never leak into a global class. -->
+  <link rel="stylesheet" href="modules/octagon-page-kit.css?v=20260731-fpc-kit-v1">
   <!-- Loaded after style.css so it can override the fixed-240px mobile sidebar
        block, and give body.sidebar-collapsed an actual visual effect. -->
   <link rel="stylesheet" href="modules/shell-mobile-sidebar.css?v=20260728-mobile-sidebar-v1">
@@ -1177,6 +1181,24 @@
         <button class="nav-btn active" data-page="home" id="navHome" onclick="switchPage('home')">
           <span class="nav-icon">🏠</span>
           <span class="nav-label">الرئيسية</span>
+          <span class="nav-indicator"></span>
+        </button>
+        <!-- Final Page Catalog — Home & Work group. rebuildSidebarNavigation()
+             re-parents these into the home_work group at boot; they live here
+             so the button exists before that sweep runs. -->
+        <button class="nav-btn" data-page="enterprise_home" id="navEnterpriseHome" onclick="switchPage('enterprise_home')">
+          <span class="nav-icon">🧭</span>
+          <span class="nav-label">مساحة العمل</span>
+          <span class="nav-indicator"></span>
+        </button>
+        <button class="nav-btn" data-page="my_work" id="navMyWork" onclick="switchPage('my_work')">
+          <span class="nav-icon">✅</span>
+          <span class="nav-label">أعمالي</span>
+          <span class="nav-indicator"></span>
+        </button>
+        <button class="nav-btn" data-page="unified_inbox" id="navUnifiedInbox" onclick="switchPage('unified_inbox')">
+          <span class="nav-icon">📥</span>
+          <span class="nav-label">صندوق الوارد والاعتمادات</span>
           <span class="nav-indicator"></span>
         </button>
         <button class="nav-btn" data-page="calculator" id="navCalculator" onclick="switchPage('calculator')">
@@ -2277,6 +2299,17 @@
   <!-- Checkpoint C5: final Administration renderer uses the canonical Control
        Plane and enforces module/license decisions on the server. -->
   <script src="modules/canonical-administration.js?v=20260728-checkpoint-c5-v1"></script>
+  <!-- ═══════════ FINAL PAGE CATALOG ═══════════
+       Shared page components. Every page added by this wave renders through
+       OctagonPageKit, so loading/empty/denied/failure states are worded and
+       structured identically everywhere and no page can show a fake zero.
+       Must load BEFORE any page that uses it. -->
+  <script src="modules/octagon-page-kit.js?v=20260731-fpc-kit-v1"></script>
+  <!-- Home & Work group (FP-1). Every one of these reads governed facts and
+       renders an explicit state; none of them writes outside ActionExecutor. -->
+  <script src="modules/fpc-enterprise-home.js?v=20260731-fpc-home-v1"></script>
+  <script src="modules/fpc-my-work.js?v=20260731-fpc-mywork-v1"></script>
+  <script src="modules/fpc-unified-inbox.js?v=20260731-fpc-inbox-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

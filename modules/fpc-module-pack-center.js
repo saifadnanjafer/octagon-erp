@@ -370,8 +370,16 @@
   }
 
   function mount() {
-    const kit = K();
-    if (kit) kit.wirePage(PAGE_ID, HOST_ID, loadData);
+    // wirePage takes a single config object — the earlier positional call
+    // (PAGE_ID, HOST_ID, loadData) silently failed wirePage's validation and
+    // left the page with no permission gate, no template wait, and no
+    // activation path at all. Use the same literal call the FP-1 pages use.
+    root.OctagonPageKit.wirePage({
+      pageId: PAGE_ID,
+      sectionId: HOST_ID,
+      navId: 'navModulePackCenter',
+      activate: loadData,
+    });
     setupEvents();
   }
 

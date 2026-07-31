@@ -13,6 +13,28 @@
 | Module Wave 2 | `node --test --test-concurrency=1 "tests/module-wave-2/**/*.test.mjs"` | pass |
 | **Consolidated** | all four above in one run | **128 tests, 128 pass, 0 fail** |
 
+## Suites run in the FP-2 recovery slice (2026-07-31, this worktree)
+
+| Suite | Command | Result |
+|---|---|---|
+| Final Page Catalog (all: wave2 wiring, governance wiring, module pack center, customization studio, commercial control center, page regression) | `node --test --test-concurrency=1 tests/final-page-catalog/*.test.mjs` | **69 / 69 pass** |
+| Migration | `npm run test:migration` | **5 / 5 pass** |
+| Unit | `npm run test:unit` | **9 / 9 pass** |
+| Precommit | `node scripts/precommit.js` | **passed** |
+
+The migration suite was red on entry for a pre-existing reason: manifests covered
+only migrations ≤066 while 067–083 were on disk. Repaired through the governed
+manifest process (`accepted-067-083-wave2.json`, 17 entries, real checksums and
+source commits) — not by editing the test.
+
+## New permanent tests added in the FP-2 recovery slice
+
+| File | What it locks down |
+|---|---|
+| `tests/final-page-catalog/customization-studio.test.mjs` | Real empty state, custom-field/view-schema/saved-view round-trips through the canonical ConfigurationAuthority, out-of-scope company isolation, 404 on unknown resource. |
+| `tests/final-page-catalog/commercial-control-center.test.mjs` | License round-trip via the real `control:license:set` action, overview counts, unlicensed-module derivation, cross-tenant license isolation, seeded-license integrity. |
+| `tests/final-page-catalog/page-regression.test.mjs` (extended) | All 6 FPC pages held to the full standard: registration, controller `wirePage` literal-call pattern, shell loading, no legacy writers, no hardcoded KPI values. |
+
 ## Suites NOT run in this wave
 
 `tests/phase02`, `tests/phase03`, `tests/phase04`, `tests/phase04-finalization`,

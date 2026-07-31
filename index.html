@@ -88,6 +88,8 @@
   <link rel="stylesheet" href="modules/pos-deepening.css?v=20260626-posd-v1">
   <link rel="stylesheet" href="modules/omni-communications.css?v=20260626-comm-v1">
   <link rel="stylesheet" href="modules/fpc-module-pack-center.css?v=20260731-fpc-mpc-v1">
+  <link rel="stylesheet" href="modules/fpc-customization-studio.css?v=20260731-fpc-cs-v1">
+  <link rel="stylesheet" href="modules/fpc-commercial-control-center.css?v=20260731-fpc-ccc-v1">
   <link rel="stylesheet" href="modules/implementation-methodology.css?v=20260626-im7k-v1">
   <link rel="stylesheet" href="modules/platform-marketplace.css?v=20260626-pmk-v2">
   <link rel="stylesheet" href="modules/ecommerce-connectors.css?v=20260626-ecom-v1">
@@ -1698,6 +1700,16 @@
               <span class="nav-label">مركز الموديلات والحزم</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="customization_studio" id="navCustomizationStudio" onclick="switchPage('customization_studio')">
+              <span class="nav-icon"><i class="fa-solid fa-pen-ruler"></i></span>
+              <span class="nav-label">استوديو التخصيص</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="commercial_control_center" id="navCommercialControlCenter" onclick="switchPage('commercial_control_center')">
+              <span class="nav-icon"><i class="fa-solid fa-file-contract"></i></span>
+              <span class="nav-label">مركز التحكم التجاري</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="integration_hub" id="navIntegrationHub" onclick="switchPage('integration_hub')">
               <span class="nav-icon"><i class="fa-solid fa-plug-circle-bolt"></i></span>
               <span class="nav-label">مركز التكامل</span>
@@ -2317,6 +2329,8 @@
   <script src="modules/fpc-my-work.js?v=20260731-fpc-mywork-v1"></script>
   <script src="modules/fpc-unified-inbox.js?v=20260731-fpc-inbox-v1"></script>
   <script src="modules/fpc-module-pack-center.js?v=20260731-fpc-mpc-v1"></script>
+  <script src="modules/fpc-customization-studio.js?v=20260731-fpc-cs-v1"></script>
+  <script src="modules/fpc-commercial-control-center.js?v=20260731-fpc-ccc-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

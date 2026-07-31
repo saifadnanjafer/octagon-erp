@@ -1453,3 +1453,31 @@ dirty files untouched.
 | Pre-existing defects repaired | 4 stale test assertions (2 CRM migration tests already failing on the Wave 2 baseline; 2 Wave 2 module-status assertions). |
 | Remaining blockers | 62 of 65 target page families unbuilt; `platform_pages` created but unpopulated; `settings`/`system_check` not yet retired. |
 | Classification | **PARTIAL — PAGE BUILD CONTINUATION REQUIRED** |
+
+## Final Page Catalog — FP-2 interrupted-session recovery: Customization Studio + Commercial Control Center (2026-07-31)
+
+| Field | Value |
+| --- | --- |
+| Model / runtime | Kimi Code CLI (kimi-for-coding), interactive agent session |
+| Takeover from interrupted session | yes — previous agent stopped mid-slice; no work discarded, no branch reset, no stash touched |
+| Starting HEAD | `0c3c0055c9f5e7f00e2c5528acde5724f3d71b5f` (governance wiring + module_pack_center, already pushed by the interrupted session — verified, not rebuilt) |
+| Initial dirty files | `services/permissionService.js` (M); untracked `modules/fpc-customization-studio.{js,css}`, `modules/fpc-commercial-control-center.{js,css}`, `views/customization_studio.html`, `views/commercial_control_center.html` |
+| State mismatch found | Takeover brief expected HEAD `82082bd` + uncommitted governance wiring; reality: governance slice already committed/pushed as `0c3c005`. Documented in `docs/evidence/final-page-catalog/control-plane/interrupted-session-recovery.md` |
+| Recovered files | all 6 kept; both page JS modules rewritten from fake arrays to real `/api/v1/control-plane/*` queries; both views rewritten to canonical `<section class="page">` |
+| Discarded content | fake `editions`/`entitlements`/`usageMeters`/`customFields` arrays, fake `prompt()` `newField()` mutation, `upgrade()` alert — replaced by real queries / `not_supported` badges |
+| Backend | 3 read-only resources added to `handleControlPlaneQuery`: `custom-fields`, `view-schemas`, `saved-views` (canonical ConfigurationAuthority tables; no new domain logic) |
+| Defects fixed | (1) `fpc-module-pack-center.js` called `wirePage(PAGE_ID, HOST_ID, loadData)` positionally — silent no-op, page never activated; fixed to literal object call. (2) New pages unwired (index.html nav/CSS/script, app.js pageMap/prefetch/admin_org). (3) Migration manifests covered only ≤066 while 067–083 were on disk — pre-existing red `historical_immutability` suite. |
+| Migration manifest repair | `database/migration-manifests/accepted-067-083-wave2.json` — 17 entries, real LF-normalized sha256 checksums, bound to `0c3c005`; acceptance basis: verified full 83-migration freshInstall on disposable DB, `migrationStatus` = applied/reversible for all of 067–083 |
+| Governance factories wired | none by this record (already wired in `0c3c005`; verified via governance-wiring suite 14/14) |
+| Actions / queries / permissions added | 0 actions; 3 control-plane read resources; 2 page permissions (`admin/customization`, `admin/commercial`) |
+| Pages added | `customization_studio`, `commercial_control_center` (FPC pages: 4 → 6) |
+| Tests | final-page-catalog 69/69; migration 5/5; unit 9/9; precommit passed |
+| Test-design corrections | 2 — initial licensing-scope and fresh-install-empty assumptions were disproven by the backend; tests corrected to assert real tenant scoping and the 7 seeded platform licenses (implementation untouched) |
+| Operational mutation | none — `octagon-erp/database.db` md5 `1b5abb394768562c69e88e9fb5222139`, WAL 0 bytes, before = after |
+| Telegram worktree | untouched — HEAD `0caa4f9c8d26c017a4c6f3f3f6059bebc8f73aaf`, status clean |
+| Administrator credential | unchanged, not read, not used |
+| VNext | unchanged — HEAD `cf7ae4ed73eac91a325c964178036290bc0736c1` |
+| main merged | no (`8815b00b2c5281167aad3bbe8370270efffb61b8`) |
+| Deferred hardening | governed mutation actions for custom fields / view schemas / saved views; backend meters for storage/AI/API allowances (rendered `not_supported`); browser proof for the two new pages; remaining 13 FP-2 pages |
+| Remaining blockers | 13 FP-2 Control Plane pages unbuilt (organization, identity, permission, authority, workflow, approval, automation, configuration, import, integration, audit, release health, release upgrade) |
+| Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |

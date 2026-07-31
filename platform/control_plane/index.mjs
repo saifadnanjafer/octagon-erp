@@ -291,6 +291,27 @@ export function handleControlPlaneQuery({ dialect: db, ctx, resource, recordId =
   }
   if (resource === 'feature-flags') return { data: db.prepare('SELECT key,module_id,scope,enabled,audit_policy,updated_at FROM platform_feature_flags ORDER BY key').all() };
   if (resource === 'packages') return { data: db.prepare('SELECT id,name,version,target_min_version,status,created_at,applied_at FROM configuration_packages ORDER BY created_at DESC LIMIT 100').all() };
+  // Customization Studio — read surface over the ConfigurationAuthority tables
+  // (platform/configuration/index.mjs). Read-only here; mutations stay behind
+  // the authority's own guarded methods, never this dispatch.
+  if (resource === 'custom-fields') return { data: db.prepare(`
+    SELECT id,entity,field,data_type,label_ar,label_en,required,default_value,status,tenant_id,company_id
+    FROM custom_fields
+    WHERE status='active' AND (tenant_id IS NULL OR tenant_id=?) AND (company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"}))
+    ORDER BY entity,field
+  `).all(ctx.tenantId, ...companyIds) };
+  if (resource === 'view-schemas') return { data: db.prepare(`
+    SELECT id,entity,kind,name,version,status,tenant_id,company_id,created_at
+    FROM view_schemas
+    WHERE status='active' AND (tenant_id IS NULL OR tenant_id=?) AND (company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"}))
+    ORDER BY entity,kind,name
+  `).all(ctx.tenantId, ...companyIds) };
+  if (resource === 'saved-views') return { data: db.prepare(`
+    SELECT id,entity,name,owner_id,shared,role_id,company_id,created_at
+    FROM saved_views
+    WHERE company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"})
+    ORDER BY entity,name
+  `).all(...companyIds) };
   if (resource === 'licensing') return { data: db.prepare(`SELECT module_id,company_id,plan,package_status,seats,features,valid_from,valid_until,version,updated_at FROM platform_module_licenses WHERE company_id IN (${companies.map(() => '?').join(',') || "''"}) ORDER BY company_id,module_id`).all(...companyIds) };
   if (resource === 'settings') return { data: db.prepare("SELECT key,module_id,type,default_value,scopes,required_permission,restart_required FROM platform_settings WHERE secret=0 ORDER BY module_id,key LIMIT 500").all() };
   if (resource === 'numbering-sequences') return { data: db.prepare('SELECT id,module_id,scope_key,template,current_value,reset_policy,gap_policy FROM platform_sequences ORDER BY module_id,id').all() };

@@ -3117,7 +3117,7 @@ const navGroupPages = {
   resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
   intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
   intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
-  admin_org: ['module_pack_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+  admin_org: ['module_pack_center', 'customization_studio', 'commercial_control_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
 };
 
 function getNavGroupForPage(page) {
@@ -37405,6 +37405,8 @@ window.ensurePageTemplateLoaded = async function (page) {
     my_work: 'pageMyWork',
     unified_inbox: 'pageUnifiedInbox',
     module_pack_center: 'pageModulePackCenter',
+    customization_studio: 'pageCustomizationStudio',
+    commercial_control_center: 'pageCommercialControlCenter',
     products: 'pageProductsAndMaterials',
     parties: 'pageCustomersAndSuppliers',
     warehouses: 'pageWarehouses',
@@ -37482,7 +37484,8 @@ window.prefetchAllViews = function () {
     'wfl_home', 'employee_mobile', 'workshop_tv', 'kiosk', 'ai_queue',
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready',
     'canonical_console', 'canonical_inventory',
-    'enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center'
+    'enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center',
+    'customization_studio', 'commercial_control_center'
   ];
   
   let i = 0;

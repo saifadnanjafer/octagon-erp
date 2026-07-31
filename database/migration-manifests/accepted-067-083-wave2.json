@@ -1,0 +1,113 @@
+{
+  "manifestVersion": 1,
+  "extendsManifest": "accepted-066-crm-activity-unification.json",
+  "acceptedSourceCommit": "0c3c0055c9f5e7f00e2c5528acde5724f3d71b5f",
+  "acceptanceTimestamp": "2026-07-31T00:00:00.000Z",
+  "checksumNormalisation": "line endings normalised to LF before hashing",
+  "acceptanceReason": "Wave 2 module migrations 067-082 (contracts, subscriptions, rental, expenses, procurement, human capital, budgeting, treasury, WMS, PLM, GRC, HSE, BI, integration hub, Iraq localization, AI copilot) plus the Final Page Catalog registry 083, landed across the W2-M1..W2-M16 commits and 56169e0. The manifest step was missed when those commits landed; accepted now after verifying on 2026-07-31 that a full freshInstall applies the complete 83-migration chain cleanly on a disposable database, that migrationStatus reports every one of 067-083 as applied with rollbackPolicy reversible, and that the wave2 wiring and final-page-catalog suites are green. Checksums computed against the bytes committed at the accepted source commit.",
+  "migrationCount": 17,
+  "migrations": [
+    {
+      "migrationId": "067_contracts_and_legal_management",
+      "relativePath": "database/migrations/067_contracts_and_legal_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "ef03447589ba5efc669a7feadb857d451015ce312ce7789e5d62eb67d6595b33"
+    },
+    {
+      "migrationId": "068_subscriptions_and_recurring_billing",
+      "relativePath": "database/migrations/068_subscriptions_and_recurring_billing.mjs",
+      "algorithm": "sha256",
+      "checksum": "63bfac953110c7e81e41720f3c726656081382ac4dd98cd31c901f06b5df9c53"
+    },
+    {
+      "migrationId": "069_rental_and_equipment_hire",
+      "relativePath": "database/migrations/069_rental_and_equipment_hire.mjs",
+      "algorithm": "sha256",
+      "checksum": "a38c91fe97dabd6eca8ff3c84f8d72305a4921a61ba644dd980802e9bdc22a42"
+    },
+    {
+      "migrationId": "070_expenses_and_business_travel",
+      "relativePath": "database/migrations/070_expenses_and_business_travel.mjs",
+      "algorithm": "sha256",
+      "checksum": "148aaa118c38ef521addb21d9ae8f630762dadbd6ad4560651d387c76e2a9213"
+    },
+    {
+      "migrationId": "071_advanced_procurement_and_supplier_portal",
+      "relativePath": "database/migrations/071_advanced_procurement_and_supplier_portal.mjs",
+      "algorithm": "sha256",
+      "checksum": "8244c6107c26c4204d414e2e517ed3bfb1e0289fec6b3f016ef629d3170b1ccc"
+    },
+    {
+      "migrationId": "072_human_capital_development",
+      "relativePath": "database/migrations/072_human_capital_development.mjs",
+      "algorithm": "sha256",
+      "checksum": "dac526d2e9bca6b4e869b733dbd49b96262764aaa8a6ea69c32d9a139c763d5d"
+    },
+    {
+      "migrationId": "073_budgeting_and_financial_planning",
+      "relativePath": "database/migrations/073_budgeting_and_financial_planning.mjs",
+      "algorithm": "sha256",
+      "checksum": "134773e4f7979a2437f7c526e7e8e8bf4af700eda20e32293be07f6cb69ce687"
+    },
+    {
+      "migrationId": "074_treasury_and_cash_management",
+      "relativePath": "database/migrations/074_treasury_and_cash_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "7dee74d2ca99d60f51ba86f1cc652bf2ba6673d55a5ea62553e6d999f01647b2"
+    },
+    {
+      "migrationId": "075_advanced_wms",
+      "relativePath": "database/migrations/075_advanced_wms.mjs",
+      "algorithm": "sha256",
+      "checksum": "4a7a0df2e7d6e3a2e13dd9301afbe53002e4a28d932b1af2fecccb3cd05d4348"
+    },
+    {
+      "migrationId": "076_plm_and_engineering_change_control",
+      "relativePath": "database/migrations/076_plm_and_engineering_change_control.mjs",
+      "algorithm": "sha256",
+      "checksum": "b8da6a3ca613ac81332ff14a509b0883f48712944d20e8e9ac19306c0588954b"
+    },
+    {
+      "migrationId": "077_grc_and_internal_audit",
+      "relativePath": "database/migrations/077_grc_and_internal_audit.mjs",
+      "algorithm": "sha256",
+      "checksum": "00857a871702833a08e9ef447928d45f96a2642c443b9bd7647fef1031a0511a"
+    },
+    {
+      "migrationId": "078_hse_and_safety_management",
+      "relativePath": "database/migrations/078_hse_and_safety_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "dbfb8c66c661fad7db0c3a5728118682be1f2224bb9c553e196abe2d62b8a1ea"
+    },
+    {
+      "migrationId": "079_business_intelligence",
+      "relativePath": "database/migrations/079_business_intelligence.mjs",
+      "algorithm": "sha256",
+      "checksum": "0765438b1acecc5181738af3403f9fc2a873bab8d274d26711ff4f279400f31c"
+    },
+    {
+      "migrationId": "080_integration_hub_and_api_management",
+      "relativePath": "database/migrations/080_integration_hub_and_api_management.mjs",
+      "algorithm": "sha256",
+      "checksum": "bbde7fa7b925a2b895af48bfb512c7c9d6fd21b79f2deaf79571e7627eb9b0be"
+    },
+    {
+      "migrationId": "081_iraq_localization_and_tax",
+      "relativePath": "database/migrations/081_iraq_localization_and_tax.mjs",
+      "algorithm": "sha256",
+      "checksum": "38a878ed207f3915d5988a6c022268a405b6a0961089f2ab08a951d610a016ed"
+    },
+    {
+      "migrationId": "082_ai_copilot_and_jarvis_governance",
+      "relativePath": "database/migrations/082_ai_copilot_and_jarvis_governance.mjs",
+      "algorithm": "sha256",
+      "checksum": "2408cd9b9c8f4a6b9abc85ce928851ac4240a6bd13b208e706a9a460ae56da3f"
+    },
+    {
+      "migrationId": "083_final_page_catalog_registry",
+      "relativePath": "database/migrations/083_final_page_catalog_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "d5349ca736c4d70a9e2afce9571e5ba6e1c6bb8c0d4d355f2698c38aeab8ed89"
+    }
+  ]
+}

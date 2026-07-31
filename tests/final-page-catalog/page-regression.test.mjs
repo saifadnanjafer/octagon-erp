@@ -49,7 +49,10 @@ const KNOWN_INCOMPLETE = new Set([
 ]);
 
 /** Pages this wave added and therefore holds to the full standard. */
-const FPC_PAGES = ['enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center'];
+const FPC_PAGES = [
+  'enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center',
+  'customization_studio', 'commercial_control_center',
+];
 
 // ---------------------------------------------------------------------------
 // §79 defect classes
@@ -169,6 +172,9 @@ test('every Final Page Catalog page has a controller module', () => {
     enterprise_home: 'modules/fpc-enterprise-home.js',
     my_work: 'modules/fpc-my-work.js',
     unified_inbox: 'modules/fpc-unified-inbox.js',
+    module_pack_center: 'modules/fpc-module-pack-center.js',
+    customization_studio: 'modules/fpc-customization-studio.js',
+    commercial_control_center: 'modules/fpc-commercial-control-center.js',
   };
   // A page must self-activate through one of two patterns:
   //   (a) legacy per-page switchPage wrap + its own ensurePageTemplateLoaded call
@@ -204,6 +210,8 @@ test('Final Page Catalog pages are loaded by the shell', () => {
   for (const file of [
     'modules/octagon-page-kit.js', 'modules/octagon-page-kit.css',
     'modules/fpc-enterprise-home.js', 'modules/fpc-my-work.js', 'modules/fpc-unified-inbox.js',
+    'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
+    'modules/fpc-commercial-control-center.js',
   ]) {
     assert.ok(html.includes(file), `${file} is not referenced by index.html`);
   }
@@ -219,7 +227,11 @@ test('Final Page Catalog pages are loaded by the shell', () => {
 // ---------------------------------------------------------------------------
 
 test('no Final Page Catalog page writes through generic legacy CRUD', () => {
-  const files = ['modules/fpc-enterprise-home.js', 'modules/fpc-my-work.js', 'modules/fpc-unified-inbox.js'];
+  const files = [
+    'modules/fpc-enterprise-home.js', 'modules/fpc-my-work.js', 'modules/fpc-unified-inbox.js',
+    'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
+    'modules/fpc-commercial-control-center.js',
+  ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
     assert.ok(!/\/api\/db\b/.test(src), `${file} must not touch the generic /api/db writer`);
@@ -229,7 +241,11 @@ test('no Final Page Catalog page writes through generic legacy CRUD', () => {
 });
 
 test('no Final Page Catalog page hardcodes a business number', () => {
-  const files = ['modules/fpc-enterprise-home.js', 'modules/fpc-my-work.js', 'modules/fpc-unified-inbox.js'];
+  const files = [
+    'modules/fpc-enterprise-home.js', 'modules/fpc-my-work.js', 'modules/fpc-unified-inbox.js',
+    'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
+    'modules/fpc-commercial-control-center.js',
+  ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
     // A KPI must come from a query or be rendered unavailable. `value:` bound

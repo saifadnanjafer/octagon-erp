@@ -54,6 +54,7 @@ const FPC_PAGES = [
   'customization_studio', 'commercial_control_center',
   'organization_center', 'identity_center', 'permission_center',
   'authority_governance', 'workflow_studio', 'approval_policy_studio', 'automation_rules',
+  'configuration_center', 'data_import_center',
 ];
 
 // ---------------------------------------------------------------------------
@@ -184,6 +185,8 @@ test('every Final Page Catalog page has a controller module', () => {
     workflow_studio: 'modules/fpc-workflow-studio.js',
     approval_policy_studio: 'modules/fpc-approval-policy-studio.js',
     automation_rules: 'modules/fpc-automation-rules.js',
+    configuration_center: 'modules/fpc-configuration-center.js',
+    data_import_center: 'modules/fpc-data-import-center.js',
   };
   // A page must self-activate through one of two patterns:
   //   (a) legacy per-page switchPage wrap + its own ensurePageTemplateLoaded call
@@ -224,6 +227,7 @@ test('Final Page Catalog pages are loaded by the shell', () => {
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
     'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
     'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
+    'modules/fpc-configuration-center.js', 'modules/fpc-data-import-center.js',
   ]) {
     assert.ok(html.includes(file), `${file} is not referenced by index.html`);
   }
@@ -246,6 +250,7 @@ test('no Final Page Catalog page writes through generic legacy CRUD', () => {
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
     'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
     'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
+    'modules/fpc-configuration-center.js', 'modules/fpc-data-import-center.js',
   ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -263,6 +268,7 @@ test('no Final Page Catalog page hardcodes a business number', () => {
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
     'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
     'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
+    'modules/fpc-configuration-center.js', 'modules/fpc-data-import-center.js',
   ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');

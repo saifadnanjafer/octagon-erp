@@ -97,6 +97,8 @@
   <link rel="stylesheet" href="modules/fpc-workflow-studio.css?v=20260731-fpc-ws-v1">
   <link rel="stylesheet" href="modules/fpc-approval-policy-studio.css?v=20260731-fpc-aps-v1">
   <link rel="stylesheet" href="modules/fpc-automation-rules.css?v=20260731-fpc-ar-v1">
+  <link rel="stylesheet" href="modules/fpc-configuration-center.css?v=20260731-fpc-cc-v1">
+  <link rel="stylesheet" href="modules/fpc-data-import-center.css?v=20260731-fpc-dic-v1">
   <link rel="stylesheet" href="modules/implementation-methodology.css?v=20260626-im7k-v1">
   <link rel="stylesheet" href="modules/platform-marketplace.css?v=20260626-pmk-v2">
   <link rel="stylesheet" href="modules/ecommerce-connectors.css?v=20260626-ecom-v1">
@@ -1752,6 +1754,16 @@
               <span class="nav-label">قواعد الأتمتة</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="configuration_center" id="navConfigurationCenter" onclick="switchPage('configuration_center')">
+              <span class="nav-icon"><i class="fa-solid fa-sliders"></i></span>
+              <span class="nav-label">مركز التهيئة</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="data_import_center" id="navDataImportCenter" onclick="switchPage('data_import_center')">
+              <span class="nav-icon"><i class="fa-solid fa-file-import"></i></span>
+              <span class="nav-label">مركز استيراد البيانات</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="integration_hub" id="navIntegrationHub" onclick="switchPage('integration_hub')">
               <span class="nav-icon"><i class="fa-solid fa-plug-circle-bolt"></i></span>
               <span class="nav-label">مركز التكامل</span>
@@ -2380,6 +2392,8 @@
   <script src="modules/fpc-workflow-studio.js?v=20260731-fpc-ws-v1"></script>
   <script src="modules/fpc-approval-policy-studio.js?v=20260731-fpc-aps-v1"></script>
   <script src="modules/fpc-automation-rules.js?v=20260731-fpc-ar-v1"></script>
+  <script src="modules/fpc-configuration-center.js?v=20260731-fpc-cc-v1"></script>
+  <script src="modules/fpc-data-import-center.js?v=20260731-fpc-dic-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

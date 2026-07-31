@@ -1524,3 +1524,22 @@ dirty files untouched.
 | Failures and rework | none |
 | Remaining blockers | 6 FP-2 pages unbuilt (configuration_center, data_import_center, integration_hub, audit_security_center, release_health, release_upgrade_center) |
 | Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |
+
+## Final Page Catalog — FP-2F: Configuration Center / Data Import Center (2026-07-31)
+
+| Field | Value |
+| --- | --- |
+| Model / runtime | Kimi Code CLI (kimi-for-coding), interactive agent session |
+| Starting HEAD | `3418853e2b9db4a7efcbb7961353a88703929077` |
+| Pages added | `configuration_center`, `data_import_center` (FPC pages: 13 → 15) |
+| Backend queries added | 2 read-only control-plane resources (`import-jobs`, `import-rows/<id>`) over the canonical DataExchangeService store |
+| Permissions registered | 2 (`admin/configuration`, `admin/import`) |
+| Tests | final-page-catalog 89/89 (5 new), precommit passed |
+| Operational mutation | none — `octagon-erp/database.db` md5 `1b5abb394768562c69e88e9fb5222139`, WAL 0 bytes |
+| Telegram worktree | untouched (HEAD `0caa4f9`, clean) |
+| Administrator credential | unchanged, not read, not used |
+| VNext | unchanged (HEAD `cf7ae4e`) |
+| main merged | no |
+| Failures and rework | none |
+| Remaining blockers | 4 FP-2 pages (integration_hub upgrade, audit_security_center, release_health, release_upgrade_center) |
+| Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |

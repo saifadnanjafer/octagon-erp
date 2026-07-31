@@ -312,6 +312,18 @@ export function handleControlPlaneQuery({ dialect: db, ctx, resource, recordId =
     WHERE company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"})
     ORDER BY entity,name
   `).all(...companyIds) };
+  // Data Import Center — read surface over the canonical DataExchangeService
+  // tables (platform/data-exchange/index.mjs). Read-only; imports execute
+  // through the service's own ActionExecutor path, never this dispatch.
+  if (resource === 'import-jobs') return { data: db.prepare(`
+    SELECT id,entity,action_id,company_id,mode,row_error_strategy,total_rows,ok_rows,failed_rows,status,idempotency_key,created_by,created_at,finished_at
+    FROM import_jobs
+    WHERE company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"})
+    ORDER BY created_at DESC LIMIT 100
+  `).all(...companyIds) };
+  if (resource === 'import-rows' && recordId) return { data: db.prepare(`
+    SELECT row_number,status,error,record_id FROM import_rows WHERE import_id = ? ORDER BY row_number LIMIT 500
+  `).all(recordId) };
   if (resource === 'licensing') return { data: db.prepare(`SELECT module_id,company_id,plan,package_status,seats,features,valid_from,valid_until,version,updated_at FROM platform_module_licenses WHERE company_id IN (${companies.map(() => '?').join(',') || "''"}) ORDER BY company_id,module_id`).all(...companyIds) };
   if (resource === 'settings') return { data: db.prepare("SELECT key,module_id,type,default_value,scopes,required_permission,restart_required FROM platform_settings WHERE secret=0 ORDER BY module_id,key LIMIT 500").all() };
   if (resource === 'numbering-sequences') return { data: db.prepare('SELECT id,module_id,scope_key,template,current_value,reset_policy,gap_policy FROM platform_sequences ORDER BY module_id,id').all() };

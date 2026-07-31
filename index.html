@@ -93,6 +93,10 @@
   <link rel="stylesheet" href="modules/fpc-organization-center.css?v=20260731-fpc-oc-v1">
   <link rel="stylesheet" href="modules/fpc-identity-center.css?v=20260731-fpc-ic-v1">
   <link rel="stylesheet" href="modules/fpc-permission-center.css?v=20260731-fpc-pc-v1">
+  <link rel="stylesheet" href="modules/fpc-authority-governance.css?v=20260731-fpc-ag-v1">
+  <link rel="stylesheet" href="modules/fpc-workflow-studio.css?v=20260731-fpc-ws-v1">
+  <link rel="stylesheet" href="modules/fpc-approval-policy-studio.css?v=20260731-fpc-aps-v1">
+  <link rel="stylesheet" href="modules/fpc-automation-rules.css?v=20260731-fpc-ar-v1">
   <link rel="stylesheet" href="modules/implementation-methodology.css?v=20260626-im7k-v1">
   <link rel="stylesheet" href="modules/platform-marketplace.css?v=20260626-pmk-v2">
   <link rel="stylesheet" href="modules/ecommerce-connectors.css?v=20260626-ecom-v1">
@@ -1728,6 +1732,26 @@
               <span class="nav-label">مركز الصلاحيات</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="authority_governance" id="navAuthorityGovernance" onclick="switchPage('authority_governance')">
+              <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+              <span class="nav-label">حوكمة الصلاحيات</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="workflow_studio" id="navWorkflowStudio" onclick="switchPage('workflow_studio')">
+              <span class="nav-icon"><i class="fa-solid fa-diagram-project"></i></span>
+              <span class="nav-label">استوديو سير العمل</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="approval_policy_studio" id="navApprovalPolicyStudio" onclick="switchPage('approval_policy_studio')">
+              <span class="nav-icon"><i class="fa-solid fa-stamp"></i></span>
+              <span class="nav-label">استوديو سياسات الاعتماد</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="automation_rules" id="navAutomationRules" onclick="switchPage('automation_rules')">
+              <span class="nav-icon"><i class="fa-solid fa-gears"></i></span>
+              <span class="nav-label">قواعد الأتمتة</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="integration_hub" id="navIntegrationHub" onclick="switchPage('integration_hub')">
               <span class="nav-icon"><i class="fa-solid fa-plug-circle-bolt"></i></span>
               <span class="nav-label">مركز التكامل</span>
@@ -2352,6 +2376,10 @@
   <script src="modules/fpc-organization-center.js?v=20260731-fpc-oc-v1"></script>
   <script src="modules/fpc-identity-center.js?v=20260731-fpc-ic-v1"></script>
   <script src="modules/fpc-permission-center.js?v=20260731-fpc-pc-v1"></script>
+  <script src="modules/fpc-authority-governance.js?v=20260731-fpc-ag-v1"></script>
+  <script src="modules/fpc-workflow-studio.js?v=20260731-fpc-ws-v1"></script>
+  <script src="modules/fpc-approval-policy-studio.js?v=20260731-fpc-aps-v1"></script>
+  <script src="modules/fpc-automation-rules.js?v=20260731-fpc-ar-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

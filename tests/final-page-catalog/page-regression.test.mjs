@@ -53,6 +53,7 @@ const FPC_PAGES = [
   'enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center',
   'customization_studio', 'commercial_control_center',
   'organization_center', 'identity_center', 'permission_center',
+  'authority_governance', 'workflow_studio', 'approval_policy_studio', 'automation_rules',
 ];
 
 // ---------------------------------------------------------------------------
@@ -179,6 +180,10 @@ test('every Final Page Catalog page has a controller module', () => {
     organization_center: 'modules/fpc-organization-center.js',
     identity_center: 'modules/fpc-identity-center.js',
     permission_center: 'modules/fpc-permission-center.js',
+    authority_governance: 'modules/fpc-authority-governance.js',
+    workflow_studio: 'modules/fpc-workflow-studio.js',
+    approval_policy_studio: 'modules/fpc-approval-policy-studio.js',
+    automation_rules: 'modules/fpc-automation-rules.js',
   };
   // A page must self-activate through one of two patterns:
   //   (a) legacy per-page switchPage wrap + its own ensurePageTemplateLoaded call
@@ -217,6 +222,8 @@ test('Final Page Catalog pages are loaded by the shell', () => {
     'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
     'modules/fpc-commercial-control-center.js', 'modules/fpc-organization-center.js',
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
+    'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
+    'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
   ]) {
     assert.ok(html.includes(file), `${file} is not referenced by index.html`);
   }
@@ -237,6 +244,8 @@ test('no Final Page Catalog page writes through generic legacy CRUD', () => {
     'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
     'modules/fpc-commercial-control-center.js', 'modules/fpc-organization-center.js',
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
+    'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
+    'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
   ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -252,6 +261,8 @@ test('no Final Page Catalog page hardcodes a business number', () => {
     'modules/fpc-module-pack-center.js', 'modules/fpc-customization-studio.js',
     'modules/fpc-commercial-control-center.js', 'modules/fpc-organization-center.js',
     'modules/fpc-identity-center.js', 'modules/fpc-permission-center.js',
+    'modules/fpc-authority-governance.js', 'modules/fpc-workflow-studio.js',
+    'modules/fpc-approval-policy-studio.js', 'modules/fpc-automation-rules.js',
   ];
   for (const file of files) {
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');

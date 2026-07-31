@@ -1503,3 +1503,24 @@ dirty files untouched.
 | Failures and rework | none — all fixtures probed against a real fresh install before writing assertions |
 | Remaining blockers | 10 FP-2 pages unbuilt (authority_governance, workflow_studio, approval_policy_studio, automation_rules, configuration_center, data_import_center, integration_hub, audit_security_center, release_health, release_upgrade_center) |
 | Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |
+
+## Final Page Catalog — FP-2E: Authority Governance / Workflow / Approval / Automation (2026-07-31)
+
+| Field | Value |
+| --- | --- |
+| Model / runtime | Kimi Code CLI (kimi-for-coding), interactive agent session |
+| Starting HEAD | `63341064de0e93f0f1b502cbca0bc8641e581ea7` |
+| Pages added | `authority_governance`, `workflow_studio`, `approval_policy_studio`, `automation_rules` (FPC pages: 9 → 13) |
+| Backend | none — all four project the governance namespaces wired in `0c3c005` (`policy`, `workflow`, `approvals`, `automation`) |
+| Engines duplicated | none — legacy `workflow`/`approvals`/`automation` pages untouched (FP-10) |
+| Permissions registered | 4 page permissions (`admin/governance`, `admin/workflow`, `admin/approvals`, `admin/automation`) |
+| Deferred (backend exists, UI actions not yet wired) | workflow visual editor/simulation/publish; approval policy create/simulate; automation dry-run/enable toggles; delegation create/revoke via UI |
+| Tests | final-page-catalog 84/84 (7 new FP-2E tests), precommit passed |
+| Operational mutation | none — `octagon-erp/database.db` md5 `1b5abb394768562c69e88e9fb5222139`, WAL 0 bytes |
+| Telegram worktree | untouched (HEAD `0caa4f9`, clean) |
+| Administrator credential | unchanged, not read, not used |
+| VNext | unchanged (HEAD `cf7ae4e`) |
+| main merged | no |
+| Failures and rework | none |
+| Remaining blockers | 6 FP-2 pages unbuilt (configuration_center, data_import_center, integration_hub, audit_security_center, release_health, release_upgrade_center) |
+| Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |

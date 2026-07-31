@@ -21,6 +21,13 @@ import { createSettingsAuthority } from './platform/settings/index.mjs';
 import { createNotificationService } from './platform/notifications/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
+// FP-2 Control Plane: WorkflowRegistry/Runtime and AutomationEngine are real,
+// tested engines that were never imported outside their own test files. See
+// platform/domains/governance-actions.mjs for why this is the same class of
+// defect Wave 2 had.
+import { createWorkflowRegistry, createWorkflowRuntime } from './platform/workflow/index.mjs';
+import { createAutomationEngine } from './platform/automation/index.mjs';
+import { registerGovernanceActions, GOVERNANCE_PERMISSIONS } from './platform/domains/governance-actions.mjs';
 import { createActionRegistry, createActionExecutor } from './platform/kernel/actions/index.mjs';
 import { createRepository } from './platform/data/repositories/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
@@ -141,7 +148,14 @@ export function createPlatformAuthority(dialect) {
   }
 
   const registry = createPermissionRegistry(dialect);
-  registry.registerMany([...DEFAULT_PAGE_PERMISSIONS, ...DEFAULT_API_PERMISSIONS]);
+  // Explicit, not relying on the required_permission auto-scan below: that scan
+  // only matches colon-token shapes it can infer a label for, and a permission
+  // the evaluator has never heard of fails closed (assertKnown throws
+  // PERMISSION_UNKNOWN) — silently correct, but it would make every governance
+  // action permanently denied for everyone, including an owner, until someone
+  // noticed. Registering explicitly means the token is known the moment this
+  // file is wired, the same way DEFAULT_PAGE_PERMISSIONS is.
+  registry.registerMany([...DEFAULT_PAGE_PERMISSIONS, ...DEFAULT_API_PERMISSIONS, ...GOVERNANCE_PERMISSIONS]);
 
   // Every governed action declares its required permission in platform_actions
   // (see migrations 003/014+). Register those tokens so the evaluator knows
@@ -171,6 +185,10 @@ export function createPlatformAuthority(dialect) {
   const settings = createSettingsAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
+  // FP-2: workflow and automation were fully built but never instantiated.
+  const workflowRegistry = createWorkflowRegistry(dialect, {});
+  const workflowRuntime = createWorkflowRuntime(dialect, {});
+  const automationEngine = createAutomationEngine(dialect, { evaluator });
   const actionRegistry = createActionRegistry(dialect);
   const actionExecutor = createActionExecutor(dialect);
   registerFinanceActions(actionExecutor);
@@ -203,6 +221,13 @@ export function createPlatformAuthority(dialect) {
     // affected pages will report module_not_installed instead.
     console.warn('[platform] Wave 2 action registration skipped:', wave2Error && wave2Error.message);
   }
+  // FP-2 Control Plane: workflow/approval/automation/policy actions. Same
+  // fail-open-to-degraded-state contract as Wave 2 above.
+  try {
+    registerGovernanceActions(actionExecutor, { workflowRegistry, workflowRuntime, approvalEngine: approvals, automationEngine, policyEngine });
+  } catch (governanceError) {
+    console.warn('[platform] Governance action registration skipped:', governanceError && governanceError.message);
+  }
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });
 
@@ -229,6 +254,7 @@ export function createPlatformAuthority(dialect) {
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, notifications, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    workflowRegistry, workflowRuntime, automationEngine,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -251,6 +277,18 @@ export function createPlatformAuthority(dialect) {
       actionExecutor: authority.actionExecutor,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
       authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
+      // FP-2 governed reads (workflow/approvals/automation/policy/permissions)
+      // need the live engine instances, not just the dialect — several of them
+      // (worklist scoping, delegation lookups, permission "explain") carry
+      // logic that must not be re-implemented as raw SQL in the query layer.
+      governanceDeps: {
+        workflowRegistry: authority.workflowRegistry,
+        workflowRuntime: authority.workflowRuntime,
+        approvalEngine: authority.approvals,
+        automationEngine: authority.automationEngine,
+        policyEngine: authority.policyEngine,
+        evaluator: authority.evaluator,
+      },
     });
   };
 

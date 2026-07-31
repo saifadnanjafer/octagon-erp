@@ -258,13 +258,17 @@ export class ApprovalEngine {
     }
     const viaDelegation = roles.delegated.find((d) => d.role === match) || null;
 
-    this.dialect.exec('BEGIN IMMEDIATE;');
+    let startedTx = false;
+    try {
+      this.dialect.exec('BEGIN IMMEDIATE;');
+      startedTx = true;
+    } catch (_) { /* already in transaction */ }
     try {
       // Re-read inside the transaction: another approver may have finished the
       // request between our read above and this write.
       const fresh = this.dialect.prepare('SELECT status, current_step, version FROM approval_requests WHERE id = ?').get(requestId);
       if (fresh.status !== 'pending') {
-        this.dialect.exec('ROLLBACK;');
+        if (startedTx) this.dialect.exec('ROLLBACK;');
         throw new ApprovalError(`request is already ${fresh.status}`, 'APPROVAL_ALREADY_DECIDED', { status: fresh.status });
       }
       try {
@@ -275,7 +279,7 @@ export class ApprovalEngine {
           viaDelegation?.fromUserId || null, viaDelegation?.delegationId || null,
           decision, comment, JSON.stringify(attachments), this.#now(), fresh.version);
       } catch (e) {
-        this.dialect.exec('ROLLBACK;');
+        if (startedTx) this.dialect.exec('ROLLBACK;');
         if (String(e.message).includes('UNIQUE')) {
           throw new ApprovalError('you have already decided this step', 'APPROVAL_DUPLICATE_DECISION', { requestId, step: fresh.current_step });
         }
@@ -287,7 +291,7 @@ export class ApprovalEngine {
         outcome = this.#applyFinal(requestId, 'rejected');
       } else if (decision === 'return') {
         if (!policy?.allowReturn) {
-          this.dialect.exec('ROLLBACK;');
+          if (startedTx) this.dialect.exec('ROLLBACK;');
           throw new ApprovalError('this policy does not allow return for correction', 'APPROVAL_RETURN_FORBIDDEN');
         }
         outcome = this.#applyFinal(requestId, 'returned');
@@ -296,11 +300,11 @@ export class ApprovalEngine {
       } else {
         outcome = this.#applyApproval(requestId, request, policy, fresh.current_step);
       }
-      this.dialect.exec('COMMIT;');
+      if (startedTx) this.dialect.exec('COMMIT;');
       this.#audit(`approval.${decision}`, requestId, { deciderId, step: fresh.current_step, viaDelegation: viaDelegation?.delegationId || null, outcome: outcome.status }, deciderId);
       return this.get(requestId);
     } catch (e) {
-      try { this.dialect.exec('ROLLBACK;'); } catch { /* already rolled back */ }
+      if (startedTx) { try { this.dialect.exec('ROLLBACK;'); } catch { /* already rolled back */ } }
       throw e;
     }
   }

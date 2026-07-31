@@ -121,7 +121,8 @@ export class WorkflowRegistry {
     const def = this.get(definitionId);
     if (!def) problems.push({ code: 'DEFINITION_NOT_FOUND', detail: definitionId });
 
-    const states = new Set(spec.states || []);
+    const stateIds = (spec.states || []).map((s) => (typeof s === 'string' ? s : (s && s.id) || String(s)));
+    const states = new Set(stateIds);
     if (!spec.initialState) problems.push({ code: 'INITIAL_STATE_REQUIRED' });
     else if (!states.has(spec.initialState)) problems.push({ code: 'INITIAL_STATE_UNDECLARED', detail: spec.initialState });
 
@@ -156,7 +157,7 @@ export class WorkflowRegistry {
 
     // Reachability: a state graph with no path to a terminal state is a
     // guaranteed hang, so it is a validation failure, not a runtime surprise.
-    const terminal = (spec.states || []).filter((s) => !(spec.transitions || []).some((t) => t.from === s));
+    const terminal = stateIds.filter((s) => !(spec.transitions || []).some((t) => t.from === s));
     if (states.size && !terminal.length) problems.push({ code: 'STATE_GRAPH_HAS_NO_TERMINAL_STATE' });
 
     return { valid: problems.length === 0, problems };
@@ -186,14 +187,20 @@ export class WorkflowRegistry {
   activate(definitionId, version, actor = 'system') {
     const v = this.getVersion(definitionId, version);
     if (!v) throw new WorkflowError('version not found', 'WORKFLOW_VERSION_NOT_FOUND', { definitionId, version });
-    this.dialect.exec('BEGIN IMMEDIATE;');
+    let startedTx = false;
+    try {
+      this.dialect.exec('BEGIN IMMEDIATE;');
+      startedTx = true;
+    } catch (e) {
+      // Already inside a transaction
+    }
     try {
       this.dialect.prepare("UPDATE workflow_versions SET status = 'retired' WHERE definition_id = ? AND status = 'active'").run(definitionId);
       this.dialect.prepare("UPDATE workflow_versions SET status = 'active' WHERE definition_id = ? AND version = ?").run(definitionId, version);
       this.dialect.prepare("UPDATE workflow_definitions SET active_version = ?, status = 'active' WHERE id = ?").run(version, definitionId);
-      this.dialect.exec('COMMIT;');
+      if (startedTx) this.dialect.exec('COMMIT;');
     } catch (e) {
-      this.dialect.exec('ROLLBACK;');
+      if (startedTx) this.dialect.exec('ROLLBACK;');
       throw e;
     }
     this.dialect.prepare(`

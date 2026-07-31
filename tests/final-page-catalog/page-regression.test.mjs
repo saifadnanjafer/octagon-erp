@@ -49,7 +49,7 @@ const KNOWN_INCOMPLETE = new Set([
 ]);
 
 /** Pages this wave added and therefore holds to the full standard. */
-const FPC_PAGES = ['enterprise_home', 'my_work', 'unified_inbox'];
+const FPC_PAGES = ['enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center'];
 
 // ---------------------------------------------------------------------------
 // §79 defect classes
@@ -170,14 +170,33 @@ test('every Final Page Catalog page has a controller module', () => {
     my_work: 'modules/fpc-my-work.js',
     unified_inbox: 'modules/fpc-unified-inbox.js',
   };
+  // A page must self-activate through one of two patterns:
+  //   (a) legacy per-page switchPage wrap + its own ensurePageTemplateLoaded call
+  //       (the pattern modules/canonical-projects.js and modules/appointments.js use), or
+  //   (b) OctagonPageKit.wirePage({ pageId, sectionId, activate }) — the shared
+  //       mount helper, which performs the exact same permission-gate +
+  //       async-template-wait + activation dance in one place instead of once
+  //       per page. This is now the FPC-preferred pattern (see
+  //       docs/evidence/final-page-catalog/INTEGRATION_AND_HARDENING_READINESS.md).
+  // Whichever pattern a page uses, the actual template-wait guarantee is
+  // asserted once, structurally, against octagon-page-kit.js itself below —
+  // not re-grepped into every page that delegates to it.
   for (const [id, file] of Object.entries(controllers)) {
     assert.ok(fs.existsSync(path.join(ROOT, file)), `${id} controller ${file} is missing`);
     const src = fs.readFileSync(path.join(ROOT, file), 'utf8');
-    // Each controller must self-activate through the switchPage wrapper, or the
-    // shell's async view hydration races it and the page renders blank.
-    assert.match(src, /root\.switchPage\s*=\s*function/, `${id} does not wrap switchPage`);
-    assert.match(src, /ensurePageTemplateLoaded/, `${id} does not wait for its template`);
+    const usesSharedMount = /OctagonPageKit\.wirePage\s*\(\s*\{[\s\S]*?pageId\s*:\s*PAGE_ID/.test(src);
+    const usesLegacyWrap = /root\.switchPage\s*=\s*function/.test(src) && /ensurePageTemplateLoaded/.test(src);
+    assert.ok(usesSharedMount || usesLegacyWrap, `${id} does not self-activate through wirePage() or a switchPage wrap`);
   }
+});
+
+test('OctagonPageKit.wirePage guarantees the async-template wait every page relies on', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'modules/octagon-page-kit.js'), 'utf8');
+  const fnStart = src.indexOf('function wirePage(');
+  assert.ok(fnStart !== -1, 'octagon-page-kit.js no longer defines wirePage()');
+  const fnBody = src.slice(fnStart, fnStart + 3000);
+  assert.match(fnBody, /ensurePageTemplateLoaded/, 'wirePage() must await the template before activating');
+  assert.match(fnBody, /PermissionService/, 'wirePage() must enforce the page permission before activating');
 });
 
 test('Final Page Catalog pages are loaded by the shell', () => {

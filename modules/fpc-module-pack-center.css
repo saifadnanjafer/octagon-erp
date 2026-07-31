@@ -1,0 +1,138 @@
+/* modules/fpc-module-pack-center.css — Final Page Catalog · Module & Pack Center styles */
+
+#pageModulePackCenter .fpc-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+#pageModulePackCenter .fpc-module-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#pageModulePackCenter .fpc-module-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: #cbd5e1;
+}
+
+#pageModulePackCenter .fpc-module-card.enabled {
+  border-right: 4px solid #10b981;
+}
+
+#pageModulePackCenter .fpc-mod-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+#pageModulePackCenter .fpc-mod-kind {
+  font-size: 0.75rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+#pageModulePackCenter .fpc-mod-version {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #94a3b8;
+}
+
+#pageModulePackCenter .fpc-mod-body {
+  margin-bottom: 16px;
+}
+
+#pageModulePackCenter .fpc-mod-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--text-main, #1e293b);
+}
+
+#pageModulePackCenter .fpc-mod-code {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+#pageModulePackCenter .fpc-mod-deps {
+  font-size: 0.8rem;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #475569;
+}
+
+#pageModulePackCenter .fpc-mod-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+#pageModulePackCenter .fpc-mod-health {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+#pageModulePackCenter .fpc-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+#pageModulePackCenter .fpc-search-box {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 12px;
+  flex: 1;
+  min-width: 240px;
+}
+
+#pageModulePackCenter .fpc-search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  margin-right: 8px;
+  font-size: 0.9rem;
+}
+
+#pageModulePackCenter .fpc-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+#pageModulePackCenter .fpc-filter-group select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  outline: none;
+}

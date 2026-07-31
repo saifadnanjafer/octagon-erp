@@ -34,6 +34,8 @@ import { handleMaintenanceQuery } from '../maintenance/index.mjs';
 import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleWave2Query, WAVE2_NAMESPACES, wave2ReadPermission } from './wave2.mjs';
+import { handleGovernanceQuery, GOVERNANCE_NAMESPACES } from './governance.mjs';
+import { governanceReadPermission } from '../domains/governance-actions.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -72,7 +74,7 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null }) {
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, governanceDeps = {} }) {
   // The runtime authority passes its own executor (with finance handlers
   // registered); standalone mounts fall back to a bare kernel executor.
   const executor = actionExecutor || createActionExecutor(dialect);
@@ -239,6 +241,19 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const commercialResult = handleCommercialQuery({ dialect, ctx, namespace, resource, recordId, query });
         if (commercialResult.error) return sendJson(res, commercialResult.status || 404, envelope(null, commercialResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(commercialResult.data, null, commercialResult.meta, ctx.correlationId));
+      }
+
+      // FP-2 Control Plane — governed reads for workflow/approvals/automation/
+      // policy/permissions. Same whitelist discipline as Wave 2 below: table,
+      // filters and scope come from the handler, never the request.
+      if (GOVERNANCE_NAMESPACES.includes(namespace) && req.method === 'GET') {
+        const readPermission = governanceReadPermission(namespace);
+        if (!requirePermission('platform:db:read')) return;
+        if (readPermission && !requirePermission(readPermission)) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const gov = handleGovernanceQuery({ dialect, ctx, deps: governanceDeps, namespace, resource, recordId, query });
+        if (gov.error) return sendJson(res, gov.status || 404, envelope(null, gov.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(gov.data, null, gov.meta, ctx.correlationId));
       }
 
       // Final Page Catalog — governed reads for the 16 Wave 2 domains.

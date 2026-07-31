@@ -1,0 +1,130 @@
+<section class="page" id="pageModulePackCenter">
+  <div class="fpc-page-container" id="modulePackCenterBody">
+    <!-- Header -->
+    <header class="fpc-page-header">
+      <div class="fpc-header-main">
+        <div class="fpc-header-icon" style="background: rgba(79, 70, 229, 0.1); color: #6366f1;">
+          <i class="fa-solid fa-boxes-packing"></i>
+        </div>
+        <div>
+          <h1 class="fpc-title">مركز الموديلات والحزم <span class="fpc-subtitle-en">Module & Pack Center</span></h1>
+          <p class="fpc-description">إدارة تفعيل الموديلات، الترخيص، صلاحيات الفروع، الحزم وإعدادات المنظومة</p>
+        </div>
+      </div>
+      <div class="fpc-header-actions">
+        <button id="mpcRefreshBtn" class="oct-btn oct-btn-secondary">
+          <i class="fa-solid fa-arrows-rotate"></i> تحديث البيانات
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Grid -->
+    <div class="fpc-kpi-grid">
+      <div class="fpc-kpi-card" id="mpcKpiTotal">
+        <div class="fpc-kpi-header">
+          <span class="fpc-kpi-title">إجمالي الموديلات</span>
+          <i class="fa-solid fa-cubes fpc-kpi-icon"></i>
+        </div>
+        <div class="fpc-kpi-value" id="mpcValTotal">--</div>
+        <div class="fpc-kpi-meta">الموديلات المسجلة بالنظام</div>
+      </div>
+
+      <div class="fpc-kpi-card" id="mpcKpiEnabled">
+        <div class="fpc-kpi-header">
+          <span class="fpc-kpi-title">الموديلات المفعلة</span>
+          <i class="fa-solid fa-circle-check fpc-kpi-icon" style="color: #10b981;"></i>
+        </div>
+        <div class="fpc-kpi-value" id="mpcValEnabled" style="color: #10b981;">--</div>
+        <div class="fpc-kpi-meta">نشطة وجاهزة للاستخدام</div>
+      </div>
+
+      <div class="fpc-kpi-card" id="mpcKpiBlocked">
+        <div class="fpc-kpi-header">
+          <span class="fpc-kpi-title">موديلات تحتاج انتباه</span>
+          <i class="fa-solid fa-triangle-exclamation fpc-kpi-icon" style="color: #f59e0b;"></i>
+        </div>
+        <div class="fpc-kpi-value" id="mpcValBlocked" style="color: #f59e0b;">--</div>
+        <div class="fpc-kpi-meta">إعدادات مفقودة أو مرخصة جزئياً</div>
+      </div>
+
+      <div class="fpc-kpi-card" id="mpcKpiFlags">
+        <div class="fpc-kpi-header">
+          <span class="fpc-kpi-title">مفاتيح الميزات</span>
+          <i class="fa-solid fa-toggle-on fpc-kpi-icon" style="color: #6366f1;"></i>
+        </div>
+        <div class="fpc-kpi-value" id="mpcValFlags" style="color: #6366f1;">--</div>
+        <div class="fpc-kpi-meta">Feature Flags النشطة</div>
+      </div>
+    </div>
+
+    <!-- Navigation Sub-tabs -->
+    <div class="fpc-tab-bar">
+      <button class="fpc-tab-btn active" data-tab="modules">الموديلات والتفعيل (Modules & Control)</button>
+      <button class="fpc-tab-btn" data-tab="flags">مفاتيح الميزات (Feature Flags)</button>
+      <button class="fpc-tab-btn" data-tab="licenses">التراخيص والصلاحيات (Licenses & Scopes)</button>
+    </div>
+
+    <!-- Tab Section 1: Modules Matrix -->
+    <div class="fpc-tab-content active" id="mpcTabModules">
+      <div class="fpc-filter-bar">
+        <div class="fpc-search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="mpcSearchInput" placeholder="بحث عن موديل بالاسم أو الرمز..." />
+        </div>
+        <div class="fpc-filter-group">
+          <label>الحالة:</label>
+          <select id="mpcStatusFilter">
+            <option value="all">كل الحالات</option>
+            <option value="enabled">مفعل فقط (Enabled)</option>
+            <option value="installed">مثبت غير مفعل (Installed)</option>
+            <option value="warning">تحذير / نقص إعدادات</option>
+          </select>
+        </div>
+        <div class="fpc-filter-group">
+          <label>الفئة:</label>
+          <select id="mpcKindFilter">
+            <option value="all">كل الفئات</option>
+            <option value="core">الأساس والنواة (Core)</option>
+            <option value="commercial">التجارة والمبيعات (Commercial)</option>
+            <option value="operations">العمليات والإنتاج (Operations)</option>
+            <option value="governance">الحوكمة والمالية (Governance)</option>
+            <option value="people">الموارد البشرية (People)</option>
+            <option value="vertical">القطاعات المتخصصة (Verticals)</option>
+            <option value="integration">الربط والتكامل (Integration)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="mpcModulesContainer" class="fpc-modules-grid">
+        <!-- Rendered dynamically by fpc-module-pack-center.js -->
+      </div>
+    </div>
+
+    <!-- Tab Section 2: Feature Flags -->
+    <div class="fpc-tab-content" id="mpcTabFlags" style="display: none;">
+      <div class="fpc-card">
+        <div class="fpc-card-header">
+          <h3>مفاتيح الميزات للنظام (Platform Feature Flags)</h3>
+          <p>إمكانية تشغيل أو إيقاف الميزات الحساسة والتجريبية بمرونة دون إعادة تشغيل الخدمة</p>
+        </div>
+        <div id="mpcFlagsContainer" class="fpc-table-wrapper">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Section 3: Licenses & Scopes -->
+    <div class="fpc-tab-content" id="mpcTabLicenses" style="display: none;">
+      <div class="fpc-card">
+        <div class="fpc-card-header">
+          <h3>التراخيص وتخصيص الفروع (Licenses & Scope Assignments)</h3>
+          <p>عرض حالة التراخيص الممنوحة وتخصيص الموديلات على مستوى الشركات والفروع</p>
+        </div>
+        <div id="mpcLicensesContainer" class="fpc-table-wrapper">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

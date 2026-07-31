@@ -244,8 +244,8 @@ export class ActionExecutor {
       INSERT INTO action_idempotency (id, actor_id, company_id, tenant_id, operation_type, idempotency_key, payload_hash, response_json, status_code, created_at, expires_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      crypto.randomUUID(), ctx.userId, ctx.companyId || 'global', ctx.tenantId, action.id, scope.key,
-      scope.payloadHash, JSON.stringify(result), statusCode, ctx.now, null
+      crypto.randomUUID(), ctx.userId, ctx.companyId || 'global', ctx.tenantId || ctx.companyId || 'default', action.id, scope.key,
+      scope.payloadHash, JSON.stringify(result ?? null), statusCode, ctx.now, null
     );
   }
 

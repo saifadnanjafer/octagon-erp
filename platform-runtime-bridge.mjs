@@ -19,6 +19,7 @@ import { createRouteCoverageRegistry } from './platform/authorization/route-cove
 import { createGovernanceBootstrap, DEFAULT_PAGE_CATALOGUE } from './platform/client/governance-bootstrap.mjs';
 import { createSettingsAuthority } from './platform/settings/index.mjs';
 import { createNotificationService } from './platform/notifications/index.mjs';
+import { createJobQueue, createWebhookService } from './platform/jobs/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
 // FP-2 Control Plane: WorkflowRegistry/Runtime and AutomationEngine are real,
@@ -120,6 +121,23 @@ function seedDefaultOwnerRole(dialect) {
   }
 }
 
+// research-gap-modules P0: platform/jobs (JobQueue/WebhookService) was fully
+// built and tested (tests/phase02/collaboration-files-jobs.test.mjs) but never
+// instantiated here — the same "built but never wired" defect FP-2 found and
+// fixed for workflow/automation above. server-scheduler.js remains the
+// existing cron authority for its own five jobs (dunning/expiry/maintenance
+// alerts/backup verify/self-check); this seed only registers one NEW,
+// additive definition so the queue has a real, safe tenant to execute against
+// without touching the legacy scheduler's business logic.
+function seedDefaultJobDefinitions(dialect) {
+  const now = new Date().toISOString();
+  dialect.prepare(`
+    INSERT INTO platform_jobs (id, module_id, name, schedule, handler, enabled, created_at, updated_at)
+    VALUES ('platform_kernel:maintenance_sweep', 'platform_kernel', 'Job queue maintenance sweep', 'every_5_minutes', 'platform.jobs.maintenance_sweep', 1, ?, ?)
+    ON CONFLICT(id) DO NOTHING
+  `).run(now, now);
+}
+
 function seedDefaultFieldRules(dialect) {
   const now = new Date().toISOString();
   // Ensure the owner role exists before attaching the sample rule.
@@ -184,6 +202,15 @@ export function createPlatformAuthority(dialect) {
   const memberships = createMembershipDirectory(dialect);
   const settings = createSettingsAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
+  // research-gap-modules P0: see seedDefaultJobDefinitions above for why this
+  // is additive rather than a replacement of server-scheduler.js.
+  const jobQueue = createJobQueue(dialect, {});
+  const webhookService = createWebhookService(dialect, {});
+  jobQueue.registerHandler('platform.jobs.maintenance_sweep', () => {
+    const recoveredLeaseIds = jobQueue.recoverStaleLeases();
+    return { recoveredLeaseCount: recoveredLeaseIds.length };
+  });
+  seedDefaultJobDefinitions(dialect);
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
   // FP-2: workflow and automation were fully built but never instantiated.
   const workflowRegistry = createWorkflowRegistry(dialect, {});
@@ -254,7 +281,7 @@ export function createPlatformAuthority(dialect) {
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, notifications, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
-    workflowRegistry, workflowRuntime, automationEngine,
+    workflowRegistry, workflowRuntime, automationEngine, jobQueue, webhookService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

@@ -330,6 +330,16 @@ export function handleControlPlaneQuery({ dialect: db, ctx, resource, recordId =
   if (resource === 'integrations') return { data: db.prepare('SELECT id,kind,name,issuer,jit_provisioning,status,updated_at FROM identity_sso_providers WHERE tenant_id=? ORDER BY name').all(ctx.tenantId) };
   if (resource === 'api-keys') return { data: db.prepare("SELECT id,prefix,service_account_id,company_id,label,scopes,expires_at,revoked_at,last_used_at FROM identity_api_keys WHERE tenant_id=? AND (company_id IS NULL OR company_id=?) ORDER BY created_at DESC").all(ctx.tenantId, ctx.companyId) };
   if (resource === 'jobs') return { data: db.prepare('SELECT id,module_id,name,schedule,handler,enabled,leased_until,updated_at FROM platform_jobs ORDER BY module_id,id').all() };
+  // research-gap-modules P0: 'jobs' above is the DEFINITION registry; this is
+  // the durable RUN queue (platform/jobs/index.mjs JobQueue, job_runs table) —
+  // read-only here, mutations stay behind JobQueue's own guarded methods.
+  if (resource === 'job-queue') return {
+    data: {
+      counts: db.prepare("SELECT status, COUNT(*) AS n FROM job_runs GROUP BY status").all(),
+      deadLetters: db.prepare("SELECT id, kind, attempts, last_error, created_at, finished_at FROM job_runs WHERE status = 'dead' ORDER BY created_at DESC LIMIT 50").all(),
+      recent: db.prepare("SELECT id, kind, status, attempts, run_after, created_at, finished_at FROM job_runs ORDER BY created_at DESC LIMIT 50").all(),
+    },
+  };
   if (resource === 'audit') return { data: db.prepare('SELECT actor_id,action,resource,resource_id,company_id,occurred_at,result,failure_code FROM platform_audit_log WHERE tenant_id IS NULL OR tenant_id=? ORDER BY occurred_at DESC LIMIT 150').all(ctx.tenantId) };
   if (resource === 'health') return { data: modules().map((row) => ({ module_id: row.id, status: row.health, access_code: row.access.code, missing_configuration: row.missing_configuration })) };
   if (resource === 'backups') return { data: db.prepare(`SELECT id,company_id,backup_type,status,storage_ref,bytes,started_at,completed_at,verified_at FROM platform_backup_runs WHERE company_id IS NULL OR company_id IN (${companies.map(() => '?').join(',') || "''"}) ORDER BY started_at DESC LIMIT 100`).all(...companyIds) };

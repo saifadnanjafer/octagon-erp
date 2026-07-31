@@ -2769,6 +2769,23 @@ async function initializeDatabase() {
       governanceStrangler = createGovernanceStrangler(platformAuthority);
       console.log('Phase 02 platform authority initialized');
       console.log('Phase 02 governance strangler active: legacy blob is no longer a governance authority');
+
+      // research-gap-modules P0: platform/jobs (JobQueue/WebhookService) was
+      // built and tested but never ticked in the running server — additive to
+      // server-scheduler.js below, not a replacement of its five cron jobs.
+      const JOB_QUEUE_POLL_MS = Number(process.env.OCTAGON_JOB_QUEUE_POLL_MS || 5 * 60 * 1000);
+      const jobQueueTimer = setInterval(() => {
+        if (!platformAuthority || !platformAuthority.jobQueue) return;
+        try {
+          platformAuthority.jobQueue.tick();
+          platformAuthority.jobQueue.drain({ max: 20 });
+          platformAuthority.jobQueue.recoverStaleLeases();
+          platformAuthority.webhookService.dispatch({ batchSize: 20 });
+        } catch (jobQueueError) {
+          console.error('[platform.jobs] poll failed:', jobQueueError && jobQueueError.message);
+        }
+      }, JOB_QUEUE_POLL_MS);
+      if (typeof jobQueueTimer.unref === 'function') jobQueueTimer.unref();
     } catch (err) {
       console.error('Failed to initialize Phase 02 platform authority:', err.message);
       console.error(err.stack || '');

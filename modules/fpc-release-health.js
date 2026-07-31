@@ -20,6 +20,7 @@
     health: [],
     backups: [],
     jobs: [],
+    jobQueue: null,
     overview: null,
   };
 
@@ -41,15 +42,17 @@
     if (b && kit) kit.renderState(b, kit.STATES.LOADING, { title: 'جاري تحميل صحة الإصدار...' });
 
     try {
-      const [health, backups, jobs, overview] = await Promise.all([
+      const [health, backups, jobs, jobQueue, overview] = await Promise.all([
         apiQuery('health'),
         apiQuery('backups'),
         apiQuery('jobs'),
+        apiQuery('job-queue'),
         apiQuery('overview'),
       ]);
       state.health = health;
       state.backups = backups;
       state.jobs = jobs;
+      state.jobQueue = jobQueue;
       state.overview = Array.isArray(overview) ? (overview[0] || null) : overview;
     } catch (err) {
       state.error = err.message || 'فشل تحميل بيانات صحة الإصدار';
@@ -76,6 +79,7 @@
         { id: 'health', label: 'صحة الوحدات', badge: unhealthy || state.health.length },
         { id: 'backups', label: 'النسخ الاحتياطية', badge: state.backups.length },
         { id: 'jobs', label: 'المهام الخلفية', badge: state.jobs.length },
+        { id: 'queue', label: 'طابور المهام', badge: (state.jobQueue?.deadLetters || []).length },
       ],
       activeTab: state.activeTab,
       onSelect: 'OctagonReleaseHealth.switchTab',
@@ -146,6 +150,36 @@
     });
   }
 
+  function renderJobQueueTab() {
+    const kit = K();
+    const q = state.jobQueue || {};
+    const counts = Array.isArray(q.counts) ? q.counts : [];
+    const byStatus = {};
+    counts.forEach((row) => { byStatus[row.status] = row.n; });
+    const kpis = [
+      { title: 'قيد الانتظار', value: kit.num(byStatus.queued || 0), subtitle: 'jobs queued', status: 'active' },
+      { title: 'قيد التنفيذ', value: kit.num(byStatus.running || 0), subtitle: 'jobs running', status: 'active' },
+      { title: 'فشلت وتُعاد المحاولة', value: kit.num(byStatus.failed || 0), subtitle: 'jobs failed (retrying)', status: byStatus.failed ? 'warning' : 'active' },
+      { title: 'ميتة نهائياً', value: kit.num(byStatus.dead || 0), subtitle: 'dead letters', status: byStatus.dead ? 'blocked' : 'active' },
+    ].map((c) => kit.renderKpiCard(c)).join('');
+
+    return `
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">${kpis}</div>
+      ${kit.renderTable({
+        columns: [
+          { key: 'id', title: 'المعرف', render: row => kit.bidi(row.id) },
+          { key: 'kind', title: 'النوع', render: row => kit.bidi(row.kind) },
+          { key: 'attempts', title: 'المحاولات', render: row => kit.num(row.attempts) },
+          { key: 'error', title: 'آخر خطأ', render: row => kit.esc(row.last_error || '—') },
+          { key: 'created', title: 'أُنشئت', render: row => kit.bidi(row.created_at || '—') },
+        ],
+        rows: q.deadLetters || [],
+        emptyTitle: 'لا توجد مهام ميتة',
+        emptySubtitle: 'طابور المهام الخلفي سليم — لا توجد مهام تجاوزت عدد محاولاتها القصوى',
+      })}
+    `;
+  }
+
   function render() {
     const kit = K();
     const b = body();
@@ -164,6 +198,7 @@
     if (state.activeTab === 'health') tabContent = renderHealthTab();
     else if (state.activeTab === 'backups') tabContent = renderBackupsTab();
     else if (state.activeTab === 'jobs') tabContent = renderJobsTab();
+    else if (state.activeTab === 'queue') tabContent = renderJobQueueTab();
 
     b.innerHTML = `
       ${renderHeader()}

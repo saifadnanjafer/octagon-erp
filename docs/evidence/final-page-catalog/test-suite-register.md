@@ -17,7 +17,7 @@
 
 | Suite | Command | Result |
 |---|---|---|
-| Final Page Catalog (all: wave2 wiring, governance wiring, module pack center, customization studio, commercial control center, page regression) | `node --test --test-concurrency=1 tests/final-page-catalog/*.test.mjs` | **69 / 69 pass** |
+| Final Page Catalog (all: wave2 wiring, governance wiring, module pack center, customization studio, commercial control center, FP-2D centers, page regression) | `node --test --test-concurrency=1 tests/final-page-catalog/*.test.mjs` | **77 / 77 pass** |
 | Migration | `npm run test:migration` | **5 / 5 pass** |
 | Unit | `npm run test:unit` | **9 / 9 pass** |
 | Precommit | `node scripts/precommit.js` | **passed** |
@@ -33,6 +33,7 @@ source commits) — not by editing the test.
 |---|---|
 | `tests/final-page-catalog/customization-studio.test.mjs` | Real empty state, custom-field/view-schema/saved-view round-trips through the canonical ConfigurationAuthority, out-of-scope company isolation, 404 on unknown resource. |
 | `tests/final-page-catalog/commercial-control-center.test.mjs` | License round-trip via the real `control:license:set` action, overview counts, unlicensed-module derivation, cross-tenant license isolation, seeded-license integrity. |
+| `tests/final-page-catalog/fp2d-centers.test.mjs` | FP-2D centers: company/branch scoping with cross-tenant isolation, honest empty states, secret-free identity projections, roles/grants, 156+ permission registry, no dangling permission→module references. |
 | `tests/final-page-catalog/page-regression.test.mjs` (extended) | All 6 FPC pages held to the full standard: registration, controller `wirePage` literal-call pattern, shell loading, no legacy writers, no hardcoded KPI values. |
 
 ## Suites NOT run in this wave

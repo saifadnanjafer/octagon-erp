@@ -1481,3 +1481,25 @@ dirty files untouched.
 | Deferred hardening | governed mutation actions for custom fields / view schemas / saved views; backend meters for storage/AI/API allowances (rendered `not_supported`); browser proof for the two new pages; remaining 13 FP-2 pages |
 | Remaining blockers | 13 FP-2 Control Plane pages unbuilt (organization, identity, permission, authority, workflow, approval, automation, configuration, import, integration, audit, release health, release upgrade) |
 | Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |
+
+## Final Page Catalog — FP-2D: Organization / Identity / Permission Centers (2026-07-31)
+
+| Field | Value |
+| --- | --- |
+| Model / runtime | Kimi Code CLI (kimi-for-coding), interactive agent session |
+| Starting HEAD | `7c03ac491b64b0c6a389c0e9425ee5edacbff36f` |
+| Pages added | `organization_center`, `identity_center`, `permission_center` (FPC pages: 6 → 9) |
+| Backend | none — all three pages project existing control-plane resources (`companies`, `branches`, `data-scopes`, `localization`, `users`, `api-keys`, `integrations`, `roles`, `permissions`) plus governance `permissions/explain` for real access simulation |
+| Backend authorities duplicated | none (multi_entity left untouched for FP-10 consolidation) |
+| Permissions registered | 3 page permissions (`admin/org`, `admin/identity`, `admin/permissions`) |
+| Secrets policy | identity page serves metadata/prefixes only; dedicated test asserts no secret-like keys in served rows |
+| Deferred (no canonical backend, not faked) | org tabs: sites/departments/BUs/cost centers/hierarchy/calendars/fiscal/legal IDs/addresses/module-pack assignment; identity: login history/sessions/lockouts/password policy/TOTP/passkey; permission: role comparison/field masks/record rules/evidence export |
+| Tests | final-page-catalog 77/77 (8 new FP-2D tests), precommit passed |
+| Operational mutation | none — `octagon-erp/database.db` md5 `1b5abb394768562c69e88e9fb5222139`, WAL 0 bytes |
+| Telegram worktree | untouched (HEAD `0caa4f9`, clean) |
+| Administrator credential | unchanged, not read, not used |
+| VNext | unchanged (HEAD `cf7ae4e`) |
+| main merged | no |
+| Failures and rework | none — all fixtures probed against a real fresh install before writing assertions |
+| Remaining blockers | 10 FP-2 pages unbuilt (authority_governance, workflow_studio, approval_policy_studio, automation_rules, configuration_center, data_import_center, integration_hub, audit_security_center, release_health, release_upgrade_center) |
+| Classification | **PARTIAL — CONTROL PLANE CONTINUATION REQUIRED** |

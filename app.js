@@ -3117,7 +3117,7 @@ const navGroupPages = {
   resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
   intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
   intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
-  admin_org: ['module_pack_center', 'customization_studio', 'commercial_control_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+  admin_org: ['module_pack_center', 'customization_studio', 'commercial_control_center', 'organization_center', 'identity_center', 'permission_center', 'multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
 };
 
 function getNavGroupForPage(page) {
@@ -37407,6 +37407,9 @@ window.ensurePageTemplateLoaded = async function (page) {
     module_pack_center: 'pageModulePackCenter',
     customization_studio: 'pageCustomizationStudio',
     commercial_control_center: 'pageCommercialControlCenter',
+    organization_center: 'pageOrganizationCenter',
+    identity_center: 'pageIdentityCenter',
+    permission_center: 'pagePermissionCenter',
     products: 'pageProductsAndMaterials',
     parties: 'pageCustomersAndSuppliers',
     warehouses: 'pageWarehouses',
@@ -37485,7 +37488,8 @@ window.prefetchAllViews = function () {
     'ai_factory', 'ai_tools', 'ai_status', 'deploy_ready',
     'canonical_console', 'canonical_inventory',
     'enterprise_home', 'my_work', 'unified_inbox', 'module_pack_center',
-    'customization_studio', 'commercial_control_center'
+    'customization_studio', 'commercial_control_center',
+    'organization_center', 'identity_center', 'permission_center'
   ];
   
   let i = 0;

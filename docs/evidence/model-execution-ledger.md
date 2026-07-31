@@ -1565,3 +1565,120 @@ dirty files untouched.
 | Failures and rework | 1 test fixture shape fix (package item requires `key`); no implementation rework |
 | Remaining blockers | R9 (mutation actions), R10 (commercial meters), R12 (browser smoke); FP-3 Finance pages not started |
 | Classification | **FP-2 CONTROL PLANE COMPLETE (read surfaces) — PARTIAL for mutations; READY FOR FP-3 with R9/R10/R12 recorded** |
+
+---
+
+## Record — Research-Driven Module Gap Discovery and Build Wave (2026-07-31)
+
+- **Model:** Claude Sonnet 5 (`claude-sonnet-5`)
+- **Agent/runtime:** Claude Code (Claude Agent SDK)
+- **Repository:** `saifadnanjafer/octagon-erp`
+- **Source branch / SHA:** `build/octagon-final-page-catalog` @ `1f59936b12d752e542e538a472a4bc3665bd6254` (verified clean, local==remote, before selection — the entry premise of an "FP-2 recovery/control-plane checkpoint" was independently confirmed true for this specific branch, not assumed)
+- **New worktree:** `octagon-research-gap-modules`
+- **New branch:** `build/octagon-research-gap-modules`
+- **Ending local/remote SHA:** `1d3ee99c03141b7170e41fb7c02314187dd021a2` (equal)
+
+### Research corpus inspected
+
+`21-7 MD/MASTER_CAPABILITY_INTEGRATION_MATRIX.md` (571 lines, ~223 rows, all
+10 parts read), `OCTAGON_TARGET_ARCHITECTURE.md`, `OCTAGON_TRANSFORMATION_AND_INTEGRATION_MASTER_PLAN.md`,
+`OCTAGON_MASTER_ROADMAP_PHASES.md`, `SOURCE_TO_TARGET_EXTRACTION_MAP.md` (all
+found under the sibling `21-7 MD/` folder, not inside the git repo).
+`VNEXT_SALVAGE_AND_MERGE_BLUEPRINT.md` (matrix companion doc #3) was
+referenced by the matrix but not found anywhere in the repo tree across 5
+branches or under `21-7 MD/`/`erp-research/` — recorded unavailable, not
+invented. Also inspected: `docs/evidence/final-page-catalog/*`,
+`docs/evidence/checkpoint-j-staged-cutover-closure/*` (a separate, unrelated,
+mid-flight PARTIAL cutover effort on the `cutover/octagon-operational-canonical-migration`
+branch — correctly identified and not selected as this wave's source).
+
+### Capability rows reviewed vs. individually re-audited
+
+All ~223 rows read for content. 18 (the assignment's own §7 "mandatory
+candidate" list) individually re-verified against live code via 5 parallel
+research passes, each required to cite file:line evidence. The dominant
+finding across all 18: not "missing modules" but **real, tested backend
+engines never imported by the runtime** (REGISTERED BUT UNREACHABLE) paired
+with mock-only UI pages with zero backend calls — the same defect class the
+repository's own FP-2 wave had already found and partly fixed for
+`workflow`/`automation` (see `platform-runtime-bridge.mjs`'s own comment
+crediting that discovery).
+
+### Gaps verified / false gaps rejected
+
+18 verified and classified (see `docs/evidence/research-gap-modules/VERIFIED_MISSING_MODULE_AND_SERVICE_REGISTER.md`):
+1 REGISTERED BUT UNREACHABLE (fixed this wave), 1 REGISTERED BUT UNREACHABLE
+(deferred, next P0), 2 BACKEND ONLY, 3 PARTIAL IMPLEMENTATION, 1 INTEGRATION
+READY (unwired), 2 EXISTING MODULE EXTENSION REQUIRED, 2 PAGE ONLY, 3 NEW
+MODULE REQUIRED, 1 VERTICAL PACK REQUIRED, 1 NOT APPLICABLE, 1 PARTIAL
+(PWA real/kiosk absent). No candidate was found to be a false gap in the
+sense of "already fully Integration Ready and reachable" — every one of the
+18 had at least a real, cited deficiency.
+
+### Built this wave
+
+**platform/jobs wiring (P0)** — `JobQueue`/`WebhookService` (pre-existing,
+385 lines, fully tested but never imported) wired into
+`platform-runtime-bridge.mjs` and polled from `server.js` every 5 minutes;
+one idempotent job-definition seed (`platform_kernel:maintenance_sweep`); one
+new read-only query (`job-queue` on the existing `control-plane` API
+namespace, reusing the existing `control:admin` permission); one existing
+page (`release_health`) extended with a new "طابور المهام" tab. Zero new
+migrations (schema pre-existed, migrations 005/010), zero new permissions,
+zero new actions — a pure, additive wiring fix. `server-scheduler.js`'s five
+live cron jobs were deliberately left untouched (higher-risk consolidation,
+explicitly deferred, not silently ignored).
+
+### Tests
+
+`tests/phase02/jobs-wiring.test.mjs` (new): 5/5. Full `tests/phase02/*`
+regression (13 files, 217 subtests): 212/217 passed. All 5 failing subtests
+(across `authorization.test.mjs`, `browser-live-evidence.test.mjs` ×2,
+`runtime-strangler.test.mjs`, `security-suite.test.mjs`) independently
+reproduced on the untouched `octagon-final-page-catalog` source worktree —
+proven pre-existing, not introduced by this wave. This worktree's
+`node_modules` had never been installed (`git worktree add` does not run
+`npm install`) — fixed once for the whole worktree; several apparent
+failures before that fix were purely this environment gap, not code defects.
+
+### Failures, current-agent mistakes and rework
+
+None in the implementation itself. Process note: the initial full-suite test
+run surfaced 7 apparently-failing files; before accepting any of them as
+regressions, each was individually re-run, and where still failing,
+independently re-run against the untouched source worktree to establish
+causality — this is what distinguished the 2 genuine pre-existing defects
+from the 5 that were purely a missing `npm install`.
+
+### Deferred hardening (not hidden)
+
+`server-scheduler.js`/`platform/jobs` duplicate-scheduler-authority
+consolidation; `WebhookService` has no transport configured (inert);
+live-browser proof of the new dashboard tab; only one job kind is a real
+tenant of the now-reachable queue. See
+`docs/evidence/research-gap-modules/deferred-hardening.md`.
+
+### Operational safety
+
+Operational data: untouched (this worktree has no operational database).
+Telegram worktree (`octagon-erp`, `cutover/octagon-operational-canonical-migration`,
+HEAD `00e60a8d894ed5e4b9a613246fe1b46264e20550`): re-verified identical (4
+uncommitted entries, same HEAD) before and after this wave. Administrator
+credential: unchanged, never read. VNext fingerprint
+(`be13a351d8613e3f55de20d7eba75558d2c1bafe80c6cd3e5bf53d590f3a10d2`):
+re-verified identical. `main` (`8815b00b2c5281167aad3bbe8370270efffb61b8`):
+not merged, not touched.
+
+### Push results
+
+`git push origin build/octagon-research-gap-modules` — local
+`1d3ee99c03141b7170e41fb7c02314187dd021a2` == remote
+`1d3ee99c03141b7170e41fb7c02314187dd021a2`. No force push. No history
+rewrite.
+
+### Classification
+
+**Item built:** INTEGRATION READY. **Overall wave:** PARTIAL — VERIFIED
+MODULE GAPS REMAIN (17 of 18 audited candidates not yet built; full
+223-row matrix not exhaustively re-audited this pass — see
+`docs/evidence/research-gap-modules/unresolved-risks.md`).

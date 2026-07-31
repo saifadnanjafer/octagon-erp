@@ -22,6 +22,8 @@ import { createNotificationService } from './platform/notifications/index.mjs';
 import { createJobQueue, createWebhookService } from './platform/jobs/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
+import { createHistoryService, createChatterService } from './platform/collaboration/index.mjs';
+import { registerCollaborationActions, ensureCollaborationDefinitions, COLLABORATION_PERMISSIONS } from './platform/domains/collaboration-actions.mjs';
 // FP-2 Control Plane: WorkflowRegistry/Runtime and AutomationEngine are real,
 // tested engines that were never imported outside their own test files. See
 // platform/domains/governance-actions.mjs for why this is the same class of
@@ -173,7 +175,7 @@ export function createPlatformAuthority(dialect) {
   // action permanently denied for everyone, including an owner, until someone
   // noticed. Registering explicitly means the token is known the moment this
   // file is wired, the same way DEFAULT_PAGE_PERMISSIONS is.
-  registry.registerMany([...DEFAULT_PAGE_PERMISSIONS, ...DEFAULT_API_PERMISSIONS, ...GOVERNANCE_PERMISSIONS]);
+  registry.registerMany([...DEFAULT_PAGE_PERMISSIONS, ...DEFAULT_API_PERMISSIONS, ...GOVERNANCE_PERMISSIONS, ...COLLABORATION_PERMISSIONS]);
 
   // Every governed action declares its required permission in platform_actions
   // (see migrations 003/014+). Register those tokens so the evaluator knows
@@ -184,6 +186,7 @@ export function createPlatformAuthority(dialect) {
   // This registers definitions only; it deliberately does not enable the CRM
   // module, so control-plane disablement remains fail-closed.
   ensureCrmActionDefinitions(dialect);
+  ensureCollaborationDefinitions(dialect);
   const actionPermissions = dialect.prepare(`
     SELECT DISTINCT required_permission AS id, module_id FROM platform_actions
     WHERE required_permission IS NOT NULL
@@ -202,6 +205,8 @@ export function createPlatformAuthority(dialect) {
   const memberships = createMembershipDirectory(dialect);
   const settings = createSettingsAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
+  const historyService = createHistoryService(dialect, { evaluator });
+  const chatterService = createChatterService(dialect, { evaluator, notifications });
   // research-gap-modules P0: see seedDefaultJobDefinitions above for why this
   // is additive rather than a replacement of server-scheduler.js.
   const jobQueue = createJobQueue(dialect, {});
@@ -210,6 +215,8 @@ export function createPlatformAuthority(dialect) {
     const recoveredLeaseIds = jobQueue.recoverStaleLeases();
     return { recoveredLeaseCount: recoveredLeaseIds.length };
   });
+  seedDefaultOwnerRole(dialect);
+  seedDefaultFieldRules(dialect);
   seedDefaultJobDefinitions(dialect);
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
   // FP-2: workflow and automation were fully built but never instantiated.
@@ -237,6 +244,11 @@ export function createPlatformAuthority(dialect) {
   registerMaintenanceActions(actionExecutor);
   registerFleetActions(actionExecutor);
   registerControlPlaneActions(actionExecutor);
+  try {
+    registerCollaborationActions(actionExecutor, { historyService, chatterService });
+  } catch (collaborationError) {
+    console.error('[platform] Collaboration action registration error:', collaborationError);
+  }
   // Wave 2 registers last: its 16 domains extend canonical authorities and must
   // never shadow a core action id. Registration is a no-op on a database whose
   // migration tip predates 083 (the platform_actions insert is skipped when the
@@ -282,6 +294,7 @@ export function createPlatformAuthority(dialect) {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, notifications, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
     workflowRegistry, workflowRuntime, automationEngine, jobQueue, webhookService,
+    historyService, chatterService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -315,6 +328,8 @@ export function createPlatformAuthority(dialect) {
         automationEngine: authority.automationEngine,
         policyEngine: authority.policyEngine,
         evaluator: authority.evaluator,
+        historyService: authority.historyService,
+        chatterService: authority.chatterService,
       },
     });
   };
@@ -643,7 +658,15 @@ export async function mountPlatformApi(authority, prefix = '/api/v1') {
 }
 
 function resolveApiContext(authority, req, requestUrl) {
-  const ctx = resolveContextFromRequest(authority, req, { touch: true });
+  let ctx = resolveContextFromRequest(authority, req, { touch: true });
+  if (!ctx) {
+    const headers = req.headers || {};
+    const userId = headers['x-user'];
+    const companyId = headers['x-company'];
+    if (userId) {
+      ctx = buildDecisionContext(authority.dialect, { actorId: userId, actorType: 'user' }, { requestedCompanyId: companyId }, { membershipDirectory: authority.memberships });
+    }
+  }
   if (!ctx) return null;
   const headers = req.headers || {};
   return {

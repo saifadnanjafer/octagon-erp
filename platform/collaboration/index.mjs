@@ -188,13 +188,24 @@ export class ChatterService {
 
   #now() { return this.now().toISOString(); }
 
+  #resolvePermission(entity, permission) {
+    const perm = permission || `${entity}:read`;
+    if (this.evaluator?.registry && !this.evaluator.registry.get(perm)) {
+      if (this.evaluator.registry.get('collaboration:read')) {
+        return 'collaboration:read';
+      }
+    }
+    return perm;
+  }
+
   /**
    * Every chatter operation inherits the attached record's permission. Reading a
    * thread you cannot read the record of is refused with the same reason code.
    */
   #assertRecordAccess(entity, recordId, ctx, permission) {
     if (!this.evaluator) return;
-    const decision = this.evaluator.evaluate({ permission, ctx, entity, recordId });
+    const perm = this.#resolvePermission(entity, permission);
+    const decision = this.evaluator.evaluate({ permission: perm, ctx, entity, recordId });
     if (!decision.allowed) throw new AuthorizationError(decision);
   }
 
@@ -209,13 +220,14 @@ export class ChatterService {
   }
 
   post({ entity, recordId, body, visibility = 'internal', mentions = [], attachments = [], ctx, readPermission }) {
-    this.#assertRecordAccess(entity, recordId, ctx, readPermission || `${entity}:read`);
+    const perm = this.#resolvePermission(entity, readPermission);
+    this.#assertRecordAccess(entity, recordId, ctx, perm);
     if (!body || !String(body).trim()) throw new CollaborationError('a message needs a body', 'MESSAGE_EMPTY');
 
     // A mention only reaches someone who could read the record anyway.
     const reachable = [];
     for (const userId of mentions) {
-      if (this.#canRead(entity, recordId, userId, readPermission || `${entity}:read`)) reachable.push(userId);
+      if (this.#canRead(entity, recordId, userId, perm)) reachable.push(userId);
     }
 
     // Attachments must already be attached to THIS record — a message cannot
@@ -251,6 +263,7 @@ export class ChatterService {
 
   #canRead(entity, recordId, userId, permission) {
     if (!this.evaluator) return true;
+    const perm = this.#resolvePermission(entity, permission);
     const memberships = this.dialect.prepare("SELECT company_id, branch_id FROM organization_memberships WHERE user_id = ? AND status = 'active'").all(userId);
     if (!memberships.length) return false;
     const probe = {
@@ -263,11 +276,12 @@ export class ChatterService {
       enabledModules: this.dialect.prepare("SELECT id FROM platform_modules WHERE status='enabled'").all().map((r) => r.id),
       now: this.#now(), sourceChannel: 'mention-check',
     };
-    return this.evaluator.evaluate({ permission, ctx: probe, entity, recordId }).allowed;
+    return this.evaluator.evaluate({ permission: perm, ctx: probe, entity, recordId }).allowed;
   }
 
   messages(entity, recordId, ctx, { readPermission, limit = 100 } = {}) {
-    this.#assertRecordAccess(entity, recordId, ctx, readPermission || `${entity}:read`);
+    const perm = this.#resolvePermission(entity, readPermission);
+    this.#assertRecordAccess(entity, recordId, ctx, perm);
     const thread = this.thread(entity, recordId, ctx, { create: false });
     if (!thread) return [];
     const rows = this.dialect.prepare('SELECT * FROM chatter_messages WHERE thread_id = ? AND removed = 0 ORDER BY created_at LIMIT ?').all(thread.id, limit);
@@ -293,7 +307,8 @@ export class ChatterService {
 
   /** Subscribing SOMEONE ELSE requires that they could read the record. */
   addFollower(entity, recordId, userId, ctx, { readPermission } = {}) {
-    if (userId !== ctx.actorId && !this.#canRead(entity, recordId, userId, readPermission || `${entity}:read`)) {
+    const perm = this.#resolvePermission(entity, readPermission);
+    if (userId !== ctx.actorId && !this.#canRead(entity, recordId, userId, perm)) {
       throw new CollaborationError('that user cannot access this record', 'FOLLOWER_NOT_AUTHORIZED', { userId });
     }
     return this.follow(entity, recordId, userId, ctx);
@@ -316,8 +331,9 @@ export class ChatterService {
   // --- activities -----------------------------------------------------------
 
   createActivity({ entity, recordId, kind = 'todo', summaryAr, assigneeId, dueAt = null, ctx, readPermission }) {
-    this.#assertRecordAccess(entity, recordId, ctx, readPermission || `${entity}:read`);
-    if (assigneeId && !this.#canRead(entity, recordId, assigneeId, readPermission || `${entity}:read`)) {
+    const perm = this.#resolvePermission(entity, readPermission);
+    this.#assertRecordAccess(entity, recordId, ctx, perm);
+    if (assigneeId && !this.#canRead(entity, recordId, assigneeId, perm)) {
       throw new CollaborationError('the assignee cannot access this record', 'ASSIGNEE_NOT_AUTHORIZED', { assigneeId });
     }
     const id = `act_${crypto.randomUUID()}`;

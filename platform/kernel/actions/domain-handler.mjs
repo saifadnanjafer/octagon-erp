@@ -25,16 +25,20 @@ function assertCompatible(input, keys, trustedValue, label) {
 }
 
 export function trustedActionInput(input = {}, ctx = {}) {
-  if (!ctx.companyId) {
+  const effectiveCtx = { ...ctx };
+  if (!effectiveCtx.companyId && effectiveCtx.activeCompanyId) effectiveCtx.companyId = effectiveCtx.activeCompanyId;
+  if (!effectiveCtx.userId && effectiveCtx.actorId) effectiveCtx.userId = effectiveCtx.actorId;
+
+  if (!effectiveCtx.companyId) {
     throw new DomainScopeError('an active company scope is required', 'COMPANY_SCOPE_REQUIRED');
   }
-  if (!ctx.userId) {
+  if (!effectiveCtx.userId) {
     throw new DomainScopeError('an authenticated actor is required', 'ACTOR_REQUIRED');
   }
 
-  assertCompatible(input, ['company_id', 'companyId'], ctx.companyId, 'company scope');
-  assertCompatible(input, ['branch_id', 'branchId'], ctx.branchId, 'branch scope');
-  assertCompatible(input, ['actor', 'actor_id', 'created_by', 'requested_by', 'user_id'], ctx.userId, 'actor identity');
+  assertCompatible(input, ['company_id', 'companyId'], effectiveCtx.companyId, 'company scope');
+  assertCompatible(input, ['branch_id', 'branchId'], effectiveCtx.branchId, 'branch scope');
+  assertCompatible(input, ['actor', 'actor_id', 'created_by', 'requested_by'], effectiveCtx.userId, 'actor identity');
 
   const scoped = { ...input };
   for (const key of [
@@ -44,13 +48,13 @@ export function trustedActionInput(input = {}, ctx = {}) {
     delete scoped[key];
   }
 
-  scoped.company_id = ctx.companyId;
-  if (ctx.branchId) scoped.branch_id = ctx.branchId;
-  scoped.actor = ctx.userId;
-  scoped.actor_id = ctx.userId;
-  scoped.created_by = ctx.userId;
-  scoped.requested_by = ctx.userId;
-  scoped.user_id = ctx.userId;
+  scoped.company_id = effectiveCtx.companyId;
+  if (effectiveCtx.branchId) scoped.branch_id = effectiveCtx.branchId;
+  scoped.actor = effectiveCtx.userId;
+  scoped.actor_id = effectiveCtx.userId;
+  scoped.created_by = effectiveCtx.userId;
+  scoped.requested_by = effectiveCtx.userId;
+  scoped.user_id = effectiveCtx.userId;
   return scoped;
 }
 
@@ -58,7 +62,11 @@ export function registerDomainHandler(actionExecutor, actionId, handler) {
   if (!actionExecutor || typeof actionExecutor.registerHandler !== 'function') {
     throw new TypeError('canonical ActionExecutor with registerHandler() is required');
   }
-  actionExecutor.registerHandler(actionId, ({ input, ctx, dialect }) => (
-    handler(dialect, trustedActionInput(input, ctx))
-  ));
+  actionExecutor.registerHandler(actionId, (opts, maybeCtx) => {
+    const input = opts?.input !== undefined ? opts.input : opts;
+    const ctx = opts?.ctx || maybeCtx || {};
+    const dialect = opts?.dialect || actionExecutor.db;
+    const trustedInput = trustedActionInput(input, ctx);
+    return handler(dialect, trustedInput);
+  });
 }

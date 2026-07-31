@@ -36,6 +36,7 @@ import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleWave2Query, WAVE2_NAMESPACES, wave2ReadPermission } from './wave2.mjs';
 import { handleGovernanceQuery, GOVERNANCE_NAMESPACES } from './governance.mjs';
 import { governanceReadPermission } from '../domains/governance-actions.mjs';
+import { handleCollaborationQuery, COLLABORATION_NAMESPACES } from './collaboration.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -271,6 +272,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const w2 = handleWave2Query({ dialect, ctx, namespace, resource, recordId, query });
         if (w2.error) return sendJson(res, w2.status || 404, envelope(null, w2.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(w2.data, null, w2.meta, ctx.correlationId));
+      }
+
+      if (COLLABORATION_NAMESPACES.includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const result = handleCollaborationQuery({ dialect, ctx, deps: governanceDeps, namespace, resource, recordId, query });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {

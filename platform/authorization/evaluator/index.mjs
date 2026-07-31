@@ -163,6 +163,7 @@ export class PermissionEvaluator {
   effectiveRoleIds(ctx) {
     if (!ctx || !ctx.actorId) return [];
     const actorType = ctx.actorType === 'service' ? 'service' : 'user';
+    const now = ctx.now || new Date().toISOString();
     return this.#cached(`roles:${actorType}:${ctx.actorId}:${ctx.activeCompanyId}`, () =>
       this.dialect.prepare(`
         SELECT DISTINCT a.role_id
@@ -172,7 +173,7 @@ export class PermissionEvaluator {
           AND (a.company_id IS NULL OR a.company_id = ?)
           AND (a.valid_from IS NULL OR a.valid_from <= ?)
           AND (a.valid_to   IS NULL OR a.valid_to   >  ?)
-      `).all(ctx.actorId, actorType, ctx.activeCompanyId || '', ctx.now, ctx.now).map((r) => r.role_id)
+      `).all(ctx.actorId, actorType, ctx.activeCompanyId || '', now, now).map((r) => r.role_id)
     );
   }
 

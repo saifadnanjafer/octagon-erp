@@ -205,9 +205,9 @@ export class ActionExecutor {
   #contextDefaults(ctx) {
     return {
       tenantId: ctx?.tenantId || null,
-      companyId: ctx?.companyId || null,
-      branchId: ctx?.branchId || null,
-      userId: ctx?.userId || 'system',
+      companyId: ctx?.companyId || ctx?.activeCompanyId || null,
+      branchId: ctx?.branchId || ctx?.activeBranchId || null,
+      userId: ctx?.userId || ctx?.actorId || 'system',
       actorType: ctx?.actorType || 'user',
       correlationId: ctx?.correlationId || crypto.randomUUID(),
       sourceChannel: ctx?.sourceChannel || 'action',

@@ -14,3 +14,8 @@ It is enforced independently of any provider configuration.
 Local provider configuration can change outside this repository. Any future
 provider-specific safety policy must be validated against that installed CLI's
 own help and documented configuration before use.
+
+GitHub publication is supported only through the runner's explicit `-Publish`
+switch. It calls authenticated GitHub CLI status without printing its output,
+then permits only a fast-forward normal push to the current branch's matching
+`origin` upstream.

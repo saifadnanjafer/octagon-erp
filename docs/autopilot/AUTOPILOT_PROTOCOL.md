@@ -42,3 +42,12 @@ The repository does not declare provider-specific CLI flags or configuration.
 The runner can optionally launch a documented installed provider in plan mode;
 it never uses automatic-approval or permission-bypass flags. Provider policies
 are advisory only; the Git/evidence gates above remain authoritative.
+
+## GitHub publication
+
+`-Publish` is explicit supervised consent to attempt a normal push for an
+eligible task. It verifies `gh auth status` without displaying credentials,
+requires the configured upstream to be exactly `origin/<current-branch>`,
+requires an existing remote branch and a fast-forward relationship, re-runs the
+automation tests, then runs ordinary `git push` and proves SHA equality. It
+never creates a branch, pushes `main`, force-pushes, or updates task state.

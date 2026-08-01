@@ -18,10 +18,14 @@ test('supervised runner contains no unattended or destructive command', () => {
   assert.match(script, /--permission-mode plan/);
   assert.match(script, /kimi --plan/);
   assert.match(script, /git worktree list --porcelain/);
+  assert.match(script, /gh auth status/);
+  assert.match(script, /\[switch\]\$Publish/);
+  assert.match(script, /git merge-base --is-ancestor/);
+  assert.match(script, /Post-push SHA equality failed/);
 });
 
 test('supervised runner parses in PowerShell without executing', () => {
-  const command = "[void][scriptblock]::Create((Get-Content -Raw scripts/continue-next-octagon-task.ps1)); 'PowerShell parse: PASS'";
+  const command = "$ErrorActionPreference='Stop'; try { [void][scriptblock]::Create((Get-Content -Raw scripts/continue-next-octagon-task.ps1)); 'PowerShell parse: PASS' } catch { Write-Error $_; exit 1 }";
   const output = execFileSync('powershell', ['-NoProfile', '-Command', command], { encoding: 'utf8' });
   assert.match(output, /PowerShell parse: PASS/);
 });

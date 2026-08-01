@@ -3,9 +3,10 @@ import * as orders from './orders.mjs';
 import * as contracts from './contracts.mjs';
 import * as lifecycle from './lifecycle.mjs';
 import * as rma from './rma.mjs';
+import * as warranty from './warranty.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { crm, orders, contracts, lifecycle, rma };
+export { crm, orders, contracts, lifecycle, rma, warranty };
 
 export function registerSalesActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'crm:lead:create', crm.createLead);
@@ -36,4 +37,8 @@ export function registerSalesActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'sales:contract:activate', contracts.activateContract);
   registerDomainHandler(actionExecutor, 'sales:contract:suspend', contracts.suspendContract);
   registerDomainHandler(actionExecutor, 'sales:contract:terminate', contracts.terminateContract);
+  registerDomainHandler(actionExecutor, 'sales:warranty:create', warranty.createWarrantyCase);
+  registerDomainHandler(actionExecutor, 'sales:warranty:submit', warranty.submitWarrantyCase);
+  registerDomainHandler(actionExecutor, 'sales:warranty:approve', warranty.approveWarrantyCase);
+  registerDomainHandler(actionExecutor, 'sales:warranty:close', warranty.closeWarrantyCase);
 }

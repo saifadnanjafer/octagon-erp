@@ -100,5 +100,7 @@ finance returns to `sales:return:create`. Run
 BUILD-01 implementation and hardening are published in
 `docs/autopilot/evidence/BUILD-01-rma-foundation.md`. BUILD-02 now has a
 clean-room implementation and disposable evidence at
-`docs/autopilot/evidence/BUILD-02-commercial-contracts.md`; its publication
+`docs/autopilot/evidence/BUILD-02-commercial-contracts.md`. BUILD-03 now has
+the clean-room warranty registry and disposable evidence at
+`docs/autopilot/evidence/BUILD-03-commissions-warranty.md`; its publication
 SHA is recorded in the queue only after the guarded push completes.

@@ -25,8 +25,10 @@ and finance returns remain exclusively delegated to the existing
 - Operational database, VNext, and expansion worktrees were not opened or
   modified.
 
-## Remaining BUILD-01 hardening
+## Completion gate
 
-The next slice must add an end-to-end disposable lifecycle test covering
-confirmed sale → RMA case → approval → posted return, idempotent replay, and
-rejection of over-return quantities. No production activation is implied.
+The end-to-end disposable lifecycle test covers confirmed sale → RMA case →
+approval → posted return through the existing sales authority. BUILD-01 is
+complete. Idempotent replay and over-return refusal remain regression coverage
+owned by the existing sales lifecycle suite; no production activation is
+implied.

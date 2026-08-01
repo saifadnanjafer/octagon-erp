@@ -132,10 +132,16 @@
     {
       "id": "BUILD-01",
       "title": "Commercial Returns/RMA single-authority foundation",
-      "status": "READY",
+      "status": "COMPLETE",
       "depends_on": ["CAP-08"],
       "prompt_path": "docs/autopilot/prompts/BUILD-01-commercial-rma-foundation.md",
-      "human_gate": "Clean-room implementation on the selected cutover baseline only; do not merge or cherry-pick expansion code."
+      "human_gate": "Clean-room implementation on the selected cutover baseline only; do not merge or cherry-pick expansion code.",
+      "completion": {
+        "commit": "51ea9f02fe21ea5b8afecad192164a5ce4808178",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "51ea9f02fe21ea5b8afecad192164a5ce4808178",
+        "evidence_path": "docs/autopilot/evidence/BUILD-01-rma-foundation.md"
+      }
     },
     {
       "id": "BUILD-02",

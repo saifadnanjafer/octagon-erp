@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
-import { createSalesReturn, getSaleOrder } from './lifecycle.mjs';
+import { createSalesReturn } from './lifecycle.mjs';
+import { getSaleOrder } from './orders.mjs';
 
 function fail(message, code) { const error = new Error(message); error.code = code; throw error; }
 function id(prefix) { return `${prefix}_${crypto.randomBytes(8).toString('hex')}`; }

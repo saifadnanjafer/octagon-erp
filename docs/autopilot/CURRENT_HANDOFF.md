@@ -68,7 +68,15 @@ Read-only devices, mobile, offline, and kiosk evidence is recorded in
 preserves approvals, audit, and local-first behavior; no public route changed.
 
 CAP-05 completion evidence is published at `c83fb2c2be6af28c783f3dc85c03bf978013020e`.
-CAP-06 is now eligible only for read-only commercial platform and marketplace review.
+
+## CAP-06 commercial platform review
+
+Read-only commercial-platform evidence is recorded in
+`docs/autopilot/evidence/CAP-06-commercial-platform-review.md`. The baseline
+retains canonical commercial authority and no external provider was activated.
+
+CAP-06 completion evidence is published at `8b8837495242d1fc3a721e92da6945a9ed154b6c`.
+CAP-07 is now eligible only for read-only AI, people, and vertical-pack review.
 
 ## Resume
 

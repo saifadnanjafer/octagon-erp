@@ -79,6 +79,15 @@ export class JobQueue {
     };
   }
 
+  /** Read-only operational view of the durable queue. */
+  list({ status = null, limit = 100 } = {}) {
+    const bounded = Math.max(1, Math.min(Number(limit) || 100, 500));
+    const rows = status
+      ? this.dialect.prepare('SELECT id FROM job_runs WHERE status = ? ORDER BY created_at DESC LIMIT ?').all(status, bounded)
+      : this.dialect.prepare('SELECT id FROM job_runs ORDER BY created_at DESC LIMIT ?').all(bounded);
+    return rows.map(({ id }) => this.get(id));
+  }
+
   /** Claim one job under a lease. Two workers cannot claim the same row. */
   claim() {
     const nowIso = this.#now();

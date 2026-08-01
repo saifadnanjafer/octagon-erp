@@ -36,3 +36,21 @@ test('BUILD-05 saves scoped views through the governed action authority', async 
     } finally { db.close(); }
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('BUILD-05 schedules reports as durable jobs and stages in-app delivery', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'octagon-build05-reports-'));
+  try {
+    const dbPath = path.join(dir, 'reports.db'); await freshInstall({ dbPath, backupDir: path.join(dir, 'backups'), actor: 'build-05-test' });
+    const db = openMigrationDatabase(dbPath);
+    try {
+      const authority = createPlatformAuthority(db); const ctx = { companyId: 'default', branchId: 'default', userId: 'build-05-test', sourceChannel: 'node-test' };
+      const schedule = authority.actionExecutor.execute('scheduled_report:create', { name: 'Daily sales', report_key: 'sales.daily', schedule: '0 8 * * *', audience: ['build-05-test'], idempotency_key: 'build05-schedule' }, ctx);
+      assert.equal(authority.scheduledReports.list(ctx).length, 1);
+      const queued = authority.jobs.tick({ jobDefinitionIds: [`scheduled_report_${schedule.id}`] });
+      assert.equal(queued.length, 1); assert.equal(authority.jobs.drain().succeeded, 1);
+      assert.equal(db.prepare("SELECT COUNT(*) AS n FROM notifications WHERE event_key = 'report.scheduled.ready'").get().n, 1);
+      const paused = authority.actionExecutor.execute('scheduled_report:pause', { schedule_id: schedule.id, idempotency_key: 'build05-pause' }, ctx);
+      assert.equal(paused.active, false);
+    } finally { db.close(); }
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

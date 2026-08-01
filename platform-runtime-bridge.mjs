@@ -20,6 +20,8 @@ import { createGovernanceBootstrap, DEFAULT_PAGE_CATALOGUE } from './platform/cl
 import { createSettingsAuthority } from './platform/settings/index.mjs';
 import { createConfigurationAuthority } from './platform/configuration/index.mjs';
 import { createNotificationService } from './platform/notifications/index.mjs';
+import { createJobQueue } from './platform/jobs/index.mjs';
+import { createScheduledReportService } from './platform/reports/scheduled/index.mjs';
 import { createHistoryService, createChatterService } from './platform/collaboration/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
@@ -164,6 +166,8 @@ export function createPlatformAuthority(dialect) {
   const settings = createSettingsAuthority(dialect, { evaluator });
   const configuration = createConfigurationAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
+  const jobs = createJobQueue(dialect);
+  const scheduledReports = createScheduledReportService(dialect, { jobs, notifications });
   const history = createHistoryService(dialect, { evaluator });
   const chatter = createChatterService(dialect, { evaluator, notifications });
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
@@ -194,6 +198,9 @@ export function createPlatformAuthority(dialect) {
     ({ archived: notifications.archive(input.notification_id, ctx) }));
   registerCollaborationAction('saved_view:save', 'sale_contract', 'platform:db:write', (input, ctx) =>
     configuration.saveView({ ...input, ownerId: ctx.userId, companyId: ctx.companyId }, ctx.userId, collaborationContext(ctx)));
+  registerCollaborationAction('scheduled_report:create', 'sale_contract', 'platform:db:write', (input, ctx) => scheduledReports.create(input, ctx));
+  registerCollaborationAction('scheduled_report:pause', 'sale_contract', 'platform:db:write', (input, ctx) => scheduledReports.pause(input.schedule_id, ctx));
+  jobs.registerHandler('scheduled_report:deliver', (job) => scheduledReports.deliver(job));
   registerFinanceActions(actionExecutor);
   registerCommercialActions(actionExecutor);
   registerInventoryActions(actionExecutor);
@@ -235,7 +242,7 @@ export function createPlatformAuthority(dialect) {
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
-    settings, configuration, notifications, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    settings, configuration, notifications, jobs, scheduledReports, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -257,6 +264,8 @@ export function createPlatformAuthority(dialect) {
       // finance handlers (registered above), not a bare kernel executor.
       actionExecutor: authority.actionExecutor,
       notifications: authority.notifications,
+      jobs: authority.jobs,
+      scheduledReports: authority.scheduledReports,
       chatter: authority.chatter,
       configuration: authority.configuration,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),

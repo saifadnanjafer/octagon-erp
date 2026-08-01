@@ -128,6 +128,28 @@
         "remote_commit": "3a8879ea3a0530cdc65ace88289d946d61fc64e0",
         "evidence_path": "docs/autopilot/evidence/CAP-08-final-pages-closure-review.md"
       }
+    },
+    {
+      "id": "BUILD-01",
+      "title": "Commercial Returns/RMA single-authority foundation",
+      "status": "READY",
+      "depends_on": ["CAP-08"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-01-commercial-rma-foundation.md",
+      "human_gate": "Clean-room implementation on the selected cutover baseline only; do not merge or cherry-pick expansion code."
+    },
+    {
+      "id": "BUILD-02",
+      "title": "Commercial contract-authority consolidation",
+      "status": "PENDING",
+      "depends_on": ["BUILD-01"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-02-commercial-contracts.md"
+    },
+    {
+      "id": "BUILD-03",
+      "title": "Commercial commissions and warranty migration",
+      "status": "PENDING",
+      "depends_on": ["BUILD-02"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-03-commissions-warranty.md"
     }
   ]
 }

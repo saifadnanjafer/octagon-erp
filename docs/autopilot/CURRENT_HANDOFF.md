@@ -92,4 +92,7 @@ CAP-08 completion evidence is published at `3a8879ea3a0530cdc65ace88289d946d61fc
 
 ## Resume
 
-Run `./scripts/continue-next-octagon-task.ps1`. It rechecks the repository and either prepares exactly one eligible task or stops with a concrete gate. It does not write task state and it never runs a multi-round unattended loop.
+The review queue is complete. The build queue begins with BUILD-01: a
+clean-room Commercial Returns/RMA foundation that delegates posted stock and
+finance returns to `sales:return:create`. Run
+`./scripts/continue-next-octagon-task.ps1` to prepare that task.

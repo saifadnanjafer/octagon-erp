@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "mode": "SUPERVISED",
-  "chapter_status": "COMPLETE",
+  "chapter_status": "READY",
   "active_task": null,
   "required_human_decision": false,
   "last_reconciled": {
@@ -11,5 +11,5 @@
     "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "CAP-08 is complete: backend, permission, contract, and individual authenticated-browser scenarios passed. The aggregate browser runner still has a cleanup-handle maintenance defect; no further queued capability remains."
+  "stop_reason": "Review queue is complete. BUILD-01 is ready for clean-room implementation on the selected cutover baseline."
 }

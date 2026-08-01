@@ -2,6 +2,16 @@
 
 ## Marathon expansion handoff
 
+### BUILD-05 progress checkpoint (2026-08-01)
+
+The expansion branch now has governed collaboration/notification commands,
+scoped saved views, durable scheduled-report definitions and staged in-app
+delivery, queue health, and read-only registered-metadata discovery in the
+Integration Hub. The source worktree remains untouched. `npm.cmd run
+test:build-05` passed 3/3 and `npm.cmd run test:permissions` passed 35/35 at
+commit `ac77b74d9f13d2fcb6640a031a9efad9a29e60f0`; BUILD-05 remains PENDING
+until its required Chromium lifecycle evidence is added.
+
 The owner authorized the module and page expansion marathon on
 `codex/octagon-feature-page-expansion-marathon`, created from synchronized
 Autopilot SHA `b121f3b3681c65e6911898517dfb309dc020aab8`. CAP review closure

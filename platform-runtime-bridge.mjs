@@ -22,6 +22,7 @@ import { createConfigurationAuthority } from './platform/configuration/index.mjs
 import { createNotificationService } from './platform/notifications/index.mjs';
 import { createJobQueue } from './platform/jobs/index.mjs';
 import { createScheduledReportService } from './platform/reports/scheduled/index.mjs';
+import { createPlatformSearchService } from './platform/search/index.mjs';
 import { createHistoryService, createChatterService } from './platform/collaboration/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
@@ -168,6 +169,7 @@ export function createPlatformAuthority(dialect) {
   const notifications = createNotificationService(dialect, { evaluator });
   const jobs = createJobQueue(dialect);
   const scheduledReports = createScheduledReportService(dialect, { jobs, notifications });
+  const platformSearch = createPlatformSearchService(dialect);
   const history = createHistoryService(dialect, { evaluator });
   const chatter = createChatterService(dialect, { evaluator, notifications });
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
@@ -242,7 +244,7 @@ export function createPlatformAuthority(dialect) {
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
-    settings, configuration, notifications, jobs, scheduledReports, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    settings, configuration, notifications, jobs, scheduledReports, platformSearch, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -266,6 +268,7 @@ export function createPlatformAuthority(dialect) {
       notifications: authority.notifications,
       jobs: authority.jobs,
       scheduledReports: authority.scheduledReports,
+      platformSearch: authority.platformSearch,
       chatter: authority.chatter,
       configuration: authority.configuration,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),

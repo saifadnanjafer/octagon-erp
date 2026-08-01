@@ -71,7 +71,7 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null, configuration = null, jobs = null, scheduledReports = null }) {
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null, configuration = null, jobs = null, scheduledReports = null, platformSearch = null }) {
   // The runtime authority passes its own executor (with finance handlers
   // registered); standalone mounts fall back to a bare kernel executor.
   const executor = actionExecutor || createActionExecutor(dialect);
@@ -129,6 +129,7 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         if (resource === 'notification-health' && notifications) return sendJson(res, 200, envelope({ providers: notifications.providerHealth(), deadLetters: notifications.deadLetters() }, null, null, ctx.correlationId));
         if (resource === 'job-health' && jobs) return sendJson(res, 200, envelope({ queued: jobs.list({ status: 'queued', limit: 50 }), failed: jobs.list({ status: 'failed', limit: 50 }), deadLetters: jobs.deadLetters() }, null, null, ctx.correlationId));
         if (resource === 'scheduled-reports' && scheduledReports) return sendJson(res, 200, envelope(scheduledReports.list(ctx), null, null, ctx.correlationId));
+        if (resource === 'search' && platformSearch) return sendJson(res, 200, envelope(platformSearch.search(requestUrl.searchParams.get('q')), null, null, ctx.correlationId));
         if (resource === 'activities' && chatter) return sendJson(res, 200, envelope(chatter.myActivities(collaborationCtx, { overdueOnly: requestUrl.searchParams.get('overdue') === '1' }), null, null, ctx.correlationId));
         if (resource === 'saved-views' && configuration) {
           const entity = requestUrl.searchParams.get('entity');

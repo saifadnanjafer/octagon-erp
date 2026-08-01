@@ -12,6 +12,7 @@ test('BUILD-05 registers governed notification commands with idempotency, audit,
       const now = new Date().toISOString();
       db.prepare("INSERT INTO notifications (id,recipient_id,event_key,category,body,created_at) VALUES (?,?,?,?,?,?)").run('ntf_build05', 'build-05-test', 'build05.test', 'informational', 'test', now);
       const authority = createPlatformAuthority(db); const ctx = { companyId: 'default', branchId: 'default', userId: 'build-05-test', sourceChannel: 'node-test' };
+      assert.ok(authority.platformSearch.search('sale').some((row) => row.type === 'entity' || row.type === 'action'));
       const result = authority.actionExecutor.execute('notification:mark_read', { notification_id: 'ntf_build05', idempotency_key: 'build05-read' }, ctx);
       const replay = authority.actionExecutor.execute('notification:mark_read', { notification_id: 'ntf_build05', idempotency_key: 'build05-read' }, ctx);
       assert.deepEqual(result, replay); assert.equal(db.prepare('SELECT read_at FROM notifications WHERE id = ?').get('ntf_build05').read_at !== null, true);

@@ -30,8 +30,18 @@ the unstarted slice 4, and the un-migrated local warranty claims registry.
 No integration action is authorized.
 
 CAP-01 completion evidence is published at `ad95d8b6405ed9446a4cf92b2400af4406946bed`.
-CAP-02 is now eligible only for read-only governance, service, and
-collaboration reconciliation.
+
+## CAP-02 reconciliation result
+
+Read-only governance, service, and collaboration reconciliation is recorded in
+`docs/autopilot/evidence/CAP-02-governance-service-collaboration-reconciliation.md`.
+The selected cutover baseline retains the single canonical authority for
+permissions, audit, governed workflow, and collaboration. The divergent
+research branch changes overlapping collaboration and authorization paths, so
+it remains unintegrated. No integration action is authorized.
+
+CAP-02 completion evidence is published at `295b60a6a2f92f26e92516ce92496834a1be736b`.
+CAP-03 is now eligible only for read-only planning and finance review.
 
 ## Resume
 

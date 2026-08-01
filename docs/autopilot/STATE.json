@@ -11,5 +11,5 @@
     "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "CAP-01 reconciliation is published. CAP-02 is eligible for read-only governance, service, and collaboration reconciliation; integration remains explicitly unauthorized."
+  "stop_reason": "CAP-02 reconciliation is published. CAP-03 is eligible for read-only planning and finance review; integration and operational cutover remain explicitly unauthorized."
 }

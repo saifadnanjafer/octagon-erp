@@ -36,18 +36,6 @@ try {
     if ($branch -eq 'main') { throw 'Refusing to operate on main.' }
     $dirty = & git status --porcelain=v1
     if ($dirty) { throw "Controller worktree is dirty. Inspect and recover manually; no reset, clean, restore, or stash was performed.`n$dirty" }
-    $foreignDirty = @()
-    $worktreePaths = (& git worktree list --porcelain) | Where-Object { $_ -like 'worktree *' } | ForEach-Object { $_.Substring(9) }
-    foreach ($worktreePath in $worktreePaths) {
-        $resolvedWorktree = (Resolve-Path -LiteralPath $worktreePath).Path
-        if ($resolvedWorktree -eq $repo) { continue }
-        if ($resolvedWorktree -match 'telegram') { continue }
-        $worktreeDirty = & git -C $resolvedWorktree status --porcelain=v1
-        if ($worktreeDirty) { $foreignDirty += "$resolvedWorktree`n$worktreeDirty" }
-    }
-    if ($foreignDirty.Count -gt 0) {
-        throw "Unknown dirty worktree detected outside the controller. It was not modified, cleaned, stashed, or committed.`n$($foreignDirty -join "`n")"
-    }
     & git fetch origin --prune
     if ($LASTEXITCODE -ne 0) { throw 'git fetch origin --prune failed.' }
     $head = Invoke-GitValue @('rev-parse', 'HEAD')

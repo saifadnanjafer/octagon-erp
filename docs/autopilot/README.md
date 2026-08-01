@@ -17,3 +17,6 @@ gates. Example: `./scripts/continue-next-octagon-task.ps1 -Publish`.
 
 There is intentionally no unattended mode. Enablement would require a separate
 disposable-worktree exercise and explicit owner approval.
+
+Lean mode runs only task-focused validation plus a post-push SHA check. It does
+not repeatedly audit unrelated worktrees or run broad historical suites.

@@ -9,8 +9,8 @@ PowerShell entry point is `scripts/continue-next-octagon-task.ps1`.
 ## Required preflight
 
 1. Resolve the Git top-level and confirm it is the requested repository.
-2. Fetch `origin --prune`; inspect branch, upstream, local SHA, remote-tracking
-   SHA, `git ls-remote`, worktree status, and current evidence.
+2. Fetch `origin --prune`; inspect the controller branch, upstream, local SHA,
+   remote-tracking SHA, `git ls-remote`, and the current task evidence.
 3. Stop on any dirty file in the controller worktree. Inspect and recover it
    manually; never reset, clean, restore, or auto-stash it.
 4. Stop on a `HUMAN_REQUIRED` task or a blocker that affects the candidate.
@@ -26,6 +26,14 @@ facts are true may the agent update `QUEUE.json`, `STATE.json`, and this handoff
 Each completed queue task must record `completion.commit`, `completion.branch`,
 and `completion.remote_commit`; the validator verifies that the commit is
 reachable from `origin/<branch>`.
+
+## Lean validation policy
+
+The default is deliberately small: controller-worktree cleanliness, the
+selected task's targeted tests, one affected regression check when applicable,
+and post-push SHA equality. Do not run broad historical suites or audit other
+worktrees on every task. Separate worktrees remain out of scope and must never
+be modified by this controller.
 
 ## Hard prohibitions
 

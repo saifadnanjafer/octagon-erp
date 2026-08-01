@@ -17,7 +17,6 @@ test('supervised runner contains no unattended or destructive command', () => {
   }
   assert.match(script, /--permission-mode plan/);
   assert.match(script, /kimi --plan/);
-  assert.match(script, /git worktree list --porcelain/);
   assert.match(script, /gh auth status/);
   assert.match(script, /\[switch\]\$Publish/);
   assert.match(script, /git merge-base --is-ancestor/);

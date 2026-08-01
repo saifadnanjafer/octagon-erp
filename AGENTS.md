@@ -17,5 +17,6 @@ writable connection. Do not inspect or print administrator credentials. Do not
 touch the Telegram-bot worktree or frozen `octagon-erp-commercial-vnext`.
 
 `continue the next eligible Octagon task` means run the supervised controller
-and follow its stop gates; it does not authorize bypassing human gates or
-starting a queued capability without a selected eligible task.
+and follow its stop gates. The controller may prepare a bounded dependency-safe
+batch; this does not authorize bypassing human gates or starting a task outside
+that prepared batch.

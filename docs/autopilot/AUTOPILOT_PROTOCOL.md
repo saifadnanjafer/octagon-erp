@@ -2,9 +2,10 @@
 
 ## Operating mode
 
-This is a provider-neutral, supervised continuation controller. It selects at
-most one task and never starts an unattended retry or multi-round loop. The
-PowerShell entry point is `scripts/continue-next-octagon-task.ps1`.
+This is a provider-neutral, supervised continuation controller. It selects a
+bounded dependency-safe batch of up to ten tasks and never starts an
+unattended retry or multi-round loop. The PowerShell entry point is
+`scripts/continue-next-octagon-task.ps1`.
 
 ## Required preflight
 
@@ -14,18 +15,20 @@ PowerShell entry point is `scripts/continue-next-octagon-task.ps1`.
 3. Stop on any dirty file in the controller worktree. Inspect and recover it
    manually; never reset, clean, restore, or auto-stash it.
 4. Stop on a `HUMAN_REQUIRED` task or a blocker that affects the candidate.
-5. Select only the first `READY` task, or first `PENDING` task whose
-   dependencies are all `COMPLETE` with valid completion evidence.
+5. Select the first `READY` or dependency-safe `PENDING` task, then extend the
+   batch only with following `PENDING` tasks whose dependencies are either
+   published `COMPLETE` tasks or earlier tasks in the same batch. Stop before a
+   human gate, blocker, non-read-only task, or the configured batch limit.
 
 ## Completion transaction
 
-For exactly one coherent slice: inspect, implement, run the task's targeted
-tests and affected regressions, write evidence, commit normally, push normally,
-then verify `HEAD == @{u} == git ls-remote origin <branch>`. Only after those
-facts are true may the agent update `QUEUE.json`, `STATE.json`, and this handoff.
-Each completed queue task must record `completion.commit`, `completion.branch`,
-and `completion.remote_commit`; the validator verifies that the commit is
-reachable from `origin/<branch>`.
+For one coherent batch: inspect, implement, run every selected task's targeted
+tests and affected regressions, and write separate evidence records. Commit the
+batch evidence normally, then update `QUEUE.json`, `STATE.json`, and the
+handoff in a normal transition commit. Push both commits together and verify
+`HEAD == @{u} == git ls-remote origin <branch>`. Each completed queue task must
+record the shared evidence commit, branch, and remote commit; the validator
+verifies that it is reachable from `origin/<branch>`.
 
 ## Lean validation policy
 

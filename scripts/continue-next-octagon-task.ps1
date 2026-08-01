@@ -3,6 +3,8 @@ param(
     [string]$RepoPath = '',
     [ValidateSet('None', 'Claude', 'Kimi')]
     [string]$Provider = 'None',
+    [ValidateRange(1, 10)]
+    [int]$MaxTasks = 10,
     [switch]$Launch,
     [switch]$Publish
 )
@@ -59,23 +61,38 @@ try {
         exit 0
     }
     if (-not $snapshot.eligible_task) { Write-Host 'STOP: no dependency-safe eligible task.'; exit 0 }
-    $task = (Get-Content -Raw docs/autopilot/QUEUE.json | ConvertFrom-Json).tasks | Where-Object id -eq $snapshot.eligible_task
+    $queue = Get-Content -Raw docs/autopilot/QUEUE.json | ConvertFrom-Json
+    $selected = @()
+    $selectedIds = @{}
+    foreach ($candidate in $queue.tasks) {
+        if ($selected.Count -ge $MaxTasks) { break }
+        if ($candidate.status -notin @('READY', 'PENDING')) { continue }
+        $dependenciesSatisfied = @($candidate.depends_on | Where-Object {
+            $dependency = $_
+            -not $selectedIds.ContainsKey($dependency) -and
+            -not (($queue.tasks | Where-Object id -eq $dependency).status -eq 'COMPLETE')
+        }).Count -eq 0
+        if (-not $dependenciesSatisfied) { continue }
+        $selected += $candidate
+        $selectedIds[$candidate.id] = $true
+    }
+    if ($selected.Count -eq 0 -or $selected[0].id -ne $snapshot.eligible_task) { throw 'Batch selection did not preserve the first dependency-safe task.' }
     $runtime = Join-Path $repo 'docs/autopilot/runtime'
     New-Item -ItemType Directory -Force -Path $runtime | Out-Null
     $context = Join-Path $runtime 'next-task-context.md'
     $contextBody = @"
 # Supervised Octagon continuation
 
-Selected task: $($task.id) — $($task.title)
+Selected batch: $($selected | ForEach-Object { $_.id + ' — ' + $_.title } | Join-String -Separator '; ')
 Branch: $branch
 Commit: $head
-Prompt: $($task.prompt_path)
+Prompts: $($selected.prompt_path -join '; ')
 
 Read AGENTS.md and docs/autopilot/AUTOPILOT_PROTOCOL.md before taking action.
 This context does not authorize state changes or bypass any human gate.
 "@
     $contextBody | Set-Content -LiteralPath $context -Encoding utf8
-    Write-Host "Prepared $($task.id). Context: $context"
+    Write-Host "Prepared batch $($selected.id -join ', '). Context: $context"
     if ($Publish) {
         Test-GitHubConnection
         & npm.cmd run test:autopilot

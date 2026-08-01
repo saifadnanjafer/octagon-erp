@@ -19,6 +19,9 @@ test('supervised runner contains no unattended or destructive command', () => {
   assert.match(script, /kimi --plan/);
   assert.match(script, /gh auth status/);
   assert.match(script, /\[switch\]\$Publish/);
+  assert.match(script, /\[ValidateRange\(1, 10\)\]/);
+  assert.match(script, /\$MaxTasks = 10/);
+  assert.match(script, /Prepared batch/);
   assert.match(script, /git merge-base --is-ancestor/);
   assert.match(script, /Post-push SHA equality failed/);
 });

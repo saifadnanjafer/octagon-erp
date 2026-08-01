@@ -62,6 +62,8 @@ const MODULE_TO_AUTHORITY = {
 const AUTHORITY_EXEMPT_MODULES = new Set([
   'platform_kernel',
   'checkpoint_c_test_module',
+  // Control-plane module: it governs cutover but owns no business facts.
+  'cutover_governance',
 ]);
 
 // The frozen zone. No canonical authority may claim these paths, because

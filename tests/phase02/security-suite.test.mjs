@@ -442,7 +442,7 @@ async function failure_migrationRollbackLeavesNothingHalfApplied() {
   dialect.close();
 
   // full down then up again — every Phase 02 migration is reversible
-  await runMigrations({ dbPath, direction: 'down' });
+  await runMigrations({ dbPath, direction: 'down', allowFullChain: true });
   const afterDown = openMigrationDatabase(dbPath);
   assert.strictEqual(Number(afterDown.prepare('SELECT COUNT(*) AS n FROM schema_migrations').get().n), 0);
   afterDown.close();

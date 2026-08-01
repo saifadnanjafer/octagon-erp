@@ -2,9 +2,10 @@ import * as crm from './crm.mjs';
 import * as orders from './orders.mjs';
 import * as contracts from './contracts.mjs';
 import * as lifecycle from './lifecycle.mjs';
+import * as rma from './rma.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { crm, orders, contracts, lifecycle };
+export { crm, orders, contracts, lifecycle, rma };
 
 export function registerSalesActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'crm:lead:create', crm.createLead);
@@ -23,6 +24,10 @@ export function registerSalesActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'sales:order:reserve', lifecycle.reserveSalesOrder);
   registerDomainHandler(actionExecutor, 'sales:delivery:post', lifecycle.postSalesDelivery);
   registerDomainHandler(actionExecutor, 'sales:return:create', lifecycle.createSalesReturn);
+  registerDomainHandler(actionExecutor, 'sales:rma:create', rma.createRmaCase);
+  registerDomainHandler(actionExecutor, 'sales:rma:submit', rma.submitRmaCase);
+  registerDomainHandler(actionExecutor, 'sales:rma:approve', rma.approveRmaCase);
+  registerDomainHandler(actionExecutor, 'sales:rma:post_return', rma.postRmaReturn);
   registerDomainHandler(actionExecutor, 'sales:invoice_request:create', orders.createFiscalInvoiceRequest);
   registerDomainHandler(actionExecutor, 'sales:commission:accrue', lifecycle.accrueCommission);
   registerDomainHandler(actionExecutor, 'sales:commission:approve', lifecycle.approveCommission);

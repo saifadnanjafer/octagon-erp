@@ -96,3 +96,8 @@ The review queue is complete. The build queue begins with BUILD-01: a
 clean-room Commercial Returns/RMA foundation that delegates posted stock and
 finance returns to `sales:return:create`. Run
 `./scripts/continue-next-octagon-task.ps1` to prepare that task.
+
+BUILD-01 implementation slice is published in
+`docs/autopilot/evidence/BUILD-01-rma-foundation.md`. The next slice is its
+disposable end-to-end lifecycle hardening; BUILD-02 remains blocked until that
+evidence is complete.

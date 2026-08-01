@@ -12,7 +12,8 @@
     "test:migration": "node --test \"tests/migration/*.test.mjs\"",
     "test:unit": "node --test \"tests/unit/*.test.mjs\"",
     "test:permissions": "node scripts/permission-regression.mjs",
-    "test:autopilot": "node --test \"tests/autopilot/*.test.mjs\""
+    "test:autopilot": "node --test \"tests/autopilot/*.test.mjs\"",
+    "test:build-01": "node --test \"tests/build-01/*.test.mjs\""
   },
   "dependencies": {
     "dotenv": "17.4.2"

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "mode": "SUPERVISED",
-  "chapter_status": "COMPLETE",
+  "chapter_status": "EXPANSION_BUILD_RUNNING",
   "active_task": null,
   "required_human_decision": false,
   "last_reconciled": {
-    "branch": "cutover/octagon-operational-canonical-migration",
-    "commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
+    "branch": "codex/octagon-feature-page-expansion-marathon",
+    "commit": "b121f3b3681c65e6911898517dfb309dc020aab8",
     "remote": "origin",
-    "remote_commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
+    "remote_commit": "b121f3b3681c65e6911898517dfb309dc020aab8",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "BUILD-04 is complete and published. The supervised build queue has no remaining eligible task."
+  "stop_reason": "Marathon expansion queue reopened by owner instruction; BUILD-05 is the next eligible implementation wave."
 }

@@ -1,5 +1,14 @@
 # Current Autopilot Handoff
 
+## Marathon expansion handoff
+
+The owner authorized the module and page expansion marathon on
+`codex/octagon-feature-page-expansion-marathon`, created from synchronized
+Autopilot SHA `b121f3b3681c65e6911898517dfb309dc020aab8`. CAP review closure
+remains valid but is not implementation closure. BUILD-05 through BUILD-14 are
+the active sequential delivery program; start BUILD-05 without changing the
+source Autopilot worktree.
+
 ## Reconciled on 2026-08-01
 
 - Controller worktree: `octagon-erp`, branch `codex/octagon-autopilot-framework`, created from the clean, synchronized cutover commit `4c7e58bb3ba3cb149561826146b91d5cc96683e2`.

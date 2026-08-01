@@ -182,6 +182,16 @@
         "remote_commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
         "evidence_path": "docs/autopilot/evidence/BUILD-04-integration-hub-rendering.md"
       }
-    }
+    },
+    { "id": "BUILD-05", "title": "Platform services completion", "status": "PENDING", "depends_on": ["BUILD-04"], "prompt_path": "docs/autopilot/prompts/BUILD-05-platform-services.md" },
+    { "id": "BUILD-06", "title": "Commercial operations completion", "status": "PENDING", "depends_on": ["BUILD-05"], "prompt_path": "docs/autopilot/prompts/BUILD-06-commercial-operations.md" },
+    { "id": "BUILD-07", "title": "Governance and service completion", "status": "PENDING", "depends_on": ["BUILD-06"], "prompt_path": "docs/autopilot/prompts/BUILD-07-governance-service.md" },
+    { "id": "BUILD-08", "title": "Planning and advanced finance", "status": "PENDING", "depends_on": ["BUILD-07"], "prompt_path": "docs/autopilot/prompts/BUILD-08-planning-finance.md" },
+    { "id": "BUILD-09", "title": "Advanced WMS and operational automation", "status": "PENDING", "depends_on": ["BUILD-08"], "prompt_path": "docs/autopilot/prompts/BUILD-09-wms-automation.md" },
+    { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
+    { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
+    { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },
+    { "id": "BUILD-13", "title": "Final functional page expansion", "status": "PENDING", "depends_on": ["BUILD-12"], "prompt_path": "docs/autopilot/prompts/BUILD-13-functional-pages.md" },
+    { "id": "BUILD-14", "title": "Capability closure and residual build", "status": "PENDING", "depends_on": ["BUILD-13"], "prompt_path": "docs/autopilot/prompts/BUILD-14-capability-closure.md" }
   ]
 }

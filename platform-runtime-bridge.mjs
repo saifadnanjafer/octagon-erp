@@ -18,6 +18,7 @@ import { createPermissionEvaluator, AuthorizationError } from './platform/author
 import { createRouteCoverageRegistry } from './platform/authorization/route-coverage/index.mjs';
 import { createGovernanceBootstrap, DEFAULT_PAGE_CATALOGUE } from './platform/client/governance-bootstrap.mjs';
 import { createSettingsAuthority } from './platform/settings/index.mjs';
+import { createConfigurationAuthority } from './platform/configuration/index.mjs';
 import { createNotificationService } from './platform/notifications/index.mjs';
 import { createHistoryService, createChatterService } from './platform/collaboration/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
@@ -161,6 +162,7 @@ export function createPlatformAuthority(dialect) {
   const users = createUserDirectory(dialect);
   const memberships = createMembershipDirectory(dialect);
   const settings = createSettingsAuthority(dialect, { evaluator });
+  const configuration = createConfigurationAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
   const history = createHistoryService(dialect, { evaluator });
   const chatter = createChatterService(dialect, { evaluator, notifications });
@@ -190,6 +192,8 @@ export function createPlatformAuthority(dialect) {
     ({ read: notifications.markRead(input.notification_id, ctx) }));
   registerCollaborationAction('notification:archive', 'sale_contract', 'platform:db:write', (input, ctx) =>
     ({ archived: notifications.archive(input.notification_id, ctx) }));
+  registerCollaborationAction('saved_view:save', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    configuration.saveView({ ...input, ownerId: ctx.userId, companyId: ctx.companyId }, ctx.userId, collaborationContext(ctx)));
   registerFinanceActions(actionExecutor);
   registerCommercialActions(actionExecutor);
   registerInventoryActions(actionExecutor);
@@ -231,7 +235,7 @@ export function createPlatformAuthority(dialect) {
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
-    settings, notifications, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    settings, configuration, notifications, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -254,6 +258,7 @@ export function createPlatformAuthority(dialect) {
       actionExecutor: authority.actionExecutor,
       notifications: authority.notifications,
       chatter: authority.chatter,
+      configuration: authority.configuration,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
       authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
     });

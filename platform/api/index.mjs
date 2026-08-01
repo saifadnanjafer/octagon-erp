@@ -71,7 +71,7 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null }) {
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null, configuration = null }) {
   // The runtime authority passes its own executor (with finance handlers
   // registered); standalone mounts fall back to a bare kernel executor.
   const executor = actionExecutor || createActionExecutor(dialect);
@@ -128,6 +128,11 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         if (resource === 'notifications' && notifications) return sendJson(res, 200, envelope(notifications.inbox(collaborationCtx, { unreadOnly: requestUrl.searchParams.get('unread') === '1' }), null, null, ctx.correlationId));
         if (resource === 'notification-health' && notifications) return sendJson(res, 200, envelope({ providers: notifications.providerHealth(), deadLetters: notifications.deadLetters() }, null, null, ctx.correlationId));
         if (resource === 'activities' && chatter) return sendJson(res, 200, envelope(chatter.myActivities(collaborationCtx, { overdueOnly: requestUrl.searchParams.get('overdue') === '1' }), null, null, ctx.correlationId));
+        if (resource === 'saved-views' && configuration) {
+          const entity = requestUrl.searchParams.get('entity');
+          if (!entity) return sendJson(res, 422, envelope(null, 'entity is required', null, ctx.correlationId));
+          return sendJson(res, 200, envelope(configuration.listViews(entity, collaborationCtx), null, null, ctx.correlationId));
+        }
         if (resource === 'chatter' && chatter) {
           const entity = requestUrl.searchParams.get('entity'); const recordId = requestUrl.searchParams.get('record_id');
           if (!entity || !recordId) return sendJson(res, 422, envelope(null, 'entity and record_id are required', null, ctx.correlationId));

@@ -168,6 +168,14 @@
         "remote_commit": "4973991bdfa5f3bb3b03f272448b8e3b2c055e41",
         "evidence_path": "docs/autopilot/evidence/BUILD-03-commissions-warranty.md"
       }
+    },
+    {
+      "id": "BUILD-04",
+      "title": "Integration Hub rendering hardening",
+      "status": "PENDING",
+      "depends_on": ["BUILD-03"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-04-integration-hub-rendering.md",
+      "human_gate": "Pilot review is explicitly skipped by the owner. Keep all connector actions staged-only and do not activate providers or mutate operational data."
     }
   ]
 }

@@ -7,9 +7,16 @@
 - Expansion work is not a linear continuation of that cutover branch. The known expansion branch tips form a separate lineage; no merge, rebase, cherry-pick, or authority selection is implied here.
 - `octagon-final-page-catalog` contains unowned modified browser screenshots. They are recorded for awareness only; this controller does not inspect, use, clean, stash, commit, or otherwise alter that worktree.
 
-## Current stop gate
+## CAP-00 audit result
 
-`CAP-00` requires an owner decision naming the authoritative branch/worktree and authorizing an integration plan. Until then, all capability tasks remain ineligible. This is intentional: a queue record must never overrule Git topology.
+The owner selected `cutover/octagon-operational-canonical-migration` as the
+authoritative safety baseline and authorized only a read-only audit. The audit
+is recorded in `docs/autopilot/evidence/CAP-00-lineage-audit.md`: the expansion
+line has 40 commits beyond common ancestor `00e60a8`, while the selected
+baseline has one; `app.js` and `server.js` are shared conflict candidates.
+
+No integration action is authorized. After this evidence is pushed and status
+is recorded, CAP-01 may perform read-only commercial-operations reconciliation.
 
 ## Resume
 

@@ -81,12 +81,14 @@ CAP-06 completion evidence is published at `8b8837495242d1fc3a721e92da6945a9ed15
 
 CAP-07 is complete with security, AI/service-identity, audit, and frozen-zone
 authority evidence at `docs/autopilot/evidence/CAP-07-ai-people-packs-review.md`.
-CAP-08 is partial: backend, permission, and browser-contract checks passed, but
-fresh authenticated Chromium evidence is still required before final-page
-capability closure can be claimed. See
+CAP-08 is complete: backend, permission, browser-contract, and all individual
+authenticated Puppeteer scenarios passed. The aggregate runner retains a
+cleanup-handle maintenance defect, but no page closure claim relies on page
+existence alone. See
 `docs/autopilot/evidence/CAP-08-final-pages-closure-review.md`.
 
 CAP-07 completion evidence is published at `01194467293d762228d0802bb976885ba6348c26`.
+CAP-08 completion evidence is published at `3a8879ea3a0530cdc65ace88289d946d61fc64e0`.
 
 ## Resume
 

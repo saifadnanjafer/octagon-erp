@@ -118,10 +118,16 @@
     {
       "id": "CAP-08",
       "title": "Final pages and capability closure review",
-      "status": "PARTIAL",
+      "status": "COMPLETE",
       "depends_on": ["CAP-07"],
       "prompt_path": "docs/autopilot/prompts/CAP-08-final-pages-closure.md",
-      "evidence_path": "docs/autopilot/evidence/CAP-08-final-pages-closure-review.md"
+      "evidence_path": "docs/autopilot/evidence/CAP-08-final-pages-closure-review.md",
+      "completion": {
+        "commit": "3a8879ea3a0530cdc65ace88289d946d61fc64e0",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "3a8879ea3a0530cdc65ace88289d946d61fc64e0",
+        "evidence_path": "docs/autopilot/evidence/CAP-08-final-pages-closure-review.md"
+      }
     }
   ]
 }

@@ -77,13 +77,14 @@ try {
         $selectedIds[$candidate.id] = $true
     }
     if ($selected.Count -eq 0 -or $selected[0].id -ne $snapshot.eligible_task) { throw 'Batch selection did not preserve the first dependency-safe task.' }
+    $batchLabels = @($selected | ForEach-Object { $_.id + ' — ' + $_.title })
     $runtime = Join-Path $repo 'docs/autopilot/runtime'
     New-Item -ItemType Directory -Force -Path $runtime | Out-Null
     $context = Join-Path $runtime 'next-task-context.md'
     $contextBody = @"
 # Supervised Octagon continuation
 
-Selected batch: $($selected | ForEach-Object { $_.id + ' — ' + $_.title } | Join-String -Separator '; ')
+Selected batch: $($batchLabels -join '; ')
 Branch: $branch
 Commit: $head
 Prompts: $($selected.prompt_path -join '; ')

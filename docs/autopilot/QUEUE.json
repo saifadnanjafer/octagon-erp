@@ -6,10 +6,16 @@
     {
       "id": "CAP-00",
       "title": "Authoritative expansion lineage decision",
-      "status": "HUMAN_REQUIRED",
+      "status": "COMPLETE",
       "depends_on": [],
       "prompt_path": "docs/autopilot/prompts/CAP-00-lineage-decision.md",
-      "human_gate": "The owner must select the authoritative integration branch/worktree and explicitly authorize any integration plan."
+      "human_gate": "The owner selected the cutover safety baseline and authorized a read-only audit only.",
+      "completion": {
+        "commit": "028b6761ad391d4f8c2009e5e578bf8e522db4b1",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "028b6761ad391d4f8c2009e5e578bf8e522db4b1",
+        "evidence_path": "docs/autopilot/evidence/CAP-00-lineage-audit.md"
+      }
     },
     {
       "id": "CAP-01",

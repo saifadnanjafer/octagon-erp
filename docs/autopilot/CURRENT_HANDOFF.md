@@ -15,8 +15,9 @@ is recorded in `docs/autopilot/evidence/CAP-00-lineage-audit.md`: the expansion
 line has 40 commits beyond common ancestor `00e60a8`, while the selected
 baseline has one; `app.js` and `server.js` are shared conflict candidates.
 
-No integration action is authorized. After this evidence is pushed and status
-is recorded, CAP-01 may perform read-only commercial-operations reconciliation.
+CAP-00 completion evidence is published at `028b6761ad391d4f8c2009e5e578bf8e522db4b1`.
+No integration action is authorized. CAP-01 is now eligible only for read-only
+commercial-operations reconciliation.
 
 ## Resume
 

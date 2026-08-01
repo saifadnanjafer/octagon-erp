@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "mode": "SUPERVISED",
-  "chapter_status": "HUMAN_REQUIRED",
+  "chapter_status": "READY",
   "active_task": null,
-  "required_human_decision": true,
+  "required_human_decision": false,
   "last_reconciled": {
     "branch": "cutover/octagon-operational-canonical-migration",
     "commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
@@ -11,5 +11,5 @@
     "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "Authoritative expansion lineage is not selected. Existing expansion branches are divergent from the current cutover branch; one separate final-page worktree is dirty and is not owned by this controller."
+  "stop_reason": "CAP-00 audit is published. CAP-01 is eligible for read-only commercial-operations reconciliation; integration remains explicitly unauthorized."
 }

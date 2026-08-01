@@ -71,7 +71,7 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null }) {
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null }) {
   // The runtime authority passes its own executor (with finance handlers
   // registered); standalone mounts fall back to a bare kernel executor.
   const executor = actionExecutor || createActionExecutor(dialect);
@@ -120,6 +120,19 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         if (!requirePermission('platform:db:read')) return;
         const rows = dialect.prepare('SELECT id, label_ar, label_en, module_id, lifecycle_policy FROM platform_entities ORDER BY id').all();
         return sendJson(res, 200, envelope(rows, null, { total: rows.length }, ctx.correlationId));
+      }
+
+      if (namespace === 'platform' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const collaborationCtx = { ...ctx, actorId: ctx.userId, activeCompanyId: ctx.companyId, activeBranchId: ctx.branchId };
+        if (resource === 'notifications' && notifications) return sendJson(res, 200, envelope(notifications.inbox(collaborationCtx, { unreadOnly: requestUrl.searchParams.get('unread') === '1' }), null, null, ctx.correlationId));
+        if (resource === 'notification-health' && notifications) return sendJson(res, 200, envelope({ providers: notifications.providerHealth(), deadLetters: notifications.deadLetters() }, null, null, ctx.correlationId));
+        if (resource === 'activities' && chatter) return sendJson(res, 200, envelope(chatter.myActivities(collaborationCtx, { overdueOnly: requestUrl.searchParams.get('overdue') === '1' }), null, null, ctx.correlationId));
+        if (resource === 'chatter' && chatter) {
+          const entity = requestUrl.searchParams.get('entity'); const recordId = requestUrl.searchParams.get('record_id');
+          if (!entity || !recordId) return sendJson(res, 422, envelope(null, 'entity and record_id are required', null, ctx.correlationId));
+          return sendJson(res, 200, envelope(chatter.messages(entity, recordId, collaborationCtx), null, null, ctx.correlationId));
+        }
       }
 
       if (namespace === 'x' && resource) {

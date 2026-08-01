@@ -252,6 +252,8 @@ export function createPlatformAuthority(dialect) {
       // The API must dispatch through the SAME executor that carries the
       // finance handlers (registered above), not a bare kernel executor.
       actionExecutor: authority.actionExecutor,
+      notifications: authority.notifications,
+      chatter: authority.chatter,
       resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
       authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
     });

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "queue_id": "octagon-capability-continuation",
+  "mode": "SUPERVISED",
+  "tasks": [
+    {
+      "id": "CAP-00",
+      "title": "Authoritative expansion lineage decision",
+      "status": "HUMAN_REQUIRED",
+      "depends_on": [],
+      "prompt_path": "docs/autopilot/prompts/CAP-00-lineage-decision.md",
+      "human_gate": "The owner must select the authoritative integration branch/worktree and explicitly authorize any integration plan."
+    },
+    {
+      "id": "CAP-01",
+      "title": "Commercial operations reconciliation",
+      "status": "PENDING",
+      "depends_on": ["CAP-00"],
+      "prompt_path": "docs/autopilot/prompts/CAP-01-commercial-operations.md"
+    },
+    {
+      "id": "CAP-02",
+      "title": "Governance, service, and collaboration reconciliation",
+      "status": "PENDING",
+      "depends_on": ["CAP-01"],
+      "prompt_path": "docs/autopilot/prompts/CAP-02-governance-service.md"
+    },
+    {
+      "id": "CAP-03",
+      "title": "Planning and finance capability review",
+      "status": "PENDING",
+      "depends_on": ["CAP-02"],
+      "prompt_path": "docs/autopilot/prompts/CAP-03-planning-finance.md"
+    },
+    {
+      "id": "CAP-04",
+      "title": "Warehouse and operational automation review",
+      "status": "PENDING",
+      "depends_on": ["CAP-03"],
+      "prompt_path": "docs/autopilot/prompts/CAP-04-warehouse-automation.md"
+    },
+    {
+      "id": "CAP-05",
+      "title": "Devices, mobile, offline, and kiosk review",
+      "status": "PENDING",
+      "depends_on": ["CAP-04"],
+      "prompt_path": "docs/autopilot/prompts/CAP-05-devices-mobile.md"
+    },
+    {
+      "id": "CAP-06",
+      "title": "Commercial platform and marketplace review",
+      "status": "PENDING",
+      "depends_on": ["CAP-05"],
+      "prompt_path": "docs/autopilot/prompts/CAP-06-commercial-platform.md"
+    },
+    {
+      "id": "CAP-07",
+      "title": "AI, people, and vertical-pack review",
+      "status": "PENDING",
+      "depends_on": ["CAP-06"],
+      "prompt_path": "docs/autopilot/prompts/CAP-07-ai-people-packs.md"
+    },
+    {
+      "id": "CAP-08",
+      "title": "Final pages and capability closure review",
+      "status": "PENDING",
+      "depends_on": ["CAP-07"],
+      "prompt_path": "docs/autopilot/prompts/CAP-08-final-pages-closure.md"
+    }
+  ]
+}

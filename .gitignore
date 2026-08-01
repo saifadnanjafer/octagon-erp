@@ -116,3 +116,6 @@ coordination/verify.lock
 # runtime directory stays untracked. Selected secret-free screenshots are
 # copied into docs/evidence/ deliberately.
 /test-artifacts/
+
+# Autopilot runtime context and supervised-run logs.
+/docs/autopilot/runtime/

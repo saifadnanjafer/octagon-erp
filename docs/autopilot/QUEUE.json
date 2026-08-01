@@ -48,9 +48,16 @@
     {
       "id": "CAP-03",
       "title": "Planning and finance capability review",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "depends_on": ["CAP-02"],
-      "prompt_path": "docs/autopilot/prompts/CAP-03-planning-finance.md"
+      "prompt_path": "docs/autopilot/prompts/CAP-03-planning-finance.md",
+      "human_gate": "Read-only review only; finance authority and operational cutover remain owner-gated.",
+      "completion": {
+        "commit": "7507c36be5e13ba82f3fa30cb7ece6c0177255f1",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "7507c36be5e13ba82f3fa30cb7ece6c0177255f1",
+        "evidence_path": "docs/autopilot/evidence/CAP-03-planning-finance-review.md"
+      }
     },
     {
       "id": "CAP-04",

@@ -41,7 +41,17 @@ research branch changes overlapping collaboration and authorization paths, so
 it remains unintegrated. No integration action is authorized.
 
 CAP-02 completion evidence is published at `295b60a6a2f92f26e92516ce92496834a1be736b`.
-CAP-03 is now eligible only for read-only planning and finance review.
+
+## CAP-03 planning and finance review
+
+Read-only planning and finance evidence is recorded in
+`docs/autopilot/evidence/CAP-03-planning-finance-review.md`. The cutover
+baseline remains the single authority; planning, treasury, and budgeting work
+on the divergent research lineage remains unintegrated. Operational cutover is
+still owner-gated.
+
+CAP-03 completion evidence is published at `7507c36be5e13ba82f3fa30cb7ece6c0177255f1`.
+CAP-04 is now eligible only for read-only warehouse and operational-automation review.
 
 ## Resume
 

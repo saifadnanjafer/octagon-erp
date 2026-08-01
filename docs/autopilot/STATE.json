@@ -11,5 +11,5 @@
     "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "BUILD-02 implementation is validated locally; publication SHA must be recorded before the next task is eligible."
+  "stop_reason": "BUILD-02 is complete and published. BUILD-03 is the next eligible clean-room build task."
 }

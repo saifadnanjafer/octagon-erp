@@ -150,16 +150,16 @@
       "depends_on": ["BUILD-01"],
       "prompt_path": "docs/autopilot/prompts/BUILD-02-commercial-contracts.md",
       "completion": {
-        "commit": "PENDING_PUBLISH",
+        "commit": "e3b807aa74ab520ed5529aeab7b31fd37d850cae",
         "branch": "codex/octagon-autopilot-framework",
-        "remote_commit": "PENDING_PUBLISH",
+        "remote_commit": "e3b807aa74ab520ed5529aeab7b31fd37d850cae",
         "evidence_path": "docs/autopilot/evidence/BUILD-02-commercial-contracts.md"
       }
     },
     {
       "id": "BUILD-03",
       "title": "Commercial commissions and warranty migration",
-      "status": "PENDING",
+      "status": "READY",
       "depends_on": ["BUILD-02"],
       "prompt_path": "docs/autopilot/prompts/BUILD-03-commissions-warranty.md"
     }

@@ -6,7 +6,7 @@ test('autopilot queue and state validate against actual Git refs', () => {
   const output = execFileSync('node', ['scripts/autopilot/validate-autopilot.mjs'], { encoding: 'utf8' });
   const result = JSON.parse(output);
   assert.equal(result.valid, true);
-  assert.equal(result.eligible_task, 'CAP-04');
+  assert.equal(result.eligible_task, 'CAP-05');
   assert.equal(result.required_human_decision, false);
 });
 

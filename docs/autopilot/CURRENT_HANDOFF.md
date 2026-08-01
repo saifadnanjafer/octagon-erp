@@ -51,7 +51,16 @@ on the divergent research lineage remains unintegrated. Operational cutover is
 still owner-gated.
 
 CAP-03 completion evidence is published at `7507c36be5e13ba82f3fa30cb7ece6c0177255f1`.
-CAP-04 is now eligible only for read-only warehouse and operational-automation review.
+
+## CAP-04 warehouse and automation review
+
+Read-only warehouse and automation evidence is recorded in
+`docs/autopilot/evidence/CAP-04-warehouse-automation-review.md`. The baseline
+remains the only stock authority; the divergent advanced-WMS migration remains
+unintegrated and operational stock writes are unauthorized.
+
+CAP-04 completion evidence is published at `9d189b33ce77740cffdd9ee79e34f5939a2531ea`.
+CAP-05 is now eligible only for read-only devices, mobile, offline, and kiosk review.
 
 ## Resume
 

@@ -62,9 +62,16 @@
     {
       "id": "CAP-04",
       "title": "Warehouse and operational automation review",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "depends_on": ["CAP-03"],
-      "prompt_path": "docs/autopilot/prompts/CAP-04-warehouse-automation.md"
+      "prompt_path": "docs/autopilot/prompts/CAP-04-warehouse-automation.md",
+      "human_gate": "Read-only review only; no direct operational quant writes or duplicate stock authority.",
+      "completion": {
+        "commit": "9d189b33ce77740cffdd9ee79e34f5939a2531ea",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "9d189b33ce77740cffdd9ee79e34f5939a2531ea",
+        "evidence_path": "docs/autopilot/evidence/CAP-04-warehouse-automation-review.md"
+      }
     },
     {
       "id": "CAP-05",

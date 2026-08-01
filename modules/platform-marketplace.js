@@ -370,26 +370,29 @@
     body.appendChild(wrap.firstElementChild);
   }
 
-  function renderAll() {
-    renderHub();
-    renderAdminCatalog();
-  }
-
   // Debounced single render — rebuilding the heavy integration_hub DOM four times
   // per navigation (compounded with the ecommerce-connectors module) made the page
   // janky/unresponsive. One delayed pass is enough once the template is mounted.
   let _renderTimer = null;
-  function scheduleRender() {
+  function scheduleRender(target) {
     clearTimeout(_renderTimer);
-    _renderTimer = setTimeout(renderAll, 350);
+    _renderTimer = setTimeout(function () {
+      if (target === 'hub') renderHub();
+      if (target === 'admin') renderAdminCatalog();
+    }, 350);
+  }
+
+  function isHubActive() {
+    const page = document.getElementById('pageIntegrationHub');
+    return !!page && page.classList.contains('page-active');
   }
 
   function installHooks() {
     const originalSwitchPage = window.switchPage;
     if (typeof originalSwitchPage === 'function' && !originalSwitchPage.__platformMarketplaceWrapped) {
-      const wrapped = function () {
+      const wrapped = function (page) {
         const result = originalSwitchPage.apply(this, arguments);
-        scheduleRender();
+        if (page === 'integration_hub') scheduleRender('hub');
         return result;
       };
       wrapped.__platformMarketplaceWrapped = true;
@@ -400,7 +403,7 @@
     if (typeof originalSwitchAdminTab === 'function' && !originalSwitchAdminTab.__platformMarketplaceWrapped) {
       const wrappedAdmin = function () {
         const result = originalSwitchAdminTab.apply(this, arguments);
-        scheduleRender();
+        scheduleRender('admin');
         return result;
       };
       wrappedAdmin.__platformMarketplaceWrapped = true;
@@ -417,7 +420,8 @@
     revokeApiKey,
     togglePlugin,
     simulateWebhook,
-    renderAll
+    renderHub,
+    renderAdminCatalog
   };
 
   function init() {
@@ -425,15 +429,14 @@
     installHooks();
     if (window.MutationObserver && document.body) {
       const observer = new MutationObserver(function () {
-        const needsHub = document.getElementById('integrationHubBody') && !document.getElementById('platformMarketplaceWorkspace');
+        const needsHub = isHubActive() && document.getElementById('integrationHubBody') && !document.getElementById('platformMarketplaceWorkspace');
         const needsAdmin = document.querySelector('#adminPanelBody .admin-tab-body') && !document.getElementById('platformMarketplaceAdminCatalog');
-        if (needsHub || needsAdmin) {
-          scheduleRender();
-        }
+        if (needsHub) scheduleRender('hub');
+        if (needsAdmin) scheduleRender('admin');
       });
       observer.observe(document.body, { childList: true, subtree: true });
     }
-    scheduleRender();
+    scheduleRender('admin');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

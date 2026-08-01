@@ -158,7 +158,7 @@
     }
   }
 
-  function init() { ensureRoot(); installHooks(); scheduleRender(); }
+  function init() { ensureRoot(); installHooks(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 

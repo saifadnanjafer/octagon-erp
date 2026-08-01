@@ -20,3 +20,19 @@ test('BUILD-05 registers governed notification commands with idempotency, audit,
     } finally { db.close(); }
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('BUILD-05 saves scoped views through the governed action authority', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'octagon-build05-views-'));
+  try {
+    const dbPath = path.join(dir, 'views.db'); await freshInstall({ dbPath, backupDir: path.join(dir, 'backups'), actor: 'build-05-test' });
+    const db = openMigrationDatabase(dbPath);
+    try {
+      const authority = createPlatformAuthority(db); const ctx = { companyId: 'default', branchId: 'default', userId: 'build-05-test', sourceChannel: 'node-test' };
+      const input = { entity: 'sale_contract', name: 'Open contracts', filters: { status: { op: 'eq', value: 'active' } }, columns: ['name', 'status'], idempotency_key: 'build05-view' };
+      const view = authority.actionExecutor.execute('saved_view:save', input, ctx);
+      const replay = authority.actionExecutor.execute('saved_view:save', input, ctx);
+      assert.equal(view.id, replay.id); assert.equal(view.ownerId, 'build-05-test');
+      assert.equal(authority.configuration.listViews('sale_contract', { actorId: 'build-05-test', activeCompanyId: 'default' }).length, 1);
+    } finally { db.close(); }
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

@@ -19,6 +19,7 @@ import { createRouteCoverageRegistry } from './platform/authorization/route-cove
 import { createGovernanceBootstrap, DEFAULT_PAGE_CATALOGUE } from './platform/client/governance-bootstrap.mjs';
 import { createSettingsAuthority } from './platform/settings/index.mjs';
 import { createNotificationService } from './platform/notifications/index.mjs';
+import { createHistoryService, createChatterService } from './platform/collaboration/index.mjs';
 import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
 import { createActionRegistry, createActionExecutor } from './platform/kernel/actions/index.mjs';
@@ -161,9 +162,34 @@ export function createPlatformAuthority(dialect) {
   const memberships = createMembershipDirectory(dialect);
   const settings = createSettingsAuthority(dialect, { evaluator });
   const notifications = createNotificationService(dialect, { evaluator });
+  const history = createHistoryService(dialect, { evaluator });
+  const chatter = createChatterService(dialect, { evaluator, notifications });
   const approvals = createApprovalEngine(dialect, { evaluator, policyEngine });
   const actionRegistry = createActionRegistry(dialect);
   const actionExecutor = createActionExecutor(dialect);
+  const collaborationContext = (ctx) => ({
+    ...ctx, actorId: ctx.userId, activeCompanyId: ctx.companyId, activeBranchId: ctx.branchId,
+  });
+  const registerCollaborationAction = (id, entity, required, handler) => {
+    actionRegistry.register({ id, module_id: 'platform_kernel', entity_id: entity, kind: 'domain',
+      required_permission: required, transaction_owner: 'platform.collaboration', idempotency_policy: 'required',
+      audit_policy: 'required', outbox_policy: 'required' });
+    actionExecutor.registerHandler(id, ({ input, ctx }) => handler(input, collaborationContext(ctx)));
+  };
+  registerCollaborationAction('chatter:post', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    chatter.post({ entity: input.entity, recordId: input.record_id, body: input.body, visibility: input.visibility,
+      mentions: input.mentions || [], attachments: input.attachments || [], ctx }));
+  registerCollaborationAction('chatter:follow', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    chatter.addFollower(input.entity, input.record_id, input.user_id || ctx.actorId, ctx));
+  registerCollaborationAction('activity:create', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    chatter.createActivity({ entity: input.entity, recordId: input.record_id, kind: input.kind,
+      summaryAr: input.summary_ar, assigneeId: input.assignee_id, dueAt: input.due_at, ctx }));
+  registerCollaborationAction('activity:complete', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    chatter.completeActivity(input.activity_id, ctx));
+  registerCollaborationAction('notification:mark_read', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    ({ read: notifications.markRead(input.notification_id, ctx) }));
+  registerCollaborationAction('notification:archive', 'sale_contract', 'platform:db:write', (input, ctx) =>
+    ({ archived: notifications.archive(input.notification_id, ctx) }));
   registerFinanceActions(actionExecutor);
   registerCommercialActions(actionExecutor);
   registerInventoryActions(actionExecutor);
@@ -205,7 +231,7 @@ export function createPlatformAuthority(dialect) {
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
-    settings, notifications, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    settings, notifications, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

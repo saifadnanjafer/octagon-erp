@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "mode": "SUPERVISED",
-  "chapter_status": "READY",
+  "chapter_status": "COMPLETE",
   "active_task": null,
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "cutover/octagon-operational-canonical-migration",
-    "commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
+    "commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
     "remote": "origin",
-    "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
+    "remote_commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "BUILD-03 is complete and published. The supervised build queue has no remaining eligible task."
+  "stop_reason": "BUILD-04 is complete and published. The supervised build queue has no remaining eligible task."
 }

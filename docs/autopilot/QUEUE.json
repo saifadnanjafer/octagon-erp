@@ -172,10 +172,16 @@
     {
       "id": "BUILD-04",
       "title": "Integration Hub rendering hardening",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "depends_on": ["BUILD-03"],
       "prompt_path": "docs/autopilot/prompts/BUILD-04-integration-hub-rendering.md",
-      "human_gate": "Pilot review is explicitly skipped by the owner. Keep all connector actions staged-only and do not activate providers or mutate operational data."
+      "human_gate": "Pilot review is explicitly skipped by the owner. Keep all connector actions staged-only and do not activate providers or mutate operational data.",
+      "completion": {
+        "commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "ebe8f7e221b1cddaa9a52ca315acffe5445222c0",
+        "evidence_path": "docs/autopilot/evidence/BUILD-04-integration-hub-rendering.md"
+      }
     }
   ]
 }

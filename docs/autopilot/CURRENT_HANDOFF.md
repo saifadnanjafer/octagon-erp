@@ -104,3 +104,9 @@ clean-room implementation and disposable evidence at
 the clean-room warranty registry and disposable evidence at
 `docs/autopilot/evidence/BUILD-03-commissions-warranty.md`; its publication
 SHA is recorded in the queue only after the guarded push completes.
+
+BUILD-04 is complete and published at
+`ebe8f7e221b1cddaa9a52ca315acffe5445222c0`. It scopes Marketplace and
+E-Commerce Integration Hub rendering to the active page, preserving staged-only
+connector behavior and all existing approval boundaries. Evidence is recorded
+in `docs/autopilot/evidence/BUILD-04-integration-hub-rendering.md`.

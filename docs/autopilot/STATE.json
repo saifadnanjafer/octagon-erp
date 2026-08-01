@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "mode": "SUPERVISED",
-  "chapter_status": "READY",
+  "chapter_status": "PARTIAL",
   "active_task": null,
   "required_human_decision": false,
   "last_reconciled": {
@@ -11,5 +11,5 @@
     "remote_commit": "4c7e58bb3ba3cb149561826146b91d5cc96683e2",
     "observed_at": "2026-08-01"
   },
-  "stop_reason": "CAP-06 review is published. CAP-07 is eligible for read-only AI, people, and vertical-pack review; integration and operational cutover remain explicitly unauthorized."
+  "stop_reason": "CAP-07 is published. CAP-08 backend and contract review is partial; fresh authenticated Chromium evidence is required before final-page capability closure may be claimed."
 }

@@ -104,16 +104,24 @@
     {
       "id": "CAP-07",
       "title": "AI, people, and vertical-pack review",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "depends_on": ["CAP-06"],
-      "prompt_path": "docs/autopilot/prompts/CAP-07-ai-people-packs.md"
+      "prompt_path": "docs/autopilot/prompts/CAP-07-ai-people-packs.md",
+      "human_gate": "Read-only review only; AI may not execute high-risk actions directly.",
+      "completion": {
+        "commit": "01194467293d762228d0802bb976885ba6348c26",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "01194467293d762228d0802bb976885ba6348c26",
+        "evidence_path": "docs/autopilot/evidence/CAP-07-ai-people-packs-review.md"
+      }
     },
     {
       "id": "CAP-08",
       "title": "Final pages and capability closure review",
-      "status": "PENDING",
+      "status": "PARTIAL",
       "depends_on": ["CAP-07"],
-      "prompt_path": "docs/autopilot/prompts/CAP-08-final-pages-closure.md"
+      "prompt_path": "docs/autopilot/prompts/CAP-08-final-pages-closure.md",
+      "evidence_path": "docs/autopilot/evidence/CAP-08-final-pages-closure-review.md"
     }
   ]
 }

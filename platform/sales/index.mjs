@@ -32,4 +32,8 @@ export function registerSalesActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'sales:commission:accrue', lifecycle.accrueCommission);
   registerDomainHandler(actionExecutor, 'sales:commission:approve', lifecycle.approveCommission);
   registerDomainHandler(actionExecutor, 'sales:commission:mark_paid', lifecycle.markCommissionPaid);
+  registerDomainHandler(actionExecutor, 'sales:contract:create', (db, input) => contracts.createContract(db, input));
+  registerDomainHandler(actionExecutor, 'sales:contract:activate', contracts.activateContract);
+  registerDomainHandler(actionExecutor, 'sales:contract:suspend', contracts.suspendContract);
+  registerDomainHandler(actionExecutor, 'sales:contract:terminate', contracts.terminateContract);
 }

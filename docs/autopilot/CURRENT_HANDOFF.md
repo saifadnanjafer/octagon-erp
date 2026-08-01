@@ -98,5 +98,7 @@ finance returns to `sales:return:create`. Run
 `./scripts/continue-next-octagon-task.ps1` to prepare that task.
 
 BUILD-01 implementation and hardening are published in
-`docs/autopilot/evidence/BUILD-01-rma-foundation.md`. The next slice is its
-BUILD-02 commercial contract-authority consolidation.
+`docs/autopilot/evidence/BUILD-01-rma-foundation.md`. BUILD-02 now has a
+clean-room implementation and disposable evidence at
+`docs/autopilot/evidence/BUILD-02-commercial-contracts.md`; its publication
+SHA is recorded in the queue only after the guarded push completes.

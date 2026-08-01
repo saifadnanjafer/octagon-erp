@@ -16,8 +16,22 @@ line has 40 commits beyond common ancestor `00e60a8`, while the selected
 baseline has one; `app.js` and `server.js` are shared conflict candidates.
 
 CAP-00 completion evidence is published at `028b6761ad391d4f8c2009e5e578bf8e522db4b1`.
-No integration action is authorized. CAP-01 is now eligible only for read-only
-commercial-operations reconciliation.
+
+## CAP-01 reconciliation result
+
+Read-only commercial-operations reconciliation is recorded in
+`docs/autopilot/evidence/CAP-01-commercial-operations-reconciliation.md`:
+the branch reuses the baseline's canonical finance, inventory/WMS, procurement,
+work-item, quality, master-data, and sales-lifecycle authorities; CRM is
+consolidated under a documented single write authority. Four overlaps are
+registered as binding findings: two live return writers (`sales:return:create`
+vs the RMA authority), two contract models, a commission-duplication risk for
+the unstarted slice 4, and the un-migrated local warranty claims registry.
+No integration action is authorized.
+
+CAP-01 completion evidence is published at `ad95d8b6405ed9446a4cf92b2400af4406946bed`.
+CAP-02 is now eligible only for read-only governance, service, and
+collaboration reconciliation.
 
 ## Resume
 

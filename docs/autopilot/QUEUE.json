@@ -76,9 +76,16 @@
     {
       "id": "CAP-05",
       "title": "Devices, mobile, offline, and kiosk review",
-      "status": "PENDING",
+      "status": "COMPLETE",
       "depends_on": ["CAP-04"],
-      "prompt_path": "docs/autopilot/prompts/CAP-05-devices-mobile.md"
+      "prompt_path": "docs/autopilot/prompts/CAP-05-devices-mobile.md",
+      "human_gate": "Read-only review only; preserve approvals, audit, local-first behavior, and public-route boundaries.",
+      "completion": {
+        "commit": "c83fb2c2be6af28c783f3dc85c03bf978013020e",
+        "branch": "codex/octagon-autopilot-framework",
+        "remote_commit": "c83fb2c2be6af28c783f3dc85c03bf978013020e",
+        "evidence_path": "docs/autopilot/evidence/CAP-05-devices-mobile-review.md"
+      }
     },
     {
       "id": "CAP-06",

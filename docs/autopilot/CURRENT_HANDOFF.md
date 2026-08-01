@@ -60,7 +60,15 @@ remains the only stock authority; the divergent advanced-WMS migration remains
 unintegrated and operational stock writes are unauthorized.
 
 CAP-04 completion evidence is published at `9d189b33ce77740cffdd9ee79e34f5939a2531ea`.
-CAP-05 is now eligible only for read-only devices, mobile, offline, and kiosk review.
+
+## CAP-05 devices and mobile review
+
+Read-only devices, mobile, offline, and kiosk evidence is recorded in
+`docs/autopilot/evidence/CAP-05-devices-mobile-review.md`. Canonical POS
+preserves approvals, audit, and local-first behavior; no public route changed.
+
+CAP-05 completion evidence is published at `c83fb2c2be6af28c783f3dc85c03bf978013020e`.
+CAP-06 is now eligible only for read-only commercial platform and marketplace review.
 
 ## Resume
 

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-083.json",
+  "acceptedSourceCommit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+  "acceptanceTimestamp": "2026-08-02T09:00:00.000Z",
+  "acceptanceReason": "BUILD-10 Slice 4 acceptance: governed offline client registry with device trust states, command queueing with offline disallowed action policies, batch sync engine with ID remapping, and conflict recording and resolution passed focused verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "084_build10_offline_sync_engine",
+      "relativePath": "database/migrations/084_build10_offline_sync_engine.mjs",
+      "algorithm": "sha256",
+      "checksum": "6f82df85c54ab7fa79e621ea635b17078651094c8a272d9842cda87503bd075f"
+    }
+  ]
+}

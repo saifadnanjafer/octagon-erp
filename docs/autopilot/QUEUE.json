@@ -222,8 +222,20 @@
         "evidence_path": "docs/autopilot/evidence/BUILD-07-governance-service.md"
       }
     },
-    { "id": "BUILD-08", "title": "Planning and advanced finance", "status": "IN_PROGRESS", "depends_on": ["BUILD-07"], "prompt_path": "docs/autopilot/prompts/BUILD-08-planning-finance.md" },
-    { "id": "BUILD-09", "title": "Advanced WMS and operational automation", "status": "PENDING", "depends_on": ["BUILD-08"], "prompt_path": "docs/autopilot/prompts/BUILD-09-wms-automation.md" },
+    {
+      "id": "BUILD-08",
+      "title": "Planning and advanced finance",
+      "status": "COMPLETE",
+      "depends_on": ["BUILD-07"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-08-planning-finance.md",
+      "completion": {
+        "commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "remote_commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+        "evidence_path": "docs/autopilot/evidence/BUILD-08-planning-finance.md"
+      }
+    },
+    { "id": "BUILD-09", "title": "Advanced WMS and operational automation", "status": "IN_PROGRESS", "depends_on": ["BUILD-08"], "prompt_path": "docs/autopilot/prompts/BUILD-09-wms-automation.md" },
     { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
     { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
     { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },

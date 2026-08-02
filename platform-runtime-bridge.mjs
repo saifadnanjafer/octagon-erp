@@ -34,6 +34,7 @@ import { createCommissionService } from './platform/sales/commissions.mjs';
 import { createDocumentTemplateService } from './platform/printing/index.mjs';
 import { createMasterDataGovernanceService } from './platform/governance/mdg.mjs';
 import { createDataQualityService } from './platform/governance/dq.mjs';
+import { createPlanningFinanceServices } from './platform/finance/planning-treasury-intercompany.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 import { registerFinanceActions } from './platform/finance/index.mjs';
@@ -257,6 +258,7 @@ export function createPlatformAuthority(dialect) {
   const documentTemplateService = createDocumentTemplateService(dialect);
   const masterDataGovernanceService = createMasterDataGovernanceService(dialect);
   const dataQualityService = createDataQualityService(dialect);
+  const { planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService } = createPlanningFinanceServices(dialect);
 
   actionExecutor.registerHandler('mdg:candidate_detect', (input, ctx) => masterDataGovernanceService.detectDuplicates(input, ctx));
   actionExecutor.registerHandler('mdg:survivorship_propose', (input, ctx) => masterDataGovernanceService.proposeMerge(input, ctx));
@@ -269,11 +271,19 @@ export function createPlatformAuthority(dialect) {
   actionExecutor.registerHandler('dq:waiver_request', (input, ctx) => dataQualityService.requestWaiver(input, ctx));
   actionExecutor.registerHandler('dq:waiver_approve', (input, ctx) => dataQualityService.approveWaiver(input.waiver_id || input.waiverId, ctx));
 
+  actionExecutor.registerHandler('planning:scenario_create', (input, ctx) => planningBudgetService.createScenario(input, ctx));
+  actionExecutor.registerHandler('planning:scenario_activate', (input, ctx) => planningBudgetService.activateScenario(input.scenario_id || input.scenarioId, ctx));
+  actionExecutor.registerHandler('treasury:forecast_generate', (input, ctx) => treasuryCashForecastService.generateForecast(input, ctx));
+  actionExecutor.registerHandler('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
+  actionExecutor.registerHandler('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
+  actionExecutor.registerHandler('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
+
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, configuration, notifications, jobs, scheduledReports, platformSearch, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
     rmaService, creditCollectionsService, commissionService, documentTemplateService,
     masterDataGovernanceService, dataQualityService,
+    planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

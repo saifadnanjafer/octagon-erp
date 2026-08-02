@@ -14,6 +14,7 @@ import * as traceability from '../wms/traceability-ops.mjs';
 import * as shopfloor from '../manufacturing/shopfloor.mjs';
 import * as materialFlow from '../manufacturing/material-flow.mjs';
 import * as performance from '../manufacturing/downtime-performance.mjs';
+import * as qualityOperations from '../quality/operations.mjs';
 
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
@@ -93,6 +94,9 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
       return { data: performance.sessionPerformance(dialect, { ...input, session_id: sessionId }), meta: null };
     }
     if (resource === 'work-center-performance') return { data: performance.workCenterPerformance(dialect, input), meta: null };
+    if (resource === 'quality-checkpoints') return list(qualityOperations.listOperationalCheckpoints(dialect, input));
+    if (resource === 'quality-dispositions') return list(qualityOperations.listDispositions(dialect, input));
+    if (resource === 'rework-routes') return list(qualityOperations.listReworkRoutes(dialect, input));
     return { error: 'BUILD-09 WMS resource not found', status: 404 };
   } catch (error) {
     return { error: error.message, status: error.statusCode || 422, code: error.code };

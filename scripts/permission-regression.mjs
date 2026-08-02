@@ -76,14 +76,14 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  // Baseline moved 102 -> 126 when BUILD-08 added its 24 functional pages.
+  // Baseline moved 126 -> 158 when BUILD-09 added its 32 functional pages.
   // Both numbers move together on
   // purpose: the second case is the real invariant (every sidebar page is
   // explicitly mapped), and it fails on either an unmapped page or count drift.
-  ['sidebar baseline reflects BUILD-08 planning, treasury, intercompany, and consolidation pages',
-    () => sidebarPages.size, 126],
+  ['sidebar baseline reflects BUILD-09 WMS, production, quality, and performance pages',
+    () => sidebarPages.size, 158],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 126],
+    () => mappedSidebarPages.length, 158],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',
@@ -116,6 +116,14 @@ const CASES = [
     () => PS.checkPage('banking', SEEDED_USERS.workshop_manager), false],
   ['operator_user can access workshop pages',
     () => PS.checkPage('task_manager', SEEDED_USERS.operator_user), true],
+  ['operator_user can access BUILD-09 receiving terminal',
+    () => PS.checkPage('mobile_receiving', SEEDED_USERS.operator_user), true],
+  ['operator_user can access BUILD-09 quality hold queue',
+    () => PS.checkPage('quality_hold_queue', SEEDED_USERS.operator_user), true],
+  ['operator_user cannot access BUILD-09 scrap approval',
+    () => PS.checkPage('scrap_approval', SEEDED_USERS.operator_user), false],
+  ['workshop_manager can access BUILD-09 scrap approval',
+    () => PS.checkPage('scrap_approval', SEEDED_USERS.workshop_manager), true],
   ['operator_user cannot access people_ops manager page',
     () => PS.checkPage('people_ops', SEEDED_USERS.operator_user), false],
   ['employee_user can access employee mobile',

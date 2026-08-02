@@ -6,8 +6,9 @@ import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
 import * as inspection from './inspection.mjs';
 import * as ncrCapa from './ncr-capa.mjs';
+import * as operations from './operations.mjs';
 
-export { inspection, ncrCapa };
+export { inspection, ncrCapa, operations };
 export { QualityError } from './inspection.mjs';
 
 export function registerQualityActions(actionExecutor) {
@@ -25,6 +26,16 @@ export function registerQualityActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'quality:capa:create', ncrCapa.createCAPA);
   registerDomainHandler(actionExecutor, 'quality:capa:close', ncrCapa.closeCAPA);
 
+  registerDomainHandler(actionExecutor, 'quality:checkpoint_open', operations.openOperationalCheckpoint);
+  registerDomainHandler(actionExecutor, 'quality:checkpoint_sync', operations.syncOperationalCheckpoint);
+  registerDomainHandler(actionExecutor, 'quality:checkpoint_conditional_accept', operations.conditionallyAcceptCheckpoint);
+  registerDomainHandler(actionExecutor, 'quality:disposition_request', operations.requestDisposition);
+  registerDomainHandler(actionExecutor, 'quality:disposition_approve', operations.approveDisposition);
+  registerDomainHandler(actionExecutor, 'quality:scrap_request_canonical', operations.requestCanonicalScrap);
+  registerDomainHandler(actionExecutor, 'quality:scrap_acknowledge', operations.acknowledgeCanonicalScrap);
+  registerDomainHandler(actionExecutor, 'quality:rework_start', operations.startRework);
+  registerDomainHandler(actionExecutor, 'quality:rework_complete', operations.completeRework);
+  registerDomainHandler(actionExecutor, 'quality:disposition_close', operations.closeDisposition);
   return actionExecutor;
 }
 

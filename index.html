@@ -125,6 +125,7 @@
   <!-- T5.1 -->
   <link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">
   <link rel="stylesheet" href="modules/build08-workspaces.css?v=20260802-build08-v1">
+  <link rel="stylesheet" href="modules/build09-workspaces.css?v=20260802-build09-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -1786,6 +1787,53 @@
         </div>
       </div>
       </nav>
+      <!-- BUILD-09: advanced WMS and operational automation workspaces -->
+      <div class="nav-group" data-nav-group="build09_wms">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build09_wms')" aria-controls="navGroup_build09_wms" aria-expanded="false">
+          <span class="nav-icon">W</span><span>Advanced WMS</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build09_wms">
+          <button class="nav-btn" data-page="warehouse_topology" onclick="switchPage('warehouse_topology')"><span>Warehouse Topology</span></button>
+          <button class="nav-btn" data-page="zone_bin_management" onclick="switchPage('zone_bin_management')"><span>Zone and Bin Management</span></button>
+          <button class="nav-btn" data-page="putaway_rules" onclick="switchPage('putaway_rules')"><span>Putaway Rules</span></button>
+          <button class="nav-btn" data-page="putaway_task_queue" onclick="switchPage('putaway_task_queue')"><span>Putaway Task Queue</span></button>
+          <button class="nav-btn" data-page="replenishment_rules" onclick="switchPage('replenishment_rules')"><span>Replenishment Rules</span></button>
+          <button class="nav-btn" data-page="replenishment_proposals" onclick="switchPage('replenishment_proposals')"><span>Replenishment Proposals</span></button>
+          <button class="nav-btn" data-page="mobile_receiving" onclick="switchPage('mobile_receiving')"><span>Mobile Receiving</span></button>
+          <button class="nav-btn" data-page="receiving_discrepancies" onclick="switchPage('receiving_discrepancies')"><span>Receiving Discrepancies</span></button>
+          <button class="nav-btn" data-page="mobile_picking" onclick="switchPage('mobile_picking')"><span>Mobile Picking</span></button>
+          <button class="nav-btn" data-page="pick_task_queue" onclick="switchPage('pick_task_queue')"><span>Pick Task Queue</span></button>
+          <button class="nav-btn" data-page="wave_planning" onclick="switchPage('wave_planning')"><span>Wave Planning</span></button>
+          <button class="nav-btn" data-page="wave_execution" onclick="switchPage('wave_execution')"><span>Wave Execution</span></button>
+          <button class="nav-btn" data-page="cycle_count_plans" onclick="switchPage('cycle_count_plans')"><span>Cycle Count Plans</span></button>
+          <button class="nav-btn" data-page="count_session" onclick="switchPage('count_session')"><span>Count Session</span></button>
+          <button class="nav-btn" data-page="variance_review" onclick="switchPage('variance_review')"><span>Variance Review</span></button>
+          <button class="nav-btn" data-page="dock_schedule" onclick="switchPage('dock_schedule')"><span>Dock Schedule</span></button>
+          <button class="nav-btn" data-page="dock_checkin" onclick="switchPage('dock_checkin')"><span>Dock Check-In</span></button>
+          <button class="nav-btn" data-page="staging_board" onclick="switchPage('staging_board')"><span>Staging Board</span></button>
+          <button class="nav-btn" data-page="crossdock_workspace" onclick="switchPage('crossdock_workspace')"><span>Cross-Dock Workspace</span></button>
+          <button class="nav-btn" data-page="lot_serial_traceability" onclick="switchPage('lot_serial_traceability')"><span>Lot / Serial Traceability</span></button>
+          <button class="nav-btn" data-page="expiration_queue" onclick="switchPage('expiration_queue')"><span>Expiration Queue</span></button>
+          <button class="nav-btn" data-page="recall_analysis" onclick="switchPage('recall_analysis')"><span>Recall Analysis</span></button>
+        </div>
+      </div>
+      <div class="nav-group" data-nav-group="build09_operations">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build09_operations')" aria-controls="navGroup_build09_operations" aria-expanded="false">
+          <span class="nav-icon">O</span><span>Production and Quality</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build09_operations">
+          <button class="nav-btn" data-page="shopfloor_terminal" onclick="switchPage('shopfloor_terminal')"><span>Shop-Floor Terminal</span></button>
+          <button class="nav-btn" data-page="workcenter_queue" onclick="switchPage('workcenter_queue')"><span>Work-Center Queue</span></button>
+          <button class="nav-btn" data-page="production_material_requests" onclick="switchPage('production_material_requests')"><span>Production Material Requests</span></button>
+          <button class="nav-btn" data-page="production_issue_return" onclick="switchPage('production_issue_return')"><span>Production Issue / Return</span></button>
+          <button class="nav-btn" data-page="production_receipt" onclick="switchPage('production_receipt')"><span>Production Receipt</span></button>
+          <button class="nav-btn" data-page="quality_hold_queue" onclick="switchPage('quality_hold_queue')"><span>Quality Hold Queue</span></button>
+          <button class="nav-btn" data-page="rework_workspace" onclick="switchPage('rework_workspace')"><span>Rework Workspace</span></button>
+          <button class="nav-btn" data-page="scrap_approval" onclick="switchPage('scrap_approval')"><span>Scrap Approval</span></button>
+          <button class="nav-btn" data-page="downtime_board" onclick="switchPage('downtime_board')"><span>Downtime Board</span></button>
+          <button class="nav-btn" data-page="operational_performance" onclick="switchPage('operational_performance')"><span>Operational Performance</span></button>
+        </div>
+      </div>
 
       <div class="sidebar-footer">
         <div class="sidebar-actions" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
@@ -2331,6 +2379,7 @@
   <!-- Checkpoint C5: final Administration renderer uses the canonical Control
        Plane and enforces module/license decisions on the server. -->
   <script src="modules/canonical-administration.js?v=20260728-checkpoint-c5-v1"></script>
+  <script src="modules/build09-workspaces.js?v=20260802-build09-v1"></script>
   <script src="modules/build08-workspaces.js?v=20260802-build08-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>

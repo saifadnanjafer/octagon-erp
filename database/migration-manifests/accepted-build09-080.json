@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-079.json",
+  "acceptedSourceCommit": "9879466aa42c5ff4377edcee11ab109dbf2d2bd2",
+  "acceptanceTimestamp": "2026-08-02T15:30:00.000Z",
+  "acceptanceReason": "BUILD-09 operational quality checkpoints, canonical NCR-linked dispositions, maker-checker scrap requests, rework routing, warehouse scope isolation, canonical Inventory and Manufacturing request boundaries, and all 32 responsive permission-governed workspaces passed focused disposable lifecycle and contract verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "080_build09_quality_rework_scrap",
+      "relativePath": "database/migrations/080_build09_quality_rework_scrap.mjs",
+      "algorithm": "sha256",
+      "checksum": "90538e532fe14dcf4560875c998a443ebda175a2f165bf4e8ecc6d73cb94e033"
+    }
+  ]
+}

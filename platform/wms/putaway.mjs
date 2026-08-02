@@ -265,6 +265,8 @@ export function recommendPutaway(db, input) {
 }
 
 function createTasks(db, recommendation, input, override = false) {
+  const productUom = db.prepare('SELECT t.uom_id FROM product_variants v JOIN product_templates t ON t.id=v.template_id WHERE v.id=? AND v.company_id=?').get(recommendation.productId, recommendation.companyId);
+  if (!productUom?.uom_id) throw new PutawayError('Canonical Product UOM is required', 'PRODUCT_UOM_REQUIRED', 409);
   const stamp = now();
   const insert = db.prepare(`INSERT INTO wms_warehouse_tasks(
     id,company_id,branch_id,warehouse_id,task_type,source_record_type,source_record_id,
@@ -277,6 +279,7 @@ function createTasks(db, recommendation, input, override = false) {
       company_id: recommendation.companyId,
       branch_id: input.branch_id || null,
       reference: `PUTAWAY/${recommendation.id}`,
+      uom_id: productUom.uom_id,
       product_id: recommendation.productId,
       product_qty: line.quantity,
       location_id: recommendation.sourceLocationId,
@@ -378,6 +381,9 @@ export function acknowledgeCanonicalMovement(db, input) {
   const remaining = db.prepare(`SELECT COUNT(*) count FROM wms_warehouse_tasks WHERE source_record_type=? AND source_record_id=? AND status<>'completed'`).get(task.sourceRecordType, task.sourceRecordId).count;
   if (!remaining && task.sourceRecordType === 'putaway_recommendation') {
     db.prepare(`UPDATE wms_putaway_recommendations SET status='completed',updated_at=? WHERE id=?`).run(now(), task.sourceRecordId);
+  }
+  if (!remaining && task.sourceRecordType === 'replenishment_proposal') {
+    db.prepare(`UPDATE wms_replenishment_proposals_v2 SET status='completed',updated_at=? WHERE id=?`).run(now(), task.sourceRecordId);
   }
   return taskInScope(db, task.id, input);
 }

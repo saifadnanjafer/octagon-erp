@@ -17,7 +17,7 @@ async function fixture(t) {
   t.after(() => db.close());
   const warehouse = createWarehouse(db, { company_id: 'company-a', name: 'Central DC', code: 'CDC' });
   const stamp = new Date().toISOString();
-  db.prepare(`INSERT INTO product_templates(id,company_id,name,code,type,category_id,created_at) VALUES(?,?,?,?,?,?,?)`).run('tmpl-a', 'company-a', 'Product A', 'A', 'storable', 'cat-a', stamp);
+  db.prepare(`INSERT INTO product_templates(id,company_id,name,code,type,category_id,uom_id,purchase_uom_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)`).run('tmpl-a', 'company-a', 'Product A', 'A', 'storable', 'cat-a', 'unit', 'unit', stamp);
   db.prepare(`INSERT INTO product_variants(id,template_id,company_id,sku,name,created_at) VALUES(?,?,?,?,?,?)`).run('product-a', 'tmpl-a', 'company-a', 'SKU-A', 'Product A', stamp);
   const ctx = { company_id: 'company-a', warehouse_id: warehouse.id, actor: 'operator-a' };
   const zone = topology.createZone(db, { ...ctx, code: 'FAST', name: 'Fast Pick', zone_type: 'storage' });

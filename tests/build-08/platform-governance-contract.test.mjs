@@ -66,13 +66,19 @@ test('governed BUILD-08 actions are idempotent, audited, transactional and permi
 test('BUILD-08 migrations roll back three reversible slices on a disposable database and reapply cleanly', async (t) => {
   const area = tempArea('rollback');
   t.after(() => fs.rmSync(area.dir, { recursive: true, force: true }));
-  const install = await freshInstall({ dbPath: area.dbPath, backupDir: area.backupDir, actor: 'build08-rollback' });
+  const sourceMigrations = path.join(process.cwd(), 'database', 'migrations');
+  const build08Migrations = fs.mkdtempSync(path.join(process.cwd(), 'database', 'build08-rollback-'));
+  t.after(() => fs.rmSync(build08Migrations, { recursive: true, force: true }));
+  for (const file of fs.readdirSync(sourceMigrations).filter((name) => /^\d+_.+\.mjs$/.test(name) && Number(name.slice(0, 3)) <= 75)) {
+    fs.copyFileSync(path.join(sourceMigrations, file), path.join(build08Migrations, file));
+  }
+  const install = await freshInstall({ dbPath: area.dbPath, migrationsDir: build08Migrations, backupDir: area.backupDir, actor: 'build08-rollback' });
   assert.deepEqual(install.migrations.slice(-3), [
     '073_build08_planning_mps_sop',
     '074_build08_treasury_liquidity',
     '075_build08_intercompany_consolidation'
   ]);
-  const rolledBack = await runMigrations({ dbPath: area.dbPath, direction: 'down', steps: 3, backupDir: area.backupDir, actor: 'build08-rollback' });
+  const rolledBack = await runMigrations({ dbPath: area.dbPath, migrationsDir: build08Migrations, direction: 'down', steps: 3, backupDir: area.backupDir, actor: 'build08-rollback' });
   assert.deepEqual(rolledBack.migrations, [
     '075_build08_intercompany_consolidation',
     '074_build08_treasury_liquidity',
@@ -82,7 +88,7 @@ test('BUILD-08 migrations roll back three reversible slices on a disposable data
   assert.equal(afterDown.prepare("SELECT COUNT(*) AS count FROM schema_migrations WHERE migration_id LIKE '07[3-5]_%'").get().count, 0);
   assert.equal(afterDown.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name IN ('forecast_versions','treasury_cash_positions','consolidation_groups_v2')").get().count, 0);
   afterDown.close();
-  const reapplied = await runMigrations({ dbPath: area.dbPath, direction: 'up', backupDir: area.backupDir, actor: 'build08-reapply' });
+  const reapplied = await runMigrations({ dbPath: area.dbPath, migrationsDir: build08Migrations, direction: 'up', backupDir: area.backupDir, actor: 'build08-reapply' });
   assert.deepEqual(reapplied.migrations, [
     '073_build08_planning_mps_sop',
     '074_build08_treasury_liquidity',

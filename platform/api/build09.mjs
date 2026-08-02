@@ -25,6 +25,9 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
   const warehouseId = query.warehouse_id || ctx.warehouseId;
   if (!warehouseId) return { error: 'warehouse_id is required', status: 422 };
   const input = { ...query, company_id: companyId, warehouse_id: warehouseId };
+  const scopedWarehouse = dialect.prepare('SELECT 1 FROM warehouses WHERE id=? AND company_id=? AND is_active=1').get(warehouseId, companyId);
+  if (!scopedWarehouse) return denied('warehouse is outside company scope');
+
 
   try {
     if (resource === 'hierarchy') return { data: topology.hierarchy(dialect, input), meta: null };

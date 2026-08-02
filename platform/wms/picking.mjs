@@ -187,12 +187,15 @@ export function requestPickPost(db, input) {
   const row = taskRow(db, input.task_id, input);
   ensureState(row, ['picked', 'short', 'staged', 'packed'], 'PICK_POST_INVALID_STATE');
   if (Number(row.picked_quantity) <= 0) throw new PickingError('Nothing was picked for canonical posting', 'PICK_ZERO_QUANTITY', 409);
+  const item = product(db, row.product_id, row.company_id);
+  if (!item.uom_id) throw new PickingError('Canonical Product UOM is required', 'PRODUCT_UOM_REQUIRED', 409);
   const request = {
     company_id: row.company_id, branch_id: row.branch_id, reference: `PICK/${row.id}`,
     product_id: row.product_id, product_qty: Number(row.picked_quantity),
     location_id: row.source_location_id, location_dest_id: row.staging_location_id || row.destination_location_id,
     lot_id: row.lot_id, serial_id: row.serial_id,
     source_document_type: row.picking_type, source_document_id: row.source_document_id,
+    uom_id: item.uom_id,
     source_line_id: row.source_line_id, reservation_id: input.reservation_id || null,
     idempotency_key: `${row.id}:canonical-pick`,
   };

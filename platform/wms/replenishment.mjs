@@ -181,11 +181,14 @@ function taskForProposal(db, proposal, input) {
   if (existing) return existing;
   if (Number(proposal.proposed_quantity) <= 0) throw new ReplenishmentError('Proposal has no movable quantity', 'REPLENISHMENT_ZERO_QUANTITY', 409);
   const id = uid('wtask');
+  const productUom = db.prepare('SELECT t.uom_id FROM product_variants v JOIN product_templates t ON t.id=v.template_id WHERE v.id=? AND v.company_id=?').get(proposal.product_id, proposal.company_id);
+  if (!productUom?.uom_id) throw new ReplenishmentError('Canonical Product UOM is required', 'PRODUCT_UOM_REQUIRED', 409);
   const stamp = now();
   const request = {
     company_id: proposal.company_id, branch_id: input.branch_id || null,
     reference: `REPLENISH/${proposal.id}`, product_id: proposal.product_id,
     product_qty: Number(proposal.proposed_quantity), location_id: proposal.source_location_id,
+    uom_id: productUom.uom_id,
     location_dest_id: proposal.destination_location_id,
     source_document_type: 'wms_replenishment', source_document_id: proposal.id,
     idempotency_key: `${proposal.id}:canonical`,

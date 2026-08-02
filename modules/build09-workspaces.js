@@ -140,7 +140,7 @@
     try { input = JSON.parse(dialog.querySelector('textarea').value || '{}'); } catch (error) { errorNode.textContent = `Invalid JSON: ${error.message}`; return; }
     const button = dialog.querySelector('[data-command="submit"]'); button.disabled = true;
     try {
-      const response = await fetch(`/api/v1/action/${encodeURIComponent(actionId)}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
+      const response = await fetch(`/api/v1/action/${actionId}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
       const payload = await response.json().catch(() => ({})); if (!response.ok || payload.success === false) throw new Error(payload.error || `HTTP ${response.status}`);
       if (dialog.close) dialog.close(); else dialog.hidden = true; setStatus(id, 'success', rtl() ? 'تم الإجراء وتسجيله في التدقيق.' : 'Action completed and recorded in audit.'); await fetchRows(id);
     } catch (error) { errorNode.textContent = error.message; } finally { button.disabled = false; }

@@ -141,9 +141,12 @@ export function releaseWave(db, input) {
     source_location_id,destination_location_id,quantity,status,priority,assigned_to,canonical_action,canonical_request_json,created_by,created_at,updated_at
   ) VALUES(?,?,?,?,'pick','pick_task',?,?,?,?,?,?,?,'ready',?,?,'stock:move:post',?,?,?,?) ON CONFLICT(source_record_type,source_record_id,destination_location_id,product_id) DO NOTHING`);
   for (const pick of picks) {
+    const productUom = db.prepare('SELECT t.uom_id FROM product_variants v JOIN product_templates t ON t.id=v.template_id WHERE v.id=? AND v.company_id=?').get(pick.product_id, pick.company_id);
+    if (!productUom?.uom_id) throw new WaveError('Canonical Product UOM is required', 'PRODUCT_UOM_REQUIRED', 409);
     const request = {
       company_id: pick.company_id, branch_id: pick.branch_id, reference: `WAVE/${wave.id}/PICK/${pick.id}`,
       product_id: pick.product_id, product_qty: pick.requested_quantity,
+      uom_id: productUom.uom_id,
       location_id: pick.source_location_id, location_dest_id: pick.staging_location_id || wave.staging_location_id || pick.destination_location_id,
       lot_id: pick.lot_id, serial_id: pick.serial_id, source_document_type: pick.picking_type,
       source_document_id: pick.source_document_id, source_line_id: pick.source_line_id,

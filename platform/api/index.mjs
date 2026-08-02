@@ -33,6 +33,7 @@ import { handleAssetsQuery } from '../assets/index.mjs';
 import { handleMaintenanceQuery } from '../maintenance/index.mjs';
 import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
+import { handleServiceQuery } from './service.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -251,6 +252,13 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const controlResult = handleControlPlaneQuery({ dialect, ctx, resource, recordId });
         if (controlResult.error) return sendJson(res, controlResult.status || 404, envelope(null, controlResult.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(controlResult.data, null, { total: Array.isArray(controlResult.data) ? controlResult.data.length : 1 }, ctx.correlationId));
+      }
+
+      if (namespace === 'service' && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const result = handleServiceQuery({ dialect, ctx, resource, recordId });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
       if (['commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {

@@ -58,6 +58,9 @@ export const DEFAULT_PAGE_CATALOGUE = Object.freeze([
   { id: 'merge_review', route: '/merge_review', labelAr: 'مساحة مراجعة واعتماد الدمج', group: 'governance', permission: 'platform:page:merge_review' },
   { id: 'dq_dashboard', route: '/dq_dashboard', labelAr: 'لوحة قياس جودة البيانات DQM', group: 'governance', permission: 'platform:page:dq_dashboard' },
   { id: 'dq_exceptions', route: '/dq_exceptions', labelAr: 'إدارة استثناءات وأخطاء الجودة', group: 'governance', permission: 'platform:page:dq_exceptions' },
+  { id: 'service_contracts', route: '/service_contracts', labelAr: 'Service contracts', group: 'commercial', permission: 'platform:page:service_contracts' },
+  { id: 'entitlements', route: '/entitlements', labelAr: 'Entitlements', group: 'commercial', permission: 'platform:page:entitlements' },
+  { id: 'electronic_signatures', route: '/electronic_signatures', labelAr: 'Electronic signatures', group: 'governance', permission: 'platform:page:electronic_signatures' },
 ]);
 
 export class GovernanceBootstrap {

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-077.json",
+  "acceptedSourceCommit": "7208383c21371bc7e3db4076675463594d1f7654",
+  "acceptanceTimestamp": "2026-08-02T12:30:00.000Z",
+  "acceptanceReason": "BUILD-09 dock scheduling, staging capacity, governed cross-dock movement requests, lot genealogy, expiration visibility, and recall hold proposals passed disposable migration, lifecycle, maker-checker, scope, and canonical authority boundary verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "078_build09_dock_crossdock_traceability",
+      "relativePath": "database/migrations/078_build09_dock_crossdock_traceability.mjs",
+      "algorithm": "sha256",
+      "checksum": "850b79169df4fa4d6bd32c2d71b3b43cdbfab70694c9b7e5a6cb247083eaa89d"
+    }
+  ]
+}

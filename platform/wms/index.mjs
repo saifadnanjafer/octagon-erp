@@ -8,9 +8,12 @@ import * as receiving from './receiving.mjs';
 import * as picking from './picking.mjs';
 import * as waves from './waves.mjs';
 import * as cycleCounting from './cycle-counting.mjs';
+import * as docks from './docks.mjs';
+import * as crossdock from './crossdock.mjs';
+import * as traceability from './traceability-ops.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { operations, counts, landedCost, topology, putaway, replenishment, receiving, picking, waves, cycleCounting };
+export { operations, counts, landedCost, topology, putaway, replenishment, receiving, picking, waves, cycleCounting, docks, crossdock, traceability };
 
 export function registerWmsActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'wms:picking:create', operations.createPicking);
@@ -73,4 +76,24 @@ export function registerWmsActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'wms:count_approve_variance', cycleCounting.approveCountVariance);
   registerDomainHandler(actionExecutor, 'wms:count_request_adjustment', cycleCounting.requestCountAdjustment);
   registerDomainHandler(actionExecutor, 'wms:count_acknowledge_adjustment', cycleCounting.acknowledgeCountAdjustment);
+  registerDomainHandler(actionExecutor, 'wms:dock_create', docks.createDock);
+  registerDomainHandler(actionExecutor, 'wms:dock_appointment_create', docks.createDockAppointment);
+  registerDomainHandler(actionExecutor, 'wms:dock_check_in', docks.checkInDockAppointment);
+  registerDomainHandler(actionExecutor, 'wms:dock_assign', docks.assignDock);
+  registerDomainHandler(actionExecutor, 'wms:dock_start_service', docks.startDockService);
+  registerDomainHandler(actionExecutor, 'wms:dock_depart', docks.departDockAppointment);
+  registerDomainHandler(actionExecutor, 'wms:dock_cancel', docks.cancelDockAppointment);
+  registerDomainHandler(actionExecutor, 'wms:staging_allocate', docks.allocateStaging);
+  registerDomainHandler(actionExecutor, 'wms:staging_release', docks.releaseStaging);
+  registerDomainHandler(actionExecutor, 'wms:crossdock_evaluate', crossdock.evaluateCrossDock);
+  registerDomainHandler(actionExecutor, 'wms:crossdock_approve', crossdock.approveCrossDock);
+  registerDomainHandler(actionExecutor, 'wms:crossdock_request_post', crossdock.requestCrossDockPost);
+  registerDomainHandler(actionExecutor, 'wms:crossdock_acknowledge_post', crossdock.acknowledgeCrossDockPost);
+  registerDomainHandler(actionExecutor, 'wms:crossdock_cancel', crossdock.cancelCrossDock);
+  registerDomainHandler(actionExecutor, 'wms:trace_profile_upsert', traceability.upsertTraceProfile);
+  registerDomainHandler(actionExecutor, 'wms:trace_quality_set', traceability.setTraceQualityStatus);
+  registerDomainHandler(actionExecutor, 'wms:recall_identify', traceability.identifyRecall);
+  registerDomainHandler(actionExecutor, 'wms:recall_analyze', traceability.analyzeRecall);
+  registerDomainHandler(actionExecutor, 'wms:recall_propose_holds', traceability.proposeRecallHolds);
+  registerDomainHandler(actionExecutor, 'wms:recall_close', traceability.closeRecall);
 }

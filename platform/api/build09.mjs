@@ -8,6 +8,9 @@ import * as receiving from '../wms/receiving.mjs';
 import * as picking from '../wms/picking.mjs';
 import * as waves from '../wms/waves.mjs';
 import * as cycleCounting from '../wms/cycle-counting.mjs';
+import * as docks from '../wms/docks.mjs';
+import * as crossdock from '../wms/crossdock.mjs';
+import * as traceability from '../wms/traceability-ops.mjs';
 
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
@@ -60,6 +63,19 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
     if (resource === 'waves') return list(waves.listWaves(dialect, input));
     if (resource === 'count-plans') return list(cycleCounting.listCountPlans(dialect, input));
     if (resource === 'count-sessions') return list(cycleCounting.listCountSessions(dialect, input));
+    if (resource === 'docks') return list(docks.listDocks(dialect, input));
+    if (resource === 'dock-appointments') return list(docks.listDockAppointments(dialect, input));
+    if (resource === 'staging-allocations') return list(docks.listStagingAllocations(dialect, input));
+    if (resource === 'crossdock-matches') return list(crossdock.listCrossDockMatches(dialect, input));
+    if (resource === 'trace') {
+      const lotId = query.lot_id || (query.identity_type === 'lot' ? recordId : null);
+      const serialId = query.serial_id || (query.identity_type === 'serial' ? recordId : null);
+      if (!lotId && !serialId) return { error: 'lot_id or serial_id is required', status: 422 };
+      return { data: traceability.queryTrace(dialect, { ...input, lot_id: lotId, serial_id: serialId }), meta: null };
+    }
+    if (resource === 'expiration-queue') return list(traceability.expirationQueue(dialect, input));
+    if (resource === 'recall-candidates') return list(traceability.recallCandidates(dialect, input));
+    if (resource === 'recall-cases') return list(traceability.listRecallCases(dialect, input));
     return { error: 'BUILD-09 WMS resource not found', status: 404 };
   } catch (error) {
     return { error: error.message, status: error.statusCode || 422, code: error.code };

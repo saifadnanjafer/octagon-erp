@@ -34,6 +34,7 @@ import { handleMaintenanceQuery } from '../maintenance/index.mjs';
 import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleServiceQuery } from './service.mjs';
+import { handleBuild08Query } from './build08.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -257,6 +258,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       if (namespace === 'service' && resource && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         const result = handleServiceQuery({ dialect, ctx, resource, recordId });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
+      }
+
+      if (['planning', 'mps', 'sop'].includes(namespace) && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const result = handleBuild08Query({ dialect, ctx, namespace, resource, recordId, query });
         if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }

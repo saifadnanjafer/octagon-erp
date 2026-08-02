@@ -35,6 +35,9 @@ import { createDocumentTemplateService } from './platform/printing/index.mjs';
 import { createMasterDataGovernanceService } from './platform/governance/mdg.mjs';
 import { createDataQualityService } from './platform/governance/dq.mjs';
 import { createPlanningFinanceServices } from './platform/finance/planning-treasury-intercompany.mjs';
+import { createForecastingService } from './platform/planning/forecasting.mjs';
+import { createMasterProductionScheduleService } from './platform/planning/mps.mjs';
+import { createSalesOperationsPlanningService } from './platform/planning/sop.mjs';
 import { createServiceEntitlementService, createElectronicSignatureService, registerServiceActions } from './platform/service/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
@@ -260,6 +263,9 @@ export function createPlatformAuthority(dialect) {
   const masterDataGovernanceService = createMasterDataGovernanceService(dialect);
   const dataQualityService = createDataQualityService(dialect);
   const { planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService } = createPlanningFinanceServices(dialect);
+  const forecastingService = createForecastingService(dialect);
+  const masterProductionScheduleService = createMasterProductionScheduleService(dialect, { forecasting: forecastingService });
+  const salesOperationsPlanningService = createSalesOperationsPlanningService(dialect);
   const serviceEntitlementService = createServiceEntitlementService(dialect);
   const electronicSignatureService = createElectronicSignatureService(dialect);
 
@@ -276,6 +282,19 @@ export function createPlatformAuthority(dialect) {
 
   actionExecutor.registerHandler('planning:scenario_create', (input, ctx) => planningBudgetService.createScenario(input, ctx));
   actionExecutor.registerHandler('planning:scenario_activate', (input, ctx) => planningBudgetService.activateScenario(input.scenario_id || input.scenarioId, ctx));
+  actionExecutor.registerHandler('forecast:history_snapshot', (input, ctx) => forecastingService.snapshotHistory(input, ctx));
+  actionExecutor.registerHandler('forecast:version_create', (input, ctx) => forecastingService.createVersion(input, ctx));
+  actionExecutor.registerHandler('forecast:calculate', (input, ctx) => forecastingService.calculate(input.version_id || input.versionId, ctx));
+  actionExecutor.registerHandler('forecast:override_submit', (input, ctx) => forecastingService.submitOverride(input, ctx));
+  actionExecutor.registerHandler('forecast:override_approve', (input, ctx) => forecastingService.approveOverride(input.override_id || input.overrideId, ctx));
+  actionExecutor.registerHandler('forecast:publish', (input, ctx) => forecastingService.publish(input.version_id || input.versionId, ctx));
+  actionExecutor.registerHandler('mps:run', (input, ctx) => masterProductionScheduleService.run(input, ctx));
+  actionExecutor.registerHandler('mps:proposal_approve', (input, ctx) => masterProductionScheduleService.approveProposal(input.proposal_id || input.proposalId, input, ctx));
+  actionExecutor.registerHandler('mps:proposal_release_request', (input, ctx) => masterProductionScheduleService.requestCanonicalRelease(input.proposal_id || input.proposalId, ctx));
+  actionExecutor.registerHandler('sop:cycle_create', (input, ctx) => salesOperationsPlanningService.createCycle(input, ctx));
+  actionExecutor.registerHandler('sop:scenario_create', (input, ctx) => salesOperationsPlanningService.addScenario(input.cycle_id || input.cycleId, input, ctx));
+  actionExecutor.registerHandler('sop:review_approve', (input, ctx) => salesOperationsPlanningService.review(input.cycle_id || input.cycleId, { ...input, decision: input.decision || 'approve' }, ctx));
+  actionExecutor.registerHandler('sop:publish', (input, ctx) => salesOperationsPlanningService.publish(input.cycle_id || input.cycleId, input.scenario_id || input.scenarioId, ctx));
   actionExecutor.registerHandler('treasury:forecast_generate', (input, ctx) => treasuryCashForecastService.generateForecast(input, ctx));
   actionExecutor.registerHandler('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
   actionExecutor.registerHandler('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
@@ -288,6 +307,7 @@ export function createPlatformAuthority(dialect) {
     rmaService, creditCollectionsService, commissionService, documentTemplateService,
     masterDataGovernanceService, dataQualityService,
     planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService,
+    forecastingService, masterProductionScheduleService, salesOperationsPlanningService,
     serviceEntitlementService, electronicSignatureService,
   };
 

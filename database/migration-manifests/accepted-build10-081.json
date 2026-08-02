@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-080.json",
+  "acceptedSourceCommit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+  "acceptanceTimestamp": "2026-08-02T08:20:02.000Z",
+  "acceptanceReason": "BUILD-10 Slice 1 acceptance: governed IoT device registry with lifecycle state machine (draft through retired/revoked/lost/replaced), credential-reference-only secret handling, company-scoped gateways with buffering and simulator configuration, calibrated sensors with engineering thresholds and data-quality metadata, canonical Fleet vehicle references, and permission-governed device, gateway and sensor actions passed focused disposable lifecycle and contract verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "081_build10_iot_device_registry",
+      "relativePath": "database/migrations/081_build10_iot_device_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "42dfcfc892259f1022b716bab0d7b1d5d556a22e5e6694f5c6fe95c88490802d"
+    }
+  ]
+}

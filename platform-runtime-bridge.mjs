@@ -59,6 +59,7 @@ import { registerQualityActions } from './platform/quality/index.mjs';
 import { registerAssetActions } from './platform/assets/index.mjs';
 import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
 import { registerFleetActions } from './platform/fleet/index.mjs';
+import { registerIotActions } from './platform/iot/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
@@ -235,6 +236,7 @@ export function createPlatformAuthority(dialect) {
   registerAssetActions(actionExecutor);
   registerMaintenanceActions(actionExecutor);
   registerFleetActions(actionExecutor);
+  registerIotActions(actionExecutor);
   registerControlPlaneActions(actionExecutor);
   const routeCoverage = createRouteCoverageRegistry(dialect, { evaluator, permissionRegistry: registry });
   const bootstrap = createGovernanceBootstrap({ evaluator, dialect, settings, notifications, approvals, membershipDirectory: memberships });

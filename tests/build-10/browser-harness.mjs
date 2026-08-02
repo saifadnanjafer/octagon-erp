@@ -24,7 +24,7 @@ function seedOperationalFacts(dialect, name) {
   const ctx = { company_id: companyId, warehouse_id: 'wh-main', branch_id: 'branch-a', actor: 'browser-manager' };
 
   // Seed IoT device
-  const device = deviceRegistry.enrollDevice(dialect, { ...ctx, device_code: 'DEV-BROWSER-1', name: 'Browser GPS Tracker 1', device_type: 'telematics' });
+  const device = deviceRegistry.enrollDevice(dialect, { ...ctx, device_code: 'DEV-BROWSER-1', name: 'Browser GPS Tracker 1', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(dialect, { ...ctx, device_id: device.id, status: 'active', actor: 'browser-admin' });
   fleetMapping.mapDeviceToVehicle(dialect, { ...ctx, vehicle_id: 'veh-browser-b10', tracker_device_id: device.id, initial_odometer_km: 12000 });
 

@@ -18,7 +18,7 @@ const parseJson = (value, fallback = {}) => {
   try { return JSON.parse(value || ''); } catch { return fallback; }
 };
 
-export const DEVICE_TYPES = ['gateway', 'sensor', 'tracker', 'kiosk', 'display'];
+export const DEVICE_TYPES = ['gateway', 'sensor', 'tracker', 'kiosk', 'display', 'telematics'];
 export const DEVICE_LIFECYCLE_STATES = ['draft', 'enrollment_pending', 'enrolled', 'active', 'suspended', 'offline', 'degraded', 'retired', 'revoked', 'lost', 'replaced'];
 const TERMINAL_STATES = ['revoked', 'lost'];
 const PLAINTEXT_CREDENTIAL_RE = /token|password|secret/i;
@@ -200,6 +200,23 @@ export function enrollDeviceSimulated(db, input) {
     timestamp(), current.id,
   );
   return deviceInScope(db, current.id, scope);
+}
+
+export function enrollDevice(db, input) {
+  const external_ref = input.external_ref || input.device_code || uid('extref');
+  const registered = registerDevice(db, { ...input, external_ref });
+  return enrollDeviceSimulated(db, { ...input, device_id: registered.id });
+}
+
+export function updateDeviceStatus(db, input) {
+  const status = input.status || input.lifecycle_state;
+  if (status === 'active') return activateDevice(db, input);
+  if (status === 'suspended') return suspendDevice(db, input);
+  if (status === 'revoked') return revokeDevice(db, input);
+  if (status === 'retired') return retireDevice(db, input);
+  const scope = requiredScope(input);
+  db.prepare('UPDATE iot_devices SET lifecycle_state=?,updated_at=? WHERE id=?').run(status, timestamp(), input.device_id || input.id);
+  return deviceInScope(db, input.device_id || input.id, scope);
 }
 
 export function activateDevice(db, input) {

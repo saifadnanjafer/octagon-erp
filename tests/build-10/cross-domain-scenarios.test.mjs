@@ -42,7 +42,7 @@ test('cross-domain scenario 1 joins telematics location, trip calculation, geofe
   const { db, ctx } = await setupFixture(t, 'scenario-1');
 
   // 1. Enroll IoT Telematics device & map to fleet vehicle
-  const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'GPS-SCENARIO-1', name: 'Fleet GPS Tracker 1', device_type: 'telematics' });
+  const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'GPS-SCENARIO-1', name: 'Fleet GPS Tracker 1', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: device.id, status: 'active', actor: 'iot-admin' });
   fleetMapping.mapDeviceToVehicle(db, { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id, initial_odometer_km: 50000 });
 
@@ -82,7 +82,7 @@ test('cross-domain scenario 1 joins telematics location, trip calculation, geofe
 test('cross-domain scenario 2 handles fuel telemetry drop, loss detection, investigation proposal, and resolution', async (t) => {
   const { db, ctx } = await setupFixture(t, 'scenario-2');
 
-  const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'FUEL-SCENARIO-2', name: 'Tank Telematics 2', device_type: 'telematics' });
+  const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'FUEL-SCENARIO-2', name: 'Tank Telematics 2', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: device.id, status: 'active', actor: 'iot-admin' });
   fleetMapping.mapDeviceToVehicle(db, { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id });
 

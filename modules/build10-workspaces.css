@@ -1,0 +1,167 @@
+/* Octagon ERP - BUILD-10 Devices, Telematics, Offline and Kiosk Workspaces Stylesheet */
+
+.b10-workspace-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg-surface, #0f172a);
+  color: var(--text-main, #f8fafc);
+  font-family: 'Tajawal', 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+.b10-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  backdrop-filter: blur(8px);
+}
+
+.b10-title-area h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.b10-title-area p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.b10-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.b10-badge-active { background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.b10-badge-warning { background: rgba(234,179,8,0.2); color: #facc15; border: 1px solid rgba(234,179,8,0.3); }
+.b10-badge-critical { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.b10-badge-offline { background: rgba(148,163,184,0.2); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.3); }
+
+.b10-controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(30,41,59,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.b10-search-input {
+  background: rgba(15,23,42,0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #f8fafc;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  min-width: 240px;
+}
+
+.b10-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.b10-btn-primary { background: #0284c7; color: #ffffff; }
+.b10-btn-primary:hover { background: #0369a1; }
+.b10-btn-secondary { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+.b10-btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+.b10-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.5rem;
+  background: rgba(15,23,42,0.6);
+}
+
+.b10-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+  font-size: 0.875rem;
+}
+
+html[dir="ltr"] .b10-table { text-align: left; }
+
+.b10-table th {
+  background: rgba(30,41,59,0.9);
+  color: #94a3b8;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.b10-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: #e2e8f0;
+}
+
+.b10-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+/* Large Screen Board Layout */
+.b10-board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.b10-board-card {
+  background: rgba(30,41,59,0.7);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+}
+
+/* Kiosk Terminal Layout */
+.b10-kiosk-shell {
+  background: #090d16;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.b10-kiosk-card {
+  width: 100%;
+  max-width: 900px;
+  background: #1e293b;
+  border: 2px solid #3b82f6;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 760px) {
+  .b10-controls-bar { flex-direction: column; align-items: stretch; }
+  .b10-search-input { width: 100%; }
+}

@@ -66,5 +66,25 @@ export function handleBuild08Query({ dialect, ctx, namespace, resource, recordId
     return { error: 'S&OP resource not found', status: 404 };
   }
 
+  if (namespace === 'treasury') {
+    if (resource === 'positions') {
+      const rows = dialect.prepare(`SELECT * FROM treasury_cash_positions WHERE company_id=?${recordId ? ' AND id=?' : ''} ORDER BY as_of_date DESC`).all(...(recordId ? [companyId, recordId] : [companyId]));
+      return recordId ? (rows[0] ? { data: rows[0], meta: null } : { error: 'cash position not found', status: 404 }) : list(rows);
+    }
+    if (resource === 'liquidity-forecasts') {
+      const rows = dialect.prepare(`SELECT * FROM liquidity_forecasts_v2 WHERE company_id=?${recordId ? ' AND id=?' : ''} ORDER BY created_at DESC`).all(...(recordId ? [companyId, recordId] : [companyId]));
+      return recordId ? (rows[0] ? { data: rows[0], meta: null } : { error: 'liquidity forecast not found', status: 404 }) : list(rows);
+    }
+    if (resource === 'liquidity-buckets') {
+      if (!query.forecast_id) return { error: 'forecast_id is required', status: 422 };
+      return list(dialect.prepare(`SELECT b.* FROM liquidity_forecast_buckets b JOIN liquidity_forecasts_v2 f ON f.id=b.forecast_id WHERE f.company_id=? AND f.id=? ORDER BY b.bucket_start`).all(companyId, query.forecast_id));
+    }
+    if (resource === 'alerts') return list(dialect.prepare('SELECT * FROM treasury_alerts WHERE company_id=? AND status=? ORDER BY created_at DESC').all(companyId, query.status || 'open'));
+    if (resource === 'proposals') return list(dialect.prepare(`SELECT * FROM treasury_proposals WHERE company_id=? AND (?='' OR status=?) ORDER BY created_at DESC`).all(companyId, query.status || '', query.status || ''));
+    if (resource === 'facilities') return list(dialect.prepare('SELECT * FROM financing_facilities WHERE company_id=? ORDER BY end_date').all(companyId));
+    if (resource === 'instruments') return list(dialect.prepare('SELECT * FROM bank_instruments WHERE company_id=? ORDER BY expiry_date').all(companyId));
+    return { error: 'treasury resource not found', status: 404 };
+  }
+
   return { error: 'BUILD-08 namespace not found', status: 404 };
 }

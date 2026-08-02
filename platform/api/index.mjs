@@ -262,7 +262,7 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
-      if (['planning', 'mps', 'sop', 'treasury'].includes(namespace) && resource && req.method === 'GET') {
+      if (['planning', 'mps', 'sop', 'treasury', 'intercompany', 'consolidation'].includes(namespace) && resource && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
         const result = handleBuild08Query({ dialect, ctx, namespace, resource, recordId, query });

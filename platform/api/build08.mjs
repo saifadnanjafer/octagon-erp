@@ -86,5 +86,25 @@ export function handleBuild08Query({ dialect, ctx, namespace, resource, recordId
     return { error: 'treasury resource not found', status: 404 };
   }
 
+  if (namespace === 'intercompany') {
+    if (resource === 'relationships') return list(dialect.prepare('SELECT * FROM intercompany_relationships_v2 WHERE company_a_id=? OR company_b_id=? ORDER BY created_at DESC').all(companyId, companyId));
+    if (resource === 'operations') return list(dialect.prepare(`SELECT * FROM intercompany_operations_v2 WHERE (source_company_id=? OR target_company_id=?) AND (?='' OR status=?) ORDER BY created_at DESC`).all(companyId, companyId, query.status || '', query.status || ''));
+    if (resource === 'mismatches') return list(dialect.prepare(`SELECT m.* FROM intercompany_mismatches_v2 m JOIN intercompany_operations_v2 o ON o.id=m.operation_id WHERE (o.source_company_id=? OR o.target_company_id=?) AND (?='' OR m.status=?) ORDER BY m.detected_at DESC`).all(companyId, companyId, query.status || '', query.status || ''));
+    if (resource === 'reconciliations') return list(dialect.prepare(`SELECT r.* FROM intercompany_reconciliations_v2 r JOIN intercompany_operations_v2 o ON o.id=r.operation_id WHERE o.source_company_id=? OR o.target_company_id=? ORDER BY r.approved_at DESC`).all(companyId, companyId));
+    if (resource === 'settlements') return list(dialect.prepare('SELECT * FROM intercompany_settlement_proposals WHERE payer_company_id=? OR payee_company_id=? ORDER BY created_at DESC').all(companyId, companyId));
+    return { error: 'intercompany resource not found', status: 404 };
+  }
+
+  if (namespace === 'consolidation') {
+    if (resource === 'groups') return list(dialect.prepare('SELECT * FROM consolidation_groups_v2 WHERE parent_company_id=? ORDER BY created_at DESC').all(companyId));
+    if (resource === 'mappings') return list(dialect.prepare(`SELECT m.* FROM consolidation_account_mappings_v2 m JOIN consolidation_groups_v2 g ON g.id=m.group_id WHERE g.parent_company_id=? AND (?='' OR m.group_id=?) ORDER BY m.company_id,m.source_account_code`).all(companyId, query.group_id || '', query.group_id || ''));
+    if (resource === 'periods') return list(dialect.prepare(`SELECT p.* FROM consolidation_periods_v2 p JOIN consolidation_groups_v2 g ON g.id=p.group_id WHERE g.parent_company_id=? ORDER BY p.end_date DESC`).all(companyId));
+    if (resource === 'runs') return list(dialect.prepare(`SELECT r.* FROM consolidation_runs_v2 r JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? ORDER BY r.created_at DESC`).all(companyId));
+    if (resource === 'eliminations') return list(dialect.prepare(`SELECT e.* FROM consolidation_eliminations_v2 e JOIN consolidation_runs_v2 r ON r.id=e.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND (?='' OR e.run_id=?) ORDER BY e.created_at`).all(companyId, query.run_id || '', query.run_id || ''));
+    if (resource === 'balances') return list(dialect.prepare(`SELECT b.* FROM consolidation_balances_v2 b JOIN consolidation_runs_v2 r ON r.id=b.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND b.run_id=? ORDER BY b.target_account_code`).all(companyId, query.run_id || recordId || ''));
+    if (resource === 'lineage') return list(dialect.prepare(`SELECT l.* FROM consolidation_lineage_v2 l JOIN consolidation_runs_v2 r ON r.id=l.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND l.run_id=? ORDER BY l.balance_id,l.created_at`).all(companyId, query.run_id || recordId || ''));
+    return { error: 'consolidation resource not found', status: 404 };
+  }
+
   return { error: 'BUILD-08 namespace not found', status: 404 };
 }

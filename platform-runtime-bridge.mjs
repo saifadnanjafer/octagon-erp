@@ -39,6 +39,8 @@ import { createForecastingService } from './platform/planning/forecasting.mjs';
 import { createMasterProductionScheduleService } from './platform/planning/mps.mjs';
 import { createSalesOperationsPlanningService } from './platform/planning/sop.mjs';
 import { createTreasuryLiquidityService } from './platform/treasury/liquidity.mjs';
+import { createIntercompanyOperationsService } from './platform/intercompany/operations.mjs';
+import { createConsolidationService } from './platform/consolidation/index.mjs';
 import { createServiceEntitlementService, createElectronicSignatureService, registerServiceActions } from './platform/service/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
@@ -268,6 +270,8 @@ export function createPlatformAuthority(dialect) {
   const masterProductionScheduleService = createMasterProductionScheduleService(dialect, { forecasting: forecastingService });
   const salesOperationsPlanningService = createSalesOperationsPlanningService(dialect);
   const treasuryLiquidityService = createTreasuryLiquidityService(dialect);
+  const intercompanyOperationsService = createIntercompanyOperationsService(dialect);
+  const consolidationService = createConsolidationService(dialect);
   const serviceEntitlementService = createServiceEntitlementService(dialect);
   const electronicSignatureService = createElectronicSignatureService(dialect);
 
@@ -306,6 +310,22 @@ export function createPlatformAuthority(dialect) {
   actionExecutor.registerHandler('treasury:facility_utilize', (input, ctx) => treasuryLiquidityService.proposeUtilization(input.facility_id || input.facilityId, input, ctx));
   actionExecutor.registerHandler('treasury:instrument_register', (input, ctx) => treasuryLiquidityService.registerInstrument(input, ctx));
   actionExecutor.registerHandler('treasury:forecast_generate', (input, ctx) => treasuryCashForecastService.generateForecast(input, ctx));
+  actionExecutor.registerHandler('intercompany:relationship_create', (input, ctx) => intercompanyOperationsService.createRelationship(input, ctx));
+  actionExecutor.registerHandler('intercompany:operation_create', (input, ctx) => intercompanyOperationsService.createOperation(input, ctx));
+  actionExecutor.registerHandler('intercompany:operation_approve', (input, ctx) => intercompanyOperationsService.approveOperation(input.operation_id || input.operationId, ctx));
+  actionExecutor.registerHandler('intercompany:mismatch_detect', (input, ctx) => intercompanyOperationsService.detectMismatches(input.operation_id || input.operationId, ctx));
+  actionExecutor.registerHandler('intercompany:reconcile', (input, ctx) => intercompanyOperationsService.reconcile(input, ctx));
+  actionExecutor.registerHandler('intercompany:settlement_propose', (input, ctx) => intercompanyOperationsService.proposeSettlement(input.operation_id || input.operationId, input, ctx));
+  actionExecutor.registerHandler('consolidation:group_create', (input, ctx) => consolidationService.createGroup(input, ctx));
+  actionExecutor.registerHandler('consolidation:member_add', (input, ctx) => consolidationService.addMember(input.group_id || input.groupId, input, ctx));
+  actionExecutor.registerHandler('consolidation:mapping_upsert', (input, ctx) => consolidationService.upsertMapping(input.group_id || input.groupId, input, ctx));
+  actionExecutor.registerHandler('consolidation:period_create', (input, ctx) => consolidationService.createPeriod(input.group_id || input.groupId, input, ctx));
+  actionExecutor.registerHandler('consolidation:snapshot_capture', (input, ctx) => consolidationService.captureTrialBalance(input.period_id || input.periodId, input, ctx));
+  actionExecutor.registerHandler('consolidation:run_calculate', (input, ctx) => consolidationService.calculateRun(input.group_id || input.groupId, input.period_id || input.periodId, ctx));
+  actionExecutor.registerHandler('consolidation:elimination_approve', (input, ctx) => consolidationService.approveElimination(input.elimination_id || input.eliminationId, ctx));
+  actionExecutor.registerHandler('consolidation:adjustment_add', (input, ctx) => consolidationService.addAdjustment(input.run_id || input.runId, input, ctx));
+  actionExecutor.registerHandler('consolidation:adjustment_approve', (input, ctx) => consolidationService.approveAdjustment(input.adjustment_id || input.adjustmentId, ctx));
+  actionExecutor.registerHandler('consolidation:finalize', (input, ctx) => consolidationService.finalize(input.run_id || input.runId, ctx));
   actionExecutor.registerHandler('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
   actionExecutor.registerHandler('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
   actionExecutor.registerHandler('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
@@ -318,7 +338,7 @@ export function createPlatformAuthority(dialect) {
     masterDataGovernanceService, dataQualityService,
     planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService,
     forecastingService, masterProductionScheduleService, salesOperationsPlanningService,
-    treasuryLiquidityService,
+    treasuryLiquidityService, intercompanyOperationsService, consolidationService,
     serviceEntitlementService, electronicSignatureService,
   };
 

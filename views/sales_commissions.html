@@ -1,0 +1,80 @@
+<section class="page" id="pageSalesCommissions">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-percent"></i></span>
+        <span data-i18n-ar="عمولات المبيعات واستحقاقاتها" data-i18n-en="Sales Commissions">عمولات المبيعات واستحقاقاتها</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة خطط العمولات، حساب الاستحقاقات التلقائي، وتصفية مستحقات فرق المبيعات." data-i18n-en="Manage sales commission plans, automated accrual calculation, and rep settlement runs.">
+        إدارة خطط العمولات، حساب الاستحقاقات التلقائي، وتصفية مستحقات فرق المبيعات.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="commissionRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="commissionNewPlanBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="إنشاء خطة عمولات" data-i18n-en="New Commission Plan">إنشاء خطة عمولات</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-layer-group"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الخطط النشطة" data-i18n-en="Active Plans">الخطط النشطة</span>
+        <h3 class="stat-value" id="commActivePlansCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-coins"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="العمولات المستحقة (Accrued)" data-i18n-en="Accrued Commissions">العمولات المستحقة (Accrued)</span>
+        <h3 class="stat-value" id="commTotalAccrued">0 IQD</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="العمولات المسددة (Settled)" data-i18n-en="Settled Commissions">العمولات المسددة (Settled)</span>
+        <h3 class="stat-value" id="commTotalSettled">0 IQD</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-info"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="مندوبو المبيعات المستفيدون" data-i18n-en="Eligible Reps">مندوبو المبيعات المستفيدون</span>
+        <h3 class="stat-value" id="commEligibleRepsCount">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="سجل استحقاقات العمولات" data-i18n-en="Commission Accruals Ledger">سجل استحقاقات العمولات</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="المعرف" data-i18n-en="ID">المعرف</th>
+              <th data-i18n-ar="مندوب المبيعات" data-i18n-en="Salesperson">مندوب المبيعات</th>
+              <th data-i18n-ar="طلب / الفاتورة المرتبطة" data-i18n-en="Order / Invoice">طلب / الفاتورة المرتبطة</th>
+              <th data-i18n-ar="مبلغ الأساس" data-i18n-en="Basis Amount">مبلغ الأساس</th>
+              <th data-i18n-ar="مبلغ العمولة" data-i18n-en="Commission Amount">مبلغ العمولة</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="commissionAccrualsTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد استحقاقات عمولات حالياً" data-i18n-en="No commission accruals found">لا توجد استحقاقات عمولات حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

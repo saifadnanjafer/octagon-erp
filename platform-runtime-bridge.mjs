@@ -28,6 +28,10 @@ import { createApprovalEngine } from './platform/approvals/index.mjs';
 import { createPolicyEngine } from './platform/policies/index.mjs';
 import { createActionRegistry, createActionExecutor } from './platform/kernel/actions/index.mjs';
 import { createRepository } from './platform/data/repositories/index.mjs';
+import { createRmaService } from './platform/commercial/rma.mjs';
+import { createCreditCollectionsService } from './platform/commercial/credit_collections.mjs';
+import { createCommissionService } from './platform/sales/commissions.mjs';
+import { createDocumentTemplateService } from './platform/printing/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 import { registerFinanceActions } from './platform/finance/index.mjs';
@@ -68,6 +72,8 @@ const DEFAULT_API_PERMISSIONS = [
   { id: 'platform:scheduler:admin', module_id: 'platform_kernel', kind: 'action', label_ar: 'إدارة الجدولة' },
   { id: 'platform:jarvis:use', module_id: 'platform_kernel', kind: 'action', label_ar: 'استخدام أدوات الذكاء' },
   { id: 'platform:jarvis:approve', module_id: 'platform_kernel', kind: 'action', label_ar: 'الموافقة على إجراءات الذكاء' },
+  { id: 'sale_contract:read', module_id: 'platform_kernel', kind: 'resource', label_ar: 'قراءة عقد البيع' },
+  { id: 'sale_contract:write', module_id: 'platform_kernel', kind: 'action', label_ar: 'تعديل عقد البيع' },
 ];
 
 export class RuntimeAuthorityError extends Error {
@@ -177,6 +183,7 @@ export function createPlatformAuthority(dialect) {
   const actionExecutor = createActionExecutor(dialect);
   const collaborationContext = (ctx) => ({
     ...ctx, actorId: ctx.userId, activeCompanyId: ctx.companyId, activeBranchId: ctx.branchId,
+    now: ctx.now || new Date().toISOString(),
   });
   const registerCollaborationAction = (id, entity, required, handler) => {
     actionRegistry.register({ id, module_id: 'platform_kernel', entity_id: entity, kind: 'domain',
@@ -242,9 +249,15 @@ export function createPlatformAuthority(dialect) {
     settings.set('finance.approval_authority.fail_closed', 'system', '', true, { actor: 'platform_bridge', reason: 'default fail-closed finance approval policy' });
   }
 
+  const rmaService = createRmaService(dialect);
+  const creditCollectionsService = createCreditCollectionsService(dialect);
+  const commissionService = createCommissionService(dialect);
+  const documentTemplateService = createDocumentTemplateService(dialect);
+
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, configuration, notifications, jobs, scheduledReports, platformSearch, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
+    rmaService, creditCollectionsService, commissionService, documentTemplateService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

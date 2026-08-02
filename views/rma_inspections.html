@@ -1,0 +1,80 @@
+<section class="page" id="pageRmaInspections">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-boxes-packing"></i></span>
+        <span data-i18n-ar="فحص المرتجعات والضمان (RMA)" data-i18n-en="RMA & Warranty Inspections">فحص المرتجعات والضمان (RMA)</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة عمليات الفحص الفني لمرتجعات العملاء، تقييم حالات الضمان وتحديد الإجراءات التجارية." data-i18n-en="Technical intake inspections for customer product returns, warranty evaluations, and disposition decisions.">
+        إدارة عمليات الفحص الفني لمرتجعات العملاء، تقييم حالات الضمان وتحديد الإجراءات التجارية.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="rmaRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="rmaNewInspectionBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="فحص RMA جديد" data-i18n-en="New RMA Inspection">فحص RMA جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-clipboard-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="إجمالي الفحوصات" data-i18n-en="Total Inspections">إجمالي الفحوصات</span>
+        <h3 class="stat-value" id="rmaTotalCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="فحص مقبول (Pass)" data-i18n-en="Passed">فحص مقبول (Pass)</span>
+        <h3 class="stat-value" id="rmaPassedCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-danger"><i class="fa-solid fa-circle-xmark"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="مرفوض / اتلاف (Scrap)" data-i18n-en="Scrapped/Failed">مرفوض / اتلاف (Scrap)</span>
+        <h3 class="stat-value" id="rmaFailedCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-wrench"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="قيد التصليح / الإبدال" data-i18n-en="Repair/Replace">قيد التصليح / الإبدال</span>
+        <h3 class="stat-value" id="rmaRepairCount">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="سجل فحوصات المرتجعات الفنية" data-i18n-en="RMA Inspection Records">سجل فحوصات المرتجعات الفنية</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف الفحص" data-i18n-en="Inspection ID">معرف الفحص</th>
+              <th data-i18n-ar="طلب RMA" data-i18n-en="RMA Case">طلب RMA</th>
+              <th data-i18n-ar="الفاحص" data-i18n-en="Inspector">الفاحص</th>
+              <th data-i18n-ar="نتيجة الفحص" data-i18n-en="Result">نتيجة الفحص</th>
+              <th data-i18n-ar="القرار التجاري (Disposition)" data-i18n-en="Disposition">القرار التجاري (Disposition)</th>
+              <th data-i18n-ar="ملاحظات" data-i18n-en="Notes">ملاحظات</th>
+              <th data-i18n-ar="تاريخ الفحص" data-i18n-en="Date">تاريخ الفحص</th>
+            </tr>
+          </thead>
+          <tbody id="rmaInspectionsTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد فحوصات RMA مسجلة حالياً" data-i18n-en="No RMA inspection records found">لا توجد فحوصات RMA مسجلة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

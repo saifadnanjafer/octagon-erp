@@ -1,0 +1,80 @@
+<section class="page" id="pageCreditCollections">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+        <span data-i18n-ar="إدارة الائتمان والتحصيل" data-i18n-en="Credit & Collections">إدارة الائتمان والتحصيل</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="مراقبة سقف الائتمان، حظر الحسابات المتأخرة، وعود التحصيل ومتابعة التعرض المالي للعملاء." data-i18n-en="Customer credit limits, dunning hold enforcement, collection promises, and exposure control.">
+        مراقبة سقف الائتمان، حظر الحسابات المتأخرة، وعود التحصيل ومتابعة التعرض المالي للعملاء.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="creditRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="creditNewPromiseBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="تسجيل وعد سداد" data-i18n-en="New Payment Promise">تسجيل وعد سداد</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-building-columns"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="إجمالي الائتمان الممنوح" data-i18n-en="Total Credit Limit">إجمالي الائتمان الممنوح</span>
+        <h3 class="stat-value" id="creditTotalLimit">0 IQD</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-danger"><i class="fa-solid fa-ban"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="حسابات على الحظر (Credit Hold)" data-i18n-en="Accounts on Hold">حسابات على الحظر (Credit Hold)</span>
+        <h3 class="stat-value" id="creditOnHoldCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الذمم القائمة (Open AR)" data-i18n-en="Open AR Exposure">الذمم القائمة (Open AR)</span>
+        <h3 class="stat-value" id="creditOpenArTotal">0 IQD</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-handshake"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="وعود السداد القائمة" data-i18n-en="Active Promises">وعود السداد القائمة</span>
+        <h3 class="stat-value" id="creditActivePromisesCount">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="سجل وعود السداد والتحصيل" data-i18n-en="Collection Promises Log">سجل وعود السداد والتحصيل</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف الوعد" data-i18n-en="Promise ID">معرف الوعد</th>
+              <th data-i18n-ar="العميل" data-i18n-en="Customer">العميل</th>
+              <th data-i18n-ar="المحصل" data-i18n-en="Collector">المحصل</th>
+              <th data-i18n-ar="المبلغ الموعود" data-i18n-en="Promised Amount">المبلغ الموعود</th>
+              <th data-i18n-ar="تاريخ الوعد" data-i18n-en="Promise Date">تاريخ الوعد</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="creditPromisesTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد وعود سداد مسجلة حالياً" data-i18n-en="No collection promises found">لا توجد وعود سداد مسجلة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

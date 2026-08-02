@@ -1,0 +1,80 @@
+<section class="page" id="pageDocumentTemplates">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-print"></i></span>
+        <span data-i18n-ar="نماذج وقوالب الطباعة الحاكمة" data-i18n-en="Governed Document Templates">نماذج وقوالب الطباعة الحاكمة</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="تصميم وإدارة القوالب الرسمية، الفواتير، الإيصالات، بطاقات RMA وتوليد البارкод والرموز." data-i18n-en="Design & manage official document templates, invoices, receipts, RMA tags, barcodes and labels.">
+        تصميم وإدارة القوالب الرسمية، الفواتير، الإيصالات، بطاقات RMA وتوليد البارкод والرموز.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="docTemplateRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="docTemplateNewBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="إنشاء قالب جديد" data-i18n-en="New Template">إنشاء قالب جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-file-invoice"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="القوالب المعتمدة" data-i18n-en="Approved Templates">القوالب المعتمدة</span>
+        <h3 class="stat-value" id="docTemplateActiveCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-info"><i class="fa-solid fa-qrcode"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="أنواع الباركود المدعومة" data-i18n-en="Barcode Formats">أنواع الباركود المدعومة</span>
+        <h3 class="stat-value" id="docTemplateBarcodeFormats">QR / Code128</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-language"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="اللغة والترميز" data-i18n-en="Locale Support">اللغة والترميز</span>
+        <h3 class="stat-value" id="docTemplateLocale">AR / EN</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-stamp"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="مستوى التدقيق المستندي" data-i18n-en="Governance Level">مستوى التدقيق المستندي</span>
+        <h3 class="stat-value" id="docTemplateGovLevel">Strict PDF</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="قائمة القوالب المستندية الحاكمة" data-i18n-en="Document Templates Directory">قائمة القوالب المستندية الحاكمة</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف القالب" data-i18n-en="Template ID">معرف القالب</th>
+              <th data-i18n-ar="اسم القالب" data-i18n-en="Template Name">اسم القالب</th>
+              <th data-i18n-ar="نوع المستند" data-i18n-en="Doc Type">نوع المستند</th>
+              <th data-i18n-ar="اللغة" data-i18n-en="Locale">اللغة</th>
+              <th data-i18n-ar="نوع الرمز" data-i18n-en="Barcode Type">نوع الرمز</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="docTemplatesTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد قوالب مستندية مسجلة حالياً" data-i18n-en="No document templates found">لا توجد قوالب مستندية مسجلة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

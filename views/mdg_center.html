@@ -1,0 +1,89 @@
+<section class="page" id="pageMdgCenter">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-shield-halved"></i></span>
+        <span data-i18n-ar="مركز حوكمة البيانات الأساسية (MDG)" data-i18n-en="Master Data Governance Center">مركز حوكمة البيانات الأساسية (MDG)</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة ملكية السجلات الحاكمة، مطابقة البيانات، توحيد الهويات والحد من التكرار." data-i18n-en="Stewardship policy management, entity matching, golden record survivorship, and duplicate prevention.">
+        إدارة ملكية السجلات الحاكمة، مطابقة البيانات، توحيد الهويات والحد من التكرار.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="mdgRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث البيانات" data-i18n-en="Refresh Data">تحديث البيانات</span>
+      </button>
+      <button class="btn btn-primary" id="mdgRunDetectionBtn" type="button">
+        <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n-ar="تشغيل فحص التكرار" data-i18n-en="Run Duplicate Scan">تشغيل فحص التكرار</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-clone"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="المرشحات المكررة" data-i18n-en="Duplicate Candidates">المرشحات المكررة</span>
+        <h3 class="stat-value" id="mdgCandidateCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-code-merge"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="مقترحات الدمج المعلقة" data-i18n-en="Pending Merges">مقترحات الدمج المعلقة</span>
+        <h3 class="stat-value" id="mdgPendingMergesCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-user-shield"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="السجلات الموحدة (Golden)" data-i18n-en="Golden Records">السجلات الموحدة (Golden)</span>
+        <h3 class="stat-value" id="mdgGoldenRecordsCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-info"><i class="fa-solid fa-id-card"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الكيانات المشمولة" data-i18n-en="Covered Entities">الكيانات المشمولة</span>
+        <h3 class="stat-value">Party / Product</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="سياسات الإشراف والملكية للحقول" data-i18n-en="Stewardship Policies">سياسات الإشراف والملكية للحقول</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped">
+          <thead>
+            <tr>
+              <th data-i18n-ar="نوع الكيان" data-i18n-en="Entity Type">نوع الكيان</th>
+              <th data-i18n-ar="مالك البيانات" data-i18n-en="Data Owner">مالك البيانات</th>
+              <th data-i18n-ar="مشرف البيانات" data-i18n-en="Data Steward">مشرف البيانات</th>
+              <th data-i18n-ar="سياسة البقاء (Survivorship)" data-i18n-en="Survivorship Policy">سياسة البقاء (Survivorship)</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Party (الأطراف والعملاء)</td>
+              <td>Data Governance Admin</td>
+              <td>Senior MDG Steward</td>
+              <td><span class="badge info">Newest Record</span></td>
+              <td><span class="badge success">Active</span></td>
+            </tr>
+            <tr>
+              <td>Product (المنتجات والمواد)</td>
+              <td>Supply Chain Director</td>
+              <td>Catalog Steward</td>
+              <td><span class="badge info">Field Level Trust</span></td>
+              <td><span class="badge success">Active</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

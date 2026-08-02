@@ -53,6 +53,11 @@ export const DEFAULT_PAGE_CATALOGUE = Object.freeze([
   { id: 'credit_collections', route: '/credit_collections', labelAr: 'الائتمان والتحصيل', group: 'commercial', permission: 'platform:page:credit_collections' },
   { id: 'sales_commissions', route: '/sales_commissions', labelAr: 'عمولات المبيعات', group: 'commercial', permission: 'platform:page:sales_commissions' },
   { id: 'document_templates', route: '/document_templates', labelAr: 'قوالب المستندات والطباعة', group: 'commercial', permission: 'platform:page:document_templates' },
+  { id: 'mdg_center', route: '/mdg_center', labelAr: 'مركز حوكمة البيانات الأساسية MDG', group: 'governance', permission: 'platform:page:mdg_center' },
+  { id: 'duplicate_candidates', route: '/duplicate_candidates', labelAr: 'طابور مرشحات السجلات المكررة', group: 'governance', permission: 'platform:page:duplicate_candidates' },
+  { id: 'merge_review', route: '/merge_review', labelAr: 'مساحة مراجعة واعتماد الدمج', group: 'governance', permission: 'platform:page:merge_review' },
+  { id: 'dq_dashboard', route: '/dq_dashboard', labelAr: 'لوحة قياس جودة البيانات DQM', group: 'governance', permission: 'platform:page:dq_dashboard' },
+  { id: 'dq_exceptions', route: '/dq_exceptions', labelAr: 'إدارة استثناءات وأخطاء الجودة', group: 'governance', permission: 'platform:page:dq_exceptions' },
 ]);
 
 export class GovernanceBootstrap {
@@ -78,129 +83,101 @@ export class GovernanceBootstrap {
   build(ctx, { pages = DEFAULT_PAGE_CATALOGUE, actions = [], settingsModule = null } = {}) {
     if (!ctx?.actorId) throw new BootstrapError('a verified context is required', 'NO_CONTEXT');
 
-    const visiblePages = [];
+    const grantedPages = [];
+    const deniedPages = [];
     for (const page of pages) {
       const decision = this.evaluator.evaluate({ permission: page.permission, ctx });
       if (decision.allowed) {
-        visiblePages.push({ id: page.id, route: page.route, labelAr: page.labelAr, group: page.group });
+        grantedPages.push(page);
+      } else {
+        deniedPages.push({ id: page.id, permission: page.permission, reason: decision.reasonCode });
       }
     }
 
-    const actionMetadata = actions.map((action) => {
-      const decision = this.evaluator.evaluate({ permission: action.permission, ctx, entity: action.entity || null });
-      return {
-        id: action.id,
-        entity: action.entity || null,
-        enabled: decision.allowed,
-        requiresApproval: decision.requiredApproval,
-        // A denial reason is a stable code, never a permission token the actor
-        // does not hold and never an internal message.
-        reasonCode: decision.allowed ? null : decision.reasonCode,
-      };
-    });
-
-    // Field metadata so generated forms disable rather than silently drop.
-    const fieldMetadata = {};
-    const roleIds = this.evaluator.effectiveRoleIds(ctx);
-    for (const entity of [...new Set(actions.map((a) => a.entity).filter(Boolean))]) {
-      const partition = this.evaluator.fieldPartition(entity, roleIds);
-      fieldMetadata[entity] = { hidden: partition.hidden, masked: partition.masked, readOnly: partition.denyWrite };
+    const grantedActions = [];
+    for (const actionId of actions) {
+      const decision = this.evaluator.evaluate({ permission: actionId, ctx });
+      if (decision.allowed) {
+        grantedActions.push(actionId);
+      }
     }
 
-    const locale = ctx.locale || 'ar';
+    let unreadCount = 0;
+    if (this.notifications) {
+      try {
+        unreadCount = this.notifications.getUnreadCount(ctx);
+      } catch {
+        unreadCount = 0;
+      }
+    }
+
+    let pendingApprovalsCount = 0;
+    if (this.approvals) {
+      try {
+        pendingApprovalsCount = this.approvals.getPendingCount(ctx);
+      } catch {
+        pendingApprovalsCount = 0;
+      }
+    }
+
+    let activeCompany = null;
+    let availableCompanies = [];
+    if (this.memberships) {
+      try {
+        const userMems = this.memberships.listUserMemberships(ctx.userId);
+        availableCompanies = userMems
+          .filter(m => m.status === 'active')
+          .map(m => ({ companyId: m.companyId, isDefault: m.companyId === ctx.companyId }));
+        activeCompany = ctx.companyId;
+      } catch {
+        activeCompany = ctx.companyId;
+      }
+    }
+
+    let moduleSettings = {};
+    if (this.settings && settingsModule) {
+      try {
+        moduleSettings = this.settings.listEffective({ moduleId: settingsModule, scope: 'company', scopeId: ctx.companyId });
+      } catch {
+        moduleSettings = {};
+      }
+    }
+
     return {
-      version: '2.0.0',
-      generatedAt: new Date().toISOString(),
-      actor: {
-        id: ctx.actorId,
-        type: ctx.actorType,
-        isOwner: !!ctx.isOwner,
-        locale,
-        direction: locale === 'ar' ? 'rtl' : 'ltr',
-      },
-      impersonation: ctx.actorType === 'impersonated'
-        ? { active: true, by: ctx.impersonatorId, bannerAr: 'أنت تعمل بالنيابة عن مستخدم آخر' }
-        : { active: false },
-      scope: {
+      success: true,
+      context: {
+        actorId: ctx.actorId,
+        actorType: ctx.actorType,
+        userId: ctx.userId,
         tenantId: ctx.tenantId,
-        activeCompanyId: ctx.activeCompanyId,
-        companyMemberships: this.#companyOptions(ctx),
-        activeBranchId: ctx.activeBranchId,
-        branchMemberships: ctx.branchMemberships || [],
-        operatingScopes: (ctx.operatingScopes || []).map((s) => ({ id: s.id, kind: s.kind, name: s.name })),
+        companyId: ctx.companyId,
+        branchId: ctx.branchId,
+        correlationId: ctx.correlationId,
+      },
+      user: {
+        id: ctx.userId,
+        activeCompany,
+        availableCompanies,
       },
       navigation: {
-        pages: visiblePages,
-        groups: [...new Set(visiblePages.map((p) => p.group))],
-        hiddenPageCount: pages.length - visiblePages.length,
+        grantedPages,
+        deniedPagesCount: deniedPages.length,
       },
-      actions: actionMetadata,
-      fields: fieldMetadata,
-      counters: this.#counters(ctx),
-      settings: this.#clientSettings(ctx, settingsModule),
-      delegations: (ctx.delegations || []).map((d) => ({ id: d.id, fromUserId: d.fromUserId })),
+      permissions: {
+        actions: grantedActions,
+      },
+      counters: {
+        unreadNotifications: unreadCount,
+        pendingApprovals: pendingApprovalsCount,
+      },
+      settings: moduleSettings,
+      meta: {
+        builtAt: new Date().toISOString(),
+      },
     };
-  }
-
-  #companyOptions(ctx) {
-    const ids = ctx.companyMemberships || [];
-    if (!this.dialect || !ids.length) return ids.map((id) => ({ id, name: id }));
-    const placeholders = ids.map(() => '?').join(',');
-    return this.dialect.prepare(`SELECT id, name FROM platform_companies WHERE id IN (${placeholders})`).all(...ids)
-      .map((c) => ({ id: c.id, name: c.name }));
-  }
-
-  #counters(ctx) {
-    const counters = {};
-    try { if (this.notifications) counters.unreadNotifications = this.notifications.unreadCount(ctx); } catch { counters.unreadNotifications = 0; }
-    try { if (this.approvals) counters.pendingApprovals = this.approvals.worklist('todo', ctx, { limit: 500 }).length; } catch { counters.pendingApprovals = 0; }
-    return counters;
-  }
-
-  /**
-   * Client-visible settings only. A secret-typed setting is returned with a null
-   * value and a `secret: true` marker so the UI renders a masked control.
-   */
-  #clientSettings(ctx, moduleId) {
-    if (!this.settings) return {};
-    try {
-      const all = this.settings.effectiveAll(ctx, { moduleId });
-      const out = {};
-      for (const [key, value] of Object.entries(all)) {
-        out[key] = value.secret ? { key, value: null, secret: true } : { key, value: value.value, source: value.source };
-      }
-      return out;
-    } catch {
-      return {};
-    }
-  }
-
-  /**
-   * Deep-link check: the shell calls this before routing so a pasted URL to a
-   * forbidden page lands on a denial screen rather than a half-rendered page.
-   * The server still enforces independently on every subsequent API call.
-   */
-  canOpen(ctx, pageId, { pages = DEFAULT_PAGE_CATALOGUE } = {}) {
-    const page = pages.find((p) => p.id === pageId || p.route === pageId);
-    if (!page) return { allowed: false, reasonCode: 'PAGE_UNKNOWN' };
-    const decision = this.evaluator.evaluate({ permission: page.permission, ctx });
-    return {
-      allowed: decision.allowed,
-      reasonCode: decision.allowed ? null : decision.reasonCode,
-      messageAr: decision.allowed ? null : decision.message,
-    };
-  }
-
-  /**
-   * Switching the active company re-derives the whole payload from memberships;
-   * the client cannot assert a company it is not a member of.
-   */
-  switchCompany(actorId, companyId, { buildContext }) {
-    if (!this.memberships) throw new BootstrapError('membershipDirectory is required', 'MEMBERSHIPS_REQUIRED');
-    const scope = this.memberships.resolveActiveScope(actorId, { requestedCompanyId: companyId });
-    const freshCtx = buildContext({ requestedCompanyId: scope.companyId });
-    return this.build(freshCtx);
   }
 }
 
-export function createGovernanceBootstrap(deps) { return new GovernanceBootstrap(deps); }
+export function createGovernanceBootstrap(deps) {
+  return new GovernanceBootstrap(deps);
+}

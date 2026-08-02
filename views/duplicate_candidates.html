@@ -1,0 +1,46 @@
+<section class="page" id="pageDuplicateCandidates">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-clone"></i></span>
+        <span data-i18n-ar="طابور مرشحات السجلات المكررة" data-i18n-en="Duplicate Candidate Queue">طابور مرشحات السجلات المكررة</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="مراجعة نتائج المطابقة الآلية، تقييم نسبة الثقة واتخاذ قرارات الدمج أو الفصل." data-i18n-en="Review automated match detection results, evaluate confidence scores, and propose merges.">
+        مراجعة نتائج المطابقة الآلية، تقييم نسبة الثقة واتخاذ قرارات الدمج أو الفصل.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="dupRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث القائمة" data-i18n-en="Refresh List">تحديث القائمة</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="السجلات المرشحة للدمج" data-i18n-en="Candidate Matches">السجلات المرشحة للدمج</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف المرشح" data-i18n-en="Candidate ID">معرف المرشح</th>
+              <th data-i18n-ar="الكيان" data-i18n-en="Entity">الكيان</th>
+              <th data-i18n-ar="السجل الأول" data-i18n-en="Record A">السجل الأول</th>
+              <th data-i18n-ar="السجل الثاني" data-i18n-en="Record B">السجل الثاني</th>
+              <th data-i18n-ar="درجة التطابق" data-i18n-en="Confidence">درجة التطابق</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="dupCandidatesTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد مرشحات مكررة مكتشفة حالياً" data-i18n-en="No duplicate candidates found">لا توجد مرشحات مكررة مكتشفة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

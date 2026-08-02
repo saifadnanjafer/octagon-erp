@@ -1,0 +1,79 @@
+<section class="page" id="pageDqDashboard">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-chart-line"></i></span>
+        <span data-i18n-ar="لوحة قياس جودة البيانات (DQM)" data-i18n-en="Data Quality Dashboard">لوحة قياس جودة البيانات (DQM)</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="مراقبة مؤشرات اكتمال، صحة، وفرادة البيانات، تشغيل دورات الفحص التلقائية ومتابعة الأداء." data-i18n-en="Monitor completeness, validity, uniqueness metrics, execute scans, and track data quality scores.">
+        مراقبة مؤشرات اكتمال، صحة، وفرادة البيانات، تشغيل دورات الفحص التلقائية ومتابعة الأداء.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="dqRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="dqRunScanBtn" type="button">
+        <i class="fa-solid fa-play"></i> <span data-i18n-ar="تشغيل فحص الجودة" data-i18n-en="Run Quality Scan">تشغيل فحص الجودة</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-gauge-high"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="مؤشر الجودة الإجمالي" data-i18n-en="Overall Quality Score">مؤشر الجودة الإجمالي</span>
+        <h3 class="stat-value" id="dqOverallScore">100%</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-list-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="القواعد النشطة" data-i18n-en="Active Rules">القواعد النشطة</span>
+        <h3 class="stat-value" id="dqActiveRulesCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الاستثناءات القائمة" data-i18n-en="Open Exceptions">الاستثناءات القائمة</span>
+        <h3 class="stat-value" id="dqOpenExceptionsCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-file-signature"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الإعفاءات المعتمدة" data-i18n-en="Approved Waivers">الإعفاءات المعتمدة</span>
+        <h3 class="stat-value" id="dqApprovedWaiversCount">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="قواعد جودة البيانات المعتمدة" data-i18n-en="Published Quality Rules">قواعد جودة البيانات المعتمدة</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped">
+          <thead>
+            <tr>
+              <th data-i18n-ar="رمز القاعدة" data-i18n-en="Rule Code">رمز القاعدة</th>
+              <th data-i18n-ar="اسم القاعدة" data-i18n-en="Rule Name">اسم القاعدة</th>
+              <th data-i18n-ar="الكيان" data-i18n-en="Entity">الكيان</th>
+              <th data-i18n-ar="البعد (Dimension)" data-i18n-en="Dimension">البعد (Dimension)</th>
+              <th data-i18n-ar="مستوى الأهمية" data-i18n-en="Severity">مستوى الأهمية</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="dqRulesTbody">
+            <tr>
+              <td colspan="6" class="text-center text-muted p-md" data-i18n-ar="لا توجد قواعد جودة مسجلة حالياً" data-i18n-en="No quality rules found">لا توجد قواعد جودة مسجلة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

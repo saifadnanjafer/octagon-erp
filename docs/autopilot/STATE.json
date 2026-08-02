@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": null,
+  "active_task": "BUILD-08",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "ac77b74d9f13d2fcb6640a031a9efad9a29e60f0",
+    "commit": "164bbff886c5ad5373ad8fa8fbadab8189e2954c",
     "remote": "origin",
-    "remote_commit": "ac77b74d9f13d2fcb6640a031a9efad9a29e60f0",
-    "observed_at": "2026-08-01"
+    "remote_commit": "164bbff886c5ad5373ad8fa8fbadab8189e2954c",
+    "observed_at": "2026-08-02"
   },
-  "stop_reason": "BUILD-05 platform-services implementation is in progress on the expansion branch: governed collaboration, saved views, scheduled reports, job health, and registered-metadata discovery are implemented. Disposable lifecycle and permission checks pass; Chromium lifecycle evidence remains required before completion."
+  "stop_reason": "BUILD-05, BUILD-06, and BUILD-07 Master Data Governance & Data Quality completion wave fully implemented and verified."
 }

@@ -1,0 +1,46 @@
+<section class="page" id="pageMergeReview">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-code-merge"></i></span>
+        <span data-i18n-ar="مساحة مراجعة واعتماد دمج السجلات" data-i18n-en="Merge Review Workspace">مساحة مراجعة واعتماد دمج السجلات</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="اعتماد مقترحات دمج الأطراف والمنتجات، حل تضارب الحقول والتحقق من حفظ النسب التاريخي." data-i18n-en="Approve or reject merge proposals, resolve field conflicts, and ensure historical lineage preservation.">
+        اعتماد مقترحات دمج الأطراف والمنتجات، حل تضارب الحقول والتحقق من حفظ النسب التاريخي.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="mergeRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="مقترحات الدمج المعلقة للاعتماد" data-i18n-en="Merge Proposals Awaiting Approval">مقترحات الدمج المعلقة للاعتماد</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف المقترح" data-i18n-en="Proposal ID">معرف المقترح</th>
+              <th data-i18n-ar="الكيان" data-i18n-en="Entity">الكيان</th>
+              <th data-i18n-ar="السجل الباقي (Surviving)" data-i18n-en="Surviving Record">السجل الباقي (Surviving)</th>
+              <th data-i18n-ar="السجل المدموج" data-i18n-en="Merged Record">السجل المدموج</th>
+              <th data-i18n-ar="صاحب المقترح" data-i18n-en="Proposed By">صاحب المقترح</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="mergeProposalsTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد مقترحات دمج معلقة" data-i18n-en="No pending merge proposals">لا توجد مقترحات دمج معلقة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

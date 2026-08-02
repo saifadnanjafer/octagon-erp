@@ -32,6 +32,8 @@ import { createRmaService } from './platform/commercial/rma.mjs';
 import { createCreditCollectionsService } from './platform/commercial/credit_collections.mjs';
 import { createCommissionService } from './platform/sales/commissions.mjs';
 import { createDocumentTemplateService } from './platform/printing/index.mjs';
+import { createMasterDataGovernanceService } from './platform/governance/mdg.mjs';
+import { createDataQualityService } from './platform/governance/dq.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 import { registerFinanceActions } from './platform/finance/index.mjs';
@@ -253,11 +255,25 @@ export function createPlatformAuthority(dialect) {
   const creditCollectionsService = createCreditCollectionsService(dialect);
   const commissionService = createCommissionService(dialect);
   const documentTemplateService = createDocumentTemplateService(dialect);
+  const masterDataGovernanceService = createMasterDataGovernanceService(dialect);
+  const dataQualityService = createDataQualityService(dialect);
+
+  actionExecutor.registerHandler('mdg:candidate_detect', (input, ctx) => masterDataGovernanceService.detectDuplicates(input, ctx));
+  actionExecutor.registerHandler('mdg:survivorship_propose', (input, ctx) => masterDataGovernanceService.proposeMerge(input, ctx));
+  actionExecutor.registerHandler('mdg:merge_approve', (input, ctx) => masterDataGovernanceService.approveMerge(input.proposal_id || input.proposalId, ctx));
+  actionExecutor.registerHandler('mdg:merge_reject', (input, ctx) => masterDataGovernanceService.rejectMerge(input.proposal_id || input.proposalId, input.reason, ctx));
+
+  actionExecutor.registerHandler('dq:rule_publish', (input, ctx) => dataQualityService.publishRule(input, ctx));
+  actionExecutor.registerHandler('dq:scan_run', (input, ctx) => dataQualityService.runScan(input, ctx));
+  actionExecutor.registerHandler('dq:exception_assign', (input, ctx) => dataQualityService.assignException(input.exception_id || input.exceptionId, input.assigned_owner || input.assignedOwner, input.due_date || input.dueDate, ctx));
+  actionExecutor.registerHandler('dq:waiver_request', (input, ctx) => dataQualityService.requestWaiver(input, ctx));
+  actionExecutor.registerHandler('dq:waiver_approve', (input, ctx) => dataQualityService.approveWaiver(input.waiver_id || input.waiverId, ctx));
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
     settings, configuration, notifications, jobs, scheduledReports, platformSearch, history, chatter, approvals, actionRegistry, actionExecutor, routeCoverage, bootstrap,
     rmaService, creditCollectionsService, commissionService, documentTemplateService,
+    masterDataGovernanceService, dataQualityService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

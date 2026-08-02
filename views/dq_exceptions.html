@@ -1,0 +1,46 @@
+<section class="page" id="pageDqExceptions">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+        <span data-i18n-ar="إدارة استثناءات وأخطاء جودة البيانات" data-i18n-en="Data Quality Exceptions">إدارة استثناءات وأخطاء جودة البيانات</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="متابعة السجلات الفاشلة في الفحص، تعيين المسؤولين، طلب الإعفاءات وتحديث حالة المعالجة." data-i18n-en="Remediate failed record checks, assign owners, submit waiver requests, and track resolution.">
+        متابعة السجلات الفاشلة في الفحص، تعيين المسؤولين، طلب الإعفاءات وتحديث حالة المعالجة.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="dqExceptionsRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="سجل استثناءات وأخطاء الجودة" data-i18n-en="Failed Quality Exceptions Log">سجل استثناءات وأخطاء الجودة</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="معرف الاستثناء" data-i18n-en="Exception ID">معرف الاستثناء</th>
+              <th data-i18n-ar="الكيان" data-i18n-en="Entity">الكيان</th>
+              <th data-i18n-ar="معرف السجل" data-i18n-en="Record ID">معرف السجل</th>
+              <th data-i18n-ar="درجة الخطورة" data-i18n-en="Severity">درجة الخطورة</th>
+              <th data-i18n-ar="المسؤول المعين" data-i18n-en="Assigned Owner">المسؤول المعين</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="dqExceptionsTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد استثناءات جودة مفتوحة حالياً" data-i18n-en="No open quality exceptions found">لا توجد استثناءات جودة مفتوحة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

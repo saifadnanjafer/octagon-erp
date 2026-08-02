@@ -19,6 +19,16 @@ import * as qualityOperations from '../quality/operations.mjs';
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
 
+export const BUILD09_RESOURCE_PERMISSIONS = Object.freeze({
+  hierarchy: 'wms:topology:view', zones: 'wms:topology:view', locations: 'wms:locations:view', capacity: 'wms:topology:view',
+  'putaway-rules': 'wms:putaway:view', 'putaway-queue': 'wms:putaway:view', 'replenishment-rules': 'wms:replenishment:view', 'replenishment-proposals': 'wms:replenishment:view',
+  'receiving-sessions': 'wms:receiving:view', 'receiving-discrepancies': 'wms:discrepancies:view', 'pick-tasks': 'wms:picking:view', waves: 'wms:waves:view',
+  'count-plans': 'wms:cycle_count:view', 'count-sessions': 'wms:cycle_count:view', docks: 'wms:docks:view', 'dock-appointments': 'wms:docks:view',
+  'staging-allocations': 'wms:crossdock:view', 'crossdock-matches': 'wms:crossdock:view', trace: 'wms:traceability:view', 'expiration-queue': 'wms:traceability:view', 'recall-cases': 'wms:recall:view',
+  'shopfloor-sessions': 'shopfloor:terminal:view', 'shopfloor-board': 'shopfloor:terminal:view', 'material-flow': 'shopfloor:material:view', downtime: 'shopfloor:downtime:view', 'work-center-performance': 'shopfloor:performance:view',
+  'quality-checkpoints': 'quality:checkpoint:view', 'quality-dispositions': 'quality:disposition:view', 'rework-routes': 'quality:rework:view'
+});
+
 export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {} }) {
   const companyId = ctx.companyId || ctx.activeCompanyId;
   if (!companyId) return denied();

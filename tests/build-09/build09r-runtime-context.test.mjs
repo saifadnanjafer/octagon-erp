@@ -42,3 +42,13 @@ test('BUILD-09R context endpoint is session-derived and server-scoped', () => {
   assert.match(source, /availableWarehouses/);
   assert.doesNotMatch(source, /query\.company_id/);
 });
+
+test('BUILD-09R exposes bounded governed lookups and resource permissions', () => {
+  const lookups = read('modules/octagon-governed-lookups.js');
+  const api = read('platform/api/build09.mjs');
+  assert.match(lookups, /Math\.min\(100/);
+  assert.match(lookups, /OctagonApiClient\.get/);
+  assert.match(api, /BUILD09_RESOURCE_PERMISSIONS/);
+  assert.match(api, /wms:receiving:view/);
+  assert.match(api, /quality:disposition:view/);
+});

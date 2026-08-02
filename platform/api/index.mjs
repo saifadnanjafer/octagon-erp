@@ -35,7 +35,7 @@ import { handleFleetQuery } from '../fleet/index.mjs';
 import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleServiceQuery } from './service.mjs';
 import { handleBuild08Query } from './build08.mjs';
-import { handleBuild09Query } from './build09.mjs';
+import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -283,7 +283,7 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       }
 
       if (namespace === 'wms' && resource && req.method === 'GET') {
-        if (!requirePermission('wms:topology:view')) return;
+        if (!requirePermission(BUILD09_RESOURCE_PERMISSIONS[resource] || 'wms:topology:view')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
         const result = handleBuild09Query({ dialect, ctx, resource, recordId, query });
         if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));

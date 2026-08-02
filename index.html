@@ -124,6 +124,7 @@
   <link rel="stylesheet" href="modules/system-settings.css?v=20260713-t6.1-v1">
   <!-- T5.1 -->
   <link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">
+  <link rel="stylesheet" href="modules/build08-workspaces.css?v=20260802-build08-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -797,7 +798,6 @@
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.04);
     }
-
     .cal-day-summary strong {
       color: #67e8f9;
       font-size: 20px;
@@ -1732,6 +1732,59 @@
             </button>
           </div>
         </div>
+      <!-- BUILD-08: governed planning and group-finance workspaces -->
+      <div class="nav-group" data-nav-group="build08_planning">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build08_planning')" aria-controls="navGroup_build08_planning" aria-expanded="false">
+          <span class="nav-icon">◈</span><span>التخطيط المتقدم</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build08_planning">
+          <button class="nav-btn" id="nav_demand_planning" data-page="demand_planning" onclick="switchPage('demand_planning')"><span class="nav-icon">·</span><span>تخطيط الطلب</span></button>
+          <button class="nav-btn" id="nav_forecast_versions" data-page="forecast_versions" onclick="switchPage('forecast_versions')"><span class="nav-icon">·</span><span>إصدارات التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_overrides" data-page="forecast_overrides" onclick="switchPage('forecast_overrides')"><span class="nav-icon">·</span><span>تعديلات التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_accuracy" data-page="forecast_accuracy" onclick="switchPage('forecast_accuracy')"><span class="nav-icon">·</span><span>دقة التنبؤ</span></button>
+          <button class="nav-btn" id="nav_planning_exceptions" data-page="planning_exceptions" onclick="switchPage('planning_exceptions')"><span class="nav-icon">·</span><span>استثناءات التخطيط</span></button>
+          <button class="nav-btn" id="nav_mps" data-page="mps" onclick="switchPage('mps')"><span class="nav-icon">·</span><span>جدول الإنتاج الرئيسي</span></button>
+          <button class="nav-btn" id="nav_mps_proposals" data-page="mps_proposals" onclick="switchPage('mps_proposals')"><span class="nav-icon">·</span><span>مقترحات الإنتاج</span></button>
+          <button class="nav-btn" id="nav_supply_demand_balance" data-page="supply_demand_balance" onclick="switchPage('supply_demand_balance')"><span class="nav-icon">·</span><span>توازن العرض والطلب</span></button>
+          <button class="nav-btn" id="nav_sop_scenarios" data-page="sop_scenarios" onclick="switchPage('sop_scenarios')"><span class="nav-icon">·</span><span>سيناريوهات S&OP</span></button>
+          <button class="nav-btn" id="nav_sop_review" data-page="sop_review" onclick="switchPage('sop_review')"><span class="nav-icon">·</span><span>مراجعة S&OP</span></button>
+        </div>
+      </div>
+      <div class="nav-group" data-nav-group="build08_treasury">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build08_treasury')" aria-controls="navGroup_build08_treasury" aria-expanded="false">
+          <span class="nav-icon">◉</span><span>الخزينة والسيولة</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build08_treasury">
+          <button class="nav-btn" id="nav_treasury_cash_position" data-page="treasury_cash_position" onclick="switchPage('treasury_cash_position')"><span class="nav-icon">·</span><span>مركز النقد</span></button>
+          <button class="nav-btn" id="nav_liquidity_forecast" data-page="liquidity_forecast" onclick="switchPage('liquidity_forecast')"><span class="nav-icon">·</span><span>تنبؤ السيولة</span></button>
+          <button class="nav-btn" id="nav_treasury_alerts" data-page="treasury_alerts" onclick="switchPage('treasury_alerts')"><span class="nav-icon">·</span><span>تنبيهات الخزينة</span></button>
+          <button class="nav-btn" id="nav_payment_funding_proposals" data-page="payment_funding_proposals" onclick="switchPage('payment_funding_proposals')"><span class="nav-icon">·</span><span>مقترحات الدفع والتمويل</span></button>
+          <button class="nav-btn" id="nav_financing_facilities" data-page="financing_facilities" onclick="switchPage('financing_facilities')"><span class="nav-icon">·</span><span>تسهيلات التمويل</span></button>
+        </div>
+      </div>
+      <div class="nav-group" data-nav-group="build08_intercompany">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build08_intercompany')" aria-controls="navGroup_build08_intercompany" aria-expanded="false">
+          <span class="nav-icon">⇄</span><span>الشركات الشقيقة</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build08_intercompany">
+          <button class="nav-btn" id="nav_intercompany_transactions" data-page="intercompany_transactions" onclick="switchPage('intercompany_transactions')"><span class="nav-icon">·</span><span>المعاملات المتبادلة</span></button>
+          <button class="nav-btn" id="nav_mismatch_queue" data-page="mismatch_queue" onclick="switchPage('mismatch_queue')"><span class="nav-icon">·</span><span>قائمة عدم التطابق</span></button>
+          <button class="nav-btn" id="nav_intercompany_reconciliation" data-page="intercompany_reconciliation" onclick="switchPage('intercompany_reconciliation')"><span class="nav-icon">·</span><span>التسوية والمطابقة</span></button>
+        </div>
+      </div>
+      <div class="nav-group" data-nav-group="build08_consolidation">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build08_consolidation')" aria-controls="navGroup_build08_consolidation" aria-expanded="false">
+          <span class="nav-icon">▦</span><span>التوحيد المالي</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build08_consolidation">
+          <button class="nav-btn" id="nav_consolidation_groups" data-page="consolidation_groups" onclick="switchPage('consolidation_groups')"><span class="nav-icon">·</span><span>مجموعات التوحيد</span></button>
+          <button class="nav-btn" id="nav_account_mapping" data-page="account_mapping" onclick="switchPage('account_mapping')"><span class="nav-icon">·</span><span>ربط الحسابات</span></button>
+          <button class="nav-btn" id="nav_consolidation_runs" data-page="consolidation_runs" onclick="switchPage('consolidation_runs')"><span class="nav-icon">·</span><span>عمليات التوحيد</span></button>
+          <button class="nav-btn" id="nav_eliminations" data-page="eliminations" onclick="switchPage('eliminations')"><span class="nav-icon">·</span><span>قيود الاستبعاد</span></button>
+          <button class="nav-btn" id="nav_consolidated_reports" data-page="consolidated_reports" onclick="switchPage('consolidated_reports')"><span class="nav-icon">·</span><span>التقارير الموحدة</span></button>
+          <button class="nav-btn" id="nav_consolidation_lineage" data-page="consolidation_lineage" onclick="switchPage('consolidation_lineage')"><span class="nav-icon">·</span><span>تتبع التوحيد</span></button>
+        </div>
+      </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -2278,6 +2331,7 @@
   <!-- Checkpoint C5: final Administration renderer uses the canonical Control
        Plane and enforces module/license decisions on the server. -->
   <script src="modules/canonical-administration.js?v=20260728-checkpoint-c5-v1"></script>
+  <script src="modules/build08-workspaces.js?v=20260802-build08-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build08-073-075.json",
+  "acceptedSourceCommit": "9b0a921947c71d7ecb8332b1b80f3f7e638a48d6",
+  "acceptanceTimestamp": "2026-08-02T08:30:00.000Z",
+  "acceptanceReason": "BUILD-09 warehouse topology, putaway, and replenishment migration passed disposable fresh-install, rollback, scoped domain, governed action, audit, outbox, idempotency, and canonical stock-boundary verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "076_build09_wms_topology_putaway_replenishment",
+      "relativePath": "database/migrations/076_build09_wms_topology_putaway_replenishment.mjs",
+      "algorithm": "sha256",
+      "checksum": "238cdbb49fdd6a6ab9144f7d57ad5f00cfd73f90ffdf392f81a009f03c6dde5c"
+    }
+  ]
+}

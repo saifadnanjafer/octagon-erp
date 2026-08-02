@@ -76,14 +76,14 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  // Baseline moved 98 -> 102 when Checkpoint B added the separate Products,
-  // Parties, Warehouses, and Locations pages. Both numbers move together on
+  // Baseline moved 102 -> 126 when BUILD-08 added its 24 functional pages.
+  // Both numbers move together on
   // purpose: the second case is the real invariant (every sidebar page is
   // explicitly mapped), and it fails on either an unmapped page or count drift.
-  ['sidebar baseline reflects canonical console/inventory plus the four separate Checkpoint B master-data pages',
-    () => sidebarPages.size, 102],
+  ['sidebar baseline reflects BUILD-08 planning, treasury, intercompany, and consolidation pages',
+    () => sidebarPages.size, 126],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 102],
+    () => mappedSidebarPages.length, 126],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

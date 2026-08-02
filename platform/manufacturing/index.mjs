@@ -8,8 +8,11 @@ import * as orders from './manufacturing-orders.mjs';
 import * as workOrders from './work-orders.mjs';
 import * as material from './material-issues.mjs';
 import * as subcontracting from './subcontracting.mjs';
+import * as shopfloor from './shopfloor.mjs';
+import * as materialFlow from './material-flow.mjs';
+import * as performance from './downtime-performance.mjs';
 
-export { orders, workOrders, material, subcontracting };
+export { orders, workOrders, material, subcontracting, shopfloor, materialFlow, performance };
 export { ManufacturingError } from './manufacturing-orders.mjs';
 
 export function registerManufacturingActions(actionExecutor) {
@@ -44,6 +47,22 @@ export function registerManufacturingActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'manufacturing:subcontract:receive_goods', subcontracting.receiveSubcontractGoods);
   registerDomainHandler(actionExecutor, 'manufacturing:subcontract:reconcile', subcontracting.reconcileSubcontract);
 
+  registerDomainHandler(actionExecutor, 'shopfloor:session_open', shopfloor.openShopfloorSession);
+  registerDomainHandler(actionExecutor, 'shopfloor:operator_assign', shopfloor.assignOperator);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_start', shopfloor.requestOperationStart);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_pause', shopfloor.requestOperationPause);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_resume', shopfloor.requestOperationResume);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_output', shopfloor.recordOperationOutput);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_complete', shopfloor.requestOperationComplete);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_acknowledge', shopfloor.acknowledgeOperationTransition);
+  registerDomainHandler(actionExecutor, 'shopfloor:operation_handoff', shopfloor.handoffOperation);
+  registerDomainHandler(actionExecutor, 'shopfloor:material_request', materialFlow.createMaterialFlowRequest);
+  registerDomainHandler(actionExecutor, 'shopfloor:material_availability', materialFlow.checkMaterialAvailability);
+  registerDomainHandler(actionExecutor, 'shopfloor:material_approve', materialFlow.approveMaterialFlow);
+  registerDomainHandler(actionExecutor, 'shopfloor:material_request_canonical', materialFlow.requestCanonicalMaterialEffect);
+  registerDomainHandler(actionExecutor, 'shopfloor:material_acknowledge', materialFlow.acknowledgeCanonicalMaterialEffect);
+  registerDomainHandler(actionExecutor, 'shopfloor:downtime_start', performance.startDowntime);
+  registerDomainHandler(actionExecutor, 'shopfloor:downtime_end', performance.endDowntime);
   return actionExecutor;
 }
 

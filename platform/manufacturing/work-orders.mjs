@@ -63,7 +63,7 @@ export function completeWorkOrder(db, input) {
     UPDATE mfg_work_orders
     SET state = 'completed', quantity_completed = ?, quantity_rejected = ?, actual_end_date = ?, updated_at = ?
     WHERE id = ?
-  `).run(compQty, rejQty, now, work_order_id);
+  `).run(compQty, rejQty, now, now, work_order_id);
 
   return { id: work_order_id, state: 'completed', quantity_completed: compQty, quantity_rejected: rejQty };
 }

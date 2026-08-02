@@ -11,6 +11,9 @@ import * as cycleCounting from '../wms/cycle-counting.mjs';
 import * as docks from '../wms/docks.mjs';
 import * as crossdock from '../wms/crossdock.mjs';
 import * as traceability from '../wms/traceability-ops.mjs';
+import * as shopfloor from '../manufacturing/shopfloor.mjs';
+import * as materialFlow from '../manufacturing/material-flow.mjs';
+import * as performance from '../manufacturing/downtime-performance.mjs';
 
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
@@ -76,6 +79,20 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
     if (resource === 'expiration-queue') return list(traceability.expirationQueue(dialect, input));
     if (resource === 'recall-candidates') return list(traceability.recallCandidates(dialect, input));
     if (resource === 'recall-cases') return list(traceability.listRecallCases(dialect, input));
+    if (resource === 'shopfloor-sessions') return list(shopfloor.listShopfloorSessions(dialect, input));
+    if (resource === 'shopfloor-board') return { data: shopfloor.shopfloorStatusBoard(dialect, input), meta: null };
+    if (resource === 'shopfloor-timeline') {
+      const sessionId = recordId || query.session_id; if (!sessionId) return { error: 'session id is required', status: 422 };
+      return list(shopfloor.sessionTimeline(dialect, { ...input, session_id: sessionId }));
+    }
+    if (resource === 'material-flow') return list(materialFlow.listMaterialFlowRequests(dialect, input));
+    if (resource === 'material-shortages') return list(materialFlow.materialShortageBoard(dialect, input));
+    if (resource === 'downtime') return list(performance.listDowntimeEvents(dialect, input));
+    if (resource === 'session-performance') {
+      const sessionId = recordId || query.session_id; if (!sessionId) return { error: 'session id is required', status: 422 };
+      return { data: performance.sessionPerformance(dialect, { ...input, session_id: sessionId }), meta: null };
+    }
+    if (resource === 'work-center-performance') return { data: performance.workCenterPerformance(dialect, input), meta: null };
     return { error: 'BUILD-09 WMS resource not found', status: 404 };
   } catch (error) {
     return { error: error.message, status: error.statusCode || 422, code: error.code };

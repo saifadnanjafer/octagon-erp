@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-078.json",
+  "acceptedSourceCommit": "c6fb94627e93a676fd0a6f14866e90eba7b4c966",
+  "acceptanceTimestamp": "2026-08-02T13:30:00.000Z",
+  "acceptanceReason": "BUILD-09 shop-floor terminal transitions, production material issue-return-receipt requests, warehouse task generation, downtime timelines, and evidence-based performance metrics passed disposable lifecycle, scope, maker-checker, canonical acknowledgement, and no-fabricated-metric verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "079_build09_shopfloor_material_performance",
+      "relativePath": "database/migrations/079_build09_shopfloor_material_performance.mjs",
+      "algorithm": "sha256",
+      "checksum": "89aa1b1673edb2f5e7f4b474f29a8bd8435b8ccac216045ed70132323d602364"
+    }
+  ]
+}

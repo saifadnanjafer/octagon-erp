@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-081.json",
+  "acceptedSourceCommit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+  "acceptanceTimestamp": "2026-08-02T08:52:00.000Z",
+  "acceptanceReason": "BUILD-10 Slice 2 acceptance: governed IoT telemetry raw and event storage, device health state calculation with fault flags, firmware catalogue and rollout simulation, config profiles with drift evaluation, and simulated device command execution passed focused verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "082_build10_telemetry_health_commands",
+      "relativePath": "database/migrations/082_build10_telemetry_health_commands.mjs",
+      "algorithm": "sha256",
+      "checksum": "ca2b48417934c97c0a0fe9dca9a5bf84179fe27a0f2efcb1ccba91d417c2252c"
+    }
+  ]
+}

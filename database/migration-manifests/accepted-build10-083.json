@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-082.json",
+  "acceptedSourceCommit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+  "acceptanceTimestamp": "2026-08-02T08:58:00.000Z",
+  "acceptanceReason": "BUILD-10 Slice 3 acceptance: governed Fleet telematics mapping, live location points and trip projections, circular/polygon geofence entry/exit/dwell events, speeding and driving events, fuel telemetry with suspected fuel loss classification, and maintenance triggers passed focused verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "083_build10_fleet_telematics_geofences",
+      "relativePath": "database/migrations/083_build10_fleet_telematics_geofences.mjs",
+      "algorithm": "sha256",
+      "checksum": "a0f4ea5d75d2afdcaf2e1e6e1c66fa4aaeb9d818394e349c3a7df370d0425983"
+    }
+  ]
+}

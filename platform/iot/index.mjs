@@ -1,9 +1,13 @@
 import * as deviceRegistry from './device-registry.mjs';
 import * as gateways from './gateways.mjs';
 import * as sensors from './sensors.mjs';
+import * as telemetry from './telemetry.mjs';
+import * as health from './health-diagnostics.mjs';
+import * as firmware from './firmware-config.mjs';
+import * as commands from './device-commands.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { deviceRegistry, gateways, sensors };
+export { deviceRegistry, gateways, sensors, telemetry, health, firmware, commands };
 
 export function registerIotActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'iot:device_register', deviceRegistry.registerDevice);
@@ -34,4 +38,16 @@ export function registerIotActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'iot:sensor_calibrate', sensors.calibrateSensor);
   registerDomainHandler(actionExecutor, 'iot:sensor_set_thresholds', sensors.setSensorThresholds);
   registerDomainHandler(actionExecutor, 'iot:sensor_set_active', sensors.setSensorActive);
+
+  // Slice 2 actions
+  registerDomainHandler(actionExecutor, 'iot:telemetry_ingest_simulated', telemetry.ingestTelemetrySimulated);
+  registerDomainHandler(actionExecutor, 'iot:health_calculate', health.calculateDeviceHealth);
+  registerDomainHandler(actionExecutor, 'iot:alert_acknowledge', health.acknowledgeAlert);
+  registerDomainHandler(actionExecutor, 'iot:firmware_register', firmware.registerFirmware);
+  registerDomainHandler(actionExecutor, 'iot:firmware_approve', firmware.approveFirmware);
+  registerDomainHandler(actionExecutor, 'iot:firmware_rollout_simulated', firmware.rolloutFirmwareSimulated);
+  registerDomainHandler(actionExecutor, 'iot:config_profile_upsert', firmware.upsertConfigProfile);
+  registerDomainHandler(actionExecutor, 'iot:command_request', commands.requestCommand);
+  registerDomainHandler(actionExecutor, 'iot:command_approve', commands.approveCommand);
+  registerDomainHandler(actionExecutor, 'iot:command_dispatch_simulated', commands.dispatchSimulatedCommand);
 }

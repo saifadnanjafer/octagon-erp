@@ -35,6 +35,7 @@ import { createDocumentTemplateService } from './platform/printing/index.mjs';
 import { createMasterDataGovernanceService } from './platform/governance/mdg.mjs';
 import { createDataQualityService } from './platform/governance/dq.mjs';
 import { createPlanningFinanceServices } from './platform/finance/planning-treasury-intercompany.mjs';
+import { createServiceEntitlementService, createElectronicSignatureService, registerServiceActions } from './platform/service/index.mjs';
 import { buildDecisionContext, stripUntrustedContext } from './platform/identity/context/index.mjs';
 import { setPassword, checkCredentials } from './platform/identity/passwords/index.mjs';
 import { registerFinanceActions } from './platform/finance/index.mjs';
@@ -259,6 +260,8 @@ export function createPlatformAuthority(dialect) {
   const masterDataGovernanceService = createMasterDataGovernanceService(dialect);
   const dataQualityService = createDataQualityService(dialect);
   const { planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService } = createPlanningFinanceServices(dialect);
+  const serviceEntitlementService = createServiceEntitlementService(dialect);
+  const electronicSignatureService = createElectronicSignatureService(dialect);
 
   actionExecutor.registerHandler('mdg:candidate_detect', (input, ctx) => masterDataGovernanceService.detectDuplicates(input, ctx));
   actionExecutor.registerHandler('mdg:survivorship_propose', (input, ctx) => masterDataGovernanceService.proposeMerge(input, ctx));
@@ -277,6 +280,7 @@ export function createPlatformAuthority(dialect) {
   actionExecutor.registerHandler('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
   actionExecutor.registerHandler('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
   actionExecutor.registerHandler('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
+  registerServiceActions(actionExecutor, { serviceEntitlementService, electronicSignatureService });
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
@@ -284,6 +288,7 @@ export function createPlatformAuthority(dialect) {
     rmaService, creditCollectionsService, commissionService, documentTemplateService,
     masterDataGovernanceService, dataQualityService,
     planningBudgetService, treasuryCashForecastService, intercompanyConsolidationService,
+    serviceEntitlementService, electronicSignatureService,
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

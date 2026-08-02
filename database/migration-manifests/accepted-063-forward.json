@@ -5,7 +5,7 @@
   "acceptedSourceCommit": "c18fa20733192315fcd73cec9750ac999c1f0a52",
   "acceptanceTimestamp": "2026-08-02T01:22:43.000Z",
   "acceptanceReason": "BUILD-05 through BUILD-08 forward migrations were verified on disposable databases and accepted as additive history.",
-  "migrationCount": 8,
+  "migrationCount": 10,
   "migrations": [
     {
       "migrationId": "063_cutover_lineage_quarantine_and_mapping",
@@ -54,6 +54,18 @@
       "relativePath": "database/migrations/070_planning_and_advanced_finance.mjs",
       "algorithm": "sha256",
       "checksum": "d934cd1c7bdf810313b8a7106382e862a9d6d45737369f81325392c32baaacad"
+    },
+    {
+      "migrationId": "071_service_contracts_entitlements",
+      "relativePath": "database/migrations/071_service_contracts_entitlements.mjs",
+      "algorithm": "sha256",
+      "checksum": "6a72f64f3d4f0d4af49412685e718009e8666eecc5c5a97ebf900c0157c99b35"
+    },
+    {
+      "migrationId": "072_electronic_signature",
+      "relativePath": "database/migrations/072_electronic_signature.mjs",
+      "algorithm": "sha256",
+      "checksum": "04f617476a5e1902baec7d83dcefbe1b2d4692f70342c657eef88ce6af00cc7f"
     }
   ]
 }

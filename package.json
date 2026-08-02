@@ -17,7 +17,8 @@
     "test:build-02": "node --test \"tests/build-02/*.test.mjs\"",
     "test:build-03": "node --test \"tests/build-03/*.test.mjs\"",
     "test:build-04": "node --test \"tests/build-04/*.test.mjs\"",
-    "test:build-05": "node --test \"tests/build-05/*.test.mjs\""
+    "test:build-05": "node --test \"tests/build-05/*.test.mjs\"",
+    "test:build-07": "node --test --test-concurrency=1 \"tests/build-07/*.test.mjs\""
   },
   "dependencies": {
     "dotenv": "17.4.2"

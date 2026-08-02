@@ -283,6 +283,8 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       }
 
       if (namespace === 'wms' && resource && req.method === 'GET') {
+        // Compatibility fallback: requirePermission('wms:topology:view') is
+        // retained only for resources without an explicit scoped permission.
         if (!requirePermission(BUILD09_RESOURCE_PERMISSIONS[resource] || 'wms:topology:view')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
         const result = handleBuild09Query({ dialect, ctx, resource, recordId, query });

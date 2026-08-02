@@ -146,6 +146,17 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         }
       }
 
+      if (namespace === 'runtime' && resource === 'context' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const memberships = dialect.prepare(`SELECT company_id AS id, company_id AS companyId, branch_id AS branchId FROM organization_memberships WHERE user_id = ? AND status = 'active' ORDER BY company_id`).all(ctx.userId);
+        const companyIds = [...new Set([ctx.companyId, ...memberships.map((row) => row.companyId)].filter(Boolean))];
+        const companies = companyIds.length ? dialect.prepare(`SELECT id, name, name AS nameEn, name AS nameAr FROM platform_companies WHERE id IN (${companyIds.map(() => '?').join(',')}) AND status = 'active'`).all(...companyIds) : [];
+        const branches = ctx.companyId ? dialect.prepare('SELECT id, company_id AS companyId, name FROM platform_branches WHERE company_id = ? AND status = ? ORDER BY name').all(ctx.companyId, 'active') : [];
+        const warehouses = ctx.companyId ? dialect.prepare('SELECT id, company_id AS companyId, code, name, is_active AS active FROM warehouses WHERE company_id = ? AND is_active = 1 ORDER BY code, name').all(ctx.companyId) : [];
+        const selected = warehouses.length === 1 ? warehouses[0].id : null;
+        return sendJson(res, 200, envelope({ actorId: ctx.actorId, userId: ctx.userId, tenantId: ctx.tenantId, companyId: ctx.companyId, branchId: ctx.branchId, warehouseId: selected, availableCompanies: companies, availableBranches: branches, availableWarehouses: warehouses, permissions: [], locale: ctx.locale || 'ar', direction: ctx.direction || 'rtl' }, null, null, ctx.correlationId));
+      }
+
       if (namespace === 'x' && resource) {
         const entityId = resource;
         const repo = createRepository(dialect, entityId);

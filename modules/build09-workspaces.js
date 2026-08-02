@@ -44,9 +44,10 @@
   const rtl = () => document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
   const config = (id) => { const row = PAGES[id]; return row && { id, title: row[0], titleAr: row[1], resource: row[2], columns: row[3], actions: row[4], mobile: Boolean(row[5]), required: row[6] || [] }; };
   const stateFor = (id) => { if (!states.has(id)) states.set(id, { phase: 'idle', rows: [], filter: '', error: '', updatedAt: null }); return states.get(id); };
-  const activeCompany = () => root.__octagonBootstrap?.actor?.activeCompanyId || root.__octagonBootstrap?.activeCompanyId || root.__octagonServerSession?.activeCompanyId || '';
-  const activeWarehouse = () => root.__octagonBootstrap?.warehouseId || root.__octagonServerSession?.warehouseId || localStorage.getItem('octagon_active_warehouse_id') || '';
-  const canWrite = () => root.__BUILD09_FORCE_READ_ONLY__ !== true && root.__octagonBootstrap?.actions?.find?.((action) => action.id === 'db_write')?.enabled !== false;
+  const runtime = () => root.OctagonRuntimeContext;
+  const activeCompany = () => runtime()?.companyId || '';
+  const activeWarehouse = () => runtime()?.warehouseId || '';
+  const canWrite = () => root.__BUILD09_FORCE_READ_ONLY__ !== true && (runtime()?.permissions?.length ? runtime().permissions.some((permission) => permission === 'platform:db:write' || permission === 'wms:topology:edit') : true);
 
   function workspaceMarkup(id) {
     const page = config(id); const requiredInputs = page.required.map((name) => `<label class="b09-query-field"><span>${escapeHtml(humanize(name))}</span><input data-query="${escapeHtml(name)}" autocomplete="off"></label>`).join('');
@@ -95,7 +96,7 @@
     host.querySelector('[data-role="title"]').textContent = rtl() ? page.titleAr : page.title;
     host.querySelector('[data-role="subtitle"]').textContent = rtl() ? 'مساحة تشغيلية محكومة، مرتبطة بالسلطات الأساسية والتدقيق.' : 'Governed operational workspace linked to canonical authorities and audit.';
     host.querySelector('[data-role="company"]').textContent = `${rtl() ? 'الشركة' : 'Company'}: ${activeCompany() || '—'}`;
-    host.querySelector('[data-role="warehouse"]').value = activeWarehouse();
+    const warehouseSelect = host.querySelector('[data-role="warehouse"]'); const warehouses = runtime()?.availableWarehouses || []; warehouseSelect.innerHTML = '<option value="">Select warehouse</option>' + warehouses.map((warehouse) => `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.code ? `${warehouse.code} · ${warehouse.name || warehouse.id}` : warehouse.name || warehouse.id)}</option>`).join(''); warehouseSelect.value = activeWarehouse();
     host.querySelector('[data-role="head"]').innerHTML = `<tr>${page.columns.map((column) => `<th>${escapeHtml(humanize(column))}</th>`).join('')}</tr>`;
     const writable = canWrite();
     host.querySelector('[data-role="actions"]').innerHTML = `<button class="b09-button b09-primary" data-command="refresh">↻ ${rtl() ? 'تحديث' : 'Refresh'}</button><button class="b09-button" data-command="export">⇩ CSV</button>${page.actions.map((action) => `<button class="b09-button" data-action="${escapeHtml(action)}" ${writable ? '' : 'disabled'}>${escapeHtml(humanize(action.split(':').slice(1).join(' ')))}</button>`).join('')}`;
@@ -106,7 +107,7 @@
   function queryParams(id) {
     const host = document.querySelector(`[data-build09-page="${id}"]`); const warehouse = host.querySelector('[data-role="warehouse"]').value.trim();
     if (!warehouse) return { error: rtl() ? 'اختر مستودعاً قبل التحميل.' : 'Enter a warehouse before loading.' };
-    localStorage.setItem('octagon_active_warehouse_id', warehouse); const params = new URLSearchParams({ warehouse_id: warehouse });
+    const params = new URLSearchParams({ warehouse_id: warehouse });
     for (const input of host.querySelectorAll('[data-query]')) if (input.value.trim()) params.set(input.dataset.query, input.value.trim());
     const page = config(id); if (page.resource === 'trace' && !params.has('lot_id') && !params.has('serial_id')) return { error: rtl() ? 'أدخل معرف دفعة أو رقم تسلسلي.' : 'Enter a lot or serial identifier.' };
     return { params };
@@ -117,9 +118,8 @@
     if (query.error) { state.phase = 'empty'; state.rows = []; renderRows(id); setStatus(id, 'empty', query.error); return []; }
     state.phase = 'loading'; setStatus(id, 'loading', rtl() ? 'جارِ تحميل البيانات…' : 'Loading data…');
     try {
-      const response = await fetch(`/api/v1/wms/${encodeURIComponent(page.resource)}?${query.params}`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
-      const payload = await response.json().catch(() => ({})); if (!response.ok || payload.success === false) throw new Error(payload.error || `HTTP ${response.status}`);
-      state.rows = flattenPayload(page, payload.data); state.phase = state.rows.length ? 'ready' : 'empty'; state.error = ''; state.updatedAt = new Date(); renderRows(id);
+      const payload = await root.OctagonApiClient.get(`/api/v1/wms/${encodeURIComponent(page.resource)}?${query.params}`);
+      state.rows = flattenPayload(page, payload); state.phase = state.rows.length ? 'ready' : 'empty'; state.error = ''; state.updatedAt = new Date(); renderRows(id);
       setStatus(id, state.phase, state.rows.length ? `${state.rows.length} ${rtl() ? 'سجل' : 'records'} · ${state.updatedAt.toLocaleTimeString()}` : (rtl() ? 'لا توجد بيانات ضمن النطاق الحالي.' : 'No data in the current scope.'));
       return state.rows;
     } catch (error) {
@@ -131,17 +131,15 @@
     if (!canWrite()) { setStatus(id, 'denied', rtl() ? 'لا تملك صلاحية هذا الإجراء.' : 'You do not have permission for this action.'); return; }
     const dialog = document.getElementById('build09ActionDialog'); dialog.dataset.page = id; dialog.dataset.action = actionId;
     dialog.querySelector('[data-role="action-name"]').textContent = actionId; const warehouse = document.querySelector(`[data-build09-page="${id}"] [data-role="warehouse"]`).value.trim();
-    dialog.querySelector('textarea').value = JSON.stringify({ warehouse_id: warehouse, idempotency_key: `${actionId}-${Date.now()}` }, null, 2); dialog.querySelector('[data-role="dialog-error"]').textContent = '';
+    dialog.querySelector('[data-role="form-fields"]').innerHTML = (root.OctagonActionForms.get(actionId)?.fields || []).map((field) => `<label>${escapeHtml(field.name)}<input name="${escapeHtml(field.name)}" type="${escapeHtml(field.type || 'text')}" ${field.required ? 'required' : ''}></label>`).join(''); dialog.dataset.warehouse = warehouse; dialog.querySelector('[data-role="dialog-error"]').textContent = '';
     if (dialog.showModal) dialog.showModal(); else dialog.hidden = false;
   }
 
   async function submitAction() {
-    const dialog = document.getElementById('build09ActionDialog'), id = dialog.dataset.page, actionId = dialog.dataset.action, errorNode = dialog.querySelector('[data-role="dialog-error"]'); let input;
-    try { input = JSON.parse(dialog.querySelector('textarea').value || '{}'); } catch (error) { errorNode.textContent = `Invalid JSON: ${error.message}`; return; }
+    const dialog = document.getElementById('build09ActionDialog'), id = dialog.dataset.page, actionId = dialog.dataset.action, errorNode = dialog.querySelector('[data-role="dialog-error"]'); const input = { ...root.OctagonActionForms.collect(dialog.querySelector('form')), warehouse_id: dialog.dataset.warehouse, idempotency_key: `${actionId}-${Date.now()}` };
     const button = dialog.querySelector('[data-command="submit"]'); button.disabled = true;
     try {
-      const response = await fetch(`/api/v1/action/${actionId}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
-      const payload = await response.json().catch(() => ({})); if (!response.ok || payload.success === false) throw new Error(payload.error || `HTTP ${response.status}`);
+      await root.OctagonApiClient.post(`/api/v1/action/${actionId}`, input);
       if (dialog.close) dialog.close(); else dialog.hidden = true; setStatus(id, 'success', rtl() ? 'تم الإجراء وتسجيله في التدقيق.' : 'Action completed and recorded in audit.'); await fetchRows(id);
     } catch (error) { errorNode.textContent = error.message; } finally { button.disabled = false; }
   }
@@ -156,12 +154,12 @@
     const host = document.querySelector(`[data-build09-page="${id}"]`); if (host.dataset.bound) return; host.dataset.bound = 'true';
     host.addEventListener('click', (event) => { const button = event.target.closest('button'); if (!button) return; if (button.dataset.command === 'refresh') fetchRows(id); if (button.dataset.command === 'export') exportCsv(id); if (button.dataset.action) actionDialog(id, button.dataset.action); });
     host.querySelector('[data-role="filter"]').addEventListener('input', (event) => { stateFor(id).filter = event.target.value; renderRows(id); });
-    host.querySelector('[data-role="warehouse"]').addEventListener('change', () => fetchRows(id));
+    host.querySelector('[data-role="warehouse"]').addEventListener('change', async (event) => { try { await runtime()?.setWarehouse(event.target.value); await fetchRows(id); } catch (error) { setStatus(id, 'denied', error.message); } });
   }
 
   function installDialog() {
     if (document.getElementById('build09ActionDialog')) return;
-    document.body.insertAdjacentHTML('beforeend', `<dialog id="build09ActionDialog" class="b09-dialog"><form method="dialog"><header><div><small>BUILD-09 governed action</small><h2 data-role="action-name"></h2></div><button value="cancel" aria-label="Close">×</button></header><p>${rtl() ? 'أدخل حمولة JSON. يتحقق الخادم من الشركة والمستودع والصلاحية.' : 'Enter the JSON payload. The server validates company, warehouse, and permission.'}</p><textarea rows="13" spellcheck="false"></textarea><p data-role="dialog-error" class="b09-dialog-error"></p><footer><button value="cancel" class="b09-button">${rtl() ? 'إلغاء' : 'Cancel'}</button><button type="button" class="b09-button b09-primary" data-command="submit">${rtl() ? 'تنفيذ' : 'Run'}</button></footer></form></dialog>`);
+    document.body.insertAdjacentHTML('beforeend', `<dialog id="build09ActionDialog" class="b09-dialog"><form method="dialog"><header><div><small>BUILD-09 governed action</small><h2 data-role="action-name"></h2></div><button value="cancel" aria-label="Close">×</button></header><p>${rtl() ? 'أدخل بيانات الإجراء المطلوبة.' : 'Complete the governed action form.'}</p><div data-role="form-fields"></div><p data-role="dialog-error" class="b09-dialog-error"></p><footer><button value="cancel" class="b09-button">${rtl() ? 'إلغاء' : 'Cancel'}</button><button type="button" class="b09-button b09-primary" data-command="submit">${rtl() ? 'تنفيذ' : 'Run'}</button></footer></form></dialog>`);
     document.querySelector('#build09ActionDialog [data-command="submit"]').addEventListener('click', submitAction);
   }
 
@@ -180,6 +178,7 @@
   function initialize() {
     installPages(); installDialog(); wrapNavigation();
     document.addEventListener('octagon:language-changed', () => PAGE_IDS.forEach((id) => { if (document.querySelector(`[data-build09-page="${id}"]`)) renderPage(id); }));
+    runtime()?.subscribe(() => PAGE_IDS.forEach((id) => { if (document.querySelector(`[data-build09-page="${id}"]`)) renderPage(id); }));
   }
 
   root.OctagonBuild09 = { pages: PAGES, activate, fetchRows, renderPage, stateFor, canWrite };

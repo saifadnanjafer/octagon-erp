@@ -1,0 +1,72 @@
+<section class="page" id="pageCollaborationLineage">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-diagram-project"></i></span>
+        <span data-i18n-ar="شجرة التعاون وتتبع خط التعديل" data-i18n-en="Collaboration Lineage">شجرة التعاون وتتبع خط التعديل</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="استعراض العلاقات الزمنية والنسب المستندي، تتبع خطوط التعديل والعكس والإلغاء المستندي." data-i18n-en="Audit document lineage, parent-child relationships, amendments, and historical ledger ties.">
+        استعراض العلاقات الزمنية والنسب المستندي، تتبع خطوط التعديل والعكس والإلغاء المستندي.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="collabLineageRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث الشجرة" data-i18n-en="Refresh Tree">تحديث الشجرة</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel mb-md">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="البحث عن النسب المستندي" data-i18n-en="Lookup Document Lineage">البحث عن النسب المستندي</h3>
+    </div>
+    <div class="panel-body">
+      <div class="form-row grid-3 gap-md">
+        <div class="form-group">
+          <label class="form-label" data-i18n-ar="نوع الكيان" data-i18n-en="Entity Type">نوع الكيان</label>
+          <select class="form-select" id="lineageEntitySelect">
+            <option value="sale_order">أوامر المبيعات (sale_order)</option>
+            <option value="purchase_order">أوامر الشراء (purchase_order)</option>
+            <option value="journal_entry">القيود المحاسبية (journal_entry)</option>
+            <option value="commercial_rma_cases">طلبات RMA (commercial_rma_cases)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n-ar="معرف السجل" data-i18n-en="Record ID">معرف السجل</label>
+          <input type="text" class="form-control" id="lineageRecordIdInput" placeholder="مثال: so_9901" />
+        </div>
+        <div class="form-group align-self-end">
+          <button class="btn btn-primary w-100" id="lineageSearchBtn" type="button">
+            <i class="fa-solid fa-sitemap"></i> <span data-i18n-ar="عرض شجرة النسب" data-i18n-en="View Lineage Tree">عرض شجرة النسب</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="خطوات وأحداث النسب المستندي" data-i18n-en="Lineage Event Trace">خطوات وأحداث النسب المستندي</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped">
+          <thead>
+            <tr>
+              <th data-i18n-ar="المستند المصدر" data-i18n-en="Source Doc">المستند المصدر</th>
+              <th data-i18n-ar="نوع العلاقة" data-i18n-en="Relation Type">نوع العلاقة</th>
+              <th data-i18n-ar="المستند التابع" data-i18n-en="Target Doc">المستند التابع</th>
+              <th data-i18n-ar="المنشئ / المستخدم" data-i18n-en="Created By">المنشئ / المستخدم</th>
+              <th data-i18n-ar="التاريخ والوقت" data-i18n-en="Timestamp">التاريخ والوقت</th>
+            </tr>
+          </thead>
+          <tbody id="lineageTreeTbody">
+            <tr>
+              <td colspan="5" class="text-center text-muted p-md" data-i18n-ar="أدخل معرف السجل لعرض شجرة النسب الحاكمة" data-i18n-en="Enter record ID to trace lineage events">أدخل معرف السجل لعرض شجرة النسب الحاكمة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

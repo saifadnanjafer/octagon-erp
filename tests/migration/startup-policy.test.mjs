@@ -260,7 +260,7 @@ async function testServerBootstrapUsesPolicyAuthority() {
   // The incident was caused by server.js calling runMigrations directly. Assert
   // the bootstrap now goes through the policy authority and no longer contains an
   // unguarded up-migration call.
-  const server = fs.readFileSync(path.resolve('server.js'), 'utf8');
+  const server = fs.readFileSync(path.resolve('server.js'), 'utf8').replace(/\r\n/g, '\n');
 
   assert.ok(
     server.includes('enforceStartupMigrationPolicy'),

@@ -45,6 +45,14 @@ export const DEFAULT_PAGE_CATALOGUE = Object.freeze([
   { id: 'parties', route: '/parties', labelAr: 'العملاء والموردون', group: 'master_data', permission: 'platform:page:parties' },
   { id: 'warehouses', route: '/warehouses', labelAr: 'المستودعات والمواقع', group: 'operations', permission: 'platform:page:warehouses' },
   { id: 'locations', route: '/locations', labelAr: 'المواقع المخزنية', group: 'operations', permission: 'platform:page:locations' },
+  { id: 'notifications', route: '/notifications', labelAr: 'مركز الإشعارات والتنبيهات', group: 'governance', permission: 'platform:page:notifications' },
+  { id: 'scheduled_reports', route: '/scheduled_reports', labelAr: 'التقارير المجدولة', group: 'governance', permission: 'platform:page:scheduled_reports' },
+  { id: 'saved_views', route: '/saved_views', labelAr: 'المشاهدات المحفوظة والبحث', group: 'governance', permission: 'platform:page:saved_views' },
+  { id: 'collaboration_lineage', route: '/collaboration_lineage', labelAr: 'سجل المحادثات وتتبع السلسلة', group: 'governance', permission: 'platform:page:collaboration_lineage' },
+  { id: 'rma_inspections', route: '/rma_inspections', labelAr: 'إدارة المرتجعات والضمان RMA', group: 'commercial', permission: 'platform:page:rma_inspections' },
+  { id: 'credit_collections', route: '/credit_collections', labelAr: 'الائتمان والتحصيل', group: 'commercial', permission: 'platform:page:credit_collections' },
+  { id: 'sales_commissions', route: '/sales_commissions', labelAr: 'عمولات المبيعات', group: 'commercial', permission: 'platform:page:sales_commissions' },
+  { id: 'document_templates', route: '/document_templates', labelAr: 'قوالب المستندات والطباعة', group: 'commercial', permission: 'platform:page:document_templates' },
 ]);
 
 export class GovernanceBootstrap {

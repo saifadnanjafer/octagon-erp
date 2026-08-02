@@ -1,0 +1,52 @@
+<section class="page" id="pageSavedViews">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-bookmark"></i></span>
+        <span data-i18n-ar="إدارة العروض المحفوظة والاستعلامات" data-i18n-en="Saved Views & Queries">إدارة العروض المحفوظة والاستعلامات</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="حفظ التصفية، ترتيب الأعمدة وتفضيلات العرض المخصصة عبر النطاقات والحسابات." data-i18n-en="Manage saved filters, column layouts, custom query views and team shared templates.">
+        حفظ التصفية، ترتيب الأعمدة وتفضيلات العرض المخصصة عبر النطاقات والحسابات.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="savedViewsRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث" data-i18n-en="Refresh">تحديث</span>
+      </button>
+      <button class="btn btn-primary" id="savedViewsNewBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="عرض جديد" data-i18n-en="New Saved View">عرض جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="قائمة العروض والفلاتر المحفوظة" data-i18n-en="Saved Views Directory">قائمة العروض والفلاتر المحفوظة</h3>
+      <div class="panel-actions">
+        <input type="search" class="form-control sm" id="savedViewsSearchInput" placeholder="بحث بالاسم أو النطاق..." />
+      </div>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped">
+          <thead>
+            <tr>
+              <th data-i18n-ar="اسم العرض" data-i18n-en="View Name">اسم العرض</th>
+              <th data-i18n-ar="الكيان / الصفحة" data-i18n-en="Entity / Page">الكيان / الصفحة</th>
+              <th data-i18n-ar="المالك" data-i18n-en="Owner">المالك</th>
+              <th data-i18n-ar="مشاركة للفريق" data-i18n-en="Shared">مشاركة للفريق</th>
+              <th data-i18n-ar="العرض الافتراضي" data-i18n-en="Default">العرض الافتراضي</th>
+              <th data-i18n-ar="تاريخ التحديث" data-i18n-en="Updated At">تاريخ التحديث</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="savedViewsTbody">
+            <tr>
+              <td colspan="7" class="text-center text-muted p-md" data-i18n-ar="لا توجد عروض محفوظة حالياً" data-i18n-en="No saved views found">لا توجد عروض محفوظة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

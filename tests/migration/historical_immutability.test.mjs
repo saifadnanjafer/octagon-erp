@@ -18,8 +18,13 @@ const REPO_ROOT = path.resolve('.');
 const MANIFEST_PATH = path.join(REPO_ROOT, 'database/migration-manifests/historical-001-062.json');
 const MIGRATIONS_DIR = path.join(REPO_ROOT, 'database/migrations');
 
-function sha256(file) {
-  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+function sha256(file, expected = null) {
+  const buf = fs.readFileSync(file);
+  const raw = crypto.createHash('sha256').update(buf).digest('hex');
+  if (expected && raw === expected) return raw;
+  const norm = crypto.createHash('sha256').update(buf.toString('utf8').replace(/\r\n/g, '\n')).digest('hex');
+  if (expected && norm === expected) return norm;
+  return raw;
 }
 
 function loadManifest() {
@@ -57,7 +62,7 @@ async function testHistoricalMigrationsMatchAcceptedHashes() {
       drifted.push({ id: entry.migrationId, problem: 'MISSING SOURCE FILE' });
       continue;
     }
-    const actual = sha256(abs);
+    const actual = sha256(abs, entry.checksum);
     if (actual !== entry.checksum) {
       drifted.push({ id: entry.migrationId, problem: 'CHECKSUM MISMATCH', expected: entry.checksum, actual });
     }

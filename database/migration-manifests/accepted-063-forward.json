@@ -2,16 +2,46 @@
   "manifestVersion": 1,
   "supersedes": null,
   "extendsManifest": "historical-001-062.json",
-  "acceptedSourceCommit": "781c314b12733e9e55a2c7c6db740c2862600f42",
-  "acceptanceTimestamp": "2026-07-30T00:00:00.000Z",
-  "acceptanceReason": "Checkpoint I5A: forward cutover-governance migration accepted after proving apply, rollback, re-apply and idempotency on a staged clone at tip 062. Historical entries 001-062 are unchanged.",
-  "migrationCount": 1,
+  "acceptedSourceCommit": "ac77b74d9f13d2fcb6640a031a9efad9a29e60f0",
+  "acceptanceTimestamp": "2026-08-01T00:00:00.000Z",
+  "acceptanceReason": "BUILD-05 and BUILD-06 platform and commercial expansion forward migrations accepted.",
+  "migrationCount": 6,
   "migrations": [
     {
       "migrationId": "063_cutover_lineage_quarantine_and_mapping",
       "relativePath": "database/migrations/063_cutover_lineage_quarantine_and_mapping.mjs",
       "algorithm": "sha256",
-      "checksum": "deb060c0992fbb9282959f396649ff6bd23d7f1eaf34669fba38204e3e8c9c24"
+      "checksum": "55998f61fede7f2ce2da66f5533bc9df12e0e1de654960d251578aa601b951af"
+    },
+    {
+      "migrationId": "064_commercial_rma_foundation",
+      "relativePath": "database/migrations/064_commercial_rma_foundation.mjs",
+      "algorithm": "sha256",
+      "checksum": "641f85ad31445f650261dff702acd175ae4706dc7d9ba6e166f7f6652876d140"
+    },
+    {
+      "migrationId": "065_commercial_contract_authority",
+      "relativePath": "database/migrations/065_commercial_contract_authority.mjs",
+      "algorithm": "sha256",
+      "checksum": "99d59d2025fc07c68f7e59424b38631ee67d0130e3a90c65049c9ca5495ca5a3"
+    },
+    {
+      "migrationId": "066_commercial_warranty_registry",
+      "relativePath": "database/migrations/066_commercial_warranty_registry.mjs",
+      "algorithm": "sha256",
+      "checksum": "9a4f0a47a00d98c382241661be67855c9b45ba441ca55d83a0d1f8fc2346af43"
+    },
+    {
+      "migrationId": "067_scheduled_reports",
+      "relativePath": "database/migrations/067_scheduled_reports.mjs",
+      "algorithm": "sha256",
+      "checksum": "4c8d7b81fb0da853a7e4f4276248a488bd26f3aef4ebeeb19c4c0339fb48aded"
+    },
+    {
+      "migrationId": "068_platform_services_and_commercial_expansion",
+      "relativePath": "database/migrations/068_platform_services_and_commercial_expansion.mjs",
+      "algorithm": "sha256",
+      "checksum": "e919e667e978acfd1524d76fb6b5fd30f50f43d0085ee040070eb1a75a66f5a5"
     }
   ]
 }

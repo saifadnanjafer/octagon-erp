@@ -1,0 +1,81 @@
+<section class="page" id="pageScheduledReports">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h1 class="page-title">
+        <span class="title-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+        <span data-i18n-ar="جدولة التقارير التلقائية" data-i18n-en="Scheduled Reports Hub">جدولة التقارير التلقائية</span>
+      </h1>
+      <p class="page-subtitle" data-i18n-ar="إدارة مهام استخراج التقارير الدورية، ضبط وتيرة الجدولة Cron والتسليم الآلي للمستخدمين." data-i18n-en="Manage automated recurring report schedules, cron expressions, and distribution tasks.">
+        إدارة مهام استخراج التقارير الدورية، ضبط وتيرة الجدولة Cron والتسليم الآلي للمستخدمين.
+      </p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary" id="schedReportRefreshBtn" type="button">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n-ar="تحديث المهام" data-i18n-en="Refresh Tasks">تحديث المهام</span>
+      </button>
+      <button class="btn btn-primary" id="schedReportNewBtn" type="button">
+        <i class="fa-solid fa-plus"></i> <span data-i18n-ar="جدولة تقرير جديد" data-i18n-en="New Scheduled Report">جدولة تقرير جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-row grid-4 gap-md mb-md">
+    <div class="stat-card">
+      <div class="stat-icon text-primary"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="التقارير المجدولة" data-i18n-en="Scheduled Reports">التقارير المجدولة</span>
+        <h3 class="stat-value" id="schedReportActiveCount">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-success"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="التنفيذات الناجحة" data-i18n-en="Successful Runs">التنفيذات الناجحة</span>
+        <h3 class="stat-value" id="schedReportSuccessRuns">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-info"><i class="fa-solid fa-file-export"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="الملفات المنشأة" data-i18n-en="Generated Files">الملفات المنشأة</span>
+        <h3 class="stat-value" id="schedReportGeneratedFiles">0</h3>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon text-warning"><i class="fa-solid fa-spinner"></i></div>
+      <div class="stat-info">
+        <span class="stat-label" data-i18n-ar="التشغيل القادم" data-i18n-en="Pending Next Run">التشغيل القادم</span>
+        <h3 class="stat-value" id="schedReportPendingRuns">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3 class="panel-title" data-i18n-ar="جدول مهام التقارير الدورية" data-i18n-en="Report Execution Schedules">جدول مهام التقارير الدورية</h3>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table striped hover">
+          <thead>
+            <tr>
+              <th data-i18n-ar="اسم التقرير" data-i18n-en="Report Name">اسم التقرير</th>
+              <th data-i18n-ar="الرمز" data-i18n-en="Code">الرمز</th>
+              <th data-i18n-ar="تعبير الجدولة (Cron)" data-i18n-en="Cron Schedule">تعبير الجدولة (Cron)</th>
+              <th data-i18n-ar="المستلمون" data-i18n-en="Recipients">المستلمون</th>
+              <th data-i18n-ar="الحالة" data-i18n-en="Status">الحالة</th>
+              <th data-i18n-ar="آخر تشغيل" data-i18n-en="Last Executed">آخر تشغيل</th>
+              <th data-i18n-ar="التشغيل القادم" data-i18n-en="Next Run">التشغيل القادم</th>
+              <th data-i18n-ar="الإجراءات" data-i18n-en="Actions">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="schedReportsTbody">
+            <tr>
+              <td colspan="8" class="text-center text-muted p-md" data-i18n-ar="لا توجد مهام تقارير مجدولة حالياً" data-i18n-en="No scheduled report tasks found">لا توجد مهام تقارير مجدولة حالياً</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

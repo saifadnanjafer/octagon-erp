@@ -345,9 +345,37 @@ export class ChatterService {
     };
   }
 
+  reassignActivity(id, newAssigneeId, ctx) {
+    this.dialect.prepare("UPDATE activities SET assignee_id = ? WHERE id = ?").run(newAssigneeId, id);
+    if (this.notifications && newAssigneeId && newAssigneeId !== ctx.actorId) {
+      const act = this.getActivity(id);
+      this.notifications.notify({
+        recipientId: newAssigneeId, eventKey: 'activity.reassigned', category: 'operational',
+        subject: 'تم إعادة تعيين مهمة لك', body: act?.summaryAr || 'مهمة معاد تعيينها',
+        payload: { entity: act?.entity, recordId: act?.recordId, activityId: id },
+        dedupeKey: `activity_reassign:${id}:${newAssigneeId}`, tenantId: ctx.tenantId, companyId: ctx.activeCompanyId,
+      });
+    }
+    return this.getActivity(id);
+  }
+
   completeActivity(id, ctx) {
     this.dialect.prepare("UPDATE activities SET status = 'done', completed_at = ? WHERE id = ?").run(this.#now(), id);
     return this.getActivity(id);
+  }
+
+  reopenActivity(id, ctx) {
+    this.dialect.prepare("UPDATE activities SET status = 'open', completed_at = NULL WHERE id = ?").run(id);
+    return this.getActivity(id);
+  }
+
+  removeFollower(entity, recordId, userId, ctx) {
+    return this.unfollow(entity, recordId, userId, ctx);
+  }
+
+  listRecordActivities(entity, recordId, ctx) {
+    const rows = this.dialect.prepare("SELECT id FROM activities WHERE entity = ? AND record_id = ? ORDER BY created_at DESC").all(entity, recordId);
+    return rows.map((r) => this.getActivity(r.id));
   }
 
   /** Open activities for an actor, scoped to their companies. */

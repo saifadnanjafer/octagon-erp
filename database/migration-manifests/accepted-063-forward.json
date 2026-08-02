@@ -2,10 +2,10 @@
   "manifestVersion": 1,
   "supersedes": null,
   "extendsManifest": "historical-001-062.json",
-  "acceptedSourceCommit": "ac77b74d9f13d2fcb6640a031a9efad9a29e60f0",
-  "acceptanceTimestamp": "2026-08-01T00:00:00.000Z",
-  "acceptanceReason": "BUILD-05 and BUILD-06 platform and commercial expansion forward migrations accepted.",
-  "migrationCount": 6,
+  "acceptedSourceCommit": "c18fa20733192315fcd73cec9750ac999c1f0a52",
+  "acceptanceTimestamp": "2026-08-02T01:22:43.000Z",
+  "acceptanceReason": "BUILD-05 through BUILD-08 forward migrations were verified on disposable databases and accepted as additive history.",
+  "migrationCount": 8,
   "migrations": [
     {
       "migrationId": "063_cutover_lineage_quarantine_and_mapping",
@@ -42,6 +42,18 @@
       "relativePath": "database/migrations/068_platform_services_and_commercial_expansion.mjs",
       "algorithm": "sha256",
       "checksum": "e919e667e978acfd1524d76fb6b5fd30f50f43d0085ee040070eb1a75a66f5a5"
+    },
+    {
+      "migrationId": "069_master_data_governance_and_quality",
+      "relativePath": "database/migrations/069_master_data_governance_and_quality.mjs",
+      "algorithm": "sha256",
+      "checksum": "546850879b9757c28134bb6bc69e2b58230372db32665cf8f22b31962a4e5411"
+    },
+    {
+      "migrationId": "070_planning_and_advanced_finance",
+      "relativePath": "database/migrations/070_planning_and_advanced_finance.mjs",
+      "algorithm": "sha256",
+      "checksum": "d934cd1c7bdf810313b8a7106382e862a9d6d45737369f81325392c32baaacad"
     }
   ]
 }

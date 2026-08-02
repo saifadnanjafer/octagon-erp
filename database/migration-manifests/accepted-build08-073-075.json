@@ -1,0 +1,29 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-063-forward.json",
+  "acceptedSourceCommit": "5eeeb272ee821bf74bda10dedd24a5094fc7d561",
+  "acceptanceTimestamp": "2026-08-02T12:00:00.000Z",
+  "acceptanceReason": "BUILD-08 planning, treasury, intercompany, and isolated consolidation migrations passed disposable fresh-install, domain, query, action, and real Chromium workflow verification.",
+  "migrationCount": 3,
+  "migrations": [
+    {
+      "migrationId": "073_build08_planning_mps_sop",
+      "relativePath": "database/migrations/073_build08_planning_mps_sop.mjs",
+      "algorithm": "sha256",
+      "checksum": "156ad0c9ddaf46c09b37af875e428cfabf83ffc683b61796c375127ceb8a24b6"
+    },
+    {
+      "migrationId": "074_build08_treasury_liquidity",
+      "relativePath": "database/migrations/074_build08_treasury_liquidity.mjs",
+      "algorithm": "sha256",
+      "checksum": "3efeb8356702ac942d1d74756130abbe3c4c3c5bb3b020379847c49e0664e81c"
+    },
+    {
+      "migrationId": "075_build08_intercompany_consolidation",
+      "relativePath": "database/migrations/075_build08_intercompany_consolidation.mjs",
+      "algorithm": "sha256",
+      "checksum": "6f59f7868f49d4aeb98bda7ad18c42e5e961210f1c42c785e48204a501bb93a5"
+    }
+  ]
+}

@@ -286,49 +286,50 @@ export function createPlatformAuthority(dialect) {
   actionExecutor.registerHandler('dq:waiver_request', (input, ctx) => dataQualityService.requestWaiver(input, ctx));
   actionExecutor.registerHandler('dq:waiver_approve', (input, ctx) => dataQualityService.approveWaiver(input.waiver_id || input.waiverId, ctx));
 
-  actionExecutor.registerHandler('planning:scenario_create', (input, ctx) => planningBudgetService.createScenario(input, ctx));
-  actionExecutor.registerHandler('planning:scenario_activate', (input, ctx) => planningBudgetService.activateScenario(input.scenario_id || input.scenarioId, ctx));
-  actionExecutor.registerHandler('forecast:history_snapshot', (input, ctx) => forecastingService.snapshotHistory(input, ctx));
-  actionExecutor.registerHandler('forecast:version_create', (input, ctx) => forecastingService.createVersion(input, ctx));
-  actionExecutor.registerHandler('forecast:calculate', (input, ctx) => forecastingService.calculate(input.version_id || input.versionId, ctx));
-  actionExecutor.registerHandler('forecast:override_submit', (input, ctx) => forecastingService.submitOverride(input, ctx));
-  actionExecutor.registerHandler('forecast:override_approve', (input, ctx) => forecastingService.approveOverride(input.override_id || input.overrideId, ctx));
-  actionExecutor.registerHandler('forecast:publish', (input, ctx) => forecastingService.publish(input.version_id || input.versionId, ctx));
-  actionExecutor.registerHandler('mps:run', (input, ctx) => masterProductionScheduleService.run(input, ctx));
-  actionExecutor.registerHandler('mps:proposal_approve', (input, ctx) => masterProductionScheduleService.approveProposal(input.proposal_id || input.proposalId, input, ctx));
-  actionExecutor.registerHandler('mps:proposal_release_request', (input, ctx) => masterProductionScheduleService.requestCanonicalRelease(input.proposal_id || input.proposalId, ctx));
-  actionExecutor.registerHandler('sop:cycle_create', (input, ctx) => salesOperationsPlanningService.createCycle(input, ctx));
-  actionExecutor.registerHandler('sop:scenario_create', (input, ctx) => salesOperationsPlanningService.addScenario(input.cycle_id || input.cycleId, input, ctx));
-  actionExecutor.registerHandler('sop:review_approve', (input, ctx) => salesOperationsPlanningService.review(input.cycle_id || input.cycleId, { ...input, decision: input.decision || 'approve' }, ctx));
-  actionExecutor.registerHandler('sop:publish', (input, ctx) => salesOperationsPlanningService.publish(input.cycle_id || input.cycleId, input.scenario_id || input.scenarioId, ctx));
-  actionExecutor.registerHandler('treasury:position_capture', (input, ctx) => treasuryLiquidityService.capturePosition(input, ctx));
-  actionExecutor.registerHandler('treasury:liquidity_generate', (input, ctx) => treasuryLiquidityService.generateForecast(input, ctx));
-  actionExecutor.registerHandler('treasury:alert_acknowledge', (input, ctx) => treasuryLiquidityService.acknowledgeAlert(input.alert_id || input.alertId, ctx));
-  actionExecutor.registerHandler('treasury:proposal_create', (input, ctx) => treasuryLiquidityService.createProposal(input, ctx));
-  actionExecutor.registerHandler('treasury:proposal_approve', (input, ctx) => treasuryLiquidityService.approveProposal(input.proposal_id || input.proposalId, ctx));
-  actionExecutor.registerHandler('treasury:facility_create', (input, ctx) => treasuryLiquidityService.createFacility(input, ctx));
-  actionExecutor.registerHandler('treasury:facility_utilize', (input, ctx) => treasuryLiquidityService.proposeUtilization(input.facility_id || input.facilityId, input, ctx));
-  actionExecutor.registerHandler('treasury:instrument_register', (input, ctx) => treasuryLiquidityService.registerInstrument(input, ctx));
-  actionExecutor.registerHandler('treasury:forecast_generate', (input, ctx) => treasuryCashForecastService.generateForecast(input, ctx));
-  actionExecutor.registerHandler('intercompany:relationship_create', (input, ctx) => intercompanyOperationsService.createRelationship(input, ctx));
-  actionExecutor.registerHandler('intercompany:operation_create', (input, ctx) => intercompanyOperationsService.createOperation(input, ctx));
-  actionExecutor.registerHandler('intercompany:operation_approve', (input, ctx) => intercompanyOperationsService.approveOperation(input.operation_id || input.operationId, ctx));
-  actionExecutor.registerHandler('intercompany:mismatch_detect', (input, ctx) => intercompanyOperationsService.detectMismatches(input.operation_id || input.operationId, ctx));
-  actionExecutor.registerHandler('intercompany:reconcile', (input, ctx) => intercompanyOperationsService.reconcile(input, ctx));
-  actionExecutor.registerHandler('intercompany:settlement_propose', (input, ctx) => intercompanyOperationsService.proposeSettlement(input.operation_id || input.operationId, input, ctx));
-  actionExecutor.registerHandler('consolidation:group_create', (input, ctx) => consolidationService.createGroup(input, ctx));
-  actionExecutor.registerHandler('consolidation:member_add', (input, ctx) => consolidationService.addMember(input.group_id || input.groupId, input, ctx));
-  actionExecutor.registerHandler('consolidation:mapping_upsert', (input, ctx) => consolidationService.upsertMapping(input.group_id || input.groupId, input, ctx));
-  actionExecutor.registerHandler('consolidation:period_create', (input, ctx) => consolidationService.createPeriod(input.group_id || input.groupId, input, ctx));
-  actionExecutor.registerHandler('consolidation:snapshot_capture', (input, ctx) => consolidationService.captureTrialBalance(input.period_id || input.periodId, input, ctx));
-  actionExecutor.registerHandler('consolidation:run_calculate', (input, ctx) => consolidationService.calculateRun(input.group_id || input.groupId, input.period_id || input.periodId, ctx));
-  actionExecutor.registerHandler('consolidation:elimination_approve', (input, ctx) => consolidationService.approveElimination(input.elimination_id || input.eliminationId, ctx));
-  actionExecutor.registerHandler('consolidation:adjustment_add', (input, ctx) => consolidationService.addAdjustment(input.run_id || input.runId, input, ctx));
-  actionExecutor.registerHandler('consolidation:adjustment_approve', (input, ctx) => consolidationService.approveAdjustment(input.adjustment_id || input.adjustmentId, ctx));
-  actionExecutor.registerHandler('consolidation:finalize', (input, ctx) => consolidationService.finalize(input.run_id || input.runId, ctx));
-  actionExecutor.registerHandler('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
-  actionExecutor.registerHandler('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
-  actionExecutor.registerHandler('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
+  const registerBuild08Action = (actionId, handler) => actionExecutor.registerHandler(actionId, ({ input, ctx: actionContext }) => handler(input, actionContext));
+  registerBuild08Action('planning:scenario_create', (input, ctx) => planningBudgetService.createScenario(input, ctx));
+  registerBuild08Action('planning:scenario_activate', (input, ctx) => planningBudgetService.activateScenario(input.scenario_id || input.scenarioId, ctx));
+  registerBuild08Action('forecast:history_snapshot', (input, ctx) => forecastingService.snapshotHistory(input, ctx));
+  registerBuild08Action('forecast:version_create', (input, ctx) => forecastingService.createVersion(input, ctx));
+  registerBuild08Action('forecast:calculate', (input, ctx) => forecastingService.calculate(input.version_id || input.versionId, ctx));
+  registerBuild08Action('forecast:override_submit', (input, ctx) => forecastingService.submitOverride(input, ctx));
+  registerBuild08Action('forecast:override_approve', (input, ctx) => forecastingService.approveOverride(input.override_id || input.overrideId, ctx));
+  registerBuild08Action('forecast:publish', (input, ctx) => forecastingService.publish(input.version_id || input.versionId, ctx));
+  registerBuild08Action('mps:run', (input, ctx) => masterProductionScheduleService.run(input, ctx));
+  registerBuild08Action('mps:proposal_approve', (input, ctx) => masterProductionScheduleService.approveProposal(input.proposal_id || input.proposalId, input, ctx));
+  registerBuild08Action('mps:proposal_release_request', (input, ctx) => masterProductionScheduleService.requestCanonicalRelease(input.proposal_id || input.proposalId, ctx));
+  registerBuild08Action('sop:cycle_create', (input, ctx) => salesOperationsPlanningService.createCycle(input, ctx));
+  registerBuild08Action('sop:scenario_create', (input, ctx) => salesOperationsPlanningService.addScenario(input.cycle_id || input.cycleId, input, ctx));
+  registerBuild08Action('sop:review_approve', (input, ctx) => salesOperationsPlanningService.review(input.cycle_id || input.cycleId, { ...input, decision: input.decision || 'approve' }, ctx));
+  registerBuild08Action('sop:publish', (input, ctx) => salesOperationsPlanningService.publish(input.cycle_id || input.cycleId, input.scenario_id || input.scenarioId, ctx));
+  registerBuild08Action('treasury:position_capture', (input, ctx) => treasuryLiquidityService.capturePosition(input, ctx));
+  registerBuild08Action('treasury:liquidity_generate', (input, ctx) => treasuryLiquidityService.generateForecast(input, ctx));
+  registerBuild08Action('treasury:alert_acknowledge', (input, ctx) => treasuryLiquidityService.acknowledgeAlert(input.alert_id || input.alertId, ctx));
+  registerBuild08Action('treasury:proposal_create', (input, ctx) => treasuryLiquidityService.createProposal(input, ctx));
+  registerBuild08Action('treasury:proposal_approve', (input, ctx) => treasuryLiquidityService.approveProposal(input.proposal_id || input.proposalId, ctx));
+  registerBuild08Action('treasury:facility_create', (input, ctx) => treasuryLiquidityService.createFacility(input, ctx));
+  registerBuild08Action('treasury:facility_utilize', (input, ctx) => treasuryLiquidityService.proposeUtilization(input.facility_id || input.facilityId, input, ctx));
+  registerBuild08Action('treasury:instrument_register', (input, ctx) => treasuryLiquidityService.registerInstrument(input, ctx));
+  registerBuild08Action('treasury:forecast_generate', (input, ctx) => treasuryCashForecastService.generateForecast(input, ctx));
+  registerBuild08Action('intercompany:relationship_create', (input, ctx) => intercompanyOperationsService.createRelationship(input, ctx));
+  registerBuild08Action('intercompany:operation_create', (input, ctx) => intercompanyOperationsService.createOperation(input, ctx));
+  registerBuild08Action('intercompany:operation_approve', (input, ctx) => intercompanyOperationsService.approveOperation(input.operation_id || input.operationId, ctx));
+  registerBuild08Action('intercompany:mismatch_detect', (input, ctx) => intercompanyOperationsService.detectMismatches(input.operation_id || input.operationId, ctx));
+  registerBuild08Action('intercompany:reconcile', (input, ctx) => intercompanyOperationsService.reconcile(input, ctx));
+  registerBuild08Action('intercompany:settlement_propose', (input, ctx) => intercompanyOperationsService.proposeSettlement(input.operation_id || input.operationId, input, ctx));
+  registerBuild08Action('consolidation:group_create', (input, ctx) => consolidationService.createGroup(input, ctx));
+  registerBuild08Action('consolidation:member_add', (input, ctx) => consolidationService.addMember(input.group_id || input.groupId, input, ctx));
+  registerBuild08Action('consolidation:mapping_upsert', (input, ctx) => consolidationService.upsertMapping(input.group_id || input.groupId, input, ctx));
+  registerBuild08Action('consolidation:period_create', (input, ctx) => consolidationService.createPeriod(input.group_id || input.groupId, input, ctx));
+  registerBuild08Action('consolidation:snapshot_capture', (input, ctx) => consolidationService.captureTrialBalance(input.period_id || input.periodId, input, ctx));
+  registerBuild08Action('consolidation:run_calculate', (input, ctx) => consolidationService.calculateRun(input.group_id || input.groupId, input.period_id || input.periodId, ctx));
+  registerBuild08Action('consolidation:elimination_approve', (input, ctx) => consolidationService.approveElimination(input.elimination_id || input.eliminationId, ctx));
+  registerBuild08Action('consolidation:adjustment_add', (input, ctx) => consolidationService.addAdjustment(input.run_id || input.runId, input, ctx));
+  registerBuild08Action('consolidation:adjustment_approve', (input, ctx) => consolidationService.approveAdjustment(input.adjustment_id || input.adjustmentId, ctx));
+  registerBuild08Action('consolidation:finalize', (input, ctx) => consolidationService.finalize(input.run_id || input.runId, ctx));
+  registerBuild08Action('intercompany:transaction_create', (input, ctx) => intercompanyConsolidationService.createIntercompanyTransaction(input, ctx));
+  registerBuild08Action('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
+  registerBuild08Action('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
   registerServiceActions(actionExecutor, { serviceEntitlementService, electronicSignatureService });
 
   const authority = {
@@ -597,7 +598,6 @@ export async function handleSetPassword(authority, req, res) {
   `).run(new Date().toISOString(), userId, ctx.sessionId || '');
   return sendJson(res, 200, { success: true, mustChange: isOwnerReset });
 }
-
 /**
  * Context-switch handler. The active company/branch is server-derived from a
  * verified membership; the request body can never claim a company the actor

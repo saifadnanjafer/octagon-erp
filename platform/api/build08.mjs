@@ -48,6 +48,11 @@ export function handleBuild08Query({ dialect, ctx, namespace, resource, recordId
       if (!query.run_id) return { error: 'run_id is required', status: 422 };
       return list(dialect.prepare(`SELECT l.* FROM mps_lines l JOIN mps_runs r ON r.id=l.run_id WHERE r.company_id=? AND r.id=? ORDER BY l.product_id,l.bucket_start`).all(companyId, query.run_id));
     }
+    if (resource === 'balance-latest') {
+      const latest = dialect.prepare('SELECT id FROM mps_runs WHERE company_id=? ORDER BY created_at DESC LIMIT 1').get(companyId);
+      if (!latest) return list([]);
+      return list(dialect.prepare(`SELECT l.* FROM mps_lines l JOIN mps_runs r ON r.id=l.run_id WHERE r.company_id=? AND r.id=? ORDER BY l.product_id,l.bucket_start`).all(companyId, latest.id));
+    }
     if (resource === 'proposals') {
       return list(dialect.prepare(`SELECT p.* FROM supply_proposals p WHERE p.company_id=? AND (?='' OR p.status=?) ORDER BY p.required_date`).all(companyId, query.status || '', query.status || ''));
     }
@@ -97,12 +102,22 @@ export function handleBuild08Query({ dialect, ctx, namespace, resource, recordId
 
   if (namespace === 'consolidation') {
     if (resource === 'groups') return list(dialect.prepare('SELECT * FROM consolidation_groups_v2 WHERE parent_company_id=? ORDER BY created_at DESC').all(companyId));
+    if (resource === 'reports') {
+      const latest = dialect.prepare(`SELECT r.id FROM consolidation_runs_v2 r JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? ORDER BY CASE WHEN r.status='locked' THEN 0 ELSE 1 END,r.created_at DESC LIMIT 1`).get(companyId);
+      if (!latest) return list([]);
+      return list(dialect.prepare('SELECT * FROM consolidation_balances_v2 WHERE run_id=? ORDER BY statement_type,target_account_code').all(latest.id));
+    }
     if (resource === 'mappings') return list(dialect.prepare(`SELECT m.* FROM consolidation_account_mappings_v2 m JOIN consolidation_groups_v2 g ON g.id=m.group_id WHERE g.parent_company_id=? AND (?='' OR m.group_id=?) ORDER BY m.company_id,m.source_account_code`).all(companyId, query.group_id || '', query.group_id || ''));
     if (resource === 'periods') return list(dialect.prepare(`SELECT p.* FROM consolidation_periods_v2 p JOIN consolidation_groups_v2 g ON g.id=p.group_id WHERE g.parent_company_id=? ORDER BY p.end_date DESC`).all(companyId));
     if (resource === 'runs') return list(dialect.prepare(`SELECT r.* FROM consolidation_runs_v2 r JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? ORDER BY r.created_at DESC`).all(companyId));
     if (resource === 'eliminations') return list(dialect.prepare(`SELECT e.* FROM consolidation_eliminations_v2 e JOIN consolidation_runs_v2 r ON r.id=e.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND (?='' OR e.run_id=?) ORDER BY e.created_at`).all(companyId, query.run_id || '', query.run_id || ''));
     if (resource === 'balances') return list(dialect.prepare(`SELECT b.* FROM consolidation_balances_v2 b JOIN consolidation_runs_v2 r ON r.id=b.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND b.run_id=? ORDER BY b.target_account_code`).all(companyId, query.run_id || recordId || ''));
-    if (resource === 'lineage') return list(dialect.prepare(`SELECT l.* FROM consolidation_lineage_v2 l JOIN consolidation_runs_v2 r ON r.id=l.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND l.run_id=? ORDER BY l.balance_id,l.created_at`).all(companyId, query.run_id || recordId || ''));
+    if (resource === 'lineage') {
+      const requestedRun = query.run_id || recordId;
+      const latest = requestedRun ? { id: requestedRun } : dialect.prepare('SELECT r.id FROM consolidation_runs_v2 r JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? ORDER BY r.created_at DESC LIMIT 1').get(companyId);
+      if (!latest) return list([]);
+      return list(dialect.prepare(`SELECT l.* FROM consolidation_lineage_v2 l JOIN consolidation_runs_v2 r ON r.id=l.run_id JOIN consolidation_groups_v2 g ON g.id=r.group_id WHERE g.parent_company_id=? AND l.run_id=? ORDER BY l.balance_id,l.created_at`).all(companyId, latest.id));
+    }
     return { error: 'consolidation resource not found', status: 404 };
   }
 

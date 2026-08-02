@@ -10,7 +10,7 @@
     planning_exceptions: ['Planning Exceptions', 'استثناءات التخطيط', 'planning/exceptions', ['exception_type', 'severity', 'product_id', 'message', 'status'], []],
     mps: ['Master Production Schedule', 'جدول الإنتاج الرئيسي', 'mps/runs', ['name', 'forecast_version_id', 'horizon_id', 'status', 'created_at'], ['mps:run']],
     mps_proposals: ['MPS Proposals', 'مقترحات جدول الإنتاج', 'mps/proposals', ['proposal_type', 'product_id', 'quantity', 'required_date', 'status'], ['mps:proposal_approve', 'mps:proposal_release_request']],
-    supply_demand_balance: ['Supply / Demand Balance', 'توازن العرض والطلب', 'mps/runs', ['name', 'forecast_version_id', 'horizon_id', 'status', 'created_at'], ['mps:run']],
+    supply_demand_balance: ['Supply / Demand Balance', 'توازن العرض والطلب', 'mps/balance-latest', ['product_id', 'bucket_start', 'gross_requirement', 'scheduled_receipts', 'projected_available', 'warning_code'], ['mps:run']],
     sop_scenarios: ['S&OP Scenarios', 'سيناريوهات المبيعات والعمليات', 'sop/scenarios', ['name', 'cycle_id', 'demand_total', 'supply_total', 'financial_total', 'status'], ['sop:scenario_create']],
     sop_review: ['S&OP Review', 'مراجعة المبيعات والعمليات', 'sop/cycles', ['name', 'period_start', 'period_end', 'selected_scenario_id', 'status'], ['sop:cycle_create', 'sop:review_approve', 'sop:publish']],
     treasury_cash_position: ['Treasury Cash Position', 'مركز النقد بالخزينة', 'treasury/positions', ['as_of_date', 'currency', 'bank_balance', 'restricted_cash', 'available_cash'], ['treasury:position_capture']],
@@ -25,8 +25,8 @@
     account_mapping: ['Account Mapping', 'ربط الحسابات', 'consolidation/mappings', ['company_id', 'source_account_code', 'target_account_code', 'mapping_type', 'status'], ['consolidation:mapping_upsert']],
     consolidation_runs: ['Consolidation Runs', 'عمليات التوحيد', 'consolidation/runs', ['period_id', 'presentation_currency', 'status', 'calculated_at', 'finalized_at'], ['consolidation:period_create', 'consolidation:snapshot_capture', 'consolidation:run_calculate', 'consolidation:finalize']],
     eliminations: ['Eliminations', 'قيود الاستبعاد', 'consolidation/eliminations', ['elimination_type', 'debit_account', 'credit_account', 'amount', 'status'], ['consolidation:elimination_approve']],
-    consolidated_reports: ['Consolidated Reports', 'التقارير الموحدة', 'consolidation/runs', ['period_id', 'presentation_currency', 'status', 'calculated_at', 'finalized_at'], []],
-    consolidation_lineage: ['Consolidation Lineage', 'تتبع التوحيد', 'consolidation/runs', ['period_id', 'presentation_currency', 'status', 'calculated_at', 'finalized_at'], []]
+    consolidated_reports: ['Consolidated Reports', 'التقارير الموحدة', 'consolidation/reports', ['target_account_code', 'target_account_name', 'statement_type', 'translated_debit', 'translated_credit', 'consolidated_balance'], []],
+    consolidation_lineage: ['Consolidation Lineage', 'تتبع التوحيد', 'consolidation/lineage', ['balance_id', 'snapshot_id', 'source_line_id', 'contribution_amount', 'lineage_type', 'created_at'], []]
   };
 
   const PAGE_IDS = Object.keys(PAGE_DEFINITIONS);
@@ -165,7 +165,7 @@
     submit.disabled = true;
     errorBox.textContent = isArabic() ? 'جارِ التنفيذ…' : 'Running…';
     try {
-      const response = await fetch(`/api/v1/action/${encodeURIComponent(actionId)}`, {
+      const response = await fetch(`/api/v1/action/${actionId}`, {
         method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input)
       });
       const payload = await response.json().catch(() => ({}));

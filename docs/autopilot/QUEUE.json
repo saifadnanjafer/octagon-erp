@@ -216,9 +216,9 @@
       "depends_on": ["BUILD-06"],
       "prompt_path": "docs/autopilot/prompts/BUILD-07-governance-service.md",
       "completion": {
-        "commit": "164bbff886c5ad5373ad8fa8fbadab8189e2954c",
+        "commit": "7aff6fc0a6467ce5afc2e5e8034546316cf85743",
         "branch": "codex/octagon-feature-page-expansion-marathon",
-        "remote_commit": "164bbff886c5ad5373ad8fa8fbadab8189e2954c",
+        "remote_commit": "7aff6fc0a6467ce5afc2e5e8034546316cf85743",
         "evidence_path": "docs/autopilot/evidence/BUILD-07-governance-service.md"
       }
     },
@@ -229,13 +229,25 @@
       "depends_on": ["BUILD-07"],
       "prompt_path": "docs/autopilot/prompts/BUILD-08-planning-finance.md",
       "completion": {
-        "commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+        "commit": "c18fa20733192315fcd73cec9750ac999c1f0a52",
         "branch": "codex/octagon-feature-page-expansion-marathon",
-        "remote_commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+        "remote_commit": "c18fa20733192315fcd73cec9750ac999c1f0a52",
         "evidence_path": "docs/autopilot/evidence/BUILD-08-planning-finance.md"
       }
     },
-    { "id": "BUILD-09", "title": "Advanced WMS and operational automation", "status": "IN_PROGRESS", "depends_on": ["BUILD-08"], "prompt_path": "docs/autopilot/prompts/BUILD-09-wms-automation.md" },
+    {
+      "id": "BUILD-09",
+      "title": "Advanced WMS and operational automation",
+      "status": "COMPLETE",
+      "depends_on": ["BUILD-08"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-09-wms-automation.md",
+      "completion": {
+        "commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "remote_commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+        "evidence_path": "docs/autopilot/evidence/BUILD-09-wms-operational-automation.md"
+      }
+    },
     { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
     { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
     { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },

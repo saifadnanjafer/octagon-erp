@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-09",
+  "active_task": "BUILD-10",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+    "commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
     "remote": "origin",
-    "remote_commit": "388c441a40834254bea9f3d887519e0f92aaceb5",
+    "remote_commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
     "observed_at": "2026-08-02"
   },
-  "stop_reason": "BUILD-05, BUILD-06, BUILD-07, and BUILD-08 Planning & Advanced Finance completion wave fully implemented and verified."
+  "stop_reason": "BUILD-09 Advanced WMS and Operational Automation is fully implemented, browser-proven, normally pushed, and SHA-equal. BUILD-10 is next eligible; chapter remains EXPANSION_BUILD_RUNNING."
 }

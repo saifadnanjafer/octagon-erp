@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 import test from 'node:test';
 
 test('autopilot queue and state validate against actual Git refs', () => {
   const output = execFileSync('node', ['scripts/autopilot/validate-autopilot.mjs'], { encoding: 'utf8' });
   const result = JSON.parse(output);
   assert.equal(result.valid, true);
-  assert.equal(result.eligible_task, 'BUILD-05');
+  const state = JSON.parse(fs.readFileSync('docs/autopilot/STATE.json', 'utf8'));
+  assert.equal(result.eligible_task, state.active_task);
   assert.equal(result.required_human_decision, false);
 });
 

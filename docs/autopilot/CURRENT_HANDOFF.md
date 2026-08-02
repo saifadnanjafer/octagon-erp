@@ -96,6 +96,23 @@ retains canonical commercial authority and no external provider was activated.
 
 CAP-06 completion evidence is published at `8b8837495242d1fc3a721e92da6945a9ed154b6c`.
 
+## BUILD-09 completion (2026-08-02)
+
+BUILD-09 Advanced WMS and Operational Automation is complete on
+`codex/octagon-feature-page-expansion-marathon`. The implementation/test proof
+commit `95be084161b5d9acdaed7ad0327d05d4a97a82ad` was normally pushed and
+matched local, upstream, and remote exactly before this status transition.
+
+The delivery includes migrations 076-080, canonical-authority WMS and
+Production orchestration, Quality/rework/scrap integration, 32 functional
+operational pages, five executable cross-domain scenarios, and two isolated
+real-Chromium lifecycle workflows. The broad BUILD-09 gate passed 21/21,
+BUILD-08 passed 17/17, permissions passed 39/39 with 158/158 mapped pages,
+canonical Inventory passed 3/3, and all 80 migrations are accounted for.
+Evidence: `docs/autopilot/evidence/BUILD-09-wms-operational-automation.md`.
+BUILD-10 is the next eligible task; the chapter remains
+`EXPANSION_BUILD_RUNNING`.
+
 ## CAP-07 and CAP-08 batch review
 
 CAP-07 is complete with security, AI/service-identity, audit, and frozen-zone

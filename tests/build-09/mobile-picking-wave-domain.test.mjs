@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mobileFixture } from './mobile-fixture.mjs';
+import * as picking from '../../platform/wms/picking.mjs';
+import * as waves from '../../platform/wms/waves.mjs';
+
+test('wave release creates governed tasks and mobile picking reaches request-only staging boundary', async (t) => {
+  const { db, ctx, productId, source, staging, destination } = await mobileFixture(t, 'pick-wave');
+  const first = picking.createPickTask(db, { ...ctx, picking_type: 'sales_delivery', source_document_id: 'sale-a', source_line_id: 'sale-line-a', product_id: productId, source_location_id: source.locationId, staging_location_id: staging.locationId, destination_location_id: destination.locationId, quantity: 6, strategy: 'fifo', route_sequence: 10, idempotency_key: 'pick-a' });
+  const second = picking.createPickTask(db, { ...ctx, picking_type: 'sales_delivery', source_document_id: 'sale-b', source_line_id: 'sale-line-b', product_id: productId, source_location_id: source.locationId, staging_location_id: staging.locationId, destination_location_id: destination.locationId, quantity: 4, strategy: 'nearest', route_sequence: 20, idempotency_key: 'pick-b' });
+  const wave = waves.createWave(db, { ...ctx, name: 'Morning route', wave_type: 'batch', grouping_strategy: 'route', staging_location_id: staging.locationId, operator_id: 'picker-a', criteria: { picking_type: 'sales_delivery' }, idempotency_key: 'wave-a' });
+  const calculated = waves.calculateWave(db, { ...ctx, wave_id: wave.id });
+  assert.equal(calculated.taskCount, 2);
+  assert.equal(calculated.status, 'calculated');
+  waves.reviewWave(db, { ...ctx, actor: 'supervisor-b', wave_id: wave.id });
+  const released = waves.releaseWave(db, { ...ctx, actor: 'manager-c', wave_id: wave.id });
+  assert.equal(released.status, 'released');
+  assert.equal(db.prepare(`SELECT COUNT(*) count FROM wms_warehouse_tasks WHERE task_type='pick'`).get().count, 2);
+  let task = picking.scanPickSource(db, { ...ctx, actor: 'picker-a', task_id: first.id, barcode: 'PICK-A' });
+  task = picking.scanPickProduct(db, { ...ctx, actor: 'picker-a', task_id: task.id, barcode: 'MOB-BC-A' });
+  task = picking.confirmPick(db, { ...ctx, actor: 'picker-a', task_id: task.id, quantity: 5, short_reason: 'One unit damaged at pick face' });
+  assert.equal(task.status, 'short');
+  assert.equal(task.shortQuantity, 1);
+  task = picking.stagePick(db, { ...ctx, actor: 'picker-a', task_id: task.id, staging_location_id: staging.locationId });
+  const request = picking.requestPickPost(db, { ...ctx, actor: 'picker-a', task_id: task.id, reservation_id: 'reservation-a' });
+  assert.equal(request.status, 'awaiting_canonical');
+  assert.equal(request.executionBoundary, 'REQUEST_ONLY');
+  assert.equal(request.inventoryWritten, false);
+  assert.equal(db.prepare('SELECT quantity FROM stock_quants WHERE id=?').get('quant-mobile-source').quantity, 20);
+  assert.equal(second.status, 'ready');
+});

@@ -4,6 +4,10 @@
 import * as topology from '../wms/topology.mjs';
 import * as putaway from '../wms/putaway.mjs';
 import * as replenishment from '../wms/replenishment.mjs';
+import * as receiving from '../wms/receiving.mjs';
+import * as picking from '../wms/picking.mjs';
+import * as waves from '../wms/waves.mjs';
+import * as cycleCounting from '../wms/cycle-counting.mjs';
 
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
@@ -46,6 +50,16 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
     if (resource === 'tasks') return list(putaway.listWarehouseTasks(dialect, input));
     if (resource === 'replenishment-rules') return list(replenishment.listReplenishmentRules(dialect, input));
     if (resource === 'replenishment-proposals') return list(replenishment.listReplenishmentProposals(dialect, input));
+    if (resource === 'receiving-sessions') return list(receiving.listReceivingSessions(dialect, input));
+    if (resource === 'receiving-discrepancies') {
+      const rows = dialect.prepare(`SELECT d.* FROM wms_receiving_discrepancies d JOIN wms_receiving_sessions s ON s.id=d.session_id
+        WHERE s.company_id=? AND s.warehouse_id=? AND (?='' OR d.status=?) ORDER BY d.requested_at DESC`).all(companyId, warehouseId, query.status || '', query.status || '');
+      return list(rows);
+    }
+    if (resource === 'pick-tasks') return list(picking.listPickTasks(dialect, input));
+    if (resource === 'waves') return list(waves.listWaves(dialect, input));
+    if (resource === 'count-plans') return list(cycleCounting.listCountPlans(dialect, input));
+    if (resource === 'count-sessions') return list(cycleCounting.listCountSessions(dialect, input));
     return { error: 'BUILD-09 WMS resource not found', status: 404 };
   } catch (error) {
     return { error: error.message, status: error.statusCode || 422, code: error.code };

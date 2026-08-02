@@ -4,9 +4,13 @@ import * as landedCost from './landed_cost.mjs';
 import * as topology from './topology.mjs';
 import * as putaway from './putaway.mjs';
 import * as replenishment from './replenishment.mjs';
+import * as receiving from './receiving.mjs';
+import * as picking from './picking.mjs';
+import * as waves from './waves.mjs';
+import * as cycleCounting from './cycle-counting.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { operations, counts, landedCost, topology, putaway, replenishment };
+export { operations, counts, landedCost, topology, putaway, replenishment, receiving, picking, waves, cycleCounting };
 
 export function registerWmsActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'wms:picking:create', operations.createPicking);
@@ -39,4 +43,34 @@ export function registerWmsActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'wms:replenishment_approve', replenishment.approveReplenishment);
   registerDomainHandler(actionExecutor, 'wms:replenishment_cancel', replenishment.cancelReplenishment);
   registerDomainHandler(actionExecutor, 'wms:replenishment_retry', replenishment.retryReplenishment);
+  registerDomainHandler(actionExecutor, 'wms:receiving_start', receiving.startReceiving);
+  registerDomainHandler(actionExecutor, 'wms:receiving_scan_reference', receiving.scanReceivingReference);
+  registerDomainHandler(actionExecutor, 'wms:receiving_scan_product', receiving.scanReceivingProduct);
+  registerDomainHandler(actionExecutor, 'wms:receiving_review', receiving.reviewReceiving);
+  registerDomainHandler(actionExecutor, 'wms:receiving_discrepancy_approve', receiving.approveReceivingDiscrepancy);
+  registerDomainHandler(actionExecutor, 'wms:receiving_request_post', receiving.requestReceivingPost);
+  registerDomainHandler(actionExecutor, 'wms:receiving_acknowledge_post', receiving.acknowledgeReceivingPost);
+  registerDomainHandler(actionExecutor, 'wms:receiving_complete', receiving.completeReceiving);
+  registerDomainHandler(actionExecutor, 'wms:pick_task_create', picking.createPickTask);
+  registerDomainHandler(actionExecutor, 'wms:pick_task_assign', picking.assignPickTask);
+  registerDomainHandler(actionExecutor, 'wms:pick_scan_source', picking.scanPickSource);
+  registerDomainHandler(actionExecutor, 'wms:pick_scan_product', picking.scanPickProduct);
+  registerDomainHandler(actionExecutor, 'wms:pick_confirm', picking.confirmPick);
+  registerDomainHandler(actionExecutor, 'wms:pick_stage', picking.stagePick);
+  registerDomainHandler(actionExecutor, 'wms:pick_request_post', picking.requestPickPost);
+  registerDomainHandler(actionExecutor, 'wms:pick_acknowledge_post', picking.acknowledgePickPost);
+  registerDomainHandler(actionExecutor, 'wms:wave_create', waves.createWave);
+  registerDomainHandler(actionExecutor, 'wms:wave_calculate', waves.calculateWave);
+  registerDomainHandler(actionExecutor, 'wms:wave_review', waves.reviewWave);
+  registerDomainHandler(actionExecutor, 'wms:wave_release', waves.releaseWave);
+  registerDomainHandler(actionExecutor, 'wms:wave_cancel', waves.cancelWave);
+  registerDomainHandler(actionExecutor, 'wms:wave_complete', waves.completeWave);
+  registerDomainHandler(actionExecutor, 'wms:count_plan_create', cycleCounting.createCountPlan);
+  registerDomainHandler(actionExecutor, 'wms:count_session_start', cycleCounting.startCountSession);
+  registerDomainHandler(actionExecutor, 'wms:count_line_record', cycleCounting.recordCountLine);
+  registerDomainHandler(actionExecutor, 'wms:count_submit', cycleCounting.submitCount);
+  registerDomainHandler(actionExecutor, 'wms:count_recount', cycleCounting.requestRecount);
+  registerDomainHandler(actionExecutor, 'wms:count_approve_variance', cycleCounting.approveCountVariance);
+  registerDomainHandler(actionExecutor, 'wms:count_request_adjustment', cycleCounting.requestCountAdjustment);
+  registerDomainHandler(actionExecutor, 'wms:count_acknowledge_adjustment', cycleCounting.acknowledgeCountAdjustment);
 }

@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-076.json",
+  "acceptedSourceCommit": "e2301b36e6091355c30665079b34797f0b4031f8",
+  "acceptanceTimestamp": "2026-08-02T09:10:00.000Z",
+  "acceptanceReason": "BUILD-09 mobile receiving, governed picking, wave task generation, and blind cycle-count variance workflows passed disposable migration, lifecycle, maker-checker, scope, and canonical request-only boundary verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "077_build09_mobile_execution",
+      "relativePath": "database/migrations/077_build09_mobile_execution.mjs",
+      "algorithm": "sha256",
+      "checksum": "981cd954c6a6b73278b19021657c11b3ba4080d281731baa9f2d28bfb94e7c60"
+    }
+  ]
+}

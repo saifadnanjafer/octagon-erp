@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-084.json",
+  "acceptedSourceCommit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+  "acceptanceTimestamp": "2026-08-02T09:01:00.000Z",
+  "acceptanceReason": "BUILD-10 Slice 5 acceptance: governed kiosk device registry with restricted role profiles and action allowlists, kiosk session logging, and read-only large-screen operational board configurations passed focused verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "085_build10_kiosk_operational_boards",
+      "relativePath": "database/migrations/085_build10_kiosk_operational_boards.mjs",
+      "algorithm": "sha256",
+      "checksum": "77bd2527c183cce2fccedf6a540ba865c46c82785a4b80d3e2001e061b90ab27"
+    }
+  ]
+}

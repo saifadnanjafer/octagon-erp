@@ -38,6 +38,8 @@ test('BUILD-09 publishes exactly 32 configured and reachable functional workspac
 test('BUILD-09 workspace shell exposes governed state, scope, actions, and export behavior', () => {
   assert.match(index, /modules\/build09-workspaces\.css/);
   assert.match(index, /modules\/build09-workspaces\.js/);
+  assert.match(index, /modules\/build09-mobile-receiving\.js/);
+  assert.match(index, /modules\/build09-mobile-picking\.js/);
   assert.match(source, /\/api\/v1\/wms\//);
   assert.match(source, /\/api\/v1\/action\//);
   // Company/warehouse scope rendering moved into the shared modules/octagon-scope-selector.js

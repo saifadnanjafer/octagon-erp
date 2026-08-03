@@ -5,6 +5,7 @@ import path from 'node:path';
 import { freshInstall, openMigrationDatabase } from '../../database/migration-runner/index.mjs';
 import { createPlatformAuthority } from '../../platform-runtime-bridge.mjs';
 import { createApiHandler } from '../../platform/api/index.mjs';
+import { createPermissionEvaluator } from '../../platform/authorization/evaluator/index.mjs';
 import { createStockLocation, createWarehouse } from '../../platform/inventory/warehouses.mjs';
 import { postStockMove } from '../../platform/inventory/ledger.mjs';
 import * as topology from '../../platform/wms/topology.mjs';
@@ -42,6 +43,7 @@ export async function openBuild09Browser(t, { name, initialPage }) {
   const dialect = openMigrationDatabase(dbPath);
   const seed = seedOperationalFacts(dialect, name);
   const authority = createPlatformAuthority(dialect);
+  const permissionEvaluator = createPermissionEvaluator(dialect);
   const contextFor = (req) => ({
     companyId: String(req.headers['x-company'] || seed.companyId), activeCompanyId: String(req.headers['x-company'] || seed.companyId),
     warehouseId: String(req.headers['x-warehouse'] || seed.warehouse.id), tenantId: 'default', branchId: 'branch-a',
@@ -49,22 +51,24 @@ export async function openBuild09Browser(t, { name, initialPage }) {
     actorType: 'user', correlationId: `build09-${name}-${Date.now()}`,
   });
   const api = createApiHandler({
-    dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor,
+    dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor, permissionEvaluator,
     authorize: ({ ctx }) => ctx.userId === 'viewer-user' ? { allowed: false, statusCode: 403, message: 'Permission denied' } : { allowed: true },
   });
 
+  const STATIC_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-workspaces.css'];
   const server = http.createServer((req, res) => {
     const requestUrl = new URL(req.url, 'http://127.0.0.1');
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
     if (api(req, res, requestUrl)) return;
-    if (requestUrl.pathname === '/modules/build09-workspaces.js' || requestUrl.pathname === '/modules/build09-workspaces.css') {
-      const file = requestUrl.pathname.endsWith('.js') ? 'build09-workspaces.js' : 'build09-workspaces.css';
-      res.writeHead(200, { 'content-type': file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8' });
-      res.end(fs.readFileSync(path.join(ROOT, 'modules', file))); return;
+    const staticName = requestUrl.pathname.startsWith('/modules/') ? requestUrl.pathname.slice('/modules/'.length) : null;
+    if (staticName && STATIC_MODULES.includes(staticName)) {
+      res.writeHead(200, { 'content-type': staticName.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8' });
+      res.end(fs.readFileSync(path.join(ROOT, 'modules', staticName))); return;
     }
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
+      const scripts = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'build09-action-forms.js', 'build09-workspaces.js'].map((file) => `<script src="/modules/${file}"></script>`).join('');
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__octagonBootstrap={actor:{activeCompanyId:${JSON.stringify(seed.companyId)}},warehouseId:${JSON.stringify(seed.warehouse.id)},actions:[{id:'db_write',enabled:true}]};localStorage.setItem('octagon_active_warehouse_id',${JSON.stringify(seed.warehouse.id)});window.switchPage=function(){};</script><script src="/modules/build09-workspaces.js"></script><script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
+      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.switchPage=function(){};</script>${scripts}<script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;
     }
     res.writeHead(404); res.end('not found');

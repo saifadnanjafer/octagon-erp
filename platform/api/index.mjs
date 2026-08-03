@@ -74,7 +74,21 @@ function readBody(req, limit = 1024 * 1024) {
   });
 }
 
-export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null, configuration = null, jobs = null, scheduledReports = null, platformSearch = null }) {
+const RUNTIME_CONTEXT_PERMISSION_CANDIDATES = Object.freeze([
+  'platform:db:write',
+  'wms:topology:admin', 'wms:putaway:admin', 'wms:putaway:override', 'wms:receiving:operate', 'wms:receiving:post', 'wms:receiving_discrepancy:approve',
+  'wms:replenishment:admin', 'wms:replenishment:operate', 'wms:replenishment:approve',
+  'wms:picking:plan', 'wms:picking:assign', 'wms:picking:operate', 'wms:picking:post',
+  'wms:wave:plan', 'wms:wave:review', 'wms:wave:release',
+  'wms:count:plan', 'wms:count:operate', 'wms:count:approve', 'wms:count:adjust',
+  'wms:dock:admin', 'wms:dock:schedule', 'wms:dock:assign', 'wms:dock:operate',
+  'wms:staging:operate', 'wms:crossdock:plan', 'wms:crossdock:approve', 'wms:crossdock:operate',
+  'wms:trace:admin', 'wms:trace:quality', 'wms:recall:plan', 'wms:recall:analyze', 'wms:recall:approve',
+  'shopfloor:operate', 'shopfloor:assign', 'shopfloor:material:request', 'shopfloor:material:approve', 'shopfloor:material:issue', 'shopfloor:downtime:admin',
+  'quality:operational:inspect', 'quality:operational:hold', 'quality:disposition:request', 'quality:disposition:approve', 'quality:rework:approve', 'quality:scrap:approve',
+]);
+
+export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveContextOption = null, authorize = null, actionExecutor = null, notifications = null, chatter = null, configuration = null, jobs = null, scheduledReports = null, platformSearch = null, permissionEvaluator = null }) {
   // The runtime authority passes its own executor (with finance handlers
   // registered); standalone mounts fall back to a bare kernel executor.
   const executor = actionExecutor || createActionExecutor(dialect);
@@ -154,7 +168,10 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         const branches = ctx.companyId ? dialect.prepare('SELECT id, company_id AS companyId, name FROM platform_branches WHERE company_id = ? AND status = ? ORDER BY name').all(ctx.companyId, 'active') : [];
         const warehouses = ctx.companyId ? dialect.prepare('SELECT id, company_id AS companyId, code, name, is_active AS active FROM warehouses WHERE company_id = ? AND is_active = 1 ORDER BY code, name').all(ctx.companyId) : [];
         const selected = warehouses.length === 1 ? warehouses[0].id : null;
-        return sendJson(res, 200, envelope({ actorId: ctx.actorId, userId: ctx.userId, tenantId: ctx.tenantId, companyId: ctx.companyId, branchId: ctx.branchId, warehouseId: selected, availableCompanies: companies, availableBranches: branches, availableWarehouses: warehouses, permissions: [], locale: ctx.locale || 'ar', direction: ctx.direction || 'rtl' }, null, null, ctx.correlationId));
+        const permissions = permissionEvaluator
+          ? permissionEvaluator.listPermissions({ ...ctx, activeCompanyId: ctx.activeCompanyId || ctx.companyId, actorType: ctx.actorType || 'user', now: ctx.now || new Date().toISOString() }, RUNTIME_CONTEXT_PERMISSION_CANDIDATES)
+          : [];
+        return sendJson(res, 200, envelope({ actorId: ctx.actorId, userId: ctx.userId, tenantId: ctx.tenantId, companyId: ctx.companyId, branchId: ctx.branchId, warehouseId: selected, availableCompanies: companies, availableBranches: branches, availableWarehouses: warehouses, permissions, locale: ctx.locale || 'ar', direction: ctx.direction || 'rtl' }, null, null, ctx.correlationId));
       }
 
       if (namespace === 'x' && resource) {

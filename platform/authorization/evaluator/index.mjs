@@ -332,6 +332,19 @@ export class PermissionEvaluator {
     }), params);
   }
 
+  /**
+   * Returns the subset of `candidateTokens` the actor is currently granted, by
+   * running each through the same `evaluate()` decision path used for
+   * enforcement (no separate wildcard/deny/module-state logic to drift from
+   * it). Intended for read-only UI affordance (e.g. disabling buttons the
+   * actor cannot use) — never a substitute for the server-side check on the
+   * actual write.
+   */
+  listPermissions(ctx, candidateTokens) {
+    if (!ctx || !ctx.actorId || !Array.isArray(candidateTokens)) return [];
+    return candidateTokens.filter((permission) => this.evaluate({ permission, ctx }).allowed);
+  }
+
   /** Throwing wrapper for command paths. */
   require(params) {
     const d = this.evaluate(params);

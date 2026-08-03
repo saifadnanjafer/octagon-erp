@@ -37,6 +37,25 @@
     operational_performance: ['Operational Performance Dashboard', 'لوحة الأداء التشغيلي', 'work-center-performance', ['sessionId', 'availability', 'performance', 'qualityRate', 'oee', 'downtimeMinutes'], []]
   };
 
+  // Mirrors platform_actions.required_permission from database/migrations/076-080_build09_*.mjs — the server is authoritative; this only drives UI affordance.
+  const ACTION_PERMISSIONS = {
+    'wms:zone_create': 'wms:topology:admin', 'wms:location_create': 'wms:topology:admin', 'wms:location_update': 'wms:topology:admin', 'wms:location_set_capacity': 'wms:topology:admin',
+    'wms:putaway_rule_create': 'wms:putaway:admin', 'wms:putaway_rule_update': 'wms:putaway:admin', 'wms:putaway_recommend': 'wms:receiving:operate', 'wms:putaway_accept': 'wms:receiving:operate', 'wms:putaway_override': 'wms:putaway:override',
+    'wms:replenishment_rule_create': 'wms:replenishment:admin', 'wms:replenishment_calculate': 'wms:replenishment:operate', 'wms:replenishment_approve': 'wms:replenishment:approve', 'wms:replenishment_cancel': 'wms:replenishment:approve',
+    'wms:receiving_start': 'wms:receiving:operate', 'wms:receiving_scan_reference': 'wms:receiving:operate', 'wms:receiving_scan_product': 'wms:receiving:operate', 'wms:receiving_review': 'wms:receiving:operate', 'wms:receiving_discrepancy_approve': 'wms:receiving_discrepancy:approve', 'wms:receiving_request_post': 'wms:receiving:post',
+    'wms:pick_task_create': 'wms:picking:plan', 'wms:pick_task_assign': 'wms:picking:assign', 'wms:pick_scan_source': 'wms:picking:operate', 'wms:pick_scan_product': 'wms:picking:operate', 'wms:pick_confirm': 'wms:picking:operate', 'wms:pick_stage': 'wms:picking:operate', 'wms:pick_request_post': 'wms:picking:post',
+    'wms:wave_create': 'wms:wave:plan', 'wms:wave_calculate': 'wms:wave:plan', 'wms:wave_review': 'wms:wave:review', 'wms:wave_release': 'wms:wave:release', 'wms:wave_complete': 'wms:wave:release', 'wms:wave_cancel': 'wms:wave:release',
+    'wms:count_plan_create': 'wms:count:plan', 'wms:count_session_start': 'wms:count:operate', 'wms:count_line_record': 'wms:count:operate', 'wms:count_submit': 'wms:count:operate', 'wms:count_recount': 'wms:count:approve', 'wms:count_approve_variance': 'wms:count:approve', 'wms:count_request_adjustment': 'wms:count:adjust',
+    'wms:dock_appointment_create': 'wms:dock:schedule', 'wms:dock_assign': 'wms:dock:assign', 'wms:dock_check_in': 'wms:dock:operate', 'wms:dock_start_service': 'wms:dock:operate', 'wms:dock_depart': 'wms:dock:operate',
+    'wms:staging_allocate': 'wms:staging:operate', 'wms:staging_release': 'wms:staging:operate', 'wms:crossdock_evaluate': 'wms:crossdock:plan', 'wms:crossdock_approve': 'wms:crossdock:approve', 'wms:crossdock_request_post': 'wms:crossdock:operate',
+    'wms:trace_quality_set': 'wms:trace:quality', 'wms:recall_identify': 'wms:recall:plan', 'wms:recall_analyze': 'wms:recall:analyze', 'wms:recall_propose_holds': 'wms:recall:approve',
+    'shopfloor:session_open': 'shopfloor:operate', 'shopfloor:operator_assign': 'shopfloor:assign', 'shopfloor:operation_start': 'shopfloor:operate', 'shopfloor:operation_output': 'shopfloor:operate', 'shopfloor:operation_complete': 'shopfloor:operate', 'shopfloor:operation_handoff': 'shopfloor:assign',
+    'shopfloor:material_request': 'shopfloor:material:request', 'shopfloor:material_availability': 'shopfloor:material:request', 'shopfloor:material_approve': 'shopfloor:material:approve', 'shopfloor:material_request_canonical': 'shopfloor:material:issue', 'shopfloor:material_acknowledge': 'shopfloor:material:issue',
+    'shopfloor:downtime_start': 'shopfloor:downtime:admin', 'shopfloor:downtime_end': 'shopfloor:downtime:admin',
+    'quality:checkpoint_open': 'quality:operational:inspect', 'quality:checkpoint_sync': 'quality:operational:inspect', 'quality:checkpoint_conditional_accept': 'quality:operational:hold',
+    'quality:disposition_request': 'quality:disposition:request', 'quality:disposition_approve': 'quality:disposition:approve', 'quality:rework_start': 'quality:rework:approve', 'quality:rework_complete': 'quality:rework:approve', 'quality:scrap_request_canonical': 'quality:scrap:approve', 'quality:scrap_acknowledge': 'quality:scrap:approve'
+  };
+
   const PAGE_IDS = Object.keys(PAGES);
   const states = new Map();
   const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -47,12 +66,19 @@
   const runtime = () => root.OctagonRuntimeContext;
   const activeCompany = () => runtime()?.companyId || '';
   const activeWarehouse = () => runtime()?.warehouseId || '';
-  const canWrite = () => root.__BUILD09_FORCE_READ_ONLY__ !== true && (runtime()?.permissions?.length ? runtime().permissions.some((permission) => permission === 'platform:db:write' || permission === 'wms:topology:edit') : true);
+  const canWrite = (actionId) => {
+    if (root.__BUILD09_FORCE_READ_ONLY__ === true) return false;
+    const permissions = runtime()?.permissions;
+    if (!Array.isArray(permissions) || !permissions.length) return true;
+    if (permissions.includes('platform:db:write')) return true;
+    const required = actionId ? ACTION_PERMISSIONS[actionId] : null;
+    return required ? permissions.includes(required) : false;
+  };
 
   function workspaceMarkup(id) {
     const page = config(id); const requiredInputs = page.required.map((name) => `<label class="b09-query-field"><span>${escapeHtml(humanize(name))}</span><input data-query="${escapeHtml(name)}" autocomplete="off"></label>`).join('');
     return `<section id="${escapeHtml(id)}" class="page b09-workspace${page.mobile ? ' b09-mobile' : ''}" data-build09-page="${escapeHtml(id)}" aria-labelledby="${escapeHtml(id)}Title">
-      <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div><div class="b09-scope"><span data-role="company"></span><label>Warehouse <input data-role="warehouse" autocomplete="off"></label></div></header>
+      <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div><div class="b09-scope"><span data-role="company"></span><label>${rtl() ? 'المستودع' : 'Warehouse'} <select data-role="warehouse"></select></label></div></header>
       <div class="b09-query-fields">${requiredInputs}</div>
       <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">Filter</span><input data-role="filter" type="search" placeholder="Filter visible records…"></label><div class="b09-actions" data-role="actions"></div></div>
       <p class="b09-notice" data-role="permission" hidden></p><p class="b09-status" data-role="status" data-phase="idle" aria-live="polite">Ready for a scoped query.</p>
@@ -98,9 +124,9 @@
     host.querySelector('[data-role="company"]').textContent = `${rtl() ? 'الشركة' : 'Company'}: ${activeCompany() || '—'}`;
     const warehouseSelect = host.querySelector('[data-role="warehouse"]'); const warehouses = runtime()?.availableWarehouses || []; warehouseSelect.innerHTML = '<option value="">Select warehouse</option>' + warehouses.map((warehouse) => `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.code ? `${warehouse.code} · ${warehouse.name || warehouse.id}` : warehouse.name || warehouse.id)}</option>`).join(''); warehouseSelect.value = activeWarehouse();
     host.querySelector('[data-role="head"]').innerHTML = `<tr>${page.columns.map((column) => `<th>${escapeHtml(humanize(column))}</th>`).join('')}</tr>`;
-    const writable = canWrite();
-    host.querySelector('[data-role="actions"]').innerHTML = `<button class="b09-button b09-primary" data-command="refresh">↻ ${rtl() ? 'تحديث' : 'Refresh'}</button><button class="b09-button" data-command="export">⇩ CSV</button>${page.actions.map((action) => `<button class="b09-button" data-action="${escapeHtml(action)}" ${writable ? '' : 'disabled'}>${escapeHtml(humanize(action.split(':').slice(1).join(' ')))}</button>`).join('')}`;
-    const notice = host.querySelector('[data-role="permission"]'); notice.hidden = writable || !page.actions.length; notice.textContent = rtl() ? 'صلاحية القراءة فقط: الإجراءات التغييرية معطلة.' : 'Read-only permission: mutation actions are disabled.';
+    host.querySelector('[data-role="actions"]').innerHTML = `<button class="b09-button b09-primary" data-command="refresh">↻ ${rtl() ? 'تحديث' : 'Refresh'}</button><button class="b09-button" data-command="export">⇩ CSV</button>${page.actions.map((action) => { const allowed = canWrite(action); const title = root.OctagonActionForms?.get(action); return `<button class="b09-button" data-action="${escapeHtml(action)}" ${allowed ? '' : 'disabled'} title="${allowed ? '' : escapeHtml(rtl() ? 'لا تملك صلاحية هذا الإجراء' : 'You do not have permission for this action')}">${escapeHtml(title ? (rtl() ? title.title.ar : title.title.en) : humanize(action.split(':').slice(1).join(' ')))}</button>`; }).join('')}`;
+    const anyWritable = page.actions.some((action) => canWrite(action));
+    const notice = host.querySelector('[data-role="permission"]'); notice.hidden = anyWritable || !page.actions.length; notice.textContent = rtl() ? 'صلاحية القراءة فقط: الإجراءات التغييرية معطلة.' : 'Read-only permission: mutation actions are disabled.';
     renderRows(id); bindPage(id);
   }
 
@@ -128,15 +154,19 @@
   }
 
   function actionDialog(id, actionId) {
-    if (!canWrite()) { setStatus(id, 'denied', rtl() ? 'لا تملك صلاحية هذا الإجراء.' : 'You do not have permission for this action.'); return; }
+    if (!canWrite(actionId)) { setStatus(id, 'denied', rtl() ? 'لا تملك صلاحية هذا الإجراء.' : 'You do not have permission for this action.'); return; }
     const dialog = document.getElementById('build09ActionDialog'); dialog.dataset.page = id; dialog.dataset.action = actionId;
-    dialog.querySelector('[data-role="action-name"]').textContent = actionId; const warehouse = document.querySelector(`[data-build09-page="${id}"] [data-role="warehouse"]`).value.trim();
-    dialog.querySelector('[data-role="form-fields"]').innerHTML = (root.OctagonActionForms.get(actionId)?.fields || []).map((field) => `<label>${escapeHtml(field.name)}<input name="${escapeHtml(field.name)}" type="${escapeHtml(field.type || 'text')}" ${field.required ? 'required' : ''}></label>`).join(''); dialog.dataset.warehouse = warehouse; dialog.querySelector('[data-role="dialog-error"]').textContent = '';
+    const definition = root.OctagonActionForms.get(actionId);
+    dialog.querySelector('[data-role="action-name"]').textContent = definition ? (rtl() ? definition.title.ar : definition.title.en) : actionId;
+    const warehouse = document.querySelector(`[data-build09-page="${id}"] [data-role="warehouse"]`).value.trim();
+    const fieldsHost = dialog.querySelector('[data-role="form-fields"]');
+    if (definition) root.OctagonActionForms.render(actionId, fieldsHost, {}); else fieldsHost.innerHTML = `<p>${escapeHtml(rtl() ? 'لا يوجد نموذج مسجل لهذا الإجراء.' : 'No form is registered for this action.')}</p>`;
+    dialog.dataset.warehouse = warehouse; dialog.querySelector('[data-role="dialog-error"]').textContent = '';
     if (dialog.showModal) dialog.showModal(); else dialog.hidden = false;
   }
 
   async function submitAction() {
-    const dialog = document.getElementById('build09ActionDialog'), id = dialog.dataset.page, actionId = dialog.dataset.action, errorNode = dialog.querySelector('[data-role="dialog-error"]'); const input = { ...root.OctagonActionForms.collect(dialog.querySelector('form')), warehouse_id: dialog.dataset.warehouse, idempotency_key: `${actionId}-${Date.now()}` };
+    const dialog = document.getElementById('build09ActionDialog'), id = dialog.dataset.page, actionId = dialog.dataset.action, errorNode = dialog.querySelector('[data-role="dialog-error"]'); const input = { ...root.OctagonActionForms.collect(dialog.querySelector('form'), actionId), warehouse_id: dialog.dataset.warehouse, idempotency_key: `${actionId}-${Date.now()}` };
     const button = dialog.querySelector('[data-command="submit"]'); button.disabled = true;
     try {
       await root.OctagonApiClient.post(`/api/v1/action/${actionId}`, input);

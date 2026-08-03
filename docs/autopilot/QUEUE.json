@@ -269,7 +269,7 @@
       "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md",
       "human_gate": "Not COMPLETE - backend/domain-layer gap repaired (6/6 cross-domain scenarios, Slice-3 actions wired), but modules/build10-workspaces.js is still a static stub. A continuation session must build the real frontend workspace shell before this can close.",
       "progress": {
-        "commit": "PENDING_THIS_SESSION_COMMIT",
+        "commit": "c595e348bab6ec264e03684c6a386312375a127c",
         "branch": "codex/octagon-feature-page-expansion-marathon",
         "evidence_path": "docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md"
       }

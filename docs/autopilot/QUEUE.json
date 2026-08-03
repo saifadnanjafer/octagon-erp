@@ -268,9 +268,9 @@
       "depends_on": ["BUILD-09R"],
       "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md",
       "completion": {
-        "commit": "c6fd9bd",
+        "commit": "675de79111cbb79d7c1b85926c3ab5d8f6c4db45",
         "branch": "codex/octagon-feature-page-expansion-marathon",
-        "remote_commit": "c6fd9bd",
+        "remote_commit": "675de79111cbb79d7c1b85926c3ab5d8f6c4db45",
         "evidence_path": "docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md"
       }
     },

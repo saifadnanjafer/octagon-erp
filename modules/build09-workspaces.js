@@ -193,10 +193,23 @@
     document.querySelector('#build09ActionDialog [data-command="submit"]').addEventListener('click', submitAction);
   }
 
+  // Purpose-built pages (BUILD-09R-2) replace the generic table+dialog shell entirely -
+  // registered here rather than baked into renderPage()/fetchRows() so the 30 pages that DO
+  // fit the generic shape are unaffected.
+  const PAGE_OVERRIDES = {};
+  function registerPageOverride(id, module) { PAGE_OVERRIDES[id] = module; }
+
   async function activate(id) {
     if (!PAGES[id] || (root.PermissionService && !root.PermissionService.checkPage(id))) return;
     document.querySelectorAll('.page').forEach((node) => node.classList.remove('page-active')); document.querySelectorAll('.nav-btn').forEach((node) => node.classList.toggle('active', node.dataset.page === id));
-    const host = document.querySelector(`[data-build09-page="${id}"]`); host.classList.add('page-active'); renderPage(id); await fetchRows(id);
+    const host = document.querySelector(`[data-build09-page="${id}"]`); host.classList.add('page-active');
+    const page = config(id);
+    host.querySelector('[data-role="title"]').textContent = rtl() ? page.titleAr : page.title;
+    root.OctagonScopeSelector.render(host, runtime()?.snapshot ? runtime().snapshot() : null);
+    const override = PAGE_OVERRIDES[id];
+    host.classList.toggle('b09r-override-active', Boolean(override));
+    if (override) { override.activate(); return; }
+    renderPage(id); await fetchRows(id);
   }
 
   function wrapNavigation() {
@@ -211,6 +224,6 @@
     runtime()?.subscribe(() => PAGE_IDS.forEach((id) => { if (document.querySelector(`[data-build09-page="${id}"]`)) renderPage(id); }));
   }
 
-  root.OctagonBuild09 = { pages: PAGES, activate, fetchRows, renderPage, stateFor, canWrite };
+  root.OctagonBuild09 = { pages: PAGES, activate, fetchRows, renderPage, stateFor, canWrite, registerPageOverride };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true }); else initialize();
 })(window);

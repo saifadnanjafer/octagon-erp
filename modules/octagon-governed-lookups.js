@@ -11,6 +11,12 @@
     products: ['commercial', 'products'],
   });
   const resources = Object.freeze({ ...WMS_RESOURCES, productionOrders: 'production-orders', workOrders: 'work-orders', products: 'products', operators: 'operators' });
+  // Some list/search endpoints map their row's real primary key to a camelCase field other
+  // than plain `id` (verified against the server-side mapper for each kind below) - falling
+  // back to row.id there silently renders every <option value=""> and makes the picker look
+  // populated while selecting nothing. Only kinds actually verified are listed here; other
+  // WMS_RESOURCES kinds still use row.id and have not been individually audited.
+  const ID_FIELD_BY_KIND = Object.freeze({ locations: 'locationId', products: 'variant_id' });
 
   async function searchOperators(normalized) {
     // No dedicated "operators" query resource exists anywhere in the API - operator/assignee
@@ -33,7 +39,13 @@
     const url = new URL(base, root.location.href); url.searchParams.set('search', normalized); url.searchParams.set('page', Math.max(1, page)); url.searchParams.set('limit', Math.min(100, Math.max(1, limit)));
     const result = await root.OctagonApiClient.get(url.pathname + url.search);
     const rows = Array.isArray(result) ? result : (result?.items || result?.rows || []);
-    const normalizedRows = rows.map((row) => ({ id: row.id, label: row.name || row.code || row.reference || row.id, ...row })); cache.set(key, normalizedRows); return normalizedRows;
+    const idField = ID_FIELD_BY_KIND[kind];
+    // 'products' returns one row per template (getProducts joins product_variants LEFT so a
+    // template with no variant yet has variant_id=null) - every WMS/production/quality action
+    // that takes product_id expects a product_variants.id, so the lookup must resolve to the
+    // variant, not the template, and templates with no variant are not selectable here.
+    const filtered = idField ? rows.filter((row) => row[idField]) : rows;
+    const normalizedRows = filtered.map((row) => ({ ...row, id: idField ? row[idField] : row.id, label: row.name || row.code || row.reference || row.id })); cache.set(key, normalizedRows); return normalizedRows;
   }
   root.OctagonGovernedLookups = { resources, search, clear() { cache.clear(); } };
 })(window);

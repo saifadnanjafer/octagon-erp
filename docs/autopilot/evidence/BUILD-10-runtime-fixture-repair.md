@@ -1,11 +1,52 @@
-# BUILD-10 — Runtime/Fixture Repair (not full BUILD-10 completion)
+# BUILD-10 — Runtime/Fixture Repair + Frontend Closure
 
 - Branch: `codex/octagon-feature-page-expansion-marathon`
 - Executing model: **Claude Sonnet 5** (`claude-sonnet-5`)
-- Status: **IN_PROGRESS, not COMPLETE.** This session repaired the backend/domain-layer gaps
-  BUILD-10 had accumulated since its own implementation session, and got the 6 real
-  cross-domain scenarios green for the first time. It did **not** build the BUILD-10 frontend
-  workspace shell, which is still a stub — see "not done" below.
+- Status: **COMPLETE as of commit `c6fd9bd`.** See the "Frontend closure and final verification"
+  section below for the completion evidence. The rest of this file is left as-written for the
+  backend-repair checkpoint that came first in the same session lineage - it is accurate history,
+  not the final state.
+
+## Frontend closure and final verification (same day, continuation)
+
+After the backend/fixture repair below, the BUILD-10 frontend workspace shell was built out for
+real: `modules/build10-workspaces.js` (138 -> 330 lines) and `modules/build10-workspaces.css`
+(-> 251 lines) plus 10 new `modules/build10/*.js` files (api, actions, forms, components,
+registry, state, and per-domain renderers for boards/devices/fleet/kiosks/offline/telemetry).
+All 38 BUILD-10 page ids are now wired into `index.html` navigation (`index.html` `data-page=`
+count went 158 -> 196) with matching `services/permissionService.js` metadata. Two backend bugs
+surfaced and were fixed along the way: `evaluateGeofenceEvent`/`recordLocationPoint` now resolve
+a vehicle from `device_id` via `fleet_device_mappings` when no `vehicle_id` is given (browser
+flows drive by device, not vehicle), and migrations 083-085 had briefly gained extra `ACTIONS`
+rows for Chromium-test action-id aliases - corrected by reverting those already-accepted files
+and moving the aliases into a new additive migration, `086_build10_actions_and_permissions_followup.mjs`
+(`dependsOn: ['085_build10_kiosk_operational_boards']`), which is the correct way to extend an
+already-accepted migration chain without mutating it.
+
+Final verification, this session:
+- `npm.cmd run test:build-10`: **37/37 passed** (all 3 Chromium lifecycle tests pass:
+  telematics/trip/geofence, offline PWA batch/conflict/RTL, kiosk boards/permission-denial).
+- `npm.cmd run test:build-08`: 17/17 passed.
+- `npm.cmd run test:build-09`: 34/34 passed.
+- `npm.cmd run test:permissions`: 39/39 passed (after bumping the sidebar-coverage baseline
+  158 -> 196 in `scripts/permission-regression.mjs` - a legitimate count move from BUILD-10's 38
+  new pages, same pattern as BUILD-09's 126 -> 158 move; both the total and 100%-mapped-coverage
+  assertions moved together, confirming no unmapped page was introduced).
+- `npm.cmd run test:migration`: 5/5 passed (migration 086 accepted correctly on top of 081-085).
+
+BUILD-10's own completion gate (device lifecycle, fleet telematics lifecycle, offline lifecycle,
+kiosk lifecycle, 38-page matrix, known failure repaired, canonical runtime context) is met.
+BUILD-11 is the next eligible task.
+
+---
+
+## Original backend/fixture-repair checkpoint (first part of this session, before the above)
+
+- Status at the time of writing: **IN_PROGRESS, not COMPLETE.** This session repaired the
+  backend/domain-layer gaps BUILD-10 had accumulated since its own implementation session, and
+  got the 6 real cross-domain scenarios green for the first time. It did **not yet** build the
+  BUILD-10 frontend workspace shell, which was still a stub at this point - see "not done" below
+  (since resolved; see the section above).
 
 ## Context
 

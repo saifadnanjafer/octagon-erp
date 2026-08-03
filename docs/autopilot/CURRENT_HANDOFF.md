@@ -1,5 +1,18 @@
 # Current Autopilot Handoff
 
+## BUILD-10 COMPLETE (2026-08-03)
+
+BUILD-10 (Devices, telematics, offline, and kiosk) is honestly complete. This session's backend
+reconciliation (below) was followed by a real frontend build on the same branch: 38 pages wired
+into `index.html` nav, `modules/build10-workspaces.js`/`.css` genuinely implemented (not a stub),
+10 new `modules/build10/*` support files, and 2 more backend bugs fixed along the way (device-to-
+vehicle resolution in geofence/location functions; migrations 083-085 briefly gained extra rows
+that were correctly reverted and moved into a new additive migration 086 instead). Final
+verification: `test:build-10` 37/37 (all 3 Chromium lifecycle tests pass), `test:build-08` 17/17,
+`test:build-09` 34/34, `test:permissions` 39/39 (after a legitimate sidebar-baseline bump
+158->196), `test:migration` 5/5. Full detail in
+`docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md`. **BUILD-11 is next eligible.**
+
 ## BUILD-10 backend/domain-layer reconciliation (2026-08-03, second session)
 
 A second session was dispatched with the same mega-prompt as the checkpoint below. The owner

@@ -40,8 +40,11 @@ test('BUILD-09 workspace shell exposes governed state, scope, actions, and expor
   assert.match(index, /modules\/build09-workspaces\.js/);
   assert.match(source, /\/api\/v1\/wms\//);
   assert.match(source, /\/api\/v1\/action\//);
-  assert.match(source, /activeCompany/);
-  assert.match(source, /activeWarehouse/);
+  // Company/warehouse scope rendering moved into the shared modules/octagon-scope-selector.js
+  // component (BUILD-09R) instead of local activeCompany()/activeWarehouse() helpers -
+  // proven live by tests/build-09/operational-32-page-matrix-chromium.test.mjs, which asserts
+  // every one of the 32 pages actually gets a populated warehouse scope in a real browser.
+  assert.match(source, /OctagonScopeSelector\.render/);
   assert.match(source, /Loading · empty · error · denied/);
   assert.match(source, /exportCsv/);
   assert.match(source, /PermissionService\.checkPage/);

@@ -55,7 +55,7 @@ export async function openBuild09Browser(t, { name, initialPage }) {
     authorize: ({ ctx }) => ctx.userId === 'viewer-user' ? { allowed: false, statusCode: 403, message: 'Permission denied' } : { allowed: true },
   });
 
-  const STATIC_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-workspaces.css'];
+  const STATIC_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-workspaces.css'];
   const server = http.createServer((req, res) => {
     const requestUrl = new URL(req.url, 'http://127.0.0.1');
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
@@ -71,7 +71,7 @@ export async function openBuild09Browser(t, { name, initialPage }) {
       res.end(fs.readFileSync(path.join(ROOT, 'modules', staticName))); return;
     }
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
-      const scripts = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'build09-action-forms.js', 'build09-workspaces.js'].map((file) => `<script src="/modules/${file}"></script>`).join('');
+      const scripts = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js'].map((file) => `<script src="/modules/${file}"></script>`).join('');
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.switchPage=function(){};</script>${scripts}<script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;

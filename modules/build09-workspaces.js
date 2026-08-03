@@ -66,8 +66,6 @@
   const config = (id) => { const row = PAGES[id]; return row && { id, title: row[0], titleAr: row[1], resource: row[2], columns: row[3], actions: row[4], mobile: Boolean(row[5]), required: row[6] || [], emptyState: row[7] || ['No records yet', 'لا توجد سجلات بعد'], filters: row[8] || [] }; };
   const stateFor = (id) => { if (!states.has(id)) states.set(id, { phase: 'idle', rows: [], filter: '', error: '', updatedAt: null }); return states.get(id); };
   const runtime = () => root.OctagonRuntimeContext;
-  const activeCompany = () => runtime()?.companyId || '';
-  const activeWarehouse = () => runtime()?.warehouseId || '';
   const canWrite = (actionId) => {
     if (root.__BUILD09_FORCE_READ_ONLY__ === true) return false;
     const permissions = runtime()?.permissions;
@@ -81,7 +79,7 @@
     const page = config(id); const requiredInputs = page.required.map((name) => `<label class="b09-query-field"><span>${escapeHtml(humanize(name))}</span><input data-query="${escapeHtml(name)}" autocomplete="off"></label>`).join('');
     const optionalFilters = page.filters.map(([name, filterLabel, options]) => `<label class="b09-query-field"><span>${escapeHtml(rtl() ? filterLabel[1] : filterLabel[0])}</span><select data-query="${escapeHtml(name)}"><option value="">${rtl() ? 'الكل' : 'All'}</option>${options.map(([value, en, ar]) => `<option value="${escapeHtml(value)}">${escapeHtml(rtl() ? ar : en)}</option>`).join('')}</select></label>`).join('');
     return `<section id="${escapeHtml(id)}" class="page b09-workspace${page.mobile ? ' b09-mobile' : ''}" data-build09-page="${escapeHtml(id)}" aria-labelledby="${escapeHtml(id)}Title">
-      <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div><div class="b09-scope"><span data-role="company"></span><label>${rtl() ? 'المستودع' : 'Warehouse'} <select data-role="warehouse"></select></label></div></header>
+      <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div>${root.OctagonScopeSelector.markup()}</header>
       <div class="b09-query-fields">${requiredInputs}${optionalFilters}</div>
       <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">Filter</span><input data-role="filter" type="search" placeholder="Filter visible records…"></label><div class="b09-actions" data-role="actions"></div></div>
       <p class="b09-notice" data-role="permission" hidden></p><p class="b09-status" data-role="status" data-phase="idle" aria-live="polite">Ready for a scoped query.</p>
@@ -124,8 +122,7 @@
     const page = config(id), host = document.querySelector(`[data-build09-page="${id}"]`); if (!page || !host) return;
     host.querySelector('[data-role="title"]').textContent = rtl() ? page.titleAr : page.title;
     host.querySelector('[data-role="subtitle"]').textContent = rtl() ? 'مساحة تشغيلية محكومة، مرتبطة بالسلطات الأساسية والتدقيق.' : 'Governed operational workspace linked to canonical authorities and audit.';
-    host.querySelector('[data-role="company"]').textContent = `${rtl() ? 'الشركة' : 'Company'}: ${activeCompany() || '—'}`;
-    const warehouseSelect = host.querySelector('[data-role="warehouse"]'); const warehouses = runtime()?.availableWarehouses || []; warehouseSelect.innerHTML = '<option value="">Select warehouse</option>' + warehouses.map((warehouse) => `<option value="${escapeHtml(warehouse.id)}">${escapeHtml(warehouse.code ? `${warehouse.code} · ${warehouse.name || warehouse.id}` : warehouse.name || warehouse.id)}</option>`).join(''); warehouseSelect.value = activeWarehouse();
+    root.OctagonScopeSelector.render(host, runtime()?.snapshot ? runtime().snapshot() : null);
     host.querySelector('[data-role="head"]').innerHTML = `<tr>${page.columns.map((column) => `<th>${escapeHtml(humanize(column))}</th>`).join('')}</tr>`;
     host.querySelector('[data-role="actions"]').innerHTML = `<button class="b09-button b09-primary" data-command="refresh">↻ ${rtl() ? 'تحديث' : 'Refresh'}</button><button class="b09-button" data-command="export">⇩ CSV</button>${page.actions.map((action) => { const allowed = canWrite(action); const title = root.OctagonActionForms?.get(action); return `<button class="b09-button" data-action="${escapeHtml(action)}" ${allowed ? '' : 'disabled'} title="${allowed ? '' : escapeHtml(rtl() ? 'لا تملك صلاحية هذا الإجراء' : 'You do not have permission for this action')}">${escapeHtml(title ? (rtl() ? title.title.ar : title.title.en) : humanize(action.split(':').slice(1).join(' ')))}</button>`; }).join('')}`;
     const anyWritable = page.actions.some((action) => canWrite(action));

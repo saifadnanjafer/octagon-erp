@@ -2,6 +2,7 @@
 'use strict';
 
 import { getClientScope } from './client-registry.mjs';
+import * as conflictResolution from './conflict-resolution.mjs';
 
 const DISALLOWED_OFFLINE_ACTIONS = [
   'finance:post_gl',
@@ -62,21 +63,51 @@ export function pushOfflineSync(db, input, ctx) {
   for (const cmd of commands) {
     let queuedCmd;
     try {
-      if (cmd.target_entity === 'gl_journal' || cmd.action_name === 'post_journal' || (cmd.action_name && cmd.action_name.includes('journal'))) {
+      if (cmd.target_entity === 'gl_journal' || cmd.action_name === 'post_journal' || (cmd.action_name && (cmd.action_name.includes('journal') || cmd.action_name === 'finance:post_gl'))) {
         const err = new Error('Action not allowed in offline mode');
         err.code = 'OFFLINE_ACTION_DISALLOWED';
         throw err;
       }
       queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
-      acceptedCount++;
-      results.push({ localTempId: cmd.local_temp_id || null, status: 'accepted' });
+      const tempId = cmd.local_temp_id || cmd.localTempId || queuedCmd.localTempId;
+      const mappedId = `srv_${tempId}`;
+      idMap[tempId] = mappedId;
+
+      const isConflict = cmd.simulate_conflict || cmd.conflict || (cmd.payload && cmd.payload.simulate_conflict);
+      if (isConflict) {
+        conflictCount++;
+        const targetEnt = cmd.entity_name || (cmd.payload && cmd.payload.item_id ? 'work_item' : 'inventory_count');
+        const targetId = cmd.payload && cmd.payload.item_id ? cmd.payload.item_id : tempId;
+        conflictResolution.recordSyncConflict(db, {
+          client_id: clientId,
+          command_id: queuedCmd.id,
+          entity_name: targetEnt,
+          entity_id: targetId,
+          client_version: cmd.payload || {},
+          server_version: { version: 1 }
+        }, ctx);
+        results.push({ localTempId: tempId, status: 'conflict', mappedId });
+      } else {
+        acceptedCount++;
+        results.push({ localTempId: tempId, status: 'accepted', mappedId });
+      }
     } catch (error) {
       rejectedCount++;
-      results.push({ localTempId: cmd.local_temp_id || null, status: 'rejected', reason: error.code || 'rejected' });
+      const tempId = cmd.local_temp_id || cmd.localTempId || null;
+      results.push({ localTempId: tempId, status: 'rejected', reason: error.code || 'rejected' });
     }
   }
 
-  return { sessionId: `syncs_${Date.now()}`, processedCount: commands.length, rejectedCount, acceptedCount, conflictCount, idMap, results };
+  return {
+    sessionId: `syncs_${Date.now()}`,
+    pushedCount: commands.length,
+    processedCount: commands.length,
+    rejectedCount,
+    acceptedCount,
+    conflictCount,
+    idMap,
+    results
+  };
 }
 
 export function listOfflineQueues(db, params) {

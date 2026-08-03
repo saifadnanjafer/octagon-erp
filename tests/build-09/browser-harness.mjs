@@ -59,6 +59,11 @@ export async function openBuild09Browser(t, { name, initialPage }) {
   const server = http.createServer((req, res) => {
     const requestUrl = new URL(req.url, 'http://127.0.0.1');
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
+    if (requestUrl.pathname === '/api/auth/options' && req.method === 'GET') {
+      const users = dialect.prepare(`SELECT id, login, name, locale FROM identity_users WHERE status = 'active' ORDER BY name, login`).all()
+        .map((user) => ({ id: user.id, login: user.login, name: user.name, displayName: user.name, locale: user.locale || 'ar' }));
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ success: true, users })); return;
+    }
     if (api(req, res, requestUrl)) return;
     const staticName = requestUrl.pathname.startsWith('/modules/') ? requestUrl.pathname.slice('/modules/'.length) : null;
     if (staticName && STATIC_MODULES.includes(staticName)) {

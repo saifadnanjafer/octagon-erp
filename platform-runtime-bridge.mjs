@@ -60,6 +60,8 @@ import { registerAssetActions } from './platform/assets/index.mjs';
 import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
 import { registerFleetActions } from './platform/fleet/index.mjs';
 import { registerIotActions } from './platform/iot/index.mjs';
+import { registerOfflineActions } from './platform/offline/index.mjs';
+import { registerKioskActions } from './platform/kiosk/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
 
@@ -333,6 +335,9 @@ export function createPlatformAuthority(dialect) {
   registerBuild08Action('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
   registerBuild08Action('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
   registerServiceActions(actionExecutor, { serviceEntitlementService, electronicSignatureService });
+  registerIotActions(actionExecutor);
+  registerOfflineActions(actionExecutor);
+  registerKioskActions(actionExecutor);
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,

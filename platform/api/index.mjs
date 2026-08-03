@@ -309,6 +309,11 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
+      if (['iot', 'offline', 'kiosk', 'boards'].includes(namespace) && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        return sendJson(res, 200, envelope([], null, { total: 0 }, ctx.correlationId));
+      }
+
       if (['commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());

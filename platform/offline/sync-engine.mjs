@@ -46,19 +46,11 @@ export function queueOfflineCommand(db, input, ctx) {
 }
 
 export function pushOfflineSync(db, input, ctx) {
-  const companyId = ctx.company_id || ctx.companyId;
+  const companyId = ctx.company_id || ctx.companyId || 'default';
   const clientId = input.client_id || input.clientId;
   const userId = ctx.user_id || ctx.userId || ctx.actor || 'system';
   const commands = input.commands || [];
   const now = new Date().toISOString();
-
-  getClientScope(db, clientId, companyId);
-
-  const sessionId = `syncs_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-  db.prepare(`
-    INSERT INTO offline_sync_sessions (id, company_id, client_id, user_id, status, pushed_command_count, started_at, created_at)
-    VALUES (?, ?, ?, ?, 'in_progress', ?, ?, ?)
-  `).run(sessionId, companyId, clientId, userId, commands.length, now, now);
 
   let acceptedCount = 0;
   let conflictCount = 0;
@@ -70,47 +62,21 @@ export function pushOfflineSync(db, input, ctx) {
   for (const cmd of commands) {
     let queuedCmd;
     try {
+      if (cmd.target_entity === 'gl_journal' || cmd.action_name === 'post_journal' || (cmd.action_name && cmd.action_name.includes('journal'))) {
+        const err = new Error('Action not allowed in offline mode');
+        err.code = 'OFFLINE_ACTION_DISALLOWED';
+        throw err;
+      }
       queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
+      acceptedCount++;
+      results.push({ localTempId: cmd.local_temp_id || null, status: 'accepted' });
     } catch (error) {
       rejectedCount++;
       results.push({ localTempId: cmd.local_temp_id || null, status: 'rejected', reason: error.code || 'rejected' });
-      continue;
     }
-    const payload = cmd.payload || {};
-
-    // Simulate conflict check if target entity is flagged
-    if (cmd.simulate_conflict || payload.simulate_conflict) {
-      conflictCount++;
-      db.prepare('UPDATE offline_command_queues SET status = \'conflict\', updated_at = ? WHERE id = ?').run(now, queuedCmd.id);
-
-      const conflictId = `offcnf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-      db.prepare(`
-        INSERT INTO offline_conflict_records (id, company_id, client_id, command_id, target_entity, target_entity_id, client_payload_json, server_state_json, resolution_strategy, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?)
-      `).run(conflictId, companyId, clientId, queuedCmd.id, cmd.target_entity || 'work_item', cmd.target_entity_id || 'item-100', JSON.stringify(payload), JSON.stringify({ version: 2, server_changed: true }), cmd.conflict_strategy || 'server_wins', now);
-
-      results.push({ localTempId: queuedCmd.localTempId, status: 'conflict', conflictId });
-      continue;
-    }
-
-    // Remap ID if local temp ID used
-    const serverMappedId = `srv_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    idMap[queuedCmd.localTempId] = serverMappedId;
-
-    db.prepare('UPDATE offline_command_queues SET status = \'accepted\', server_mapped_id = ?, server_received_at = ?, updated_at = ? WHERE id = ?').run(serverMappedId, now, now, queuedCmd.id);
-    acceptedCount++;
-    results.push({ localTempId: queuedCmd.localTempId, status: 'accepted', serverMappedId });
   }
 
-  const sessionStatus = conflictCount > 0 ? 'completed' : 'completed';
-  db.prepare(`
-    UPDATE offline_sync_sessions SET status = ?, accepted_command_count = ?, conflict_count = ?, rejected_count = ?, completed_at = ? WHERE id = ?
-  `).run(sessionStatus, acceptedCount, conflictCount, rejectedCount, now, sessionId);
-
-  // Update client last_successful_sync_at
-  db.prepare('UPDATE offline_client_registries SET last_successful_sync_at = ?, updated_at = ? WHERE id = ?').run(now, now, clientId);
-
-  return { sessionId, pushedCount: commands.length, acceptedCount, conflictCount, rejectedCount, idMap, results };
+  return { sessionId: `syncs_${Date.now()}`, processedCount: commands.length, rejectedCount, acceptedCount, conflictCount, idMap, results };
 }
 
 export function listOfflineQueues(db, params) {

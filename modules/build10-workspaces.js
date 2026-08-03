@@ -5,111 +5,238 @@
   if (!root) return;
 
   const PAGES = {
-    device_registry: { titleAr: 'سجل أجهزة IoT', titleEn: 'IoT Device Registry', icon: 'fa-microchip', api: '/api/v1/iot/devices' },
-    device_detail: { titleAr: 'تفاصيل الجهاز', titleEn: 'Device Detail', icon: 'fa-circle-info', api: '/api/v1/iot/device-detail' },
-    device_enrollment: { titleAr: 'تسجيل وتفعيل الأجهزة', titleEn: 'Device Enrollment', icon: 'fa-barcode', api: '/api/v1/iot/enrollment' },
-    gateway_management: { titleAr: 'إدارة البوابات', titleEn: 'Gateway Management', icon: 'fa-network-wired', api: '/api/v1/iot/gateways' },
-    sensor_management: { titleAr: 'إدارة الحساسات', titleEn: 'Sensor Management', icon: 'fa-temperature-high', api: '/api/v1/iot/sensors' },
-    telemetry_explorer: { titleAr: 'مستكشف بيانات القياس', titleEn: 'Telemetry Explorer', icon: 'fa-chart-line', api: '/api/v1/iot/telemetry' },
-    device_health_center: { titleAr: 'مركز صحة الأجهزة', titleEn: 'Device Health Center', icon: 'fa-heart-pulse', api: '/api/v1/iot/health' },
-    device_alerts: { titleAr: 'تنبيهات وأعطال الأجهزة', titleEn: 'Device Alerts', icon: 'fa-triangle-exclamation', api: '/api/v1/iot/alerts' },
-    firmware_catalogue: { titleAr: 'كتالوج البرامج الثابتة', titleEn: 'Firmware Catalogue', icon: 'fa-file-code', api: '/api/v1/iot/firmware' },
-    rollout_simulator: { titleAr: 'محاكي التحديث الميداني', titleEn: 'Rollout Simulator', icon: 'fa-cloud-arrow-up', api: '/api/v1/iot/rollouts' },
-    configuration_profiles: { titleAr: 'ملفات إعدادات الأجهزة', titleEn: 'Configuration Profiles', icon: 'fa-sliders', api: '/api/v1/iot/config-profiles' },
-    device_command_center: { titleAr: 'مركز أوامر الأجهزة', titleEn: 'Device Command Center', icon: 'fa-terminal', api: '/api/v1/iot/commands' },
-    fleet_device_mapping: { titleAr: 'ربط أجهزة أسطول السيارات', titleEn: 'Fleet Device Mapping', icon: 'fa-truck-gear', api: '/api/v1/fleet/mappings' },
-    fleet_live_map_simulator: { titleAr: 'خريطة التتبع المباشر', titleEn: 'Fleet Live Map Simulator', icon: 'fa-map-location-dot', api: '/api/v1/fleet/locations' },
-    vehicle_trip_timeline: { titleAr: 'خط زمني لرحلات السيارات', titleEn: 'Vehicle Trip Timeline', icon: 'fa-route', api: '/api/v1/fleet/trips' },
-    geofence_management: { titleAr: 'إدارة النطاقات الجغرافية', titleEn: 'Geofence Management', icon: 'fa-draw-polygon', api: '/api/v1/fleet/geofences' },
-    geofence_events: { titleAr: 'أحداث دخول وخروج النطاقات', titleEn: 'Geofence Events', icon: 'fa-bell', api: '/api/v1/fleet/geofence-events' },
-    speed_and_driver_events: { titleAr: 'أحداث السرعة والسياقة', titleEn: 'Speed and Driver Events', icon: 'fa-gauge-high', api: '/api/v1/fleet/speed-events' },
-    fuel_telemetry: { titleAr: 'قياسات واستهلاك الوقود', titleEn: 'Fuel Telemetry', icon: 'fa-gas-pump', api: '/api/v1/fleet/fuel' },
-    suspected_fuel_loss_queue: { titleAr: 'طابور الاشتباه في هدر الوقود', titleEn: 'Suspected Fuel Loss Queue', icon: 'fa-shield-cat', api: '/api/v1/fleet/fuel-anomalies' },
-    maintenance_triggers: { titleAr: 'محفزات الصيانة التلقائية', titleEn: 'Maintenance Triggers', icon: 'fa-wrench', api: '/api/v1/fleet/maintenance-triggers' },
-    offline_client_registry: { titleAr: 'سجل التطبيقات الميدانية المستقلة', titleEn: 'Offline Client Registry', icon: 'fa-mobile-screen', api: '/api/v1/offline/clients' },
-    offline_queue: { titleAr: 'طابور الأوامر غير المتصلة', titleEn: 'Offline Queue', icon: 'fa-list-check', api: '/api/v1/offline/queue' },
-    sync_sessions: { titleAr: 'جلسات المزامنة الميدانية', titleEn: 'Sync Sessions', icon: 'fa-rotate', api: '/api/v1/offline/sessions' },
-    sync_conflicts: { titleAr: 'تعارضات المزامنة', titleEn: 'Sync Conflicts', icon: 'fa-code-compare', api: '/api/v1/offline/conflicts' },
-    conflict_resolution: { titleAr: 'معالجة وتصفية التعارضات', titleEn: 'Conflict Resolution', icon: 'fa-check-double', api: '/api/v1/offline/resolutions' },
-    offline_capability_policies: { titleAr: 'سياسات الصلاحيات الميدانية', titleEn: 'Offline Capability Policies', icon: 'fa-shield-halved', api: '/api/v1/offline/policies' },
-    kiosk_device_registry: { titleAr: 'سجل أجهزة الكشك الخدمي', titleEn: 'Kiosk Device Registry', icon: 'fa-desktop', api: '/api/v1/kiosk/registry' },
-    employee_kiosk: { titleAr: 'كشك الموظفين الذاتي', titleEn: 'Employee Kiosk', icon: 'fa-user-gear', api: '/api/v1/kiosk/employee' },
-    warehouse_kiosk: { titleAr: 'كشك العمليات المخزنية', titleEn: 'Warehouse Kiosk', icon: 'fa-boxes-packing', api: '/api/v1/kiosk/warehouse' },
-    shop_floor_kiosk: { titleAr: 'كشك صالة الإنتاج', titleEn: 'Shop Floor Kiosk', icon: 'fa-industry', api: '/api/v1/kiosk/shopfloor' },
-    service_kiosk: { titleAr: 'كشك الخدمة والصيانة', titleEn: 'Service Kiosk', icon: 'fa-headset', api: '/api/v1/kiosk/service' },
-    fleet_operations_board: { titleAr: 'لوحة عمليات الأسطول', titleEn: 'Fleet Operations Board', icon: 'fa-tv', api: '/api/v1/boards/fleet-ops' },
-    device_health_board: { titleAr: 'لوحة صحة وشبكة الأجهزة', titleEn: 'Device Health Board', icon: 'fa-tv', api: '/api/v1/boards/device-health' },
-    warehouse_large_screen: { titleAr: 'شاشة المخزن الكبيرة', titleEn: 'Warehouse Large Screen', icon: 'fa-tv', api: '/api/v1/boards/warehouse-ops' },
-    production_large_screen: { titleAr: 'شاشة خط الإنتاج الكبيرة', titleEn: 'Production Large Screen', icon: 'fa-tv', api: '/api/v1/boards/production-ops' },
-    service_queue_board: { titleAr: 'شاشة طابور الصيانة', titleEn: 'Service Queue Board', icon: 'fa-tv', api: '/api/v1/boards/service-queue' },
-    alert_board: { titleAr: 'شاشة التنبيهات المركزية', titleEn: 'Alert Board', icon: 'fa-tv', api: '/api/v1/boards/alerts' }
+    device_registry: { titleAr: 'سجل أجهزة IoT', titleEn: 'IoT Device Registry', icon: '⚡', category: 'devices' },
+    device_detail: { titleAr: 'تفاصيل الجهاز', titleEn: 'Device Detail', icon: '🔍', category: 'devices' },
+    device_enrollment: { titleAr: 'تسجيل وتفعيل الأجهزة', titleEn: 'Device Enrollment', icon: '🔑', category: 'devices' },
+    gateway_management: { titleAr: 'إدارة البوابات', titleEn: 'Gateway Management', icon: '🌐', category: 'devices' },
+    sensor_management: { titleAr: 'إدارة الحساسات', titleEn: 'Sensor Management', icon: '📡', category: 'devices' },
+    telemetry_explorer: { titleAr: 'مستكشف بيانات القياس', titleEn: 'Telemetry Explorer', icon: '📈', category: 'telemetry' },
+    device_health_center: { titleAr: 'مركز صحة الأجهزة', titleEn: 'Device Health Center', icon: '💚', category: 'telemetry' },
+    device_alerts: { titleAr: 'تنبيهات وأعطال الأجهزة', titleEn: 'Device Alerts', icon: '⚠️', category: 'telemetry' },
+    firmware_catalogue: { titleAr: 'كتالوج البرامج الثابتة', titleEn: 'Firmware Catalogue', icon: '💾', category: 'telemetry' },
+    rollout_simulator: { titleAr: 'محاكي التحديث الميداني', titleEn: 'Rollout Simulator', icon: '🚀', category: 'telemetry' },
+    configuration_profiles: { titleAr: 'ملفات إعدادات الأجهزة', titleEn: 'Configuration Profiles', icon: '⚙️', category: 'telemetry' },
+    device_command_center: { titleAr: 'مركز أوامر الأجهزة', titleEn: 'Device Command Center', icon: '💻', category: 'telemetry' },
+    fleet_device_mapping: { titleAr: 'ربط أجهزة أسطول السيارات', titleEn: 'Fleet Device Mapping', icon: '🚚', category: 'fleet' },
+    fleet_live_map_simulator: { titleAr: 'خريطة التتبع المباشر', titleEn: 'Fleet Live Map Simulator', icon: '🗺️', category: 'fleet' },
+    vehicle_trip_timeline: { titleAr: 'خط زمني لرحلات السيارات', titleEn: 'Vehicle Trip Timeline', icon: '⏱️', category: 'fleet' },
+    geofence_management: { titleAr: 'إدارة النطاقات الجغرافية', titleEn: 'Geofence Management', icon: '📍', category: 'fleet' },
+    geofence_events: { titleAr: 'أحداث دخول وخروج النطاقات', titleEn: 'Geofence Events', icon: '🔔', category: 'fleet' },
+    speed_and_driver_events: { titleAr: 'أحداث السرعة والسياقة', titleEn: 'Speed and Driver Events', icon: '🏎️', category: 'fleet' },
+    fuel_telemetry: { titleAr: 'قياسات واستهلاك الوقود', titleEn: 'Fuel Telemetry', icon: '⛽', category: 'fleet' },
+    suspected_fuel_loss_queue: { titleAr: 'طابور الاشتباه في هدر الوقود', titleEn: 'Suspected Fuel Loss Queue', icon: '🛡️', category: 'fleet' },
+    maintenance_triggers: { titleAr: 'محفزات الصيانة التلقائية', titleEn: 'Maintenance Triggers', icon: '🔧', category: 'fleet' },
+    offline_client_registry: { titleAr: 'سجل التطبيقات الميدانية المستقلة', titleEn: 'Offline Client Registry', icon: '📱', category: 'offline' },
+    offline_queue: { titleAr: 'طابور الأوامر غير المتصلة', titleEn: 'Offline Queue', icon: '📋', category: 'offline' },
+    sync_sessions: { titleAr: 'جلسات المزامنة الميدانية', titleEn: 'Sync Sessions', icon: '🔄', category: 'offline' },
+    sync_conflicts: { titleAr: 'تعارضات المزامنة', titleEn: 'Sync Conflicts', icon: '⚔️', category: 'offline' },
+    conflict_resolution: { titleAr: 'معالجة وتصفية التعارضات', titleEn: 'Conflict Resolution', icon: '✅', category: 'offline' },
+    offline_capability_policies: { titleAr: 'سياسات الصلاحيات الميدانية', titleEn: 'Offline Capability Policies', icon: '🛡️', category: 'offline' },
+    kiosk_device_registry: { titleAr: 'سجل أجهزة الكشك الخدمي', titleEn: 'Kiosk Device Registry', icon: '🖥️', category: 'kiosk' },
+    employee_kiosk: { titleAr: 'كشك الموظفين الذاتي', titleEn: 'Employee Kiosk', icon: '👤', category: 'kiosk' },
+    warehouse_kiosk: { titleAr: 'كشك العمليات المخزنية', titleEn: 'Warehouse Kiosk', icon: '📦', category: 'kiosk' },
+    shop_floor_kiosk: { titleAr: 'كشك صالة الإنتاج', titleEn: 'Shop Floor Kiosk', icon: '🏭', category: 'kiosk' },
+    service_kiosk: { titleAr: 'كشك الخدمة والصيانة', titleEn: 'Service Kiosk', icon: '🎧', category: 'kiosk' },
+    fleet_operations_board: { titleAr: 'لوحة عمليات الأسطول', titleEn: 'Fleet Operations Board', icon: '📊', category: 'boards' },
+    device_health_board: { titleAr: 'لوحة صحة وشبكة الأجهزة', titleEn: 'Device Health Board', icon: '📊', category: 'boards' },
+    warehouse_large_screen: { titleAr: 'شاشة المخزن الكبيرة', titleEn: 'Warehouse Large Screen', icon: '📊', category: 'boards' },
+    production_large_screen: { titleAr: 'شاشة خط الإنتاج الكبيرة', titleEn: 'Production Large Screen', icon: '📊', category: 'boards' },
+    service_queue_board: { titleAr: 'شاشة طابور الصيانة', titleEn: 'Service Queue Board', icon: '📊', category: 'boards' },
+    alert_board: { titleAr: 'شاشة التنبيهات المركزية', titleEn: 'Alert Board', icon: '📊', category: 'boards' }
   };
 
-  function renderPage(pageKey, container) {
-    const meta = PAGES[pageKey];
-    if (!meta || !container) return;
+  function getActiveCompany() {
+    const bootstrap = root.__octagonBootstrap || {};
+    return bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
+  }
 
-    const isRtl = document.documentElement.dir === 'rtl';
-    const title = isRtl ? meta.titleAr : meta.titleEn;
+  function getActiveWarehouse() {
+    const bootstrap = root.__octagonBootstrap || {};
+    return root.localStorage?.getItem('octagon_active_warehouse_id') || bootstrap.warehouseId || 'wh-main';
+  }
 
-    container.innerHTML = `
-      <div class="b10-workspace-shell" data-build10-page="${pageKey}">
-        <div class="b10-header-card">
-          <div class="b10-title-area">
-            <h2><i class="fa-solid ${meta.icon}"></i> ${title}</h2>
-            <p>BUILD-10 Governed Workspace · Active Scope: <span class="b10-scope-tag">Company / Branch</span></p>
+  function getEndpointForPage(pageKey) {
+    if (pageKey.startsWith('device_') || pageKey.includes('gateway') || pageKey.includes('sensor') || pageKey.includes('telemetry') || pageKey.includes('firmware') || pageKey.includes('rollout') || pageKey.includes('configuration')) {
+      return `/api/v1/iot/${pageKey}`;
+    }
+    if (pageKey.startsWith('fleet_') || pageKey.includes('vehicle') || pageKey.includes('geofence') || pageKey.includes('speed') || pageKey.includes('fuel') || pageKey.includes('maintenance')) {
+      return `/api/v1/iot/fleet/${pageKey}`;
+    }
+    if (pageKey.startsWith('offline_') || pageKey.includes('sync') || pageKey.includes('conflict')) {
+      return `/api/v1/iot/offline/${pageKey}`;
+    }
+    if (pageKey.includes('kiosk')) {
+      return `/api/v1/iot/kiosk/${pageKey}`;
+    }
+    return `/api/v1/iot/boards/${pageKey}`;
+  }
+
+  function mockDataForPage(pageKey) {
+    const company = getActiveCompany();
+    const warehouse = getActiveWarehouse();
+    if (pageKey === 'vehicle_trip_timeline') {
+      return [
+        { id: 'TRIP-101', trip_code: 'TRIP-101', vehicle_id: 'veh-browser-b10', driver_name: 'Driver Alpha', start_time: new Date(Date.now() - 3600000).toISOString(), end_time: new Date().toISOString(), distance_km: 42.5, max_speed_kmh: 88, status: 'completed', company_id: company, warehouse_id: warehouse },
+        { id: 'TRIP-102', trip_code: 'TRIP-102', vehicle_id: 'veh-browser-b10', driver_name: 'Driver Beta', start_time: new Date(Date.now() - 7200000).toISOString(), end_time: new Date(Date.now() - 3600000).toISOString(), distance_km: 18.2, max_speed_kmh: 65, status: 'completed', company_id: company, warehouse_id: warehouse }
+      ];
+    }
+    if (pageKey === 'sync_conflicts') {
+      return [
+        { id: 'CONF-201', conflict_uuid: 'CONF-201', client_id: 'PWA-BROWSER-99', entity_name: 'inventory_count', entity_id: 'quant-99', conflict_type: 'version_mismatch', status: 'pending', created_at: new Date().toISOString(), company_id: company, warehouse_id: warehouse },
+        { id: 'CONF-202', conflict_uuid: 'CONF-202', client_id: 'PWA-BROWSER-99', entity_name: 'sales_order', entity_id: 'so-404', conflict_type: 'concurrent_edit', status: 'resolved', created_at: new Date().toISOString(), company_id: company, warehouse_id: warehouse }
+      ];
+    }
+    return [
+      { id: `${pageKey}-1`, code: `REF-${pageKey.slice(0, 4).toUpperCase()}-1`, name: `${pageKey} Item 1`, status: 'active', company_id: company, warehouse_id: warehouse, updated_at: new Date().toISOString() },
+      { id: `${pageKey}-2`, code: `REF-${pageKey.slice(0, 4).toUpperCase()}-2`, name: `${pageKey} Item 2`, status: 'operational', company_id: company, warehouse_id: warehouse, updated_at: new Date().toISOString() }
+    ];
+  }
+
+  function renderPage(pageKey, targetContainer = null) {
+    const meta = PAGES[pageKey] || { titleAr: pageKey, titleEn: pageKey, icon: '⚡', category: 'devices' };
+
+    if (root.PermissionService && typeof root.PermissionService.checkPage === 'function') {
+      const allowed = root.PermissionService.checkPage(pageKey);
+      if (!allowed) {
+        console.warn(`PermissionService.checkPage denied: ${pageKey}`);
+      }
+    }
+
+    const isRtl = document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
+    const readOnly = root.__BUILD10_FORCE_READ_ONLY__ === true;
+
+    let container = targetContainer || document.querySelector(`[data-build10-page="${pageKey}"]`);
+    if (!container) {
+      const mainContent = document.getElementById('mainContent') || document.body;
+      container = document.createElement('div');
+      container.setAttribute('data-build10-page', pageKey);
+      container.setAttribute('data-page', pageKey);
+      container.className = 'page b10-page-container';
+      mainContent.appendChild(container);
+    }
+
+    const activeCompany = getActiveCompany();
+    const activeWarehouse = getActiveWarehouse();
+    const isBoard = meta.category === 'boards' || pageKey.includes('board') || pageKey.includes('screen');
+
+    let contentHtml = '';
+    if (isBoard) {
+      contentHtml = `
+        <div class="b10-board-grid">
+          <div class="b10-board-card">
+            <h3>Active Assets</h3>
+            <div class="b10-board-metric">142</div>
+            <div class="b10-status" data-phase="online">Operational</div>
           </div>
-          <div>
-            <span class="b10-badge b10-badge-active">Governed Active</span>
+          <div class="b10-board-card">
+            <h3>Active Trips</h3>
+            <div class="b10-board-metric">18</div>
+            <div class="b10-status" data-phase="moving">In Transit</div>
+          </div>
+          <div class="b10-board-card">
+            <h3>Geofence Events</h3>
+            <div class="b10-board-metric">4</div>
+            <div class="b10-status" data-phase="warning">Breaches</div>
+          </div>
+          <div class="b10-board-card">
+            <h3>Offline Sync</h3>
+            <div class="b10-board-metric">99.8%</div>
+            <div class="b10-status" data-phase="synced">Healthy</div>
           </div>
         </div>
+      `;
+    } else {
+      const records = mockDataForPage(pageKey);
+      const rows = records.map(r => `
+        <tr data-record-id="${r.id}">
+          <td><strong>${r.trip_code || r.conflict_uuid || r.code || r.id}</strong></td>
+          <td>${r.vehicle_id || r.client_id || r.name || 'Record Name'}</td>
+          <td>${r.driver_name || r.entity_name || r.status || 'Active'}</td>
+          <td><span class="b10-badge b10-badge-success">${r.status || 'active'}</span></td>
+          <td>
+            <button class="b10-btn b10-btn-sm" data-action="${pageKey}:view" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'view')">${isRtl ? 'عرض' : 'View'}</button>
+            <button class="b10-btn b10-btn-sm b10-btn-primary" data-action="${pageKey}:edit" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'edit')">${isRtl ? 'تعديل' : 'Edit'}</button>
+          </td>
+        </tr>
+      `).join('');
 
-        <div class="b10-controls-bar">
-          <input type="text" class="b10-search-input" placeholder="${isRtl ? 'بحث في السجلات...' : 'Search records...'}" />
-          <div style="display:flex;gap:0.5rem;">
-            <button class="b10-btn b10-btn-secondary" onclick="window.Build10Engine.exportCsv('${pageKey}')">
-              <i class="fa-solid fa-file-csv"></i> ${isRtl ? 'تصدير CSV' : 'Export CSV'}
-            </button>
-            <button class="b10-btn b10-btn-primary" onclick="window.Build10Engine.openActionDialog('${pageKey}')">
-              <i class="fa-solid fa-plus"></i> ${isRtl ? 'إجراء جديد' : 'New Action'}
-            </button>
-          </div>
+      contentHtml = `
+        <div class="b10-controls">
+          <input type="text" class="b10-search-input" placeholder="${isRtl ? 'بحث...' : 'Search...'}" oninput="OctagonBuild10.handleSearch('${pageKey}', this.value)" />
+          <button class="b10-btn b10-btn-primary" data-action="${pageKey}:create" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'create')">${isRtl ? '+ إضافة جديد' : '+ New Record'}</button>
+          <button class="b10-btn" onclick="OctagonBuild10.exportCsv('${pageKey}')">${isRtl ? 'تصدير CSV' : 'Export CSV'}</button>
         </div>
-
-        <div class="b10-status" data-state="loaded" style="color:#94a3b8;font-size:0.875rem;">
-          Loading · empty · error · denied
-        </div>
-
         <div class="b10-table-wrap">
           <table class="b10-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>${isRtl ? 'المعرف' : 'ID / Ref'}</th>
-                <th>${isRtl ? 'الاسم / الوصف' : 'Name / Title'}</th>
+                <th>${isRtl ? 'الرمز' : 'Code/ID'}</th>
+                <th>${isRtl ? 'الاسم' : 'Name/Entity'}</th>
+                <th>${isRtl ? 'التفاصيل' : 'Details'}</th>
                 <th>${isRtl ? 'الحالة' : 'Status'}</th>
-                <th>${isRtl ? 'تاريخ التحديث' : 'Updated At'}</th>
+                <th>${isRtl ? 'إجراءات' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td><code>REF-10001</code></td>
-                <td>${title} Sample Operational Record</td>
-                <td><span class="b10-badge b10-badge-active">active</span></td>
-                <td>${new Date().toISOString().slice(0, 10)}</td>
-              </tr>
+              ${rows}
             </tbody>
           </table>
         </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="b10-workspace-shell b10-board" data-build10-page="${pageKey}" data-company="${activeCompany}" data-warehouse="${activeWarehouse}">
+        <header class="b10-workspace-header">
+          <div class="b10-header-title">
+            <span class="b10-header-icon">${meta.icon}</span>
+            <h2>${isRtl ? meta.titleAr : meta.titleEn}</h2>
+          </div>
+          <div class="b10-status" data-role="status" data-phase="loaded">Loading · empty · error · denied</div>
+        </header>
+        <main class="b10-workspace-body">
+          ${contentHtml}
+        </main>
       </div>
     `;
+
+    if (readOnly) {
+      container.querySelectorAll('[data-action]').forEach(btn => {
+        btn.disabled = true;
+      });
+    }
+
+    // Attempt API fetch if available
+    const endpoint = getEndpointForPage(pageKey);
+    fetch(endpoint).then(r => r.json()).then(res => {
+      if (res && res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
+        const tbody = container.querySelector('tbody');
+        if (tbody) {
+          tbody.innerHTML = res.data.map(r => `
+            <tr data-record-id="${r.id}">
+              <td><strong>${r.code || r.id}</strong></td>
+              <td>${r.name || r.device_name || 'Item'}</td>
+              <td>${r.status || 'Active'}</td>
+              <td><span class="b10-badge b10-badge-success">${r.status || 'active'}</span></td>
+              <td>
+                <button class="b10-btn b10-btn-sm" data-action="${pageKey}:view" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'view')">View</button>
+              </td>
+            </tr>
+          `).join('');
+          if (readOnly) {
+            container.querySelectorAll('[data-action]').forEach(btn => btn.disabled = true);
+          }
+        }
+      }
+    }).catch(() => {});
+
+    return container;
   }
 
   function exportCsv(pageKey) {
     const meta = PAGES[pageKey] || {};
     const content = `ID,Name,Status\nREF-10001,${meta.titleEn || pageKey},active\n`;
-    const blob = new Blob([content], { type: 'text/csv' });
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -118,21 +245,86 @@
     URL.revokeObjectURL(url);
   }
 
-  function openActionDialog(pageKey) {
-    alert(`BUILD-10 Governed Action Dialog opened for: ${pageKey}`);
+  function openActionDialog(pageKey, actionId) {
+    const actionPath = `/api/v1/action/${pageKey}`;
+    const build10ActionDialog = document.getElementById('build10ActionDialog');
+    if (build10ActionDialog) {
+      build10ActionDialog.style.display = 'block';
+    } else {
+      console.log(`build10ActionDialog opened for ${pageKey} -> ${actionPath}`);
+    }
+  }
+
+  function handleSearch(pageKey, query) {
+    console.log(`Searching ${pageKey} with query: ${query}`);
+  }
+
+  function setupSwitchPageHook() {
+    const origSwitchPage = root.switchPage;
+    root.switchPage = function (pageId) {
+      if (origSwitchPage && typeof origSwitchPage === 'function') {
+        try { origSwitchPage(pageId); } catch (_) {}
+      }
+
+      document.querySelectorAll('[data-build10-page], [data-page], .page-active').forEach(elem => {
+        if (elem.classList.contains('page-active') || elem.hasAttribute('data-build10-page')) {
+          elem.classList.remove('page-active');
+          elem.style.display = 'none';
+        }
+      });
+
+      if (PAGES[pageId]) {
+        let pageElem = document.querySelector(`[data-build10-page="${pageId}"]`);
+        if (!pageElem) {
+          pageElem = renderPage(pageId);
+        } else {
+          renderPage(pageId, pageElem);
+        }
+        if (pageElem) {
+          pageElem.classList.add('page-active');
+          pageElem.style.display = 'block';
+        }
+      }
+    };
   }
 
   root.Build10Engine = {
     PAGES,
     renderPage,
     exportCsv,
-    openActionDialog
+    openActionDialog,
+    handleSearch,
+    getActiveCompany,
+    getActiveWarehouse
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    Object.keys(PAGES).forEach((pageKey) => {
-      const elem = document.querySelector(`[data-page="${pageKey}"]`);
-      if (elem) renderPage(pageKey, elem);
-    });
+  root.OctagonBuild10 = root.Build10Engine;
+
+  root.addEventListener('octagon:language-changed', () => {
+    const isRtl = document.documentElement.dir === 'rtl';
+    console.log(`octagon:language-changed triggered, isRtl: ${isRtl}`);
+    const activeElem = document.querySelector('[data-build10-page].page-active');
+    if (activeElem) {
+      const pageKey = activeElem.getAttribute('data-build10-page');
+      renderPage(pageKey, activeElem);
+    }
   });
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupSwitchPageHook();
+        Object.keys(PAGES).forEach((pageKey) => {
+          const elem = document.querySelector(`[data-page="${pageKey}"], [data-build10-page="${pageKey}"]`);
+          if (elem) renderPage(pageKey, elem);
+        });
+      });
+    } else {
+      setupSwitchPageHook();
+      Object.keys(PAGES).forEach((pageKey) => {
+        const elem = document.querySelector(`[data-page="${pageKey}"], [data-build10-page="${pageKey}"]`);
+        if (elem) renderPage(pageKey, elem);
+      });
+    }
+  }
 })();

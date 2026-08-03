@@ -57,14 +57,18 @@ export function registerIotActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'iot:command_approve', commands.approveCommand);
   registerDomainHandler(actionExecutor, 'iot:command_dispatch_simulated', commands.dispatchSimulatedCommand);
 
-  // Slice 3 actions (fleet telematics) - previously implemented but never wired to the action executor
+  // Slice 3 actions (fleet telematics)
   registerDomainHandler(actionExecutor, 'iot:fleet_device_map', fleetMapping.mapFleetDevice);
   registerDomainHandler(actionExecutor, 'iot:fleet_odometer_calibrate', fleetMapping.calibrateOdometer);
   registerDomainHandler(actionExecutor, 'iot:location_point_record', locationTrips.recordLocationPoint);
+  registerDomainHandler(actionExecutor, 'iot:record_location_point', locationTrips.recordLocationPoint);
   registerDomainHandler(actionExecutor, 'iot:trip_start', locationTrips.startTrip);
+  registerDomainHandler(actionExecutor, 'iot:start_or_project_trip', locationTrips.startTrip);
   registerDomainHandler(actionExecutor, 'iot:trip_end', locationTrips.endTrip);
   registerDomainHandler(actionExecutor, 'iot:geofence_create', geofences.createGeofence);
+  registerDomainHandler(actionExecutor, 'iot:define_geofence', geofences.createGeofence);
   registerDomainHandler(actionExecutor, 'iot:geofence_event_evaluate', geofences.evaluateGeofenceEvent);
+  registerDomainHandler(actionExecutor, 'iot:evaluate_geofence_breach', geofences.evaluateGeofenceEvent);
   registerDomainHandler(actionExecutor, 'iot:geofence_event_acknowledge', geofences.acknowledgeGeofenceEvent);
   registerDomainHandler(actionExecutor, 'iot:speed_event_record', fleetEvents.recordSpeedEvent);
   registerDomainHandler(actionExecutor, 'iot:speed_event_acknowledge', fleetEvents.acknowledgeSpeedEvent);

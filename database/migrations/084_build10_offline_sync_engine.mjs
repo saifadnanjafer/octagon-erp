@@ -15,9 +15,12 @@ const ACTIONS = [
   ['offline:client_revoke', 'offline_client_registry', 'offline:admin'],
   ['offline:command_queue_local', 'offline_command_queue', 'offline:sync'],
   ['offline:command_sync_push', 'offline_command_queue', 'offline:sync'],
+  ['offline:push_queue_batch', 'offline_command_queue', 'offline:sync'],
   ['offline:sync_session_start', 'offline_sync_session', 'offline:sync'],
   ['offline:sync_session_complete', 'offline_sync_session', 'offline:sync'],
   ['offline:conflict_resolve', 'offline_conflict_record', 'offline:admin'],
+  ['offline:record_sync_conflict', 'offline_conflict_record', 'offline:admin'],
+  ['offline:resolve_sync_conflict', 'offline_conflict_record', 'offline:admin'],
 ];
 
 const PERMISSIONS = [

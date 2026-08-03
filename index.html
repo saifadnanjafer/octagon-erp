@@ -126,6 +126,7 @@
   <link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">
   <link rel="stylesheet" href="modules/build08-workspaces.css?v=20260802-build08-v1">
   <link rel="stylesheet" href="modules/build09-workspaces.css?v=20260803-build09r2-v1">
+  <link rel="stylesheet" href="modules/build10-workspaces.css?v=20260803-build10-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -1835,6 +1836,85 @@
         </div>
       </div>
 
+      <!-- BUILD-10 Navigation Groups -->
+      <div class="nav-group" data-nav-group="build10_devices">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_devices')" aria-controls="navGroup_build10_devices" aria-expanded="false">
+          <span class="nav-icon">⚡</span><span>IoT & Devices</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_devices">
+          <button class="nav-btn" data-page="device_registry" onclick="switchPage('device_registry')"><span>Device Registry</span></button>
+          <button class="nav-btn" data-page="device_detail" onclick="switchPage('device_detail')"><span>Device Detail</span></button>
+          <button class="nav-btn" data-page="device_enrollment" onclick="switchPage('device_enrollment')"><span>Device Enrollment</span></button>
+          <button class="nav-btn" data-page="gateway_management" onclick="switchPage('gateway_management')"><span>Gateway Management</span></button>
+          <button class="nav-btn" data-page="sensor_management" onclick="switchPage('sensor_management')"><span>Sensor Management</span></button>
+          <button class="nav-btn" data-page="telemetry_explorer" onclick="switchPage('telemetry_explorer')"><span>Telemetry Explorer</span></button>
+          <button class="nav-btn" data-page="device_health_center" onclick="switchPage('device_health_center')"><span>Device Health Center</span></button>
+          <button class="nav-btn" data-page="device_alerts" onclick="switchPage('device_alerts')"><span>Device Alerts</span></button>
+          <button class="nav-btn" data-page="firmware_catalogue" onclick="switchPage('firmware_catalogue')"><span>Firmware Catalogue</span></button>
+          <button class="nav-btn" data-page="rollout_simulator" onclick="switchPage('rollout_simulator')"><span>Rollout Simulator</span></button>
+          <button class="nav-btn" data-page="configuration_profiles" onclick="switchPage('configuration_profiles')"><span>Configuration Profiles</span></button>
+          <button class="nav-btn" data-page="device_command_center" onclick="switchPage('device_command_center')"><span>Device Command Center</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_fleet">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_fleet')" aria-controls="navGroup_build10_fleet" aria-expanded="false">
+          <span class="nav-icon">🚚</span><span>Fleet Telematics</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_fleet">
+          <button class="nav-btn" data-page="fleet_device_mapping" onclick="switchPage('fleet_device_mapping')"><span>Fleet Device Mapping</span></button>
+          <button class="nav-btn" data-page="fleet_live_map_simulator" onclick="switchPage('fleet_live_map_simulator')"><span>Fleet Live Map Simulator</span></button>
+          <button class="nav-btn" data-page="vehicle_trip_timeline" onclick="switchPage('vehicle_trip_timeline')"><span>Vehicle Trip Timeline</span></button>
+          <button class="nav-btn" data-page="geofence_management" onclick="switchPage('geofence_management')"><span>Geofence Management</span></button>
+          <button class="nav-btn" data-page="geofence_events" onclick="switchPage('geofence_events')"><span>Geofence Events</span></button>
+          <button class="nav-btn" data-page="speed_and_driver_events" onclick="switchPage('speed_and_driver_events')"><span>Speed and Driver Events</span></button>
+          <button class="nav-btn" data-page="fuel_telemetry" onclick="switchPage('fuel_telemetry')"><span>Fuel Telemetry</span></button>
+          <button class="nav-btn" data-page="suspected_fuel_loss_queue" onclick="switchPage('suspected_fuel_loss_queue')"><span>Suspected Fuel Loss Queue</span></button>
+          <button class="nav-btn" data-page="maintenance_triggers" onclick="switchPage('maintenance_triggers')"><span>Maintenance Triggers</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_offline">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_offline')" aria-controls="navGroup_build10_offline" aria-expanded="false">
+          <span class="nav-icon">📲</span><span>Offline Operations</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_offline">
+          <button class="nav-btn" data-page="offline_client_registry" onclick="switchPage('offline_client_registry')"><span>Offline Client Registry</span></button>
+          <button class="nav-btn" data-page="offline_queue" onclick="switchPage('offline_queue')"><span>Offline Queue</span></button>
+          <button class="nav-btn" data-page="sync_sessions" onclick="switchPage('sync_sessions')"><span>Sync Sessions</span></button>
+          <button class="nav-btn" data-page="sync_conflicts" onclick="switchPage('sync_conflicts')"><span>Sync Conflicts</span></button>
+          <button class="nav-btn" data-page="conflict_resolution" onclick="switchPage('conflict_resolution')"><span>Conflict Resolution</span></button>
+          <button class="nav-btn" data-page="offline_capability_policies" onclick="switchPage('offline_capability_policies')"><span>Offline Capability Policies</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_kiosk">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_kiosk')" aria-controls="navGroup_build10_kiosk" aria-expanded="false">
+          <span class="nav-icon">🖥️</span><span>Kiosk Terminals</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_kiosk">
+          <button class="nav-btn" data-page="kiosk_device_registry" onclick="switchPage('kiosk_device_registry')"><span>Kiosk Device Registry</span></button>
+          <button class="nav-btn" data-page="employee_kiosk" onclick="switchPage('employee_kiosk')"><span>Employee Kiosk</span></button>
+          <button class="nav-btn" data-page="warehouse_kiosk" onclick="switchPage('warehouse_kiosk')"><span>Warehouse Kiosk</span></button>
+          <button class="nav-btn" data-page="shop_floor_kiosk" onclick="switchPage('shop_floor_kiosk')"><span>Shop Floor Kiosk</span></button>
+          <button class="nav-btn" data-page="service_kiosk" onclick="switchPage('service_kiosk')"><span>Service Kiosk</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_boards">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_boards')" aria-controls="navGroup_build10_boards" aria-expanded="false">
+          <span class="nav-icon">📊</span><span>Operational Boards</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_boards">
+          <button class="nav-btn" data-page="fleet_operations_board" onclick="switchPage('fleet_operations_board')"><span>Fleet Operations Board</span></button>
+          <button class="nav-btn" data-page="device_health_board" onclick="switchPage('device_health_board')"><span>Device Health Board</span></button>
+          <button class="nav-btn" data-page="warehouse_large_screen" onclick="switchPage('warehouse_large_screen')"><span>Warehouse Large Screen</span></button>
+          <button class="nav-btn" data-page="production_large_screen" onclick="switchPage('production_large_screen')"><span>Production Large Screen</span></button>
+          <button class="nav-btn" data-page="service_queue_board" onclick="switchPage('service_queue_board')"><span>Service Queue Board</span></button>
+          <button class="nav-btn" data-page="alert_board" onclick="switchPage('alert_board')"><span>Alert Board</span></button>
+        </div>
+      </div>
+
       <div class="sidebar-footer">
         <div class="sidebar-actions" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
           <div class="theme-switcher-wrap" id="themeSwitcherWrap">
@@ -2386,8 +2466,21 @@
   <script src="modules/build09-action-forms.js?v=20260803-build09r-v2"></script>
   <script src="modules/build09-workspaces.js?v=20260803-build09r2-v1"></script>
   <script src="modules/build09-mobile-receiving.js?v=20260803-build09r2-v1"></script>
-  <script src="modules/build09-mobile-picking.js?v=20260803-build09r2-v1"></script>
   <script src="modules/build08-workspaces.js?v=20260802-build08-v1"></script>
+  <!-- BUILD-10 Modular Workspaces & Kiosks Engine -->
+  <script src="modules/build10/registry.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/state.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/api.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/forms.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/actions.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/components.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/devices.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/telemetry.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/fleet.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/offline.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/kiosks.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/boards.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10-workspaces.js?v=20260803-build10-v1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

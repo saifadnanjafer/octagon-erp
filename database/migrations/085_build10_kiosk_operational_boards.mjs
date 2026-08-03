@@ -16,6 +16,7 @@ const ACTIONS = [
   ['kiosk:heartbeat', 'kiosk_device_registry', 'kiosk:operate'],
   ['kiosk:session_start', 'kiosk_session_log', 'kiosk:operate'],
   ['kiosk:session_end', 'kiosk_session_log', 'kiosk:operate'],
+  ['kiosk:evaluate_kiosk_permission', 'kiosk_device_registry', 'kiosk:admin'],
   ['board:config_upsert', 'operational_board_config', 'board:admin'],
 ];
 

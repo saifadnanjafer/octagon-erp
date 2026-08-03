@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-10",
+  "active_task": "BUILD-09R",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
+    "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
     "remote": "origin",
-    "remote_commit": "95be084161b5d9acdaed7ad0327d05d4a97a82ad",
-    "observed_at": "2026-08-02"
+    "remote_commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+    "observed_at": "2026-08-03"
   },
-  "stop_reason": "BUILD-09 Advanced WMS and Operational Automation is fully implemented, browser-proven, normally pushed, and SHA-equal. BUILD-10 is next eligible; chapter remains EXPANSION_BUILD_RUNNING."
+  "stop_reason": "BUILD-09R (BUILD-09 usability remediation) substantially in progress: 5 commits pushed and SHA-verified, fixing the verified root cause of the 32-page 'opens empty / same warehouse error' defect plus the raw-form/permission/lookup-routing defects described in the BUILD-09R brief. Genuine gaps remain (see docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md) - not marked COMPLETE. Do not begin BUILD-10: note that 8 commits of real BUILD-10 work already exist in this branch's history between BUILD-09's completion and BUILD-09R's start, even though QUEUE.json still shows BUILD-10 PENDING - that reconciliation gap predates this session and was left untouched as out of scope."
 }

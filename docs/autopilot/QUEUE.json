@@ -248,7 +248,20 @@
         "evidence_path": "docs/autopilot/evidence/BUILD-09-wms-operational-automation.md"
       }
     },
-    { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
+    {
+      "id": "BUILD-09R",
+      "title": "BUILD-09 usability remediation (runtime context, real forms, governed lookups)",
+      "status": "IN_PROGRESS",
+      "depends_on": ["BUILD-09"],
+      "human_gate": "Not marked COMPLETE - genuine gaps remain, documented in evidence. A continuation session should read the evidence file before doing more work.",
+      "completion": {
+        "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "remote_commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+        "evidence_path": "docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md"
+      }
+    },
+    { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09R"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
     { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
     { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },
     { "id": "BUILD-13", "title": "Final functional page expansion", "status": "PENDING", "depends_on": ["BUILD-12"], "prompt_path": "docs/autopilot/prompts/BUILD-13-functional-pages.md" },

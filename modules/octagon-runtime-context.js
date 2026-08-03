@@ -20,28 +20,32 @@
     sync(); readyResolve(snapshot()); notify(); return snapshot();
   }
   async function postContext(patch) {
-    const response = await fetch('/api/auth/context', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ companyId: state.companyId, branchId: state.branchId, warehouseId: state.warehouseId, ...patch }) });
+    const response = await fetch('/api/auth/context', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ companyId: state.companyId, branchId: state.branchId, ...patch }) });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || payload.success === false) throw new Error(payload.error || `HTTP ${response.status}`);
     return payload;
   }
+  // Warehouse selection is NOT a server session field (platform-runtime-bridge.mjs
+  // handleContextSwitch only persists companyId/branchId) - it is a client preference,
+  // validated here against the server-returned availableWarehouses list, and re-enforced
+  // by the server on every single read/write query via its own company+warehouse scope
+  // check. No /api/auth/context round-trip belongs here.
   async function setWarehouse(id) {
     await ready; const selected = state.availableWarehouses.find((warehouse) => warehouse.id === id);
     if (!selected) throw new Error('Warehouse is not available in the current scope');
-    await postContext({ warehouseId: id });
     state.warehouseId = id; root.localStorage?.setItem(preferenceKey, id); sync(); notify(); return snapshot();
   }
   async function selectCompany(id) {
     await ready; const selected = state.availableCompanies.find((company) => company.id === id);
     if (!selected) throw new Error('Company is not available in the current scope');
-    await postContext({ companyId: id, branchId: null, warehouseId: null });
+    await postContext({ companyId: id, branchId: null });
     state.companyId = id; state.branchId = null; state.warehouseId = null; root.localStorage?.removeItem(preferenceKey); sync(); notify();
     return refresh();
   }
   async function selectBranch(id) {
     await ready; const selected = state.availableBranches.find((branch) => branch.id === id);
     if (!selected) throw new Error('Branch is not available in the current scope');
-    await postContext({ branchId: id, warehouseId: null });
+    await postContext({ branchId: id });
     state.branchId = id; state.warehouseId = null; root.localStorage?.removeItem(preferenceKey); sync(); notify();
     return refresh();
   }

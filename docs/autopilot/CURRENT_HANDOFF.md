@@ -1,5 +1,29 @@
 # Current Autopilot Handoff
 
+## BUILD-09R-2 mobile workspaces checkpoint (2026-08-03)
+
+A single mega-prompt asked for BUILD-09R-2 completion + BUILD-10 closure + a substantial
+BUILD-11 SaaS/commercial-platform core in one unsupervised run, with no stop for human
+review. That conflicts with this repo's own supervised-controller contract (see
+AUTOPILOT_PROTOCOL.md and STATE.json's `required_human_decision`/`human_gate` fields), so
+the operator was shown the conflict and explicitly chose to override the stop-gate for this
+one session rather than have it silently ignored or silently obeyed.
+
+What actually shipped, honestly: real purpose-built scanning workspaces for
+`mobile_receiving` and `mobile_picking` (2 of the ~19 BUILD-09R-2 pages), proven via real
+Chromium clicks, plus two previously-undetected id-mapping bugs in the shared
+`octagon-governed-lookups.js` module (found only because this was the first time anyone
+drove a `products`/`locations` lookup through a real click rather than calling the action
+directly) fixed in the same session since they silently broke the pre-existing generic
+dialogs too. 2 commits, pushed, SHA-verified. Full detail in
+`docs/autopilot/evidence/BUILD-09R-2-mobile-workspaces.md`.
+
+BUILD-10 and BUILD-11 were **not** started this session - that is a genuine multi-day scope,
+and forcing it in one sitting would mean either padding line counts or fabricating
+completion, both of which this session declined to do. See STATE.json for the explicit next
+step recommended (continue BUILD-09R-2 one page at a time) versus what the original
+mega-prompt asked for (all three phases at once) - that choice needs an owner call.
+
 ## Marathon expansion handoff
 
 ### BUILD-05 progress checkpoint (2026-08-01)

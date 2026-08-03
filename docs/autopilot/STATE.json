@@ -3,13 +3,13 @@
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
   "active_task": "BUILD-09R",
-  "required_human_decision": false,
+  "required_human_decision": true,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+    "commit": "3cfb2af67453f684c443ba3e6b8af29067e05919",
     "remote": "origin",
-    "remote_commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+    "remote_commit": "3cfb2af67453f684c443ba3e6b8af29067e05919",
     "observed_at": "2026-08-03"
   },
-  "stop_reason": "BUILD-09R (BUILD-09 usability remediation) substantially in progress: 5 commits pushed and SHA-verified, fixing the verified root cause of the 32-page 'opens empty / same warehouse error' defect plus the raw-form/permission/lookup-routing defects described in the BUILD-09R brief. Genuine gaps remain (see docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md) - not marked COMPLETE. Do not begin BUILD-10: note that 8 commits of real BUILD-10 work already exist in this branch's history between BUILD-09's completion and BUILD-09R's start, even though QUEUE.json still shows BUILD-10 PENDING - that reconciliation gap predates this session and was left untouched as out of scope."
+  "stop_reason": "BUILD-09R still substantially in progress, now including a BUILD-09R-2 slice: mobile_receiving and mobile_picking got real purpose-built scanning workspaces (real-click Chromium proof, 2 commits pushed and SHA-verified), plus two previously-undetected id-mapping bugs in the shared governed-lookups module (products/locations) fixed along the way - see docs/autopilot/evidence/BUILD-09R-2-mobile-workspaces.md. This session began from a single mega-prompt that demanded finishing all of BUILD-09R-2, closing BUILD-10, and shipping a substantial BUILD-11 SaaS/commercial-platform core in one unsupervised run with no human checkpoint; that directly conflicts with this file's own supervised-mode contract, so the operator was asked and explicitly chose to override the stop-gate for this session only. Only 2 of the ~19 workspaces the BUILD-09R-2 brief describes are done. required_human_decision is set to true because the next session should get an explicit owner call on whether to keep working through the remaining BUILD-09R-2 pages one at a time (recommended - see evidence file) or attempt something closer to the original mega-prompt's scope; either way BUILD-10 and BUILD-11 remain untouched this session, per 'do not begin BUILD-10' below. Note that 8 commits of real BUILD-10 work already exist in this branch's history between BUILD-09's completion and BUILD-09R's start, even though QUEUE.json still shows BUILD-10 PENDING - that reconciliation gap predates this session and was left untouched as out of scope."
 }

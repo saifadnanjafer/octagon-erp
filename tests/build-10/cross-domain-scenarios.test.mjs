@@ -44,7 +44,8 @@ test('cross-domain scenario 1 joins telematics location, trip calculation, geofe
   // 1. Enroll IoT Telematics device & map to fleet vehicle
   const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'GPS-SCENARIO-1', name: 'Fleet GPS Tracker 1', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: device.id, status: 'active', actor: 'iot-admin' });
-  fleetMapping.mapDeviceToVehicle(db, { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id, initial_odometer_km: 50000 });
+  const mapInput = { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id, odometer_offset_km: 50000 };
+  fleetMapping.mapFleetDevice(db, mapInput, mapInput);
 
   // 2. Ingest series of location points forming a trip
   const now = new Date();
@@ -53,30 +54,30 @@ test('cross-domain scenario 1 joins telematics location, trip calculation, geofe
   const t2 = now.toISOString();
 
   // Point 1: Origin (inside HQ geofence)
-  locationTrips.recordLocationPoint(db, { ...ctx, device_id: device.id, latitude: 33.3152, longitude: 44.3661, altitude_m: 35, speed_kmh: 0, heading_deg: 0, timestamp: t0 });
+  locationTrips.recordLocationPoint(db, { ...ctx, vehicle_id: 'veh-scenario-1', device_id: device.id, latitude: 33.3152, longitude: 44.3661, speed_kmh: 0, heading: 0, timestamp: t0 }, ctx);
   // Point 2: En-route high speed
-  locationTrips.recordLocationPoint(db, { ...ctx, device_id: device.id, latitude: 33.3500, longitude: 44.4000, altitude_m: 40, speed_kmh: 110, heading_deg: 45, timestamp: t1 });
+  locationTrips.recordLocationPoint(db, { ...ctx, vehicle_id: 'veh-scenario-1', device_id: device.id, latitude: 33.3500, longitude: 44.4000, speed_kmh: 120, heading: 45, timestamp: t1 }, ctx);
   // Point 3: Destination (outside HQ geofence)
-  locationTrips.recordLocationPoint(db, { ...ctx, device_id: device.id, latitude: 33.4000, longitude: 44.4500, altitude_m: 42, speed_kmh: 0, heading_deg: 90, timestamp: t2 });
+  locationTrips.recordLocationPoint(db, { ...ctx, vehicle_id: 'veh-scenario-1', device_id: device.id, latitude: 33.4000, longitude: 44.4500, speed_kmh: 0, heading: 90, timestamp: t2 }, ctx);
 
-  // 3. Define HQ Geofence
-  const gf = geofences.defineGeofence(db, { ...ctx, code: 'GF-HQ', name: 'Baghdad HQ Depot', fence_type: 'circular', center_lat: 33.3152, center_lng: 44.3661, radius_m: 500 });
-  const breaches = geofences.evaluateGeofenceBreach(db, { ...ctx, device_id: device.id, geofence_id: gf.id, latitude: 33.4000, longitude: 44.4500, event_type: 'exit' });
-  assert.equal(breaches.breaches.length, 1);
+  // 3. Define HQ Geofence (restricted, so an entry/unauthorized_entry would be critical; an exit stays informational)
+  const gf = geofences.createGeofence(db, { ...ctx, name: 'Baghdad HQ Depot', type: 'restricted', center_latitude: 33.3152, center_longitude: 44.3661, radius_meters: 500 }, ctx);
+  const breach = geofences.evaluateGeofenceEvent(db, { ...ctx, geofence_id: gf.id, vehicle_id: 'veh-scenario-1', event_type: 'exit' }, ctx);
+  assert.equal(breach.status, 'open');
+  assert.equal(breach.eventType, 'exit');
 
-  // 4. Record speeding event
-  const speedEv = fleetEvents.recordSpeedEvent(db, { ...ctx, device_id: device.id, speed_kmh: 110, speed_limit_kmh: 80, latitude: 33.3500, longitude: 44.4000 });
-  assert.equal(speedEv.severity, 'major');
+  // 4. Record speeding event (120 vs 80 limit -> excess 40 > 30 -> critical)
+  const speedEv = fleetEvents.recordSpeedEvent(db, { ...ctx, vehicle_id: 'veh-scenario-1', speed_kmh: 120, speed_limit_kmh: 80 }, ctx);
+  assert.equal(speedEv.severity, 'critical');
 
-  // 5. Calculate trip
-  const trip = locationTrips.startOrProjectTrip(db, { ...ctx, vehicle_id: 'veh-scenario-1', device_id: device.id, start_time: t0, end_time: t2, distance_km: 25, max_speed_kmh: 110 });
-  assert.equal(trip.status, 'completed');
+  // 5. Start and end the trip
+  const trip = locationTrips.startTrip(db, { ...ctx, vehicle_id: 'veh-scenario-1', start_time: t0 }, ctx);
+  const tripEnd = locationTrips.endTrip(db, { ...ctx, trip_id: trip.id, distance_km: 25, duration_minutes: 60, end_time: t2 }, ctx);
+  assert.equal(tripEnd.status, 'completed');
 
   // 6. Trigger maintenance request proposal due to odometer threshold
-  db.prepare('UPDATE iot_device_fleet_mappings SET current_odometer_km = 60500 WHERE tracker_device_id = ?').run(device.id);
-  const mtRule = maintenanceTriggers.createMaintenanceTriggerRule(db, { ...ctx, name: '60,000 km Major Service', trigger_type: 'odometer', threshold_value: 60000, maintenance_type: 'major_service' });
-  const mtResult = maintenanceTriggers.evaluateMaintenanceTriggers(db, { ...ctx, vehicle_id: 'veh-scenario-1' });
-  assert.equal(mtResult.proposalsCreated, 1);
+  const mtResult = maintenanceTriggers.evaluateMaintenanceTrigger(db, { ...ctx, vehicle_id: 'veh-scenario-1', trigger_type: 'odometer', threshold_value: 60000, current_value: 60500 }, ctx);
+  assert.equal(mtResult.status, 'triggered');
 });
 
 test('cross-domain scenario 2 handles fuel telemetry drop, loss detection, investigation proposal, and resolution', async (t) => {
@@ -84,23 +85,27 @@ test('cross-domain scenario 2 handles fuel telemetry drop, loss detection, inves
 
   const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'FUEL-SCENARIO-2', name: 'Tank Telematics 2', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: device.id, status: 'active', actor: 'iot-admin' });
-  fleetMapping.mapDeviceToVehicle(db, { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id });
+  const mapInput = { ...ctx, vehicle_id: 'veh-scenario-1', tracker_device_id: device.id };
+  fleetMapping.mapFleetDevice(db, mapInput, mapInput);
 
-  // Record baseline fuel reading
   const t0 = new Date(Date.now() - 3600000).toISOString();
   const t1 = new Date().toISOString();
-  fuelTelemetry.recordFuelReading(db, { ...ctx, device_id: device.id, fuel_level_liters: 100, fuel_percentage: 100, timestamp: t0 });
 
-  // Record sudden drop reading (100L -> 40L with no vehicle movement)
-  const reading2 = fuelTelemetry.recordFuelReading(db, { ...ctx, device_id: device.id, fuel_level_liters: 40, fuel_percentage: 40, timestamp: t1 });
-  assert.equal(reading2.anomalyDetected, true);
+  // Record baseline fuel reading (100L)
+  fuelTelemetry.recordFuelReading(db, { ...ctx, vehicle_id: 'veh-scenario-1', raw_fuel_percentage: 100, calibrated_liters: 100, previous_liters: 100, timestamp: t0 }, ctx);
 
-  const pendingLosses = db.prepare('SELECT * FROM iot_suspected_fuel_loss_records WHERE status = ?').all('flagged');
+  // Record sudden drop reading (100L -> 40L, parked, no refuel) -> diff 60 > 15 while parked -> suspected_fuel_loss
+  const reading2 = fuelTelemetry.recordFuelReading(db, { ...ctx, vehicle_id: 'veh-scenario-1', raw_fuel_percentage: 40, calibrated_liters: 40, previous_liters: 100, is_parked: true, timestamp: t1 }, ctx);
+  assert.equal(reading2.eventClassification, 'suspected_fuel_loss');
+  assert.equal(reading2.status, 'investigation_required');
+
+  const pendingLosses = db.prepare('SELECT * FROM fleet_fuel_telemetry WHERE status = ?').all('investigation_required');
   assert.equal(pendingLosses.length, 1);
 
-  // Propose investigation action
-  const resolved = fuelTelemetry.resolveFuelLossRecord(db, { ...ctx, loss_id: pendingLosses[0].id, resolution: 'confirmed_theft', notes: 'Tank drain plug tampered', actor: 'fleet-manager' });
-  assert.equal(resolved.status, 'confirmed_theft');
+  // Investigate and resolve
+  const resolved = fuelTelemetry.investigateFuelAnomaly(db, { ...ctx, fuel_id: pendingLosses[0].id, classification: 'confirmed_theft' }, { ...ctx, actor: 'fleet-manager' });
+  assert.equal(resolved.status, 'resolved');
+  assert.equal(resolved.classification, 'confirmed_theft');
 });
 
 test('cross-domain scenario 3 handles telemetry threshold breach, missed heartbeat alert, device health score degradation, and health board query', async (t) => {
@@ -109,20 +114,24 @@ test('cross-domain scenario 3 handles telemetry threshold breach, missed heartbe
   const device = deviceRegistry.enrollDevice(db, { ...ctx, device_code: 'SENS-SCENARIO-3', name: 'Warehouse Temp Sensor', device_type: 'sensor' });
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: device.id, status: 'active', actor: 'iot-admin' });
 
-  const gateway = gateways.registerGateway(db, { ...ctx, gateway_code: 'GW-MAIN', name: 'Main Warehouse Gateway' });
+  const gateway = gateways.registerGateway(db, { ...ctx, code: 'GW-MAIN', name: 'Main Warehouse Gateway' });
   gateways.assignDeviceToGateway(db, { ...ctx, gateway_id: gateway.id, device_id: device.id });
 
-  // Telemetry payload with high temp breach
-  const telem = telemetry.ingestTelemetryPayload(db, { ...ctx, device_code: device.device_code, payload: { temperature_c: 65, humidity_pct: 80 } });
-  assert.equal(telem.status, 'ingested');
+  // Telemetry payload with high temp reading
+  const telem = telemetry.ingestTelemetrySimulated(db, { ...ctx, device_id: device.id, measurements: [{ type: 'temperature', value: 65, unit: 'C' }] }, ctx);
+  assert.equal(telem.status, 'normalized');
 
-  // Compute health score
-  const scoreResult = health.calculateDeviceHealthScore(db, { ...ctx, device_id: device.id, health_score: 35, missed_heartbeats: 4, is_online: false, actor: 'health-evaluator' });
-  assert.equal(scoreResult.health_status, 'critical');
+  // Simulate silence since last telemetry (>1h) so health degrades to offline/critical rather than the
+  // just-ingested online/100 state calculateDeviceHealth would otherwise compute from a fresh last_seen_at
+  const staleTimestamp = new Date(Date.now() - 7200000).toISOString();
+  db.prepare('UPDATE iot_devices SET last_seen_at = ? WHERE id = ?').run(staleTimestamp, device.id);
+  const scoreResult = health.calculateDeviceHealth(db, { ...ctx, device_id: device.id }, { ...ctx, actor: 'health-evaluator' });
+  assert.equal(scoreResult.healthState, 'offline');
+  assert.equal(scoreResult.healthScore, 0);
 
   // Query health board data
-  const boardData = operationalBoards.getBoardData(db, { ...ctx, board_type: 'health' });
-  assert.equal(boardData.metrics.criticalDevicesCount >= 1, true);
+  const boardData = operationalBoards.getBoardData(db, { ...ctx, board_key: 'device_health' });
+  assert.ok(boardData.items.some((item) => item.id === device.id && item.health_state === 'offline'));
 });
 
 test('cross-domain scenario 4 handles firmware catalogue entry, rollout simulation across active devices, and config drift', async (t) => {
@@ -134,17 +143,18 @@ test('cross-domain scenario 4 handles firmware catalogue entry, rollout simulati
   deviceRegistry.updateDeviceStatus(db, { ...ctx, device_id: d2.id, status: 'active', actor: 'admin' });
 
   // Add & approve firmware
-  const fw = firmwareConfig.registerFirmware(db, { ...ctx, device_type: 'gateway', version: 'v2.4.0', title: 'Security Hotfix 2.4.0', firmware_checksum: 'a'.repeat(64) });
-  firmwareConfig.approveFirmware(db, { ...ctx, firmware_id: fw.id, approved_by: 'security-lead' });
+  const fw = firmwareConfig.registerFirmware(db, { ...ctx, device_model: 'gateway-v2', version: 'v2.4.0', release_notes: 'Security Hotfix 2.4.0' }, ctx);
+  firmwareConfig.approveFirmware(db, { ...ctx, firmware_id: fw.id }, ctx);
 
-  // Simulate staged rollout
-  const rollout = firmwareConfig.simulateStagedRollout(db, { ...ctx, firmware_id: fw.id, target_device_type: 'gateway', stage_percentage: 100 });
-  assert.equal(rollout.targetedDevicesCount, 2);
-  assert.equal(rollout.simulatedSuccessCount, 2);
+  // Simulate staged rollout (simulator, fixed success/failure counts by design - see iot-telemetry-health-commands.test.mjs)
+  const rollout = firmwareConfig.rolloutFirmwareSimulated(db, { ...ctx, firmware_id: fw.id, target_group: { device_type: 'gateway' }, stage_percentage: 100 }, ctx);
+  assert.equal(rollout.status, 'completed');
+  assert.equal(rollout.successCount, 5);
+  assert.equal(rollout.failureCount, 0);
 
   // Define & evaluate config profile drift
-  const profile = firmwareConfig.createConfigurationProfile(db, { ...ctx, profile_code: 'SEC-PROFILE-1', device_type: 'gateway', parameters: { reporting_interval_s: 30, encryption: 'AES-256' } });
-  const drift = firmwareConfig.evaluateConfigDrift(db, { ...ctx, device_id: d1.id, profile_id: profile.id, current_parameters: { reporting_interval_s: 60, encryption: 'AES-256' } });
+  const profile = firmwareConfig.upsertConfigProfile(db, { ...ctx, name: 'SEC-PROFILE-1', device_model: 'gateway-v2', desired_config: { reporting_interval_s: 30, encryption: 'AES-256' } }, ctx);
+  const drift = firmwareConfig.evaluateConfigDrift(db, { ...ctx, device_id: d1.id, profile_id: profile.id, current_parameters: { reporting_interval_s: 60, encryption: 'AES-256' } }, ctx);
   assert.equal(drift.hasDrift, true);
   assert.equal(drift.driftDetails[0].key, 'reporting_interval_s');
 });
@@ -152,66 +162,52 @@ test('cross-domain scenario 4 handles firmware catalogue entry, rollout simulati
 test('cross-domain scenario 5 handles offline PWA client registry, batch queue push, local ID remapping, and disallowed offline GL rejection', async (t) => {
   const { db, ctx } = await setupFixture(t, 'scenario-5');
 
-  const client = clientRegistry.registerClientDevice(db, { ...ctx, client_device_uuid: 'PWA-UUID-1001', device_name: 'Warehouse Handheld 1', app_version: 'v19.0-b10' });
-  assert.equal(client.trust_status, 'trusted');
+  const client = clientRegistry.registerOfflineClient(db, { client_uuid: 'PWA-UUID-1001', device_name: 'Warehouse Handheld 1' }, ctx);
+  assert.equal(client.deviceTrustState, 'trusted');
 
-  // Push batch offline actions (1 valid inventory scan, 1 disallowed offline GL action)
-  const batchResult = syncEngine.pushOfflineQueueBatch(db, {
-    ...ctx,
+  // Push batch offline commands (1 valid inventory scan, 1 disallowed offline GL posting)
+  const batchResult = syncEngine.pushOfflineSync(db, {
     client_id: client.id,
-    session_uuid: 'SYNC-SESS-9001',
-    queue_items: [
-      {
-        queue_item_uuid: 'ITEM-1',
-        entity_name: 'inventory_scan',
-        action_type: 'record_scan',
-        payload: { barcode: 'BC-OFFLINE-1', quantity: 5 },
-        client_timestamp: new Date().toISOString()
-      },
-      {
-        queue_item_uuid: 'ITEM-2',
-        entity_name: 'gl_entry',
-        action_type: 'post_gl_journal',
-        payload: { account_id: 'acc_101000', amount: 5000 },
-        client_timestamp: new Date().toISOString()
-      }
+    commands: [
+      { local_temp_id: 'ITEM-1', action_name: 'warehouse:scan_capture', payload: { barcode: 'BC-OFFLINE-1', quantity: 5 } },
+      { local_temp_id: 'ITEM-2', action_name: 'finance:post_gl', payload: { account_id: 'acc_101000', amount: 5000 } }
     ]
-  });
+  }, ctx);
 
-  assert.equal(batchResult.processedCount, 2);
-  assert.equal(batchResult.appliedCount, 1);
+  assert.equal(batchResult.pushedCount, 2);
+  assert.equal(batchResult.acceptedCount, 1);
   assert.equal(batchResult.rejectedCount, 1);
   assert.equal(batchResult.results[1].status, 'rejected');
-  assert.equal(batchResult.results[1].reason, 'disallowed_offline_action');
+  assert.equal(batchResult.results[1].reason, 'OFFLINE_ACTION_DISALLOWED');
 });
 
 test('cross-domain scenario 6 handles sync conflict detection, conflict resolution strategies, and kiosk restricted profile action enforcement', async (t) => {
   const { db, ctx } = await setupFixture(t, 'scenario-6');
 
-  const client = clientRegistry.registerClientDevice(db, { ...ctx, client_device_uuid: 'PWA-UUID-1002', device_name: 'Counter Kiosk Tablet', app_version: 'v19.0-b10' });
+  const client = clientRegistry.registerOfflineClient(db, { client_uuid: 'PWA-UUID-1002', device_name: 'Counter Kiosk Tablet' }, ctx);
 
-  // Record conflict
-  const conflict = syncEngine.recordSyncConflict(db, {
-    ...ctx,
+  // Push a batch containing one command flagged to simulate a mid-sync conflict (existing pushOfflineSync path)
+  const push = syncEngine.pushOfflineSync(db, {
     client_id: client.id,
-    session_id: 'SYNC-SESS-9002',
-    entity_name: 'work_order_status',
-    entity_id: 'wo-101',
-    server_version: { status: 'completed', updated_at: '2026-08-02T08:00:00Z' },
-    client_version: { status: 'in_progress', updated_at: '2026-08-02T08:05:00Z' },
-    conflict_type: 'version_mismatch'
-  });
+    commands: [
+      { local_temp_id: 'WO-101', action_name: 'work_item:status_update', payload: { item_id: 'wo-101', status: 'in_progress', simulate_conflict: true } }
+    ]
+  }, ctx);
+  assert.equal(push.conflictCount, 1);
+
+  const openConflicts = conflictRes.listConflicts(db, { ...ctx, client_id: client.id, status: 'open' });
+  assert.equal(openConflicts.length, 1);
 
   // Resolve conflict using server_wins
-  const res = conflictRes.resolveSyncConflict(db, { ...ctx, conflict_id: conflict.id, strategy: 'server_wins', resolution_notes: 'Server state takes precedence', resolved_by: 'sync-admin' });
+  const res = conflictRes.resolveConflict(db, { conflict_id: openConflicts[0].id, resolution_strategy: 'server_wins', resolution_note: 'Server state takes precedence' }, { ...ctx, actor: 'sync-admin' });
   assert.equal(res.status, 'resolved');
-  assert.equal(res.chosen_winner, 'server');
+  assert.equal(res.resolutionStrategy, 'server_wins');
 
   // Register kiosk & test restricted actions
-  const kiosk = kioskRegistry.registerKioskDevice(db, { ...ctx, kiosk_code: 'KIOSK-SHOP-1', kiosk_type: 'shop_floor', name: 'Shop Floor Terminal 1' });
-  kioskRegistry.updateKioskHeartbeat(db, { ...ctx, kiosk_id: kiosk.id, active_page: 'shop_floor_kiosk' });
+  const kiosk = kioskRegistry.registerKiosk(db, { code: 'KIOSK-SHOP-1', kiosk_type: 'shopfloor', name: 'Shop Floor Terminal 1' }, ctx);
+  kioskRegistry.recordKioskHeartbeat(db, { kiosk_id: kiosk.id }, ctx);
 
-  const restricted = kioskRegistry.evaluateKioskActionPermission(db, { ...ctx, kiosk_id: kiosk.id, action_name: 'post_accounting_journal' });
+  const restricted = kioskRegistry.evaluateKioskActionPermission(db, { kiosk_id: kiosk.id, action_name: 'post_accounting_journal' }, ctx);
   assert.equal(restricted.allowed, false);
   assert.equal(restricted.reason, 'restricted_kiosk_role');
 });

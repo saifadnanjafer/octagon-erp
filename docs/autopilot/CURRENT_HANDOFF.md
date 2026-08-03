@@ -1,5 +1,26 @@
 # Current Autopilot Handoff
 
+## BUILD-10 backend/domain-layer reconciliation (2026-08-03, second session)
+
+A second session was dispatched with the same mega-prompt as the checkpoint below. The owner
+was shown the prior session's `required_human_decision` flag and explicitly chose to keep making
+progress on undone work rather than re-answer the same scope question every time ("do what's
+undone only"). This session prioritized BUILD-10's backend reconciliation gap: BUILD-10's own
+test fixtures (`cross-domain-scenarios.test.mjs`, `browser-harness.mjs`) were calling function
+names/argument shapes that never matched the real `platform/iot`/`platform/offline`/`platform/kiosk`
+exports - not just the single `mapDeviceToVehicle` failure the dispatching prompt named. All 6
+cross-domain scenarios now pass (were 0/6); Slice-3 fleet-telematics actions are registered with
+the action executor for the first time; a real ctx-passing bug in the shared
+`platform/kernel/actions/domain-handler.mjs` (used by every BUILD-01..14 domain) was fixed and
+verified safe via full BUILD-08/09/permission regressions; a new export/action-id contract test
+was added. Full detail in `docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md`.
+
+**BUILD-10 is still not COMPLETE.** `modules/build10-workspaces.js` is a static stub (one
+hardcoded row for all 38 pages, no real API/board/kiosk rendering); none of the 38 page ids are
+wired into `index.html` navigation. The 3 `build10-workspaces-contract.test.mjs` tests and the 3
+Chromium lifecycle tests remain red and need a real frontend build - a separate, substantial task
+from this session's backend repair. BUILD-11 was not started this session.
+
 ## BUILD-09R-2 mobile workspaces checkpoint (2026-08-03)
 
 A single mega-prompt asked for BUILD-09R-2 completion + BUILD-10 closure + a substantial

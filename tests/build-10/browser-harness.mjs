@@ -26,13 +26,14 @@ function seedOperationalFacts(dialect, name) {
   // Seed IoT device
   const device = deviceRegistry.enrollDevice(dialect, { ...ctx, device_code: 'DEV-BROWSER-1', name: 'Browser GPS Tracker 1', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(dialect, { ...ctx, device_id: device.id, status: 'active', actor: 'browser-admin' });
-  fleetMapping.mapDeviceToVehicle(dialect, { ...ctx, vehicle_id: 'veh-browser-b10', tracker_device_id: device.id, initial_odometer_km: 12000 });
+  const mapInput = { ...ctx, vehicle_id: 'veh-browser-b10', tracker_device_id: device.id, odometer_offset_km: 12000 };
+  fleetMapping.mapFleetDevice(dialect, mapInput, mapInput);
 
   // Seed Offline Client
-  const client = clientRegistry.registerClientDevice(dialect, { ...ctx, client_device_uuid: 'PWA-BROWSER-99', device_name: 'Browser PWA Scanner', app_version: 'v19.0-b10' });
+  const client = clientRegistry.registerOfflineClient(dialect, { client_uuid: 'PWA-BROWSER-99', device_name: 'Browser PWA Scanner' }, ctx);
 
   // Seed Kiosk Device
-  const kiosk = kioskRegistry.registerKioskDevice(dialect, { ...ctx, kiosk_code: 'KIOSK-BROWSER-1', kiosk_type: 'fleet', name: 'Browser Fleet Board Kiosk' });
+  const kiosk = kioskRegistry.registerKiosk(dialect, { code: 'KIOSK-BROWSER-1', kiosk_type: 'warehouse', name: 'Browser Fleet Board Kiosk' }, ctx);
 
   return { companyId, vehicleId: 'veh-browser-b10', deviceId: device.id, clientId: client.id, kioskId: kiosk.id };
 }

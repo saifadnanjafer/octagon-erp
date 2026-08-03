@@ -5,9 +5,15 @@ import * as telemetry from './telemetry.mjs';
 import * as health from './health-diagnostics.mjs';
 import * as firmware from './firmware-config.mjs';
 import * as commands from './device-commands.mjs';
+import * as fleetMapping from './fleet-telematics-mapping.mjs';
+import * as locationTrips from './location-trips.mjs';
+import * as geofences from './geofences.mjs';
+import * as fleetEvents from './fleet-events.mjs';
+import * as fuelTelemetry from './fuel-telemetry.mjs';
+import * as maintenanceTriggers from './maintenance-triggers.mjs';
 import { registerDomainHandler } from '../kernel/actions/domain-handler.mjs';
 
-export { deviceRegistry, gateways, sensors, telemetry, health, firmware, commands };
+export { deviceRegistry, gateways, sensors, telemetry, health, firmware, commands, fleetMapping, locationTrips, geofences, fleetEvents, fuelTelemetry, maintenanceTriggers };
 
 export function registerIotActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'iot:device_register', deviceRegistry.registerDevice);
@@ -50,4 +56,20 @@ export function registerIotActions(actionExecutor) {
   registerDomainHandler(actionExecutor, 'iot:command_request', commands.requestCommand);
   registerDomainHandler(actionExecutor, 'iot:command_approve', commands.approveCommand);
   registerDomainHandler(actionExecutor, 'iot:command_dispatch_simulated', commands.dispatchSimulatedCommand);
+
+  // Slice 3 actions (fleet telematics) - previously implemented but never wired to the action executor
+  registerDomainHandler(actionExecutor, 'iot:fleet_device_map', fleetMapping.mapFleetDevice);
+  registerDomainHandler(actionExecutor, 'iot:fleet_odometer_calibrate', fleetMapping.calibrateOdometer);
+  registerDomainHandler(actionExecutor, 'iot:location_point_record', locationTrips.recordLocationPoint);
+  registerDomainHandler(actionExecutor, 'iot:trip_start', locationTrips.startTrip);
+  registerDomainHandler(actionExecutor, 'iot:trip_end', locationTrips.endTrip);
+  registerDomainHandler(actionExecutor, 'iot:geofence_create', geofences.createGeofence);
+  registerDomainHandler(actionExecutor, 'iot:geofence_event_evaluate', geofences.evaluateGeofenceEvent);
+  registerDomainHandler(actionExecutor, 'iot:geofence_event_acknowledge', geofences.acknowledgeGeofenceEvent);
+  registerDomainHandler(actionExecutor, 'iot:speed_event_record', fleetEvents.recordSpeedEvent);
+  registerDomainHandler(actionExecutor, 'iot:speed_event_acknowledge', fleetEvents.acknowledgeSpeedEvent);
+  registerDomainHandler(actionExecutor, 'iot:fuel_reading_record', fuelTelemetry.recordFuelReading);
+  registerDomainHandler(actionExecutor, 'iot:fuel_anomaly_investigate', fuelTelemetry.investigateFuelAnomaly);
+  registerDomainHandler(actionExecutor, 'iot:maintenance_trigger_evaluate', maintenanceTriggers.evaluateMaintenanceTrigger);
+  registerDomainHandler(actionExecutor, 'iot:maintenance_trigger_acknowledge', maintenanceTriggers.acknowledgeMaintenanceTrigger);
 }

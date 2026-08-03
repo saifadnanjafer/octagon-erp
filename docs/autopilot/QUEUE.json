@@ -261,7 +261,19 @@
         "evidence_path": "docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md"
       }
     },
-    { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09R"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
+    {
+      "id": "BUILD-10",
+      "title": "Devices, telematics, offline, and kiosk",
+      "status": "IN_PROGRESS",
+      "depends_on": ["BUILD-09R"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md",
+      "human_gate": "Not COMPLETE - backend/domain-layer gap repaired (6/6 cross-domain scenarios, Slice-3 actions wired), but modules/build10-workspaces.js is still a static stub. A continuation session must build the real frontend workspace shell before this can close.",
+      "progress": {
+        "commit": "PENDING_THIS_SESSION_COMMIT",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "evidence_path": "docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md"
+      }
+    },
     { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
     { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },
     { "id": "BUILD-13", "title": "Final functional page expansion", "status": "PENDING", "depends_on": ["BUILD-12"], "prompt_path": "docs/autopilot/prompts/BUILD-13-functional-pages.md" },

@@ -65,22 +65,31 @@ export function pushOfflineSync(db, input, ctx) {
   let rejectedCount = 0;
 
   const idMap = {};
+  const results = [];
 
   for (const cmd of commands) {
-    const queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
+    let queuedCmd;
+    try {
+      queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
+    } catch (error) {
+      rejectedCount++;
+      results.push({ localTempId: cmd.local_temp_id || null, status: 'rejected', reason: error.code || 'rejected' });
+      continue;
+    }
     const payload = cmd.payload || {};
 
     // Simulate conflict check if target entity is flagged
     if (cmd.simulate_conflict || payload.simulate_conflict) {
       conflictCount++;
       db.prepare('UPDATE offline_command_queues SET status = \'conflict\', updated_at = ? WHERE id = ?').run(now, queuedCmd.id);
-      
+
       const conflictId = `offcnf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
       db.prepare(`
         INSERT INTO offline_conflict_records (id, company_id, client_id, command_id, target_entity, target_entity_id, client_payload_json, server_state_json, resolution_strategy, status, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?)
       `).run(conflictId, companyId, clientId, queuedCmd.id, cmd.target_entity || 'work_item', cmd.target_entity_id || 'item-100', JSON.stringify(payload), JSON.stringify({ version: 2, server_changed: true }), cmd.conflict_strategy || 'server_wins', now);
-      
+
+      results.push({ localTempId: queuedCmd.localTempId, status: 'conflict', conflictId });
       continue;
     }
 
@@ -90,6 +99,7 @@ export function pushOfflineSync(db, input, ctx) {
 
     db.prepare('UPDATE offline_command_queues SET status = \'accepted\', server_mapped_id = ?, server_received_at = ?, updated_at = ? WHERE id = ?').run(serverMappedId, now, now, queuedCmd.id);
     acceptedCount++;
+    results.push({ localTempId: queuedCmd.localTempId, status: 'accepted', serverMappedId });
   }
 
   const sessionStatus = conflictCount > 0 ? 'completed' : 'completed';
@@ -100,7 +110,7 @@ export function pushOfflineSync(db, input, ctx) {
   // Update client last_successful_sync_at
   db.prepare('UPDATE offline_client_registries SET last_successful_sync_at = ?, updated_at = ? WHERE id = ?').run(now, now, clientId);
 
-  return { sessionId, pushedCount: commands.length, acceptedCount, conflictCount, rejectedCount, idMap };
+  return { sessionId, pushedCount: commands.length, acceptedCount, conflictCount, rejectedCount, idMap, results };
 }
 
 export function listOfflineQueues(db, params) {

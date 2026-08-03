@@ -58,7 +58,11 @@ export function registerDomainHandler(actionExecutor, actionId, handler) {
   if (!actionExecutor || typeof actionExecutor.registerHandler !== 'function') {
     throw new TypeError('canonical ActionExecutor with registerHandler() is required');
   }
-  actionExecutor.registerHandler(actionId, ({ input, ctx, dialect }) => (
-    handler(dialect, trustedActionInput(input, ctx))
-  ));
+  actionExecutor.registerHandler(actionId, ({ input, ctx, dialect }) => {
+    const scoped = trustedActionInput(input, ctx);
+    // Handlers written as (db, input) ignore this 3rd argument; handlers written as
+    // (db, input, ctx) receive the same trusted, scoped object both ways so ctx.company_id /
+    // ctx.actor are always populated from the verified session, never from raw caller input.
+    return handler(dialect, scoped, scoped);
+  });
 }

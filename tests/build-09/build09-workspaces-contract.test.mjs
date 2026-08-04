@@ -53,6 +53,32 @@ test('BUILD-09 workspace shell exposes governed state, scope, actions, and expor
   assert.match(source, /octagon:language-changed/);
 });
 
+test('index.html loads BUILD-09 modules in mandatory dependency order', () => {
+  const scripts = [...index.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+  const indexOf = (filename) => scripts.findIndex((s) => s.includes(filename));
+
+  const order = [
+    'modules/octagon-runtime-context.js',
+    'modules/octagon-api-client.js',
+    'modules/octagon-governed-lookups.js',
+    'modules/octagon-scope-selector.js',
+    'modules/build09-action-forms.js',
+    'modules/build09-workspaces.js',
+    'modules/build09-mobile-receiving.js',
+    'modules/build09-mobile-picking.js',
+    'modules/build08-workspaces.js',
+    'modules/build10/registry.js',
+  ];
+
+  for (let i = 0; i < order.length - 1; i++) {
+    const idxCurrent = indexOf(order[i]);
+    const idxNext = indexOf(order[i + 1]);
+    assert.ok(idxCurrent !== -1, `${order[i]} must be loaded in index.html`);
+    assert.ok(idxNext !== -1, `${order[i + 1]} must be loaded in index.html`);
+    assert.ok(idxCurrent < idxNext, `${order[i]} must precede ${order[i + 1]} in index.html`);
+  }
+});
+
 test('BUILD-09 supports mobile terminals, RTL, responsive tables, and action dialogs', () => {
   assert.match(source, /b09-mobile/);
   assert.match(source, /document\.documentElement\.dir === 'rtl'/);

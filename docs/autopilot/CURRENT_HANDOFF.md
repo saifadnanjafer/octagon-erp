@@ -1,10 +1,26 @@
 # Current Autopilot Handoff
 
+## BUILD-12 IN PROGRESS — UI AND ACCEPTANCE CHECKPOINT (2026-08-05)
+
+BUILD-12 now has its additive authority, migration 089, provider-neutral
+deterministic AI simulator, bounded/redacted context, quota integration,
+maker-checker proposals, People Development, consent-aware Marketing
+simulation, Events capacity/check-in, and safe Al-Warsha installation metadata.
+The shell now exposes 24 distinct purpose-built BUILD-12 workspaces with
+guided fields, visible risk/context/review/no-auto-execution labels, responsive
+Arabic/English styling, empty/error/denied states, and focus-visible controls.
+
+Checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e` is pushed with local,
+upstream, and remote equality. Focused `npm.cmd run test:build-12` is green
+17/17, including five serial real-shell Chromium flows. Final closure still
+requires the broader authorized regression set, final evidence, and the clean
+worktree/SHA gate. BUILD-13 remains pending and unauthorized.
+
 ## BUILD-11R COMPLETE (2026-08-05)
 
 BUILD-11R is complete: the commercial administration UX, five real-shell
 Chromium acceptance flows, and complete serial BUILD-09 regression are green.
-BUILD-12 is the next eligible supervised task and remains untouched.
+BUILD-12 is the current supervised task and is recorded above.
 
 The BUILD-11R remediation preserved the existing tenant, subscription,
 entitlement, usage, billing-simulator, and extension authorities while replacing

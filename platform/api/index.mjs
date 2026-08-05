@@ -38,6 +38,7 @@ import { handleBuild08Query } from './build08.mjs';
 import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
 import { handleWorkshopQuery, WORKSHOP_RESOURCE_PERMISSIONS } from './workshop.mjs';
 import { listSaas } from '../build11/index.mjs';
+import { listBuild12 } from '../build12/index.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -185,6 +186,13 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         if (!requirePermission('platform:saas:read')) return;
         const crossTenant = !!(authorize && (authorize({ permission: 'platform:saas:cross_tenant', ctx, req, requestUrl })?.allowed));
         const result = listSaas(dialect, ctx, resource, recordId, Object.fromEntries(requestUrl.searchParams.entries()), { crossTenant });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'build12' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const result = listBuild12(dialect, ctx, resource, recordId, Object.fromEntries(requestUrl.searchParams.entries()));
         if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }

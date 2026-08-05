@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build11-088.json",
+  "acceptedSourceCommit": "d82322c160350b0e1cff9595d8dc25f4e6e3f6df",
+  "acceptanceTimestamp": "2026-08-05T00:00:00.000Z",
+  "acceptanceReason": "BUILD-12 additive provider-neutral AI governance, people development, marketing simulation, event management, and safe Al-Warsha pack metadata on disposable migration verification.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "089_build12_ai_people_marketing_events_pack",
+      "relativePath": "database/migrations/089_build12_ai_people_marketing_events_pack.mjs",
+      "algorithm": "sha256",
+      "checksum": "b55c49a177f7da70e31dcd7d17777c37dc24199c6ccdf184d6c14ccebff85f93"
+    }
+  ]
+}

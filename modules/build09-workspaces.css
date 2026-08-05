@@ -75,4 +75,13 @@ html[dir=rtl] .b09r-stepper li{border-inline-start:0;border-inline-end:3px solid
 .b09r-terminal-clock{border-color:rgba(56,189,248,.4)}.b09r-terminal-clock strong{color:#7dd3fc;font-size:1.6rem;font-variant-numeric:tabular-nums}
 .b09r-queue-rank{display:grid;place-items:center;width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:rgba(56,189,248,.16);color:#7dd3fc;font-size:.8rem;font-weight:800}
 .b09r-subform{display:grid;gap:12px;padding:14px;border:1px solid rgba(148,163,184,.16);border-radius:11px;background:rgba(2,6,23,.32)}
+/* Downtime board: legible on a wall display, with the live clock as the loudest element. */
+.b09r-downtime-live{border-color:rgba(239,68,68,.35)}
+.b09r-downtime-row{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:12px 14px;border:1px solid rgba(239,68,68,.24);border-radius:11px;background:rgba(127,29,29,.12)}
+.b09r-downtime-clock{display:grid;gap:2px;text-align:center}.b09r-downtime-clock small{color:#8293a8;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}
+.b09r-downtime-clock strong{color:#fca5a5;font-size:1.35rem;font-variant-numeric:tabular-nums}
+/* A metric with no evidence must not look like a measured zero. */
+.b09r-kpi-unavailable{border-inline-start-color:rgba(100,116,139,.6);background:rgba(15,23,42,.35)}
+.b09r-kpi-unavailable .b09r-kpi-value{color:#64748b;font-size:1.05rem;font-style:italic}
+.b09r-kpi-why{color:#64748b;font-size:.72rem;line-height:1.4}
 @media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}.b09r-count-line{grid-template-columns:1fr 1fr}.b09r-count-line>button{grid-column:1/-1}.b09r-chains{grid-template-columns:1fr}.b09r-grid-3{grid-template-columns:1fr}.b09r-terminal-clock strong{font-size:1.3rem}}

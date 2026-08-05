@@ -84,4 +84,29 @@ html[dir=rtl] .b09r-stepper li{border-inline-start:0;border-inline-end:3px solid
 .b09r-kpi-unavailable{border-inline-start-color:rgba(100,116,139,.6);background:rgba(15,23,42,.35)}
 .b09r-kpi-unavailable .b09r-kpi-value{color:#64748b;font-size:1.05rem;font-style:italic}
 .b09r-kpi-why{color:#64748b;font-size:.72rem;line-height:1.4}
-@media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}.b09r-count-line{grid-template-columns:1fr 1fr}.b09r-count-line>button{grid-column:1/-1}.b09r-chains{grid-template-columns:1fr}.b09r-grid-3{grid-template-columns:1fr}.b09r-terminal-clock strong{font-size:1.3rem}}
+/* Dock schedule: a per-dock 24h timeline — the one view a flat table cannot express. */
+.b09r-timeline{display:grid;gap:8px;overflow-x:auto}
+.b09r-timeline-axis{position:relative;height:18px;margin-inline-start:180px;color:#64748b;font-size:.68rem}
+.b09r-timeline-axis span{position:absolute;transform:translateX(-50%)}html[dir=rtl] .b09r-timeline-axis span{transform:translateX(50%)}
+.b09r-timeline-lane{display:flex;align-items:center;gap:10px}
+.b09r-timeline-lane[data-conflict=true] .b09r-timeline-track{border-color:rgba(239,68,68,.5);background:rgba(127,29,29,.16)}
+.b09r-timeline-label{display:grid;gap:2px;flex:0 0 170px;width:170px}
+.b09r-timeline-label strong{color:#e2e8f0;font-size:.84rem}.b09r-timeline-label small{color:#8293a8;font-size:.7rem}
+.b09r-timeline-track{position:relative;flex:1 1 auto;min-width:260px;height:38px;border:1px solid rgba(148,163,184,.22);border-radius:9px;background:repeating-linear-gradient(90deg,rgba(148,163,184,.09) 0,rgba(148,163,184,.09) 1px,transparent 1px,transparent 16.666%)}
+.b09r-timeline-block{position:absolute;top:4px;bottom:4px;display:flex;align-items:center;overflow:hidden;min-width:26px;padding:0 7px;border:1px solid rgba(56,189,248,.5);border-radius:7px;background:rgba(12,74,110,.85);color:#e0f2fe;font:inherit;font-size:.72rem;font-weight:700;white-space:nowrap;cursor:pointer}
+.b09r-timeline-block:hover,.b09r-timeline-block:focus-visible{border-color:#7dd3fc;background:rgba(3,105,161,.95)}
+.b09r-timeline-outbound{border-color:rgba(167,139,250,.5);background:rgba(76,29,149,.85);color:#ede9fe}
+.b09r-timeline-conflict{border-color:#ef4444;background:rgba(153,27,27,.9);color:#fecaca}
+.b09r-detention{display:grid;gap:2px;text-align:center}.b09r-detention small{color:#8293a8;font-size:.66rem;text-transform:uppercase;letter-spacing:.05em}
+.b09r-detention strong{color:#fca5a5;font-size:1rem;font-variant-numeric:tabular-nums}
+/* Staging board: lane occupancy as a meter, not a number buried in a table cell. */
+.b09r-lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.b09r-lane{display:grid;gap:11px;padding:14px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:rgba(15,23,42,.5)}
+.b09r-lane-full{border-color:rgba(239,68,68,.4);background:rgba(127,29,29,.12)}
+.b09r-lane-meter{position:relative;display:flex;overflow:hidden;height:24px;border:1px solid rgba(148,163,184,.22);border-radius:999px;background:rgba(2,6,23,.6)}
+.b09r-lane-fill{background:linear-gradient(90deg,#0369a1,#38bdf8)}.b09r-lane-full .b09r-lane-fill{background:linear-gradient(90deg,#b91c1c,#ef4444)}
+.b09r-lane-meter em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:.72rem;font-style:normal;font-weight:800;text-shadow:0 1px 3px rgba(2,6,23,.9)}
+.b09r-lane-meter .b09r-muted{padding:0 10px;font-size:.72rem;line-height:22px}
+.b09r-score{display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;border-radius:10px;background:rgba(56,189,248,.16);color:#7dd3fc;font-size:.88rem;font-weight:800}
+@media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}.b09r-count-line{grid-template-columns:1fr 1fr}.b09r-count-line>button{grid-column:1/-1}.b09r-chains{grid-template-columns:1fr}.b09r-grid-3{grid-template-columns:1fr}.b09r-terminal-clock strong{font-size:1.3rem}
+.b09r-timeline-axis{margin-inline-start:0}.b09r-timeline-lane{flex-wrap:wrap}.b09r-timeline-label{flex-basis:100%;width:auto}.b09r-lanes{grid-template-columns:1fr}}

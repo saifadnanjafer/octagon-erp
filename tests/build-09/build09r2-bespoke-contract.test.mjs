@@ -25,15 +25,15 @@ const BESPOKE_MODULES = {
   'build09-shopfloor-workspace.js': ['shopfloor_terminal', 'workcenter_queue'],
   'build09-quality-workspace.js': ['quality_hold_queue', 'rework_workspace', 'scrap_approval'],
   'build09-downtime-workspace.js': ['downtime_board', 'operational_performance'],
+  'build09-dock-workspace.js': ['dock_schedule', 'dock_checkin', 'staging_board', 'crossdock_workspace'],
 };
 
-// The 16 BUILD-09 pages still served by the generic shell. This list is the honest remaining
+// The 12 BUILD-09 pages still served by the generic shell. This list is the honest remaining
 // BUILD-09R-2 backlog; shrink it as each page gets a purpose-built workspace.
 const STILL_GENERIC = [
   'warehouse_topology', 'zone_bin_management', 'putaway_rules', 'putaway_task_queue',
   'replenishment_rules', 'replenishment_proposals', 'receiving_discrepancies', 'pick_task_queue',
-  'dock_schedule', 'dock_checkin', 'staging_board', 'crossdock_workspace', 'expiration_queue',
-  'production_material_requests', 'production_issue_return', 'production_receipt',
+  'expiration_queue', 'production_material_requests', 'production_issue_return', 'production_receipt',
 ];
 
 const declaredPages = () => {
@@ -62,8 +62,8 @@ test('every bespoke BUILD-09R-2 workspace is loaded, registered, and covers a re
   // Nothing bespoke may also be listed as still-generic, and together they must be the full set.
   for (const page of STILL_GENERIC) assert.ok(!claimed.includes(page), `${page} is bespoke but still listed as generic`);
   assert.deepEqual([...claimed, ...STILL_GENERIC].sort(), [...pages].sort(), 'every BUILD-09 page is either bespoke or explicitly listed as still generic');
-  assert.equal(claimed.length, 16, 'BUILD-09R-2 has 16 purpose-built workspaces');
-  assert.equal(STILL_GENERIC.length, 16, 'BUILD-09R-2 has 16 pages left on the generic shell');
+  assert.equal(claimed.length, 20, 'BUILD-09R-2 has 20 purpose-built workspaces');
+  assert.equal(STILL_GENERIC.length, 12, 'BUILD-09R-2 has 12 pages left on the generic shell');
 });
 
 test('the BUILD-09R-2 shared kernel loads before every module that depends on it', () => {

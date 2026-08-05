@@ -19,6 +19,26 @@ import * as qualityOperations from '../quality/operations.mjs';
 function denied(message = 'company scope is required') { return { error: message, status: 403 }; }
 function list(data) { return { data, meta: { total: data.length } }; }
 
+function enrichMaterialFlow(dialect, rows) {
+  const product = dialect.prepare(`SELECT v.id, COALESCE(v.name,t.name) name, v.sku
+    FROM product_variants v JOIN product_templates t ON t.id=v.template_id WHERE v.id=?`);
+  const order = dialect.prepare('SELECT id,order_number,product_id,planned_quantity,planned_start_date,planned_end_date FROM mfg_production_orders WHERE id=?');
+  const work = dialect.prepare(`SELECT w.id,w.name,w.work_center_id,c.code work_center_code,COALESCE(c.name_en,c.name_ar) work_center_name
+    FROM mfg_work_orders w LEFT JOIN work_centers c ON c.id=w.work_center_id WHERE w.id=?`);
+  const requirement = dialect.prepare(`SELECT id,required_quantity,reserved_quantity,issued_quantity,returned_quantity,location_id,state
+    FROM mfg_material_requirements WHERE id=?`);
+  const location = dialect.prepare('SELECT id,name,complete_name FROM stock_locations WHERE id=?');
+  return rows.map((row) => ({
+    ...row,
+    product: product.get(row.productId) || null,
+    productionOrder: order.get(row.productionOrderId) || null,
+    workOrder: row.workOrderId ? work.get(row.workOrderId) || null : null,
+    requirement: row.requirementId ? requirement.get(row.requirementId) || null : null,
+    sourceLocation: row.sourceLocationId ? location.get(row.sourceLocationId) || null : null,
+    destinationLocation: row.destinationLocationId ? location.get(row.destinationLocationId) || null : null,
+  }));
+}
+
 export const BUILD09_RESOURCE_PERMISSIONS = Object.freeze({
   hierarchy: 'wms:topology:view', zones: 'wms:topology:view', locations: 'wms:locations:view', capacity: 'wms:topology:view',
   'putaway-rules': 'wms:putaway:view', 'putaway-queue': 'wms:putaway:view', 'replenishment-rules': 'wms:replenishment:view', 'replenishment-proposals': 'wms:replenishment:view',
@@ -99,7 +119,7 @@ export function handleBuild09Query({ dialect, ctx, resource, recordId, query = {
       const sessionId = recordId || query.session_id; if (!sessionId) return { error: 'session id is required', status: 422 };
       return list(shopfloor.sessionTimeline(dialect, { ...input, session_id: sessionId }));
     }
-    if (resource === 'material-flow') return list(materialFlow.listMaterialFlowRequests(dialect, input));
+    if (resource === 'material-flow') return list(enrichMaterialFlow(dialect, materialFlow.listMaterialFlowRequests(dialect, input)));
     if (resource === 'material-shortages') return list(materialFlow.materialShortageBoard(dialect, input));
     if (resource === 'downtime') return list(performance.listDowntimeEvents(dialect, input));
     if (resource === 'session-performance') {

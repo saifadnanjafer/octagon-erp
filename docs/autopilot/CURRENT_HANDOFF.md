@@ -1,19 +1,17 @@
 # Current Autopilot Handoff
 
-## BUILD-11R IN PROGRESS (2026-08-05)
+## BUILD-11R COMPLETE (2026-08-05)
 
-BUILD-11 was honestly reopened because its backend/domain authorities are
-accepted, but the commercial administration UX, five real-shell Chromium
-acceptance flows, and complete serial BUILD-09 regression were not closed.
-BUILD-12 remains PENDING and untouched.
+BUILD-11R is complete: the commercial administration UX, five real-shell
+Chromium acceptance flows, and complete serial BUILD-09 regression are green.
+BUILD-12 is the next eligible supervised task and remains untouched.
 
-The BUILD-11R remediation preserves the existing tenant, subscription,
-entitlement, usage, billing-simulator, and extension authorities and will
-replace only the generic commercial workspace renderer plus its acceptance
-coverage. The next completion claim requires executable proof, pushed commits,
-and exact local/upstream/remote SHA equality.
+The BUILD-11R remediation preserved the existing tenant, subscription,
+entitlement, usage, billing-simulator, and extension authorities while replacing
+the generic commercial workspace renderer with eleven purpose-built workspaces.
+Implementation checkpoint: `946b0c7cd99797f146847180c98f8644bb3b3995`.
 
-## BUILD-11 COMPLETE (historical checkpoint, 2026-08-05)
+## BUILD-11 COMPLETE (historical implementation checkpoint, 2026-08-05)
 
 BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle is complete on
 `codex/octagon-feature-page-expansion-marathon`. The implementation tip is

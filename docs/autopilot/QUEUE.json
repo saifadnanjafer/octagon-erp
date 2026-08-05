@@ -284,17 +284,13 @@
     {
       "id": "BUILD-11",
       "title": "Commercial platform and SaaS",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "depends_on": ["BUILD-10"],
       "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md",
-      "progress": {
-        "remediation": "BUILD-11R: backend/domain authorities are retained; purpose-built UX, five real-shell Chromium flows, and complete BUILD-09 regression closure remain in progress.",
-        "reopened_at": "2026-08-05"
-      },
       "completion": {
-        "commit": "e02673616781cb71fe028baa36318e6cf534d080",
+        "commit": "946b0c7cd99797f146847180c98f8644bb3b3995",
         "branch": "codex/octagon-feature-page-expansion-marathon",
-        "remote_commit": "e02673616781cb71fe028baa36318e6cf534d080",
+        "remote_commit": "946b0c7cd99797f146847180c98f8644bb3b3995",
         "evidence_path": "docs/autopilot/evidence/BUILD-11-commercial-platform-completion.md"
       }
     },

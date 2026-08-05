@@ -11,5 +11,5 @@
     "remote_commit": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e",
     "observed_at": "2026-08-05"
   },
-  "stop_reason": "BUILD-12 is IN PROGRESS at the published UI checkpoint: 24 purpose-built workspaces, governed AI/People/Marketing/Events/Al-Warsha authorities, 17/17 focused BUILD-12 tests, and five real-shell Chromium flows are green. Final global regression, evidence closure, clean-worktree SHA gate, and BUILD-12 completion remain pending. BUILD-13 is not authorized."
+  "stop_reason": "BUILD-12 implementation and acceptance are complete pending the final evidence commit SHA refresh: 24 purpose-built workspaces, governed AI/People/Marketing/Events/Al-Warsha authorities, 17/17 focused tests, five real-shell Chromium flows, BUILD-09 65/65, BUILD-08 17/17, BUILD-10 37/37, BUILD-11 19/19, Workshop 80/80, permissions 40/40, autopilot 3/3, unit 12/12, and migration 5/5. BUILD-13 is not authorized."
 }

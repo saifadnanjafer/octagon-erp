@@ -1,6 +1,6 @@
 # Current Autopilot Handoff
 
-## BUILD-12 IN PROGRESS — UI AND ACCEPTANCE CHECKPOINT (2026-08-05)
+## BUILD-12 COMPLETE — GOVERNED INTELLIGENCE AND VERTICAL PACKS (2026-08-05)
 
 BUILD-12 now has its additive authority, migration 089, provider-neutral
 deterministic AI simulator, bounded/redacted context, quota integration,
@@ -10,11 +10,16 @@ The shell now exposes 24 distinct purpose-built BUILD-12 workspaces with
 guided fields, visible risk/context/review/no-auto-execution labels, responsive
 Arabic/English styling, empty/error/denied states, and focus-visible controls.
 
-Checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e` is pushed with local,
-upstream, and remote equality. Focused `npm.cmd run test:build-12` is green
-17/17, including five serial real-shell Chromium flows. Final closure still
-requires the broader authorized regression set, final evidence, and the clean
-worktree/SHA gate. BUILD-13 remains pending and unauthorized.
+The implementation checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
+is pushed; the final closure evidence commit follows the complete authorized
+regression set. BUILD-12 is complete at the final published tip recorded in
+STATE/QUEUE below. BUILD-13 remains pending and unauthorized.
+
+Closure evidence: BUILD-12 17/17; BUILD-09 65/65; BUILD-08 17/17;
+BUILD-10 37/37; BUILD-11 19/19; Workshop 80/80; permissions 40/40;
+autopilot 3/3; unit 12/12; migration 5/5. Browser-heavy suites were run
+serially. Local, upstream, and remote SHA equality and a clean worktree are
+required after the final evidence commit.
 
 ## BUILD-11R COMPLETE (2026-08-05)
 

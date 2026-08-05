@@ -36,11 +36,20 @@
 - `npm.cmd run test:migration`: **5/5 suites passed**, including historical
   immutability and rollback compatibility.
 
-## Remaining closure gates
+## Closure regression record
 
-The focused BUILD-12 slice is green. BUILD-12 is not marked COMPLETE until the
-authorized broader regression set, final evidence synchronization, clean
-worktree, and exact local/upstream/remote SHA equality are freshly verified.
-No external AI, payment, SMS, email, advertising, operational-data, Finance,
-Inventory, Manufacturing, Quality, payroll, attendance, timesheet, Telegram,
-VNext, or BUILD-13 work is in scope.
+The full authorized acceptance record is green:
+
+- BUILD-12 focused suite: **17/17** (4 contracts, 5 real-shell Chromium,
+  8 domain tests).
+- BUILD-09 serial suite: **65/65**, including all 32 workspace flows and
+  cross-domain/Chromium acceptance.
+- BUILD-08: **17/17**; BUILD-10: **37/37**; BUILD-11: **19/19**.
+- Workshop: **80/80**; permissions: **40/40**; autopilot: **3/3**;
+  unit: **12/12**; migration: **5/5**.
+
+The final evidence commit refreshes STATE/QUEUE to COMPLETE and is published
+with local/upstream/remote equality and a clean worktree. No external AI,
+payment, SMS, email, advertising, operational-data, Finance, Inventory,
+Manufacturing, Quality, payroll, attendance, timesheet, Telegram, VNext, or
+BUILD-13 work is in scope.

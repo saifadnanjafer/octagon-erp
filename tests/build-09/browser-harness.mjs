@@ -36,7 +36,11 @@ function seedOperationalFacts(dialect, name) {
   return { companyId, warehouse, source, destination, staging, supplier, productId: 'product-browser-b09', rule };
 }
 
-export async function openBuild09Browser(t, { name, initialPage }) {
+// BUILD-09R-2 group workspaces ship as their own modules; a test opts in by naming them in
+// `extraModules` so the harness only loads what the page under test actually needs.
+const BASE_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-mobile-receiving.js', 'build09-mobile-picking.js'];
+
+export async function openBuild09Browser(t, { name, initialPage, extraModules = [], user = 'browser-manager' }) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `octagon-b09-browser-${name}-`));
   const dbPath = path.join(dir, 'browser.db');
   await freshInstall({ dbPath, backupDir: path.join(dir, 'backups'), actor: `build09-browser-${name}` });
@@ -47,7 +51,7 @@ export async function openBuild09Browser(t, { name, initialPage }) {
   const contextFor = (req) => ({
     companyId: String(req.headers['x-company'] || seed.companyId), activeCompanyId: String(req.headers['x-company'] || seed.companyId),
     warehouseId: String(req.headers['x-warehouse'] || seed.warehouse.id), tenantId: 'default', branchId: 'branch-a',
-    userId: String(req.headers['x-user'] || 'browser-manager'), actorId: String(req.headers['x-user'] || 'browser-manager'),
+    userId: String(req.headers['x-user'] || user), actorId: String(req.headers['x-user'] || user),
     actorType: 'user', correlationId: `build09-${name}-${Date.now()}`,
   });
   const api = createApiHandler({
@@ -55,7 +59,8 @@ export async function openBuild09Browser(t, { name, initialPage }) {
     authorize: ({ ctx }) => ctx.userId === 'viewer-user' ? { allowed: false, statusCode: 403, message: 'Permission denied' } : { allowed: true },
   });
 
-  const STATIC_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-mobile-receiving.js', 'build09-mobile-picking.js', 'build09-workspaces.css'];
+  const pageScripts = [...BASE_MODULES, ...extraModules];
+  const STATIC_MODULES = [...pageScripts, 'build09-workspaces.css'];
   const server = http.createServer((req, res) => {
     const requestUrl = new URL(req.url, 'http://127.0.0.1');
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
@@ -71,7 +76,7 @@ export async function openBuild09Browser(t, { name, initialPage }) {
       res.end(fs.readFileSync(path.join(ROOT, 'modules', staticName))); return;
     }
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
-      const scripts = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-mobile-receiving.js', 'build09-mobile-picking.js'].map((file) => `<script src="/modules/${file}"></script>`).join('');
+      const scripts = pageScripts.map((file) => `<script src="/modules/${file}"></script>`).join('');
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.switchPage=function(){};</script>${scripts}<script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;

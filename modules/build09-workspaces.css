@@ -35,3 +35,30 @@ html[dir=rtl] .b09-table th,html[dir=rtl] .b09-table td{text-align:right}@keyfra
 .b09r-error{color:#fca5a5;font-weight:700}
 html[dir=rtl] .b09r-stepper li{border-inline-start:0;border-inline-end:3px solid rgba(148,163,184,.28)}html[dir=rtl] .b09r-stepper li.b09r-step-done{border-inline-end-color:#22c55e}html[dir=rtl] .b09r-stepper li.b09r-step-active{border-inline-end-color:#4ade80}
 @media(max-width:760px){.b09r-grid-2{grid-template-columns:1fr}.b09r-stepper{gap:6px 0}.b09r-stepper li{min-width:72px;font-size:.68rem}.b09r-actions-row{flex-direction:column}.b09r-actions-row .b09r-btn-xl{width:100%}}
+
+/* BUILD-09R-2 shared workspace kernel (modules/build09r-shared.js) — the primitives every
+   high-value operational group renders with, so waves/counts/trace/shop-floor/quality/downtime
+   read as one product rather than six separately-styled pages. */
+.b09r-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.b09r-panel-head h2{margin:0;font-size:1.02rem;color:#e2e8f0}
+.b09r-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.b09r-kpi{display:grid;gap:5px;padding:13px 15px;border:1px solid rgba(148,163,184,.2);border-inline-start:3px solid rgba(148,163,184,.42);border-radius:12px;background:rgba(15,23,42,.55)}
+.b09r-kpi-label{color:#8293a8;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}.b09r-kpi-value{font-size:1.5rem;line-height:1.15;color:#f1f5f9}
+.b09r-kpi-ok{border-inline-start-color:#22c55e}.b09r-kpi-ok .b09r-kpi-value{color:#86efac}.b09r-kpi-info{border-inline-start-color:#38bdf8}.b09r-kpi-info .b09r-kpi-value{color:#7dd3fc}
+.b09r-kpi-warn{border-inline-start-color:#f59e0b}.b09r-kpi-warn .b09r-kpi-value{color:#fde68a}.b09r-kpi-danger{border-inline-start-color:#ef4444}.b09r-kpi-danger .b09r-kpi-value{color:#fca5a5}
+.b09r-progress{position:relative;display:flex;overflow:hidden;width:100%;min-width:120px;height:22px;border:1px solid rgba(148,163,184,.22);border-radius:999px;background:rgba(2,6,23,.6)}
+.b09r-progress-done{background:linear-gradient(90deg,#15803d,#22c55e)}.b09r-progress-exception{background:linear-gradient(90deg,#b91c1c,#ef4444)}
+.b09r-progress em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:.72rem;font-style:normal;font-weight:800;text-shadow:0 1px 3px rgba(2,6,23,.9)}
+.b09r-badge-ok{background:rgba(34,197,94,.2);color:#86efac}.b09r-badge-info{background:rgba(56,189,248,.18);color:#7dd3fc}.b09r-badge-danger{background:rgba(239,68,68,.2);color:#fca5a5}.b09r-badge-muted{background:rgba(100,116,139,.2);color:#94a3b8}
+.b09r-pool-list{display:grid;gap:8px;max-height:420px;overflow:auto}
+.b09r-pool-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid rgba(148,163,184,.18);border-radius:10px;background:rgba(15,23,42,.42);cursor:pointer}
+.b09r-pool-row:hover{border-color:#4ade80;background:rgba(21,128,61,.12)}.b09r-pool-row input[type=checkbox]{width:22px;height:22px;flex:0 0 auto}
+.b09r-pool-selected{border-color:#22c55e;background:rgba(21,128,61,.16)}
+.b09r-pool-main{display:grid;gap:2px;flex:1 1 auto;min-width:0}.b09r-pool-main strong{color:#e2e8f0;font-size:.9rem}.b09r-pool-main small{color:#8293a8;font-size:.76rem}
+.b09r-pool-meta{color:#64748b;font-size:.76rem;white-space:nowrap}
+.b09r-wave-row{display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:10px;background:rgba(15,23,42,.42)}
+.b09r-wave-progress{flex:1 1 160px;min-width:120px;display:block}
+.b09r-group{display:grid;gap:8px;padding:12px;border:1px solid rgba(148,163,184,.16);border-radius:11px;background:rgba(2,6,23,.35)}
+.b09r-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#8293a8;font-size:.78rem;font-weight:700}
+.b09r-textarea{min-height:78px;padding:11px 14px;border:1px solid #334155;border-radius:10px;background:#020617;color:#dbeafe;font:inherit;resize:vertical}
+.b09r-alert{margin:0}.b09r-alert[data-phase=denied]{background:rgba(245,158,11,.12);color:#fde68a}.b09r-alert[data-phase=failed]{background:rgba(239,68,68,.12);color:#fca5a5}
+@media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}}

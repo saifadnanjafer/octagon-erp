@@ -208,9 +208,15 @@ function scoped(db, table, tenantId, order='created_at DESC', limit=200) { retur
 export function listBuild12(db, ctx, resource, recordId, query = {}) {
   const tenantId = tenant(query, ctx);
   const read = (table, order) => recordId ? row(db, `SELECT * FROM ${table} WHERE id=? AND tenant_id=?`, recordId, tenantId) : scoped(db, table, tenantId, order);
+  const globalRead = (table, order, key = 'id') => recordId ? row(db, `SELECT * FROM ${table} WHERE ${key}=?`, recordId) : rows(db, `SELECT * FROM ${table} ORDER BY ${order}`);
   if (resource === 'overview' || resource === 'ai-overview') return { data: { generated_at: timestamp(ctx), simulator: 'deterministic-v1', ai: { providers: rows(db,'SELECT * FROM ai_providers ORDER BY display_name'), tasks: rows(db,'SELECT * FROM ai_tasks ORDER BY task_id'), recent_runs: scoped(db,'ai_runs','tenant_id,created_at DESC',20), proposals: scoped(db,'ai_proposals','created_at DESC',20) }, people: { skills: scoped(db,'people_skills','name'), plans: scoped(db,'people_development_plans','updated_at DESC',20), certification_warnings: rows(db,"SELECT * FROM people_certifications WHERE tenant_id=? AND status='active' AND expires_at<=datetime('now','+30 day') ORDER BY expires_at",tenantId) }, marketing: { campaigns: scoped(db,'marketing_campaigns','updated_at DESC',20), content: scoped(db,'marketing_content','updated_at DESC',20) }, events: scoped(db,'build12_events','starts_at',20), pack: row(db,'SELECT * FROM build12_pack_profiles WHERE package_id=\'pack:al_warsha\'') } };
   const map = { 'ai-providers':'ai_providers','ai-tasks':'ai_tasks','ai-runs':'ai_runs','ai-context':'ai_context_sources','ai-policies':'ai_policies','ai-proposals':'ai_proposals','ai-feedback':'ai_feedback','people-skills':'people_skills','people-competencies':'people_competencies','people-evidence':'people_skill_evidence','development-plans':'people_development_plans','learning':'people_learning_records','certifications':'people_certifications','marketing-audiences':'marketing_audiences','marketing-campaigns':'marketing_campaigns','marketing-content':'marketing_content','marketing-attribution':'marketing_attribution','events':'build12_events','event-sessions':'build12_event_sessions','event-registrations':'build12_event_registrations','packs':'build12_pack_profiles','pack-installations':'build12_pack_installations' };
-  if (map[resource]) return { data: read(map[resource], resource.includes('events') ? 'starts_at' : 'created_at DESC') };
+  if (map[resource]) {
+    if (resource === 'ai-providers') return { data: globalRead('ai_providers', 'display_name') };
+    if (resource === 'ai-tasks') return { data: globalRead('ai_tasks', 'task_id', 'task_id') };
+    if (resource === 'packs') return { data: globalRead('build12_pack_profiles', 'name', 'package_id') };
+    return { data: read(map[resource], resource.includes('events') ? 'starts_at' : 'created_at DESC') };
+  }
   if (resource === 'readiness-profile') return { data: row(db,"SELECT readiness_categories,workflow_templates,terminology_overlay FROM build12_pack_profiles WHERE package_id='pack:al_warsha'") };
   if (resource === 'pack-kpis') return { data: parse(row(db,"SELECT kpi_catalog FROM build12_pack_profiles WHERE package_id='pack:al_warsha'")?.kpi_catalog,'[]') };
   return { error: 'BUILD-12 resource not found', status: 404 };

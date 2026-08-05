@@ -41,6 +41,7 @@ function mapProfile(row) {
     expiryDate: row.expiry_date, retestDate: row.retest_date, qualityStatus: row.quality_status,
     recallFlag: Boolean(row.recall_flag), sourceReceiptType: row.source_receipt_type,
     sourceReceiptId: row.source_receipt_id, assetId: row.asset_id, metadata: parse(row.metadata_json),
+    lotNumber: row.lot_number, serialNumber: row.serial_number, locationId: row.location_id,
     updatedBy: row.updated_by, createdAt: row.created_at, updatedAt: row.updated_at,
   };
 }
@@ -143,10 +144,17 @@ export function queryTrace(db, input) {
 export function expirationQueue(db, input) {
   const companyId = scope(input);
   const through = input.through_date || new Date(Date.now() + Number(input.days || 30) * 86400000).toISOString();
-  return db.prepare(`SELECT p.*,l.lot_number,s.serial_number FROM wms_trace_profiles p
+  return db.prepare(`SELECT p.*,l.lot_number,s.serial_number,current.location_dest_id location_id FROM wms_trace_profiles p
     LEFT JOIN stock_lots l ON l.id=p.lot_id LEFT JOIN stock_serials s ON s.id=p.serial_id
+    LEFT JOIN stock_move_lines current_line ON current_line.id=(
+      SELECT ml.id FROM stock_move_lines ml JOIN stock_moves m ON m.id=ml.move_id
+      WHERE ml.company_id=p.company_id AND (ml.lot_id=p.lot_id OR (p.serial_id IS NOT NULL AND ml.serial_id=p.serial_id))
+      ORDER BY m.move_date DESC,ml.created_at DESC LIMIT 1)
+    LEFT JOIN stock_moves current ON current.id=current_line.move_id
+    LEFT JOIN stock_locations current_location ON current_location.id=current.location_dest_id
     WHERE p.company_id=? AND p.expiry_date IS NOT NULL AND p.expiry_date<=? AND p.quality_status NOT IN ('rejected','expired')
-    ORDER BY p.expiry_date`).all(companyId, through).map(mapProfile);
+      AND (? IS NULL OR current_location.warehouse_id=?)
+    ORDER BY p.expiry_date`).all(companyId, through, input.warehouse_id || null, input.warehouse_id || null).map(mapProfile);
 }
 
 export function recallCandidates(db, input) {

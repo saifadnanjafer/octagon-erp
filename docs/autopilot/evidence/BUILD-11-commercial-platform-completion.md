@@ -1,5 +1,14 @@
 # BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle
 
+## BUILD-11R reopening checkpoint — 2026-08-05
+
+BUILD-11 is intentionally **IN_PROGRESS** again. The backend/domain
+authorities and historical implementation evidence below remain valid, but the
+generic commercial workspace renderer, incomplete browser acceptance, and
+incomplete broad BUILD-09 regression did not meet the BUILD-11R acceptance
+brief. BUILD-12 remains pending and untouched while this remediation replaces
+the UI with eleven purpose-built workspaces and proves the missing flows.
+
 ## Acceptance
 
 - Branch: `codex/octagon-feature-page-expansion-marathon`

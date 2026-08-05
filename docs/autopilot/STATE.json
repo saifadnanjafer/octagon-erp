@@ -2,7 +2,7 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-12",
+  "active_task": "BUILD-11",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
@@ -11,5 +11,5 @@
     "remote_commit": "e02673616781cb71fe028baa36318e6cf534d080",
     "observed_at": "2026-08-05"
   },
-  "stop_reason": "BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle is COMPLETE on the published BUILD-10 baseline. Delivered: tenant authority, lifecycle events, resumable provisioning, immutable commercial plan versions, explainable entitlements, subscriptions, seats and limits, usage idempotency and hard quotas, reconciliation, simulation-only billing, safe extension validation/staging, and ten governed responsive admin workspaces. Verification passed: BUILD-11 11/11 including Chromium, unit 12/12, migration 5/5 suites, permissions 40/40, autopilot 3/3, BUILD-08 17/17, BUILD-10 37/37, workshop 80/80, plus focused BUILD-09 13/13. The broad BUILD-09 runner was attempted serially and timed out at 180 seconds with exit 124; it is recorded as incomplete broad proof, not a pass. No operational database, external billing provider, Finance GL, inventory authority, VNext, Telegram, payroll, attendance, or timesheet path was changed. BUILD-12 is the next eligible task."
+  "stop_reason": "BUILD-11R is in progress. The accepted backend/domain authorities are preserved, while commercial UX is being remediated from generic rendering to eleven purpose-built workspaces, with five real-shell Chromium flows and complete serial BUILD-09 regression still required. No BUILD-12 work is authorized or started."
 }

@@ -405,7 +405,7 @@
     omni_communications: ['workshop.manager', 'finance.manager'],
     command_center: ['workshop.manager', 'finance.manager'],
     workshop_command_center: ['workshop.user', 'workshop.manager', 'finance.manager'],
-    my_work: ['workshop.user', 'workshop.manager', 'finance.manager'],
+    my_work: ['workshop.user', 'workshop.manager', 'finance.user', 'finance.manager'],
     workshop_readiness: ['workshop.manager', 'system.admin'],
     analytics: ['workshop.manager', 'finance.manager'],
     nl_reports: ['workshop.manager', 'finance.manager'],

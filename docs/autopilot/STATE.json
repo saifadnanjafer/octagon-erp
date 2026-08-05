@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-11",
+  "active_task": "BUILD-12",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "f0b47def450c8c585699a07739fd829adff1c1f3",
+    "commit": "e02673616781cb71fe028baa36318e6cf534d080",
     "remote": "origin",
-    "remote_commit": "f0b47def450c8c585699a07739fd829adff1c1f3",
+    "remote_commit": "e02673616781cb71fe028baa36318e6cf534d080",
     "observed_at": "2026-08-05"
   },
-  "stop_reason": "The Internal Workshop Operational Completion Wave is COMPLETE on top of the closed BUILD-09R and BUILD-10 baseline. Delivered: role-aware Workshop Command Center with 18 bounded drilldowns and operational playbooks, actor-scoped My Work, ten-category read-only readiness with prerequisite-aware guidance, a disposable seven-role order-to-cash/production lifecycle, three governed exception paths, and four real Chromium flows. Verification passed: workshop 80/80, BUILD-08 17/17, BUILD-09 65/65 across complete non-overlapping serial slices, BUILD-10 37/37, permissions 40/40, migration 5/5 suites, and autopilot 3/3. Inventory remains the sole stock writer; all workshop surfaces use existing canonical authorities. BUILD-11 remains PENDING and eligible; no BUILD-11 implementation was started."
+  "stop_reason": "BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle is COMPLETE on the published BUILD-10 baseline. Delivered: tenant authority, lifecycle events, resumable provisioning, immutable commercial plan versions, explainable entitlements, subscriptions, seats and limits, usage idempotency and hard quotas, reconciliation, simulation-only billing, safe extension validation/staging, and ten governed responsive admin workspaces. Verification passed: BUILD-11 11/11 including Chromium, unit 12/12, migration 5/5 suites, permissions 40/40, autopilot 3/3, BUILD-08 17/17, BUILD-10 37/37, workshop 80/80, plus focused BUILD-09 13/13. The broad BUILD-09 runner was attempted serially and timed out at 180 seconds with exit 124; it is recorded as incomplete broad proof, not a pass. No operational database, external billing provider, Finance GL, inventory authority, VNext, Telegram, payroll, attendance, or timesheet path was changed. BUILD-12 is the next eligible task."
 }

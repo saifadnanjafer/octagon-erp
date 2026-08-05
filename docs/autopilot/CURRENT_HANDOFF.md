@@ -1,5 +1,29 @@
 # Current Autopilot Handoff
 
+## BUILD-11 COMPLETE (2026-08-05)
+
+BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle is complete on
+`codex/octagon-feature-page-expansion-marathon`. The implementation tip is
+`e02673616781cb71fe028baa36318e6cf534d080`, normally pushed with local,
+upstream, and remote SHA equality. Evidence is recorded at
+`docs/autopilot/evidence/BUILD-11-commercial-platform-completion.md`.
+
+The delivery adds additive tenant/lifecycle/provisioning authority, commercial
+editions/plans/immutable versions, explainable entitlements, subscriptions,
+seats/limits, usage idempotency and hard quotas, reconciliation,
+simulation-only billing, safe extension validation/staging, and ten responsive
+commercial/SaaS workspaces inside the existing shell. The focused BUILD-11
+suite passed 11/11 with two real Chromium flows. Unit 12/12, migration 5/5,
+permissions 40/40, autopilot 3/3, BUILD-08 17/17, BUILD-10 37/37, and
+workshop 80/80 also passed. The broad BUILD-09 runner was attempted with a
+180-second bound and timed out with exit 124; focused BUILD-09 runtime,
+forms/lookups, bespoke workspace, and Chromium proof passed 13/13.
+
+No operational data, external billing provider, Finance GL, inventory
+authority, VNext, Telegram, payroll, attendance, or timesheet path was
+changed. BUILD-12 is next eligible. The older dated sections below are
+historical checkpoints retained for lineage.
+
 ## BUILD-09R-2 high-value page pack (2026-08-05)
 
 Six purpose-built workspace groups shipped on `codex/octagon-feature-page-expansion-marathon`,

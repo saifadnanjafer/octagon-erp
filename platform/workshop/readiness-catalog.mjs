@@ -62,8 +62,8 @@ export const READINESS_CATEGORIES = Object.freeze([
     id: 'production', label: 'Production', labelAr: 'الإنتاج', icon: 'gears',
     checks: [
       check('work_centers', 'Work centers', 'مراكز العمل', 'manufacturing:order:read', 'work_center_registry', true, tableCount('work_centers', 'company_id=?', (scope) => [scope.companyId], { emptyState: 'MISSING' })),
-      check('approved_boms', 'Approved BOM versions', 'إصدارات قوائم المواد المعتمدة', 'manufacturing:order:read', 'bom_version_management', true, tableCount('bom_versions', "company_id=? AND status='approved'", (scope) => [scope.companyId], { emptyState: 'WARNING', emptyDetail: 'No approved BOM is ready for production' })),
-      check('approved_routings', 'Approved routing versions', 'مسارات الإنتاج المعتمدة', 'manufacturing:order:read', 'routing_version_management', true, tableCount('routing_versions', "company_id=? AND status='approved'", (scope) => [scope.companyId], { emptyState: 'WARNING', emptyDetail: 'No approved routing is ready for production' })),
+      check('approved_boms', 'Approved BOM versions', 'إصدارات قوائم المواد المعتمدة', 'manufacturing:order:read', 'bom_version_management', true, tableCount('bom_versions', "company_id=? AND state='approved'", (scope) => [scope.companyId], { emptyState: 'WARNING', emptyDetail: 'No approved BOM is ready for production' })),
+      check('approved_routings', 'Approved routing versions', 'مسارات الإنتاج المعتمدة', 'manufacturing:order:read', 'routing_version_management', true, tableCount('routing_versions', "company_id=? AND state='approved'", (scope) => [scope.companyId], { emptyState: 'WARNING', emptyDetail: 'No approved routing is ready for production' })),
     ],
   },
   {
@@ -107,4 +107,3 @@ export const READINESS_CATEGORIES = Object.freeze([
     ],
   },
 ]);
-

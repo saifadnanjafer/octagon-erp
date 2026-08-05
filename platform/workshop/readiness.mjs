@@ -1,6 +1,7 @@
 'use strict';
 
 import { READINESS_CATEGORIES, READINESS_STATES } from './readiness-catalog.mjs';
+import { buildReadinessActionPlan, guidanceFor } from './readiness-guidance.mjs';
 import { requireCompany, scopedContext } from './query-utils.mjs';
 
 function evaluateCheck(definition, context) {
@@ -48,19 +49,22 @@ export function buildWorkshopReadiness({ dialect, ctx, query = {}, can = () => f
   if (invalid) return invalid;
   const context = { dialect, ctx, query, scope, can };
   const categories = READINESS_CATEGORIES.map((definition) => {
-    const checks = definition.checks.map((item) => evaluateCheck(item, context));
+    const checks = definition.checks.map((item) => {
+      const evaluated = evaluateCheck(item, context);
+      return { ...evaluated, guidance: guidanceFor(evaluated) };
+    });
     return { id: definition.id, label: definition.label, labelAr: definition.labelAr, icon: definition.icon, state: categoryStatus(checks), checks };
   });
   const generatedAt = now().toISOString();
+  const actionPlan = buildReadinessActionPlan(categories);
   return {
     data: {
       page: 'workshop_readiness', generatedAt,
       scope: { companyId: scope.companyId, branchId: scope.branchId || null, warehouseId: scope.warehouseId || null, actorId: scope.actorId || null },
-      formula: formula(categories), categories,
+      formula: formula(categories), categories, actionPlan,
       stateLegend: READINESS_STATES,
       mutationPolicy: 'READ_ONLY_ZERO_MUTATION',
     },
     meta: { total: categories.length, checks: categories.flatMap((category) => category.checks).length, generated_at: generatedAt },
   };
 }
-

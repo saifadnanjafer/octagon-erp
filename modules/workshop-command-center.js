@@ -10,6 +10,7 @@
       scope: document.getElementById('workshopCommandScope'),
       freshness: document.getElementById('workshopCommandFreshness'),
       partial: document.getElementById('workshopCommandPartial'),
+      briefing: document.getElementById('workshopCommandBriefing'),
       refresh: document.getElementById('workshopCommandRefresh'),
     };
   }
@@ -21,7 +22,7 @@
     const interactive = card.state === 'ready' && card.target;
     const tag = interactive ? 'button' : 'article';
     const type = interactive ? ' type="button"' : '';
-    const target = interactive ? ` data-target="${shell.escapeHtml(card.target)}"` : '';
+    const target = interactive ? ` data-target="${shell.escapeHtml(card.target)}" data-metric="${shell.escapeHtml(card.id)}" data-label="${shell.escapeHtml(label)}"` : '';
     return `<${tag}${type} class="workshop-command-card" data-state="${shell.escapeHtml(card.state)}" data-tone="${shell.escapeHtml(card.tone)}"${target}>
       <div class="workshop-card-state"><span>${shell.escapeHtml(card.state.replaceAll('_', ' '))}</span><span class="workshop-card-dot"></span></div>
       <div class="workshop-card-value">${shell.escapeHtml(value)}</div>
@@ -40,7 +41,10 @@
   }
 
   function bindCards(body) {
-    body.querySelectorAll('[data-target]').forEach((card) => card.addEventListener('click', () => root.WorkshopShell.navigate(card.dataset.target)));
+    body.querySelectorAll('[data-target]').forEach((card) => card.addEventListener('click', () => {
+      if (root.WorkshopDrilldown) root.WorkshopDrilldown.open(card.dataset.metric, card.dataset.target, card.dataset.label);
+      else root.WorkshopShell.navigate(card.dataset.target);
+    }));
   }
 
   function paint(payload) {
@@ -51,6 +55,12 @@
     root.WorkshopShell.renderScope(el.scope, payload.scope || {});
     el.body.innerHTML = (payload.sections || []).map(sectionHtml).join('') || '<div class="workshop-empty-state">No permitted operational signals are available.</div>';
     bindCards(el.body);
+    if (el.briefing) {
+      const briefing = payload.briefing || {};
+      const coverage = briefing.coverage || {};
+      el.briefing.innerHTML = `<strong>${root.WorkshopShell.escapeHtml(briefing.summary || 'Operational briefing unavailable.')}</strong>
+        <span>${Number(coverage.ready || 0)} ready · ${Number(coverage.unavailable || 0)} unavailable · ${Number(coverage.permissionDenied || 0)} permission-hidden</span>`;
+    }
     if (el.partial) {
       const unavailable = Number(payload.summary?.unavailable || 0);
       el.partial.hidden = unavailable === 0;
@@ -96,4 +106,3 @@
   root.renderWorkshopCommandCenter = function renderWorkshopCommandCenter() { init(); return load(false); };
   root.WorkshopCommandCenter = Object.freeze({ load, state });
 })(window);
-

@@ -1,6 +1,7 @@
 'use strict';
 
 import { COMMAND_CENTER_METRICS, WORKSHOP_SECTIONS } from './command-center-catalog.mjs';
+import { buildCommandBriefing } from './command-briefing.mjs';
 import { requireCompany, safeMetric, scopedContext, validateWarehouse } from './query-utils.mjs';
 
 export function buildWorkshopCommandCenter({ dialect, ctx, query = {}, can = () => false, now = () => new Date() }) {
@@ -19,6 +20,7 @@ export function buildWorkshopCommandCenter({ dialect, ctx, query = {}, can = () 
   const denied = cards.filter((card) => card.state === 'permission_denied').length;
   const unavailable = cards.filter((card) => card.state === 'unavailable').length;
   const warehouse = validateWarehouse(dialect, scope);
+  const briefing = buildCommandBriefing(sections);
 
   return {
     data: {
@@ -34,9 +36,9 @@ export function buildWorkshopCommandCenter({ dialect, ctx, query = {}, can = () 
         actorId: scope.actorId || null,
       },
       summary: { total: cards.length, available, denied, unavailable, partial: unavailable > 0 },
+      briefing,
       sections,
     },
     meta: { total: cards.length, generated_at: generatedAt, partial_failures: unavailable },
   };
 }
-

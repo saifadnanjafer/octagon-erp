@@ -33,6 +33,11 @@ test('Chromium flow 1: Supervisor login reaches scoped Command Center KPI and ca
   const targetCard = await page.$('.workshop-command-card[data-target="my_work"]');
   assert.ok(targetCard, 'a real KPI must deep-link to My Work');
   await targetCard.click();
+  await page.waitForSelector('#workshopDrilldown:not([hidden])', { visible: true });
+  await page.waitForFunction(() => !document.querySelector('#workshopDrilldownBody .workshop-loading'));
+  assert.match(await page.$eval('#workshopDrilldownCount', (node) => node.textContent), /bounded live query/);
+  assert.ok(await page.$$eval('.workshop-drilldown-row', (nodes) => nodes.length) >= 1);
+  await page.click('#workshopDrilldownOpenTarget');
   await page.waitForFunction(() => window.__currentPage === 'my_work');
   assert.equal(await page.evaluate(() => window.__currentPage), 'my_work');
   await waitForLoaded(page, '#myWorkBody');

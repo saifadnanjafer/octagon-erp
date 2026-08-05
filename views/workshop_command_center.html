@@ -12,8 +12,25 @@
   </div>
   <div class="workshop-scope-strip" id="workshopCommandScope" aria-live="polite"></div>
   <div class="workshop-partial-banner" id="workshopCommandPartial" hidden></div>
+  <div class="workshop-command-briefing" id="workshopCommandBriefing" aria-live="polite"></div>
   <div class="workshop-command-sections" id="workshopCommandBody">
     <div class="workshop-loading" role="status"><span class="workshop-spinner"></span> Loading operational signals…</div>
   </div>
+  <div class="workshop-drilldown-backdrop" id="workshopDrilldownBackdrop" hidden></div>
+  <aside class="workshop-drilldown" id="workshopDrilldown" role="dialog" aria-modal="true" aria-labelledby="workshopDrilldownTitle" hidden>
+    <header class="workshop-drilldown-head">
+      <div>
+        <p class="workshop-ops-eyebrow">Operational detail</p>
+        <h2 id="workshopDrilldownTitle">Signal details</h2>
+        <p id="workshopDrilldownDescription"></p>
+      </div>
+      <button class="workshop-drilldown-close" id="workshopDrilldownClose" type="button" aria-label="Close details">&times;</button>
+    </header>
+    <div class="workshop-drilldown-scope" id="workshopDrilldownScope"></div>
+    <div class="workshop-drilldown-body" id="workshopDrilldownBody"></div>
+    <footer class="workshop-drilldown-foot">
+      <span id="workshopDrilldownCount" aria-live="polite"></span>
+      <button class="btn-primary" id="workshopDrilldownOpenTarget" type="button">Open canonical workspace</button>
+    </footer>
+  </aside>
 </section>
-

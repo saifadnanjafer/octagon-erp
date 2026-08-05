@@ -47,7 +47,7 @@ function harnessHtml(seed, pickTaskId) {
       window.switchRole=function(role){window.__role=role;const actor=window.__actors[role];window.OctagonRuntimeContext.userId=actor;window.OctagonRuntimeContext.actorId=actor;document.querySelectorAll('[data-page]').forEach(button=>{const page=button.dataset.page;button.hidden=(page==='workshop_readiness'&&role!=='supervisor')||(page==='workshop_command_center'&&role==='finance');});document.getElementById('roleSwitcher').value=role;};
       document.getElementById('roleSwitcher').addEventListener('change',event=>window.switchRole(event.target.value));document.querySelectorAll('[data-page]').forEach(button=>button.addEventListener('click',()=>window.switchPage(button.dataset.page)));
     </script>
-    <script src="/modules/workshop-shell.js"></script><script src="/modules/workshop-command-center.js"></script><script src="/modules/workshop-my-work.js"></script><script src="/modules/workshop-readiness.js"></script>
+    <script src="/modules/workshop-shell.js"></script><script src="/modules/workshop-drilldown.js"></script><script src="/modules/workshop-command-center.js"></script><script src="/modules/workshop-my-work.js"></script><script src="/modules/workshop-readiness.js"></script>
     <script>window.switchRole('supervisor');window.switchPage('workshop_command_center');</script></body></html>`;
 }
 

@@ -74,3 +74,29 @@ test('invalid warehouse does not leak another scope and reports isolated unavail
   assert.ok(warehouseCards.every((card) => card.state === 'unavailable'));
   assert.ok(result.data.summary.available > 0);
 });
+
+test('Command Center briefing covers every signal with accountable response guidance', async (t) => {
+  const { dialect, ctx } = await openWorkshopFixture(t, 'command-briefing');
+  insertWorkItem(dialect, { id: 'briefing-urgent', priority: 'urgent' });
+  const result = buildWorkshopCommandCenter({ dialect, ctx, can: allowAll });
+  const briefing = result.data.briefing;
+  assert.equal(briefing.coverage.registered, 18);
+  assert.equal(briefing.coverage.visible, 18);
+  assert.equal(briefing.signals.length, 18);
+  assert.equal(briefing.mutationPolicy, 'ADVISORY_ONLY_CANONICAL_TARGETS');
+  assert.ok(briefing.signals.every((signal) => signal.ownerRole));
+  assert.ok(briefing.signals.every((signal) => signal.response.length >= 3));
+  assert.ok(briefing.signals.every((signal) => signal.evidence.length >= 2));
+  assert.ok(briefing.attention.total >= 1);
+  assert.ok(briefing.nextRoute.target);
+});
+
+test('briefing preserves permission-hidden signals without exposing metric values', async (t) => {
+  const { dialect, ctx } = await openWorkshopFixture(t, 'command-briefing-denied');
+  const result = buildWorkshopCommandCenter({ dialect, ctx, can: (permission) => permission === 'platform:db:read' });
+  const denied = result.data.briefing.signals.filter((signal) => signal.state === 'permission_denied');
+  assert.ok(denied.length > 0);
+  assert.ok(denied.every((signal) => signal.value === null));
+  assert.equal(result.data.briefing.coverage.permissionDenied, denied.length);
+  assert.equal(result.data.briefing.coverage.complete, false);
+});

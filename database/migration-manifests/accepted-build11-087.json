@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-081-086.json",
+  "acceptedSourceCommit": "18163dff5b47eb13216864d96366a1b3bb4603e1",
+  "acceptanceTimestamp": "2026-08-05T00:00:00.000Z",
+  "acceptanceReason": "BUILD-11 additive migration accepted for disposable schema rehearsal before commercial platform implementation.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "087_build11_commercial_platform",
+      "relativePath": "database/migrations/087_build11_commercial_platform.mjs",
+      "algorithm": "sha256",
+      "checksum": "fc8eee45ac6e18cc44aab9b0d2a987700824565831af7e9e5089540f1f4f03b9"
+    }
+  ]
+}

@@ -23,6 +23,7 @@
     "test:build-08": "node --test --test-concurrency=1 \"tests/build-08/*.test.mjs\"",
     "test:build-09": "node --test --test-concurrency=1 \"tests/build-09/*.test.mjs\"",
     "test:build-10": "node --test --test-concurrency=1 \"tests/build-10/*.test.mjs\"",
+    "test:build-11": "node --test --test-concurrency=1 \"tests/build-11/*.test.mjs\"",
     "test:workshop": "node --test --test-concurrency=1 \"tests/workshop/*.test.mjs\""
   },
   "dependencies": {

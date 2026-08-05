@@ -64,6 +64,7 @@ import { registerOfflineActions } from './platform/offline/index.mjs';
 import { registerKioskActions } from './platform/kiosk/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
+import { registerBuild11Actions } from './platform/build11/index.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -338,6 +339,7 @@ export function createPlatformAuthority(dialect) {
   registerIotActions(actionExecutor);
   registerOfflineActions(actionExecutor);
   registerKioskActions(actionExecutor);
+  registerBuild11Actions(actionExecutor, dialect);
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
@@ -348,6 +350,7 @@ export function createPlatformAuthority(dialect) {
     forecastingService, masterProductionScheduleService, salesOperationsPlanningService,
     treasuryLiquidityService, intercompanyOperationsService, consolidationService,
     serviceEntitlementService, electronicSignatureService,
+    build11: { evaluateEntitlement: (ctx, capability, options = {}) => import('./platform/build11/index.mjs').then(({ evaluateEntitlement }) => evaluateEntitlement(dialect, ctx, capability, options)) },
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal

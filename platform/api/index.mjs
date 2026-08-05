@@ -37,6 +37,7 @@ import { handleServiceQuery } from './service.mjs';
 import { handleBuild08Query } from './build08.mjs';
 import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
 import { handleWorkshopQuery, WORKSHOP_RESOURCE_PERMISSIONS } from './workshop.mjs';
+import { listSaas } from '../build11/index.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -178,6 +179,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
           ? permissionEvaluator.listPermissions({ ...ctx, activeCompanyId: ctx.activeCompanyId || ctx.companyId, actorType: ctx.actorType || 'user', now: ctx.now || new Date().toISOString() }, RUNTIME_CONTEXT_PERMISSION_CANDIDATES)
           : [];
         return sendJson(res, 200, envelope({ actorId: ctx.actorId, userId: ctx.userId, tenantId: ctx.tenantId, companyId: ctx.companyId, branchId: ctx.branchId, warehouseId: selected, availableCompanies: companies, availableBranches: branches, availableWarehouses: warehouses, permissions, locale: ctx.locale || 'ar', direction: ctx.direction || 'rtl' }, null, null, ctx.correlationId));
+      }
+
+      if (namespace === 'saas' && req.method === 'GET') {
+        if (!requirePermission('platform:saas:read')) return;
+        const crossTenant = !!(authorize && (authorize({ permission: 'platform:saas:cross_tenant', ctx, req, requestUrl })?.allowed));
+        const result = listSaas(dialect, ctx, resource, recordId, Object.fromEntries(requestUrl.searchParams.entries()), { crossTenant });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
       if (namespace === 'x' && resource) {
@@ -337,11 +346,11 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {
-        if (!requirePermission('platform:db:write')) return;
         // Governed actions declare their own required permission in
         // platform_actions; evaluate it so HTTP dispatch honors the same
         // contract as the runtime authority. No-op when authorize is unset.
         const actionPermission = dialect.prepare('SELECT required_permission FROM platform_actions WHERE id = ?').get(resource);
+        if (!resource.startsWith('saas:') && !requirePermission('platform:db:write')) return;
         if (actionPermission?.required_permission && !requirePermission(actionPermission.required_permission)) return;
         const actionId = resource;
         const raw = await readBody(req);

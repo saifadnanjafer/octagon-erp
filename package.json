@@ -25,7 +25,15 @@
     "test:build-10": "node --test --test-concurrency=1 \"tests/build-10/*.test.mjs\"",
     "test:build-11": "node --test --test-concurrency=1 \"tests/build-11/*.test.mjs\"",
     "test:build-12": "node --test --test-concurrency=1 \"tests/build-12/*.test.mjs\"",
-    "test:workshop": "node --test --test-concurrency=1 \"tests/workshop/*.test.mjs\""
+    "test:workshop": "node --test --test-concurrency=1 \"tests/workshop/*.test.mjs\"",
+    "test:review": "node --test \"tests/review/*.test.mjs\"",
+    "review:setup": "node scripts/review/setup.mjs",
+    "review:reset": "node scripts/review/reset.mjs",
+    "review:start": "node scripts/review/start.mjs",
+    "review:verify": "node scripts/review/verify.mjs",
+    "review:functional-matrix": "node scripts/review/functional-matrix.mjs",
+    "review:page-inventory": "node scripts/review/page-inventory.mjs",
+    "review:uiux-matrix": "node scripts/review/uiux-matrix.mjs"
   },
   "dependencies": {
     "dotenv": "17.4.2"

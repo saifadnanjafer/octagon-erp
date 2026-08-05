@@ -48,6 +48,12 @@ attachments/
 exports/
 review-reports/
 
+# Disposable Review Freeze environment (database, credentials, screenshots).
+# Never commit review data or credentials — review:setup regenerates all of
+# this deterministically from scratch.
+/.review-data/
+/review-artifacts/
+
 # Backups, archives, and local handoff bundles
 backup/
 backups/

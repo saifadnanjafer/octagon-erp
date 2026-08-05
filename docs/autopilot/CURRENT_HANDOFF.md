@@ -12,7 +12,7 @@ Arabic/English styling, empty/error/denied states, and focus-visible controls.
 
 The implementation checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
 was followed by final closure evidence at
-`b3995061924850a7c214c32004414a519e76c926`, pushed with local, upstream, and
+`c95a1d63d62017c5d3203af13142ff36716fee45`, pushed with local, upstream, and
 remote equality. BUILD-13 remains pending and unauthorized.
 
 Closure evidence: BUILD-12 17/17; BUILD-09 65/65; BUILD-08 17/17;

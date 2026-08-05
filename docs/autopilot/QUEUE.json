@@ -294,7 +294,7 @@
         "evidence_path": "docs/autopilot/evidence/BUILD-11-commercial-platform-completion.md"
       }
     },
-    { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "COMPLETE", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md", "checkpoint": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md", "completion": { "commit": "b3995061924850a7c214c32004414a519e76c926", "branch": "codex/octagon-feature-page-expansion-marathon", "remote_commit": "b3995061924850a7c214c32004414a519e76c926", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md" } },
+    { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "COMPLETE", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md", "checkpoint": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md", "completion": { "commit": "c95a1d63d62017c5d3203af13142ff36716fee45", "branch": "codex/octagon-feature-page-expansion-marathon", "remote_commit": "c95a1d63d62017c5d3203af13142ff36716fee45", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md" } },
     { "id": "BUILD-13", "title": "Final functional page expansion", "status": "PENDING", "depends_on": ["BUILD-12"], "prompt_path": "docs/autopilot/prompts/BUILD-13-functional-pages.md" },
     { "id": "BUILD-14", "title": "Capability closure and residual build", "status": "PENDING", "depends_on": ["BUILD-13"], "prompt_path": "docs/autopilot/prompts/BUILD-14-capability-closure.md" }
   ]

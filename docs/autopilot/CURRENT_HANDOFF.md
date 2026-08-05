@@ -1,5 +1,43 @@
 # Current Autopilot Handoff
 
+## BUILD-09R-2 high-value page pack (2026-08-05)
+
+Six purpose-built workspace groups shipped on `codex/octagon-feature-page-expansion-marathon`,
+taking BUILD-09 from 2 to **16 of 32** purpose-built pages: waves (planning/execution), cycle
+counting (plans/session/variance review), traceability + recall, shop-floor terminal +
+work-centre queue, quality hold/rework/scrap, and downtime + operational performance. A shared
+kernel (`modules/build09r-shared.js`) carries the reusable half so the six groups read as one
+product. 6 commits, each tested and pushed before the next began.
+
+**The dispatching prompt's premise was stale and was not taken at face value.** It named
+`d74c3bfc` as HEAD and described BUILD-10's frontend as an unbuilt 138-line stub with 6 red
+tests. The remote was 6 commits ahead and those commits had built it; `test:build-10` verifies
+**37/37 including all 3 Chromium lifecycle tests**. BUILD-10 was already COMPLETE, so this
+session left it alone and went to the prompt's own next priority (§31), Phase G. BUILD-11 was
+not started.
+
+Three real defects were found and fixed while building, two of which had been invisible because
+nothing had ever driven these paths through a real click:
+1. `listCountSessions` leaked the blind-count snapshot — a counter could list sessions and read
+   the quantity a blind count exists to withhold (fixed in `platform/wms/cycle-counting.mjs`,
+   with a domain regression test).
+2. The `lots` / `serials` governed pickers pointed at `/api/v1/wms/lots`, which does not exist;
+   they 404d and rendered permanently empty (fixed in `modules/octagon-governed-lookups.js`).
+3. A `clickablePoint` flake where a `guarded()` repaint detaches an element mid-click (fixed
+   with `clickStable()` in the harness, keeping real mouse clicks).
+
+Verification: `test:build-08` 17/17, `test:build-09` **51/51** (35 baseline preserved + 16 new),
+`test:build-10` 37/37, `test:permissions` 39/39, `test:migration` 5/5. Migrations 081–085
+untouched; no payroll/attendance/timesheet path touched.
+
+**BUILD-09R stays IN_PROGRESS.** 16 pages remain on the generic shell and are pinned by name in
+`tests/build-09/build09r2-bespoke-contract.test.mjs`. Full detail:
+`docs/autopilot/evidence/BUILD-09R-2-high-value-page-pack.md`.
+
+**Next eligible:** either continue BUILD-09R-2 (next natural group: dock scheduling + check-in +
+staging/cross-dock, which share one physical flow) or start BUILD-11, which remains PENDING and
+untouched.
+
 ## BUILD-10 COMPLETE (2026-08-03)
 
 BUILD-10 (Devices, telematics, offline, and kiosk) is honestly complete. This session's backend

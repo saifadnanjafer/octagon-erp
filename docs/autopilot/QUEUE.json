@@ -253,7 +253,15 @@
       "title": "BUILD-09 usability remediation (runtime context, real forms, governed lookups)",
       "status": "IN_PROGRESS",
       "depends_on": ["BUILD-09"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-09R-usability-remediation.md",
       "human_gate": "Not marked COMPLETE - genuine gaps remain, documented in evidence. A continuation session should read the evidence file before doing more work.",
+      "progress": {
+        "purpose_built_pages": 16,
+        "total_pages": 32,
+        "evidence_path": "docs/autopilot/evidence/BUILD-09R-2-high-value-page-pack.md",
+        "remaining_generic_pages": ["warehouse_topology", "zone_bin_management", "putaway_rules", "putaway_task_queue", "replenishment_rules", "replenishment_proposals", "receiving_discrepancies", "pick_task_queue", "dock_schedule", "dock_checkin", "staging_board", "crossdock_workspace", "expiration_queue", "production_material_requests", "production_issue_return", "production_receipt"],
+        "note": "Pinned in tests/build-09/build09r2-bespoke-contract.test.mjs; that test fails if this list drifts from what the modules actually register."
+      },
       "completion": {
         "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
         "branch": "codex/octagon-feature-page-expansion-marathon",

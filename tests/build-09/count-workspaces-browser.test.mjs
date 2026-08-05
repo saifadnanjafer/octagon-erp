@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { browserAction, openBuild09Browser } from './browser-harness.mjs';
+import { browserAction, clickStable, openBuild09Browser } from './browser-harness.mjs';
 
 // BUILD-09R-2 Group B: real Chromium drives Cycle Count Plans -> Count Session -> Variance
 // Review (modules/build09-count-workspace.js) through visible controls only.
@@ -43,7 +43,7 @@ test('real Chromium creates a blind count plan, starts a session, and hides the 
   assert.equal(plan.location_id, seed.source.locationId);
   assert.equal(Number(plan.blind_count), 1);
 
-  await page.click(`${host} [data-role="cp-start"][data-plan-id="${plan.id}"]`);
+  await clickStable(page, `${host} [data-role="cp-start"][data-plan-id="${plan.id}"]`);
   await page.waitForSelector(`${host} [data-role="cp-started"]`, { timeout: 15000 });
   const countSession = dialect.prepare('SELECT * FROM wms_count_sessions_v2 WHERE plan_id=?').get(plan.id);
   assert.equal(countSession.status, 'counting');
@@ -56,7 +56,7 @@ test('real Chromium creates a blind count plan, starts a session, and hides the 
   await page.evaluate(() => window.switchPage('count_session'));
   const sessionHost = '[data-build09-page="count_session"]';
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="cs-open"]`).length > 0, { timeout: 15000 }, sessionHost);
-  await page.click(`${sessionHost} [data-role="cs-open"][data-session-id="${countSession.id}"]`);
+  await clickStable(page, `${sessionHost} [data-role="cs-open"][data-session-id="${countSession.id}"]`);
   await page.waitForSelector(`${sessionHost} [data-role="cs-expected"]`, { timeout: 10000 });
 
   const expectedCell = latin(await page.$eval(`${sessionHost} [data-role="cs-expected"]`, (node) => node.textContent.trim()));
@@ -79,7 +79,7 @@ test('real Chromium records a variance, hits the approval boundary, then propose
 
   await page.evaluate(() => window.switchPage('count_session'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="cs-open"]`).length > 0, { timeout: 15000 }, sessionHost);
-  await page.click(`${sessionHost} [data-role="cs-open"][data-session-id="${started.id}"]`);
+  await clickStable(page, `${sessionHost} [data-role="cs-open"][data-session-id="${started.id}"]`);
   await page.waitForSelector(`${sessionHost} [data-role="cs-line-form"]`, { timeout: 10000 });
 
   const directedExpected = latin(await page.$eval(`${sessionHost} [data-role="cs-expected"]`, (node) => node.textContent.trim()));
@@ -91,7 +91,7 @@ test('real Chromium records a variance, hits the approval boundary, then propose
   await page.click(`${sessionHost} [data-role="cs-line-form"] button[type="submit"]`);
 
   await page.waitForFunction((selector) => !document.querySelector(`${selector} [data-role="cs-submit"]`)?.disabled, { timeout: 10000 }, sessionHost);
-  await page.click(`${sessionHost} [data-role="cs-submit"]`);
+  await clickStable(page, `${sessionHost} [data-role="cs-submit"]`);
   await page.waitForFunction((selector) => /variance_review/.test(document.querySelector(`${selector} [data-role="cs-body"]`)?.textContent || ''), { timeout: 10000 }, sessionHost);
 
   const submitted = dialect.prepare('SELECT status,variance_count FROM wms_count_sessions_v2 WHERE id=?').get(started.id);
@@ -103,7 +103,7 @@ test('real Chromium records a variance, hits the approval boundary, then propose
 
   await page.evaluate(() => window.switchPage('variance_review'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="vr-open"]`).length > 0, { timeout: 15000 }, reviewHost);
-  await page.click(`${reviewHost} [data-role="vr-open"][data-session-id="${started.id}"]`);
+  await clickStable(page, `${reviewHost} [data-role="vr-open"][data-session-id="${started.id}"]`);
   await page.waitForSelector(`${reviewHost} [data-role="vr-lines"]`, { timeout: 10000 });
 
   const varianceText = latin(await page.$eval(`${reviewHost} [data-role="vr-lines"]`, (node) => node.textContent));
@@ -122,9 +122,9 @@ test('real Chromium records a variance, hits the approval boundary, then propose
   await browserAction(page, 'wms:count_approve_variance', { warehouse_id: seed.warehouse.id, session_id: started.id, reason: 'accepted shrinkage' }, { user: 'count-supervisor' });
   await page.evaluate(() => window.switchPage('variance_review'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="vr-open"]`).length > 0, { timeout: 15000 }, reviewHost);
-  await page.click(`${reviewHost} [data-role="vr-open"][data-session-id="${started.id}"]`);
+  await clickStable(page, `${reviewHost} [data-role="vr-open"][data-session-id="${started.id}"]`);
   await page.waitForSelector(`${reviewHost} [data-role="vr-adjust"]`, { timeout: 10000 });
-  await page.click(`${reviewHost} [data-role="vr-adjust"]`);
+  await clickStable(page, `${reviewHost} [data-role="vr-adjust"]`);
 
   await page.waitForSelector(`${reviewHost} [data-role="vr-proposal"]`, { timeout: 10000 });
   const proposalText = await page.$eval(`${reviewHost} [data-role="vr-proposal"]`, (node) => node.textContent);

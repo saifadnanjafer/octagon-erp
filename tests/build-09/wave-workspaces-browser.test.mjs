@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { browserAction, openBuild09Browser } from './browser-harness.mjs';
+import { browserAction, clickStable, openBuild09Browser } from './browser-harness.mjs';
 
 // BUILD-09R-2 Group A: real Chromium drives the purpose-built Wave Planning and Wave Execution
 // workspaces (modules/build09-wave-workspace.js) through visible controls only - checkbox
@@ -72,7 +72,7 @@ test('real Chromium plans a wave from the task pool and honours the wave maker-c
 
   // The planner who created the wave may not review it. Clicking review must render an honest
   // denied panel - proving governance reaches the operator instead of failing silently.
-  await page.click(`${host} [data-role="wp-review"]`);
+  await clickStable(page, `${host} [data-role="wp-review"]`);
   await page.waitForFunction((selector) => document.querySelector(selector)?.dataset.phase === 'denied', { timeout: 10000 }, `${host} [data-role="wp-alert"]`);
   const deniedText = await page.$eval(`${host} [data-role="wp-alert"]`, (node) => node.textContent);
   assert.match(deniedText, /maker-checker/i);
@@ -89,7 +89,7 @@ test('real Chromium releases a reviewed wave and shows live execution progress',
 
   await page.evaluate(() => window.switchPage('wave_planning'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="wp-toggle"]`).length === 2, { timeout: 15000 }, planningHost);
-  await page.click(`${planningHost} [data-role="wp-select-all"]`);
+  await clickStable(page, `${planningHost} [data-role="wp-select-all"]`);
   await page.type(`${planningHost} [data-role="wp-rule-form"] [name="name"]`, 'WAVE-UI-EXEC');
   await page.click(`${planningHost} [data-role="wp-rule-form"] button[type="submit"]`);
   await page.waitForSelector(`${planningHost} [data-role="wp-review"]`, { timeout: 15000 });
@@ -102,10 +102,10 @@ test('real Chromium releases a reviewed wave and shows live execution progress',
 
   await page.evaluate(() => window.switchPage('wave_execution'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="we-select"]`).length > 0, { timeout: 15000 }, host);
-  await page.click(`${host} [data-role="we-select"][data-wave-id="${wave.id}"]`);
+  await clickStable(page, `${host} [data-role="we-select"][data-wave-id="${wave.id}"]`);
 
   await page.waitForSelector(`${host} [data-role="we-release"]`, { timeout: 10000 });
-  await page.click(`${host} [data-role="we-release"]`);
+  await clickStable(page, `${host} [data-role="we-release"]`);
 
   await page.waitForFunction((selector) => /released/.test(document.querySelector(`${selector} [data-role="we-list"]`)?.textContent || ''), { timeout: 15000 }, host);
   const released = dialect.prepare('SELECT status,released_by,reviewed_by FROM wms_pick_waves WHERE id=?').get(wave.id);

@@ -96,6 +96,30 @@ export async function openBuild09Browser(t, { name, initialPage, extraModules = 
   return { authority, browser, consoleErrors, dialect, page, seed };
 }
 
+/**
+ * Real mouse click that tolerates a re-render landing between selector resolution and the click.
+ *
+ * The BUILD-09R-2 workspaces repaint their whole body when a guarded action settles, so a handle
+ * resolved by waitForSelector can be detached microseconds later - puppeteer then throws
+ * "Node is either not clickable or not an HTMLElement" from clickablePoint. That is a test-harness
+ * race, not a product defect, so retry on a fresh handle instead of weakening the assertion into
+ * an evaluate() click (which would stop proving the control is genuinely clickable).
+ */
+export async function clickStable(page, selector, { timeout = 10000, attempts = 4 } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      await page.waitForSelector(selector, { timeout, visible: true });
+      await page.click(selector);
+      return;
+    } catch (error) {
+      lastError = error;
+      if (!/not clickable|not an HTMLElement|detached|No node found/i.test(String(error.message))) throw error;
+    }
+  }
+  throw lastError;
+}
+
 export async function browserAction(page, actionId, input, { user = 'browser-manager', company = 'default', warehouse } = {}) {
   return page.evaluate(async ({ actionId, input, user, company, warehouse }) => {
     const response = await fetch(`/api/v1/action/${actionId}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-user': user, 'x-company': company, 'x-warehouse': warehouse || '' }, body: JSON.stringify({ idempotency_key: `${actionId}-${Date.now()}-${Math.random().toString(36).slice(2)}`, ...input }) });

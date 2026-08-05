@@ -1,7 +1,7 @@
 (function governedLookups(root) {
   'use strict';
   const cache = new Map();
-  const WMS_RESOURCES = Object.freeze({ warehouses: 'warehouses', zones: 'zones', locations: 'locations', lots: 'lots', serials: 'serials', receivingSessions: 'receiving-sessions', receivingDiscrepancies: 'receiving-discrepancies', pickTasks: 'pick-tasks', waves: 'waves', countPlans: 'count-plans', countSessions: 'count-sessions', docks: 'docks', dockAppointments: 'dock-appointments', qualityCheckpoints: 'quality-checkpoints', dispositions: 'quality-dispositions', putawayRules: 'putaway-rules', putawayQueue: 'putaway-queue', replenishmentRules: 'replenishment-rules', replenishmentProposals: 'replenishment-proposals', crossdockMatches: 'crossdock-matches', recallCases: 'recall-cases', reworkRoutes: 'rework-routes', shopfloorSessions: 'shopfloor-sessions', materialFlow: 'material-flow', downtimeEvents: 'downtime', stagingAllocations: 'staging-allocations' });
+  const WMS_RESOURCES = Object.freeze({ warehouses: 'warehouses', zones: 'zones', locations: 'locations', receivingSessions: 'receiving-sessions', receivingDiscrepancies: 'receiving-discrepancies', pickTasks: 'pick-tasks', waves: 'waves', countPlans: 'count-plans', countSessions: 'count-sessions', docks: 'docks', dockAppointments: 'dock-appointments', qualityCheckpoints: 'quality-checkpoints', dispositions: 'quality-dispositions', putawayRules: 'putaway-rules', putawayQueue: 'putaway-queue', replenishmentRules: 'replenishment-rules', replenishmentProposals: 'replenishment-proposals', crossdockMatches: 'crossdock-matches', recallCases: 'recall-cases', reworkRoutes: 'rework-routes', shopfloorSessions: 'shopfloor-sessions', materialFlow: 'material-flow', downtimeEvents: 'downtime', stagingAllocations: 'staging-allocations' });
   // These are NOT under /api/v1/wms/ - platform/api/index.mjs routes each to its own
   // namespace instead (verified empirically; the bare single-segment form 404s "not found"
   // because the router requires 2 path segments, e.g. /api/v1/work-orders alone fails but
@@ -9,14 +9,22 @@
   const NAMESPACED_RESOURCES = Object.freeze({
     productionOrders: ['manufacturing', 'production-orders'], workOrders: ['manufacturing', 'work-orders'],
     products: ['commercial', 'products'],
+    // lots/serials were listed as WMS resources, but /api/v1/wms/lots does not exist - the real
+    // route is /api/v1/inventory/lots (platform/api/commercial.mjs), so the picker 404d and
+    // rendered permanently empty. Traceability/recall need a working lot picker.
+    lots: ['inventory', 'lots'], serials: ['inventory', 'serials'],
   });
-  const resources = Object.freeze({ ...WMS_RESOURCES, productionOrders: 'production-orders', workOrders: 'work-orders', products: 'products', operators: 'operators' });
+  const resources = Object.freeze({ ...WMS_RESOURCES, productionOrders: 'production-orders', workOrders: 'work-orders', products: 'products', operators: 'operators', lots: 'lots', serials: 'serials' });
   // Some list/search endpoints map their row's real primary key to a camelCase field other
   // than plain `id` (verified against the server-side mapper for each kind below) - falling
   // back to row.id there silently renders every <option value=""> and makes the picker look
   // populated while selecting nothing. Only kinds actually verified are listed here; other
   // WMS_RESOURCES kinds still use row.id and have not been individually audited.
   const ID_FIELD_BY_KIND = Object.freeze({ locations: 'locationId', products: 'variant_id' });
+  // /api/v1/inventory/{lots,serials} return raw stock_lots / stock_serials rows, which carry no
+  // name/code/reference - without this the generic label fallback renders every option as a bare
+  // UUID, which is unusable for picking a lot to trace or recall.
+  const LABEL_FIELD_BY_KIND = Object.freeze({ lots: 'lot_number', serials: 'serial_number' });
 
   async function searchOperators(normalized) {
     // No dedicated "operators" query resource exists anywhere in the API - operator/assignee
@@ -45,7 +53,11 @@
     // that takes product_id expects a product_variants.id, so the lookup must resolve to the
     // variant, not the template, and templates with no variant are not selectable here.
     const filtered = idField ? rows.filter((row) => row[idField]) : rows;
-    const normalizedRows = filtered.map((row) => ({ ...row, id: idField ? row[idField] : row.id, label: row.name || row.code || row.reference || row.id })); cache.set(key, normalizedRows); return normalizedRows;
+    const labelField = LABEL_FIELD_BY_KIND[kind];
+    // These endpoints have no server-side search, so filter client-side on the label the user
+    // actually sees - otherwise typing narrows nothing and the picker looks broken.
+    const searchable = labelField && normalized ? filtered.filter((row) => String(row[labelField] || '').toLowerCase().includes(normalized.toLowerCase())) : filtered;
+    const normalizedRows = searchable.map((row) => ({ ...row, id: idField ? row[idField] : row.id, label: (labelField && row[labelField]) || row.name || row.code || row.reference || row.id })); cache.set(key, normalizedRows); return normalizedRows;
   }
   root.OctagonGovernedLookups = { resources, search, clear() { cache.clear(); } };
 })(window);

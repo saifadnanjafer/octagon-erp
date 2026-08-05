@@ -65,4 +65,5 @@ html[dir=rtl] .b09r-stepper li{border-inline-start:0;border-inline-end:3px solid
 .b09r-count-line input{min-height:46px;padding:9px 12px;border:1px solid #334155;border-radius:9px;background:#020617;color:#dbeafe;font:inherit}
 .b09r-count-expected{display:grid;gap:3px;text-align:center}.b09r-count-expected small{color:#8293a8;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}.b09r-count-expected strong{color:#7dd3fc;font-size:1rem}
 .b09r-count-input{display:grid;gap:5px;color:#86efac;font-size:.8rem;font-weight:700}
-@media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}.b09r-count-line{grid-template-columns:1fr 1fr}.b09r-count-line>button{grid-column:1/-1}}
+.b09r-chains{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.b09r-kpi-value{font-size:1.25rem}.b09r-wave-row{flex-wrap:wrap}.b09r-wave-progress{flex-basis:100%}.b09r-pool-list{max-height:none}.b09r-count-line{grid-template-columns:1fr 1fr}.b09r-count-line>button{grid-column:1/-1}.b09r-chains{grid-template-columns:1fr}}

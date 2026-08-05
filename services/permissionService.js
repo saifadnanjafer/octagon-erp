@@ -355,7 +355,18 @@
     warehouse_large_screen: { sensitivity: 'boards/warehouse', riskLevel: 'low', phase: 'build10', label: 'Warehouse large screen' },
     production_large_screen: { sensitivity: 'boards/production', riskLevel: 'low', phase: 'build10', label: 'Production large screen' },
     service_queue_board: { sensitivity: 'boards/service', riskLevel: 'low', phase: 'build10', label: 'Service queue board' },
-    alert_board: { sensitivity: 'boards/alerts', riskLevel: 'low', phase: 'build10', label: 'Alert board' }
+    alert_board: { sensitivity: 'boards/alerts', riskLevel: 'low', phase: 'build10', label: 'Alert board' },
+    saas_overview: { sensitivity: 'commercial/saas', riskLevel: 'medium', phase: 'build11', label: 'SaaS overview' },
+    tenant_directory: { sensitivity: 'commercial/tenant', riskLevel: 'high', phase: 'build11', label: 'Tenant directory' },
+    tenant_detail: { sensitivity: 'commercial/tenant', riskLevel: 'high', phase: 'build11', label: 'Tenant detail' },
+    commercial_plans: { sensitivity: 'commercial/plans', riskLevel: 'high', phase: 'build11', label: 'Commercial plans' },
+    subscriptions: { sensitivity: 'commercial/subscriptions', riskLevel: 'high', phase: 'build11', label: 'Subscriptions' },
+    entitlements: { sensitivity: 'commercial/entitlements', riskLevel: 'high', phase: 'build11', label: 'Entitlements' },
+    seats_and_limits: { sensitivity: 'commercial/seats', riskLevel: 'high', phase: 'build11', label: 'Seats and limits' },
+    usage_and_quotas: { sensitivity: 'commercial/usage', riskLevel: 'high', phase: 'build11', label: 'Usage and quotas' },
+    billing_simulator: { sensitivity: 'commercial/billing', riskLevel: 'high', phase: 'build11', label: 'Billing simulator' },
+    extension_marketplace: { sensitivity: 'commercial/extensions', riskLevel: 'high', phase: 'build11', label: 'Extension marketplace' },
+    extension_installations: { sensitivity: 'commercial/extensions', riskLevel: 'high', phase: 'build11', label: 'Extension installations' }
   };
 
   const PAGE_PERMISSIONS = {
@@ -562,7 +573,18 @@
     warehouse_large_screen: [],
     production_large_screen: [],
     service_queue_board: [],
-    alert_board: []
+    alert_board: [],
+    saas_overview: ['system.admin', 'workshop.manager', 'finance.manager'],
+    tenant_directory: ['system.admin', 'workshop.manager', 'finance.manager'],
+    tenant_detail: ['system.admin', 'workshop.manager', 'finance.manager'],
+    commercial_plans: ['system.admin', 'finance.manager'],
+    subscriptions: ['system.admin', 'finance.manager'],
+    entitlements: ['system.admin', 'workshop.manager', 'finance.manager'],
+    seats_and_limits: ['system.admin', 'workshop.manager'],
+    usage_and_quotas: ['system.admin', 'workshop.manager', 'finance.manager'],
+    billing_simulator: ['system.admin', 'finance.manager'],
+    extension_marketplace: ['system.admin', 'workshop.manager'],
+    extension_installations: ['system.admin', 'workshop.manager']
   };
 
   function expandGroups(groups) {

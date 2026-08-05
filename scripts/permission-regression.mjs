@@ -78,14 +78,16 @@ const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.has
 const CASES = [
   // Baseline moved 126 -> 158 when BUILD-09 added its 32 functional pages, then
   // 158 -> 196 when BUILD-10 added its 38 devices/fleet/offline/kiosk pages,
-  // then 196 -> 199 for Workshop Command Center, My Work, and Readiness.
+  // then 196 -> 199 for Workshop Command Center, My Work, and Readiness,
+  // then 199 -> 209 for BUILD-11 commercial and managed-SaaS workspaces;
+  // subscriptions reuses the existing commercial sidebar route.
   // Both numbers move together on
   // purpose: the second case is the real invariant (every sidebar page is
   // explicitly mapped), and it fails on either an unmapped page or count drift.
   ['sidebar baseline reflects BUILD-09 WMS/production/quality/performance and BUILD-10 devices/fleet/offline/kiosk pages',
-    () => sidebarPages.size, 199],
+    () => sidebarPages.size, 209],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 199],
+    () => mappedSidebarPages.length, 209],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',

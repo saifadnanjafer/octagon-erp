@@ -36,6 +36,7 @@ import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleServiceQuery } from './service.mjs';
 import { handleBuild08Query } from './build08.mjs';
 import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
+import { handleWorkshopQuery, WORKSHOP_RESOURCE_PERMISSIONS } from './workshop.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -124,13 +125,18 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
     const ctx = resolveContext(req, requestUrl);
     if (!ctx) return sendJson(res, 401, envelope(null, 'Login session required', null, null));
 
-    const requirePermission = (permission) => {
+      const requirePermission = (permission) => {
       if (!authorize) return true;
       const decision = authorize({ permission, ctx, req, requestUrl });
       if (decision === true || decision?.allowed) return true;
       sendJson(res, decision?.statusCode || 403, envelope(null, decision?.message || 'Permission denied', null, ctx.correlationId));
       return false;
-    };
+      };
+      const canPermission = (permission) => {
+        if (!authorize) return true;
+        const decision = authorize({ permission, ctx, req, requestUrl });
+        return decision === true || decision?.allowed === true;
+      };
 
     try {
       if (namespace === 'meta' && resource === 'entities' && req.method === 'GET') {
@@ -305,6 +311,14 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         if (!requirePermission(BUILD09_RESOURCE_PERMISSIONS[resource] || 'wms:topology:view')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
         const result = handleBuild09Query({ dialect, ctx, resource, recordId, query });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'workshop' && resource && req.method === 'GET') {
+        if (!requirePermission(WORKSHOP_RESOURCE_PERMISSIONS[resource] || 'platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const result = handleWorkshopQuery({ dialect, ctx, resource, query, can: canPermission });
         if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }

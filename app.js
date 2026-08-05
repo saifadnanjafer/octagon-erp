@@ -3103,7 +3103,7 @@ const navGroupMeta = {
 const navGroupPages = {
   core_daily: ['calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
-  ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
+  ops_control: ['workshop_command_center', 'command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
   ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
   ops_frontline: ['workshop_tv', 'kiosk'],
   finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
@@ -4196,6 +4196,7 @@ function switchPage(page) {
     task_manager: 'pageTaskManager',
     sop: 'pageSop',
     command_center: 'pageCommandCenter',
+    workshop_command_center: 'pageWorkshopCommandCenter',
     op_packs: 'pageOpPacks',
     machines: 'pageMachines',
     inventory: 'pageInventory',
@@ -4237,6 +4238,7 @@ function switchPage(page) {
     task_manager: 'navTaskManager',
     sop: 'navSop',
     command_center: 'navCommandCenter',
+    workshop_command_center: 'navWorkshopCommandCenter',
     op_packs: 'navOpPacks',
     machines: 'navMachines',
     inventory: 'navInventory',
@@ -4296,6 +4298,7 @@ function switchPage(page) {
   if (page === 'task_manager') renderTaskManager();
   if (page === 'sop') renderSopHub();
   if (page === 'command_center') renderCommandCenter();
+  if (page === 'workshop_command_center' && typeof window.renderWorkshopCommandCenter === 'function') window.renderWorkshopCommandCenter();
   if (page === 'op_packs') renderOpPacks();
   if (page === 'machines') renderMachinesPage();
   if (page === 'inventory') renderInventoryPage();

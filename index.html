@@ -126,7 +126,8 @@
   <link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">
   <link rel="stylesheet" href="modules/build08-workspaces.css?v=20260802-build08-v1">
   <link rel="stylesheet" href="modules/build09-workspaces.css?v=20260805-build09r2-v2">
-  <link rel="stylesheet" href="modules/build10-workspaces.css?v=20260803-build10-v1">
+<link rel="stylesheet" href="modules/build10-workspaces.css?v=20260803-build10-v1">
+<link rel="stylesheet" href="modules/workshop-operations.css?v=20260805-workshop-wave-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -1263,6 +1264,11 @@
               <span class="nav-label">مركز القيادة</span>
               <span class="nav-indicator"></span>
             </button>
+            <button class="nav-btn" data-page="workshop_command_center" id="navWorkshopCommandCenter" onclick="switchPage('workshop_command_center')">
+              <span class="nav-icon">⌁</span>
+              <span class="nav-label" data-i18n-ar="مركز قيادة الورشة" data-i18n-en="Workshop Command Center">مركز قيادة الورشة</span>
+              <span class="nav-indicator"></span>
+            </button>
             <button class="nav-btn" data-page="kanban" id="navKanban" onclick="switchPage('kanban')">
               <span class="nav-icon">📋</span>
               <span class="nav-label">اللوحة التنفيذية</span>
@@ -2024,6 +2030,7 @@
 
   <!-- ═══════════ COMMAND CENTER ═══════════ -->
   <!-- view:command_center -->
+  <!-- view:workshop_command_center -->
 
   <!-- ═══════════ OPERATION PACKS ═══════════ -->
   <!-- view:op_packs -->
@@ -2210,6 +2217,8 @@
   <!-- T4.2 (Phase 4): Command Center cluster, moved verbatim out of app.js.
        Loads immediately AFTER app.js and BEFORE modules that wrap renderCommandCenter. -->
   <script src="modules/command-center.js?v=20260714-t4.2-v2"></script>
+  <script src="modules/workshop-shell.js?v=20260805-workshop-wave-v1"></script>
+  <script src="modules/workshop-command-center.js?v=20260805-workshop-wave-v1"></script>
   <!-- T4.3 (Phase 4): Analytics Intelligence Brain cluster, moved verbatim out of app.js. -->
   <script src="modules/analytics-dashboard.js?v=20260714-t4.3-v1"></script>
   <script>

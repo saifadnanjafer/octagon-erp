@@ -6,7 +6,7 @@
   const { escapeHtml: esc, t, num, when, badge, kpis, scopeLine, muted, lookup, field, select } = S;
 
   const TYPES = {
-    requests: new Set(['request', 'reservation']),
+    requests: new Set(['request', 'reservation', 'issue', 'return', 'production_receipt']),
     movements: new Set(['issue', 'return']),
     receipts: new Set(['production_receipt']),
   };
@@ -64,7 +64,7 @@
       ${lookup('locations', 'source_location_id', 'Source location', 'موقع المصدر')}
       ${lookup('locations', 'destination_location_id', 'Work center / staging destination', 'وجهة مركز العمل / التجهيز')}
       ${field('requested_quantity', 'Quantity', 'الكمية', { type: 'number', min: 0, step: '0.01', required: true })}
-      ${select('request_type', 'Request type', 'نوع الطلب', [['request','Request','طلب'],['reservation','Reservation','حجز']], { required: true })}
+      ${select('request_type', 'Request type', 'نوع الطلب', [['request','Request','طلب'],['reservation','Reservation','حجز'],['issue','Production issue','صرف إنتاج'],['return','Production return','إرجاع إنتاج'],['production_receipt','Production receipt','استلام إنتاج']], { required: true })}
       <button class="b09-button b09-primary" type="submit">${esc(t('Create governed request', 'إنشاء طلب محكوم'))}</button>
     </form>`;
   }

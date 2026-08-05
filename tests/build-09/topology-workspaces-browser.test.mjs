@@ -11,7 +11,8 @@ test('real Chromium creates a warehouse-scoped zone and Inventory-backed bin pro
   await page.type(`${topologyHost} [name="code"]`, 'A-01');
   await page.type(`${topologyHost} [name="name"]`, 'Primary Storage');
   await page.click(`${topologyHost} [data-role="topology-zone-form"] button[type="submit"]`);
-  await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="topology-zones"] .b09r-card`).length === 1 || !!document.querySelector(`${selector} [data-role="topology-alert"]`), { timeout: 15000 }, topologyHost);
+  await page.waitForFunction((selector) => [...document.querySelectorAll(`${selector} [data-role="topology-zones"] .b09r-card`)]
+    .some((node) => node.textContent.includes('A-01')) || !!document.querySelector(`${selector} [data-role="topology-alert"]`), { timeout: 15000 }, topologyHost);
   const zoneAlert = await page.$(`${topologyHost} [data-role="topology-alert"]`);
   assert.equal(zoneAlert, null, zoneAlert ? await zoneAlert.evaluate((node) => node.textContent) : '');
   const zone = dialect.prepare('SELECT * FROM wms_zones WHERE code=?').get('A-01');

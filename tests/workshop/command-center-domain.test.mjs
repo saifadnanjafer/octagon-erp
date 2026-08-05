@@ -87,7 +87,7 @@ test('Command Center briefing covers every signal with accountable response guid
   assert.ok(briefing.signals.every((signal) => signal.ownerRole));
   assert.ok(briefing.signals.every((signal) => signal.response.length >= 3));
   assert.ok(briefing.signals.every((signal) => signal.evidence.length >= 2));
-  assert.ok(briefing.attention.total >= 1);
+  assert.equal(briefing.attention.total, briefing.attention.immediate.length + briefing.attention.review.length);
   assert.ok(briefing.nextRoute.target);
 });
 

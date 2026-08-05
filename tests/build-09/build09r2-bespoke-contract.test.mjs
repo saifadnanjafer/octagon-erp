@@ -19,6 +19,7 @@ const index = read('index.html');
 const BESPOKE_MODULES = {
   'build09-mobile-receiving.js': ['mobile_receiving'],
   'build09-mobile-picking.js': ['mobile_picking'],
+  'build09-topology-workspace.js': ['warehouse_topology', 'zone_bin_management'],
   'build09-wave-workspace.js': ['wave_planning', 'wave_execution'],
   'build09-count-workspace.js': ['cycle_count_plans', 'count_session', 'variance_review'],
   'build09-trace-workspace.js': ['lot_serial_traceability', 'recall_analysis'],
@@ -32,7 +33,7 @@ const BESPOKE_MODULES = {
 // The 8 BUILD-09 pages still served by the generic shell. This list is the honest remaining
 // BUILD-09R-2 backlog; shrink it as each page gets a purpose-built workspace.
 const STILL_GENERIC = [
-  'warehouse_topology', 'zone_bin_management', 'receiving_discrepancies', 'pick_task_queue',
+  'receiving_discrepancies', 'pick_task_queue',
   'expiration_queue', 'production_material_requests', 'production_issue_return', 'production_receipt',
 ];
 
@@ -62,8 +63,8 @@ test('every bespoke BUILD-09R-2 workspace is loaded, registered, and covers a re
   // Nothing bespoke may also be listed as still-generic, and together they must be the full set.
   for (const page of STILL_GENERIC) assert.ok(!claimed.includes(page), `${page} is bespoke but still listed as generic`);
   assert.deepEqual([...claimed, ...STILL_GENERIC].sort(), [...pages].sort(), 'every BUILD-09 page is either bespoke or explicitly listed as still generic');
-  assert.equal(claimed.length, 24, 'BUILD-09R-2 has 24 purpose-built workspaces');
-  assert.equal(STILL_GENERIC.length, 8, 'BUILD-09R-2 has 8 pages left on the generic shell');
+  assert.equal(claimed.length, 26, 'BUILD-09R-2 has 26 purpose-built workspaces');
+  assert.equal(STILL_GENERIC.length, 6, 'BUILD-09R-2 has 6 pages left on the generic shell');
 });
 
 test('the BUILD-09R-2 shared kernel loads before every module that depends on it', () => {

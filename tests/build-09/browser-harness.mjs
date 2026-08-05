@@ -65,7 +65,9 @@ export async function openBuild09Browser(t, { name, initialPage, extraModules = 
   });
   const api = createApiHandler({
     dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor, permissionEvaluator,
-    authorize: ({ ctx }) => ctx.userId === 'viewer-user' ? { allowed: false, statusCode: 403, message: 'Permission denied' } : { allowed: true },
+    authorize: ({ permission, ctx }) => ctx.userId === 'viewer-user'
+      ? (permission === 'wms:picking:view' ? { allowed: true } : { allowed: false, statusCode: 403, message: 'Permission denied' })
+      : { allowed: true },
   });
 
   const pageScripts = [...BASE_MODULES, ...extraModules];

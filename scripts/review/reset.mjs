@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Review Freeze 1 — reset the disposable review database.
+// Review Freeze 2 — reset the disposable review database.
 //
 // Removes ONLY .review-data/ (never touches database.db / database.json /
 // any operational path — it doesn't even reference them) and re-runs setup

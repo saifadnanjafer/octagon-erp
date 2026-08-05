@@ -12,7 +12,14 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { openMigrationDatabase } from '../../database/migration-runner/index.mjs';
-import { REVIEW_ROLES } from '../../scripts/review/roles.mjs';
+import { SessionAuthority } from '../../platform/identity/sessions/index.mjs';
+import { REVIEW_ROLES, REVIEW_TENANT, ISOLATION_TENANT } from '../../scripts/review/roles.mjs';
+import {
+  assertReviewFixtureAllowed,
+  isLoopbackHost,
+  REVIEW_BIND_HOST,
+  REVIEW_PASSWORD,
+} from '../../scripts/review/identities.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..', '..');
 const reviewDbPath = path.join(repoRoot, '.review-data', 'octagon-review.db');
@@ -73,23 +80,29 @@ test('review:reset is deterministic — identical identity and fixture counts ac
   runNpmScript('reset');
   const manifestB = JSON.parse(fs.readFileSync(reviewManifestPath, 'utf8'));
   const summaryB = JSON.parse(fs.readFileSync(fixtureSummaryPath, 'utf8'));
+  runNpmScript('setup');
+  const manifestC = JSON.parse(fs.readFileSync(reviewManifestPath, 'utf8'));
 
-  assert.equal(manifestA.users.length, manifestB.users.length, 'identity count is not deterministic across resets');
   assert.deepEqual(
-    manifestA.users.map((u) => u.login).sort(),
-    manifestB.users.map((u) => u.login).sort(),
+    manifestA.accounts.map((u) => u.username).sort(),
+    manifestB.accounts.map((u) => u.username).sort(),
     'identity login set is not deterministic across resets',
   );
+  assert.equal(manifestA.sharedPassword, REVIEW_PASSWORD, 'reset A did not use the fixed review password');
+  assert.equal(manifestB.sharedPassword, REVIEW_PASSWORD, 'reset B did not use the fixed review password');
+  assert.deepEqual(manifestA.accounts, manifestB.accounts, 'account roles/scopes are not deterministic across resets');
+  assert.equal(manifestC.sharedPassword, REVIEW_PASSWORD, 'setup did not use the fixed review password');
+  assert.deepEqual(manifestA.accounts, manifestC.accounts, 'setup did not recreate the same review accounts');
   assert.deepEqual(Object.keys(summaryA.summaries).sort(), Object.keys(summaryB.summaries).sort(), 'fixture domain set is not deterministic across resets');
 });
 
 test('required review identities exist — all 19 named roles plus isolation viewer', () => {
   const manifest = JSON.parse(fs.readFileSync(reviewManifestPath, 'utf8'));
-  const logins = new Set(manifest.users.map((u) => u.login));
+  const logins = new Set(manifest.accounts.map((u) => u.username));
   for (const role of REVIEW_ROLES) {
     assert.ok(logins.has(role.login), `missing review identity: ${role.login}`);
   }
-  assert.equal(manifest.users.length, REVIEW_ROLES.length, 'unexpected number of review identities seeded');
+  assert.equal(manifest.accounts.length, REVIEW_ROLES.length, 'unexpected number of review identities seeded');
 });
 
 test('required review fixtures exist — all 10 domains seeded with at least one row', () => {
@@ -138,6 +151,94 @@ test('commercial/BUILD-11-12 pages remain permission-scoped, not silently public
   assert.ok(commercialPages.length > 0, 'no commercial pages found in inventory — inventory may be stale');
   const unscoped = commercialPages.filter((p) => p.requiredPermission === 'none (public/open)');
   assert.equal(unscoped.length, 0, `commercial pages with no permission gate: ${unscoped.map((p) => p.pageId).join(', ')}`);
+});
+
+test('all review identities authenticate with the fixed password through SessionAuthority', () => {
+  const dialect = openMigrationDatabase(reviewDbPath);
+  try {
+    const sessions = new SessionAuthority(dialect);
+    for (const role of REVIEW_ROLES) {
+      const result = sessions.authenticate({
+        tenantId: role.tenant || (role.key === 'isolation_viewer' ? ISOLATION_TENANT : REVIEW_TENANT),
+        login: role.login,
+        password: REVIEW_PASSWORD,
+        ip: '127.0.0.1',
+        userAgent: 'review-environment-test',
+      });
+      assert.equal(result.userId, `usr_review_${role.key}`, `${role.login} did not authenticate`);
+    }
+  } finally {
+    dialect.close();
+  }
+});
+
+test('wrong review password is rejected', () => {
+  const dialect = openMigrationDatabase(reviewDbPath);
+  try {
+    const sessions = new SessionAuthority(dialect);
+    assert.throws(
+      () => sessions.authenticate({ tenantId: REVIEW_TENANT, login: 'review.viewer', password: 'wrong-review-password' }),
+      (error) => error?.code === 'AUTH_FAILED',
+    );
+  } finally {
+    dialect.close();
+  }
+});
+
+test('fixed credential guard fails outside review mode, review data scope, and loopback binding', () => {
+  const baseEnv = {
+    OCTAGON_REVIEW_FIXTURE: '1',
+    OCTAGON_REVIEW_MODE: '1',
+    OCTAGON_REVIEW_HOST: REVIEW_BIND_HOST,
+    NODE_ENV: 'test',
+  };
+  assert.throws(
+    () => assertReviewFixtureAllowed({ dbPath: reviewDbPath, env: { ...baseEnv, OCTAGON_REVIEW_MODE: '0' } }),
+    (error) => error?.code === 'REVIEW_MODE_REQUIRED',
+  );
+  assert.throws(
+    () => assertReviewFixtureAllowed({ dbPath: path.join(repoRoot, 'tmp', 'not-review.db'), env: baseEnv }),
+    (error) => error?.code === 'REVIEW_DB_SCOPE_DENIED',
+  );
+  assert.throws(
+    () => assertReviewFixtureAllowed({ dbPath: reviewDbPath, env: { ...baseEnv, OCTAGON_REVIEW_HOST: '0.0.0.0' } }),
+    (error) => error?.code === 'REVIEW_BINDING_DENIED',
+  );
+  assert.throws(
+    () => assertReviewFixtureAllowed({ dbPath: reviewDbPath, env: { ...baseEnv, OCTAGON_REVIEW_FIXTURE: '0' } }),
+    (error) => error?.code === 'REVIEW_FLAG_REQUIRED',
+  );
+});
+
+test('review credentials are ignored and plaintext is absent from SQLite', () => {
+  assert.doesNotThrow(() => execFileSync('git', ['check-ignore', '--quiet', '.review-data/review-credentials.json'], { cwd: repoRoot }));
+  const dialect = openMigrationDatabase(reviewDbPath);
+  try {
+    const rows = dialect.prepare('SELECT algorithm, salt, hash FROM identity_credentials').all();
+    assert.equal(rows.length, REVIEW_ROLES.length, 'unexpected credential row count');
+    assert.ok(rows.every((row) => row.algorithm === 'scrypt'), 'review credentials must use canonical scrypt hashes');
+    assert.ok(!JSON.stringify(rows).includes(REVIEW_PASSWORD), 'fixed plaintext password is stored in SQLite');
+  } finally {
+    dialect.close();
+  }
+});
+
+test('review server bind configuration is loopback-only', () => {
+  assert.equal(REVIEW_BIND_HOST, '127.0.0.1');
+  assert.equal(isLoopbackHost(REVIEW_BIND_HOST), true);
+  assert.equal(isLoopbackHost('localhost'), true);
+  assert.equal(isLoopbackHost('0.0.0.0'), false);
+  const startSource = fs.readFileSync(path.join(repoRoot, 'scripts', 'review', 'start.mjs'), 'utf8');
+  assert.match(startSource, /reviewLoopbackListen/);
+  assert.match(startSource, /OCTAGON_REVIEW_MODE = '1'/);
+});
+
+test('review tooling leaves operational users and paths unchanged', () => {
+  const dbBefore = statMtime(operationalDbPath);
+  const jsonBefore = statMtime(operationalJsonPath);
+  runNpmScript('setup');
+  assert.equal(statMtime(operationalDbPath), dbBefore, 'review setup changed operational database.db');
+  assert.equal(statMtime(operationalJsonPath), jsonBefore, 'review setup changed operational database.json');
 });
 
 test('review database can be deleted safely, leaving no trace outside .review-data', () => {

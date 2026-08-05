@@ -1,4 +1,4 @@
-// Review Freeze 1 — role catalogue.
+// Review Freeze 2 — role catalogue.
 //
 // Nineteen disposable review identities, one per named role in
 // docs/review/TEAM_HANDOFF.md / ROLE_REVIEW_SCENARIOS.md. Permission tokens

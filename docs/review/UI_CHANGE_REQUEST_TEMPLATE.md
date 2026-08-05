@@ -1,4 +1,4 @@
-# UI Change Request Template — Octagon ERP Review Freeze 1
+# UI Change Request Template — Octagon ERP Review Freeze 2
 
 Use this for a *proposed improvement* — the page works, but the reviewer believes
 it should look or behave differently. This is NOT a bug report (use

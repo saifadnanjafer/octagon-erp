@@ -1,4 +1,4 @@
-# Role-Based Review Scenarios — Octagon ERP Review Freeze 1
+# Role-Based Review Scenarios — Octagon ERP Review Freeze 2
 
 Generated from the scenario source in `scripts/review/functional-matrix.mjs`.
 This document is the reviewer-facing handoff; the generated functional matrix

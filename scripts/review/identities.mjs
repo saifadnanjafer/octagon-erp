@@ -1,20 +1,17 @@
-// Review Freeze 1 — disposable review identities.
+// Review Freeze 2 — disposable review identities.
 //
-// Same three safety guards as scripts/test-auth-fixture.mjs, gated on a
-// SEPARATE env flag (OCTAGON_REVIEW_FIXTURE) so review runs never collide
-// with the phaseNN/checkpoint/build test-fixture flag, and vice versa:
-//   1. OCTAGON_REVIEW_FIXTURE must be exactly '1'.
+// Review credentials are fail-closed to the disposable local review runtime:
+//   1. OCTAGON_REVIEW_FIXTURE and OCTAGON_REVIEW_MODE must be exactly '1'.
 //   2. NODE_ENV must not be 'production'.
-//   3. The target database path must NOT be the operational database, and
-//      must not sit directly in the repository root.
+//   3. The target database must be inside this checkout's .review-data path.
+//   4. The review host must be loopback-only.
 //
-// Credentials are disposable, printed locally by review:setup, and never
-// committed — see writeReviewManifest().
+// The fixed default is explicitly disposable and is never used by production
+// authentication. Plaintext is written only to the ignored local manifest.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import crypto from 'node:crypto';
 
 import { createUserDirectory } from '../../platform/identity/users/index.mjs';
 import { createMembershipDirectory } from '../../platform/organizations/memberships/index.mjs';
@@ -23,6 +20,7 @@ import { REVIEW_ROLES, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH, ISOLATION_T
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
 
+const REVIEW_DATA_DIR = path.join(repoRoot, '.review-data');
 const OPERATIONAL_PATHS = [
   path.join(repoRoot, 'database.db'),
   path.join(repoRoot, 'database.json'),
@@ -36,15 +34,28 @@ export class ReviewFixtureRefused extends Error {
   }
 }
 
-// Throwaway password, satisfies the real password policy so review never
-// needs a weakened path. Exists only inside the disposable review database.
-export const REVIEW_PASSWORD = 'OctagonReview!2026#Disposable';
+export const REVIEW_TAG = 'octagon-review-build12-freeze-v2';
+export const REVIEW_URL = 'http://localhost:8090';
+export const REVIEW_BIND_HOST = '127.0.0.1';
+// Explicitly labelled disposable local review default. It is hashed through
+// the canonical identity password service before it reaches SQLite.
+export const REVIEW_PASSWORD = 'Octagon123!';
+
+export function isLoopbackHost(host) {
+  return ['127.0.0.1', 'localhost', '::1'].includes(String(host || '').trim().toLowerCase());
+}
 
 export function assertReviewFixtureAllowed({ dbPath, env = process.env } = {}) {
   if (env.OCTAGON_REVIEW_FIXTURE !== '1') {
     throw new ReviewFixtureRefused(
       'review fixture requires OCTAGON_REVIEW_FIXTURE=1',
       'REVIEW_FLAG_REQUIRED',
+    );
+  }
+  if (env.OCTAGON_REVIEW_MODE !== '1') {
+    throw new ReviewFixtureRefused(
+      'fixed review credentials require OCTAGON_REVIEW_MODE=1',
+      'REVIEW_MODE_REQUIRED',
     );
   }
   if (String(env.NODE_ENV || '').toLowerCase() === 'production') {
@@ -57,6 +68,13 @@ export function assertReviewFixtureAllowed({ dbPath, env = process.env } = {}) {
     throw new ReviewFixtureRefused('review fixture requires an explicit dbPath', 'REVIEW_DBPATH_REQUIRED');
   }
   const resolved = path.resolve(dbPath);
+  const relativeToReviewData = path.relative(REVIEW_DATA_DIR, resolved);
+  if (!relativeToReviewData || relativeToReviewData.startsWith(`..${path.sep}`) || path.isAbsolute(relativeToReviewData)) {
+    throw new ReviewFixtureRefused(
+      `fixed review credentials require a database inside .review-data: ${resolved}`,
+      'REVIEW_DB_SCOPE_DENIED',
+    );
+  }
   for (const operational of OPERATIONAL_PATHS) {
     if (resolved === operational) {
       throw new ReviewFixtureRefused(
@@ -65,10 +83,11 @@ export function assertReviewFixtureAllowed({ dbPath, env = process.env } = {}) {
       );
     }
   }
-  if (path.dirname(resolved) === repoRoot) {
+  const host = env.OCTAGON_REVIEW_HOST || REVIEW_BIND_HOST;
+  if (!isLoopbackHost(host)) {
     throw new ReviewFixtureRefused(
-      `refusing to seed a database inside the product repository root: ${resolved}`,
-      'REVIEW_REPO_ROOT_DENIED',
+      `fixed review credentials require a loopback host, received: ${host}`,
+      'REVIEW_BINDING_DENIED',
     );
   }
   return true;
@@ -161,6 +180,7 @@ export function seedReviewIdentities(dialect, { dbPath, env = process.env } = {}
       userId,
       login: role.login,
       name: role.name,
+      role: role.name.replace(/^Review /, ''),
       permissions: role.permissions,
       tenantId,
       companyId,
@@ -181,21 +201,21 @@ export function seedReviewIdentities(dialect, { dbPath, env = process.env } = {}
 }
 
 /**
- * Write the seeded logins + disposable password to a local, git-ignored
- * manifest so `npm run review:setup` can print instructions without ever
- * committing credentials. Caller picks the (already-ignored) path.
+ * Write the fixed shared password and seeded logins to a local, git-ignored
+ * manifest. This is the only plaintext credential output.
  */
 export function writeReviewManifest(targetPath, seeded) {
   const payload = {
-    generatedAt: nowIso(),
-    warning: 'DISPOSABLE REVIEW CREDENTIALS. Valid only inside .review-data/octagon-review.db. Never use in production.',
-    password: seeded.password,
+    environment: 'DISPOSABLE LOCAL REVIEW ONLY',
+    reviewTag: REVIEW_TAG,
+    url: REVIEW_URL,
+    sharedPassword: seeded.password,
+    warning: 'Fixed password for the pre-adoption review phase only. Never use in production or remote deployments.',
     reviewTenantId: seeded.reviewTenantId,
     reviewCompanyId: seeded.reviewCompanyId,
     isolationTenantId: seeded.isolationTenantId,
     isolationCompanyId: seeded.isolationCompanyId,
-    users: seeded.users.map((u) => ({ key: u.key, login: u.login, name: u.name, tenantId: u.tenantId })),
-    nonce: crypto.randomBytes(8).toString('hex'),
+    accounts: seeded.users.map((u) => ({ username: u.login, role: u.role, tenantId: u.tenantId })),
   };
   fs.mkdirSync(path.dirname(targetPath), { recursive: true });
   fs.writeFileSync(targetPath, JSON.stringify(payload, null, 2), 'utf8');

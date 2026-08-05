@@ -1,4 +1,4 @@
-# Design Findings Guide — Octagon ERP Review Freeze 1
+# Design Findings Guide — Octagon ERP Review Freeze 2
 
 When you record a finding (in `FUNCTIONAL_REVIEW_MATRIX.md`,
 `UI_UX_AUDIT_MATRIX.md`, or a `UI_CHANGE_REQUEST_TEMPLATE.md`/

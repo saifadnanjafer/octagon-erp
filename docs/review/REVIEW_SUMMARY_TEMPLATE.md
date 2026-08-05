@@ -1,4 +1,4 @@
-# Review Summary Template — Octagon ERP Review Freeze 1
+# Review Summary Template — Octagon ERP Review Freeze 2
 
 Fill this in once the team's functional/UI review pass is complete, then hand it back
 as the human decision input that unblocks BUILD-13 scoping.
@@ -6,7 +6,7 @@ as the human decision input that unblocks BUILD-13 scoping.
 ```
 Reviewers:
 Review period:                  <start date> to <end date>
-Snapshot SHA/tag:                octagon-review-build12-freeze-v1 / <commit sha>
+Snapshot SHA/tag:                octagon-review-build12-freeze-v2 / <commit sha>
 
 Pages reviewed:                  <count> / <total active pages, from PAGE_INVENTORY.json>
 Scenarios completed:             <count> / <total, from ROLE_REVIEW_SCENARIOS.md>

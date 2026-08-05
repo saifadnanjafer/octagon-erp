@@ -1,4 +1,4 @@
-# Known Limitations — Octagon ERP Review Freeze 1
+# Known Limitations — Octagon ERP Review Freeze 2
 
 Only limitations verified during construction of this review package are listed
 here. Nothing in this document is a UI/UX finding — those belong in

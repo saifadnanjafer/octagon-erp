@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Review Freeze 1 — disposable review environment setup.
+// Review Freeze 2 — disposable review environment setup.
 //
 // Creates a FRESH database at .review-data/octagon-review.db (never
 // database.db, never database.json — see identities.mjs's operational-path
@@ -14,7 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { freshInstall, openMigrationDatabase } from '../../database/migration-runner/index.mjs';
-import { seedReviewIdentities, writeReviewManifest, REVIEW_PASSWORD } from './identities.mjs';
+import { seedReviewIdentities, writeReviewManifest, REVIEW_BIND_HOST } from './identities.mjs';
 import { REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH, ISOLATION_TENANT, ISOLATION_COMPANY, ISOLATION_BRANCH } from './roles.mjs';
 
 import { seedWorkshopFixtures } from './fixtures/workshop.mjs';
@@ -40,6 +40,8 @@ async function main() {
   fs.mkdirSync(reviewDataDir, { recursive: true });
 
   process.env.OCTAGON_REVIEW_FIXTURE = '1';
+  process.env.OCTAGON_REVIEW_MODE = '1';
+  process.env.OCTAGON_REVIEW_HOST = REVIEW_BIND_HOST;
   if (String(process.env.NODE_ENV || '').toLowerCase() === 'production') {
     console.error('[review:setup] FATAL: refusing to run with NODE_ENV=production');
     process.exit(1);
@@ -62,7 +64,7 @@ async function main() {
     dialect.prepare(`INSERT OR REPLACE INTO cutover_staged_fixture
         (id, is_disposable, source_label, created_at, source_db_sha256, note)
       VALUES ('staged', 1, ?, ?, NULL, ?)`)
-      .run('octagon-review-freeze-1', now, 'Disposable Review Freeze fixture database. Never operational.');
+      .run('octagon-review-freeze-2', now, 'Disposable Review Freeze 2 fixture database. Never operational.');
 
     console.log('[review:setup] seeding review identities…');
     const seeded = seedReviewIdentities(dialect, { dbPath: reviewDbPath });

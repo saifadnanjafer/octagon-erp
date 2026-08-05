@@ -1,4 +1,4 @@
-# Visual Review Routes — Octagon ERP Review Freeze 1
+# Visual Review Routes — Octagon ERP Review Freeze 2
 
 Ten guided tours group the 233 pages in `docs/review/PAGE_INVENTORY.json` into
 walkable sequences (spec section 16). Every page lands in exactly one tour —

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Review Freeze 1 — start the real Octagon application shell against the
+// Review Freeze 2 — start the real Octagon application shell against the
 // disposable review database. Requires review:setup to have run at least
 // once (fails fast with instructions otherwise).
 //
@@ -10,6 +10,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import http from 'node:http';
+
+import { assertReviewFixtureAllowed, REVIEW_BIND_HOST, REVIEW_TAG, REVIEW_URL } from './identities.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
@@ -41,14 +44,27 @@ fs.rmSync(`${reviewJsonPath}.prev`, { force: true });
 process.env.OCTAGON_SQLITE_DB_FILE = reviewDbPath;
 process.env.OCTAGON_DB_FILE = reviewJsonPath;
 process.env.OCTAGON_BACKUP_DIR = reviewBackupDir;
-process.env.PORT = process.env.PORT || '8080';
+process.env.OCTAGON_REVIEW_FIXTURE = '1';
+process.env.OCTAGON_REVIEW_MODE = '1';
+process.env.OCTAGON_REVIEW_HOST = REVIEW_BIND_HOST;
+process.env.PORT = process.env.PORT || '8090';
+assertReviewFixtureAllowed({ dbPath: reviewDbPath, env: process.env });
 
-const REVIEW_TAG = 'octagon-review-build12-freeze-v1';
+// server.js predates the review launcher and calls server.listen(port) without
+// a host. Keep the loopback boundary in review tooling without changing the
+// production server's bind behavior.
+const originalListen = http.Server.prototype.listen;
+http.Server.prototype.listen = function reviewLoopbackListen(...args) {
+  if (typeof args[0] === 'number' && !args.some((arg) => typeof arg === 'string')) {
+    return originalListen.call(this, args[0], REVIEW_BIND_HOST, ...args.slice(1));
+  }
+  return originalListen.apply(this, args);
+};
 
 console.log('[review:start] OCTAGON REVIEW ENVIRONMENT (disposable database — not production)');
 console.log(`[review:start]   database: ${reviewDbPath}`);
 console.log(`[review:start]   port:     ${process.env.PORT}`);
-console.log(`[review:start]   url:      http://localhost:${process.env.PORT}`);
+console.log(`[review:start]   url:      ${REVIEW_URL.replace('8090', process.env.PORT)}`);
 console.log(`[review:start]   snapshot: ${REVIEW_TAG}`);
 console.log('[review:start]   credentials: .review-data/review-credentials.json (git-ignored, local only)');
 console.log('[review:start] starting server…');

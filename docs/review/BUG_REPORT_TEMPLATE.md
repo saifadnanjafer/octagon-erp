@@ -1,4 +1,4 @@
-# Bug Report Template — Octagon ERP Review Freeze 1
+# Bug Report Template — Octagon ERP Review Freeze 2
 
 Copy this block into a new entry in `FUNCTIONAL_REVIEW_MATRIX.md` (as a row) and/or
 file it wherever your team tracks issues. One finding per report — do not bundle
@@ -8,7 +8,7 @@ multiple unrelated defects.
 Finding ID:            REV-<domain>-<3-digit-sequence>   e.g. REV-WMS-014
 Date:                   YYYY-MM-DD
 Reviewer:
-Review tag/SHA:         octagon-review-build12-freeze-v1 / <commit sha>
+Review tag/SHA:         octagon-review-build12-freeze-v2 / <commit sha>
 Role:                   <the review identity you were signed in as, e.g. review.warehouse_operator>
 Tenant/company/warehouse:
 Language:               ar | en

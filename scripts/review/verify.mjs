@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Review Freeze 1 — verify the disposable review environment is sane.
+// Review Freeze 2 — verify the disposable review environment is sane.
 //
 // Checks: database presence, migration tip fully applied, required review
 // identities exist, required fixtures exist, no operational database path
@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 import { migrationStatus, openMigrationDatabase } from '../../database/migration-runner/index.mjs';
 import { REVIEW_ROLES, REVIEW_TENANT, ISOLATION_TENANT } from './roles.mjs';
+import { REVIEW_PASSWORD, REVIEW_TAG, REVIEW_URL } from './identities.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
@@ -113,6 +114,16 @@ async function main() {
     fail('review credentials manifest exists', manifestPath);
   } else {
     ok(`review credentials manifest exists (${manifestPath})`);
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (manifest.environment !== 'DISPOSABLE LOCAL REVIEW ONLY') {
+      fail('credentials manifest is marked disposable', 'unexpected environment marker');
+    } else if (manifest.reviewTag !== REVIEW_TAG || manifest.url !== REVIEW_URL || manifest.sharedPassword !== REVIEW_PASSWORD) {
+      fail('fixed review credential manifest is current', 'tag, URL, or shared password does not match review tooling');
+    } else if (!Array.isArray(manifest.accounts) || manifest.accounts.length !== REVIEW_ROLES.length) {
+      fail('credentials manifest contains every review account', `expected ${REVIEW_ROLES.length}, found ${manifest.accounts?.length || 0}`);
+    } else {
+      ok(`fixed review credential manifest is current (${manifest.accounts.length} accounts)`);
+    }
   }
 
   report();

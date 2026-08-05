@@ -31,6 +31,7 @@
     "review:reset": "node scripts/review/reset.mjs",
     "review:start": "node scripts/review/start.mjs",
     "review:verify": "node scripts/review/verify.mjs",
+    "review:credentials": "node scripts/review/credentials.mjs",
     "review:functional-matrix": "node scripts/review/functional-matrix.mjs",
     "review:page-inventory": "node scripts/review/page-inventory.mjs",
     "review:uiux-matrix": "node scripts/review/uiux-matrix.mjs"

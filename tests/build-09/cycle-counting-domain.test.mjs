@@ -25,3 +25,29 @@ test('blind cycle count routes variance through maker-checker and canonical adju
   assert.equal(db.prepare('SELECT quantity FROM stock_quants WHERE id=?').get('quant-mobile-source').quantity, 20);
   assert.equal(productId, request.requests[0].product_id);
 });
+
+// Regression: startCountSession hid the snapshot for a blind count, but listCountSessions
+// revealed it unconditionally - so a counter could simply list the sessions and read the very
+// quantity a blind count exists to withhold. The snapshot is only revealed once counting ends.
+test('listCountSessions withholds the blind snapshot while counting and reveals it for review', async (t) => {
+  const { db, ctx, source } = await mobileFixture(t, 'counting-list');
+  const plan = counting.createCountPlan(db, { ...ctx, name: 'Blind bins', count_scope: 'location', location_id: source.locationId, blind_count: true });
+  const session = counting.startCountSession(db, { ...ctx, plan_id: plan.id, assigned_to: 'counter-a', idempotency_key: 'count-list-a' });
+
+  const whileCounting = counting.listCountSessions(db, ctx).find((row) => row.id === session.id);
+  assert.equal(whileCounting.status, 'counting');
+  assert.equal(whileCounting.lines[0].theoreticalQuantity, undefined, 'the list surface must not leak the blind snapshot');
+  assert.equal(whileCounting.lines[0].countedQuantity, null);
+
+  counting.recordCountLine(db, { ...ctx, actor: 'counter-a', session_id: session.id, line_id: session.lines[0].id, counted_quantity: 18 });
+  counting.submitCount(db, { ...ctx, actor: 'counter-a', session_id: session.id });
+
+  const afterSubmit = counting.listCountSessions(db, ctx).find((row) => row.id === session.id);
+  assert.equal(afterSubmit.status, 'variance_review');
+  assert.equal(afterSubmit.lines[0].theoreticalQuantity, 20, 'variance review needs the snapshot to be reviewable');
+
+  // A directed (non-blind) count is unaffected: its snapshot is visible from the start.
+  const directed = counting.startCountSession(db, { ...ctx, location_id: source.locationId, blind_count: false, idempotency_key: 'count-list-directed' });
+  const listedDirected = counting.listCountSessions(db, ctx).find((row) => row.id === directed.id);
+  assert.equal(listedDirected.lines[0].theoreticalQuantity, 20);
+});

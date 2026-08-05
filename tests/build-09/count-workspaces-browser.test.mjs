@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { browserAction, clickStable, openBuild09Browser } from './browser-harness.mjs';
+import { browserAction, clickStable, latinDigits, openBuild09Browser } from './browser-harness.mjs';
 
 // BUILD-09R-2 Group B: real Chromium drives Cycle Count Plans -> Count Session -> Variance
 // Review (modules/build09-count-workspace.js) through visible controls only.
@@ -12,11 +12,9 @@ import { browserAction, clickStable, openBuild09Browser } from './browser-harnes
 
 const COUNT_MODULES = ['build09r-shared.js', 'build09-count-workspace.js'];
 
-// The harness renders lang="ar" dir="rtl", so Intl formats quantities with Arabic-Indic digits
-// (٢٠, not 20). Asserting on raw ASCII would make every "quantity is hidden" check pass
-// vacuously, so fold the digits back to ASCII before asserting either way.
-const ARABIC_INDIC = /[٠-٩]/g;
-const latin = (text) => String(text).replace(ARABIC_INDIC, (digit) => String(digit.charCodeAt(0) - 0x0660)).replace(/[؜‎‏]/g, '');
+// Asserting on raw ASCII would make every "quantity is hidden" check pass vacuously here, since
+// the harness renders lang="ar" - latinDigits() folds the Arabic-Indic digits back first.
+const latin = latinDigits;
 
 test('real Chromium creates a blind count plan, starts a session, and hides the expected quantity', async (t) => {
   const { consoleErrors, dialect, page, seed } = await openBuild09Browser(t, { name: 'count-plans-ui', initialPage: 'cycle_count_plans', extraModules: COUNT_MODULES });

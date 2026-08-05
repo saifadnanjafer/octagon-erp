@@ -97,6 +97,19 @@ export async function openBuild09Browser(t, { name, initialPage, extraModules = 
 }
 
 /**
+ * The harness page renders lang="ar" dir="rtl", so Intl formats every quantity with Arabic-Indic
+ * digits (٢٠, not 20). Assertions on rendered numbers must fold them back to ASCII first -
+ * otherwise a "this quantity must be hidden" check passes for the wrong reason.
+ */
+export const latinDigits = (text) => String(text ?? '')
+  .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+  .replace(/[؜‎‏]/g, '')
+  .trim();
+
+/** The same fold, as source, for injection into page.evaluate/waitForFunction callbacks. */
+export const LATIN_DIGITS_IN_PAGE = `((text) => String(text ?? '').replace(/[\\u0660-\\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[\\u061C\\u200E\\u200F]/g, '').trim())`;
+
+/**
  * Real mouse click that tolerates a re-render landing between selector resolution and the click.
  *
  * The BUILD-09R-2 workspaces repaint their whole body when a guarded action settles, so a handle

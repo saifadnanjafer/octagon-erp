@@ -77,19 +77,32 @@ test('real Chromium drives the Mobile Receiving scanning workspace end to end', 
   assert.equal(consoleErrors.filter((message) => !message.includes('409 (Conflict)')).length, 0, consoleErrors.join('\n'));
 });
 
-test('real Chromium drives the Mobile Picking scanning workspace end to end', async (t) => {
-  const { consoleErrors, dialect, page, seed } = await openBuild09Browser(t, { name: 'mobile-picking-ui', initialPage: 'mobile_picking' });
+test('real Chromium dispatches from Pick Task Queue then drives Mobile Picking to canonical completion', async (t) => {
+  const { consoleErrors, dialect, page, seed, switchAuthenticatedUser } = await openBuild09Browser(t, { name: 'mobile-picking-ui', initialPage: 'pick_task_queue', extraModules: ['build09r-shared.js', 'build09-pick-task-queue-workspace.js'] });
   const scope = { warehouse_id: seed.warehouse.id };
   const host = '[data-build09-page="mobile_picking"]';
+  const queue = '[data-build09-page="pick_task_queue"]';
 
   const task = await browserAction(page, 'wms:pick_task_create', { ...scope, picking_type: 'sales_delivery', source_document_id: 'sale-ui-test', source_line_id: 'line-ui-test', product_id: seed.productId, source_location_id: seed.source.locationId, staging_location_id: seed.staging.locationId, destination_location_id: seed.staging.locationId, quantity: 5, strategy: 'fifo', route_sequence: 10 });
 
+  await page.evaluate(() => window.switchPage('pick_task_queue'));
+  await page.waitForSelector(`${queue} [data-role="pd-select"]`, { timeout: 10000 });
+  await page.click(`${queue} [data-role="pd-select"][data-task-id="${task.id}"]`);
+  await page.type(`${queue} [data-role="pd-assign"] .b09-lookup-query`, 'browser-picker');
+  await page.waitForFunction((selector) => document.querySelector(selector)?.options.length > 1, { timeout: 5000 }, `${queue} [data-role="pd-assign"] .b09-lookup-select`);
+  await page.select(`${queue} [data-role="pd-assign"] .b09-lookup-select`, 'browser-picker');
+  await page.click(`${queue} [data-role="pd-assign"] button[type="submit"]`);
+  await page.waitForFunction((selector) => document.querySelector(selector)?.textContent.includes('browser-picker'), { timeout: 10000 }, `${queue} [data-role="pd-list"]`);
+  await page.select(`${queue} [data-role="pd-filter"]`, 'assigned');
+  await page.waitForSelector(`${queue} [data-role="pd-select"][data-task-id="${task.id}"]`, { timeout: 10000 });
+  assert.equal(dialect.prepare('SELECT assigned_to,status FROM wms_pick_tasks_v2 WHERE id=?').get(task.id).assigned_to, 'browser-picker');
+  await switchAuthenticatedUser('browser-picker');
+  assert.equal(await page.evaluate(() => window.OctagonRuntimeContext.actorId), 'browser-picker');
   await page.evaluate(() => window.switchPage('mobile_picking'));
   await page.waitForFunction((selector) => document.querySelectorAll(`${selector} [data-role="pt-queue-list"] .b09r-queue-row`).length > 0, { timeout: 10000 }, host);
   await page.click(`${host} [data-role="pt-select"][data-task-id="${task.id}"]`);
 
-  await page.waitForFunction((selector) => document.querySelector(selector)?.textContent.includes('assigned'), { timeout: 10000 }, `${host} [data-role="pt-status"]`);
-  assert.equal(dialect.prepare('SELECT status,assigned_to FROM wms_pick_tasks_v2 WHERE id=?').get(task.id).assigned_to, 'browser-manager');
+  assert.equal(dialect.prepare('SELECT status,assigned_to FROM wms_pick_tasks_v2 WHERE id=?').get(task.id).assigned_to, 'browser-picker');
 
   await page.waitForSelector(`${host} [data-role="pt-source-form"]`, { timeout: 10000 });
   await page.type(`${host} [data-role="pt-source-form"] [name="barcode"]`, 'B-PICK');
@@ -128,5 +141,9 @@ test('real Chromium drives the Mobile Picking scanning workspace end to end', as
 
   await page.waitForFunction((selector) => document.querySelector(selector)?.textContent.includes('✓'), { timeout: 10000 }, `${host} .b09r-success`);
   assert.equal(dialect.prepare('SELECT status FROM wms_pick_tasks_v2 WHERE id=?').get(task.id).status, 'completed');
+  await switchAuthenticatedUser('browser-manager');
+  await page.evaluate(() => window.switchPage('pick_task_queue'));
+  await page.select(`${queue} [data-role="pd-filter"]`, 'completed');
+  await page.waitForFunction((selector) => document.querySelector(selector)?.textContent.includes('completed'), { timeout: 10000 }, `${queue} [data-role="pd-list"]`);
   assert.equal(consoleErrors.length, 0, consoleErrors.join('\n'));
 });

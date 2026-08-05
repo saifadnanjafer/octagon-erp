@@ -12,11 +12,19 @@ import * as topology from '../../platform/wms/topology.mjs';
 import { products } from '../../platform/commercial/index.mjs';
 import { setApprovalAuthorityLimit } from '../../platform/finance/engine.mjs';
 import * as putaway from '../../platform/wms/putaway.mjs';
+import { createUserDirectory } from '../../platform/identity/users/index.mjs';
+import { createMembershipDirectory } from '../../platform/organizations/memberships/index.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 
 function seedOperationalFacts(dialect, name) {
   const companyId = 'default';
+  const users = createUserDirectory(dialect);
+  const memberships = createMembershipDirectory(dialect);
+  for (const [id, login, display] of [['browser-manager', 'browser-manager', 'Browser Manager'], ['browser-picker', 'browser-picker', 'Browser Picker'], ['viewer-user', 'viewer-user', 'Viewer User']]) {
+    if (!dialect.prepare('SELECT 1 FROM identity_users WHERE id=?').get(id)) users.create({ id, tenantId: 'default', login, name: display, email: `${login}@example.test` });
+    if (dialect.prepare('SELECT 1 FROM platform_companies WHERE id=?').get(companyId)) memberships.grant({ userId: id, companyId, isDefault: true });
+  }
   const warehouse = createWarehouse(dialect, { company_id: companyId, name: `Browser DC ${name}`, code: `B${name.slice(0, 4).toUpperCase()}` });
   const stamp = new Date().toISOString();
   dialect.prepare('INSERT INTO warehouse_branch_scopes(warehouse_id,company_id,branch_id,created_at) VALUES(?,?,?,?)').run(warehouse.id, companyId, 'branch-a', stamp);
@@ -48,10 +56,11 @@ export async function openBuild09Browser(t, { name, initialPage, extraModules = 
   const seed = seedOperationalFacts(dialect, name);
   const authority = createPlatformAuthority(dialect);
   const permissionEvaluator = createPermissionEvaluator(dialect);
+  let activeUser = user;
   const contextFor = (req) => ({
     companyId: String(req.headers['x-company'] || seed.companyId), activeCompanyId: String(req.headers['x-company'] || seed.companyId),
     warehouseId: String(req.headers['x-warehouse'] || seed.warehouse.id), tenantId: 'default', branchId: 'branch-a',
-    userId: String(req.headers['x-user'] || user), actorId: String(req.headers['x-user'] || user),
+    userId: String(req.headers['x-user'] || activeUser), actorId: String(req.headers['x-user'] || activeUser),
     actorType: 'user', correlationId: `build09-${name}-${Date.now()}`,
   });
   const api = createApiHandler({
@@ -93,7 +102,12 @@ export async function openBuild09Browser(t, { name, initialPage, extraModules = 
   await page.goto(`http://127.0.0.1:${server.address().port}/harness`, { waitUntil: 'networkidle0', timeout: 30000 });
   await page.waitForFunction((pageId) => document.querySelector(`[data-build09-page="${pageId}"]`)?.classList.contains('page-active'), {}, initialPage);
   t.after(async () => { await browser.close(); await new Promise((resolve) => server.close(resolve)); dialect.close(); fs.rmSync(dir, { recursive: true, force: true }); });
-  return { authority, browser, consoleErrors, dialect, page, seed };
+  const switchAuthenticatedUser = async (userId) => {
+    activeUser = userId;
+    await page.reload({ waitUntil: 'networkidle0', timeout: 30000 });
+    await page.waitForFunction((expected) => window.OctagonRuntimeContext?.ready && window.OctagonRuntimeContext.actorId === expected && window.OctagonRuntimeContext.userId === expected, { timeout: 10000 }, userId);
+  };
+  return { authority, browser, consoleErrors, dialect, page, seed, setAuthenticatedUser: (userId) => { activeUser = userId; }, switchAuthenticatedUser };
 }
 
 /**

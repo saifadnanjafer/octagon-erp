@@ -31,6 +31,7 @@ const ACTIONS = [
   ['saas:package_enable', 'saas_extension_installation', 'platform:saas:packages:manage'],
   ['saas:package_disable', 'saas_extension_installation', 'platform:saas:packages:manage'],
   ['saas:package_rollback', 'saas_extension_installation', 'platform:saas:packages:manage'],
+  ['saas:invoice_simulate', 'saas_simulated_invoice', 'platform:saas:billing:simulate'],
   ['saas:invoice_issue', 'saas_simulated_invoice', 'platform:saas:billing:simulate'],
   ['saas:payment_simulate', 'saas_simulated_payment', 'platform:saas:billing:simulate'],
 ];

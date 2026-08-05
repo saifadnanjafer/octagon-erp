@@ -15,7 +15,18 @@ export async function openBuild11Browser(t, { name, initialPage }) {
   const dialect = openMigrationDatabase(dbPath);
   const authority = createPlatformAuthority(dialect);
   const contextFor = (req) => ({ tenantId: String(req.headers['x-tenant'] || 'default'), companyId: 'default', branchId: 'default', userId: String(req.headers['x-user'] || 'browser-platform'), actorId: String(req.headers['x-user'] || 'browser-platform'), actorType: 'user', correlationId: `build11-${name}-${Date.now()}` });
-  const api = createApiHandler({ dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor, authorize: ({ permission, ctx }) => permission === 'platform:saas:cross_tenant' ? { allowed: ctx.userId === 'platform-admin' || ctx.userId === 'browser-platform' } : { allowed: true } });
+  const api = createApiHandler({ dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor, authorize: ({ permission, ctx }) => {
+    const user = ctx.userId;
+    if (permission === 'platform:saas:cross_tenant') return { allowed: user === 'platform-admin' || user === 'browser-platform' };
+    if (permission === 'platform:saas:read') return { allowed: true };
+    if (permission === 'platform:saas:tenant_admin') return { allowed: ['platform-admin', 'browser-platform', 'tenant-admin'].includes(user), statusCode: 403, message: 'Tenant administrator permission required' };
+    if (permission === 'platform:saas:packages:review') return { allowed: ['platform-admin', 'browser-platform', 'package-reviewer'].includes(user), statusCode: 403, message: 'Package reviewer permission required' };
+    if (permission === 'platform:saas:packages:manage') return { allowed: ['platform-admin', 'browser-platform', 'package-reviewer'].includes(user), statusCode: 403, message: 'Package manager permission required' };
+    if (permission === 'platform:saas:usage:record') return { allowed: ['platform-admin', 'browser-platform', 'tenant-admin'].includes(user), statusCode: 403, message: 'Usage recorder permission required' };
+    if (permission === 'platform:saas:billing:simulate') return { allowed: ['platform-admin', 'browser-platform', 'tenant-admin'].includes(user), statusCode: 403, message: 'Billing simulator permission required' };
+    if (permission === 'platform:saas:plans:publish') return { allowed: ['platform-admin', 'browser-platform'].includes(user), statusCode: 403, message: 'Plan publication permission required' };
+    return { allowed: true };
+  } });
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://127.0.0.1');
     if (url.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }

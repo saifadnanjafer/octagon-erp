@@ -1,0 +1,31 @@
+<section class="page workshop-ops-page" id="pageMyWork" data-workshop-page="my-work">
+  <div class="workshop-ops-hero">
+    <div>
+      <p class="workshop-ops-eyebrow">Personal operations</p>
+      <h1><span aria-hidden="true">✓</span> My Work</h1>
+      <p>Only work actually assigned to the signed-in actor, across canonical operational authorities.</p>
+    </div>
+    <div class="workshop-ops-hero-actions">
+      <span class="workshop-freshness" id="myWorkFreshness">Not loaded</span>
+      <button class="btn-secondary" type="button" id="myWorkRefresh">Refresh</button>
+    </div>
+  </div>
+  <div class="workshop-scope-strip" id="myWorkScope"></div>
+  <div class="my-work-summary" id="myWorkSummary" aria-label="My work summary"></div>
+  <div class="my-work-presets" id="myWorkPresets" role="tablist" aria-label="Work views"></div>
+  <details class="my-work-saved" id="myWorkSavedPanel">
+    <summary>Saved views <span id="myWorkSavedCount">0</span></summary>
+    <div id="myWorkSavedViews" class="my-work-saved-list"></div>
+  </details>
+  <form class="my-work-filters" id="myWorkFilters" aria-label="My Work filters">
+    <label>Task family<select name="task_family"><option value="">All families</option></select></label>
+    <label>Status<select name="status"><option value="">All statuses</option></select></label>
+    <label>Priority<select name="priority"><option value="">All priorities</option></select></label>
+    <label>Due<select name="due"><option value="">Any date</option><option value="today">Due today</option><option value="overdue">Overdue</option><option value="none">No due date</option></select></label>
+    <label>Warehouse<select name="warehouse_id"><option value="">Active scope</option></select></label>
+    <button type="reset" class="btn-secondary">Clear</button>
+  </form>
+  <div class="my-work-source-status" id="myWorkSourceStatus"></div>
+  <div class="my-work-list" id="myWorkBody"><div class="workshop-loading"><span class="workshop-spinner"></span> Loading assigned work…</div></div>
+</section>
+

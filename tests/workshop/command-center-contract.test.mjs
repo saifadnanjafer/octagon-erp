@@ -39,3 +39,10 @@ test('Command API is read-only, permission-gated, and preserves per-card permiss
   assert.doesNotMatch(handler, /INSERT|UPDATE|DELETE/);
 });
 
+test('internal workshop sidebar baseline contains Command Center and My Work exactly once', () => {
+  const html = read('index.html');
+  for (const page of ['workshop_command_center', 'my_work']) {
+    assert.equal((html.match(new RegExp(`data-page="${page}"`, 'g')) || []).length, 1);
+    assert.equal((html.match(new RegExp(`view:${page}`, 'g')) || []).length, 1);
+  }
+});

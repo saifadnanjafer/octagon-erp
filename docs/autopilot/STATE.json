@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-12",
+  "active_task": "BUILD-13",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e",
+    "commit": "b3995061924850a7c214c32004414a519e76c926",
     "remote": "origin",
-    "remote_commit": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e",
+    "remote_commit": "b3995061924850a7c214c32004414a519e76c926",
     "observed_at": "2026-08-05"
   },
-  "stop_reason": "BUILD-12 implementation and acceptance are complete pending the final evidence commit SHA refresh: 24 purpose-built workspaces, governed AI/People/Marketing/Events/Al-Warsha authorities, 17/17 focused tests, five real-shell Chromium flows, BUILD-09 65/65, BUILD-08 17/17, BUILD-10 37/37, BUILD-11 19/19, Workshop 80/80, permissions 40/40, autopilot 3/3, unit 12/12, and migration 5/5. BUILD-13 is not authorized."
+  "stop_reason": "BUILD-12 is COMPLETE at the published final tip: 24 purpose-built workspaces, governed AI/People/Marketing/Events/Al-Warsha authorities, 17/17 focused tests, five real-shell Chromium flows, BUILD-09 65/65, BUILD-08 17/17, BUILD-10 37/37, BUILD-11 19/19, Workshop 80/80, permissions 40/40, autopilot 3/3, unit 12/12, and migration 5/5. The queue now routes to BUILD-13 as the next pending item, but no BUILD-13 implementation was started or authorized."
 }

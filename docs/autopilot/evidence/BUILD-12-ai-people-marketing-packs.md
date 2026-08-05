@@ -3,7 +3,8 @@
 ## Published checkpoint
 
 - Branch: `codex/octagon-feature-page-expansion-marathon`
-- Commit: `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
+- Implementation checkpoint: `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
+- Final closure commit: `b3995061924850a7c214c32004414a519e76c926`
 - Remote equality: verified local `HEAD`, upstream, and remote branch at the same SHA.
 - Scope: BUILD-12 only. BUILD-13 remains pending.
 

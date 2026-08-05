@@ -11,9 +11,9 @@ guided fields, visible risk/context/review/no-auto-execution labels, responsive
 Arabic/English styling, empty/error/denied states, and focus-visible controls.
 
 The implementation checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
-is pushed; the final closure evidence commit follows the complete authorized
-regression set. BUILD-12 is complete at the final published tip recorded in
-STATE/QUEUE below. BUILD-13 remains pending and unauthorized.
+was followed by final closure evidence at
+`b3995061924850a7c214c32004414a519e76c926`, pushed with local, upstream, and
+remote equality. BUILD-13 remains pending and unauthorized.
 
 Closure evidence: BUILD-12 17/17; BUILD-09 65/65; BUILD-08 17/17;
 BUILD-10 37/37; BUILD-11 19/19; Workshop 80/80; permissions 40/40;

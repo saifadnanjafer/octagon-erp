@@ -105,7 +105,7 @@
     const isRtl = document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
     const readOnly = root.__BUILD10_FORCE_READ_ONLY__ === true;
 
-    let container = targetContainer || document.querySelector(`[data-build10-page="${pageKey}"]`);
+    let container = targetContainer || document.querySelector(`.page[data-build10-page="${pageKey}"]`);
     if (!container) {
       const mainContent = document.getElementById('mainContent') || document.body;
       container = document.createElement('div');
@@ -261,30 +261,35 @@
 
   function setupSwitchPageHook() {
     const origSwitchPage = root.switchPage;
-    root.switchPage = function (pageId) {
+    root.switchPage = async function (pageId) {
+      let result;
       if (origSwitchPage && typeof origSwitchPage === 'function') {
-        try { origSwitchPage(pageId); } catch (_) {}
+        try { result = await origSwitchPage(pageId); } catch (_) {}
       }
 
-      document.querySelectorAll('[data-build10-page], [data-page], .page-active').forEach(elem => {
+      // This wrapper sits in the global switchPage chain.  It may only take
+      // ownership of Build 10 destinations; clearing every active page for a
+      // foreign route left the user with an apparently selected, empty page.
+      if (!PAGES[pageId]) return result;
+
+      document.querySelectorAll('.page[data-build10-page], .page.page-active').forEach(elem => {
         if (elem.classList.contains('page-active') || elem.hasAttribute('data-build10-page')) {
           elem.classList.remove('page-active');
           elem.style.display = 'none';
         }
       });
 
-      if (PAGES[pageId]) {
-        let pageElem = document.querySelector(`[data-build10-page="${pageId}"]`);
-        if (!pageElem) {
-          pageElem = renderPage(pageId);
-        } else {
-          renderPage(pageId, pageElem);
-        }
-        if (pageElem) {
-          pageElem.classList.add('page-active');
-          pageElem.style.display = 'block';
-        }
+      let pageElem = document.querySelector(`.page[data-build10-page="${pageId}"]`);
+      if (!pageElem) {
+        pageElem = renderPage(pageId);
+      } else {
+        renderPage(pageId, pageElem);
       }
+      if (pageElem) {
+        pageElem.classList.add('page-active');
+        pageElem.style.display = 'block';
+      }
+      return result;
     };
   }
 
@@ -315,14 +320,14 @@
       document.addEventListener('DOMContentLoaded', () => {
         setupSwitchPageHook();
         Object.keys(PAGES).forEach((pageKey) => {
-          const elem = document.querySelector(`[data-page="${pageKey}"], [data-build10-page="${pageKey}"]`);
+          const elem = document.querySelector(`.page[data-page="${pageKey}"], .page[data-build10-page="${pageKey}"]`);
           if (elem) renderPage(pageKey, elem);
         });
       });
     } else {
       setupSwitchPageHook();
       Object.keys(PAGES).forEach((pageKey) => {
-        const elem = document.querySelector(`[data-page="${pageKey}"], [data-build10-page="${pageKey}"]`);
+        const elem = document.querySelector(`.page[data-page="${pageKey}"], .page[data-build10-page="${pageKey}"]`);
         if (elem) renderPage(pageKey, elem);
       });
     }

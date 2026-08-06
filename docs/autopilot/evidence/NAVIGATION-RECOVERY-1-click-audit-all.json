@@ -1,0 +1,2476 @@
+{
+  "generatedAt": "2026-08-06T22:34:06.762Z",
+  "startedAt": "2026-08-06T22:32:28.897Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 40,
+    "pass": 40,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "globalNotFound": [
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json"
+  ],
+  "items": [
+    {
+      "id": "account_mapping",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "account_mapping",
+        "activePageKey": "account_mapping",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 694,
+      "consoleErrors": [
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
+      "notFound": []
+    },
+    {
+      "id": "admin_panel",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAdminPanel",
+        "activePageKey": "pageAdminPanel",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 583,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_assistant",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_assistant",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2632,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_context_sources",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_context_sources",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1564,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_factory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAiFactory",
+        "activePageKey": "pageAiFactory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1564,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1959,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "ai_policy_registry",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_policy_registry",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2573,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_prompt_templates",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_prompt_templates",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2342,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_proposal_inbox",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_proposal_inbox",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2087,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAiQueue",
+        "activePageKey": "pageAiQueue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2220,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_run_history",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "ai_run_history",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1916,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_status",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAiStatus",
+        "activePageKey": "pageAiStatus",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1791,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ai_tools",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAiTools",
+        "activePageKey": "pageAiTools",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1817,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "alert_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "alert_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2109,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "analytics",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAnalytics",
+        "activePageKey": "pageAnalytics",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2015,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "appointments",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAppointments",
+        "activePageKey": "pageAppointments",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1856,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "approvals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageApprovals",
+        "activePageKey": "pageApprovals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1644,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "ar_ap",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageArAp",
+        "activePageKey": "pageArAp",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2011,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "assets",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAssets",
+        "activePageKey": "pageAssets",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1953,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "attribution_insights",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "attribution_insights",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1798,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "automation",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageAutomation",
+        "activePageKey": "pageAutomation",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1998,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "banking",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageBanking",
+        "activePageKey": "pageBanking",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2066,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "billing_simulator",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "billing_simulator",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2129,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "budgeting",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageBudgeting",
+        "activePageKey": "pageBudgeting",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2056,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "calendar",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCalendar",
+        "activePageKey": "pageCalendar",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2062,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "campaigns",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "campaigns",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2308,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_console",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalConsole",
+        "activePageKey": "pageCanonicalConsole",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2200,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_inventory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalInventory",
+        "activePageKey": "pageCanonicalInventory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2565,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "cashbox",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCashbox",
+        "activePageKey": "pageCashbox",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3203,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "clinic",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageClinic",
+        "activePageKey": "pageClinic",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3650,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "command_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCommandCenter",
+        "activePageKey": "pageCommandCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3429,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "commercial_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "commercial_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3717,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "competency_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "competency_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 3230,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "configuration_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "configuration_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3222,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "conflict_resolution",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "conflict_resolution",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3104,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidated_reports",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidated_reports",
+        "activePageKey": "consolidated_reports",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 2912,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidation_groups",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidation_groups",
+        "activePageKey": "consolidation_groups",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3079,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidation_lineage",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidation_lineage",
+        "activePageKey": "consolidation_lineage",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3158,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidation_runs",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidation_runs",
+        "activePageKey": "consolidation_runs",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3245,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "content_approvals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "content_approvals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "alert_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "ai_assistant",
+            "display": "none"
+          },
+          {
+            "page": "ai_context_sources",
+            "display": "none"
+          },
+          {
+            "page": "ai_overview",
+            "display": "none"
+          },
+          {
+            "page": "ai_policy_registry",
+            "display": "none"
+          },
+          {
+            "page": "ai_prompt_templates",
+            "display": "none"
+          },
+          {
+            "page": "ai_proposal_inbox",
+            "display": "none"
+          },
+          {
+            "page": "ai_run_history",
+            "display": "none"
+          },
+          {
+            "page": "attribution_insights",
+            "display": "none"
+          },
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 3071,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

@@ -43,14 +43,15 @@ test('navigation divides every registered page into short, named groups', () => 
   });
 });
 
-test('every static sidebar entry is mapped, labelled, and given an icon at assembly time', () => {
+test('every primary sidebar entry is mapped, labelled, and given an icon at assembly time', () => {
   const { navGroupPages } = navigationRegistry();
   const configuredPages = new Set(Array.from(Object.values(navGroupPages)).flatMap(pages => Array.from(pages)));
+  const nonPrimaryControls = new Set(['calculator', 'kanban', 'locations', 'workshop_tv', 'pos_deepening']);
   const buttons = staticNavButtons();
 
   assert.ok(buttons.length > 150, 'the full static page catalogue was inspected');
   buttons.forEach(({ page, label }) => {
-    assert.ok(configuredPages.has(page), `${page} is assigned to a deliberate group`);
+    assert.ok(configuredPages.has(page) || nonPrimaryControls.has(page), `${page} is assigned to a deliberate group or classified outside primary navigation`);
     assert.ok(label.length > 0, `${page} has a written label in its source entry`);
   });
   assert.match(appSource, /function normaliseNavigationButton\(button\)/, 'late and legacy entries are normalised');

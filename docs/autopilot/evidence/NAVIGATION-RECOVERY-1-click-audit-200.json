@@ -1,0 +1,1680 @@
+{
+  "generatedAt": "2026-08-06T22:40:09.159Z",
+  "startedAt": "2026-08-06T22:39:45.670Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 31,
+    "pass": 31,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+  ],
+  "globalNotFound": [
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json"
+  ],
+  "items": [
+    {
+      "id": "tax_compliance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTaxCompliance",
+        "activePageKey": "pageTaxCompliance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 582,
+      "consoleErrors": [
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
+      "notFound": []
+    },
+    {
+      "id": "telegram",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTelegram",
+        "activePageKey": "pageTelegram",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 550,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "telemetry_explorer",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "telemetry_explorer",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 685,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "tenant_detail",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "tenant_detail",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 566,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "tenant_directory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "tenant_directory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 569,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "timesheet",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTimesheet",
+        "activePageKey": "pageTimesheet",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 561,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "training_lms",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTrainingLms",
+        "activePageKey": "pageTrainingLms",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 567,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "treasury_alerts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "treasury_alerts",
+        "activePageKey": "treasury_alerts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 570,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "treasury_cash_position",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "treasury_cash_position",
+        "activePageKey": "treasury_cash_position",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 581,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "usage_and_quotas",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "usage_and_quotas",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 717,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "variance_review",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "variance_review",
+        "activePageKey": "variance_review",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 715,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "vehicle_trip_timeline",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "vehicle_trip_timeline",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 715,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "vertical_packs",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "vertical_packs",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 704,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "visitors",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageVisitors",
+        "activePageKey": "pageVisitors",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 594,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "warehouse_kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "warehouse_kiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 682,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "warehouse_large_screen",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "warehouse_large_screen",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 533,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "warehouse_topology",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "warehouse_topology",
+        "activePageKey": "warehouse_topology",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 667,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "warehouses",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWarehouses",
+        "activePageKey": "pageWarehouses",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 532,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "warranty",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWarranty",
+        "activePageKey": "pageWarranty",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 682,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "wave_execution",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "wave_execution",
+        "activePageKey": "wave_execution",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 684,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "wave_planning",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "wave_planning",
+        "activePageKey": "wave_planning",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 533,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "wfl_home",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWflHome",
+        "activePageKey": "pageWflHome",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 549,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "whatsapp",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWhatsapp",
+        "activePageKey": "pageWhatsapp",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 534,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "work_orders",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWorkOrders",
+        "activePageKey": "pageWorkOrders",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 686,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "workcenter_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "workcenter_queue",
+        "activePageKey": "workcenter_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 547,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "workflow",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWorkflow",
+        "activePageKey": "pageWorkflow",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 667,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "workshop_command_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWorkshopCommandCenter",
+        "activePageKey": "pageWorkshopCommandCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 549,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "workshop_ledger",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWorkshopLedger",
+        "activePageKey": "pageWorkshopLedger",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 720,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "workshop_pack_setup",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "workshop_pack_setup",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          },
+          {
+            "page": "workshop_pack_setup",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 711,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "workshop_readiness",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageWorkshopReadiness",
+        "activePageKey": "pageWorkshopReadiness",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          },
+          {
+            "page": "workshop_pack_setup",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 684,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "zone_bin_management",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "zone_bin_management",
+        "activePageKey": "zone_bin_management",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "vehicle_trip_timeline",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "warehouse_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "vertical_packs",
+            "display": "none"
+          },
+          {
+            "page": "workshop_pack_setup",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 666,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+      ],
+      "notFound": []
+    }
+  ]
+}

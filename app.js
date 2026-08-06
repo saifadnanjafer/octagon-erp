@@ -3074,6 +3074,120 @@ function getEmployeeDailyFinancialSummary(emp, rec, cfg) {
 }
 
 // ─── Page Navigation ───
+// Canonical bilingual labels for pages introduced after the original Arabic
+// sidebar.  Keeping this registry beside the navigation topology makes a
+// page's identity independent of whatever markup created its first button.
+const navLabelOverrides = Object.freeze({
+  ai_assistant: { ar: 'مساعد الذكاء الاصطناعي', en: 'AI Assistant' },
+  ai_context_sources: { ar: 'مصادر سياق الذكاء الاصطناعي', en: 'AI Context Sources' },
+  ai_overview: { ar: 'نظرة عامة على الذكاء الاصطناعي', en: 'AI Overview' },
+  ai_policy_registry: { ar: 'سجل سياسات الذكاء الاصطناعي', en: 'AI Policy Registry' },
+  ai_prompt_templates: { ar: 'قوالب أوامر الذكاء الاصطناعي', en: 'AI Prompt Templates' },
+  ai_proposal_inbox: { ar: 'صندوق مقترحات الذكاء الاصطناعي', en: 'AI Proposal Inbox' },
+  ai_run_history: { ar: 'سجل تشغيل الذكاء الاصطناعي', en: 'AI Run History' },
+  alert_board: { ar: 'لوحة التنبيهات', en: 'Alert Board' },
+  attribution_insights: { ar: 'تحليلات الإسناد', en: 'Attribution Insights' },
+  billing_simulator: { ar: 'محاكي الفوترة', en: 'Billing Simulator' },
+  campaigns: { ar: 'الحملات', en: 'Campaigns' },
+  commercial_plans: { ar: 'الخطط التجارية', en: 'Commercial Plans' },
+  competency_profiles: { ar: 'ملفات الكفاءات', en: 'Competency Profiles' },
+  configuration_profiles: { ar: 'ملفات الإعداد', en: 'Configuration Profiles' },
+  conflict_resolution: { ar: 'حل التعارضات', en: 'Conflict Resolution' },
+  content_approvals: { ar: 'اعتمادات المحتوى', en: 'Content Approvals' },
+  content_calendar: { ar: 'تقويم المحتوى', en: 'Content Calendar' },
+  count_session: { ar: 'جلسة الجرد', en: 'Count Session' },
+  crossdock_workspace: { ar: 'مساحة العبور المباشر', en: 'Cross-Dock Workspace' },
+  cycle_count_plans: { ar: 'خطط الجرد الدوري', en: 'Cycle Count Plans' },
+  development_plans: { ar: 'خطط التطوير', en: 'Development Plans' },
+  device_alerts: { ar: 'تنبيهات الأجهزة', en: 'Device Alerts' },
+  device_command_center: { ar: 'مركز أوامر الأجهزة', en: 'Device Command Center' },
+  device_detail: { ar: 'تفاصيل الجهاز', en: 'Device Detail' },
+  device_enrollment: { ar: 'تسجيل الأجهزة', en: 'Device Enrollment' },
+  device_health_board: { ar: 'لوحة صحة الأجهزة', en: 'Device Health Board' },
+  device_health_center: { ar: 'مركز صحة الأجهزة', en: 'Device Health Center' },
+  device_registry: { ar: 'سجل الأجهزة', en: 'Device Registry' },
+  dock_checkin: { ar: 'تسجيل وصول الرصيف', en: 'Dock Check-In' },
+  dock_schedule: { ar: 'جدول الأرصفة', en: 'Dock Schedule' },
+  downtime_board: { ar: 'لوحة التوقفات', en: 'Downtime Board' },
+  employee_kiosk: { ar: 'كشك الموظف', en: 'Employee Kiosk' },
+  entitlements: { ar: 'الاستحقاقات', en: 'Entitlements' },
+  event_checkin: { ar: 'تسجيل حضور الفعالية', en: 'Event Check-in' },
+  event_planner: { ar: 'مخطط الفعاليات', en: 'Event Planner' },
+  event_registrations: { ar: 'تسجيلات الفعاليات', en: 'Event Registrations' },
+  events_overview: { ar: 'نظرة عامة على الفعاليات', en: 'Events Overview' },
+  expiration_queue: { ar: 'طابور تواريخ الانتهاء', en: 'Expiration Queue' },
+  extension_installations: { ar: 'تثبيت الإضافات', en: 'Extension Installations' },
+  extension_marketplace: { ar: 'سوق الإضافات', en: 'Extension Marketplace' },
+  firmware_catalogue: { ar: 'دليل البرامج الثابتة', en: 'Firmware Catalogue' },
+  fleet_device_mapping: { ar: 'ربط الأسطول بالأجهزة', en: 'Fleet Device Mapping' },
+  fleet_live_map_simulator: { ar: 'محاكي الخريطة الحية للأسطول', en: 'Fleet Live Map Simulator' },
+  fleet_operations_board: { ar: 'لوحة عمليات الأسطول', en: 'Fleet Operations Board' },
+  fuel_telemetry: { ar: 'بيانات الوقود', en: 'Fuel Telemetry' },
+  gateway_management: { ar: 'إدارة البوابات', en: 'Gateway Management' },
+  geofence_events: { ar: 'أحداث السياج الجغرافي', en: 'Geofence Events' },
+  geofence_management: { ar: 'إدارة السياج الجغرافي', en: 'Geofence Management' },
+  kiosk_device_registry: { ar: 'سجل أجهزة الأكشاك', en: 'Kiosk Device Registry' },
+  learning_and_certifications: { ar: 'التعلم والشهادات', en: 'Learning & Certifications' },
+  lot_serial_traceability: { ar: 'تتبع الدفعات والأرقام التسلسلية', en: 'Lot / Serial Traceability' },
+  maintenance_triggers: { ar: 'محفزات الصيانة', en: 'Maintenance Triggers' },
+  marketing_overview: { ar: 'نظرة عامة على التسويق', en: 'Marketing Overview' },
+  mobile_picking: { ar: 'الالتقاط المتنقل', en: 'Mobile Picking' },
+  mobile_receiving: { ar: 'الاستلام المتنقل', en: 'Mobile Receiving' },
+  offline_capability_policies: { ar: 'سياسات العمل دون اتصال', en: 'Offline Capability Policies' },
+  offline_client_registry: { ar: 'سجل عملاء دون اتصال', en: 'Offline Client Registry' },
+  offline_queue: { ar: 'طابور العمل دون اتصال', en: 'Offline Queue' },
+  operational_performance: { ar: 'الأداء التشغيلي', en: 'Operational Performance' },
+  people_development_overview: { ar: 'نظرة عامة على تطوير الأفراد', en: 'People Development' },
+  person_skill_evidence: { ar: 'أدلة المهارات', en: 'Skill Evidence' },
+  pick_task_queue: { ar: 'طابور مهام الالتقاط', en: 'Pick Task Queue' },
+  production_issue_return: { ar: 'صرف وإرجاع الإنتاج', en: 'Production Issue / Return' },
+  production_large_screen: { ar: 'شاشة الإنتاج الكبيرة', en: 'Production Large Screen' },
+  production_material_requests: { ar: 'طلبات مواد الإنتاج', en: 'Production Material Requests' },
+  production_receipt: { ar: 'استلام الإنتاج', en: 'Production Receipt' },
+  putaway_rules: { ar: 'قواعد التخزين', en: 'Putaway Rules' },
+  putaway_task_queue: { ar: 'طابور مهام التخزين', en: 'Putaway Task Queue' },
+  quality_hold_queue: { ar: 'طابور تعليق الجودة', en: 'Quality Hold Queue' },
+  recall_analysis: { ar: 'تحليل الاستدعاءات', en: 'Recall Analysis' },
+  receiving_discrepancies: { ar: 'فروقات الاستلام', en: 'Receiving Discrepancies' },
+  replenishment_proposals: { ar: 'مقترحات التجديد', en: 'Replenishment Proposals' },
+  replenishment_rules: { ar: 'قواعد التجديد', en: 'Replenishment Rules' },
+  rework_workspace: { ar: 'مساحة إعادة العمل', en: 'Rework Workspace' },
+  rollout_simulator: { ar: 'محاكي النشر', en: 'Rollout Simulator' },
+  saas_overview: { ar: 'نظرة عامة على البرمجيات كخدمة', en: 'SaaS Overview' },
+  scrap_approval: { ar: 'اعتماد الهدر', en: 'Scrap Approval' },
+  seats_and_limits: { ar: 'المقاعد والحدود', en: 'Seats and Limits' },
+  sensor_management: { ar: 'إدارة المستشعرات', en: 'Sensor Management' },
+  service_kiosk: { ar: 'كشك الخدمة', en: 'Service Kiosk' },
+  service_queue_board: { ar: 'لوحة طابور الخدمة', en: 'Service Queue Board' },
+  shop_floor_kiosk: { ar: 'كشك أرضية الإنتاج', en: 'Shop Floor Kiosk' },
+  shopfloor_terminal: { ar: 'محطة أرضية الإنتاج', en: 'Shop-Floor Terminal' },
+  skills_catalog: { ar: 'دليل المهارات', en: 'Skills Catalog' },
+  speed_and_driver_events: { ar: 'أحداث السرعة والسائق', en: 'Speed and Driver Events' },
+  staging_board: { ar: 'لوحة التجهيز', en: 'Staging Board' },
+  suspected_fuel_loss_queue: { ar: 'طابور فاقد الوقود المشتبه', en: 'Suspected Fuel Loss Queue' },
+  sync_conflicts: { ar: 'تعارضات المزامنة', en: 'Sync Conflicts' },
+  sync_sessions: { ar: 'جلسات المزامنة', en: 'Sync Sessions' },
+  system_check: { ar: 'فحص النظام', en: 'System Check' },
+  system_settings: { ar: 'إعدادات النظام', en: 'System Settings' },
+  import_center: { ar: 'استيراد البيانات', en: 'Data Import' },
+  telemetry_explorer: { ar: 'مستكشف القياسات', en: 'Telemetry Explorer' },
+  tenant_detail: { ar: 'تفاصيل المستأجر', en: 'Tenant Detail' },
+  tenant_directory: { ar: 'دليل المستأجرين', en: 'Tenant Directory' },
+  usage_and_quotas: { ar: 'الاستخدام والحصص', en: 'Usage and Quotas' },
+  variance_review: { ar: 'مراجعة الفروقات', en: 'Variance Review' },
+  vehicle_trip_timeline: { ar: 'الخط الزمني لرحلات المركبة', en: 'Vehicle Trip Timeline' },
+  vertical_packs: { ar: 'حزم القطاعات', en: 'Vertical Packs' },
+  warehouse_kiosk: { ar: 'كشك المستودع', en: 'Warehouse Kiosk' },
+  warehouse_large_screen: { ar: 'شاشة المستودع الكبيرة', en: 'Warehouse Large Screen' },
+  warehouse_topology: { ar: 'هيكل المستودع', en: 'Warehouse Topology' },
+  wave_execution: { ar: 'تنفيذ الموجات', en: 'Wave Execution' },
+  wave_planning: { ar: 'تخطيط الموجات', en: 'Wave Planning' },
+  workcenter_queue: { ar: 'طابور مركز العمل', en: 'Work-Center Queue' },
+  workshop_pack_setup: { ar: 'إعداد حزمة الورشة', en: 'Workshop Pack Setup' },
+  zone_bin_management: { ar: 'إدارة المناطق والخانات', en: 'Zone and Bin Management' }
+});
+
+// ─── Page Navigation ───
 const navDomains = [
   { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
   { key: 'ops', label: 'التشغيل والورشة', icon: 'fa-industry', groups: ['ops_control', 'ops_planning', 'ops_production', 'ops_inventory', 'ops_warehouse_inbound', 'ops_warehouse_fulfillment', 'ops_warehouse_traceability', 'ops_kiosks', 'ops_boards'] },
@@ -3119,22 +3233,22 @@ const navGroupMeta = {
 };
 
 const navGroupPages = {
-  core_daily: ['home', 'my_work', 'calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
+  core_daily: ['home', 'my_work', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
-  ops_control: ['workshop_command_center', 'workshop_readiness', 'command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
+  ops_control: ['workshop_command_center', 'workshop_readiness', 'command_center', 'task_manager', 'workflow', 'sop'],
   ops_planning: ['demand_planning', 'forecast_versions', 'forecast_overrides', 'forecast_accuracy', 'planning_exceptions', 'mps', 'mps_proposals', 'supply_demand_balance', 'sop_scenarios', 'sop_review'],
   ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'shopfloor_terminal', 'workcenter_queue', 'production_material_requests', 'production_issue_return', 'production_receipt', 'quality_hold_queue', 'rework_workspace', 'scrap_approval', 'downtime_board', 'operational_performance'],
-  ops_inventory: ['canonical_console', 'canonical_inventory', 'products', 'parties', 'warehouses', 'locations', 'inventory', 'equipment', 'qc_center', 'warehouse_topology', 'zone_bin_management'],
+  ops_inventory: ['canonical_console', 'canonical_inventory', 'products', 'parties', 'warehouses', 'inventory', 'equipment', 'qc_center', 'warehouse_topology', 'zone_bin_management'],
   ops_warehouse_inbound: ['putaway_rules', 'putaway_task_queue', 'replenishment_rules', 'replenishment_proposals', 'mobile_receiving', 'receiving_discrepancies'],
   ops_warehouse_fulfillment: ['mobile_picking', 'pick_task_queue', 'wave_planning', 'wave_execution', 'cycle_count_plans', 'count_session', 'variance_review'],
   ops_warehouse_traceability: ['dock_schedule', 'dock_checkin', 'staging_board', 'crossdock_workspace', 'lot_serial_traceability', 'expiration_queue', 'recall_analysis'],
-  ops_kiosks: ['workshop_tv', 'kiosk', 'kiosk_device_registry', 'employee_kiosk', 'warehouse_kiosk', 'shop_floor_kiosk', 'service_kiosk'],
+  ops_kiosks: ['kiosk', 'kiosk_device_registry', 'employee_kiosk', 'warehouse_kiosk', 'shop_floor_kiosk', 'service_kiosk'],
   ops_boards: ['fleet_operations_board', 'device_health_board', 'warehouse_large_screen', 'production_large_screen', 'service_queue_board', 'alert_board'],
   finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance', 'finance_installments'],
   finance_treasury: ['treasury_cash_position', 'liquidity_forecast', 'treasury_alerts', 'payment_funding_proposals', 'financing_facilities'],
   finance_intercompany: ['intercompany_transactions', 'mismatch_queue', 'intercompany_reconciliation'],
   finance_consolidation: ['consolidation_groups', 'account_mapping', 'consolidation_runs', 'eliminations', 'consolidated_reports', 'consolidation_lineage'],
-  commercial_sales: ['sales', 'pos', 'sales_price_lists', 'sales_commission', 'pos_deepening', 'loyalty'],
+  commercial_sales: ['sales', 'pos', 'sales_price_lists', 'sales_commission', 'loyalty'],
   commercial_relationships: ['customer_portal', 'subscriptions', 'appointments', 'helpdesk', 'warranty', 'sales_contracts', 'omni_communications'],
   commercial_marketing: ['marketing', 'events', 'marketing_overview', 'campaigns', 'content_calendar', 'content_approvals', 'attribution_insights', 'events_overview', 'event_planner', 'event_registrations', 'event_checkin'],
   commercial_saas: ['saas_overview', 'tenant_directory', 'tenant_detail', 'commercial_plans', 'entitlements', 'seats_and_limits', 'usage_and_quotas', 'billing_simulator', 'extension_marketplace', 'extension_installations'],
@@ -3149,7 +3263,7 @@ const navGroupPages = {
   intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'telegram', 'route_health'],
   intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status', 'ai_overview', 'ai_assistant'],
   intelligence_governance: ['ai_proposal_inbox', 'ai_run_history', 'ai_policy_registry', 'ai_prompt_templates', 'ai_context_sources'],
-  admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+  admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready', 'system_check', 'import_center', 'system_settings']
 };
 
 function getNavGroupForPage(page) {
@@ -3236,10 +3350,31 @@ function normaliseNavigationButton(button) {
     icon.replaceChildren(iconElement);
   }
 
-  const label = navigationLabel(button);
+  const override = navLabelOverrides[page];
+  let labelElement = [...button.querySelectorAll('span')]
+    .find(span => !span.classList.contains('nav-icon') && span.textContent.trim());
+  if (!labelElement) {
+    labelElement = document.createElement('span');
+    button.append(labelElement);
+  }
+  labelElement.classList.add('nav-label');
+  if (override) {
+    labelElement.dataset.i18nAr = override.ar;
+    labelElement.dataset.i18nEn = override.en;
+    labelElement.textContent = override.ar;
+  } else {
+    const labelText = navigationLabel(button);
+    labelElement.dataset.i18nAr ||= /[\u0600-\u06ff]/.test(labelText) ? labelText : titleCasePageId(page);
+    labelElement.dataset.i18nEn ||= /[\u0600-\u06ff]/.test(labelText) ? titleCasePageId(page) : labelText.replace(/^[◆·\s]+/, '');
+  }
+  const label = labelElement.textContent.trim();
   button.dataset.navLabel = label;
   button.setAttribute('aria-label', label);
   button.title = label;
+}
+
+function titleCasePageId(page) {
+  return page.split(/[_-]+/).filter(Boolean).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 }
 
 function normaliseNavigationButtons(scope = document) {
@@ -37577,8 +37712,13 @@ window.ensurePageTemplateLoaded = async function (page) {
   // 404s on /views/<page>.html every time (the module renders correctly anyway,
   // but the console fills with false errors). Skip the fetch for them outright;
   // the owning module is responsible for building its own section.
-  const JS_RENDERED_PAGES = new Set(['import_center', 'system_settings']);
-  if (JS_RENDERED_PAGES.has(page)) return;
+  const JS_RENDERED_PAGES = new Set(['import_center', 'system_settings', 'system_check']);
+  const moduleOwnsPage = Boolean(
+    window.Build10Engine?.PAGES?.[page]
+    || window.Build11Engine?.PAGES?.[page]
+    || window.Build12Engine?.PAGES?.[page]
+  );
+  if (JS_RENDERED_PAGES.has(page) || moduleOwnsPage) return;
 
   const id = pageMap[page] || page;
   if (document.getElementById(id)) return;

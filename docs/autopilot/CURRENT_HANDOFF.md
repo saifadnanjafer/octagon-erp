@@ -1,5 +1,19 @@
 # Current Autopilot Handoff
 
+## Navigation Recovery 1 complete — owner consolidation decision pending (2026-08-07)
+
+This supervised recovery is separate from BUILD-13/BUILD-14; both remain
+pending and unauthorized. The navigation registry now has 231 verified primary
+workspaces across seven domains, four embedded TAB controls, and one POS
+compatibility alias. Chromium clicked every primary entry through the visible
+UI (231/231 pass) against the disposable review environment. The forensic
+registry, consolidation candidates, owner-decision checklist, and evidence are
+under `docs/navigation/` and `docs/autopilot/evidence/`.
+
+Human confirmation is required before any orphan view, duplicate candidate, or
+compatibility surface is retired or merged. No operational data or product
+authority was changed.
+
 ## BUILD-12 COMPLETE — GOVERNED INTELLIGENCE AND VERTICAL PACKS (2026-08-05)
 
 BUILD-12 now has its additive authority, migration 089, provider-neutral

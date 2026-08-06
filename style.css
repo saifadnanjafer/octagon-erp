@@ -331,6 +331,25 @@ body {
   overscroll-behavior: contain;
 }
 
+/* The registry is the sole owner of visible sidebar navigation.  Keep
+   inactive domains and collapsed bodies out of layout even if a late module
+   or a stale inline style tries to re-display them. */
+.sidebar-nav > .nav-group {
+  flex: 0 0 auto;
+}
+
+.sidebar-nav > .nav-group[hidden],
+.sidebar-nav .nav-group-body[hidden],
+.sidebar-nav .nav-group.collapsed > .nav-group-body {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
 .module-domain-tabs {
   width: 100%;
   display: flex;

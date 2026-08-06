@@ -3189,13 +3189,13 @@ const navLabelOverrides = Object.freeze({
 
 // ─── Page Navigation ───
 const navDomains = [
-  { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
-  { key: 'ops', label: 'التشغيل والورشة', icon: 'fa-industry', groups: ['ops_control', 'ops_planning', 'ops_production', 'ops_inventory', 'ops_warehouse_inbound', 'ops_warehouse_fulfillment', 'ops_warehouse_traceability', 'ops_kiosks', 'ops_boards'] },
-  { key: 'finance', label: 'المالية', icon: 'fa-building-columns', groups: ['finance_accounts', 'finance_treasury', 'finance_intercompany', 'finance_consolidation'] },
-  { key: 'commercial', label: 'العملاء والقطاعات', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_relationships', 'commercial_marketing', 'commercial_saas', 'commercial_verticals'] },
-  { key: 'resources', label: 'الموارد والإمداد', icon: 'fa-people-carry-box', groups: ['resources_people', 'resources_knowledge', 'resources_assets', 'resources_devices', 'resources_fleet', 'resources_offline', 'resources_supply'] },
-  { key: 'intelligence', label: 'الذكاء والتحكم', icon: 'fa-brain', groups: ['intelligence_core', 'intelligence_ai', 'intelligence_governance'] },
-  { key: 'admin', label: 'الإدارة والنظام', icon: 'fa-screwdriver-wrench', groups: ['admin_org'] }
+  { key: 'core', label: 'النظام الأساسي', labelEn: 'Core System', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
+  { key: 'ops', label: 'التشغيل والورشة', labelEn: 'Operations and Workshop', icon: 'fa-industry', groups: ['ops_control', 'ops_planning', 'ops_production', 'ops_inventory', 'ops_warehouse_inbound', 'ops_warehouse_fulfillment', 'ops_warehouse_traceability', 'ops_kiosks', 'ops_boards'] },
+  { key: 'finance', label: 'المالية', labelEn: 'Finance', icon: 'fa-building-columns', groups: ['finance_accounts', 'finance_treasury', 'finance_intercompany', 'finance_consolidation'] },
+  { key: 'commercial', label: 'العملاء والقطاعات', labelEn: 'Customers and Verticals', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_relationships', 'commercial_marketing', 'commercial_saas', 'commercial_verticals'] },
+  { key: 'resources', label: 'الموارد والإمداد', labelEn: 'Resources and Supply', icon: 'fa-people-carry-box', groups: ['resources_people', 'resources_knowledge', 'resources_assets', 'resources_devices', 'resources_fleet', 'resources_offline', 'resources_supply'] },
+  { key: 'intelligence', label: 'الذكاء والتحكم', labelEn: 'Intelligence and Control', icon: 'fa-brain', groups: ['intelligence_core', 'intelligence_ai', 'intelligence_governance'] },
+  { key: 'admin', label: 'الإدارة والنظام', labelEn: 'Administration and System', icon: 'fa-screwdriver-wrench', groups: ['admin_org'] }
 ];
 
 const navGroupMeta = {
@@ -3231,6 +3231,45 @@ const navGroupMeta = {
   intelligence_governance: { label: 'حوكمة الذكاء', domain: 'intelligence', icon: 'fa-shield-halved' },
   admin_org: { label: 'الحوكمة والإعدادات', domain: 'admin', icon: 'fa-shield-halved' }
 };
+
+const navGroupLabelsEn = Object.freeze({
+  core_daily: 'Daily and People',
+  core_records: 'Inputs and Outputs',
+  ops_control: 'Leadership and Workflow',
+  ops_planning: 'Planning and Demand',
+  ops_production: 'Production and Quality',
+  ops_inventory: 'Inventory and Master Data',
+  ops_warehouse_inbound: 'Receiving and Putaway',
+  ops_warehouse_fulfillment: 'Picking and Counting',
+  ops_warehouse_traceability: 'Docks and Traceability',
+  ops_kiosks: 'Operations Kiosks',
+  ops_boards: 'Operations Boards',
+  finance_accounts: 'Accounts and Receivables',
+  finance_treasury: 'Treasury and Liquidity',
+  finance_intercompany: 'Intercompany',
+  finance_consolidation: 'Financial Consolidation',
+  commercial_sales: 'Sales and Point of Sale',
+  commercial_relationships: 'Contracts and Customer Service',
+  commercial_marketing: 'Marketing and Events',
+  commercial_saas: 'Commercial and Subscriptions',
+  commercial_verticals: 'Business Verticals',
+  resources_people: 'People and Development',
+  resources_knowledge: 'Knowledge and Documents',
+  resources_assets: 'Assets and Fleet',
+  resources_devices: 'IoT and Devices',
+  resources_fleet: 'Fleet Telematics',
+  resources_offline: 'Offline Operations',
+  resources_supply: 'Supply and Projects',
+  intelligence_core: 'Analytics and Automation',
+  intelligence_ai: 'AI Assistant',
+  intelligence_governance: 'AI Governance',
+  admin_org: 'Governance and Settings'
+});
+
+function navGroupLabels(groupKey) {
+  const meta = navGroupMeta[groupKey] || { label: groupKey, icon: 'fa-layer-group' };
+  return { ar: meta.label, en: navGroupLabelsEn[groupKey] || titleCasePageId(groupKey) };
+}
 
 const navGroupPages = {
   core_daily: ['home', 'my_work', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
@@ -3279,6 +3318,11 @@ function getNavDomainForPage(page) {
   return group ? getNavDomainForGroup(group) : null;
 }
 
+function currentNavigationLanguage() {
+  const lang = String(document.documentElement.lang || localStorage.getItem('octagon_language') || 'ar').toLowerCase();
+  return lang.startsWith('en') ? 'en' : 'ar';
+}
+
 function getStoredNavDomain() {
   let stored = null;
   try { stored = localStorage.getItem('omniNavDomain'); } catch (err) {}
@@ -3292,10 +3336,16 @@ function renderNavDomainTabs() {
     const count = domain.groups.reduce((sum, group) => sum + (navGroupPages[group]?.length || 0), 0);
     return `<button class="module-domain-tab" type="button" data-nav-domain="${domain.key}" onclick="setNavDomain('${domain.key}')">
       <i class="fa-solid ${domain.icon}"></i>
-      <span>${domain.label}</span>
+      <span data-i18n-ar="${domain.label}" data-i18n-en="${domain.labelEn}">${domain.label}</span>
       <em>${count}</em>
     </button>`;
   }).join('');
+  const language = currentNavigationLanguage();
+  host.querySelectorAll('.module-domain-tab[data-nav-domain]').forEach(button => {
+    const domain = navDomains.find(item => item.key === button.dataset.navDomain);
+    const label = button.querySelector('span');
+    if (domain && label) label.textContent = language === 'en' ? domain.labelEn : domain.label;
+  });
 }
 
 function syncNavDomainVisibility() {
@@ -3306,7 +3356,10 @@ function syncNavDomainVisibility() {
     btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
   document.querySelectorAll('.sidebar-nav .nav-group[data-nav-group]').forEach(group => {
-    group.hidden = getNavDomainForGroup(group.dataset.navGroup) !== activeDomain;
+    const hidden = getNavDomainForGroup(group.dataset.navGroup) !== activeDomain;
+    group.hidden = hidden;
+    group.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    group.inert = hidden;
   });
 }
 
@@ -3351,6 +3404,7 @@ function normaliseNavigationButton(button) {
   }
 
   const override = navLabelOverrides[page];
+  const language = currentNavigationLanguage();
   let labelElement = [...button.querySelectorAll('span')]
     .find(span => !span.classList.contains('nav-icon') && span.textContent.trim());
   if (!labelElement) {
@@ -3361,11 +3415,12 @@ function normaliseNavigationButton(button) {
   if (override) {
     labelElement.dataset.i18nAr = override.ar;
     labelElement.dataset.i18nEn = override.en;
-    labelElement.textContent = override.ar;
+    labelElement.textContent = language === 'en' ? override.en : override.ar;
   } else {
     const labelText = navigationLabel(button);
     labelElement.dataset.i18nAr ||= /[\u0600-\u06ff]/.test(labelText) ? labelText : titleCasePageId(page);
     labelElement.dataset.i18nEn ||= /[\u0600-\u06ff]/.test(labelText) ? titleCasePageId(page) : labelText.replace(/^[◆·\s]+/, '');
+    labelElement.textContent = language === 'en' ? labelElement.dataset.i18nEn : labelElement.dataset.i18nAr;
   }
   const label = labelElement.textContent.trim();
   button.dataset.navLabel = label;
@@ -3380,6 +3435,21 @@ function titleCasePageId(page) {
 function normaliseNavigationButtons(scope = document) {
   scope.querySelectorAll('.nav-btn[data-page]').forEach(normaliseNavigationButton);
 }
+
+function refreshGeneratedNavigationLanguage() {
+  const language = currentNavigationLanguage();
+  document.querySelectorAll('.sidebar-nav .nav-group-toggle span[data-i18n-ar]').forEach(span => {
+    const group = span.closest('.nav-group')?.dataset.navGroup;
+    const labels = group ? navGroupLabels(group) : null;
+    if (!labels) return;
+    const icon = span.querySelector('i');
+    span.replaceChildren(icon, document.createTextNode(' ' + (language === 'en' ? labels.en : labels.ar)));
+  });
+  normaliseNavigationButtons(document.querySelector('.sidebar-nav'));
+  renderNavDomainTabs();
+}
+
+document.addEventListener('octagon:language-applied', refreshGeneratedNavigationLanguage);
 
 function rebuildSidebarNavigation() {
   const nav = document.querySelector('.sidebar-nav');
@@ -3404,12 +3474,13 @@ function rebuildSidebarNavigation() {
   navDomains.forEach(domain => {
     domain.groups.forEach(groupKey => {
       const meta = navGroupMeta[groupKey] || { label: groupKey, icon: 'fa-layer-group' };
+      const labels = navGroupLabels(groupKey);
       const group = document.createElement('div');
       group.className = 'nav-group';
       group.dataset.navGroup = groupKey;
       group.dataset.navDomain = domain.key;
       group.innerHTML = `<button class="nav-group-toggle" type="button" onclick="toggleNavGroup('${groupKey}')">
-        <span><i class="fa-solid ${meta.icon}"></i> ${meta.label}</span>
+        <span data-i18n-ar="${labels.ar}" data-i18n-en="${labels.en}"><i class="fa-solid ${meta.icon}"></i> ${labels.ar}</span>
         <i class="fa-solid fa-chevron-down"></i>
       </button><div class="nav-group-body" id="navGroup-${groupKey}"></div>`;
       const body = group.querySelector('.nav-group-body');
@@ -3421,6 +3492,7 @@ function rebuildSidebarNavigation() {
   });
 
   normaliseNavigationButtons(nav);
+  refreshGeneratedNavigationLanguage();
   nav.dataset.registryBuilt = '1';
   renderNavDomainTabs();
   bindSidebarNavigation();
@@ -3448,7 +3520,21 @@ function applyNavGroupState() {
     const el = document.querySelector(`[data-nav-group="${group}"]`);
     if (!el) return;
     const isOpen = state[group] !== false;
+    const toggle = el.querySelector('.nav-group-toggle');
+    const body = el.querySelector('.nav-group-body');
     el.classList.toggle('collapsed', !isOpen);
+    el.dataset.navState = isOpen ? 'open' : 'collapsed';
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (body?.id) toggle.setAttribute('aria-controls', body.id);
+    }
+    if (body) {
+      body.hidden = !isOpen;
+      body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      body.querySelectorAll('.nav-btn[data-page]').forEach(button => {
+        button.tabIndex = isOpen ? 0 : -1;
+      });
+    }
   });
   syncNavDomainVisibility();
 }

@@ -177,6 +177,45 @@
       overflow-x: hidden !important;
     }
 
+    /* This block is inline and therefore loads after the drawer stylesheet.
+       Keep the narrow shell an overlay with a full-width content lane. */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: flex !important;
+        position: fixed !important;
+        inset-block: 0 !important;
+        inset-inline-start: 0 !important;
+        width: min(82vw, 300px) !important;
+        min-width: 0 !important;
+        max-width: min(82vw, 300px) !important;
+        z-index: 1200 !important;
+        overflow-y: auto !important;
+        transform: translateX(0);
+      }
+
+      .main-content,
+      body.sidebar-collapsed .main-content {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+      }
+
+      body.sidebar-collapsed .sidebar {
+        width: min(82vw, 300px) !important;
+        min-width: 0 !important;
+        max-width: min(82vw, 300px) !important;
+        transform: translateX(-105%);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      html[dir="rtl"] body.sidebar-collapsed .sidebar {
+        transform: translateX(105%);
+      }
+    }
+
     body.sidebar-collapsed .sidebar {
       display: none !important;
     }

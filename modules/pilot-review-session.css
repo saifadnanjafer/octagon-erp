@@ -289,6 +289,28 @@
   cursor: pointer;
 }
 
+/* In RTL the sidebar is the right-hand flex item. Keep review affordances in
+   the content lane so they never sit on top of menu entries. */
+html[dir="rtl"] #pilotReviewLauncher,
+html[dir="rtl"] #pilotReviewDock {
+  right: calc(var(--sidebar-width, 260px) + 22px);
+}
+
+@media (max-width: 768px) {
+  /* The open drawer owns the narrow viewport; a fixed review affordance must
+     not float above its footer or navigation rows. It remains available when
+     the drawer is closed. */
+  body:not(.sidebar-collapsed) #pilotReviewLauncher,
+  body:not(.sidebar-collapsed) #pilotReviewDock {
+    display: none !important;
+  }
+
+  html[dir="rtl"] #pilotReviewLauncher,
+  html[dir="rtl"] #pilotReviewDock {
+    right: 22px;
+  }
+}
+
 #pilotReviewLauncher.active,
 #pilotReviewLauncher:hover {
   border-color: rgba(125, 211, 252, .72);

@@ -54,7 +54,7 @@ test('every static sidebar entry is mapped, labelled, and given an icon at assem
     assert.ok(label.length > 0, `${page} has a written label in its source entry`);
   });
   assert.match(appSource, /function normaliseNavigationButton\(button\)/, 'late and legacy entries are normalised');
-  assert.match(appSource, /icon\.innerHTML = `<i class="fa-solid \$\{groupIcon\}"/, 'normalisation supplies a meaningful group icon');
+  assert.match(appSource, /iconElement\.className = `fa-solid \$\{groupIcon\}`/, 'normalisation supplies a meaningful group icon');
 });
 
 test('sidebar clicks preserve the full module navigation chain', () => {

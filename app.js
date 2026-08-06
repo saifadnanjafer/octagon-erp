@@ -3230,7 +3230,10 @@ function normaliseNavigationButton(button) {
     button.prepend(icon);
   }
   if (!icon.querySelector('i') || /^[◆·\s]*$/.test(icon.textContent)) {
-    icon.innerHTML = `<i class="fa-solid ${groupIcon}" aria-hidden="true"></i>`;
+    const iconElement = document.createElement('i');
+    iconElement.className = `fa-solid ${groupIcon}`;
+    iconElement.setAttribute('aria-hidden', 'true');
+    icon.replaceChildren(iconElement);
   }
 
   const label = navigationLabel(button);

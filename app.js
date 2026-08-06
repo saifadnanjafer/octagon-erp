@@ -3101,18 +3101,18 @@ const navGroupMeta = {
 };
 
 const navGroupPages = {
-  core_daily: ['my_work', 'calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
+  core_daily: ['home', 'my_work', 'calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
-  ops_control: ['workshop_command_center', 'workshop_readiness', 'command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
-  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
-  ops_frontline: ['workshop_tv', 'kiosk'],
-  finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
-  commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty'],
-  commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service'],
-  resources_org: ['people_ops', 'fleet', 'assets', 'documents', 'esign', 'knowledge', 'surveys', 'visitors'],
+  ops_control: ['workshop_command_center', 'workshop_readiness', 'command_center', 'kanban', 'task_manager', 'workflow', 'sop', 'demand_planning', 'forecast_versions', 'forecast_overrides', 'forecast_accuracy', 'planning_exceptions', 'mps', 'mps_proposals', 'supply_demand_balance', 'sop_scenarios', 'sop_review', 'shopfloor_terminal', 'workcenter_queue', 'production_material_requests', 'production_issue_return', 'production_receipt', 'quality_hold_queue', 'rework_workspace', 'scrap_approval', 'downtime_board', 'operational_performance'],
+  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'canonical_console', 'canonical_inventory', 'products', 'parties', 'warehouses', 'locations', 'inventory', 'equipment', 'qc_center', 'warehouse_topology', 'zone_bin_management', 'putaway_rules', 'putaway_task_queue', 'replenishment_rules', 'replenishment_proposals', 'mobile_receiving', 'receiving_discrepancies', 'mobile_picking', 'pick_task_queue', 'wave_planning', 'wave_execution', 'cycle_count_plans', 'count_session', 'variance_review', 'dock_schedule', 'dock_checkin', 'staging_board', 'crossdock_workspace', 'lot_serial_traceability', 'expiration_queue', 'recall_analysis'],
+  ops_frontline: ['workshop_tv', 'kiosk', 'kiosk_device_registry', 'employee_kiosk', 'warehouse_kiosk', 'shop_floor_kiosk', 'service_kiosk', 'fleet_operations_board', 'device_health_board', 'warehouse_large_screen', 'production_large_screen', 'service_queue_board', 'alert_board'],
+  finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance', 'finance_installments', 'treasury_cash_position', 'liquidity_forecast', 'treasury_alerts', 'payment_funding_proposals', 'financing_facilities', 'intercompany_transactions', 'mismatch_queue', 'intercompany_reconciliation', 'consolidation_groups', 'account_mapping', 'consolidation_runs', 'eliminations', 'consolidated_reports', 'consolidation_lineage'],
+  commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty', 'sales_price_lists', 'sales_commission', 'sales_contracts', 'pos_deepening', 'omni_communications', 'marketing_overview', 'campaigns', 'content_calendar', 'content_approvals', 'attribution_insights', 'events_overview', 'event_planner', 'event_registrations', 'event_checkin', 'saas_overview', 'tenant_directory', 'tenant_detail', 'commercial_plans', 'entitlements', 'seats_and_limits', 'usage_and_quotas', 'billing_simulator', 'extension_marketplace', 'extension_installations'],
+  commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service', 'vertical_packs', 'workshop_pack_setup'],
+  resources_org: ['people_ops', 'fleet', 'assets', 'documents', 'esign', 'knowledge', 'knowledge_base', 'surveys', 'visitors', 'people_development_overview', 'skills_catalog', 'competency_profiles', 'person_skill_evidence', 'development_plans', 'learning_and_certifications', 'device_registry', 'device_detail', 'device_enrollment', 'gateway_management', 'sensor_management', 'telemetry_explorer', 'device_health_center', 'device_alerts', 'firmware_catalogue', 'rollout_simulator', 'configuration_profiles', 'device_command_center', 'fleet_device_mapping', 'fleet_live_map_simulator', 'vehicle_trip_timeline', 'geofence_management', 'geofence_events', 'speed_and_driver_events', 'fuel_telemetry', 'suspected_fuel_loss_queue', 'maintenance_triggers', 'offline_client_registry', 'offline_queue', 'sync_sessions', 'sync_conflicts', 'conflict_resolution', 'offline_capability_policies'],
   resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
-  intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
-  intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
+  intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'telegram', 'route_health'],
+  intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status', 'ai_overview', 'ai_assistant', 'ai_proposal_inbox', 'ai_run_history', 'ai_policy_registry', 'ai_prompt_templates', 'ai_context_sources'],
   admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
 };
 
@@ -3171,7 +3171,11 @@ function setNavDomain(domainKey, persist = true) {
 
 function rebuildSidebarNavigation() {
   const nav = document.querySelector('.sidebar-nav');
-  if (!nav || nav.dataset.registryBuilt === '1') return;
+  if (!nav) return;
+  if (nav.dataset.registryBuilt === '1') {
+    adoptLateSidebarNavigation();
+    return;
+  }
 
   const buttons = {};
   nav.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
@@ -3210,6 +3214,7 @@ function rebuildSidebarNavigation() {
   applyNavGroupState();
   setNavDomain(getNavDomainForPage(currentPage) || getStoredNavDomain(), false);
   applyPlatformBootstrapVisibility();
+  watchLateSidebarNavigation();
 }
 
 function getNavGroupState() {
@@ -3252,6 +3257,33 @@ function ensureNavGroupForPage(page) {
   if (!group) return;
   setNavDomain(getNavDomainForGroup(group), true);
   setNavGroupOpen(group, true);
+}
+
+function adoptLateSidebarNavigation() {
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav) return;
+  const lateButtons = [...document.querySelectorAll('#sidebar .nav-btn[data-page]')]
+    .filter(button => !button.closest('.nav-group'));
+  if (!lateButtons.length) return;
+
+  lateButtons.forEach(button => {
+    const groupKey = getNavGroupForPage(button.dataset.page) || 'admin_org';
+    const groupBody = document.querySelector(`[data-nav-group="${groupKey}"] .nav-group-body`)
+      || document.querySelector('[data-nav-group="admin_org"] .nav-group-body');
+    if (groupBody) groupBody.appendChild(button);
+  });
+  bindSidebarNavigation();
+  applyNavGroupState();
+}
+
+function watchLateSidebarNavigation() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar || sidebar.dataset.lateNavigationWatcher === '1' || !window.MutationObserver) return;
+  sidebar.dataset.lateNavigationWatcher = '1';
+  const observer = new MutationObserver(() => adoptLateSidebarNavigation());
+  observer.observe(sidebar, { childList: true, subtree: true });
+  window.__lateSidebarNavigationObserver = observer;
+  adoptLateSidebarNavigation();
 }
 
 

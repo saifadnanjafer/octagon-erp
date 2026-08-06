@@ -75,9 +75,9 @@ label failures are all zero in the visual report.
 ## Browser noise retained for follow-up
 
 The visual report records pageErrors=0, but it does not hide console/network
-noise: the after run saw 186 console errors across its 35 browser cases,
-dominated by existing HTTP 400 (72), 401 (69), 404 (20), and the guarded
-saveData empty-employees warning (25+). These are preserved in
+noise: the final after run saw 206 console errors across its 35 browser cases,
+dominated by existing HTTP 400 (89), 401 (69), 404 (20), one explicit server
+401, and the guarded saveData empty-employees warning (27). These are preserved in
 review-artifacts/navigation-visual-recovery-2/after-report.json; they are not
 claimed as navigation-visual passes or silently classified away.
 

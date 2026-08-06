@@ -26,6 +26,8 @@
     "test:build-11": "node --test --test-concurrency=1 \"tests/build-11/*.test.mjs\"",
     "test:build-12": "node --test --test-concurrency=1 \"tests/build-12/*.test.mjs\"",
     "test:build-13": "node --test --test-concurrency=1 \"tests/build-13/*.test.mjs\"",
+    "test:navigation": "node scripts/navigation/run-click-audit.mjs",
+    "test:navigation-visual": "node scripts/navigation/run-visual-acceptance.mjs",
     "test:workshop": "node --test --test-concurrency=1 \"tests/workshop/*.test.mjs\"",
     "test:review": "node --test \"tests/review/*.test.mjs\"",
     "review:setup": "node scripts/review/setup.mjs",

@@ -257,6 +257,7 @@ body {
 /* ─── Sidebar ─── */
 .sidebar {
   width: 260px;
+  height: 100vh;
   min-height: 100vh;
   background: var(--gradient-dark);
   border-left: 1px solid var(--border-glass);
@@ -325,7 +326,9 @@ body {
 .sidebar-nav {
   padding: 16px 0;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .module-domain-tabs {
@@ -524,6 +527,10 @@ body {
 .nav-btn.active .nav-icon {
   transform: scale(1.08);
   filter: saturate(1.45);
+}
+
+.nav-btn .nav-icon i {
+  font-size: 0.88em;
 }
 
 .sidebar-footer {

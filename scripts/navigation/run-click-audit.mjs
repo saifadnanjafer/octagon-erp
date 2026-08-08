@@ -50,6 +50,35 @@ async function clickVisible(page, selector, label) {
   return label;
 }
 
+/*
+ * Wait for the DESTINATION to actually become active, rather than sleeping a
+ * fixed interval and hoping.
+ *
+ * A fixed 220ms settle was not deterministic: these pages hydrate by fetching
+ * views/<id>.html, so activation legitimately lands anywhere between ~100ms and
+ * ~1200ms depending on machine load. Under load the whole 231-page run degraded
+ * to 172/231 with a 12.8s median on the failures, every one of them showing the
+ * PREVIOUS page still active — a measurement artifact, not a navigation defect.
+ *
+ * This does NOT weaken the gate. The pass criteria are unchanged, and a page
+ * that never activates still fails: the poll is bounded, and on timeout the
+ * caller captures and judges exactly the same terminal state it always did.
+ */
+async function waitForActivation(page, pageId, timeout = 6000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const ready = await page.evaluate((id) => {
+      const navButton = document.querySelector(`.nav-btn[data-page="${CSS.escape(id)}"]`);
+      if (!navButton?.classList.contains('active')) return false;
+      const active = document.querySelector('.page.page-active');
+      return Boolean(active && active.textContent && active.textContent.trim());
+    }, pageId).catch(() => false);
+    if (ready) return true;
+    await sleep(60);
+  }
+  return false;
+}
+
 async function auditItem(page, item) {
   await clickVisible(page, `.module-domain-tab${selectorFor('data-nav-domain', item.topLevelSection)}`, `domain:${item.topLevelSection}`);
   const group = `[data-nav-group="${item.sidebarGroup}"]`;
@@ -58,7 +87,10 @@ async function auditItem(page, item) {
 
   const nav = `${group} .nav-btn${selectorFor('data-page', item.id)}`;
   await clickVisible(page, nav, `page:${item.id}`);
-  await sleep(220);
+  await waitForActivation(page, item.id);
+  // Settle past any deferred module activation that runs after the destination
+  // first paints, so a stale re-activation would still be caught here.
+  await sleep(150);
   return page.evaluate((pageId) => {
     const navButton = document.querySelector(`.nav-btn[data-page="${CSS.escape(pageId)}"]`);
     const activePage = document.querySelector('.page.page-active')

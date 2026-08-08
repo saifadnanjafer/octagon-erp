@@ -158,9 +158,19 @@
   const RENDERERS = { saas_overview: renderSaasOverview, tenant_directory: renderTenantDirectory, tenant_detail: renderTenantDetail, commercial_plans: renderCommercialPlans, subscriptions: renderSubscriptions, entitlements: renderEntitlements, seats_and_limits: renderSeatsAndLimits, usage_and_quotas: renderUsageAndQuotas, billing_simulator: renderBillingSimulator, extension_marketplace: renderExtensionMarketplace, extension_installations: renderExtensionInstallations };
   async function load(host, pageId) { if (!PAGE_META[pageId]) return; frame(host, pageId); setStatus(host, 'loading', label('Loading…', 'جارٍ التحميل…')); try { await RENDERERS[pageId](host, pageId); bind(host, pageId); setStatus(host, 'ready', `${label('Generated', 'تم الإنشاء')}: ${new Date().toLocaleString()}`); } catch (error) { setContent(host, `<div class="b11-denied" data-state="${error.status === 403 ? 'denied' : 'error'}">${escapeHtml(error.message)}</div>`); setStatus(host, error.status === 403 ? 'denied' : 'error', error.message); bind(host, pageId); } }
   function hostFor(pageId) { let host = document.querySelector(`[data-build11-page="${pageId}"]`); if (!host) { host = document.createElement('section'); host.className = 'page b11-page'; host.dataset.page = pageId; host.dataset.build11Page = pageId; (document.getElementById('mainContent') || document.body).appendChild(host); } return host; }
-  function activate(pageId) { if (!PAGE_META[pageId]) return; document.querySelectorAll('.page').forEach((node) => node.classList.remove('page-active')); document.querySelectorAll('.b11-page').forEach((node) => { node.style.display = node.dataset.build11Page === pageId ? 'block' : 'none'; }); const host = hostFor(pageId); host.classList.add('page-active'); host.style.display = 'block'; load(host, pageId); }
+  // mySeq: a self-contained staleness guard for this deferred activation. This
+  // codebase wraps window.switchPage through many modules, so `result` below
+  // may already be an unresolved promise for reasons that have nothing to do
+  // with Build11 — there is no reliable shared signal for "has the full chain
+  // actually finished yet". mySeq is captured synchronously, before any of
+  // that opaque chain runs, and is only trusted once the deferred activation
+  // fires; if a newer switchPage call started meanwhile, localSeq will have
+  // moved past it. Core switchPage already deactivates every .page host on
+  // every call, so this only needs to (re)activate our own destination.
+  let localSeq = 0;
+  function activate(pageId, mySeq) { if (!PAGE_META[pageId]) return; if (typeof mySeq === 'number' && mySeq !== localSeq) return; document.querySelectorAll('.page').forEach((node) => node.classList.remove('page-active')); document.querySelectorAll('.b11-page').forEach((node) => { node.style.display = node.dataset.build11Page === pageId ? 'block' : 'none'; }); const host = hostFor(pageId); host.classList.add('page-active'); host.style.display = 'block'; load(host, pageId); }
   const originalSwitchPage = root.switchPage;
-  if (typeof originalSwitchPage === 'function' && !originalSwitchPage.__build11Wrapped) { const wrapped = function (pageId) { const result = originalSwitchPage.apply(this, arguments); if (PAGE_META[pageId]) Promise.resolve(result).then(() => activate(pageId)); return result; }; wrapped.__build11Wrapped = true; root.switchPage = wrapped; }
+  if (typeof originalSwitchPage === 'function' && !originalSwitchPage.__build11Wrapped) { const wrapped = function (pageId) { const mySeq = ++localSeq; const result = originalSwitchPage.apply(this, arguments); if (PAGE_META[pageId]) Promise.resolve(result).then(() => activate(pageId, mySeq)); return result; }; wrapped.__build11Wrapped = true; root.switchPage = wrapped; }
   root.Build11Engine = { PAGES: PAGE_META, PAGE_IDS, RENDERERS, state: PAGE_STATE, activate, load, api, action };
   root.addEventListener('octagon:language-changed', () => { const active = document.querySelector('.b11-page[style*="block"]'); if (active) load(active, active.dataset.build11Page); });
 })();

@@ -4504,7 +4504,20 @@ function switchPage(page) {
   }
   currentPage = page;
   enforceUIPermissions();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+  // Universal page-deactivation contract: EVERY navigation — regardless of which
+  // module owns the destination — must fully deactivate every previously active
+  // page host before activating the new one. Removing the page-active class is
+  // not enough: Build10/11/12 self-rendered hosts additionally set an inline
+  // style.display to toggle visibility among their own sibling pages, and an
+  // inline style always wins over the .page{display:none} CSS rule regardless
+  // of class state. Clearing that inline style here — for every .page element,
+  // not just the ones the destination module happens to own — is what lets a
+  // legacy/foreign destination correctly hide a previously active Build10/11/12
+  // workspace instead of leaving it visibly stuck on screen.
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('page-active');
+    if (p.style.display) p.style.display = '';
+  });
   document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   const mainContent = document.getElementById('mainContent');
   if (mainContent) {

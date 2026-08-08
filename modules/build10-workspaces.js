@@ -261,16 +261,36 @@
 
   function setupSwitchPageHook() {
     const origSwitchPage = root.switchPage;
+    // localSeq/mySeq: a self-contained staleness guard. This codebase wraps
+    // window.switchPage through many modules (40+), so by the time this hook
+    // captures origSwitchPage it may already be asynchronous for reasons that
+    // have nothing to do with Build10 — origSwitchPage(pageId) can return a
+    // still-pending promise, and there is no reliable way to observe "has the
+    // real core switchPage body run yet" from the outside. Rather than infer
+    // staleness from a shared, timing-sensitive value, each call captures its
+    // own sequence number synchronously (before any await), and only proceeds
+    // to mutate the DOM if no newer switchPage call has started meanwhile.
+    let localSeq = 0;
     root.switchPage = async function (pageId) {
+      const mySeq = ++localSeq;
       let result;
       if (origSwitchPage && typeof origSwitchPage === 'function') {
         try { result = await origSwitchPage(pageId); } catch (_) {}
       }
 
-      // This wrapper sits in the global switchPage chain.  It may only take
-      // ownership of Build 10 destinations; clearing every active page for a
-      // foreign route left the user with an apparently selected, empty page.
+      // This wrapper sits in the global switchPage chain and may only take
+      // ownership of Build 10 destinations. Deactivating every page host —
+      // including foreign ones — happens once, centrally, in core switchPage
+      // above; it already cleared the page-active class and any inline
+      // display style off every .page element, so a foreign route reaching
+      // this point needs no cleanup here.
       if (!PAGES[pageId]) return result;
+
+      // Staleness guard: if a later switchPage call started while this call
+      // was suspended at the `await` above, localSeq will have moved past
+      // mySeq. Activating now would re-surface a Build10 page the user has
+      // already navigated away from.
+      if (mySeq !== localSeq) return result;
 
       document.querySelectorAll('.page[data-build10-page], .page.page-active').forEach(elem => {
         if (elem.classList.contains('page-active') || elem.hasAttribute('data-build10-page')) {

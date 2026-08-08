@@ -102,9 +102,19 @@
     host.querySelectorAll('[data-b12-button]').forEach((buttonNode) => buttonNode.addEventListener('click', () => { const actionId = buttonNode.dataset.b12Button; const id = buttonNode.dataset.b12Id || buttonNode.dataset.b12Package_id; const input = actionId.startsWith('ai:proposal') ? { proposal_id: id, reason: 'Governed UI review' } : actionId.startsWith('marketing:content') ? { content_id: id, reason: 'Governed UI review' } : actionId.startsWith('packs:') ? { package_id: id, installation_id: id, tenant_id: root.__octagonBootstrap?.actor?.tenantId || 'default' } : {}; execute(host, pageId, actionId, input); }));
   }
   async function load(host, pageId) { frame(host, pageId); try { await RENDERERS[pageId](host); bind(host, pageId); setStatus(host, 'ready', t('Ready · governed data loaded', 'جاهز · تم تحميل البيانات المحكومة')); } catch (e) { setContent(host, `<div class="b12-denied" data-state="${e.status === 403 ? 'denied' : 'error'}">${esc(e.message)}</div>`); setStatus(host, e.status === 403 ? 'denied' : 'error', e.message); bind(host, pageId); } }
-  function activate(pageId) { if (!PAGES[pageId]) return; document.querySelectorAll('.page').forEach((node) => node.classList.remove('page-active')); document.querySelectorAll('.b12-page').forEach((n) => { n.style.display = n.dataset.build12Page === pageId ? 'block' : 'none'; }); const host = hostFor(pageId); host.classList.add('page-active'); host.style.display = 'block'; load(host, pageId); }
+  // mySeq: a self-contained staleness guard for this deferred activation. This
+  // codebase wraps window.switchPage through many modules, so `result` below
+  // may already be an unresolved promise for reasons that have nothing to do
+  // with Build12 — there is no reliable shared signal for "has the full chain
+  // actually finished yet". mySeq is captured synchronously, before any of
+  // that opaque chain runs, and is only trusted once the deferred activation
+  // fires; if a newer switchPage call started meanwhile, localSeq will have
+  // moved past it. Core switchPage already deactivates every .page host on
+  // every call, so this only needs to (re)activate our own destination.
+  let localSeq = 0;
+  function activate(pageId, mySeq) { if (!PAGES[pageId]) return; if (typeof mySeq === 'number' && mySeq !== localSeq) return; document.querySelectorAll('.page').forEach((node) => node.classList.remove('page-active')); document.querySelectorAll('.b12-page').forEach((n) => { n.style.display = n.dataset.build12Page === pageId ? 'block' : 'none'; }); const host = hostFor(pageId); host.classList.add('page-active'); host.style.display = 'block'; load(host, pageId); }
   const originalSwitchPage = root.switchPage;
-  if (typeof originalSwitchPage === 'function' && !originalSwitchPage.__build12Wrapped) { const wrapped = function (pageId) { const result = originalSwitchPage.apply(this, arguments); if (PAGES[pageId]) Promise.resolve(result).then(() => activate(pageId)); return result; }; wrapped.__build12Wrapped = true; root.switchPage = wrapped; }
+  if (typeof originalSwitchPage === 'function' && !originalSwitchPage.__build12Wrapped) { const wrapped = function (pageId) { const mySeq = ++localSeq; const result = originalSwitchPage.apply(this, arguments); if (PAGES[pageId]) Promise.resolve(result).then(() => activate(pageId, mySeq)); return result; }; wrapped.__build12Wrapped = true; root.switchPage = wrapped; }
   root.Build12Engine = { PAGES, PAGE_IDS, RENDERERS, state, activate, load, api, action };
   root.addEventListener('octagon:language-changed', () => { const active = document.querySelector('.b12-page[style*="block"]'); if (active) load(active, active.dataset.build12Page); });
 })();

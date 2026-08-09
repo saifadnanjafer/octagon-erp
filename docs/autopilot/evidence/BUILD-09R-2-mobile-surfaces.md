@@ -6,9 +6,10 @@
 
 ## Delivered
 
-`mobile_receiving`, `mobile_picking`, and `count_session` now expose a
-mobile-first quick-action surface instead of relying only on the shared table
-toolbar. Each quick action
+All seven BUILD-09 pages marked as mobile (`mobile_receiving`,
+`mobile_picking`, `count_session`, `dock_checkin`, `shopfloor_terminal`,
+`production_issue_return`, and `production_receipt`) now expose a mobile-first
+quick-action surface instead of relying only on the shared table toolbar. Each quick action
 opens the existing governed action form and therefore preserves the canonical
 WMS authority, permission checks, audit trail, idempotency, and request routing.
 
@@ -26,9 +27,11 @@ npm.cmd run test:permissions                                  39/39
 ```
 
 The new Chromium scenario verifies four receiving actions, five picking
-actions, and three count actions are visible; representative actions open the
-expected governed forms. The existing receiving, picking, and count lifecycle
-scenarios remain green.
+actions, three count actions, three dock actions, five shop-floor actions, two
+material-issue actions, and three production-receipt actions are visible. It
+also verifies representative actions open the expected governed forms. The
+existing receiving, picking, count, dock, and shop-floor lifecycle scenarios
+remain green.
 
 ## Remaining BUILD-09R work
 

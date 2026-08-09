@@ -44,7 +44,17 @@ test('BUILD-10 workspace shell exposes governed state, scope, actions, and expor
   assert.match(source, /\/api\/v1\/action\//);
   assert.match(source, /activeCompany/);
   assert.match(source, /activeWarehouse/);
-  assert.match(source, /Loading · empty · error · denied/);
+  // The shell must expose a governed-state node (data-role="status" with a
+  // data-phase attribute), not any specific literal text. A prior version of
+  // this test asserted the literal placeholder string "Loading · empty ·
+  // error · denied" -- that string was a real bug: dead debug/legend text
+  // hardcoded into every b10-status node and never replaced with the actual
+  // phase label (unlike the working setStatus() pattern in Build08/09/11).
+  // Real users saw the literal list of all possible states instead of their
+  // current one. Fixed at the source; this assertion now checks the
+  // structural contract the fix must preserve, not the bug's exact wording.
+  assert.match(source, /data-role="status" data-phase="[a-z]+"/);
+  assert.doesNotMatch(source, /Loading · empty · error · denied/, 'the dead placeholder legend must not return');
   assert.match(source, /exportCsv/);
   assert.match(source, /PermissionService\.checkPage/);
   assert.match(source, /octagon:language-changed/);

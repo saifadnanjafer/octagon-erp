@@ -47,7 +47,15 @@ test('BUILD-09 workspace shell exposes governed state, scope, actions, and expor
   // proven live by tests/build-09/operational-32-page-matrix-chromium.test.mjs, which asserts
   // every one of the 32 pages actually gets a populated warehouse scope in a real browser.
   assert.match(source, /OctagonScopeSelector\.render/);
-  assert.match(source, /Loading · empty · error · denied/);
+  // The footer must carry a real refresh-behavior caption, not the literal
+  // legend "Loading · empty · error · denied" this test previously asserted --
+  // that string was a real bug: dead debug/legend text hardcoded into the
+  // footer and never replaced with a real caption, visible to real users.
+  // Note this footer span is separate from the real, working status paragraph
+  // at data-role="status" a few lines above it in the same template, which
+  // already renders the correct dynamic "Ready for a scoped query." message.
+  assert.match(source, /<footer><span>Canonical read model/);
+  assert.doesNotMatch(source, /Loading · empty · error · denied/, 'the dead placeholder legend must not return');
   assert.match(source, /exportCsv/);
   assert.match(source, /PermissionService\.checkPage/);
   assert.match(source, /octagon:language-changed/);

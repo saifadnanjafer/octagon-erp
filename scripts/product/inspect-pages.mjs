@@ -147,11 +147,25 @@ function inspectActivePage() {
 
   const lower = text.toLowerCase();
   const has = (patterns) => patterns.some((pattern) => pattern.test(text));
+  // querySelector match is required to be VISIBLE, same visible() predicate
+  // used for controls/inputs/tables above -- a hidden sibling state container
+  // is not a real signal. (First-pass data showed 167/231 pages tripping all
+  // four state flags at once; that turned out to be a genuine product defect,
+  // not a query bug -- see the b10-status fix in modules/build10*/renderers/*
+  // and build09-workspaces.js: the literal legend text "Loading · empty ·
+  // error · denied" was hardcoded into b10-status/footer nodes and never
+  // replaced with the real phase label, unlike the working setStatus() pattern
+  // in Build08/09/11. Fixed at the source; this visibility guard stays as
+  // defense against the unrelated failure mode it was originally written for.)
+  const visibleStateNode = (selector) => {
+    const node = host.querySelector(selector);
+    return Boolean(node && visible(node));
+  };
   const stateSignals = {
-    loading: has([/جارٍ التحميل|جاري التحميل/, /loading/i]) || !!host.querySelector('.spinner, .loading, [data-state="loading"]'),
-    empty: has([/لا توجد|لا يوجد|فارغ/, /no data|no records|empty|nothing/i]) || !!host.querySelector('[data-state="empty"], .empty-state'),
-    error: has([/تعذّر|خطأ|فشل/, /error|failed/i]) || !!host.querySelector('[data-state="error"], .error-state'),
-    denied: has([/ليس لديك صلاحية|غير مصرح/, /denied|forbidden|not authorized/i]) || !!host.querySelector('[data-state="denied"]'),
+    loading: has([/جارٍ التحميل|جاري التحميل/, /loading/i]) || visibleStateNode('.spinner, .loading, [data-state="loading"]'),
+    empty: has([/لا توجد|لا يوجد|فارغ/, /no data|no records|empty|nothing/i]) || visibleStateNode('[data-state="empty"], .empty-state'),
+    error: has([/تعذّر|خطأ|فشل/, /error|failed/i]) || visibleStateNode('[data-state="error"], .error-state'),
+    denied: has([/ليس لديك صلاحية|غير مصرح/, /denied|forbidden|not authorized/i]) || visibleStateNode('[data-state="denied"]'),
   };
 
   // Cross-page links: what this page can hand off TO. Both the declarative

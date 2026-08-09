@@ -84,7 +84,7 @@
       <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">Filter</span><input data-role="filter" type="search" placeholder="Filter visible records…"></label><div class="b09-actions" data-role="actions"></div></div>
       <p class="b09-notice" data-role="permission" hidden></p><p class="b09-status" data-role="status" data-phase="idle" aria-live="polite">Ready for a scoped query.</p>
       <article class="b09-card"><div class="b09-table-wrap"><table class="b09-table"><thead data-role="head"></thead><tbody data-role="rows"><tr><td class="b09-empty">Loading workspace…</td></tr></tbody></table></div>
-      <footer><span>Canonical read model · company and warehouse scoped</span><span>Loading · empty · error · denied</span></footer></article></section>`;
+      <footer><span>Canonical read model · company and warehouse scoped</span><span>${rtl() ? 'يُحدَّث عند الطلب' : 'Refreshed on demand'}</span></footer></article></section>`;
   }
 
   function installPages() {

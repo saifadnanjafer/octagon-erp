@@ -192,7 +192,7 @@
             <span class="b10-header-icon">${meta.icon}</span>
             <h2>${isRtl ? meta.titleAr : meta.titleEn}</h2>
           </div>
-          <div class="b10-status" data-role="status" data-phase="loaded">Loading · empty · error · denied</div>
+          <div class="b10-status" data-role="status" data-phase="loaded">${isRtl ? 'جاهز · تم تحميل البيانات' : 'Ready · data loaded'}</div>
         </header>
         <main class="b10-workspace-body">
           ${contentHtml}

@@ -76,7 +76,7 @@
         </div>
 
         <div class="b10-status" data-role="status" data-phase="loaded" style="color:#94a3b8;font-size:0.875rem;margin-bottom:1rem;">
-          Loading · empty · error · denied
+          ${isRtl ? 'جاهز · تم تحميل البيانات' : 'Ready · data loaded'}
         </div>
 
         <div class="b10-board-grid">

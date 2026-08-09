@@ -25,7 +25,7 @@
             <div><span class="b10-badge b10-badge-active">Kiosk Registry</span></div>
           </div>
           ${controls}
-          <div class="b10-status" data-role="status" data-phase="loaded" style="color:#94a3b8;font-size:0.875rem;">Loading · empty · error · denied</div>
+          <div class="b10-status" data-role="status" data-phase="loaded" style="color:#94a3b8;font-size:0.875rem;">${isRtl ? 'جاهز · تم تحميل البيانات' : 'Ready · data loaded'}</div>
           ${table}
         </div>
       `;
@@ -77,7 +77,7 @@
           </div>
 
           <div class="b10-status" data-role="status" data-phase="loaded" style="color:#94a3b8;font-size:0.875rem;margin-bottom:1rem;">
-            Loading · empty · error · denied
+            ${isRtl ? 'جاهز · تم تحميل البيانات' : 'Ready · data loaded'}
           </div>
 
           <div style="display:flex;gap:1rem;justify-content:center;margin:2rem 0;">

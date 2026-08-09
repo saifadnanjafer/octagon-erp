@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-085.json",
+  "acceptedSourceCommit": "295fc265a5022a3242a812749c983b9ef0297a50",
+  "acceptanceTimestamp": "2026-08-09T00:00:00.000Z",
+  "acceptanceReason": "Forward safety correction: post-062 descriptive lifecycle labels are normalized to the closed entity descriptor vocabulary, and fresh-install entity registry verification passes.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "086_canonical_entity_lifecycle_policies",
+      "relativePath": "database/migrations/086_canonical_entity_lifecycle_policies.mjs",
+      "algorithm": "sha256",
+      "checksum": "77cfd1865c4f27fd26d068f440650dc5ba48e1795a4ba033ac09191816aac0f7"
+    }
+  ]
+}

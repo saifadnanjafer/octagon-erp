@@ -1641,10 +1641,17 @@ function getDailyCalc(rec, emp, configOverride = null) {
   const workingDays = totalDays - fridayCount;
   const PS = getPayrollSettings();
   const shift = getEmployeeShift(emp);
+  // A manager-approved attendance policy may set an explicit per-day shift
+  // length. This keeps exceptional historical periods (for example an 8-hour
+  // evening roster) from changing the employee's normal shift in other months.
+  const recordShiftHours = Number(rec.payrollShiftHours);
+  const effectiveShiftHours = Number.isFinite(recordShiftHours) && recordShiftHours > 0
+    ? recordShiftHours
+    : shift.hours;
   const dailyRate = cfg.nominalSalary / totalDays;
   // Hourly rate is relative to the employee's shift length, so a FULL shift earns exactly one dailyRate
   // (morning 9h → dailyRate/9, evening 8h → dailyRate/8).
-  const hourlyRate = dailyRate / (shift.hours || PS.standardDayHours || 9);
+  const hourlyRate = dailyRate / (effectiveShiftHours || PS.standardDayHours || 9);
   const transportRate = workingDays > 0 ? (cfg.cfgTransport || 50000) / workingDays : 0;
   const foodRate = workingDays > 0 ? (cfg.cfgFood || 50000) / workingDays : 0;
   const allowanceRate = transportRate + foodRate;
@@ -1724,14 +1731,14 @@ function getDailyCalc(rec, emp, configOverride = null) {
     dayPay = dailyRate;
     allowance = allowanceRate;
     const hrs = actualWorkedHours();
-    if (hrs > shift.hours) { otHours = hrs - shift.hours; otValue = otHours * hourlyRate * OT_MULT; }
+    if (hrs > effectiveShiftHours) { otHours = hrs - effectiveShiftHours; otValue = otHours * hourlyRate * OT_MULT; }
   } else if (statusType === 'night_shift') {
     // Full day, no late/early; OT after a full shift's actual hours. Carries next day → hourly_excused.
     isAttendanceDay = true;
     dayPay = dailyRate;
     allowance = allowanceRate;
     const hrs = actualWorkedHours();
-    if (hrs > shift.hours) { otHours = hrs - shift.hours; otValue = otHours * hourlyRate * OT_MULT; }
+    if (hrs > effectiveShiftHours) { otHours = hrs - effectiveShiftHours; otValue = otHours * hourlyRate * OT_MULT; }
   } else if (statusType === 'external_mission') {
     // مهمة خارجية: off-site work counts as a full present day + allowance, no late/early penalty.
     isAttendanceDay = true;
@@ -1808,7 +1815,7 @@ function getDailyCalc(rec, emp, configOverride = null) {
     dayPay, allowance, otHours, otValue, late, earlyDeduction, deduction,
     lateMinutes, earlyMinutes, penaltyTotal,
     isAttendanceDay, isFridayWorked, isPaidOff,
-    hourlyRate, dailyRate, allowanceRate,
+    hourlyRate, dailyRate, allowanceRate, effectiveShiftHours,
     manualAdvance, officialAdvanceApplied, advanceTotal, total
   };
 }

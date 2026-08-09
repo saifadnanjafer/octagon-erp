@@ -6,8 +6,9 @@
 
 ## Delivered
 
-`mobile_receiving` and `mobile_picking` now expose a mobile-first quick-action
-surface instead of relying only on the shared table toolbar. Each quick action
+`mobile_receiving`, `mobile_picking`, and `count_session` now expose a
+mobile-first quick-action surface instead of relying only on the shared table
+toolbar. Each quick action
 opens the existing governed action form and therefore preserves the canonical
 WMS authority, permission checks, audit trail, idempotency, and request routing.
 
@@ -24,9 +25,10 @@ npm.cmd run test:build-09                                     33/33
 npm.cmd run test:permissions                                  39/39
 ```
 
-The new Chromium scenario verifies four receiving actions and five picking
-actions are visible and that representative actions open the expected governed
-forms. The existing receiving and picking lifecycle scenarios remain green.
+The new Chromium scenario verifies four receiving actions, five picking
+actions, and three count actions are visible; representative actions open the
+expected governed forms. The existing receiving, picking, and count lifecycle
+scenarios remain green.
 
 ## Remaining BUILD-09R work
 

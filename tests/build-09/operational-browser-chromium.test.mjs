@@ -16,6 +16,14 @@ test('real Chromium exposes mobile-first quick actions for receiving and picking
   await page.click('[data-build09-page="mobile_picking"] [data-mobile-action="wms:pick_scan_product"]');
   await page.waitForSelector('#build09ActionDialog[open]');
   assert.equal(await page.$eval('#build09ActionDialog', (dialog) => dialog.dataset.action), 'wms:pick_scan_product');
+  await page.evaluate(() => document.getElementById('build09ActionDialog').close());
+
+  await page.evaluate(() => window.switchPage('count_session'));
+  await page.waitForSelector('[data-build09-page="count_session"].page-active [data-role="mobile-scan-panel"]');
+  assert.equal(await page.$$eval('[data-build09-page="count_session"] [data-mobile-action]', (buttons) => buttons.length), 3);
+  await page.click('[data-build09-page="count_session"] [data-mobile-action="wms:count_line_record"]');
+  await page.waitForSelector('#build09ActionDialog[open]');
+  assert.equal(await page.$eval('#build09ActionDialog', (dialog) => dialog.dataset.action), 'wms:count_line_record');
   assert.equal(consoleErrors.length, 0, consoleErrors.join('\n'));
 });
 

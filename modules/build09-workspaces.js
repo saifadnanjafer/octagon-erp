@@ -73,6 +73,11 @@
       ['wms:pick_confirm', 'Confirm quantity', 'تأكيد الكمية'],
       ['wms:pick_stage', 'Stage pick', 'تجهيز الالتقاط'],
     ],
+    count_session: [
+      ['wms:count_line_record', 'Record count', 'تسجيل الجرد'],
+      ['wms:count_submit', 'Submit count', 'تسليم الجرد'],
+      ['wms:count_recount', 'Request recount', 'طلب إعادة الجرد'],
+    ],
   };
   const states = new Map();
   const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));

@@ -2,6 +2,23 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { browserAction, browserQuery, openBuild09Browser } from './browser-harness.mjs';
 
+test('real Chromium exposes mobile-first quick actions for receiving and picking', async (t) => {
+  const { consoleErrors, page } = await openBuild09Browser(t, { name: 'mobile-quick-actions', initialPage: 'mobile_receiving' });
+  assert.equal(await page.$$eval('[data-build09-page="mobile_receiving"] [data-mobile-action]', (buttons) => buttons.length), 4);
+  await page.click('[data-build09-page="mobile_receiving"] [data-mobile-action="wms:receiving_start"]');
+  await page.waitForSelector('#build09ActionDialog[open]');
+  assert.equal(await page.$eval('#build09ActionDialog', (dialog) => dialog.dataset.action), 'wms:receiving_start');
+  await page.evaluate(() => document.getElementById('build09ActionDialog').close());
+
+  await page.evaluate(() => window.switchPage('mobile_picking'));
+  await page.waitForSelector('[data-build09-page="mobile_picking"].page-active [data-role="mobile-scan-panel"]');
+  assert.equal(await page.$$eval('[data-build09-page="mobile_picking"] [data-mobile-action]', (buttons) => buttons.length), 5);
+  await page.click('[data-build09-page="mobile_picking"] [data-mobile-action="wms:pick_scan_product"]');
+  await page.waitForSelector('#build09ActionDialog[open]');
+  assert.equal(await page.$eval('#build09ActionDialog', (dialog) => dialog.dataset.action), 'wms:pick_scan_product');
+  assert.equal(consoleErrors.length, 0, consoleErrors.join('\n'));
+});
+
 test('real Chromium completes mobile receipt, canonical receipt, scanned putaway, and canonical transfer', async (t) => {
   const { consoleErrors, dialect, page, seed } = await openBuild09Browser(t, { name: 'inbound', initialPage: 'mobile_receiving' });
   const scope = { warehouse_id: seed.warehouse.id };

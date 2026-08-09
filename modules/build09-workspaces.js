@@ -59,6 +59,21 @@
   };
 
   const PAGE_IDS = Object.keys(PAGES);
+  const MOBILE_QUICK_ACTIONS = {
+    mobile_receiving: [
+      ['wms:receiving_start', 'Start session', 'بدء الجلسة'],
+      ['wms:receiving_scan_reference', 'Scan reference', 'مسح المرجع'],
+      ['wms:receiving_scan_product', 'Scan product', 'مسح المنتج'],
+      ['wms:receiving_review', 'Review session', 'مراجعة الجلسة'],
+    ],
+    mobile_picking: [
+      ['wms:pick_task_assign', 'Assign task', 'تعيين المهمة'],
+      ['wms:pick_scan_source', 'Scan source', 'مسح المصدر'],
+      ['wms:pick_scan_product', 'Scan product', 'مسح المنتج'],
+      ['wms:pick_confirm', 'Confirm quantity', 'تأكيد الكمية'],
+      ['wms:pick_stage', 'Stage pick', 'تجهيز الالتقاط'],
+    ],
+  };
   const states = new Map();
   const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const humanize = (value) => String(value || '').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -78,8 +93,11 @@
   function workspaceMarkup(id) {
     const page = config(id); const requiredInputs = page.required.map((name) => `<label class="b09-query-field"><span>${escapeHtml(humanize(name))}</span><input data-query="${escapeHtml(name)}" autocomplete="off"></label>`).join('');
     const optionalFilters = page.filters.map(([name, filterLabel, options]) => `<label class="b09-query-field"><span>${escapeHtml(rtl() ? filterLabel[1] : filterLabel[0])}</span><select data-query="${escapeHtml(name)}"><option value="">${rtl() ? 'الكل' : 'All'}</option>${options.map(([value, en, ar]) => `<option value="${escapeHtml(value)}">${escapeHtml(rtl() ? ar : en)}</option>`).join('')}</select></label>`).join('');
+    const quickActions = (MOBILE_QUICK_ACTIONS[id] || []).map(([action, en, ar]) => `<button type="button" class="b09-mobile-quick-action" data-mobile-action="${escapeHtml(action)}"><span aria-hidden="true">⌁</span>${escapeHtml(rtl() ? ar : en)}</button>`).join('');
+    const mobilePanel = quickActions ? `<aside class="b09-mobile-scan-panel" data-role="mobile-scan-panel"><div><p class="b09-mobile-kicker">${rtl() ? 'وضع التنفيذ السريع' : 'QUICK EXECUTION MODE'}</p><h2>${rtl() ? 'مسح وتنفيذ' : 'Scan and execute'}</h2><p>${rtl() ? 'افتح إجراءً محكومًا مباشرة من شاشة الهاتف.' : 'Open a governed action directly from the mobile work surface.'}</p></div><div class="b09-mobile-quick-actions">${quickActions}</div><p class="b09-mobile-scan-status" data-role="mobile-scan-status" aria-live="polite">${rtl() ? 'اختر إجراءً للبدء.' : 'Choose an action to begin.'}</p></aside>` : '';
     return `<section id="${escapeHtml(id)}" class="page b09-workspace${page.mobile ? ' b09-mobile' : ''}" data-build09-page="${escapeHtml(id)}" aria-labelledby="${escapeHtml(id)}Title">
       <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div>${root.OctagonScopeSelector.markup()}</header>
+      ${mobilePanel}
       <div class="b09-query-fields">${requiredInputs}${optionalFilters}</div>
       <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">Filter</span><input data-role="filter" type="search" placeholder="Filter visible records…"></label><div class="b09-actions" data-role="actions"></div></div>
       <p class="b09-notice" data-role="permission" hidden></p><p class="b09-status" data-role="status" data-phase="idle" aria-live="polite">Ready for a scoped query.</p>
@@ -153,14 +171,14 @@
     }
   }
 
-  function actionDialog(id, actionId) {
+  function actionDialog(id, actionId, values = {}) {
     if (!canWrite(actionId)) { setStatus(id, 'denied', rtl() ? 'لا تملك صلاحية هذا الإجراء.' : 'You do not have permission for this action.'); return; }
     const dialog = document.getElementById('build09ActionDialog'); dialog.dataset.page = id; dialog.dataset.action = actionId;
     const definition = root.OctagonActionForms.get(actionId);
     dialog.querySelector('[data-role="action-name"]').textContent = definition ? (rtl() ? definition.title.ar : definition.title.en) : actionId;
     const warehouse = document.querySelector(`[data-build09-page="${id}"] [data-role="warehouse"]`).value.trim();
     const fieldsHost = dialog.querySelector('[data-role="form-fields"]');
-    if (definition) root.OctagonActionForms.render(actionId, fieldsHost, {}); else fieldsHost.innerHTML = `<p>${escapeHtml(rtl() ? 'لا يوجد نموذج مسجل لهذا الإجراء.' : 'No form is registered for this action.')}</p>`;
+    if (definition) root.OctagonActionForms.render(actionId, fieldsHost, values); else fieldsHost.innerHTML = `<p>${escapeHtml(rtl() ? 'لا يوجد نموذج مسجل لهذا الإجراء.' : 'No form is registered for this action.')}</p>`;
     dialog.dataset.warehouse = warehouse; dialog.querySelector('[data-role="dialog-error"]').textContent = '';
     if (dialog.showModal) dialog.showModal(); else dialog.hidden = false;
   }
@@ -183,6 +201,12 @@
   function bindPage(id) {
     const host = document.querySelector(`[data-build09-page="${id}"]`); if (host.dataset.bound) return; host.dataset.bound = 'true';
     host.addEventListener('click', (event) => { const button = event.target.closest('button'); if (!button) return; if (button.dataset.command === 'refresh') fetchRows(id); if (button.dataset.command === 'export') exportCsv(id); if (button.dataset.action) actionDialog(id, button.dataset.action); });
+    host.querySelectorAll('[data-mobile-action]').forEach((button) => button.addEventListener('click', () => {
+      const actionId = button.dataset.mobileAction;
+      const status = host.querySelector('[data-role="mobile-scan-status"]');
+      if (status) status.textContent = rtl() ? 'تم فتح نموذج الإجراء المحكوم.' : 'Governed action form opened.';
+      actionDialog(id, actionId);
+    }));
     host.querySelector('[data-role="filter"]').addEventListener('input', (event) => { stateFor(id).filter = event.target.value; renderRows(id); });
     host.querySelector('[data-role="warehouse"]').addEventListener('change', async (event) => { try { await runtime()?.setWarehouse(event.target.value); await fetchRows(id); } catch (error) { setStatus(id, 'denied', error.message); } });
   }

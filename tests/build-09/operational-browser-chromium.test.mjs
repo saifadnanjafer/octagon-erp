@@ -24,6 +24,19 @@ test('real Chromium exposes mobile-first quick actions for receiving and picking
   await page.click('[data-build09-page="count_session"] [data-mobile-action="wms:count_line_record"]');
   await page.waitForSelector('#build09ActionDialog[open]');
   assert.equal(await page.$eval('#build09ActionDialog', (dialog) => dialog.dataset.action), 'wms:count_line_record');
+  await page.evaluate(() => document.getElementById('build09ActionDialog').close());
+
+  const mobileContracts = {
+    dock_checkin: ['wms:dock_check_in', 'wms:dock_start_service', 'wms:dock_depart'],
+    shopfloor_terminal: ['shopfloor:session_open', 'shopfloor:operator_assign', 'shopfloor:operation_start', 'shopfloor:operation_output', 'shopfloor:operation_complete'],
+    production_issue_return: ['shopfloor:material_request_canonical', 'shopfloor:material_acknowledge'],
+    production_receipt: ['shopfloor:material_request', 'shopfloor:material_approve', 'shopfloor:material_request_canonical'],
+  };
+  for (const [pageId, actions] of Object.entries(mobileContracts)) {
+    await page.evaluate((id) => window.switchPage(id), pageId);
+    await page.waitForSelector(`[data-build09-page="${pageId}"].page-active [data-role="mobile-scan-panel"]`);
+    assert.deepEqual(await page.$$eval(`[data-build09-page="${pageId}"] [data-mobile-action]`, (buttons) => buttons.map((button) => button.dataset.mobileAction)), actions);
+  }
   assert.equal(consoleErrors.length, 0, consoleErrors.join('\n'));
 });
 

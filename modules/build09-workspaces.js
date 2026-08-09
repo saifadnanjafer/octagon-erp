@@ -78,6 +78,27 @@
       ['wms:count_submit', 'Submit count', 'تسليم الجرد'],
       ['wms:count_recount', 'Request recount', 'طلب إعادة الجرد'],
     ],
+    dock_checkin: [
+      ['wms:dock_check_in', 'Check in vehicle', 'تسجيل دخول المركبة'],
+      ['wms:dock_start_service', 'Start service', 'بدء الخدمة'],
+      ['wms:dock_depart', 'Depart vehicle', 'مغادرة المركبة'],
+    ],
+    shopfloor_terminal: [
+      ['shopfloor:session_open', 'Open session', 'فتح الجلسة'],
+      ['shopfloor:operator_assign', 'Assign operator', 'تعيين المشغل'],
+      ['shopfloor:operation_start', 'Start operation', 'بدء العملية'],
+      ['shopfloor:operation_output', 'Record output', 'تسجيل الناتج'],
+      ['shopfloor:operation_complete', 'Complete operation', 'إكمال العملية'],
+    ],
+    production_issue_return: [
+      ['shopfloor:material_request_canonical', 'Request material', 'طلب مادة'],
+      ['shopfloor:material_acknowledge', 'Acknowledge issue', 'تأكيد الصرف'],
+    ],
+    production_receipt: [
+      ['shopfloor:material_request', 'Request receipt', 'طلب الاستلام'],
+      ['shopfloor:material_approve', 'Approve receipt', 'اعتماد الاستلام'],
+      ['shopfloor:material_request_canonical', 'Post receipt', 'ترحيل الاستلام'],
+    ],
   };
   const states = new Map();
   const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));

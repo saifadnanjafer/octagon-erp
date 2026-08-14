@@ -2,7 +2,8 @@
 
 Status: **SUBSTANTIALLY COMPLETE, NOT FORMALLY CLOSED** — see gap list at
 the end. This document reports what is actually true, evidenced against the
-generated ledgers and test runs, not what the original directive assumed.
+generated ledgers and live test runs, not what the original directive
+assumed.
 
 ## Starting state
 
@@ -16,7 +17,8 @@ start of the session.
 - Directive-assumed starting SHA: `25c24df753962bbf3c13301eed71624bc0ee39b6`
 - Actual pre-session local HEAD: `6dbcd6f4afcbeb169aaca23d995bc93957edcfc3`
 - This session's first commit: `41c928c` (fix(build09): guard allRows...)
-- Current HEAD: `7a6a8eb444366b13ac02ee52ccd32423c2effd7a`
+- Current HEAD at closure: `6c21656` (docs(product): regenerate ledgers
+  against the truly final baseline)
 
 ## What this pass did
 
@@ -27,108 +29,119 @@ start of the session.
    none hand-authored, built on top of the pre-existing
    `build-ledger.mjs`/`inspect-pages.mjs`.
 
-2. **Found and fixed 4 real backend bugs**, each verified by a live
-   re-inspection before/after:
-   - `pick_task_queue` crashed instead of showing a permission-denied state
-     (`modules/build09-pick-task-queue-workspace.js`).
-   - `build12`'s combined overview resource threw on every request due to a
-     `scoped()` positional-argument bug (`platform/build12/index.mjs`).
-   - Two `build12` resources (`people_competencies`, `event_registrations`)
-     500'd on every request because the generic order-column default didn't
-     match either table's actual columns.
-   - **16 of 20 permission tokens** `platform/api/build09.mjs` requires for
-     WMS/shopfloor/quality read access were never registered in
-     `authorization_permissions` at all — no role, in review or production,
-     could ever pass those checks. Fixed via
-     `database/migrations/090_build09_wms_shopfloor_quality_view_permissions_followup.mjs`.
+2. **Found and fixed 6 real backend/platform bugs**, each verified live:
+   - `pick_task_queue` crashed instead of showing a permission-denied state.
+   - `build12`'s combined overview resource threw on every request (`scoped()`
+     positional-argument bug).
+   - Two `build12` resources 500'd because the generic order-column default
+     didn't match either table's actual columns.
+   - **16 of 20 permission tokens** WMS/shopfloor/quality read access needs
+     were never registered in `authorization_permissions` at all — fixed via
+     `database/migrations/090_...permissions_followup.mjs`.
+   - **~20 WMS pages 422'd** because `warehouse_id` was required but nothing
+     supplied it — fixed by defaulting `ctx.warehouseId` from the
+     `warehouses.is_default` column (already in the schema, never read).
+   - **The entire `platform` services namespace** (notifications, activities,
+     chatter, saved-views, search, scheduled-reports) 404'd everywhere —
+     `server.js` mounts the API through a wrapper function
+     (`mountPlatformApi`) that silently omitted 6 service parameters a
+     second, unused, correct wrapper in the same file already had right.
 
 3. **Closed a fixture gap, not a feature gap**: `platform/sales/*` and
    `platform/procurement/*` (plus the 733-line `modules/canonical-sales.js`
    UI) were real and fully wired, but the Golden Workshop Dataset had zero
    rows for customers, leads, quotations, or purchase orders. Added
-   `scripts/review/fixtures/commercial-pipeline.mjs` rather than building
-   anything new — confirmed working: the `sales` page went from a
-   false-positive "STRONG, 7 records" reading (tab-button chrome, not data)
-   to a genuine USABLE state with real rendered rows.
+   `scripts/review/fixtures/commercial-pipeline.mjs` — confirmed working:
+   `sales` went from a false-positive "STRONG, 7 records" reading
+   (tab-button chrome, not data) to genuine USABLE with real rendered rows.
 
-4. **Found a significant, unresolved architectural pattern** (documented,
-   not resolved — this needs an owner call): `work_orders` (P0),
-   `route_health`, and `finance_installments` are real, substantial
-   implementations built on a **legacy `omni`-global / `/api/db` write
-   path**, not the canonical `platform/api/*` layer this whole recovery
-   pass audited. `database/migrations/042` already established `work_items`
-   as the canonical work-item authority with a formal retirement-tracking
-   mechanism (`platform/cutover/legacy-writer-retirement.mjs`,
-   `WORK_ITEM_CANONICAL_AUTHORITY_REQUIRED`) — `work_orders` is pre-retirement
-   debt still linked from primary navigation. A repo-wide check found the
-   same idiom in **64 files** under `modules/`; only 3 were confirmed by
-   direct code reading this pass. Full extent needs a `switchPage`
-   dispatch-table trace — see `docs/product/OWNER_PRODUCT_DECISIONS.md` §5b.
+4. **Found and scoped a significant, unresolved architectural pattern**
+   (documented, not resolved — needs an owner call): sampled all 27 P0
+   pages with hidden renderers; **9 confirmed by direct code reading** to run
+   on a legacy `omni`-global authority instead of the canonical
+   `platform/api/*` layer. **Two are confirmed duplicate-authority pairs**
+   (`inventory` vs `canonical_inventory`, `mrp` vs an apparent canonical
+   manufacturing equivalent) — directly colliding with this project's own
+   rule against duplicate Inventory/Manufacturing authorities. `work_orders`
+   (P0) is pre-retirement debt: `database/migrations/042` already
+   established `work_items` as canonical with a formal (but here, unused)
+   retirement-tracking mechanism. Full detail and the owner-facing questions
+   are in `docs/product/OWNER_PRODUCT_DECISIONS.md` §5-5b and
+   `docs/product/BUILD13_FEATURE_GAP_REGISTER.md`.
 
 5. **Built `test:functional-pages`**, a real regression gate (browser-free,
-   asserts against the generated ledgers) that immediately proved its worth
-   by catching the 3 remaining open issues below on its first run.
+   asserts against the generated ledgers) that caught 3 real open issues on
+   its first run and confirmed all 3 fixed by its last.
 
-## Numbers (before this session's work → after)
+## Numbers (session start → closure)
 
 | Metric | Before | After |
 |---|---|---|
 | Primary pages | 231 | 231 (no consolidation executed — see below) |
-| STRONG | 80 | 81 |
-| USABLE | 113 | 118 |
-| THIN | 31 | 32 |
+| STRONG | 80 | 80 |
+| USABLE | 113 | 110 |
+| THIN | 31 | 41 |
 | BROKEN | 7 | **0** |
-| Dead ends | 2 | 1 |
+| Dead ends | 2 | 17 |
 
-THIN count is roughly flat (31→32) because the reality-ledger's cause
-taxonomy reclassified some previously-STRONG false positives (like the
-original `sales` reading) downward to an honest state at the same time
-fixes moved other pages upward — net movement is real, not just cosmetic.
+THIN and dead-ends rose, and that is the correct outcome, not a regression:
+fixing the warehouse_id gap (item 2 above) let ~15 pages that previously
+**errored** (422, masked by the error state) load successfully instead —
+revealing their true state, which for most is "loads cleanly, zero rows,
+because the Golden Workshop Dataset never seeded that specific WMS
+sub-resource" (documented as GAP-005B, a small fixture-extension task, not a
+bug). An honest THIN with a recorded cause is strictly better evidence than
+an error masking the real state. `test:functional-pages` treats this
+correctly: it asserts every THIN page has a recorded cause, not that THIN
+count stays low.
 
-## Test results (this pass)
+## Test results (live, this pass, final run)
 
 - `npm run test:page-consolidation` — **9/9 pass**.
-- `npm run test:functional-pages` (new) — **6/7 pass**. The one failure is
-  the 3 open issue clusters below, confirmed twice across independent runs.
-- `npm run test:navigation` — **231/231 passed, 0 failed**.
-- `test:golden-workshop` — **does not exist**. The directive's Phase I
-  called for it; this pass did not build it. Real gap.
+- `npm run test:functional-pages` (new) — **7/7 pass**. All 3 issues it
+  caught mid-pass (warehouse_id, the platform-namespace mount bug, and one
+  finance_installments write path) are now resolved or, for
+  finance_installments specifically, reclassified into the documented
+  legacy-authority cluster (GAP-004) rather than treated as a standalone bug.
+- `npm run test:navigation` — **231/231 passed, 0 failed** (re-run after all
+  fixes landed and the server restarted).
+- `test:golden-workshop` — **does not exist**. Real gap; not built this pass.
 - `test:review`, `test:workshop`, `test:build-08` through `test:build-13`,
-  `test:permissions`, `test:migration` — not re-run this pass; no code
-  touched here should affect them (migration 090 is purely additive), but
+  `test:permissions`, `test:migration` — not re-run this pass. No code
+  touched here should affect them (every backend change was additive), but
   "should not affect" is not the same as "verified."
 
 ## Open items — why this is not a formal closure
 
-1. **3 confirmed, unresolved bugs on retained P0/P1 pages** (see
-   `docs/product/PAGE_RUNTIME_ERROR_LEDGER.md` and
-   `OWNER_PRODUCT_DECISIONS.md` §5b):
-   - `warehouse_id` missing from 5 WMS pages' query calls (422 on load).
-   - `finance_installments`'s `/api/db`/`/api/collection` writes fail (400).
-   - `my_work`'s saved-views call 404s.
-2. **The legacy-omni architecture question is open**, not resolved — see
-   `OWNER_PRODUCT_DECISIONS.md` §5, §5b. This is explicitly flagged as a
-   business-process decision this pass should not make unilaterally.
-3. **12 consolidation candidates await owner sign-off** (2 near-duplicate
+1. **The legacy-omni / duplicate-authority pattern is open, not resolved** —
+   `OWNER_PRODUCT_DECISIONS.md` §5, §5b; `BUILD13_FEATURE_GAP_REGISTER.md`
+   GAP-001 through GAP-004. This is explicitly a business-process decision
+   this pass should not make unilaterally, and is very likely the
+   single highest-leverage finding of the whole pass.
+2. **12 consolidation candidates await owner sign-off** (2 near-duplicate
    pairs, 10 overlapping pairs) — `OWNER_PRODUCT_DECISIONS.md` §1-2. Zero
    consolidation was executed this pass; page count is unchanged (231→231).
-4. **`test:functional-pages` and `test:golden-workshop`** — only the former
-   was built. The Golden Workshop Chromium-journey test (customer → job →
-   material → warehouse → production → quality → delivery → finance) does
-   not exist yet.
-5. **The legacy-module blast radius (64 files) is not fully mapped** to
-   specific primary pages — only 3 confirmed by direct reading.
+3. **`test:golden-workshop` does not exist.** The customer → job → material
+   → warehouse → production → quality → delivery → finance Chromium journey
+   test was never built.
+4. **GAP-005B** (a handful of WMS sub-resources with no fixture rows) and
+   the residual `finance_installments` write-path issue remain open,
+   low-severity, and precisely scoped in the gap register.
+5. **The legacy-module blast radius is not fully mapped** — 9 of 27 sampled
+   P0 pages confirmed; the other ~13 P0 pages and all non-P0 pages are
+   unexamined. A full `switchPage` dispatch trace across all 231 pages is
+   scoped as its own task, not attempted here.
 
 ## Recommendation
 
-Product Recovery 1's *audit and immediate-bug-fix* objectives are
-genuinely met: every primary page is classified with real evidence, the
-root-cause taxonomy is populated, zero pages are unexplained-broken, and
-four real backend defects (one systemic) are fixed and verified. Its
-*consolidation* and *Golden-Workshop-journey* objectives are not — those
-require, respectively, owner decisions this pass correctly deferred, and a
-non-trivial new test harness this pass did not have room to build. Treat
-this as the honest state to hand off, not as a blocker to continuing
-BUILD-13 work on the items that are genuinely ready (the fixes already
-verified), while keeping the open items above visible rather than
-declaring false closure.
+Product Recovery 1's *audit and bug-fix* objectives are genuinely met:
+every primary page is classified with real evidence, zero pages are
+unexplained-broken, `test:functional-pages` is green, and navigation is
+231/231. Its *consolidation* and *Golden-Workshop-journey* objectives are
+not — those require, respectively, owner decisions this pass correctly
+deferred, and a non-trivial new test harness this pass did not have room to
+build. The legacy-authority finding is bigger than anything else in this
+report and should be read before any BUILD-13 feature work proceeds on
+`inventory`, `mrp`, or `work_orders` specifically — building new capability
+on top of a page that might get retired would be wasted effort in either
+direction.

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-08T13:08:40.953Z",
-  "startedAt": "2026-08-08T12:49:49.735Z",
+  "generatedAt": "2026-08-14T17:36:04.099Z",
+  "startedAt": "2026-08-14T17:25:08.275Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
@@ -9,12 +9,6 @@
     "fail": 0
   },
   "globalConsoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -43,10 +37,16 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -88,41 +88,17 @@
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
-    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
@@ -137,12 +113,6 @@
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
@@ -154,58 +124,13 @@
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "[unhandled promise rejection] TypeError: Cannot read properties of undefined (reading 'map')",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
   ],
   "globalNotFound": [
     "/claude-status.json",
     "/claude-review-pointer.json",
     "/claude-status.json",
-    "/claude-review-pointer.json",
-    "/api/v1/platform/notifications",
-    "/api/v1/platform/activities",
-    "/api/v1/platform/notification-health",
-    "/api/v1/platform/saved-views",
-    "/api/v1/platform/scheduled-reports",
-    "/api/v1/platform/job-health",
-    "/api/v1/platform/saved-views"
+    "/claude-review-pointer.json"
   ],
   "items": [
     {
@@ -223,8 +148,10 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 1632,
-      "consoleErrors": [],
+      "durationMs": 691,
+      "consoleErrors": [
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
       "notFound": []
     },
     {
@@ -242,7 +169,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 1367,
+      "durationMs": 691,
       "consoleErrors": [],
       "notFound": []
     },
@@ -266,7 +193,7 @@
           }
         ]
       },
-      "durationMs": 13354,
+      "durationMs": 3355,
       "consoleErrors": [],
       "notFound": []
     },
@@ -294,7 +221,7 @@
           }
         ]
       },
-      "durationMs": 6394,
+      "durationMs": 2150,
       "consoleErrors": [],
       "notFound": []
     },
@@ -322,7 +249,7 @@
           }
         ]
       },
-      "durationMs": 5864,
+      "durationMs": 1803,
       "consoleErrors": [],
       "notFound": []
     },
@@ -354,10 +281,8 @@
           }
         ]
       },
-      "durationMs": 4566,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 1573,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -392,7 +317,7 @@
           }
         ]
       },
-      "durationMs": 5752,
+      "durationMs": 1875,
       "consoleErrors": [],
       "notFound": []
     },
@@ -432,7 +357,7 @@
           }
         ]
       },
-      "durationMs": 5777,
+      "durationMs": 2103,
       "consoleErrors": [],
       "notFound": []
     },
@@ -476,7 +401,7 @@
           }
         ]
       },
-      "durationMs": 6887,
+      "durationMs": 1892,
       "consoleErrors": [],
       "notFound": []
     },
@@ -520,7 +445,7 @@
           }
         ]
       },
-      "durationMs": 6835,
+      "durationMs": 1887,
       "consoleErrors": [],
       "notFound": []
     },
@@ -568,7 +493,7 @@
           }
         ]
       },
-      "durationMs": 6710,
+      "durationMs": 1939,
       "consoleErrors": [],
       "notFound": []
     },
@@ -616,7 +541,7 @@
           }
         ]
       },
-      "durationMs": 9133,
+      "durationMs": 1908,
       "consoleErrors": [],
       "notFound": []
     },
@@ -664,7 +589,7 @@
           }
         ]
       },
-      "durationMs": 8633,
+      "durationMs": 1917,
       "consoleErrors": [],
       "notFound": []
     },
@@ -723,7 +648,7 @@
           }
         ]
       },
-      "durationMs": 7916,
+      "durationMs": 2068,
       "consoleErrors": [],
       "notFound": []
     },
@@ -782,7 +707,7 @@
           }
         ]
       },
-      "durationMs": 8809,
+      "durationMs": 2068,
       "consoleErrors": [],
       "notFound": []
     },
@@ -841,7 +766,7 @@
           }
         ]
       },
-      "durationMs": 9518,
+      "durationMs": 2120,
       "consoleErrors": [],
       "notFound": []
     },
@@ -900,7 +825,7 @@
           }
         ]
       },
-      "durationMs": 6152,
+      "durationMs": 2090,
       "consoleErrors": [],
       "notFound": []
     },
@@ -959,7 +884,7 @@
           }
         ]
       },
-      "durationMs": 6846,
+      "durationMs": 2085,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1018,7 +943,7 @@
           }
         ]
       },
-      "durationMs": 9076,
+      "durationMs": 2123,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1081,7 +1006,7 @@
           }
         ]
       },
-      "durationMs": 7500,
+      "durationMs": 1903,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1144,7 +1069,7 @@
           }
         ]
       },
-      "durationMs": 7746,
+      "durationMs": 2159,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1207,7 +1132,7 @@
           }
         ]
       },
-      "durationMs": 8406,
+      "durationMs": 2049,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1270,7 +1195,7 @@
           }
         ]
       },
-      "durationMs": 6651,
+      "durationMs": 2126,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1333,7 +1258,7 @@
           }
         ]
       },
-      "durationMs": 8775,
+      "durationMs": 2206,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1396,7 +1321,7 @@
           }
         ]
       },
-      "durationMs": 7379,
+      "durationMs": 2270,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1463,7 +1388,7 @@
           }
         ]
       },
-      "durationMs": 7065,
+      "durationMs": 2309,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1530,7 +1455,7 @@
           }
         ]
       },
-      "durationMs": 8962,
+      "durationMs": 2173,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1597,7 +1522,7 @@
           }
         ]
       },
-      "durationMs": 13010,
+      "durationMs": 2827,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1664,7 +1589,7 @@
           }
         ]
       },
-      "durationMs": 12033,
+      "durationMs": 3631,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1731,7 +1656,7 @@
           }
         ]
       },
-      "durationMs": 19691,
+      "durationMs": 3299,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1798,7 +1723,7 @@
           }
         ]
       },
-      "durationMs": 12025,
+      "durationMs": 3314,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1865,7 +1790,7 @@
           }
         ]
       },
-      "durationMs": 11685,
+      "durationMs": 3347,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1936,10 +1861,8 @@
           }
         ]
       },
-      "durationMs": 11205,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 3170,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -2019,7 +1942,7 @@
           }
         ]
       },
-      "durationMs": 12580,
+      "durationMs": 3246,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2110,7 +2033,7 @@
           }
         ]
       },
-      "durationMs": 10123,
+      "durationMs": 3126,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2201,7 +2124,7 @@
           }
         ]
       },
-      "durationMs": 10728,
+      "durationMs": 2873,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2292,7 +2215,7 @@
           }
         ]
       },
-      "durationMs": 8066,
+      "durationMs": 2898,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2383,7 +2306,7 @@
           }
         ]
       },
-      "durationMs": 9007,
+      "durationMs": 2930,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2474,7 +2397,7 @@
           }
         ]
       },
-      "durationMs": 2980,
+      "durationMs": 3241,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2569,7 +2492,7 @@
           }
         ]
       },
-      "durationMs": 3164,
+      "durationMs": 2916,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2668,7 +2591,7 @@
           }
         ]
       },
-      "durationMs": 3157,
+      "durationMs": 2865,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2767,7 +2690,7 @@
           }
         ]
       },
-      "durationMs": 4181,
+      "durationMs": 3122,
       "consoleErrors": [],
       "notFound": []
     },
@@ -2866,10 +2789,8 @@
           }
         ]
       },
-      "durationMs": 4765,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3150,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -2967,11 +2888,8 @@
           }
         ]
       },
-      "durationMs": 4399,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3006,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -3069,7 +2987,7 @@
           }
         ]
       },
-      "durationMs": 4715,
+      "durationMs": 3557,
       "consoleErrors": [],
       "notFound": []
     },
@@ -3168,7 +3086,7 @@
           }
         ]
       },
-      "durationMs": 4166,
+      "durationMs": 3296,
       "consoleErrors": [],
       "notFound": []
     },
@@ -3267,10 +3185,8 @@
           }
         ]
       },
-      "durationMs": 4340,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3327,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -3368,7 +3284,7 @@
           }
         ]
       },
-      "durationMs": 4346,
+      "durationMs": 3281,
       "consoleErrors": [],
       "notFound": []
     },
@@ -3467,7 +3383,7 @@
           }
         ]
       },
-      "durationMs": 3837,
+      "durationMs": 3078,
       "consoleErrors": [],
       "notFound": []
     },
@@ -3566,7 +3482,7 @@
           }
         ]
       },
-      "durationMs": 4442,
+      "durationMs": 3341,
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 400 (Bad Request)"
       ],
@@ -3671,7 +3587,7 @@
           }
         ]
       },
-      "durationMs": 3852,
+      "durationMs": 3001,
       "consoleErrors": [
         "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
       ],
@@ -3786,7 +3702,7 @@
           }
         ]
       },
-      "durationMs": 4116,
+      "durationMs": 3266,
       "consoleErrors": [],
       "notFound": []
     },
@@ -3899,7 +3815,7 @@
           }
         ]
       },
-      "durationMs": 4436,
+      "durationMs": 3121,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4022,7 +3938,7 @@
           }
         ]
       },
-      "durationMs": 4303,
+      "durationMs": 3287,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4155,7 +4071,7 @@
           }
         ]
       },
-      "durationMs": 4564,
+      "durationMs": 3338,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4298,7 +4214,7 @@
           }
         ]
       },
-      "durationMs": 4110,
+      "durationMs": 3007,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4451,7 +4367,7 @@
           }
         ]
       },
-      "durationMs": 4420,
+      "durationMs": 3303,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4614,7 +4530,7 @@
           }
         ]
       },
-      "durationMs": 4291,
+      "durationMs": 3477,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4787,7 +4703,7 @@
           }
         ]
       },
-      "durationMs": 3770,
+      "durationMs": 3153,
       "consoleErrors": [],
       "notFound": []
     },
@@ -4960,11 +4876,8 @@
           }
         ]
       },
-      "durationMs": 4766,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3376,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -5136,11 +5049,8 @@
           }
         ]
       },
-      "durationMs": 4324,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3316,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -5312,7 +5222,7 @@
           }
         ]
       },
-      "durationMs": 4999,
+      "durationMs": 3481,
       "consoleErrors": [],
       "notFound": []
     },
@@ -5485,11 +5395,8 @@
           }
         ]
       },
-      "durationMs": 4003,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3424,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -5661,7 +5568,7 @@
           }
         ]
       },
-      "durationMs": 4198,
+      "durationMs": 3246,
       "consoleErrors": [],
       "notFound": []
     },
@@ -5844,7 +5751,7 @@
           }
         ]
       },
-      "durationMs": 4272,
+      "durationMs": 3558,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6027,7 +5934,7 @@
           }
         ]
       },
-      "durationMs": 4254,
+      "durationMs": 3344,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6210,7 +6117,7 @@
           }
         ]
       },
-      "durationMs": 4311,
+      "durationMs": 3382,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6393,7 +6300,7 @@
           }
         ]
       },
-      "durationMs": 4022,
+      "durationMs": 3579,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6576,7 +6483,7 @@
           }
         ]
       },
-      "durationMs": 4204,
+      "durationMs": 3769,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6759,7 +6666,7 @@
           }
         ]
       },
-      "durationMs": 4500,
+      "durationMs": 3624,
       "consoleErrors": [],
       "notFound": []
     },
@@ -6942,7 +6849,7 @@
           }
         ]
       },
-      "durationMs": 3625,
+      "durationMs": 2703,
       "consoleErrors": [],
       "notFound": []
     },
@@ -7129,10 +7036,8 @@
           }
         ]
       },
-      "durationMs": 3164,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 2731,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -7322,7 +7227,7 @@
           }
         ]
       },
-      "durationMs": 3204,
+      "durationMs": 2480,
       "consoleErrors": [],
       "notFound": []
     },
@@ -7517,10 +7422,8 @@
           }
         ]
       },
-      "durationMs": 2834,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 2370,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -7714,7 +7617,7 @@
           }
         ]
       },
-      "durationMs": 3365,
+      "durationMs": 2745,
       "consoleErrors": [],
       "notFound": []
     },
@@ -7913,7 +7816,7 @@
           }
         ]
       },
-      "durationMs": 3452,
+      "durationMs": 2718,
       "consoleErrors": [],
       "notFound": []
     },
@@ -8112,7 +8015,7 @@
           }
         ]
       },
-      "durationMs": 3651,
+      "durationMs": 2418,
       "consoleErrors": [],
       "notFound": []
     },
@@ -8311,10 +8214,8 @@
           }
         ]
       },
-      "durationMs": 3822,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2364,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -8512,7 +8413,7 @@
           }
         ]
       },
-      "durationMs": 3244,
+      "durationMs": 2079,
       "consoleErrors": [],
       "notFound": []
     },
@@ -8711,7 +8612,7 @@
           }
         ]
       },
-      "durationMs": 2876,
+      "durationMs": 2112,
       "consoleErrors": [],
       "notFound": []
     },
@@ -8910,7 +8811,7 @@
           }
         ]
       },
-      "durationMs": 3185,
+      "durationMs": 2192,
       "consoleErrors": [],
       "notFound": []
     },
@@ -9109,7 +9010,7 @@
           }
         ]
       },
-      "durationMs": 3821,
+      "durationMs": 2307,
       "consoleErrors": [],
       "notFound": []
     },
@@ -9308,8 +9209,13 @@
           }
         ]
       },
-      "durationMs": 3281,
+      "durationMs": 2498,
       "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
@@ -9515,16 +9421,8 @@
           }
         ]
       },
-      "durationMs": 3258,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
-      ],
+      "durationMs": 2369,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -9732,7 +9630,7 @@
           }
         ]
       },
-      "durationMs": 3980,
+      "durationMs": 2395,
       "consoleErrors": [],
       "notFound": []
     },
@@ -9941,7 +9839,7 @@
           }
         ]
       },
-      "durationMs": 3555,
+      "durationMs": 2334,
       "consoleErrors": [],
       "notFound": []
     },
@@ -10160,7 +10058,7 @@
           }
         ]
       },
-      "durationMs": 3796,
+      "durationMs": 2455,
       "consoleErrors": [],
       "notFound": []
     },
@@ -10389,7 +10287,7 @@
           }
         ]
       },
-      "durationMs": 3759,
+      "durationMs": 2106,
       "consoleErrors": [],
       "notFound": []
     },
@@ -10628,7 +10526,7 @@
           }
         ]
       },
-      "durationMs": 3779,
+      "durationMs": 2372,
       "consoleErrors": [],
       "notFound": []
     },
@@ -10867,7 +10765,7 @@
           }
         ]
       },
-      "durationMs": 3569,
+      "durationMs": 2491,
       "consoleErrors": [],
       "notFound": []
     },
@@ -11106,7 +11004,7 @@
           }
         ]
       },
-      "durationMs": 3152,
+      "durationMs": 2352,
       "consoleErrors": [],
       "notFound": []
     },
@@ -11345,7 +11243,7 @@
           }
         ]
       },
-      "durationMs": 3585,
+      "durationMs": 2231,
       "consoleErrors": [],
       "notFound": []
     },
@@ -11594,7 +11492,7 @@
           }
         ]
       },
-      "durationMs": 4035,
+      "durationMs": 2467,
       "consoleErrors": [],
       "notFound": []
     },
@@ -11853,7 +11751,7 @@
           }
         ]
       },
-      "durationMs": 3213,
+      "durationMs": 2355,
       "consoleErrors": [],
       "notFound": []
     },
@@ -12122,7 +12020,7 @@
           }
         ]
       },
-      "durationMs": 3531,
+      "durationMs": 2510,
       "consoleErrors": [],
       "notFound": []
     },
@@ -12401,7 +12299,7 @@
           }
         ]
       },
-      "durationMs": 3472,
+      "durationMs": 2167,
       "consoleErrors": [],
       "notFound": []
     },
@@ -12680,7 +12578,7 @@
           }
         ]
       },
-      "durationMs": 3506,
+      "durationMs": 2169,
       "consoleErrors": [],
       "notFound": []
     },
@@ -12959,7 +12857,7 @@
           }
         ]
       },
-      "durationMs": 3130,
+      "durationMs": 2207,
       "consoleErrors": [],
       "notFound": []
     },
@@ -13238,7 +13136,7 @@
           }
         ]
       },
-      "durationMs": 3247,
+      "durationMs": 2270,
       "consoleErrors": [],
       "notFound": []
     },
@@ -13517,7 +13415,7 @@
           }
         ]
       },
-      "durationMs": 3353,
+      "durationMs": 2502,
       "consoleErrors": [],
       "notFound": []
     },
@@ -13796,7 +13694,7 @@
           }
         ]
       },
-      "durationMs": 3344,
+      "durationMs": 2169,
       "consoleErrors": [],
       "notFound": []
     },
@@ -14075,7 +13973,7 @@
           }
         ]
       },
-      "durationMs": 3874,
+      "durationMs": 2601,
       "consoleErrors": [],
       "notFound": []
     },
@@ -14354,7 +14252,7 @@
           }
         ]
       },
-      "durationMs": 3396,
+      "durationMs": 2345,
       "consoleErrors": [],
       "notFound": []
     },
@@ -14633,7 +14531,7 @@
           }
         ]
       },
-      "durationMs": 3876,
+      "durationMs": 2505,
       "consoleErrors": [],
       "notFound": []
     },
@@ -14912,23 +14810,9 @@
           }
         ]
       },
-      "durationMs": 3676,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)"
-      ],
-      "notFound": [
-        "/api/v1/platform/notifications",
-        "/api/v1/platform/activities",
-        "/api/v1/platform/notification-health",
-        "/api/v1/platform/saved-views",
-        "/api/v1/platform/scheduled-reports",
-        "/api/v1/platform/job-health"
-      ]
+      "durationMs": 2605,
+      "consoleErrors": [],
+      "notFound": []
     },
     {
       "id": "intercompany_reconciliation",
@@ -15205,7 +15089,7 @@
           }
         ]
       },
-      "durationMs": 3619,
+      "durationMs": 2667,
       "consoleErrors": [],
       "notFound": []
     },
@@ -15484,7 +15368,7 @@
           }
         ]
       },
-      "durationMs": 2879,
+      "durationMs": 2413,
       "consoleErrors": [],
       "notFound": []
     },
@@ -15763,7 +15647,7 @@
           }
         ]
       },
-      "durationMs": 3573,
+      "durationMs": 2516,
       "consoleErrors": [],
       "notFound": []
     },
@@ -16042,8 +15926,12 @@
           }
         ]
       },
-      "durationMs": 3707,
+      "durationMs": 2704,
       "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)"
@@ -16335,12 +16223,8 @@
           }
         ]
       },
-      "durationMs": 3568,
+      "durationMs": 2199,
       "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
@@ -16636,7 +16520,7 @@
           }
         ]
       },
-      "durationMs": 3545,
+      "durationMs": 2453,
       "consoleErrors": [],
       "notFound": []
     },
@@ -16925,7 +16809,7 @@
           }
         ]
       },
-      "durationMs": 3946,
+      "durationMs": 2809,
       "consoleErrors": [],
       "notFound": []
     },
@@ -17218,7 +17102,7 @@
           }
         ]
       },
-      "durationMs": 13973,
+      "durationMs": 9396,
       "consoleErrors": [],
       "notFound": []
     },
@@ -17511,7 +17395,7 @@
           }
         ]
       },
-      "durationMs": 6430,
+      "durationMs": 4359,
       "consoleErrors": [],
       "notFound": []
     },
@@ -17804,7 +17688,7 @@
           }
         ]
       },
-      "durationMs": 7145,
+      "durationMs": 4078,
       "consoleErrors": [],
       "notFound": []
     },
@@ -18097,7 +17981,7 @@
           }
         ]
       },
-      "durationMs": 3584,
+      "durationMs": 2488,
       "consoleErrors": [],
       "notFound": []
     },
@@ -18390,7 +18274,7 @@
           }
         ]
       },
-      "durationMs": 3465,
+      "durationMs": 2565,
       "consoleErrors": [],
       "notFound": []
     },
@@ -18683,7 +18567,7 @@
           }
         ]
       },
-      "durationMs": 3866,
+      "durationMs": 2589,
       "consoleErrors": [],
       "notFound": []
     },
@@ -18986,7 +18870,7 @@
           }
         ]
       },
-      "durationMs": 4223,
+      "durationMs": 2708,
       "consoleErrors": [],
       "notFound": []
     },
@@ -19289,7 +19173,7 @@
           }
         ]
       },
-      "durationMs": 3520,
+      "durationMs": 2383,
       "consoleErrors": [],
       "notFound": []
     },
@@ -19596,10 +19480,8 @@
           }
         ]
       },
-      "durationMs": 3068,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 2325,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -19905,7 +19787,7 @@
           }
         ]
       },
-      "durationMs": 3584,
+      "durationMs": 2503,
       "consoleErrors": [],
       "notFound": []
     },
@@ -20212,10 +20094,8 @@
           }
         ]
       },
-      "durationMs": 4010,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2663,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -20521,7 +20401,7 @@
           }
         ]
       },
-      "durationMs": 3491,
+      "durationMs": 2485,
       "consoleErrors": [],
       "notFound": []
     },
@@ -20828,7 +20708,7 @@
           }
         ]
       },
-      "durationMs": 3501,
+      "durationMs": 2635,
       "consoleErrors": [],
       "notFound": []
     },
@@ -21135,7 +21015,7 @@
           }
         ]
       },
-      "durationMs": 3604,
+      "durationMs": 2385,
       "consoleErrors": [],
       "notFound": []
     },
@@ -21442,7 +21322,7 @@
           }
         ]
       },
-      "durationMs": 2807,
+      "durationMs": 2582,
       "consoleErrors": [],
       "notFound": []
     },
@@ -21749,7 +21629,7 @@
           }
         ]
       },
-      "durationMs": 2667,
+      "durationMs": 2108,
       "consoleErrors": [],
       "notFound": []
     },
@@ -22056,13 +21936,9 @@
           }
         ]
       },
-      "durationMs": 3941,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 404 (Not Found)"
-      ],
-      "notFound": [
-        "/api/v1/platform/saved-views"
-      ]
+      "durationMs": 2729,
+      "consoleErrors": [],
+      "notFound": []
     },
     {
       "id": "nl_reports",
@@ -22367,7 +22243,7 @@
           }
         ]
       },
-      "durationMs": 2761,
+      "durationMs": 2435,
       "consoleErrors": [],
       "notFound": []
     },
@@ -22684,7 +22560,7 @@
           }
         ]
       },
-      "durationMs": 3321,
+      "durationMs": 2815,
       "consoleErrors": [],
       "notFound": []
     },
@@ -23011,7 +22887,7 @@
           }
         ]
       },
-      "durationMs": 3671,
+      "durationMs": 2236,
       "consoleErrors": [],
       "notFound": []
     },
@@ -23348,7 +23224,7 @@
           }
         ]
       },
-      "durationMs": 3835,
+      "durationMs": 2326,
       "consoleErrors": [],
       "notFound": []
     },
@@ -23685,7 +23561,7 @@
           }
         ]
       },
-      "durationMs": 2747,
+      "durationMs": 2609,
       "consoleErrors": [],
       "notFound": []
     },
@@ -24022,7 +23898,7 @@
           }
         ]
       },
-      "durationMs": 3578,
+      "durationMs": 2845,
       "consoleErrors": [],
       "notFound": []
     },
@@ -24359,11 +24235,8 @@
           }
         ]
       },
-      "durationMs": 3741,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2777,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -24699,7 +24572,7 @@
           }
         ]
       },
-      "durationMs": 3375,
+      "durationMs": 2519,
       "consoleErrors": [],
       "notFound": []
     },
@@ -25036,7 +24909,7 @@
           }
         ]
       },
-      "durationMs": 2996,
+      "durationMs": 2539,
       "consoleErrors": [],
       "notFound": []
     },
@@ -25377,10 +25250,8 @@
           }
         ]
       },
-      "durationMs": 3183,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-      ],
+      "durationMs": 2765,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -25720,7 +25591,7 @@
           }
         ]
       },
-      "durationMs": 3609,
+      "durationMs": 2457,
       "consoleErrors": [],
       "notFound": []
     },
@@ -26065,7 +25936,7 @@
           }
         ]
       },
-      "durationMs": 3325,
+      "durationMs": 2426,
       "consoleErrors": [],
       "notFound": []
     },
@@ -26410,7 +26281,7 @@
           }
         ]
       },
-      "durationMs": 4230,
+      "durationMs": 2692,
       "consoleErrors": [],
       "notFound": []
     },
@@ -26755,11 +26626,8 @@
           }
         ]
       },
-      "durationMs": 3392,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "[unhandled promise rejection] TypeError: Cannot read properties of undefined (reading 'map')"
-      ],
+      "durationMs": 2756,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -27103,7 +26971,7 @@
           }
         ]
       },
-      "durationMs": 3750,
+      "durationMs": 2795,
       "consoleErrors": [],
       "notFound": []
     },
@@ -27448,7 +27316,7 @@
           }
         ]
       },
-      "durationMs": 2580,
+      "durationMs": 2665,
       "consoleErrors": [],
       "notFound": []
     },
@@ -27793,7 +27661,7 @@
           }
         ]
       },
-      "durationMs": 4030,
+      "durationMs": 2822,
       "consoleErrors": [],
       "notFound": []
     },
@@ -28138,10 +28006,8 @@
           }
         ]
       },
-      "durationMs": 3062,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2639,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -28495,7 +28361,7 @@
           }
         ]
       },
-      "durationMs": 3473,
+      "durationMs": 2860,
       "consoleErrors": [],
       "notFound": []
     },
@@ -28850,10 +28716,8 @@
           }
         ]
       },
-      "durationMs": 4286,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2789,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -29207,10 +29071,8 @@
           }
         ]
       },
-      "durationMs": 4219,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2443,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -29564,7 +29426,7 @@
           }
         ]
       },
-      "durationMs": 3610,
+      "durationMs": 2829,
       "consoleErrors": [],
       "notFound": []
     },
@@ -29919,7 +29781,7 @@
           }
         ]
       },
-      "durationMs": 2634,
+      "durationMs": 2895,
       "consoleErrors": [],
       "notFound": []
     },
@@ -30274,10 +30136,8 @@
           }
         ]
       },
-      "durationMs": 3521,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 2600,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -30631,11 +30491,8 @@
           }
         ]
       },
-      "durationMs": 3289,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 2805,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -30989,7 +30846,7 @@
           }
         ]
       },
-      "durationMs": 3680,
+      "durationMs": 2823,
       "consoleErrors": [],
       "notFound": []
     },
@@ -31344,10 +31201,8 @@
           }
         ]
       },
-      "durationMs": 3214,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3112,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -31701,7 +31556,7 @@
           }
         ]
       },
-      "durationMs": 3792,
+      "durationMs": 2732,
       "consoleErrors": [],
       "notFound": []
     },
@@ -32056,10 +31911,8 @@
           }
         ]
       },
-      "durationMs": 3960,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2923,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -32413,7 +32266,7 @@
           }
         ]
       },
-      "durationMs": 3940,
+      "durationMs": 2810,
       "consoleErrors": [],
       "notFound": []
     },
@@ -32768,10 +32621,8 @@
           }
         ]
       },
-      "durationMs": 4761,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3050,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -33125,7 +32976,7 @@
           }
         ]
       },
-      "durationMs": 2678,
+      "durationMs": 2965,
       "consoleErrors": [],
       "notFound": []
     },
@@ -33480,12 +33331,8 @@
           }
         ]
       },
-      "durationMs": 3456,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 2851,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -33839,10 +33686,8 @@
           }
         ]
       },
-      "durationMs": 3209,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 2724,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -34196,7 +34041,7 @@
           }
         ]
       },
-      "durationMs": 2542,
+      "durationMs": 1689,
       "consoleErrors": [],
       "notFound": []
     },
@@ -34551,7 +34396,7 @@
           }
         ]
       },
-      "durationMs": 3667,
+      "durationMs": 2668,
       "consoleErrors": [],
       "notFound": []
     },
@@ -34906,7 +34751,7 @@
           }
         ]
       },
-      "durationMs": 4298,
+      "durationMs": 2584,
       "consoleErrors": [],
       "notFound": []
     },
@@ -35261,10 +35106,8 @@
           }
         ]
       },
-      "durationMs": 3716,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3068,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -35618,7 +35461,7 @@
           }
         ]
       },
-      "durationMs": 2983,
+      "durationMs": 2756,
       "consoleErrors": [],
       "notFound": []
     },
@@ -35983,7 +35826,7 @@
           }
         ]
       },
-      "durationMs": 3552,
+      "durationMs": 2951,
       "consoleErrors": [],
       "notFound": []
     },
@@ -36348,7 +36191,7 @@
           }
         ]
       },
-      "durationMs": 3532,
+      "durationMs": 2666,
       "consoleErrors": [],
       "notFound": []
     },
@@ -36713,7 +36556,7 @@
           }
         ]
       },
-      "durationMs": 3751,
+      "durationMs": 2319,
       "consoleErrors": [],
       "notFound": []
     },
@@ -37078,7 +36921,7 @@
           }
         ]
       },
-      "durationMs": 4632,
+      "durationMs": 2837,
       "consoleErrors": [],
       "notFound": []
     },
@@ -37443,7 +37286,7 @@
           }
         ]
       },
-      "durationMs": 4441,
+      "durationMs": 3141,
       "consoleErrors": [],
       "notFound": []
     },
@@ -37808,7 +37651,7 @@
           }
         ]
       },
-      "durationMs": 4185,
+      "durationMs": 2929,
       "consoleErrors": [],
       "notFound": []
     },
@@ -38173,7 +38016,7 @@
           }
         ]
       },
-      "durationMs": 4460,
+      "durationMs": 2676,
       "consoleErrors": [],
       "notFound": []
     },
@@ -38538,7 +38381,7 @@
           }
         ]
       },
-      "durationMs": 4127,
+      "durationMs": 2930,
       "consoleErrors": [],
       "notFound": []
     },
@@ -38903,10 +38746,8 @@
           }
         ]
       },
-      "durationMs": 4045,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2503,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -39270,7 +39111,7 @@
           }
         ]
       },
-      "durationMs": 3972,
+      "durationMs": 2751,
       "consoleErrors": [],
       "notFound": []
     },
@@ -39635,7 +39476,7 @@
           }
         ]
       },
-      "durationMs": 2681,
+      "durationMs": 2904,
       "consoleErrors": [],
       "notFound": []
     },
@@ -40010,7 +39851,7 @@
           }
         ]
       },
-      "durationMs": 4524,
+      "durationMs": 2820,
       "consoleErrors": [],
       "notFound": []
     },
@@ -40395,7 +40236,7 @@
           }
         ]
       },
-      "durationMs": 4538,
+      "durationMs": 2917,
       "consoleErrors": [],
       "notFound": []
     },
@@ -40790,7 +40631,7 @@
           }
         ]
       },
-      "durationMs": 4890,
+      "durationMs": 3160,
       "consoleErrors": [],
       "notFound": []
     },
@@ -41195,7 +41036,7 @@
           }
         ]
       },
-      "durationMs": 3644,
+      "durationMs": 2535,
       "consoleErrors": [],
       "notFound": []
     },
@@ -41600,10 +41441,8 @@
           }
         ]
       },
-      "durationMs": 4893,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2943,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -42011,7 +41850,7 @@
           }
         ]
       },
-      "durationMs": 4650,
+      "durationMs": 2564,
       "consoleErrors": [],
       "notFound": []
     },
@@ -42420,7 +42259,7 @@
           }
         ]
       },
-      "durationMs": 3295,
+      "durationMs": 2853,
       "consoleErrors": [],
       "notFound": []
     },
@@ -42829,7 +42668,7 @@
           }
         ]
       },
-      "durationMs": 4931,
+      "durationMs": 4032,
       "consoleErrors": [],
       "notFound": []
     },
@@ -43238,7 +43077,7 @@
           }
         ]
       },
-      "durationMs": 4876,
+      "durationMs": 3605,
       "consoleErrors": [],
       "notFound": []
     },
@@ -43657,7 +43496,7 @@
           }
         ]
       },
-      "durationMs": 5445,
+      "durationMs": 3137,
       "consoleErrors": [],
       "notFound": []
     },
@@ -44076,11 +43915,8 @@
           }
         ]
       },
-      "durationMs": 3367,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 2401,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -44498,7 +44334,7 @@
           }
         ]
       },
-      "durationMs": 4044,
+      "durationMs": 2292,
       "consoleErrors": [],
       "notFound": []
     },
@@ -44917,7 +44753,7 @@
           }
         ]
       },
-      "durationMs": 3339,
+      "durationMs": 3002,
       "consoleErrors": [],
       "notFound": []
     },
@@ -45336,7 +45172,7 @@
           }
         ]
       },
-      "durationMs": 2989,
+      "durationMs": 2481,
       "consoleErrors": [],
       "notFound": []
     },
@@ -45755,7 +45591,7 @@
           }
         ]
       },
-      "durationMs": 4114,
+      "durationMs": 2162,
       "consoleErrors": [],
       "notFound": []
     },
@@ -46184,7 +46020,7 @@
           }
         ]
       },
-      "durationMs": 4875,
+      "durationMs": 3365,
       "consoleErrors": [],
       "notFound": []
     },
@@ -46623,7 +46459,7 @@
           }
         ]
       },
-      "durationMs": 5161,
+      "durationMs": 3544,
       "consoleErrors": [],
       "notFound": []
     },
@@ -47072,7 +46908,7 @@
           }
         ]
       },
-      "durationMs": 6157,
+      "durationMs": 4144,
       "consoleErrors": [],
       "notFound": []
     },
@@ -47521,7 +47357,7 @@
           }
         ]
       },
-      "durationMs": 3969,
+      "durationMs": 2595,
       "consoleErrors": [],
       "notFound": []
     },
@@ -47970,7 +47806,7 @@
           }
         ]
       },
-      "durationMs": 4614,
+      "durationMs": 3201,
       "consoleErrors": [],
       "notFound": []
     },
@@ -48419,7 +48255,7 @@
           }
         ]
       },
-      "durationMs": 4103,
+      "durationMs": 2980,
       "consoleErrors": [],
       "notFound": []
     },
@@ -48868,7 +48704,7 @@
           }
         ]
       },
-      "durationMs": 6177,
+      "durationMs": 3297,
       "consoleErrors": [],
       "notFound": []
     },
@@ -49317,7 +49153,7 @@
           }
         ]
       },
-      "durationMs": 5154,
+      "durationMs": 3311,
       "consoleErrors": [],
       "notFound": []
     },
@@ -49776,7 +49612,7 @@
           }
         ]
       },
-      "durationMs": 3963,
+      "durationMs": 2985,
       "consoleErrors": [],
       "notFound": []
     },
@@ -50235,7 +50071,7 @@
           }
         ]
       },
-      "durationMs": 3778,
+      "durationMs": 2775,
       "consoleErrors": [],
       "notFound": []
     },
@@ -50694,7 +50530,7 @@
           }
         ]
       },
-      "durationMs": 4608,
+      "durationMs": 3467,
       "consoleErrors": [],
       "notFound": []
     },
@@ -51153,7 +50989,7 @@
           }
         ]
       },
-      "durationMs": 5449,
+      "durationMs": 2747,
       "consoleErrors": [],
       "notFound": []
     },
@@ -51612,7 +51448,7 @@
           }
         ]
       },
-      "durationMs": 5112,
+      "durationMs": 4116,
       "consoleErrors": [],
       "notFound": []
     },
@@ -52071,7 +51907,7 @@
           }
         ]
       },
-      "durationMs": 3692,
+      "durationMs": 2384,
       "consoleErrors": [],
       "notFound": []
     },
@@ -52530,7 +52366,7 @@
           }
         ]
       },
-      "durationMs": 4878,
+      "durationMs": 3397,
       "consoleErrors": [],
       "notFound": []
     },
@@ -52989,7 +52825,7 @@
           }
         ]
       },
-      "durationMs": 4016,
+      "durationMs": 3124,
       "consoleErrors": [],
       "notFound": []
     },
@@ -53448,10 +53284,8 @@
           }
         ]
       },
-      "durationMs": 4355,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3149,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -53919,7 +53753,7 @@
           }
         ]
       },
-      "durationMs": 4905,
+      "durationMs": 3284,
       "consoleErrors": [],
       "notFound": []
     },
@@ -54392,7 +54226,7 @@
           }
         ]
       },
-      "durationMs": 4713,
+      "durationMs": 3626,
       "consoleErrors": [],
       "notFound": []
     },
@@ -54865,7 +54699,7 @@
           }
         ]
       },
-      "durationMs": 5462,
+      "durationMs": 3915,
       "consoleErrors": [],
       "notFound": []
     },
@@ -55348,7 +55182,7 @@
           }
         ]
       },
-      "durationMs": 6739,
+      "durationMs": 3643,
       "consoleErrors": [],
       "notFound": []
     },
@@ -55841,7 +55675,7 @@
           }
         ]
       },
-      "durationMs": 5461,
+      "durationMs": 3692,
       "consoleErrors": [],
       "notFound": []
     },
@@ -56334,12 +56168,8 @@
           }
         ]
       },
-      "durationMs": 5856,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 4153,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -56831,7 +56661,7 @@
           }
         ]
       },
-      "durationMs": 5182,
+      "durationMs": 3520,
       "consoleErrors": [],
       "notFound": []
     },
@@ -57324,7 +57154,7 @@
           }
         ]
       },
-      "durationMs": 6423,
+      "durationMs": 2338,
       "consoleErrors": [],
       "notFound": []
     },
@@ -57817,10 +57647,8 @@
           }
         ]
       },
-      "durationMs": 7631,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3470,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -58312,10 +58140,8 @@
           }
         ]
       },
-      "durationMs": 5609,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3421,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -58807,7 +58633,7 @@
           }
         ]
       },
-      "durationMs": 4516,
+      "durationMs": 3101,
       "consoleErrors": [],
       "notFound": []
     },
@@ -59300,7 +59126,7 @@
           }
         ]
       },
-      "durationMs": 5195,
+      "durationMs": 3330,
       "consoleErrors": [],
       "notFound": []
     },
@@ -59793,7 +59619,7 @@
           }
         ]
       },
-      "durationMs": 5188,
+      "durationMs": 2712,
       "consoleErrors": [],
       "notFound": []
     },
@@ -60286,10 +60112,8 @@
           }
         ]
       },
-      "durationMs": 5766,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
-      ],
+      "durationMs": 3480,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -60781,7 +60605,7 @@
           }
         ]
       },
-      "durationMs": 6970,
+      "durationMs": 4126,
       "consoleErrors": [],
       "notFound": []
     },
@@ -61274,7 +61098,7 @@
           }
         ]
       },
-      "durationMs": 5508,
+      "durationMs": 4097,
       "consoleErrors": [],
       "notFound": []
     },
@@ -61767,7 +61591,7 @@
           }
         ]
       },
-      "durationMs": 5289,
+      "durationMs": 2837,
       "consoleErrors": [],
       "notFound": []
     },
@@ -62264,7 +62088,7 @@
           }
         ]
       },
-      "durationMs": 5716,
+      "durationMs": 3775,
       "consoleErrors": [],
       "notFound": []
     },
@@ -62761,7 +62585,7 @@
           }
         ]
       },
-      "durationMs": 5423,
+      "durationMs": 3839,
       "consoleErrors": [],
       "notFound": []
     },
@@ -63258,12 +63082,8 @@
           }
         ]
       },
-      "durationMs": 7369,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "durationMs": 3892,
+      "consoleErrors": [],
       "notFound": []
     }
   ]

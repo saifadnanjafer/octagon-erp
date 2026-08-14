@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-14T10:31:56.656Z",
-  "startedAt": "2026-08-14T10:31:50.731Z",
+  "generatedAt": "2026-08-14T17:24:43.225Z",
+  "startedAt": "2026-08-14T17:24:37.345Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -18,7 +18,7 @@
       "rendererType": "view",
       "rendererSource": "views/account_mapping.html",
       "requiredPermission": "account_mapping",
-      "durationMs": 1098,
+      "durationMs": 1740,
       "error": null,
       "activated": true,
       "observation": {
@@ -70,7 +70,7 @@
       "rendererType": "view",
       "rendererSource": "views/admin_panel.html",
       "requiredPermission": "admin_panel",
-      "durationMs": 1107,
+      "durationMs": 1824,
       "error": null,
       "activated": true,
       "observation": {
@@ -169,7 +169,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_assistant",
-      "durationMs": 5968,
+      "durationMs": 16269,
       "error": null,
       "activated": true,
       "observation": {
@@ -220,7 +220,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_context_sources",
-      "durationMs": 3371,
+      "durationMs": 7555,
       "error": null,
       "activated": true,
       "observation": {
@@ -270,7 +270,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_factory.html",
       "requiredPermission": "ai_factory",
-      "durationMs": 3155,
+      "durationMs": 835,
       "error": null,
       "activated": true,
       "observation": {
@@ -308,7 +308,9 @@
         "arabicChars": 266,
         "latinChars": 20
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
       "pageErrors": [],
       "failedRequests": []
     },
@@ -321,7 +323,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_overview",
-      "durationMs": 3298,
+      "durationMs": 5419,
       "error": null,
       "activated": true,
       "observation": {
@@ -372,7 +374,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_policy_registry",
-      "durationMs": 3559,
+      "durationMs": 7624,
       "error": null,
       "activated": true,
       "observation": {
@@ -423,7 +425,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_prompt_templates",
-      "durationMs": 3308,
+      "durationMs": 8609,
       "error": null,
       "activated": true,
       "observation": {
@@ -473,7 +475,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_proposal_inbox",
-      "durationMs": 3122,
+      "durationMs": 8374,
       "error": null,
       "activated": true,
       "observation": {
@@ -526,7 +528,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_queue.html",
       "requiredPermission": "ai_queue",
-      "durationMs": 2941,
+      "durationMs": 8096,
       "error": null,
       "activated": true,
       "observation": {
@@ -577,7 +579,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_run_history",
-      "durationMs": 3101,
+      "durationMs": 7368,
       "error": null,
       "activated": true,
       "observation": {
@@ -628,7 +630,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_status.html",
       "requiredPermission": "ai_status",
-      "durationMs": 2898,
+      "durationMs": 947,
       "error": null,
       "activated": true,
       "observation": {
@@ -639,7 +641,7 @@
           "🛡️\nحالة الذكاء الصناعي"
         ],
         "title": "🛡️\nحالة الذكاء الصناعي",
-        "textLength": 3678,
+        "textLength": 3699,
         "controlCount": 5,
         "controlLabels": [
           "🧪 اختبار المزوّد",
@@ -670,8 +672,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": true,
-        "arabicChars": 807,
-        "latinChars": 2139
+        "arabicChars": 801,
+        "latinChars": 2164
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -686,7 +688,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_tools.html",
       "requiredPermission": "ai_tools",
-      "durationMs": 3413,
+      "durationMs": 8006,
       "error": null,
       "activated": true,
       "observation": {
@@ -737,7 +739,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "alert_board",
-      "durationMs": 3395,
+      "durationMs": 7732,
       "error": null,
       "activated": true,
       "observation": {
@@ -789,7 +791,7 @@
       "rendererType": "view",
       "rendererSource": "views/analytics.html",
       "requiredPermission": "analytics",
-      "durationMs": 3311,
+      "durationMs": 8522,
       "error": null,
       "activated": true,
       "observation": {
@@ -893,7 +895,7 @@
       "rendererType": "view",
       "rendererSource": "views/appointments.html",
       "requiredPermission": "appointments",
-      "durationMs": 3580,
+      "durationMs": 783,
       "error": null,
       "activated": true,
       "observation": {
@@ -954,7 +956,7 @@
       "rendererType": "view",
       "rendererSource": "views/approvals.html",
       "requiredPermission": "approvals",
-      "durationMs": 4085,
+      "durationMs": 6711,
       "error": null,
       "activated": true,
       "observation": {
@@ -1007,7 +1009,7 @@
       "rendererType": "view",
       "rendererSource": "views/ar_ap.html",
       "requiredPermission": "ar_ap",
-      "durationMs": 3945,
+      "durationMs": 8765,
       "error": null,
       "activated": true,
       "observation": {
@@ -1071,7 +1073,7 @@
       "rendererType": "view",
       "rendererSource": "views/assets.html",
       "requiredPermission": "assets",
-      "durationMs": 3532,
+      "durationMs": 8579,
       "error": null,
       "activated": true,
       "observation": {
@@ -1126,7 +1128,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "attribution_insights",
-      "durationMs": 3430,
+      "durationMs": 6959,
       "error": null,
       "activated": true,
       "observation": {
@@ -1176,7 +1178,7 @@
       "rendererType": "view",
       "rendererSource": "views/automation.html",
       "requiredPermission": "automation",
-      "durationMs": 3283,
+      "durationMs": 8384,
       "error": null,
       "activated": true,
       "observation": {
@@ -1243,7 +1245,7 @@
       "rendererType": "view",
       "rendererSource": "views/banking.html",
       "requiredPermission": "banking",
-      "durationMs": 3608,
+      "durationMs": 8085,
       "error": null,
       "activated": true,
       "observation": {
@@ -1309,7 +1311,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "billing_simulator",
-      "durationMs": 4146,
+      "durationMs": 8345,
       "error": null,
       "activated": true,
       "observation": {
@@ -1360,7 +1362,7 @@
       "rendererType": "view",
       "rendererSource": "views/budgeting.html",
       "requiredPermission": "budgeting",
-      "durationMs": 3901,
+      "durationMs": 8420,
       "error": null,
       "activated": true,
       "observation": {
@@ -1413,7 +1415,7 @@
       "rendererType": "view",
       "rendererSource": "views/calendar.html",
       "requiredPermission": "calendar",
-      "durationMs": 3742,
+      "durationMs": 8937,
       "error": null,
       "activated": true,
       "observation": {
@@ -1501,7 +1503,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/jarvis-brain.js",
       "requiredPermission": "campaigns",
-      "durationMs": 3919,
+      "durationMs": 9269,
       "error": null,
       "activated": true,
       "observation": {
@@ -1553,7 +1555,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_console.html",
       "requiredPermission": "canonical_console",
-      "durationMs": 3857,
+      "durationMs": 8934,
       "error": null,
       "activated": true,
       "observation": {
@@ -1611,7 +1613,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_inventory.html",
       "requiredPermission": "canonical_inventory",
-      "durationMs": 4098,
+      "durationMs": 10603,
       "error": null,
       "activated": true,
       "observation": {
@@ -1668,7 +1670,7 @@
       "rendererType": "view",
       "rendererSource": "views/cashbox.html",
       "requiredPermission": "cashbox",
-      "durationMs": 5029,
+      "durationMs": 12594,
       "error": null,
       "activated": true,
       "observation": {
@@ -1722,7 +1724,7 @@
       "rendererType": "view",
       "rendererSource": "views/clinic.html",
       "requiredPermission": "clinic",
-      "durationMs": 4396,
+      "durationMs": 12680,
       "error": null,
       "activated": true,
       "observation": {
@@ -1779,7 +1781,7 @@
       "rendererType": "view",
       "rendererSource": "views/command_center.html",
       "requiredPermission": "command_center",
-      "durationMs": 4658,
+      "durationMs": 1018,
       "error": null,
       "activated": true,
       "observation": {
@@ -1888,7 +1890,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "commercial_plans",
-      "durationMs": 4688,
+      "durationMs": 12575,
       "error": null,
       "activated": true,
       "observation": {
@@ -1939,7 +1941,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "competency_profiles",
-      "durationMs": 4752,
+      "durationMs": 12339,
       "error": null,
       "activated": true,
       "observation": {
@@ -1989,7 +1991,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "configuration_profiles",
-      "durationMs": 4334,
+      "durationMs": 11309,
       "error": null,
       "activated": true,
       "observation": {
@@ -2042,7 +2044,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "conflict_resolution",
-      "durationMs": 4220,
+      "durationMs": 12234,
       "error": null,
       "activated": true,
       "observation": {
@@ -2095,7 +2097,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidated_reports.html",
       "requiredPermission": "consolidated_reports",
-      "durationMs": 3535,
+      "durationMs": 10403,
       "error": null,
       "activated": true,
       "observation": {
@@ -2146,7 +2148,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_groups.html",
       "requiredPermission": "consolidation_groups",
-      "durationMs": 4149,
+      "durationMs": 11386,
       "error": null,
       "activated": true,
       "observation": {
@@ -2199,7 +2201,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_lineage.html",
       "requiredPermission": "consolidation_lineage",
-      "durationMs": 4298,
+      "durationMs": 10992,
       "error": null,
       "activated": true,
       "observation": {
@@ -2250,7 +2252,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_runs.html",
       "requiredPermission": "consolidation_runs",
-      "durationMs": 3991,
+      "durationMs": 10800,
       "error": null,
       "activated": true,
       "observation": {
@@ -2305,7 +2307,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_approvals",
-      "durationMs": 4286,
+      "durationMs": 10569,
       "error": null,
       "activated": true,
       "observation": {
@@ -2356,7 +2358,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_calendar",
-      "durationMs": 3589,
+      "durationMs": 10723,
       "error": null,
       "activated": true,
       "observation": {
@@ -2407,7 +2409,7 @@
       "rendererType": "view",
       "rendererSource": "views/contracts.html",
       "requiredPermission": "contracts",
-      "durationMs": 4574,
+      "durationMs": 12838,
       "error": null,
       "activated": true,
       "observation": {
@@ -2470,7 +2472,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "count_session",
-      "durationMs": 4555,
+      "durationMs": 11712,
       "error": null,
       "activated": true,
       "observation": {
@@ -2481,11 +2483,9 @@
           "جلسة الجرد"
         ],
         "title": "جلسة الجرد",
-        "textLength": 322,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 231,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -2504,20 +2504,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 133,
-        "latinChars": 111
+        "arabicChars": 79,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/count-sessions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "crossdock_workspace",
@@ -2528,7 +2520,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "crossdock_workspace",
-      "durationMs": 4412,
+      "durationMs": 11043,
       "error": null,
       "activated": true,
       "observation": {
@@ -2539,11 +2531,9 @@
           "مساحة العبور المباشر"
         ],
         "title": "مساحة العبور المباشر",
-        "textLength": 425,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 334,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -2562,26 +2552,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 220,
-        "latinChars": 111
+        "arabicChars": 166,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/crossdock-matches",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/dock-appointments",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "customer_portal",
@@ -2592,7 +2568,7 @@
       "rendererType": "view",
       "rendererSource": "views/customer_portal.html",
       "requiredPermission": "customer_portal",
-      "durationMs": 4291,
+      "durationMs": 804,
       "error": null,
       "activated": true,
       "observation": {
@@ -2646,7 +2622,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers.html",
       "requiredPermission": "customers",
-      "durationMs": 4118,
+      "durationMs": 11641,
       "error": null,
       "activated": true,
       "observation": {
@@ -2700,7 +2676,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "cycle_count_plans",
-      "durationMs": 4635,
+      "durationMs": 12996,
       "error": null,
       "activated": true,
       "observation": {
@@ -2713,11 +2689,10 @@
           "خطة جرد جديدة"
         ],
         "title": "خطط الجرد الدوري",
-        "textLength": 568,
-        "controlCount": 2,
+        "textLength": 477,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء خطة جرد",
-          "إغلاق"
+          "إنشاء خطة جرد"
         ],
         "inputCount": 10,
         "selectCount": 4,
@@ -2737,20 +2712,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 313,
-        "latinChars": 122
+        "arabicChars": 259,
+        "latinChars": 101
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/count-plans",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "data_quality",
@@ -2761,7 +2728,7 @@
       "rendererType": "view",
       "rendererSource": "views/data_quality.html",
       "requiredPermission": "data_quality",
-      "durationMs": 4972,
+      "durationMs": 12219,
       "error": null,
       "activated": true,
       "observation": {
@@ -2778,7 +2745,7 @@
           "Phase 7A deployment blockers"
         ],
         "title": "جودة البيانات والترحيل",
-        "textLength": 2512,
+        "textLength": 2410,
         "controlCount": 8,
         "controlLabels": [
           "سحب الإشارات الحية",
@@ -2795,7 +2762,7 @@
         "searchInputCount": 0,
         "dateInputCount": 1,
         "tableCount": 1,
-        "tableRows": 6,
+        "tableRows": 5,
         "tableColumns": 7,
         "listItems": 0,
         "stateSignals": {
@@ -2809,7 +2776,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1023,
-        "latinChars": 961
+        "latinChars": 890
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2824,7 +2791,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 4344,
+      "durationMs": 11312,
       "error": null,
       "activated": true,
       "observation": {
@@ -2876,7 +2843,7 @@
       "rendererType": "view",
       "rendererSource": "views/deploy_ready.html",
       "requiredPermission": "deploy_ready",
-      "durationMs": 4831,
+      "durationMs": 12185,
       "error": null,
       "activated": true,
       "observation": {
@@ -2892,7 +2859,7 @@
           "Training checklist"
         ],
         "title": "🚀\nجاهزية التشغيل",
-        "textLength": 4557,
+        "textLength": 4566,
         "controlCount": 18,
         "controlLabels": [
           "💾 نسخة احتياطية الآن",
@@ -2921,8 +2888,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1142,
-        "latinChars": 2235
+        "arabicChars": 1143,
+        "latinChars": 2237
       },
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 400 (Bad Request)"
@@ -2945,7 +2912,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "development_plans",
-      "durationMs": 3743,
+      "durationMs": 10983,
       "error": null,
       "activated": true,
       "observation": {
@@ -2998,7 +2965,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_alerts",
-      "durationMs": 4455,
+      "durationMs": 11777,
       "error": null,
       "activated": true,
       "observation": {
@@ -3051,7 +3018,7 @@
       "rendererType": "view",
       "rendererSource": "views/device_center.html",
       "requiredPermission": "device_center",
-      "durationMs": 4570,
+      "durationMs": 11480,
       "error": null,
       "activated": true,
       "observation": {
@@ -3114,7 +3081,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_command_center",
-      "durationMs": 4602,
+      "durationMs": 12778,
       "error": null,
       "activated": true,
       "observation": {
@@ -3167,7 +3134,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_detail",
-      "durationMs": 4552,
+      "durationMs": 11614,
       "error": null,
       "activated": true,
       "observation": {
@@ -3220,7 +3187,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_enrollment",
-      "durationMs": 3958,
+      "durationMs": 10680,
       "error": null,
       "activated": true,
       "observation": {
@@ -3273,7 +3240,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "device_health_board",
-      "durationMs": 4376,
+      "durationMs": 12225,
       "error": null,
       "activated": true,
       "observation": {
@@ -3325,7 +3292,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_health_center",
-      "durationMs": 4925,
+      "durationMs": 12638,
       "error": null,
       "activated": true,
       "observation": {
@@ -3378,7 +3345,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_registry",
-      "durationMs": 3931,
+      "durationMs": 10828,
       "error": null,
       "activated": true,
       "observation": {
@@ -3431,7 +3398,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_checkin",
-      "durationMs": 4747,
+      "durationMs": 11791,
       "error": null,
       "activated": true,
       "observation": {
@@ -3442,11 +3409,9 @@
           "تسجيل دخول الرصيف"
         ],
         "title": "تسجيل دخول الرصيف",
-        "textLength": 317,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 226,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -3465,26 +3430,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 131,
-        "latinChars": 111
+        "arabicChars": 77,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/dock-appointments",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/docks",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "dock_schedule",
@@ -3495,7 +3446,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_schedule",
-      "durationMs": 4855,
+      "durationMs": 11484,
       "error": null,
       "activated": true,
       "observation": {
@@ -3508,11 +3459,10 @@
           "جدولة موعد"
         ],
         "title": "جدول الأرصفة",
-        "textLength": 707,
-        "controlCount": 2,
+        "textLength": 616,
+        "controlCount": 1,
         "controlLabels": [
-          "جدولة الموعد",
-          "إغلاق"
+          "جدولة الموعد"
         ],
         "inputCount": 11,
         "selectCount": 3,
@@ -3532,26 +3482,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 400,
-        "latinChars": 124
+        "arabicChars": 346,
+        "latinChars": 95
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/docks",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/dock-appointments",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "documents",
@@ -3562,7 +3498,7 @@
       "rendererType": "view",
       "rendererSource": "views/documents.html",
       "requiredPermission": "documents",
-      "durationMs": 4846,
+      "durationMs": 830,
       "error": null,
       "activated": true,
       "observation": {
@@ -3616,7 +3552,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "downtime_board",
-      "durationMs": 5102,
+      "durationMs": 13061,
       "error": null,
       "activated": true,
       "observation": {
@@ -3629,11 +3565,9 @@
           "سجل التوقف"
         ],
         "title": "لوحة التوقف",
-        "textLength": 549,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 458,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 2,
         "selectCount": 2,
         "searchInputCount": 0,
@@ -3652,26 +3586,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 307,
-        "latinChars": 111
+        "arabicChars": 253,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/downtime",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/shopfloor-sessions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "eliminations",
@@ -3682,7 +3602,7 @@
       "rendererType": "view",
       "rendererSource": "views/eliminations.html",
       "requiredPermission": "eliminations",
-      "durationMs": 4468,
+      "durationMs": 11226,
       "error": null,
       "activated": true,
       "observation": {
@@ -3734,7 +3654,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "employee_kiosk",
-      "durationMs": 4805,
+      "durationMs": 12140,
       "error": null,
       "activated": true,
       "observation": {
@@ -3787,7 +3707,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_mobile.html",
       "requiredPermission": "employee_mobile",
-      "durationMs": 4945,
+      "durationMs": 831,
       "error": null,
       "activated": true,
       "observation": {
@@ -3838,7 +3758,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_ui.html",
       "requiredPermission": "employee_ui",
-      "durationMs": 4446,
+      "durationMs": 11638,
       "error": null,
       "activated": true,
       "observation": {
@@ -3886,7 +3806,7 @@
       "rendererType": "view",
       "rendererSource": "views/employees.html",
       "requiredPermission": "employees",
-      "durationMs": 4807,
+      "durationMs": 12127,
       "error": null,
       "activated": true,
       "observation": {
@@ -3939,7 +3859,7 @@
       "rendererType": "view",
       "rendererSource": "views/entitlements.html",
       "requiredPermission": "entitlements",
-      "durationMs": 4683,
+      "durationMs": 12816,
       "error": null,
       "activated": true,
       "observation": {
@@ -3974,8 +3894,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 63,
-        "latinChars": 1583
+        "arabicChars": 57,
+        "latinChars": 1589
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3990,7 +3910,7 @@
       "rendererType": "view",
       "rendererSource": "views/equipment.html",
       "requiredPermission": "equipment",
-      "durationMs": 5229,
+      "durationMs": 14810,
       "error": null,
       "activated": true,
       "observation": {
@@ -4052,7 +3972,7 @@
       "rendererType": "view",
       "rendererSource": "views/esign.html",
       "requiredPermission": "esign",
-      "durationMs": 3691,
+      "durationMs": 10326,
       "error": null,
       "activated": true,
       "observation": {
@@ -4113,7 +4033,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_checkin",
-      "durationMs": 3709,
+      "durationMs": 10670,
       "error": null,
       "activated": true,
       "observation": {
@@ -4164,7 +4084,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_planner",
-      "durationMs": 3872,
+      "durationMs": 9361,
       "error": null,
       "activated": true,
       "observation": {
@@ -4215,7 +4135,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_registrations",
-      "durationMs": 3544,
+      "durationMs": 9090,
       "error": null,
       "activated": true,
       "observation": {
@@ -4266,7 +4186,7 @@
       "rendererType": "view",
       "rendererSource": "views/events.html",
       "requiredPermission": "events",
-      "durationMs": 3821,
+      "durationMs": 10265,
       "error": null,
       "activated": true,
       "observation": {
@@ -4328,7 +4248,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "events_overview",
-      "durationMs": 3285,
+      "durationMs": 10829,
       "error": null,
       "activated": true,
       "observation": {
@@ -4379,7 +4299,7 @@
       "rendererType": "view",
       "rendererSource": "views/expenses.html",
       "requiredPermission": "expenses",
-      "durationMs": 3621,
+      "durationMs": 10400,
       "error": null,
       "activated": true,
       "observation": {
@@ -4435,7 +4355,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "expiration_queue",
-      "durationMs": 3648,
+      "durationMs": 11332,
       "error": null,
       "activated": true,
       "observation": {
@@ -4446,11 +4366,9 @@
           "طابور انتهاء الصلاحية"
         ],
         "title": "طابور انتهاء الصلاحية",
-        "textLength": 537,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 446,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 5,
         "selectCount": 3,
         "searchInputCount": 0,
@@ -4469,20 +4387,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 293,
-        "latinChars": 123
+        "arabicChars": 239,
+        "latinChars": 102
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/expiration-queue",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "extension_installations",
@@ -4493,7 +4403,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_installations",
-      "durationMs": 3990,
+      "durationMs": 9480,
       "error": null,
       "activated": true,
       "observation": {
@@ -4543,7 +4453,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_marketplace",
-      "durationMs": 4030,
+      "durationMs": 9472,
       "error": null,
       "activated": true,
       "observation": {
@@ -4594,7 +4504,7 @@
       "rendererType": "view",
       "rendererSource": "views/field_service.html",
       "requiredPermission": "field_service",
-      "durationMs": 4404,
+      "durationMs": 9648,
       "error": null,
       "activated": true,
       "observation": {
@@ -4647,7 +4557,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance.html",
       "requiredPermission": "finance",
-      "durationMs": 4291,
+      "durationMs": 11221,
       "error": null,
       "activated": true,
       "observation": {
@@ -4657,7 +4567,6 @@
         "headings": [
           "💹\nالداشبورد المالي",
           "Phase 7H Finance Close and Planning",
-          "المالية V6",
           "آخر الحركات",
           "الشجرة الحسابية المختصرة",
           "أرصدة الأشخاص",
@@ -4665,7 +4574,7 @@
           "Phase 7A period lock foundation"
         ],
         "title": "💹\nالداشبورد المالي",
-        "textLength": 2995,
+        "textLength": 2777,
         "controlCount": 14,
         "controlLabels": [
           "إضافة أمثلة تجريبية",
@@ -4701,7 +4610,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1250,
+        "arabicChars": 1092,
         "latinChars": 889
       },
       "consoleErrors": [],
@@ -4717,7 +4626,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance_installments.html",
       "requiredPermission": "finance_installments",
-      "durationMs": 3962,
+      "durationMs": 806,
       "error": null,
       "activated": true,
       "observation": {
@@ -4757,94 +4666,10 @@
         "latinChars": 0
       },
       "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
       ],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "financing_facilities",
@@ -4855,7 +4680,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 3990,
+      "durationMs": 10641,
       "error": null,
       "activated": true,
       "observation": {
@@ -4895,9 +4720,53 @@
         "arabicChars": 206,
         "latinChars": 190
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        }
+      ]
     },
     {
       "id": "firmware_catalogue",
@@ -4908,7 +4777,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "firmware_catalogue",
-      "durationMs": 4165,
+      "durationMs": 10938,
       "error": null,
       "activated": true,
       "observation": {
@@ -4961,7 +4830,7 @@
       "rendererType": "view",
       "rendererSource": "views/fleet.html",
       "requiredPermission": "fleet",
-      "durationMs": 4258,
+      "durationMs": 10894,
       "error": null,
       "activated": true,
       "observation": {
@@ -5018,7 +4887,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_device_mapping",
-      "durationMs": 4551,
+      "durationMs": 10415,
       "error": null,
       "activated": true,
       "observation": {
@@ -5071,7 +4940,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_live_map_simulator",
-      "durationMs": 3848,
+      "durationMs": 9244,
       "error": null,
       "activated": true,
       "observation": {
@@ -5124,7 +4993,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "fleet_operations_board",
-      "durationMs": 4690,
+      "durationMs": 9983,
       "error": null,
       "activated": true,
       "observation": {
@@ -5176,7 +5045,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_accuracy.html",
       "requiredPermission": "forecast_accuracy",
-      "durationMs": 4394,
+      "durationMs": 10677,
       "error": null,
       "activated": true,
       "observation": {
@@ -5187,7 +5056,7 @@
           "دقة التنبؤ"
         ],
         "title": "دقة التنبؤ",
-        "textLength": 435,
+        "textLength": 421,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -5212,7 +5081,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 190,
+        "arabicChars": 179,
         "latinChars": 148
       },
       "consoleErrors": [],
@@ -5228,7 +5097,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_overrides.html",
       "requiredPermission": "forecast_overrides",
-      "durationMs": 4123,
+      "durationMs": 10708,
       "error": null,
       "activated": true,
       "observation": {
@@ -5281,7 +5150,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_versions.html",
       "requiredPermission": "forecast_versions",
-      "durationMs": 3766,
+      "durationMs": 10602,
       "error": null,
       "activated": true,
       "observation": {
@@ -5334,7 +5203,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fuel_telemetry",
-      "durationMs": 4272,
+      "durationMs": 11108,
       "error": null,
       "activated": true,
       "observation": {
@@ -5387,7 +5256,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "gateway_management",
-      "durationMs": 4452,
+      "durationMs": 10984,
       "error": null,
       "activated": true,
       "observation": {
@@ -5440,7 +5309,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "geofence_events",
-      "durationMs": 3999,
+      "durationMs": 10202,
       "error": null,
       "activated": true,
       "observation": {
@@ -5493,7 +5362,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "geofence_management",
-      "durationMs": 4077,
+      "durationMs": 9643,
       "error": null,
       "activated": true,
       "observation": {
@@ -5546,7 +5415,7 @@
       "rendererType": "view",
       "rendererSource": "views/help_manual.html",
       "requiredPermission": "help_manual",
-      "durationMs": 4046,
+      "durationMs": 9958,
       "error": null,
       "activated": true,
       "observation": {
@@ -5613,7 +5482,7 @@
       "rendererType": "view",
       "rendererSource": "views/helpdesk.html",
       "requiredPermission": "helpdesk",
-      "durationMs": 3732,
+      "durationMs": 9939,
       "error": null,
       "activated": true,
       "observation": {
@@ -5667,7 +5536,7 @@
       "rendererType": "view",
       "rendererSource": "views/home.html",
       "requiredPermission": "home",
-      "durationMs": 4002,
+      "durationMs": 10876,
       "error": null,
       "activated": true,
       "observation": {
@@ -5675,9 +5544,9 @@
         "hostId": "pageHome",
         "hostDataPage": null,
         "headings": [
-          "☀️ مساء الخير، النظام"
+          "🌙 مساء الخير، النظام"
         ],
-        "title": "☀️ مساء الخير، النظام",
+        "title": "🌙 مساء الخير، النظام",
         "textLength": 655,
         "controlCount": 9,
         "controlLabels": [
@@ -5735,7 +5604,7 @@
       "rendererType": "view",
       "rendererSource": "views/hotel.html",
       "requiredPermission": "hotel",
-      "durationMs": 4591,
+      "durationMs": 10981,
       "error": null,
       "activated": true,
       "observation": {
@@ -5789,7 +5658,7 @@
       "rendererType": "view",
       "rendererSource": "views/import.html",
       "requiredPermission": "import",
-      "durationMs": 4093,
+      "durationMs": 11016,
       "error": null,
       "activated": true,
       "observation": {
@@ -5843,7 +5712,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/import-wizard.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 4304,
+      "durationMs": 12835,
       "error": null,
       "activated": true,
       "observation": {
@@ -5900,7 +5769,7 @@
       "rendererType": "view",
       "rendererSource": "views/income.html",
       "requiredPermission": "income",
-      "durationMs": 4070,
+      "durationMs": 10640,
       "error": null,
       "activated": true,
       "observation": {
@@ -5956,7 +5825,7 @@
       "rendererType": "view",
       "rendererSource": "views/integration_hub.html",
       "requiredPermission": "integration_hub",
-      "durationMs": 4311,
+      "durationMs": 14190,
       "error": null,
       "activated": true,
       "observation": {
@@ -5965,7 +5834,6 @@
         "hostDataPage": null,
         "headings": [
           "مركز التكامل",
-          "Collaboration, notifications, and scheduled reporting",
           "مركز التكاملات",
           "موصلات المتاجر والمدفوعات (أساس مرحلي)",
           "موصلات المتاجر الإلكترونية",
@@ -5974,17 +5842,16 @@
           "مهام المزامنة المرحلية"
         ],
         "title": "مركز التكامل",
-        "textLength": 3301,
-        "controlCount": 15,
+        "textLength": 3059,
+        "controlCount": 14,
         "controlLabels": [
-          "Refresh",
           "🔌 اختبار الاتصال",
           "تجهيز اتصال",
           "مزامنة مرحلية"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 2,
         "tableRows": 5,
@@ -6001,14 +5868,9 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 2020,
-        "latinChars": 607
+        "latinChars": 404
       },
       "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
-        "Failed to load resource: the server responded with a status of 404 (Not Found)",
         "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
       "pageErrors": [],
@@ -6016,31 +5878,6 @@
         {
           "status": 404,
           "path": "/api/v1/platform/notifications",
-          "method": "GET"
-        },
-        {
-          "status": 404,
-          "path": "/api/v1/platform/activities",
-          "method": "GET"
-        },
-        {
-          "status": 404,
-          "path": "/api/v1/platform/notification-health",
-          "method": "GET"
-        },
-        {
-          "status": 404,
-          "path": "/api/v1/platform/saved-views",
-          "method": "GET"
-        },
-        {
-          "status": 404,
-          "path": "/api/v1/platform/scheduled-reports",
-          "method": "GET"
-        },
-        {
-          "status": 404,
-          "path": "/api/v1/platform/job-health",
           "method": "GET"
         }
       ]
@@ -6054,7 +5891,7 @@
       "rendererType": "view",
       "rendererSource": "views/intelligence.html",
       "requiredPermission": "intelligence",
-      "durationMs": 4291,
+      "durationMs": 12865,
       "error": null,
       "activated": true,
       "observation": {
@@ -6187,9 +6024,41 @@
         "arabicChars": 7266,
         "latinChars": 41
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 404,
+          "path": "/api/v1/platform/activities",
+          "method": "GET"
+        },
+        {
+          "status": 404,
+          "path": "/api/v1/platform/notification-health",
+          "method": "GET"
+        },
+        {
+          "status": 404,
+          "path": "/api/v1/platform/saved-views",
+          "method": "GET"
+        },
+        {
+          "status": 404,
+          "path": "/api/v1/platform/job-health",
+          "method": "GET"
+        },
+        {
+          "status": 404,
+          "path": "/api/v1/platform/scheduled-reports",
+          "method": "GET"
+        }
+      ]
     },
     {
       "id": "intercompany_reconciliation",
@@ -6200,7 +6069,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_reconciliation.html",
       "requiredPermission": "intercompany_reconciliation",
-      "durationMs": 4565,
+      "durationMs": 11846,
       "error": null,
       "activated": true,
       "observation": {
@@ -6253,7 +6122,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_transactions.html",
       "requiredPermission": "intercompany_transactions",
-      "durationMs": 4081,
+      "durationMs": 11298,
       "error": null,
       "activated": true,
       "observation": {
@@ -6306,7 +6175,7 @@
       "rendererType": "view",
       "rendererSource": "views/inventory.html",
       "requiredPermission": "inventory",
-      "durationMs": 4247,
+      "durationMs": 13574,
       "error": null,
       "activated": true,
       "observation": {
@@ -6316,39 +6185,22 @@
         "headings": [
           "🧱\nالمخزون والمواد",
           "Phase 7I Advanced Inventory and Supply Chain",
-          "شجرة المواقع",
-          "الأرصدة حسب الموقع",
-          "آخر حركات المخزون"
+          "مواقع التخزين"
         ],
         "title": "🧱\nالمخزون والمواد",
-        "textLength": 1722,
-        "controlCount": 19,
+        "textLength": 2347,
+        "controlCount": 3,
         "controlLabels": [
           "إضافة مادة",
           "Preview reorder suggestions",
-          "المواد والمخزون",
-          "الموردون والكتالوج",
-          "طلبات وأوامر الشراء (RFQ/PO)",
-          "المواقع والتحويلات",
-          "مسح الباركود",
-          "النواقص والحجوزات",
-          "تقييم المخزون",
-          "مقترحات التوريد",
-          "سجل الاستلامات",
-          "إعادة الضبط",
-          "تصدير CSV",
-          "تحديث",
-          "استلام",
-          "صرف",
-          "تحويل",
-          "جرد/تسوية"
+          "تسجيل الحركة"
         ],
-        "inputCount": 3,
-        "selectCount": 2,
-        "searchInputCount": 1,
+        "inputCount": 6,
+        "selectCount": 4,
+        "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 9,
+        "tableCount": 3,
+        "tableRows": 18,
         "tableColumns": 3,
         "listItems": 0,
         "stateSignals": {
@@ -6361,8 +6213,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 586,
-        "latinChars": 787
+        "arabicChars": 942,
+        "latinChars": 935
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6377,7 +6229,7 @@
       "rendererType": "view",
       "rendererSource": "views/kiosk.html",
       "requiredPermission": "kiosk",
-      "durationMs": 4034,
+      "durationMs": 14750,
       "error": null,
       "activated": true,
       "observation": {
@@ -6432,13 +6284,6 @@
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
         "Failed to load resource: the server responded with a status of 400 (Bad Request)"
       ],
       "pageErrors": [],
@@ -6477,41 +6322,6 @@
           "status": 400,
           "path": "/api/collection",
           "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
         }
       ]
     },
@@ -6524,7 +6334,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "kiosk_device_registry",
-      "durationMs": 4014,
+      "durationMs": 12928,
       "error": null,
       "activated": true,
       "observation": {
@@ -6564,9 +6374,53 @@
         "arabicChars": 99,
         "latinChars": 97
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        },
+        {
+          "status": 400,
+          "path": "/api/db",
+          "method": "POST"
+        }
+      ]
     },
     {
       "id": "knowledge",
@@ -6577,7 +6431,7 @@
       "rendererType": "view",
       "rendererSource": "views/knowledge.html",
       "requiredPermission": "knowledge",
-      "durationMs": 4355,
+      "durationMs": 14045,
       "error": null,
       "activated": true,
       "observation": {
@@ -6637,7 +6491,7 @@
       "rendererType": "view",
       "rendererSource": "views/knowledge_base.html",
       "requiredPermission": "knowledge_base",
-      "durationMs": 1330,
+      "durationMs": 965,
       "error": null,
       "activated": true,
       "observation": {
@@ -6853,9 +6707,7 @@
         "arabicChars": 23850,
         "latinChars": 2355
       },
-      "consoleErrors": [
-        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
       "failedRequests": []
     },
@@ -6868,7 +6720,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "learning_and_certifications",
-      "durationMs": 16238,
+      "durationMs": 7289,
       "error": null,
       "activated": true,
       "observation": {
@@ -6919,7 +6771,7 @@
       "rendererType": "view",
       "rendererSource": "views/liquidity_forecast.html",
       "requiredPermission": "liquidity_forecast",
-      "durationMs": 9046,
+      "durationMs": 2831,
       "error": null,
       "activated": true,
       "observation": {
@@ -6971,7 +6823,7 @@
       "rendererType": "view",
       "rendererSource": "views/logistics.html",
       "requiredPermission": "logistics",
-      "durationMs": 8210,
+      "durationMs": 3735,
       "error": null,
       "activated": true,
       "observation": {
@@ -6987,7 +6839,7 @@
           "إضافة سريعة"
         ],
         "title": "اللوجستيات والتوصيل",
-        "textLength": 1353,
+        "textLength": 1352,
         "controlCount": 10,
         "controlLabels": [
           "📊 اللوحة والعمليات",
@@ -7035,7 +6887,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "lot_serial_traceability",
-      "durationMs": 5064,
+      "durationMs": 953,
       "error": null,
       "activated": true,
       "observation": {
@@ -7086,7 +6938,7 @@
       "rendererType": "view",
       "rendererSource": "views/loyalty.html",
       "requiredPermission": "loyalty",
-      "durationMs": 4258,
+      "durationMs": 949,
       "error": null,
       "activated": true,
       "observation": {
@@ -7146,7 +6998,7 @@
       "rendererType": "view",
       "rendererSource": "views/machines.html",
       "requiredPermission": "machines",
-      "durationMs": 4981,
+      "durationMs": 919,
       "error": null,
       "activated": true,
       "observation": {
@@ -7209,7 +7061,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "maintenance_triggers",
-      "durationMs": 3616,
+      "durationMs": 947,
       "error": null,
       "activated": true,
       "observation": {
@@ -7262,7 +7114,7 @@
       "rendererType": "view",
       "rendererSource": "views/marketing.html",
       "requiredPermission": "marketing",
-      "durationMs": 4348,
+      "durationMs": 802,
       "error": null,
       "activated": true,
       "observation": {
@@ -7315,7 +7167,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "marketing_overview",
-      "durationMs": 4422,
+      "durationMs": 829,
       "error": null,
       "activated": true,
       "observation": {
@@ -7365,7 +7217,7 @@
       "rendererType": "view",
       "rendererSource": "views/mismatch_queue.html",
       "requiredPermission": "mismatch_queue",
-      "durationMs": 4120,
+      "durationMs": 799,
       "error": null,
       "activated": true,
       "observation": {
@@ -7417,7 +7269,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-picking.js",
       "requiredPermission": "mobile_picking",
-      "durationMs": 4338,
+      "durationMs": 970,
       "error": null,
       "activated": true,
       "observation": {
@@ -7428,10 +7280,10 @@
           "الالتقاط المتنقل"
         ],
         "title": "الالتقاط المتنقل",
-        "textLength": 348,
+        "textLength": 374,
         "controlCount": 1,
         "controlLabels": [
-          "العودة إلى الطابور"
+          "↻ تحديث الطابور"
         ],
         "inputCount": 1,
         "selectCount": 1,
@@ -7443,28 +7295,20 @@
         "listItems": 7,
         "stateSignals": {
           "loading": false,
-          "empty": false,
-          "error": true,
+          "empty": true,
+          "error": false,
           "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 159,
-        "latinChars": 111
+        "arabicChars": 199,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/pick-tasks",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "mobile_receiving",
@@ -7475,7 +7319,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-receiving.js",
       "requiredPermission": "mobile_receiving",
-      "durationMs": 3733,
+      "durationMs": 835,
       "error": null,
       "activated": true,
       "observation": {
@@ -7525,7 +7369,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps.html",
       "requiredPermission": "mps",
-      "durationMs": 4986,
+      "durationMs": 928,
       "error": null,
       "activated": true,
       "observation": {
@@ -7577,7 +7421,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps_proposals.html",
       "requiredPermission": "mps_proposals",
-      "durationMs": 4918,
+      "durationMs": 816,
       "error": null,
       "activated": true,
       "observation": {
@@ -7630,7 +7474,7 @@
       "rendererType": "view",
       "rendererSource": "views/mrp.html",
       "requiredPermission": "mrp",
-      "durationMs": 4563,
+      "durationMs": 797,
       "error": null,
       "activated": true,
       "observation": {
@@ -7693,7 +7537,7 @@
       "rendererType": "view",
       "rendererSource": "views/multi_entity.html",
       "requiredPermission": "multi_entity",
-      "durationMs": 4962,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -7746,7 +7590,7 @@
       "rendererType": "view",
       "rendererSource": "views/my_work.html",
       "requiredPermission": "my_work",
-      "durationMs": 3914,
+      "durationMs": 832,
       "error": null,
       "activated": true,
       "observation": {
@@ -7757,7 +7601,7 @@
           "✓ My Work"
         ],
         "title": "✓ My Work",
-        "textLength": 737,
+        "textLength": 739,
         "controlCount": 15,
         "controlLabels": [
           "Refresh",
@@ -7795,19 +7639,11 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 21,
-        "latinChars": 565
+        "latinChars": 566
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 404 (Not Found)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 404,
-          "path": "/api/v1/platform/saved-views",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "nl_reports",
@@ -7818,7 +7654,7 @@
       "rendererType": "view",
       "rendererSource": "views/nl_reports.html",
       "requiredPermission": "nl_reports",
-      "durationMs": 4278,
+      "durationMs": 784,
       "error": null,
       "activated": true,
       "observation": {
@@ -7886,7 +7722,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_capability_policies",
-      "durationMs": 3827,
+      "durationMs": 948,
       "error": null,
       "activated": true,
       "observation": {
@@ -7939,7 +7775,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_client_registry",
-      "durationMs": 4052,
+      "durationMs": 802,
       "error": null,
       "activated": true,
       "observation": {
@@ -7992,7 +7828,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_queue",
-      "durationMs": 3939,
+      "durationMs": 830,
       "error": null,
       "activated": true,
       "observation": {
@@ -8045,7 +7881,7 @@
       "rendererType": "view",
       "rendererSource": "views/omni_communications.html",
       "requiredPermission": "omni_communications",
-      "durationMs": 3643,
+      "durationMs": 805,
       "error": null,
       "activated": true,
       "observation": {
@@ -8101,7 +7937,7 @@
       "rendererType": "view",
       "rendererSource": "views/op_packs.html",
       "requiredPermission": "op_packs",
-      "durationMs": 3967,
+      "durationMs": 846,
       "error": null,
       "activated": true,
       "observation": {
@@ -8168,7 +8004,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "operational_performance",
-      "durationMs": 4582,
+      "durationMs": 930,
       "error": null,
       "activated": true,
       "observation": {
@@ -8179,11 +8015,9 @@
           "لوحة الأداء التشغيلي"
         ],
         "title": "لوحة الأداء التشغيلي",
-        "textLength": 365,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 332,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -8202,26 +8036,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 170,
-        "latinChars": 111
+        "arabicChars": 165,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/work-center-performance",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/shopfloor-sessions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "parties",
@@ -8232,7 +8052,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers_and_suppliers.html",
       "requiredPermission": "parties",
-      "durationMs": 4015,
+      "durationMs": 789,
       "error": null,
       "activated": true,
       "observation": {
@@ -8283,7 +8103,7 @@
       "rendererType": "view",
       "rendererSource": "views/payment_funding_proposals.html",
       "requiredPermission": "payment_funding_proposals",
-      "durationMs": 3904,
+      "durationMs": 810,
       "error": null,
       "activated": true,
       "observation": {
@@ -8336,7 +8156,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "people_development_overview",
-      "durationMs": 4264,
+      "durationMs": 824,
       "error": null,
       "activated": true,
       "observation": {
@@ -8386,7 +8206,7 @@
       "rendererType": "view",
       "rendererSource": "views/people_ops.html",
       "requiredPermission": "people_ops",
-      "durationMs": 3984,
+      "durationMs": 810,
       "error": null,
       "activated": true,
       "observation": {
@@ -8443,7 +8263,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "person_skill_evidence",
-      "durationMs": 4236,
+      "durationMs": 832,
       "error": null,
       "activated": true,
       "observation": {
@@ -8494,7 +8314,7 @@
       "rendererType": "view",
       "rendererSource": "views/pharmacy.html",
       "requiredPermission": "pharmacy",
-      "durationMs": 4580,
+      "durationMs": 803,
       "error": null,
       "activated": true,
       "observation": {
@@ -8550,7 +8370,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-pick-task-queue-workspace.js",
       "requiredPermission": "pick_task_queue",
-      "durationMs": 5011,
+      "durationMs": 936,
       "error": null,
       "activated": true,
       "observation": {
@@ -8559,13 +8379,14 @@
         "hostDataPage": null,
         "headings": [
           "طابور مهام الالتقاط",
-          "إرسال مهام الالتقاط"
+          "إرسال مهام الالتقاط",
+          "تفاصيل الإرسال"
         ],
         "title": "طابور مهام الالتقاط",
-        "textLength": 520,
-        "controlCount": 1,
+        "textLength": 735,
+        "controlCount": 3,
         "controlLabels": [
-          "إغلاق"
+          "فتح الالتقاط المتنقل"
         ],
         "inputCount": 6,
         "selectCount": 6,
@@ -8577,7 +8398,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -8585,20 +8406,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 270,
-        "latinChars": 134
+        "arabicChars": 280,
+        "latinChars": 287
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/pick-tasks",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "planning_exceptions",
@@ -8609,7 +8422,7 @@
       "rendererType": "view",
       "rendererSource": "views/planning_exceptions.html",
       "requiredPermission": "planning_exceptions",
-      "durationMs": 4959,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -8660,7 +8473,7 @@
       "rendererType": "view",
       "rendererSource": "views/pos.html",
       "requiredPermission": "pos",
-      "durationMs": 4213,
+      "durationMs": 926,
       "error": null,
       "activated": true,
       "observation": {
@@ -8721,7 +8534,7 @@
       "rendererType": "view",
       "rendererSource": "views/procurement.html",
       "requiredPermission": "procurement",
-      "durationMs": 3806,
+      "durationMs": 15452,
       "error": null,
       "activated": true,
       "observation": {
@@ -8729,11 +8542,10 @@
         "hostId": "pageProcurement",
         "hostDataPage": null,
         "headings": [
-          "المشتريات",
-          "دورة الشراء القانونية"
+          "المشتريات"
         ],
         "title": "المشتريات",
-        "textLength": 616,
+        "textLength": 350,
         "controlCount": 13,
         "controlLabels": [
           "لوحة المشتريات",
@@ -8754,9 +8566,9 @@
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 4,
-        "tableColumns": 3,
+        "tableCount": 0,
+        "tableRows": 0,
+        "tableColumns": 0,
         "listItems": 0,
         "stateSignals": {
           "loading": false,
@@ -8768,8 +8580,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 422,
-        "latinChars": 72
+        "arabicChars": 266,
+        "latinChars": 31
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8784,7 +8596,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_issue_return",
-      "durationMs": 4259,
+      "durationMs": 15789,
       "error": null,
       "activated": true,
       "observation": {
@@ -8795,11 +8607,9 @@
           "صرف وإرجاع الإنتاج"
         ],
         "title": "صرف وإرجاع الإنتاج",
-        "textLength": 346,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 255,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -8818,20 +8628,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 154,
-        "latinChars": 111
+        "arabicChars": 100,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/material-flow",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "production_large_screen",
@@ -8842,7 +8644,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "production_large_screen",
-      "durationMs": 5004,
+      "durationMs": 15616,
       "error": null,
       "activated": true,
       "observation": {
@@ -8894,7 +8696,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_material_requests",
-      "durationMs": 4334,
+      "durationMs": 15315,
       "error": null,
       "activated": true,
       "observation": {
@@ -8907,11 +8709,10 @@
           "إنشاء طلب مواد"
         ],
         "title": "طلبات مواد الإنتاج",
-        "textLength": 659,
-        "controlCount": 2,
+        "textLength": 568,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء طلب محكوم",
-          "إغلاق"
+          "إنشاء طلب محكوم"
         ],
         "inputCount": 14,
         "selectCount": 8,
@@ -8931,20 +8732,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 358,
-        "latinChars": 146
+        "arabicChars": 304,
+        "latinChars": 125
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/material-flow",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "production_receipt",
@@ -8955,7 +8748,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-action-forms.js",
       "requiredPermission": "production_receipt",
-      "durationMs": 4187,
+      "durationMs": 14540,
       "error": null,
       "activated": true,
       "observation": {
@@ -8966,11 +8759,9 @@
           "استلام الإنتاج"
         ],
         "title": "استلام الإنتاج",
-        "textLength": 411,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 320,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -8989,20 +8780,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 209,
-        "latinChars": 111
+        "arabicChars": 155,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/material-flow",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "products",
@@ -9013,7 +8796,7 @@
       "rendererType": "view",
       "rendererSource": "views/products_and_materials.html",
       "requiredPermission": "products",
-      "durationMs": 4561,
+      "durationMs": 15938,
       "error": null,
       "activated": true,
       "observation": {
@@ -9064,7 +8847,7 @@
       "rendererType": "view",
       "rendererSource": "views/projects.html",
       "requiredPermission": "projects",
-      "durationMs": 5031,
+      "durationMs": 948,
       "error": null,
       "activated": true,
       "observation": {
@@ -9133,7 +8916,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_rules",
-      "durationMs": 3987,
+      "durationMs": 10209,
       "error": null,
       "activated": true,
       "observation": {
@@ -9146,11 +8929,10 @@
           "قاعدة إيداع جديدة"
         ],
         "title": "قواعد الإيداع",
-        "textLength": 748,
-        "controlCount": 2,
+        "textLength": 657,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء القاعدة",
-          "إغلاق"
+          "إنشاء القاعدة"
         ],
         "inputCount": 13,
         "selectCount": 7,
@@ -9170,20 +8952,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 471,
-        "latinChars": 111
+        "arabicChars": 417,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/putaway-rules",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "putaway_task_queue",
@@ -9194,7 +8968,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_task_queue",
-      "durationMs": 4027,
+      "durationMs": 15752,
       "error": null,
       "activated": true,
       "observation": {
@@ -9203,14 +8977,14 @@
         "hostDataPage": null,
         "headings": [
           "طابور مهام الإيداع",
+          "التوصيات",
           "طلب توصية إيداع"
         ],
         "title": "طابور مهام الإيداع",
-        "textLength": 644,
+        "textLength": 578,
         "controlCount": 2,
         "controlLabels": [
-          "طلب الإيداع",
-          "إغلاق"
+          "طلب الإيداع"
         ],
         "inputCount": 8,
         "selectCount": 5,
@@ -9222,7 +8996,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9230,26 +9004,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 382,
-        "latinChars": 111
+        "arabicChars": 301,
+        "latinChars": 137
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/putaway-queue",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/tasks",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "qc_center",
@@ -9260,7 +9020,7 @@
       "rendererType": "view",
       "rendererSource": "views/qc_center.html",
       "requiredPermission": "qc_center",
-      "durationMs": 4674,
+      "durationMs": 981,
       "error": null,
       "activated": true,
       "observation": {
@@ -9323,7 +9083,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "quality_hold_queue",
-      "durationMs": 4935,
+      "durationMs": 17009,
       "error": null,
       "activated": true,
       "observation": {
@@ -9334,11 +9094,9 @@
           "طابور حجز الجودة"
         ],
         "title": "طابور حجز الجودة",
-        "textLength": 368,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 277,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -9357,20 +9115,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 171,
-        "latinChars": 111
+        "arabicChars": 117,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/quality-checkpoints",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "real-estate",
@@ -9381,7 +9131,7 @@
       "rendererType": "view",
       "rendererSource": "views/real-estate.html",
       "requiredPermission": "default-client-gate",
-      "durationMs": 4635,
+      "durationMs": 16897,
       "error": null,
       "activated": true,
       "observation": {
@@ -9436,7 +9186,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-trace-workspace.js",
       "requiredPermission": "recall_analysis",
-      "durationMs": 3626,
+      "durationMs": 17120,
       "error": null,
       "activated": true,
       "observation": {
@@ -9448,11 +9198,10 @@
           "تحديد حالة سحب"
         ],
         "title": "تحليل السحب",
-        "textLength": 435,
-        "controlCount": 2,
+        "textLength": 344,
+        "controlCount": 1,
         "controlLabels": [
-          "تحديد حالة السحب",
-          "إغلاق"
+          "تحديد حالة السحب"
         ],
         "inputCount": 6,
         "selectCount": 3,
@@ -9472,20 +9221,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 221,
-        "latinChars": 111
+        "arabicChars": 167,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/recall-cases",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "receipt",
@@ -9496,7 +9237,7 @@
       "rendererType": "view",
       "rendererSource": "views/receipt.html",
       "requiredPermission": "receipt",
-      "durationMs": 4195,
+      "durationMs": 778,
       "error": null,
       "activated": true,
       "observation": {
@@ -9553,7 +9294,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-receiving-discrepancy-workspace.js",
       "requiredPermission": "receiving_discrepancies",
-      "durationMs": 3864,
+      "durationMs": 18154,
       "error": null,
       "activated": true,
       "observation": {
@@ -9561,18 +9302,14 @@
         "hostId": "receiving_discrepancies",
         "hostDataPage": null,
         "headings": [
-          "فروقات الاستلام",
-          "طابور استثناءات الاستلام",
-          "اختر استثناءً"
+          "فروقات الاستلام"
         ],
         "title": "فروقات الاستلام",
-        "textLength": 490,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
-        "inputCount": 2,
-        "selectCount": 2,
+        "textLength": 219,
+        "controlCount": 0,
+        "controlLabels": [],
+        "inputCount": 1,
+        "selectCount": 1,
         "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 0,
@@ -9581,7 +9318,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9589,20 +9326,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 274,
-        "latinChars": 111
+        "arabicChars": 74,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/receiving-discrepancies",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "rental",
@@ -9613,7 +9342,7 @@
       "rendererType": "view",
       "rendererSource": "views/rental.html",
       "requiredPermission": "rental",
-      "durationMs": 4656,
+      "durationMs": 16191,
       "error": null,
       "activated": true,
       "observation": {
@@ -9667,7 +9396,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "replenishment_proposals",
-      "durationMs": 4386,
+      "durationMs": 16190,
       "error": null,
       "activated": true,
       "observation": {
@@ -9676,14 +9405,15 @@
         "hostDataPage": null,
         "headings": [
           "مقترحات إعادة التعبئة",
-          "حساب إعادة التعبئة"
+          "حساب إعادة التعبئة",
+          "المقترحات"
         ],
         "title": "مقترحات إعادة التعبئة",
-        "textLength": 487,
+        "textLength": 497,
         "controlCount": 2,
         "controlLabels": [
           "احسب الآن",
-          "إغلاق"
+          "rev_prod_var_steel_tube_01\nالمقترح ٦٠ من ٦٠\nPROPOSED"
         ],
         "inputCount": 2,
         "selectCount": 2,
@@ -9695,7 +9425,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9703,32 +9433,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 270,
-        "latinChars": 111
+        "arabicChars": 209,
+        "latinChars": 170
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/replenishment-proposals",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/tasks",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/replenishment-rules",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "replenishment_rules",
@@ -9739,7 +9449,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "replenishment_rules",
-      "durationMs": 4879,
+      "durationMs": 15603,
       "error": null,
       "activated": true,
       "observation": {
@@ -9752,11 +9462,10 @@
           "قاعدة إعادة تعبئة جديدة"
         ],
         "title": "قواعد إعادة التعبئة",
-        "textLength": 697,
-        "controlCount": 2,
+        "textLength": 669,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء القاعدة",
-          "إغلاق"
+          "إنشاء القاعدة"
         ],
         "inputCount": 15,
         "selectCount": 5,
@@ -9768,7 +9477,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9776,20 +9485,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 428,
-        "latinChars": 111
+        "arabicChars": 364,
+        "latinChars": 143
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/replenishment-rules",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "report",
@@ -9800,7 +9501,7 @@
       "rendererType": "view",
       "rendererSource": "views/report.html",
       "requiredPermission": "report",
-      "durationMs": 3968,
+      "durationMs": 824,
       "error": null,
       "activated": true,
       "observation": {
@@ -9853,7 +9554,7 @@
       "rendererType": "view",
       "rendererSource": "views/restaurant.html",
       "requiredPermission": "restaurant",
-      "durationMs": 4294,
+      "durationMs": 18629,
       "error": null,
       "activated": true,
       "observation": {
@@ -9908,7 +9609,7 @@
       "rendererType": "view",
       "rendererSource": "views/retail.html",
       "requiredPermission": "retail",
-      "durationMs": 4710,
+      "durationMs": 17095,
       "error": null,
       "activated": true,
       "observation": {
@@ -9964,7 +9665,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "rework_workspace",
-      "durationMs": 5059,
+      "durationMs": 17571,
       "error": null,
       "activated": true,
       "observation": {
@@ -9975,11 +9676,9 @@
           "مساحة إعادة العمل"
         ],
         "title": "مساحة إعادة العمل",
-        "textLength": 352,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 261,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -9998,20 +9697,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 159,
-        "latinChars": 111
+        "arabicChars": 105,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/rework-routes",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "risk_compliance",
@@ -10022,7 +9713,7 @@
       "rendererType": "view",
       "rendererSource": "views/risk_compliance.html",
       "requiredPermission": "risk_compliance",
-      "durationMs": 4110,
+      "durationMs": 831,
       "error": null,
       "activated": true,
       "observation": {
@@ -10086,7 +9777,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "rollout_simulator",
-      "durationMs": 3950,
+      "durationMs": 17259,
       "error": null,
       "activated": true,
       "observation": {
@@ -10139,7 +9830,7 @@
       "rendererType": "view",
       "rendererSource": "views/route_health.html",
       "requiredPermission": "route_health",
-      "durationMs": 4886,
+      "durationMs": 17549,
       "error": null,
       "activated": true,
       "observation": {
@@ -10187,7 +9878,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "saas_overview",
-      "durationMs": 4695,
+      "durationMs": 20579,
       "error": null,
       "activated": true,
       "observation": {
@@ -10238,7 +9929,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales.html",
       "requiredPermission": "sales",
-      "durationMs": 5677,
+      "durationMs": 21151,
       "error": null,
       "activated": true,
       "observation": {
@@ -10246,13 +9937,11 @@
         "hostId": "pageSales",
         "hostDataPage": null,
         "headings": [
-          "المبيعات",
-          "مسار التنفيذ",
-          "آخر طلبات المبيعات"
+          "المبيعات"
         ],
         "title": "المبيعات",
-        "textLength": 901,
-        "controlCount": 16,
+        "textLength": 316,
+        "controlCount": 12,
         "controlLabels": [
           "تحديث",
           "لوحة المبيعات",
@@ -10265,20 +9954,16 @@
           "المرتجعات",
           "طلبات الفواتير",
           "أرصدة العملاء",
-          "تقارير المبيعات",
-          "[DEMO] rev_so_quotation_draft_01",
-          "[DEMO] rev_so_quotation_sent_01",
-          "[DEMO] rev_so_confirmed_01",
-          "[DEMO] rev_so_cancelled_01"
+          "تقارير المبيعات"
         ],
         "inputCount": 0,
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 4,
-        "tableColumns": 4,
-        "listItems": 7,
+        "tableCount": 0,
+        "tableRows": 0,
+        "tableColumns": 0,
+        "listItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10289,8 +9974,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 511,
-        "latinChars": 193
+        "arabicChars": 265,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10305,7 +9990,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_commission.html",
       "requiredPermission": "sales_commission",
-      "durationMs": 4319,
+      "durationMs": 19087,
       "error": null,
       "activated": true,
       "observation": {
@@ -10360,7 +10045,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_contracts.html",
       "requiredPermission": "sales_contracts",
-      "durationMs": 5234,
+      "durationMs": 19656,
       "error": null,
       "activated": true,
       "observation": {
@@ -10412,7 +10097,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_price_lists.html",
       "requiredPermission": "sales_price_lists",
-      "durationMs": 4484,
+      "durationMs": 18896,
       "error": null,
       "activated": true,
       "observation": {
@@ -10462,7 +10147,7 @@
       "rendererType": "view",
       "rendererSource": "views/scenario_planner.html",
       "requiredPermission": "scenario_planner",
-      "durationMs": 5961,
+      "durationMs": 19469,
       "error": null,
       "activated": true,
       "observation": {
@@ -10514,7 +10199,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "scrap_approval",
-      "durationMs": 4422,
+      "durationMs": 21198,
       "error": null,
       "activated": true,
       "observation": {
@@ -10525,11 +10210,9 @@
           "اعتماد الإتلاف"
         ],
         "title": "اعتماد الإتلاف",
-        "textLength": 362,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 271,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -10548,20 +10231,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 169,
-        "latinChars": 111
+        "arabicChars": 115,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/quality-dispositions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "seats_and_limits",
@@ -10572,7 +10247,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "seats_and_limits",
-      "durationMs": 4273,
+      "durationMs": 18696,
       "error": null,
       "activated": true,
       "observation": {
@@ -10623,7 +10298,7 @@
       "rendererType": "view",
       "rendererSource": "views/security_center.html",
       "requiredPermission": "security_center",
-      "durationMs": 5200,
+      "durationMs": 20232,
       "error": null,
       "activated": true,
       "observation": {
@@ -10678,7 +10353,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "sensor_management",
-      "durationMs": 4630,
+      "durationMs": 21123,
       "error": null,
       "activated": true,
       "observation": {
@@ -10731,7 +10406,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "service_kiosk",
-      "durationMs": 4995,
+      "durationMs": 21409,
       "error": null,
       "activated": true,
       "observation": {
@@ -10784,7 +10459,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "service_queue_board",
-      "durationMs": 5801,
+      "durationMs": 20556,
       "error": null,
       "activated": true,
       "observation": {
@@ -10836,7 +10511,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "shop_floor_kiosk",
-      "durationMs": 4732,
+      "durationMs": 19270,
       "error": null,
       "activated": true,
       "observation": {
@@ -10889,7 +10564,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-shopfloor-workspace.js",
       "requiredPermission": "shopfloor_terminal",
-      "durationMs": 5042,
+      "durationMs": 22297,
       "error": null,
       "activated": true,
       "observation": {
@@ -10900,11 +10575,9 @@
           "محطة أرض المصنع"
         ],
         "title": "محطة أرض المصنع",
-        "textLength": 325,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 234,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -10923,20 +10596,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 137,
-        "latinChars": 111
+        "arabicChars": 83,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/shopfloor-sessions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "skills_catalog",
@@ -10947,7 +10612,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "skills_catalog",
-      "durationMs": 5168,
+      "durationMs": 21513,
       "error": null,
       "activated": true,
       "observation": {
@@ -10982,8 +10647,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 119,
-        "latinChars": 206
+        "arabicChars": 113,
+        "latinChars": 212
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10998,7 +10663,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop.html",
       "requiredPermission": "sop",
-      "durationMs": 5160,
+      "durationMs": 19313,
       "error": null,
       "activated": true,
       "observation": {
@@ -11021,8 +10686,8 @@
           "إضافة SOP",
           "مراجعة الإجراء",
           "مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178670\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178670\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178672\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178672\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
           "مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1"
         ],
         "inputCount": 5,
@@ -11059,7 +10724,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_review.html",
       "requiredPermission": "sop_review",
-      "durationMs": 5966,
+      "durationMs": 22018,
       "error": null,
       "activated": true,
       "observation": {
@@ -11113,7 +10778,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_scenarios.html",
       "requiredPermission": "sop_scenarios",
-      "durationMs": 5575,
+      "durationMs": 19636,
       "error": null,
       "activated": true,
       "observation": {
@@ -11165,7 +10830,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "speed_and_driver_events",
-      "durationMs": 5706,
+      "durationMs": 21713,
       "error": null,
       "activated": true,
       "observation": {
@@ -11218,7 +10883,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "staging_board",
-      "durationMs": 5637,
+      "durationMs": 22328,
       "error": null,
       "activated": true,
       "observation": {
@@ -11226,17 +10891,21 @@
         "hostId": "staging_board",
         "hostDataPage": null,
         "headings": [
-          "لوحة التجهيز"
+          "لوحة التجهيز",
+          "ممرات التجهيز",
+          "REV-LOC-RECV-A",
+          "REV-LOC-STAGE-A",
+          "تخصيص تجهيز"
         ],
         "title": "لوحة التجهيز",
-        "textLength": 319,
+        "textLength": 598,
         "controlCount": 1,
         "controlLabels": [
-          "إغلاق"
+          "تخصيص للممر"
         ],
-        "inputCount": 1,
-        "selectCount": 1,
-        "searchInputCount": 0,
+        "inputCount": 7,
+        "selectCount": 3,
+        "searchInputCount": 1,
         "dateInputCount": 0,
         "tableCount": 0,
         "tableRows": 0,
@@ -11252,26 +10921,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 133,
-        "latinChars": 111
+        "arabicChars": 279,
+        "latinChars": 176
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/staging-allocations",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/locations",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "subscriptions",
@@ -11282,7 +10937,7 @@
       "rendererType": "view",
       "rendererSource": "views/subscriptions.html",
       "requiredPermission": "subscriptions",
-      "durationMs": 4884,
+      "durationMs": 21133,
       "error": null,
       "activated": true,
       "observation": {
@@ -11321,8 +10976,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 819
+        "arabicChars": 98,
+        "latinChars": 825
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11337,7 +10992,7 @@
       "rendererType": "view",
       "rendererSource": "views/supplier_portal.html",
       "requiredPermission": "supplier_portal",
-      "durationMs": 5346,
+      "durationMs": 21588,
       "error": null,
       "activated": true,
       "observation": {
@@ -11390,7 +11045,7 @@
       "rendererType": "view",
       "rendererSource": "views/supply_demand_balance.html",
       "requiredPermission": "supply_demand_balance",
-      "durationMs": 5786,
+      "durationMs": 22017,
       "error": null,
       "activated": true,
       "observation": {
@@ -11442,7 +11097,7 @@
       "rendererType": "view",
       "rendererSource": "views/surveys.html",
       "requiredPermission": "surveys",
-      "durationMs": 4662,
+      "durationMs": 20456,
       "error": null,
       "activated": true,
       "observation": {
@@ -11502,7 +11157,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "suspected_fuel_loss_queue",
-      "durationMs": 5592,
+      "durationMs": 24298,
       "error": null,
       "activated": true,
       "observation": {
@@ -11555,7 +11210,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "sync_conflicts",
-      "durationMs": 5293,
+      "durationMs": 20061,
       "error": null,
       "activated": true,
       "observation": {
@@ -11608,7 +11263,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "sync_sessions",
-      "durationMs": 4882,
+      "durationMs": 19659,
       "error": null,
       "activated": true,
       "observation": {
@@ -11661,7 +11316,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-check.js",
       "requiredPermission": "system_check",
-      "durationMs": 4686,
+      "durationMs": 19674,
       "error": null,
       "activated": true,
       "observation": {
@@ -11721,7 +11376,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-settings.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 7257,
+      "durationMs": 20805,
       "error": null,
       "activated": true,
       "observation": {
@@ -11774,7 +11429,7 @@
       "rendererType": "view",
       "rendererSource": "views/task_manager.html",
       "requiredPermission": "task_manager",
-      "durationMs": 4432,
+      "durationMs": 21130,
       "error": null,
       "activated": true,
       "observation": {
@@ -11844,7 +11499,7 @@
       "rendererType": "view",
       "rendererSource": "views/tax_compliance.html",
       "requiredPermission": "tax_compliance",
-      "durationMs": 7306,
+      "durationMs": 32078,
       "error": null,
       "activated": true,
       "observation": {
@@ -11897,7 +11552,7 @@
       "rendererType": "view",
       "rendererSource": "views/telegram.html",
       "requiredPermission": "telegram",
-      "durationMs": 5920,
+      "durationMs": 21351,
       "error": null,
       "activated": true,
       "observation": {
@@ -11962,7 +11617,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "telemetry_explorer",
-      "durationMs": 6142,
+      "durationMs": 23334,
       "error": null,
       "activated": true,
       "observation": {
@@ -12015,7 +11670,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_detail",
-      "durationMs": 5933,
+      "durationMs": 21503,
       "error": null,
       "activated": true,
       "observation": {
@@ -12026,27 +11681,13 @@
           "Tenant Detail"
         ],
         "title": "Tenant Detail",
-        "textLength": 643,
-        "controlCount": 15,
+        "textLength": 137,
+        "controlCount": 1,
         "controlLabels": [
-          "تحديث",
-          "overview",
-          "companies",
-          "subscription",
-          "entitlements",
-          "seats",
-          "usage",
-          "provisioning",
-          "extensions",
-          "audit",
-          "Begin / resume provisioning",
-          "تعيين grace",
-          "تعيين suspended",
-          "تعيين cancelled",
-          "تعيين archived"
+          "تحديث"
         ],
-        "inputCount": 3,
-        "selectCount": 2,
+        "inputCount": 0,
+        "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 0,
@@ -12054,7 +11695,7 @@
         "tableColumns": 0,
         "listItems": 0,
         "stateSignals": {
-          "loading": false,
+          "loading": true,
           "empty": false,
           "error": false,
           "denied": false
@@ -12063,8 +11704,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 42,
-        "latinChars": 461
+        "arabicChars": 24,
+        "latinChars": 88
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12079,7 +11720,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_directory",
-      "durationMs": 5489,
+      "durationMs": 22180,
       "error": null,
       "activated": true,
       "observation": {
@@ -12091,7 +11732,7 @@
           "إنشاء مستأجر"
         ],
         "title": "Tenant Directory",
-        "textLength": 807,
+        "textLength": 810,
         "controlCount": 6,
         "controlLabels": [
           "تحديث",
@@ -12117,8 +11758,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 533
+        "arabicChars": 127,
+        "latinChars": 539
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12133,7 +11774,7 @@
       "rendererType": "view",
       "rendererSource": "views/timesheet.html",
       "requiredPermission": "timesheet",
-      "durationMs": 5849,
+      "durationMs": 22806,
       "error": null,
       "activated": true,
       "observation": {
@@ -12199,7 +11840,7 @@
       "rendererType": "view",
       "rendererSource": "views/training_lms.html",
       "requiredPermission": "training_lms",
-      "durationMs": 6768,
+      "durationMs": 24191,
       "error": null,
       "activated": true,
       "observation": {
@@ -12257,7 +11898,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_alerts.html",
       "requiredPermission": "treasury_alerts",
-      "durationMs": 6699,
+      "durationMs": 24318,
       "error": null,
       "activated": true,
       "observation": {
@@ -12309,7 +11950,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_cash_position.html",
       "requiredPermission": "treasury_cash_position",
-      "durationMs": 6245,
+      "durationMs": 22235,
       "error": null,
       "activated": true,
       "observation": {
@@ -12361,7 +12002,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "usage_and_quotas",
-      "durationMs": 6107,
+      "durationMs": 25649,
       "error": null,
       "activated": true,
       "observation": {
@@ -12399,8 +12040,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 137,
-        "latinChars": 581
+        "arabicChars": 131,
+        "latinChars": 587
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12415,7 +12056,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "variance_review",
-      "durationMs": 7485,
+      "durationMs": 25071,
       "error": null,
       "activated": true,
       "observation": {
@@ -12426,11 +12067,9 @@
           "مراجعة الفروقات"
         ],
         "title": "مراجعة الفروقات",
-        "textLength": 316,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 225,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -12449,20 +12088,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 132,
-        "latinChars": 111
+        "arabicChars": 78,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/count-sessions",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "vehicle_trip_timeline",
@@ -12473,7 +12104,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "vehicle_trip_timeline",
-      "durationMs": 5943,
+      "durationMs": 24100,
       "error": null,
       "activated": true,
       "observation": {
@@ -12526,7 +12157,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "vertical_packs",
-      "durationMs": 4402,
+      "durationMs": 23768,
       "error": null,
       "activated": true,
       "observation": {
@@ -12537,20 +12168,18 @@
           "الحزم الرأسية"
         ],
         "title": "الحزم الرأسية",
-        "textLength": 424,
-        "controlCount": 3,
+        "textLength": 139,
+        "controlCount": 1,
         "controlLabels": [
-          "تحديث",
-          "Validate",
-          "Approve"
+          "تحديث"
         ],
         "inputCount": 0,
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 6,
+        "tableCount": 0,
+        "tableRows": 0,
+        "tableColumns": 0,
         "listItems": 0,
         "stateSignals": {
           "loading": false,
@@ -12562,8 +12191,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 207,
-        "latinChars": 128
+        "arabicChars": 86,
+        "latinChars": 24
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12578,7 +12207,7 @@
       "rendererType": "view",
       "rendererSource": "views/visitors.html",
       "requiredPermission": "visitors",
-      "durationMs": 6527,
+      "durationMs": 25894,
       "error": null,
       "activated": true,
       "observation": {
@@ -12637,7 +12266,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "warehouse_kiosk",
-      "durationMs": 5508,
+      "durationMs": 29061,
       "error": null,
       "activated": true,
       "observation": {
@@ -12690,7 +12319,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "warehouse_large_screen",
-      "durationMs": 6398,
+      "durationMs": 24367,
       "error": null,
       "activated": true,
       "observation": {
@@ -12742,7 +12371,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "warehouse_topology",
-      "durationMs": 7116,
+      "durationMs": 26119,
       "error": null,
       "activated": true,
       "observation": {
@@ -12756,11 +12385,10 @@
           "شجرة المواقع"
         ],
         "title": "هيكل المستودع",
-        "textLength": 535,
-        "controlCount": 2,
+        "textLength": 914,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء منطقة ضمن النطاق",
-          "إغلاق"
+          "إنشاء منطقة ضمن النطاق"
         ],
         "inputCount": 6,
         "selectCount": 2,
@@ -12772,7 +12400,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -12780,32 +12408,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 310,
-        "latinChars": 111
+        "arabicChars": 327,
+        "latinChars": 374
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/zones",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/locations",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/capacity",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "warehouses",
@@ -12816,7 +12424,7 @@
       "rendererType": "view",
       "rendererSource": "views/warehouses_and_locations.html",
       "requiredPermission": "warehouses",
-      "durationMs": 6642,
+      "durationMs": 22247,
       "error": null,
       "activated": true,
       "observation": {
@@ -12867,7 +12475,7 @@
       "rendererType": "view",
       "rendererSource": "views/warranty.html",
       "requiredPermission": "warranty",
-      "durationMs": 6466,
+      "durationMs": 21168,
       "error": null,
       "activated": true,
       "observation": {
@@ -12921,7 +12529,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_execution",
-      "durationMs": 6308,
+      "durationMs": 5538,
       "error": null,
       "activated": true,
       "observation": {
@@ -12932,11 +12540,9 @@
           "تنفيذ الموجات"
         ],
         "title": "تنفيذ الموجات",
-        "textLength": 404,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 313,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -12955,20 +12561,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 111
+        "arabicChars": 146,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/waves",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "wave_planning",
@@ -12979,7 +12577,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_planning",
-      "durationMs": 6966,
+      "durationMs": 3209,
       "error": null,
       "activated": true,
       "observation": {
@@ -12992,13 +12590,13 @@
           "قاعدة التجميع"
         ],
         "title": "تخطيط الموجات",
-        "textLength": 777,
+        "textLength": 697,
         "controlCount": 2,
         "controlLabels": [
-          "إنشاء وحساب الموجة (٠)",
-          "إغلاق"
+          "تحديد الكل",
+          "إنشاء وحساب الموجة (٠)"
         ],
-        "inputCount": 9,
+        "inputCount": 10,
         "selectCount": 4,
         "searchInputCount": 1,
         "dateInputCount": 0,
@@ -13008,7 +12606,7 @@
         "listItems": 4,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -13016,20 +12614,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 505,
-        "latinChars": 111
+        "arabicChars": 408,
+        "latinChars": 136
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/pick-tasks",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "wfl_home",
@@ -13040,7 +12630,7 @@
       "rendererType": "view",
       "rendererSource": "views/wfl_home.html",
       "requiredPermission": "wfl_home",
-      "durationMs": 4886,
+      "durationMs": 3295,
       "error": null,
       "activated": true,
       "observation": {
@@ -13102,7 +12692,7 @@
       "rendererType": "view",
       "rendererSource": "views/whatsapp.html",
       "requiredPermission": "whatsapp",
-      "durationMs": 6797,
+      "durationMs": 3282,
       "error": null,
       "activated": true,
       "observation": {
@@ -13165,7 +12755,7 @@
       "rendererType": "view",
       "rendererSource": "views/work_orders.html",
       "requiredPermission": "work_orders",
-      "durationMs": 6564,
+      "durationMs": 2618,
       "error": null,
       "activated": true,
       "observation": {
@@ -13215,7 +12805,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-shopfloor-workspace.js",
       "requiredPermission": "workcenter_queue",
-      "durationMs": 6727,
+      "durationMs": 3277,
       "error": null,
       "activated": true,
       "observation": {
@@ -13226,11 +12816,9 @@
           "طابور مركز العمل"
         ],
         "title": "طابور مركز العمل",
-        "textLength": 316,
-        "controlCount": 1,
-        "controlLabels": [
-          "إغلاق"
-        ],
+        "textLength": 225,
+        "controlCount": 0,
+        "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -13249,20 +12837,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 111
+        "arabicChars": 76,
+        "latinChars": 90
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/shopfloor-board",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "workflow",
@@ -13273,7 +12853,7 @@
       "rendererType": "view",
       "rendererSource": "views/workflow.html",
       "requiredPermission": "workflow",
-      "durationMs": 8040,
+      "durationMs": 3656,
       "error": null,
       "activated": true,
       "observation": {
@@ -13350,7 +12930,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_command_center.html",
       "requiredPermission": "workshop_command_center",
-      "durationMs": 7542,
+      "durationMs": 3735,
       "error": null,
       "activated": true,
       "observation": {
@@ -13366,14 +12946,15 @@
           "عملي"
         ],
         "title": "⌁ Workshop Command Center",
-        "textLength": 1579,
-        "controlCount": 13,
+        "textLength": 1518,
+        "controlCount": 17,
         "controlLabels": [
           "Refresh",
           "READY\n1\nمستحق اليوم\nOpen canonical work due today\n↗",
+          "READY\n1\nالاستلام قيد التنفيذ\nWarehouse REV-WH-01\n↗",
           "READY\n2\nعمل متأخر\nOpen work past its due date\n↗",
           "READY\n4\nعمل محظور\nBlocked or SLA-breached canonical work\n↗",
-          "READY\n0\nمهام الالتقاط\nActive pick execution queue\n↗",
+          "READY\n2\nمهام الالتقاط\nActive pick execution queue\n↗",
           "READY\n0\nتنبيهات الأجهزة\nOpen IoT health alerts\n↗",
           "READY\n26\nالوحدات المفعلة\nPlatform module registry\n↗",
           "READY\n0\nبانتظاري\nAssigned work requiring actor attention\n↗"
@@ -13397,7 +12978,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 263,
-        "latinChars": 995
+        "latinChars": 936
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -13412,7 +12993,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_ledger.html",
       "requiredPermission": "workshop_ledger",
-      "durationMs": 4962,
+      "durationMs": 2383,
       "error": null,
       "activated": true,
       "observation": {
@@ -13473,7 +13054,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "workshop_pack_setup",
-      "durationMs": 6930,
+      "durationMs": 3421,
       "error": null,
       "activated": true,
       "observation": {
@@ -13527,7 +13108,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_readiness.html",
       "requiredPermission": "workshop_readiness",
-      "durationMs": 6386,
+      "durationMs": 3039,
       "error": null,
       "activated": true,
       "observation": {
@@ -13546,7 +13127,7 @@
           "B\nالمؤسسة\n3 checks\nWARNING",
           "U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED",
           "B\nالمنتجات\n3 checks\nBLOCKED",
-          "W\nالمستودع\n3 checks\nMISSING",
+          "W\nالمستودع\n3 checks\nREADY",
           "G\nالإنتاج\n3 checks\nPERMISSION DENIED",
           "S\nالجودة\n3 checks\nWARNING",
           "T\nالتسليم\n3 checks\nMISSING",
@@ -13574,7 +13155,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 162,
-        "latinChars": 944
+        "latinChars": 943
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -13589,7 +13170,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "zone_bin_management",
-      "durationMs": 7285,
+      "durationMs": 3942,
       "error": null,
       "activated": true,
       "observation": {
@@ -13602,11 +13183,10 @@
           "سعة وحالة الخانات"
         ],
         "title": "إدارة المناطق والخانات",
-        "textLength": 552,
-        "controlCount": 2,
+        "textLength": 894,
+        "controlCount": 1,
         "controlLabels": [
-          "إنشاء ملف الخانة",
-          "إغلاق"
+          "إنشاء ملف الخانة"
         ],
         "inputCount": 6,
         "selectCount": 3,
@@ -13618,7 +13198,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -13626,32 +13206,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 323,
-        "latinChars": 111
+        "arabicChars": 325,
+        "latinChars": 358
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
-        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 422,
-          "path": "/api/v1/wms/zones",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/locations",
-          "method": "GET"
-        },
-        {
-          "status": 422,
-          "path": "/api/v1/wms/capacity",
-          "method": "GET"
-        }
-      ]
+      "failedRequests": []
     }
   ]
 }

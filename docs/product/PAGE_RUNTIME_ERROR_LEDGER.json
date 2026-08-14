@@ -1,103 +1,23 @@
 {
-  "generatedAt": "2026-08-14T10:32:03.193Z",
+  "generatedAt": "2026-08-14T17:24:50.452Z",
   "generator": "scripts/product/build-runtime-error-ledger.mjs",
-  "totalSignatures": 36,
-  "needsFixCount": 9,
+  "totalSignatures": 9,
+  "needsFixCount": 1,
   "categoryCounts": {
-    "CLIENT_CONTRACT_BUG": 29,
-    "BROKEN_ENDPOINT": 6,
-    "EXPECTED_VALIDATION": 1
+    "CLIENT_CONTRACT_BUG": 2,
+    "EXPECTED_VALIDATION": 1,
+    "BROKEN_ENDPOINT": 6
   },
   "needsFix": [
-    {
-      "kind": "network",
-      "signature": "422 GET /api/v1/wms/dock-appointments",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 3,
-      "retainedP0P1Pages": [
-        "dock_schedule"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "400 POST /api/db",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 3,
-      "retainedP0P1Pages": [
-        "finance_installments"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "422 GET /api/v1/wms/pick-tasks",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 3,
-      "retainedP0P1Pages": [
-        "mobile_picking",
-        "wave_planning"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "422 GET /api/v1/wms/material-flow",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 3,
-      "retainedP0P1Pages": [
-        "production_material_requests"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "422 GET /api/v1/wms/docks",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 2,
-      "retainedP0P1Pages": [
-        "dock_schedule"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "400 POST /api/collection",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 2,
-      "retainedP0P1Pages": [
-        "finance_installments"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "404 GET /api/v1/platform/saved-views",
-      "category": "BROKEN_ENDPOINT",
-      "note": "client requested a path the server does not serve",
-      "pageCount": 2,
-      "retainedP0P1Pages": [
-        "my_work"
-      ]
-    },
     {
       "kind": "console",
       "signature": "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
       "category": "EXPECTED_VALIDATION",
       "note": "a client-side safety guard intentionally refused an unsafe write — this is the guard working, not a bug",
-      "pageCount": 2,
+      "pageCount": 3,
       "retainedP0P1Pages": [
-        "development_plans"
-      ]
-    },
-    {
-      "kind": "network",
-      "signature": "422 GET /api/v1/wms/recall-cases",
-      "category": "CLIENT_CONTRACT_BUG",
-      "note": "request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input",
-      "pageCount": 1,
-      "retainedP0P1Pages": [
-        "recall_analysis"
+        "development_plans",
+        "finance_installments"
       ]
     }
   ]

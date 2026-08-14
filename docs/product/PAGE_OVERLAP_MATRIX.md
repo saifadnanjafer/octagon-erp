@@ -20,9 +20,9 @@ similar to every other one and buried real duplicates under lifecycle pairs
 |---|---|
 | A — NEAR-DUPLICATE, CONSOLIDATION CANDIDATE | 2 |
 | B — OVERLAPPING, REVIEW | 10 |
-| C — RELATED, KEEP SEPARATE | 181 |
+| C — RELATED, KEEP SEPARATE | 182 |
 
-Total scored pairs: **193**
+Total scored pairs: **194**
 
 | Class | Page A | Page B | Domain | Same group | Label sim | Purpose sim | Score | A state | B state |
 |---|---|---|---|---|---|---|---|---|---|
@@ -88,6 +88,7 @@ Total scored pairs: **193**
 | C | `alert_board` | `device_health_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | THIN/THIN |
 | C | `alert_board` | `fleet_operations_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | THIN/THIN |
 | C | `alert_board` | `service_queue_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | THIN/THIN |
+| C | `automation` | `intelligence` | intelligence | yes | 0 | same category | 0.4 | STRONG/CONFUSING | STRONG/STRONG |
 | C | `banking` | `budgeting` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `banking` | `cashbox` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `banking` | `customers` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |

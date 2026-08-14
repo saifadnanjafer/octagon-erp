@@ -1,19 +1,17 @@
 {
-  "generatedAt": "2026-08-14T10:15:33.534Z",
+  "generatedAt": "2026-08-14T10:32:02.388Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-14T10:12:03.379Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-14T10:32:01.665Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 231,
   "emptinessCauseCounts": {
     "G": 7,
-    "not an emptiness case": 1,
     "F": 18,
     "H": 7
   },
   "recommendedDispositionCounts": {
-    "KEEP_PRIMARY": 198,
+    "KEEP_PRIMARY": 199,
     "STRENGTHEN": 25,
-    "FIX_CONNECTION": 1,
     "DEFER": 7
   },
   "rows": [
@@ -1254,29 +1252,48 @@
       "owningDomain": "Ai",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "NOT_OBSERVED (runtime inspection missing — run scripts/product/inspect-pages.mjs)",
-      "observedTitle": null,
-      "actionsAvailable": "NOT_OBSERVED (runtime inspection missing — run scripts/product/inspect-pages.mjs)",
+      "pageArchetype": "LIST/REGISTER",
+      "observedTitle": "محرك الأتمتة",
+      "actionsAvailable": "قاعدة مخصصة | 🧾\nمتابعة عرض السعر\nكل عرض سعر جديد يولد مهمة تدقيق ومتابعة. | اختبار | تعديل | حذف | تشغيل المحاكاة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, help_manual, intelligence",
-      "downstreamWorkflow": "NOT_OBSERVED (runtime inspection missing — run scripts/product/inspect-pages.mjs)",
-      "functionalState": "BROKEN",
-      "functionalEvidence": "no active page host resolved after navigation",
-      "usabilityState": "NOT_OBSERVED (runtime inspection missing — run scripts/product/inspect-pages.mjs)",
-      "usabilityEvidence": "",
+      "downstreamWorkflow": "none — no onward workflow link rendered",
+      "functionalState": "STRONG",
+      "functionalEvidence": "20 controls, 7 rendered records, 0 workflow link(s)",
+      "usabilityState": "CONFUSING",
+      "usabilityEvidence": "raw JSON visible to a normal user",
       "deadEnd": false,
-      "measured": null,
+      "measured": {
+        "textLength": 4178,
+        "controls": 20,
+        "inputs": 8,
+        "searchInputs": 1,
+        "tables": 1,
+        "tableRows": 7,
+        "listItems": 0,
+        "links": 0,
+        "states": {
+          "loading": false,
+          "empty": true,
+          "error": true,
+          "denied": false
+        },
+        "rawIds": 0,
+        "rawJson": true,
+        "arabicChars": 3109,
+        "latinChars": 140
+      },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null,
-      "emptinessCause": "not an emptiness case — page is BROKEN (crash/server error), fix the defect before re-classifying",
-      "emptinessCauseConfidence": "MEASURED",
-      "emptinessCauseEvidence": "renders an error state",
-      "recommendedDisposition": "FIX_CONNECTION — resolve the crash/server error first, re-run product:inspect-pages, re-classify",
-      "whatUserAccomplishes": "Automation: Automation engine — available here: NOT_OBSERVED (runtime inspection missing — run scripts/product/inspect-pages.mjs).",
+      "emptinessCause": null,
+      "emptinessCauseConfidence": null,
+      "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "whatUserAccomplishes": "Automation: Automation engine — available here: قاعدة مخصصة | 🧾\nمتابعة عرض السعر\nكل عرض سعر جديد يولد مهمة تدقيق ومتابعة. | اختبار | تعديل | حذف | تشغيل المحاكاة.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -1369,7 +1386,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 487,
+        "textLength": 486,
         "controls": 2,
         "inputs": 7,
         "searchInputs": 0,
@@ -1857,7 +1874,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3444,
+        "textLength": 3442,
         "controls": 49,
         "inputs": 1,
         "searchInputs": 0,
@@ -1873,7 +1890,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 2501,
+        "arabicChars": 2499,
         "latinChars": 28
       },
       "runtimeConsoleErrors": 0,
@@ -1918,7 +1935,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 789,
+        "textLength": 788,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -2901,7 +2918,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2483,
+        "textLength": 2512,
         "controls": 8,
         "inputs": 6,
         "searchInputs": 0,
@@ -2918,7 +2935,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1023,
-        "latinChars": 939
+        "latinChars": 961
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3025,7 +3042,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4558,
+        "textLength": 4557,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -3042,7 +3059,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1142,
-        "latinChars": 2233
+        "latinChars": 2235
       },
       "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 1,
@@ -4193,7 +4210,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2595,
+        "textLength": 2594,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -4805,7 +4822,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 231,
+        "textLength": 230,
         "controls": 1,
         "inputs": 0,
         "searchInputs": 0,
@@ -4832,7 +4849,7 @@
       "consolidationRationale": null,
       "emptinessCause": "G — renderer is only a generic shell with no page-specific implementation",
       "emptinessCauseConfidence": "INFERRED",
-      "emptinessCauseEvidence": "renderer source shared by 9 primary pages, and this instance renders almost nothing page-specific (231 chars, 1 controls)",
+      "emptinessCauseEvidence": "renderer source shared by 9 primary pages, and this instance renders almost nothing page-specific (230 chars, 1 controls)",
       "recommendedDisposition": "STRENGTHEN or CONSOLIDATE — confirm this page has page-specific value beyond the shared template, else fold into a sibling",
       "whatUserAccomplishes": "Extension Installations: Extension installations — available here: تحديث.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
@@ -4866,7 +4883,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 843,
+        "textLength": 842,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -6342,20 +6359,20 @@
       ],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز التكامل",
-      "actionsAvailable": "🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
+      "actionsAvailable": "Refresh | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "USABLE",
-      "functionalEvidence": "14 controls, 5 records, 0 link(s)",
-      "usabilityState": "USABLE",
-      "usabilityEvidence": "titled and actionable",
+      "functionalState": "STRONG",
+      "functionalEvidence": "15 controls, 5 rendered records, 0 workflow link(s)",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3059,
-        "controls": 14,
-        "inputs": 0,
-        "searchInputs": 0,
+        "textLength": 3301,
+        "controls": 15,
+        "inputs": 1,
+        "searchInputs": 1,
         "tables": 2,
         "tableRows": 5,
         "listItems": 3,
@@ -6369,7 +6386,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 2020,
-        "latinChars": 404
+        "latinChars": 607
       },
       "runtimeConsoleErrors": 6,
       "runtimeFailedRequests": 6,
@@ -6381,7 +6398,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Integration Hub: Integration hub — available here: 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية.",
+      "whatUserAccomplishes": "Integration Hub: Integration hub — available here: Refresh | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -6874,7 +6891,7 @@
         "arabicChars": 23850,
         "latinChars": 2355
       },
-      "runtimeConsoleErrors": 0,
+      "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
@@ -8877,7 +8894,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 312,
+        "textLength": 606,
         "controls": 11,
         "inputs": 0,
         "searchInputs": 0,
@@ -8893,8 +8910,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 236,
-        "latinChars": 26
+        "arabicChars": 455,
+        "latinChars": 29
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9920,8 +9937,8 @@
       "canonicalApi": null,
       "observedEndpoints": [
         "/api/v1/wms/replenishment-proposals",
-        "/api/v1/wms/replenishment-rules",
-        "/api/v1/wms/tasks"
+        "/api/v1/wms/tasks",
+        "/api/v1/wms/replenishment-rules"
       ],
       "pageArchetype": "DETAIL/READ",
       "observedTitle": "مقترحات إعادة التعبئة",
@@ -10537,36 +10554,36 @@
       "owningDomain": "Sales",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "BOARD/QUEUE",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "المبيعات",
-      "actionsAvailable": "تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات",
+      "actionsAvailable": "تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات | [DEMO] rev_so_quotation_draft_01 | [DEMO] rev_so_quotation_sent_01 | [DEMO] rev_so_confirmed_01 | [DEMO] rev_so_cancelled_01",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "12 controls, 7 records, 0 link(s)",
+      "functionalEvidence": "16 controls, 4 records, 0 link(s)",
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 650,
-        "controls": 12,
+        "textLength": 901,
+        "controls": 16,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 4,
         "listItems": 7,
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 503,
-        "latinChars": 3
+        "arabicChars": 511,
+        "latinChars": 193
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10578,7 +10595,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Sales: Sales — available here: تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات.",
+      "whatUserAccomplishes": "Sales: Sales — available here: تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات | [DEMO] rev_so_quotation_draft_01 | [DEMO] rev_so_quotation_sent_01 | [DEMO] rev_so_confirmed_01 | [DEMO] rev_so_cancelled_01.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -14106,7 +14123,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1377,
+        "textLength": 1378,
         "controls": 12,
         "inputs": 0,
         "searchInputs": 0,
@@ -14122,8 +14139,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 156,
-        "latinChars": 949
+        "arabicChars": 162,
+        "latinChars": 944
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

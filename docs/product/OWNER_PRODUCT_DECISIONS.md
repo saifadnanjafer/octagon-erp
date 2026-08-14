@@ -104,6 +104,70 @@ procurement chain (requisition→RFQ→2 competing supplier quotes→purchase
 order→pending three-way match). No new backend or UI code — this was a data
 problem, closed with data. Re-run `npm run review:setup` to apply.
 
+## 5. `work_orders` (P0) and `route_health` run on a legacy, pre-canonical authority
+
+Not a fixture gap and not a missing feature — a genuine architecture question.
+`views/work_orders.html` and `views/route_health.html` are both empty shell
+containers populated at runtime by `modules/work-orders.js` (1513 lines) and
+`modules/route-health.js`, and **both read and write through the legacy
+`omni` global** (`typeof omni !== 'undefined' ? omni : ...`), not through the
+canonical `platform/api/*` + SQLite layer everything else in this recovery
+pass has been auditing.
+
+`modules/work-orders.js`'s own header says it orchestrates
+`omni.jobOrders` — "customer-facing workshop job orders — distinct from
+MRP's `omni.workOrders` machine runs." But
+`database/migrations/042_canonical_work_item_and_authority_retirement.mjs`
+already established a `work_items` table as the **canonical** work-item
+authority, plus a formal `authority_retirement_locks` governance mechanism
+(`platform/cutover/legacy-writer-retirement.mjs`) specifically listing
+`WORK_ITEM_CANONICAL_AUTHORITY_REQUIRED` as a tracked, enforced authority key.
+`scripts/review/fixtures/workshop.mjs`'s own comment confirms: "There is no
+dedicated workshop_jobs table: the real business models workshop jobs as
+canonical work items." The Golden Workshop Dataset's 11 job-state fixture
+rows all go into `work_items` — `work_orders` and `route_health` cannot see
+any of it, because they read from a different, older state system entirely.
+
+This is why these two pages show as "no domain implementation" in the
+reality ledger: not because nothing was built, but because what was built
+predates the authority-retirement migration and nothing ever repointed the
+`work_orders` nav entry at the canonical replacement (which is functionally
+covered today by `task_manager`/`my_work`/`command_center`, all already
+built on `work_items`).
+
+**Decision needed, not executed**: this is exactly the kind of "business
+decision changing canonical process" this recovery pass should not resolve
+unilaterally.
+- [ ] Is `work_orders` fully superseded by `task_manager`/`command_center`
+      today, making it a **RETIRE_CANDIDATE** (alias/redirect, same pattern
+      as `pos_deepening` → `pos`)? Or does `omni.jobOrders` carry something
+      genuinely not yet ported (op-pack generation, machine-queue linkage,
+      SOP/QC-gate/rework loop, the audit timeline mentioned in its header)
+      that would be real capability loss if simply redirected?
+- [ ] Same question for `route_health` — does anything still depend on the
+      omni-based diagnostic, or is it dead code left linked from primary
+      navigation?
+- [ ] If real capability lives only in `omni.jobOrders`, porting it to
+      `work_items` is BUILD-13-scale work (data model translation, not a
+      fixture fix) and should be scoped as its own gap-register entry, not
+      folded into this pass.
+
+## 6. `scenario_planner` (P2) confirmed as a generic-shell template, not a real page
+
+`modules/enterprise-suite.js` implements `scenario_planner` via the same
+generic factory that also produces `training_lms`, `data_quality`, and
+several other secondary-domain pages — each is a `{title, body, fields,
+kpis, demo}` config object rendered by one shared template. `scenario_planner`'s
+entry has `demo: []` (empty), while sibling entries like `training_lms` at
+least carry one hardcoded demo row. There is no cash-flow/inventory-risk/
+staffing-pressure/delivery-capacity calculation anywhere behind it despite
+the page's subtitle promising exactly that ("مدى التدفق النقدي · مخاطر
+المخزون · ضغوط التوظيف · طاقة التوصيل"). Recommend: **HIDE** from primary
+navigation (or relabel honestly as a placeholder) rather than leave a P2 page
+promising simulation capability that was never built — unless the owner
+wants this built as a real BUILD-13 feature, in which case it needs its own
+gap-register entry with a defined calculation source, not a fixture.
+
 ---
 
 _Generated during Product Recovery 1. Update this file as the owner rules on_

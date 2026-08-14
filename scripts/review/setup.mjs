@@ -72,9 +72,11 @@ async function main() {
 
     const domains = [
       ['workshop', seedWorkshopFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
-      ['commercial pipeline (CRM/sales/procurement)', seedCommercialPipelineFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['warehouse', seedWarehouseFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['production', seedProductionFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
+      // Must run after warehouse/production: its sale/purchase order lines
+      // reference product_variants rows those fixtures create.
+      ['commercial pipeline (CRM/sales/procurement)', seedCommercialPipelineFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['quality', seedQualityFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['commercial/SaaS', seedCommercialSaasFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['Al-Warsha pack', seedAlWarshaPackFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],

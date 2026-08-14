@@ -701,6 +701,20 @@ export async function mountPlatformApi(authority, prefix = '/api/v1') {
     // Same executor as the runtime authority: finance handlers stay reachable
     // over HTTP (Phase 03 closure repair).
     actionExecutor: authority.actionExecutor,
+    // This is the handler server.js actually mounts at /api/v1 (see
+    // server.js:2938) -- authority.mountApi below passes all six of these,
+    // but nothing calls it. Without them, platform/api/index.mjs's `platform`
+    // namespace block (notifications/activities/saved-views/chatter/
+    // scheduled-reports/job-health/search) silently falls through every one
+    // of its `resource === X && Y` checks -- Y is always undefined -- and
+    // returns the generic 404 "unknown route" instead of the intended
+    // response or a diagnosable error.
+    notifications: authority.notifications,
+    jobs: authority.jobs,
+    scheduledReports: authority.scheduledReports,
+    platformSearch: authority.platformSearch,
+    chatter: authority.chatter,
+    configuration: authority.configuration,
     resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
     authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
   });

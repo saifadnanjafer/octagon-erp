@@ -152,6 +152,42 @@ unilaterally.
       fixture fix) and should be scoped as its own gap-register entry, not
       folded into this pass.
 
+## 5b. The legacy-authority pattern is wider than 2 pages — extent not yet fully mapped
+
+`test:functional-pages` (new this pass) caught a third instance while
+verifying: `finance_installments` fails with `400` on `POST /api/db` and
+`POST /api/collection`. Reading `modules/finance-installments.js` confirms
+the same signature as `work-orders.js` — `typeof omni !== 'undefined'`,
+`window.saveData`, a raw `/api/db`/`/api/collection` write path instead of
+`platform/api/*`. **A repo-wide grep for this exact idiom
+(`typeof omni !== 'undefined'`) matches 64 files under `modules/`** —
+including `sales-price-lists.js` and `procurement.js`, which are *different,
+legacy files* from the canonical `platform/sales/*` and `platform/procurement/*`
+this pass verified and fed with fixture data in §4. That means the `sales`
+page (→ `canonical-sales.js`, canonical, now fixture-fed) and the
+`sales_price_lists` page (→ `sales-price-lists.js`, apparently legacy) may
+be two different architectures serving what reads as one business area —
+worth re-checking once `sales_price_lists`'s actual behavior is re-observed
+against the new fixture data.
+
+I could not reliably map all 64 files to specific primary nav pages this
+pass: `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`'s `rendererSource`
+field records the initial static view file (`views/work_orders.html`) for
+many of these, not the JS module that populates it at runtime (`work-orders.js`)
+— so a direct cross-reference undercounts. Confirmed by direct code reading
+so far: `work_orders` (P0), `route_health`, `finance_installments`.
+**Recommend as a BUILD-13-scoped task, not something to individually patch
+page-by-page**: trace `app.js`'s `switchPage` dispatch table to build a
+precise map of which of the 231 primary pages resolve to a `typeof omni`
+module vs. the canonical platform, before deciding case-by-case whether each
+is retire/port/leave-as-is. This is a bigger, more consequential finding
+than any single page fix in this pass — it may mean a meaningful fraction of
+"Tier 2-5" secondary-domain pages (loyalty, subscriptions, surveys, visitors,
+warranty/RMA, verticals, helpdesk, documents, esign, appointments) never
+touch the canonical database the Golden Workshop Dataset feeds, which would
+explain a lot of thin/empty readings across those domains beyond what any
+fixture expansion can fix.
+
 ## 6. `scenario_planner` (P2) confirmed as a generic-shell template, not a real page
 
 `modules/enterprise-suite.js` implements `scenario_planner` via the same

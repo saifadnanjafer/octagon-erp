@@ -166,5 +166,24 @@ rows.filter((row) => !row.needsFix).forEach((row) => {
 md.push('');
 fs.writeFileSync(P('docs', 'product', 'PAGE_RUNTIME_ERROR_LEDGER.md'), `${md.join('\n')}\n`, 'utf8');
 
+// Machine-readable twin, for tests/functional-pages to assert against
+// without re-parsing markdown.
+const jsonOut = {
+  generatedAt: new Date().toISOString(),
+  generator: 'scripts/product/build-runtime-error-ledger.mjs',
+  totalSignatures: rows.length,
+  needsFixCount: needsFixRows.length,
+  categoryCounts,
+  needsFix: needsFixRows.map((row) => ({
+    kind: row.kind,
+    signature: row.kind === 'network' ? `${row.status} ${row.method} ${row.path}` : row.text,
+    category: row.category,
+    note: row.note,
+    pageCount: row.pageCount,
+    retainedP0P1Pages: row.retainedP0P1Pages,
+  })),
+};
+fs.writeFileSync(P('docs', 'product', 'PAGE_RUNTIME_ERROR_LEDGER.json'), `${JSON.stringify(jsonOut, null, 2)}\n`, 'utf8');
+
 console.log(`Runtime error ledger: ${rows.length} unique signatures (${needsFixRows.length} on retained P0/P1 pages) -> docs/product/PAGE_RUNTIME_ERROR_LEDGER.md`);
 console.log(`  categories: ${JSON.stringify(categoryCounts)}`);

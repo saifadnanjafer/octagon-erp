@@ -30,6 +30,7 @@
     "test:navigation-visual": "node scripts/navigation/run-visual-acceptance.mjs",
     "test:navigation-regression": "node --test \"tests/navigation/*.test.mjs\"",
     "test:page-consolidation": "node --test \"tests/page-consolidation/*.test.mjs\"",
+    "test:functional-pages": "node --test \"tests/functional-pages/*.test.mjs\"",
     "product:inspect-pages": "node scripts/product/inspect-pages.mjs",
     "product:ledger": "node scripts/product/build-ledger.mjs",
     "product:reality-ledger": "node scripts/product/build-reality-ledger.mjs",

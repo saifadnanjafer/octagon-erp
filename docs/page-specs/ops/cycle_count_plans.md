@@ -1,28 +1,29 @@
 ---
 page_id: "cycle_count_plans"
 title_en: "Cycle Count Plans"
-title_ar: "خطط الجرد الدوري"
+title_ar: ""
 domain: "ops"
-navigation_group: "ops_warehouse_fulfillment"
+navigation_group: "ops_inventory"
 kind: SETUP
-canonical_status: PRIMARY
+canonical_status: "PRIMARY"
 canonical_home: "cycle_count_plans"
 parent_page: null
 aliases: []
-roles: ["workshop.manager"]
-permission: "workshop.manager"
-entitlement: "none/global (not a commercial/SaaS-gated page)"
+roles: ["workshop.user"]
+permission: "workshop.user"
+entitlement: "none/global"
 renderer_type: "javascript"
 renderer_sources: ["modules/build09-count-workspace.js"]
 view_sources: []
-api_sources: []
-domain_sources: ["modules/build09-count-workspace.js","services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/build-09/build09-workspaces-contract.test.mjs","tests/build-09/build09r2-bespoke-contract.test.mjs","tests/build-09/count-workspaces-browser.test.mjs","tests/build-09/operational-32-page-matrix-chromium.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["platform/api/build09.mjs"]
+domain_sources: ["modules/build09-count-workspace.js", "platform/wms/index.mjs", "platform/wms/cycle-counting.mjs"]
+tables_or_entities: ["wms_count_plans_v2"]
+test_sources: ["tests/build-09/cycle-counting-domain.test.mjs", "tests/build-09/count-workspaces-browser.test.mjs", "tests/build-09/operational-32-page-matrix-chromium.test.mjs"]
+catalog_baseline_sha: "aa730dd23462aab3e90b70ad2db1bf6cc945ca99"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
 functional_status: "CONNECTED"
 usability_status: "USABLE"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
@@ -30,157 +31,146 @@ review_status: "REQUIRES_PRODUCT_RECOVERY"
 
 # 1. Identity
 
-- Page ID: `cycle_count_plans`
-- English: Cycle Count Plans
-- Arabic: خطط الجرد الدوري
-- Domain: `ops`; navigation group: `ops_warehouse_fulfillment`
-- Route: switchPage('cycle_count_plans') / views/cycle_count_plans.html
-- Page type: SETUP
+- Page ID: `cycle_count_plans`; English: Cycle Count Plans; domain: `ops`; navigation group: `ops_inventory`.
+- Route: `switchPage('cycle_count_plans')`; page-specific renderer is `modules/build09-count-workspace.js`.
+- Canonical status: PRIMARY. Embedded tabs and compatibility aliases are not treated as separate pages.
 
 # 2. Business Purpose
 
-Cycle count plans — workshop/inventory (risk: high, phase: build09)
+Define blind or directed recurring count policies, tolerance, and next count dates for warehouse locations/products.
 
 # 3. Primary Users
 
-- Declared roles: workshop.manager
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: `workshop.user`.
+- Operational roles implied by the renderer/domain boundary: warehouse operator, reviewer/approver, and manager; exact role-to-action matrix remains a server-governance concern.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Cycle Count Plans workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+Complete the named operational workflow inside the active company and warehouse scope, with the page showing the resulting lifecycle state and any canonical handoff reference.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/cycle_count_plans.html. Static source counts at baseline: 9 headings, 10 button tags, 3 input/select/textarea controls, 0 tables, 3 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: modules/build09-count-workspace.js
-- Visible action inventory: (rendered by JS module — not statically inspectable)
-- Empty state: not verified (no view file to inspect — JS-rendered page)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer: `modules/build09-count-workspace.js`; the module registers a page-specific BUILD-09 workspace/override rather than relying on the generic table shell.
+- Data loading: `count-plans` through the governed Build-09 API/query boundary; mobile picking additionally uses the explicit pick-task GET route.
+- Primary actions exposed by this page: wms:count_plan_create.
+- Visible behavior: page-specific loading, empty/muted, status/badge, validation/error, and success or handoff panels are present where the workflow reaches them.
+- The page is operationally connected, but route activation alone is not persistence or isolation proof; this spec attributes those claims only to the cited domain and browser tests.
 
 # 6. Data Sources
 
-- UI → renderer: modules/build09-count-workspace.js
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: warehouse
+- UI → query/action boundary: `platform/api/build09.mjs`; every Build-09 query requires company context and an active warehouse belonging to that company.
+- Renderer/domain source: `modules/build09-count-workspace.js` → `cycleCounting.createCountPlan/listCountPlans`.
+- Persisted entities/tables: wms_count_plans_v2.
+- Warehouse scope is injected as `warehouse_id`; server code rejects missing or out-of-scope warehouses instead of trusting client labels.
 
 # 7. Actions
 
-- UI label: (rendered by JS module — not statically inspectable); action ID/API/domain handler/persistence: NOT VERIFIED by the baseline inventory.
-- UI label: ${esc(t('Start session', 'بدء جلسة'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Create count plan', 'إنشاء خطة جرد'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(row.freezeReference || row.id)} ${esc(row.sessionType)} · ${esc(num((row.lines || []).length, 0))} ${esc(t('lines', 'سطر'))} · ${esc(when(row.createdAt))} ${badge(row.blindCount ? t('blind', 'أعمى') : t('directed', 'موجّه'), row.blindCount ? 'info' : 'muted')}${statusBadge(row.status)}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(done ? t('Update', 'تحديث') : t('Record', 'تسجيل'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Submit count', 'تسليم الجرد'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Back to sessions', 'العودة للجلسات'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(row.freezeReference || row.id)} ${esc(num(row.varianceCount, 0))} ${esc(t('variances', 'فرق'))} · ${esc(when(row.updatedAt))} ${statusBadge(row.status)}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Request canonical adjustment', 'طلب التسوية الرسمية'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Approve variances', 'اعتماد الفروقات'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(t('Request recount', 'طلب إعادة الجرد'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- `wms:count_plan_create`
+
+- Each mutation is routed through `/api/v1/action/:actionId` (or the explicit governed API used by the mobile renderer), carries warehouse scope and idempotency where applicable, and is owned by the WMS/shop-floor/quality domain rather than by the page.
+- Canonical boundary: where the action is a request or acknowledgement, this page records the request/result reference; canonical Inventory or Quality remains authoritative for the stock/inspection effect.
 
 # 8. Inputs
 
-- Static controls: (rendered by JS module — not statically inspectable)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Governed selectors are used for warehouse locations/products where the renderer requires them; raw IDs are not sufficient evidence of authorization.
+- Operational inputs include the record identifier, barcode/product/lot/serial evidence, quantity/reason, status decision, or canonical result reference according to the page family.
+- Validation must reject missing required IDs, invalid quantities, warehouse mismatch, stale state, and maker-checker violations.
 
 # 9. Outputs
 
-The intended output is the page’s named Cycle Count Plans record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+- The page renders scoped records from `count-plans`, lifecycle/status badges, quantities and operational KPIs where applicable.
+- Mutations persist into wms_count_plans_v2 and refresh the query result; canonical handoff pages expose the returned request/result reference without claiming ownership of the canonical side effect.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: `count_session`, `variance_review`
+- Upstream: warehouse_topology.
+- Downstream: count_session.
+- Workflow edges above are taken from renderer query/action wiring and domain ownership, not from title similarity.
 
 # 11. States
 
-- LOADING: module source contains async loading paths; exact copy/state transitions require browser proof.
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified (no view file to inspect — JS-rendered page)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- LOADING: async query/action in progress; controls must be guarded against duplicate submission.
+- READY: scoped records or an actionable form are visible.
+- EMPTY: the page explains that no records/tasks/proposals exist in the current warehouse scope and offers the next valid action where the renderer supports one.
+- DENIED: permission or warehouse-scope failure is rendered as a denied/error state; client navigation is not treated as authorization proof.
+- VALIDATION_ERROR: missing required barcode/ID, invalid quantity, stale state, or maker-checker violation.
+- SERVER_ERROR: API/domain failure remains visible and recoverable without inventing a success state.
+- SUCCESS/HANDOFF: resulting status and canonical reference are shown after the domain operation succeeds.
+- Domain status vocabulary is page-specific and is defined by the cited WMS/shop-floor/quality handler; do not collapse request, approved, awaiting_canonical, and completed into one state.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.manager
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client gate: `workshop.user`; server resource permission is mapped in `BUILD09_RESOURCE_PERMISSIONS` for the relevant resource family.
+- Required server context: `companyId` plus an active `warehouse_id` that belongs to that company. The handler injects `company_id` and `warehouse_id` into domain reads.
+- Mutations and approvals require action-specific authorization; a visible button is not proof that every role may execute it.
 
 # 13. Arabic / English
 
-- Arabic label: خطط الجرد الدوري
-- English label: Cycle Count Plans
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Cycle Count Plans; Arabic label is owned by the navigation/module localization layer and must remain paired with the visible English action/state label.
+- Any mojibake or missing translation in the inspected renderer is a usability defect, not a reason to infer a different business capability.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: list/detail or operational board must preserve scope, status, primary action, and error copy without horizontal loss.
+- Mobile/scanner: controls must keep scan inputs, quantity/reason fields, and next action visible; direct mobile behavior is required for the two scanner workspaces and remains an explicit gap elsewhere.
 
 # 15. AS-IS Functional Assessment
 
-**USABLE** — The baseline contains a page-specific JavaScript renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**ALREADY_IMPLEMENTED / CONNECTED / USABLE** — The engineering reference contains a page-specific renderer, the cited Build-09 query/action boundary, and domain persistence evidence. This does not claim that every target contract or browser lifecycle is complete; the gaps below are the remaining proof/reconciliation work.
 
 # 16. Target Business Contract
 
-The Cycle Count Plans workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+The page must load data for the active company/warehouse, expose only the actions appropriate to the current lifecycle state, persist through the named domain authority, show explicit loading/empty/denied/validation/server-error/success states, and preserve canonical ownership boundaries. A target implementation is not complete until the relevant lifecycle, permission/isolation, and browser evidence is attached.
 
 # 17. Identified Gaps
 
-- **PAGE-cycle_count_plans-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **PAGE-cycle_count_plans-GAP-001** (P1, ACTION) — plan activation/edit lifecycle is not equivalent to creation and must be explicitly reconciled
+- **PAGE-cycle_count_plans-GAP-002** (P1, FIXTURE) — browser evidence needs a plan that produces a non-empty count session
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `cycle_count_plans` unless a later owner decision records another home.
+- Remain a primary workspace: YES, pending owner review; the source navigation treats this as a primary destination and the renderer owns a distinct operational workflow.
+- Do not consolidate solely because another page shares a query or table. Shared WMS resources are expected; independent user goals and lifecycle boundaries remain separate.
+- Canonical home: `cycle_count_plans` unless a later owner decision explicitly changes the navigation contract.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `cycle_count_plans` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Cycle Count Plans workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error, page-specific surface in the active warehouse scope.
+- Query results and mutation responses are company/warehouse isolated on the server.
+- The primary workflow is executable with required validation and explicit state transitions; canonical handoffs show their request/result boundary.
+- The cited focused contract/domain/browser tests pass, and a direct browser lifecycle proves the highest-risk transition identified above.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/build-09/build09-workspaces-contract.test.mjs, tests/build-09/build09r2-bespoke-contract.test.mjs, tests/build-09/count-workspaces-browser.test.mjs, tests/build-09/operational-32-page-matrix-chromium.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- STATIC/CONTRACT: `modules/build09-count-workspace.js`, `platform/api/build09.mjs`, `platform/wms/index.mjs`.
+- BUILD-09 test sources:
+- `tests/build-09/cycle-counting-domain.test.mjs`
+- `tests/build-09/count-workspaces-browser.test.mjs`
+- `tests/build-09/operational-32-page-matrix-chromium.test.mjs`
+- The 231-page navigation audit is route/visible-surface evidence only; it is not substituted for action, persistence, or isolation proof.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `aa730dd23462aab3e90b70ad2db1bf6cc945ca99`; engineering reference researched: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- This is documentation-only reconciliation. It does not modify engineering source, tests, migrations, or product documentation.
+- Fixture availability and current server runtime state are not inferred from source wiring; they must be proven by the cited tests or a future direct browser run.
 
 # 22. Source Evidence
 
 - `modules/build09-count-workspace.js`
-- `index.html`
+- `platform/api/build09.mjs`
+- `platform/wms/index.mjs`
 - `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `cycleCounting.createCountPlan` → `listCountPlans`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 2 continuation: deepened from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; preserved catalog baseline `aa730dd23462aab3e90b70ad2db1bf6cc945ca99`.
 
 ## CAPABILITIES OWNED
 
-- Cycle Count Plans workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED, NOT VERIFIED.
+- Cycle Count Plans page-specific presentation, validation, and lifecycle orchestration at the cited module boundary.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- Build-09 scoped resources, action executor, domain persistence, canonical Inventory/Quality authority where applicable, and warehouse/company permission enforcement.

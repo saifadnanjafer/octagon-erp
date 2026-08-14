@@ -4,175 +4,169 @@ title_en: "Income"
 title_ar: "الواردات"
 domain: "finance"
 navigation_group: "finance_accounts"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "income"
 parent_page: null
 aliases: []
 roles: ["finance.user"]
 permission: "finance.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/income.html"]
+renderer_type: "page-specific-or-generic-shell"
+renderer_sources: ["app.js"]
 view_sources: ["views/income.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/build-01/rma-foundation.test.mjs","tests/checkpoint-c/pos_atomic_lifecycle.test.mjs","tests/checkpoint-c/procurement_lifecycle.test.mjs","tests/checkpoint-c/sales_lifecycle.test.mjs","tests/checkpoint-d-e/engineering_bom_routing_mrp.test.mjs","tests/checkpoint-d-e/manufacturing_orders.test.mjs","tests/phase03/finance-closure-audit.test.mjs","tests/phase03/finance-ui-parity.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["No page-specific /api/v1 route verified; local finance state and FinanceService candidates"]
+domain_sources: ["platform/finance/engine.mjs","app.js legacy finance helpers"]
+tables_or_entities: ["finance.transactions local object","account_moves canonical candidate","finance_documents canonical candidate","finance.transactions local object","finance_documents","finance_document_lines"]
+test_sources: ["tests/phase03/finance-browser-evidence.test.mjs","tests/phase03/finance-final-cutover.test.mjs"]
+catalog_baseline_sha: "10152af1772bf9efba43cc42bb4226b73b63abca"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
-evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
-functional_status: "CONNECTED"
-usability_status: "USABLE"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 4
+evidence_confidence: "MEDIUM"
+implementation_status: "IMPLEMENTED_OR_PRESENT_AT_ENGINEERING_REFERENCE"
+functional_status: "PARTIALLY_CONNECTED"
+usability_status: "THIN"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `income`
-- English: Income
-- Arabic: الواردات
-- Domain: `finance`; navigation group: `finance_accounts`
-- Route: switchPage('income') / views/income.html
-- Page type: PAGE
+- Page ID: `income`; English: Income; domain: `finance`; navigation group: `finance_accounts`.
+- Route: `switchPage('income')`; view: `views/income.html`; renderer evidence: `app.js`.
+- Canonical status: PRIMARY; this page is a primary navigation destination, not an embedded tab.
 
 # 2. Business Purpose
 
-Income — finance (risk: high, phase: core)
+A finance user opens Income to review income receipts and categories while preserving Finance document/source ownership.
 
 # 3. Primary Users
 
-- Declared roles: finance.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: finance.user.
+- Operational roles: owner/operator/reviewer/approver/manager split is NOT VERIFIED from page-specific evidence.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Income workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A finance user opens Income to review income receipts and categories while preserving Finance document/source ownership.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/income.html. Static source counts at baseline: 3 headings, 3 button tags, 6 input/select/textarea controls, 1 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/income.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- View: `views/income.html`; renderer: `app.js generic/legacy surface`.
+- API/query boundary: No page-specific /api/v1 route verified; local finance state and FinanceService candidates.
+- AS-IS classification: **PARTIALLY_CONNECTED**; usability: **THIN**.
+- Primary actions:
+- Create/edit income -> local addFinanceTransaction — permission: server authorization required; persistence: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
+- View totals -> local summary and Finance candidate — permission: server authorization required; persistence: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
+- Navigation activation is not persistence, isolation, lifecycle, or release proof.
 
 # 6. Data Sources
 
-- UI → renderer: views/income.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `No page-specific /api/v1 route verified; local finance state and FinanceService candidates`.
+- Domain authority: `platform/finance/engine.mjs; app.js legacy finance helpers`.
+- Tables/entities where evidence permits: `finance.transactions local object`, `account_moves canonical candidate`, `finance_documents canonical candidate`, `finance.transactions local object`, `finance_documents`, `finance_document_lines`.
+- Scope requirements: company, branch, period, currency, actor, and role scope must be server-derived where applicable; local-only rows are not canonical posted facts.
 
 # 7. Actions
 
-- UI label: إضافة أمثلة تجريبية; handler/action ID: addFinanceDemoData(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: تسجيل الوارد; handler/action ID: addIncomeFromForm(); permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: فتح لوحة الأدمن; handler/action ID: switchPage(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- Create/edit income -> local addFinanceTransaction — permission: server authorization required; persistence: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
+- View totals -> local summary and Finance candidate — permission: server authorization required; persistence: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Business inputs vary by page: company/group/period, account mapping, amount/date/source document, bank or facility reference, reconciliation decision, workflow definition, tax period, or device/session context.
+- Raw IDs must not bypass tenant, company, period, actor, maker-checker, lifecycle, or entitlement validation.
+- For local or NOT_VERIFIED surfaces, inputs must be treated as provisional until a canonical API/domain persistence proof exists.
 
 # 9. Outputs
 
-The intended output is the page’s named Income record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+A finance user opens Income to review income receipts and categories while preserving Finance document/source ownership. Expected output: scoped records, decision state, durable source reference, report, alert, or device/session state as appropriate. Exact persisted result is partly evidenced by the cited domain.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: `admin_panel`
+- Upstream: local finance object; manual entry or imported source.
+- Downstream: cashbox; income/expense reporting; Finance candidate.
+- Cross-page edge status: PARTIAL/NOT_VERIFIED; no unproven handoff is treated as complete.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- LOCAL_DRAFT, LOCAL_SAVED, POSTED_NOT_VERIFIED, DENIED_NOT_VERIFIED.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain distinct where supported.
+- Lifecycle authority: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
 
 # 12. Permissions & Scope
 
-- Client page gate: finance.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client gate: finance.user.
+- Server authorization and scope: action/resource permission plus company/branch/period/actor/entitlement rules as applicable; direct page isolation is NOT VERIFIED.
+- Approval roles must remain separate from requestor roles; local UI controls are not authorization proof.
 
 # 13. Arabic / English
 
-- Arabic label: الواردات
-- English label: Income
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English: Income; Arabic: الواردات.
+- Every primary action, state, error, and report period needs a visible bilingual label; mojibake or missing state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve period/company scope, record identity, status, decision, totals, and primary action.
+- Mobile/kiosk: where applicable, prove the smallest safe action, offline/entitlement state, retry, and audit result; direct responsive proof is NOT VERIFIED unless cited in tests.
 
 # 15. AS-IS Functional Assessment
 
-**USABLE** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**PARTIALLY_CONNECTED / THIN** — The page has a meaningful renderer/domain boundary, but remaining gaps prevent release closure.
 
 # 16. Target Business Contract
 
-The Income workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A finance user opens Income to review income receipts and categories while preserving Finance document/source ownership. The target contract is a scoped, page-specific workflow that loads authoritative data, exposes lifecycle-valid actions, persists through **Finance engine should own posted facts; current legacy page surface is not a safe independent writer.**, produces a durable result/reference, and makes missing, denied, stale, validation, and server-error states explicit.
 
 # 17. Identified Gaps
 
-- **PAGE-income-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **income-W4-01** (P0, AUTHORITY_CONFLICT) — The legacy page can use local finance helpers while Finance engine owns documents, journals, and hash-chain posting. **Required next step:** Freeze or migrate the writer through an idempotent Finance source-fact contract.
+- **income-W4-02** (P1, ISOLATION_GAP) — Company, branch, period, actor, and audit scope are not proven for the local page surface. **Required next step:** Add scoped browser/API evidence before allowing operational use.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `income` unless a later owner decision records another home.
+- Recommended disposition: **RETIRE_OR_MIGRATE**.
+- Keep separate only when the user goal and lifecycle authority are distinct. Shared Finance tables or adjacent page titles do not prove duplication.
+- Current authority decision: Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `income` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Income workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error surface with explicit scope and freshness.
+- Each primary action validates required inputs, authorization, lifecycle, idempotency, and maker-checker rules, then displays the durable resulting state.
+- A direct browser/API/domain test proves the highest-risk transition and persistence; navigation-only proof is insufficient.
+- For this page: A finance user opens Income to review income receipts and categories while preserving Finance document/source ownership.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/build-01/rma-foundation.test.mjs, tests/checkpoint-c/pos_atomic_lifecycle.test.mjs, tests/checkpoint-c/procurement_lifecycle.test.mjs, tests/checkpoint-c/sales_lifecycle.test.mjs, tests/checkpoint-d-e/engineering_bom_routing_mrp.test.mjs, tests/checkpoint-d-e/manufacturing_orders.test.mjs, tests/phase03/finance-closure-audit.test.mjs, tests/phase03/finance-ui-parity.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: STATIC/DOMAIN/CONTRACT references listed below; direct page lifecycle is bounded.
+- `tests/phase03/finance-browser-evidence.test.mjs`
+- `tests/phase03/finance-final-cutover.test.mjs`
+- Source files verified at engineering reference:
+- `views/income.html`
+- `platform/finance/engine.mjs`
+- `tests/phase03/finance-browser-evidence.test.mjs`
+- `tests/phase03/finance-final-cutover.test.mjs`
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog starting SHA: `10152af1772bf9efba43cc42bb4226b73b63abca`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 4 is documentation-only; no engineering source, product test, migration, runtime data, or navigation file was changed.
+- A domain test does not automatically prove that this navigation page is wired to that domain.
 
 # 22. Source Evidence
 
 - `views/income.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `platform/finance/engine.mjs`
+- `tests/phase03/finance-browser-evidence.test.mjs`
+- `tests/phase03/finance-final-cutover.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 4 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Waves 2-3 were preserved and not redone.
 
 ## CAPABILITIES OWNED
 
-- Income workspace presentation and its explicitly verified page-specific actions: addFinanceDemoData(, addIncomeFromForm(), switchPage(.
+- Finance engine should own posted facts; current legacy page surface is not a safe independent writer.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- local finance object; manual entry or imported source; cashbox; income/expense reporting; Finance candidate

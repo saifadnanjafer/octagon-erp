@@ -49,3 +49,27 @@
 - Correct and regression-test the readiness table authority.
 - Prove the three high-value flow chains in `BUSINESS_FLOW_MAP.md` before creating more pages.
 - Keep Finance as the sole GL writer and require source-document/idempotency references for every operational handoff.
+
+# Wave 4 — Engineering Handoff
+
+## Reference and scope
+
+- Catalog starting SHA: `10152af1772bf9efba43cc42bb4226b73b63abca`.
+- Engineering reference SHA: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Deep-reviewed pages: **26**; Waves 2-3 preserved.
+- Documentation-only scope: `docs/page-specs/**` in the isolated catalog worktree.
+
+## Highest-value findings
+
+1. **P0 Finance authority:** local Cashbox/Expenses/Income helpers remain visible beside canonical Finance documents and journal posting. Treat local rows as legacy/provisional until migrated or retired.
+2. **P0 Workflow authority:** durable WorkflowRegistry/WorkflowRuntime is a strong canonical runtime, but the legacy canvas/localStorage surface must become an adapter with publication/run proof.
+3. **P1 Finance page wiring:** domain APIs and tests exist, but many finance navigation pages lack page-specific API evidence; do not infer functionality from shared backend existence.
+4. **P1 Consolidation/Treasury/Intercompany:** domain boundaries are present and tested, but page-level lifecycle and isolation edges remain incomplete.
+5. **P1 Service Kiosk and Tax:** domain/test evidence exists; direct page-to-domain handoffs and source lineage still need bounded proof.
+
+## Recommended next implementation order
+
+- Resolve P0 Finance and Workflow authority conflicts before adding more local actions.
+- Select canonical consolidation group/run/report hierarchy and treasury proposal execution contract.
+- Prove intercompany pair isolation and Procurement-to-AP closure from the prior wave.
+- Attach direct page browser/API evidence to the pages currently classified THIN or PARTIALLY_CONNECTED.

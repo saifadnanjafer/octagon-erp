@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 3,
-  "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
+  "schemaVersion": 4,
+  "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
   "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
   "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-  "generatedAt": "2026-08-14T11:35:20.928Z",
+  "generatedAt": "2026-08-14T11:48:28.496Z",
   "primaryWorkspaceCount": 231,
   "embeddedTabs": [
     "calculator",
@@ -25,22 +25,38 @@
       "specPath": "./finance/account_mapping.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "account_mapping:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/account_mapping.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "admin_panel",
@@ -457,26 +473,17 @@
       "specPath": "./resources/approvals.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "sales/procurement/project/finance request"
-      ],
-      "downstream": [
-        "quotation/order/requisition/budget/finance state"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Governance approval events are authoritative for decision; target domain owns the business record."
+        "approvals:workspace"
       ],
       "capabilitiesConsumed": [
-        "sales/procurement/project/finance request",
-        "quotation/order/requisition/budget/finance state"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Approvals renderer (source path NOT VERIFIED)",
-        "views/approvals.html",
-        "GET /api/v1/approvals; POST /api/v1/action/approval:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -493,36 +500,17 @@
       "specPath": "./finance/ar_ap.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "posted sales invoices",
-        "posted supplier bills",
-        "payments"
-      ],
-      "downstream": [
-        "collections",
-        "supplier payment",
-        "reconciliation",
-        "reports"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Finance engine owns AR/AP open items, aging, holds, and allocations."
+        "ar_ap:workspace"
       ],
       "capabilitiesConsumed": [
-        "posted sales invoices",
-        "posted supplier bills",
-        "payments",
-        "collections",
-        "supplier payment",
-        "reconciliation",
-        "reports"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "AR/AP renderer (source path NOT VERIFIED)",
-        "views/ar_ap.html",
-        "GET /api/v1/finance/ar|ap/*; POST /api/v1/action/finance_ar|finance_ap:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -620,22 +608,38 @@
       "specPath": "./finance/banking.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted source facts",
+        "company/branch/period scope"
+      ],
+      "downstream": [
+        "AR/AP",
+        "treasury",
+        "reports",
+        "tax/compliance"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "banking:workspace"
+        "Finance engine is the canonical accounting authority and sole GL writer."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted source facts",
+        "company/branch/period scope",
+        "AR/AP",
+        "treasury",
+        "reports",
+        "tax/compliance"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/banking.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "billing_simulator",
@@ -674,22 +678,38 @@
       "specPath": "./finance/budgeting.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted source facts",
+        "company/branch/period scope"
+      ],
+      "downstream": [
+        "AR/AP",
+        "treasury",
+        "reports",
+        "tax/compliance"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "budgeting:workspace"
+        "Finance engine is the canonical accounting authority and sole GL writer."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted source facts",
+        "company/branch/period scope",
+        "AR/AP",
+        "treasury",
+        "reports",
+        "tax/compliance"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "modules/budgeting.js",
+        "views/budgeting.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "calendar",
@@ -807,24 +827,38 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./finance/cashbox.md",
-      "functionalStatus": "CONNECTED",
-      "usabilityStatus": "USABLE",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "functionalStatus": "PARTIALLY_CONNECTED",
+      "usabilityStatus": "THIN",
+      "recommendedDisposition": "RETIRE_OR_MIGRATE",
+      "upstream": [
+        "local finance object",
+        "manual entry or imported source"
+      ],
+      "downstream": [
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "cashbox:workspace"
+        "Finance engine should own posted facts; current legacy page surface is not a safe independent writer."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "local finance object",
+        "manual entry or imported source",
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/cashbox.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "clinic",
@@ -998,22 +1032,38 @@
       "specPath": "./finance/consolidated_reports.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "consolidated_reports:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/consolidated_reports.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "consolidation_groups",
@@ -1025,22 +1075,38 @@
       "specPath": "./finance/consolidation_groups.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "consolidation_groups:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/consolidation_groups.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "consolidation_lineage",
@@ -1052,22 +1118,38 @@
       "specPath": "./finance/consolidation_lineage.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "consolidation_lineage:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/consolidation_lineage.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "consolidation_runs",
@@ -1079,22 +1161,38 @@
       "specPath": "./finance/consolidation_runs.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "consolidation_runs:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/consolidation_runs.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "content_approvals",
@@ -1104,24 +1202,40 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./commercial/content_approvals.md",
-      "functionalStatus": "CONNECTED",
-      "usabilityStatus": "STRONG",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "functionalStatus": "THIN",
+      "usabilityStatus": "THIN",
+      "recommendedDisposition": "OWNER_DECISION_REQUIRED",
+      "upstream": [
+        "registered actions",
+        "permissions",
+        "workflow canvas definition"
+      ],
+      "downstream": [
+        "approved target actions",
+        "outbox/external effects",
+        "audit"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "content_approvals:workspace"
+        "Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "registered actions",
+        "permissions",
+        "workflow canvas definition",
+        "approved target actions",
+        "outbox/external effects",
+        "audit"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/approvals.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "content_calendar",
@@ -1160,32 +1274,17 @@
       "specPath": "./resources/contracts.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "OWNER_DECISION_REQUIRED",
-      "upstream": [
-        "customer/vendor/service context NOT VERIFIED"
-      ],
-      "downstream": [
-        "sales_contracts",
-        "procurement",
-        "projects",
-        "finance"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "UNKNOWN; do not allow parallel writes."
+        "contracts:workspace"
       ],
       "capabilitiesConsumed": [
-        "customer/vendor/service context NOT VERIFIED",
-        "sales_contracts",
-        "procurement",
-        "projects",
-        "finance"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Contracts renderer (source path NOT VERIFIED)",
-        "views/contracts.html",
-        "NOT VERIFIED in page-specific evidence"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -1256,32 +1355,17 @@
       "specPath": "./commercial/customer_portal.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "party/portal identity",
-        "sales and finance documents"
-      ],
-      "downstream": [
-        "sales support",
-        "warranty",
-        "finance requests"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Portal grants control visibility; source sales/finance domains own records."
+        "customer_portal:workspace"
       ],
       "capabilitiesConsumed": [
-        "party/portal identity",
-        "sales and finance documents",
-        "sales support",
-        "warranty",
-        "finance requests"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Customer portal renderer (source path NOT VERIFIED)",
-        "views/customer_portal.html",
-        "GET /api/v1/commercial/portal/*; POST /api/v1/action/portal:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -1298,32 +1382,17 @@
       "specPath": "./finance/customers.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "CONSOLIDATE_WITH_PARTIES_REVIEW",
-      "upstream": [
-        "parties",
-        "posted finance documents"
-      ],
-      "downstream": [
-        "sales",
-        "ar_ap",
-        "customer_portal"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Parties owns identity; Finance owns balances/open items."
+        "customers:workspace"
       ],
       "capabilitiesConsumed": [
-        "parties",
-        "posted finance documents",
-        "sales",
-        "ar_ap",
-        "customer_portal"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/canonical-sales.js",
-        "views/customers_and_suppliers.html",
-        "GET /api/v1/commercial/parties?role=customer; GET /api/v1/finance/*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -1799,22 +1868,38 @@
       "specPath": "./finance/eliminations.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping"
+      ],
+      "downstream": [
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "eliminations:workspace"
+        "Consolidation domain should own group, run, elimination, and lineage state; Finance owns source journals."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company/group hierarchy",
+        "posted company ledgers",
+        "account mapping",
+        "consolidated reports",
+        "audit lineage",
+        "management decisions"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/eliminations.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "employee_kiosk",
@@ -1826,22 +1911,38 @@
       "specPath": "./ops/employee_kiosk.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "upstream": [
+        "device registration",
+        "identity/entitlement",
+        "offline sync state"
+      ],
+      "downstream": [
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "employee_kiosk:workspace"
+        "Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "device registration",
+        "identity/entitlement",
+        "offline sync state",
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/kiosk.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "employee_mobile",
@@ -2148,24 +2249,38 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./finance/expenses.md",
-      "functionalStatus": "CONNECTED",
-      "usabilityStatus": "USABLE",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "functionalStatus": "PARTIALLY_CONNECTED",
+      "usabilityStatus": "THIN",
+      "recommendedDisposition": "RETIRE_OR_MIGRATE",
+      "upstream": [
+        "local finance object",
+        "manual entry or imported source"
+      ],
+      "downstream": [
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "expenses:workspace"
+        "Finance engine should own posted facts; current legacy page surface is not a safe independent writer."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "local finance object",
+        "manual entry or imported source",
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/expenses.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "expiration_queue",
@@ -2258,32 +2373,17 @@
       "specPath": "./commercial/field_service.md",
       "functionalStatus": "PARTIALLY_CONNECTED",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "CONSOLIDATE_WITH_SERVICE_REVIEW",
-      "upstream": [
-        "customer/site/technician",
-        "service queue"
-      ],
-      "downstream": [
-        "finance",
-        "warranty/RMA",
-        "work orders"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Current authority is local/unclear; Finance must remain the only GL writer."
+        "field_service:workspace"
       ],
       "capabilitiesConsumed": [
-        "customer/site/technician",
-        "service queue",
-        "finance",
-        "warranty/RMA",
-        "work orders"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/field-service.js",
-        "views/field_service.html",
-        "No canonical field-service API shown; local omni.fieldService state and finance bridge"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -2300,38 +2400,17 @@
       "specPath": "./finance/finance.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "sales invoice requests",
-        "procurement bills",
-        "project billing",
-        "payments"
-      ],
-      "downstream": [
-        "AR/AP reports",
-        "customer/supplier balances",
-        "tax/compliance",
-        "management reporting"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Finance engine is the sole GL writer and canonical AR/AP authority."
+        "finance:workspace"
       ],
       "capabilitiesConsumed": [
-        "sales invoice requests",
-        "procurement bills",
-        "project billing",
-        "payments",
-        "AR/AP reports",
-        "customer/supplier balances",
-        "tax/compliance",
-        "management reporting"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Finance renderer (source path NOT VERIFIED)",
-        "views/finance.html",
-        "GET /api/v1/finance/*; POST /api/v1/action/finance:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -2348,26 +2427,17 @@
       "specPath": "./finance/finance_installments.md",
       "functionalStatus": "SIMULATED_BY_DESIGN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "RETIRE_OR_MIGRATE",
-      "upstream": [
-        "local customer list and manually entered total"
-      ],
-      "downstream": [
-        "local late view; canonical AR/payment allocation NOT VERIFIED"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Current local authority is not acceptable for financial posting; Finance AR must own result."
+        "finance_installments:workspace"
       ],
       "capabilitiesConsumed": [
-        "local customer list and manually entered total",
-        "local late view; canonical AR/payment allocation NOT VERIFIED"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/finance-installments.js",
-        "views/finance_installments.html",
-        "No /api/v1 call; omni.finance.installmentPlans and saveData/local state"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -2384,22 +2454,38 @@
       "specPath": "./finance/financing_facilities.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data"
+      ],
+      "downstream": [
+        "payment funding",
+        "cash management",
+        "management reporting"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "financing_facilities:workspace"
+        "Treasury planning domain owns forecasts, funding proposals, facilities, alerts, and cash position views; Finance owns posted cash facts."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data",
+        "payment funding",
+        "cash management",
+        "management reporting"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/financing_facilities.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "firmware_catalogue",
@@ -2519,30 +2605,17 @@
       "specPath": "./ops/fleet_operations_board.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "STRENGTHEN",
-      "upstream": [
-        "fleet/asset/maintenance state"
-      ],
-      "downstream": [
-        "delivery",
-        "field_service",
-        "workshop readiness"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Fleet domain candidate; readiness consumes fleet checks but does not own fleet mutations."
+        "fleet_operations_board:workspace"
       ],
       "capabilitiesConsumed": [
-        "fleet/asset/maintenance state",
-        "delivery",
-        "field_service",
-        "workshop readiness"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Fleet operations renderer (source path NOT VERIFIED)",
-        "Fleet operations view (source path NOT VERIFIED)",
-        "GET /api/v1/fleet/*; exact page wiring NOT VERIFIED"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -2908,24 +2981,38 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./finance/income.md",
-      "functionalStatus": "CONNECTED",
-      "usabilityStatus": "USABLE",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "functionalStatus": "PARTIALLY_CONNECTED",
+      "usabilityStatus": "THIN",
+      "recommendedDisposition": "RETIRE_OR_MIGRATE",
+      "upstream": [
+        "local finance object",
+        "manual entry or imported source"
+      ],
+      "downstream": [
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "income:workspace"
+        "Finance engine should own posted facts; current legacy page surface is not a safe independent writer."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "local finance object",
+        "manual entry or imported source",
+        "cashbox",
+        "income/expense reporting",
+        "Finance candidate"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/income.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "integration_hub",
@@ -2991,22 +3078,36 @@
       "specPath": "./finance/intercompany_reconciliation.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company pair/group configuration",
+        "source company entries"
+      ],
+      "downstream": [
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "intercompany_reconciliation:workspace"
+        "Intercompany operations owns agreement, mismatch, and reconciliation workflow; Finance owns each company ledger posting."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company pair/group configuration",
+        "source company entries",
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/intercompany_reconciliation.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "intercompany_transactions",
@@ -3018,22 +3119,36 @@
       "specPath": "./finance/intercompany_transactions.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company pair/group configuration",
+        "source company entries"
+      ],
+      "downstream": [
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "intercompany_transactions:workspace"
+        "Intercompany operations owns agreement, mismatch, and reconciliation workflow; Finance owns each company ledger posting."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company pair/group configuration",
+        "source company entries",
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/intercompany_transactions.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "inventory",
@@ -3093,28 +3208,44 @@
       "pageId": "kiosk_device_registry",
       "title": "Kiosk Device Registry",
       "domain": "ops",
-      "kind": "KIOSK",
+      "kind": "SETUP",
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./ops/kiosk_device_registry.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "upstream": [
+        "device registration",
+        "identity/entitlement",
+        "offline sync state"
+      ],
+      "downstream": [
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "kiosk_device_registry:workspace"
+        "Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "device registration",
+        "identity/entitlement",
+        "offline sync state",
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/kiosk.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "knowledge",
@@ -3207,22 +3338,38 @@
       "specPath": "./finance/liquidity_forecast.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data"
+      ],
+      "downstream": [
+        "payment funding",
+        "cash management",
+        "management reporting"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "liquidity_forecast:workspace"
+        "Treasury planning domain owns forecasts, funding proposals, facilities, alerts, and cash position views; Finance owns posted cash facts."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data",
+        "payment funding",
+        "cash management",
+        "management reporting"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/liquidity_forecast.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "logistics",
@@ -3234,34 +3381,17 @@
       "specPath": "./resources/logistics.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "STRENGTHEN",
-      "upstream": [
-        "sales delivery demands",
-        "purchase receipt demands",
-        "warehouse scope"
-      ],
-      "downstream": [
-        "customer delivery",
-        "supplier receipt",
-        "finance valuation"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Inventory/WMS owns stock movement; Logistics should orchestrate or present it."
+        "logistics:workspace"
       ],
       "capabilitiesConsumed": [
-        "sales delivery demands",
-        "purchase receipt demands",
-        "warehouse scope",
-        "customer delivery",
-        "supplier receipt",
-        "finance valuation"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Logistics renderer (source path NOT VERIFIED)",
-        "views/logistics.html",
-        "GET /api/v1/commercial/warehouse/* and procurement/stock resources; exact page wiring NOT VERIFIED"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -3440,22 +3570,36 @@
       "specPath": "./finance/mismatch_queue.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "company pair/group configuration",
+        "source company entries"
+      ],
+      "downstream": [
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "mismatch_queue:workspace"
+        "Intercompany operations owns agreement, mismatch, and reconciliation workflow; Finance owns each company ledger posting."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "company pair/group configuration",
+        "source company entries",
+        "consolidation runs",
+        "eliminations",
+        "finance corrections"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/mismatch_queue.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "mobile_picking",
@@ -3629,40 +3773,17 @@
       "specPath": "./core/my_work.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "actor/company/warehouse scope",
-        "assigned source records"
-      ],
-      "downstream": [
-        "task_manager",
-        "warehouse_task_queue",
-        "picking_execution",
-        "mobile_cycle_count",
-        "shopfloor_terminal",
-        "quality_checkpoint",
-        "device_health_monitor"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "My Work is an orchestration/read surface; work_items and each source domain remain authoritative."
+        "my_work:workspace"
       ],
       "capabilitiesConsumed": [
-        "actor/company/warehouse scope",
-        "assigned source records",
-        "task_manager",
-        "warehouse_task_queue",
-        "picking_execution",
-        "mobile_cycle_count",
-        "shopfloor_terminal",
-        "quality_checkpoint",
-        "device_health_monitor"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/workshop-my-work.js",
-        "views/my_work.html",
-        "GET /api/v1/workshop/my-work"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -3868,34 +3989,17 @@
       "specPath": "./ops/parties.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "organization/company scope"
-      ],
-      "downstream": [
-        "sales",
-        "procurement",
-        "finance",
-        "customer_portal",
-        "warranty"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Parties domain and parties tables are canonical identity authority."
+        "parties:workspace"
       ],
       "capabilitiesConsumed": [
-        "organization/company scope",
-        "sales",
-        "procurement",
-        "finance",
-        "customer_portal",
-        "warranty"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/customers-and-suppliers.js",
-        "views/customers_and_suppliers.html",
-        "GET /api/v1/commercial/parties; POST /api/v1/action/party:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -3912,22 +4016,38 @@
       "specPath": "./finance/payment_funding_proposals.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data"
+      ],
+      "downstream": [
+        "payment funding",
+        "cash management",
+        "management reporting"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "payment_funding_proposals:workspace"
+        "Treasury planning domain owns forecasts, funding proposals, facilities, alerts, and cash position views; Finance owns posted cash facts."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data",
+        "payment funding",
+        "cash management",
+        "management reporting"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/payment_funding_proposals.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "people_development_overview",
@@ -4128,36 +4248,17 @@
       "specPath": "./resources/procurement.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "parties supplier role",
-        "products",
-        "warehouse",
-        "approval"
-      ],
-      "downstream": [
-        "warehouse receiving/quality",
-        "finance AP",
-        "material availability"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Procurement owns purchasing lifecycle; WMS/Inventory owns stock movement; Finance owns AP posting."
+        "procurement:workspace"
       ],
       "capabilitiesConsumed": [
-        "parties supplier role",
-        "products",
-        "warehouse",
-        "approval",
-        "warehouse receiving/quality",
-        "finance AP",
-        "material availability"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/canonical-procurement.js",
-        "views/procurement.html",
-        "GET /api/v1/procurement/*; POST /api/v1/action/procurement:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -4309,34 +4410,17 @@
       "specPath": "./resources/projects.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "customer/contract/sales context",
-        "work items"
-      ],
-      "downstream": [
-        "task_manager",
-        "procurement commitments",
-        "finance billing",
-        "delivery"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Projects owns project records; Work Items own tasks; Finance is the only GL writer."
+        "projects:workspace"
       ],
       "capabilitiesConsumed": [
-        "customer/contract/sales context",
-        "work items",
-        "task_manager",
-        "procurement commitments",
-        "finance billing",
-        "delivery"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/canonical-projects.js",
-        "views/projects.html",
-        "GET /api/v1/projects/*; POST /api/v1/action/projects:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -4866,38 +4950,17 @@
       "specPath": "./commercial/sales.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "parties",
-        "products",
-        "price lists",
-        "warehouse"
-      ],
-      "downstream": [
-        "logistics/delivery",
-        "finance/ar_ap",
-        "warranty/rma",
-        "customer_portal"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Sales owns commercial lifecycle; Inventory/WMS owns movement; Finance owns invoice/GL posting."
+        "sales:workspace"
       ],
       "capabilitiesConsumed": [
-        "parties",
-        "products",
-        "price lists",
-        "warehouse",
-        "logistics/delivery",
-        "finance/ar_ap",
-        "warranty/rma",
-        "customer_portal"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/canonical-sales.js",
-        "views/sales.html",
-        "GET /api/v1/commercial/sales/*; POST /api/v1/action/{crm,sales}:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -4941,26 +5004,17 @@
       "specPath": "./commercial/sales_contracts.md",
       "functionalStatus": "SIMULATED_BY_DESIGN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "CONSOLIDATE_WITH_CANONICAL_SALES",
-      "upstream": [
-        "customer/quotation context NOT VERIFIED"
-      ],
-      "downstream": [
-        "billing/service obligations NOT VERIFIED"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Canonical contract domain is the intended authority; current page is not connected."
+        "sales_contracts:workspace"
       ],
       "capabilitiesConsumed": [
-        "customer/quotation context NOT VERIFIED",
-        "billing/service obligations NOT VERIFIED"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/sales-contracts.js",
-        "views/sales_contracts.html",
-        "No /api/v1 call in module; browser/local storage save()"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -4977,30 +5031,17 @@
       "specPath": "./commercial/sales_price_lists.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "products/UOMs",
-        "company/currency"
-      ],
-      "downstream": [
-        "sales quotations/orders",
-        "customer portal"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Commercial pricing domain owns price-list records; Sales consumes resolved prices."
+        "sales_price_lists:workspace"
       ],
       "capabilitiesConsumed": [
-        "products/UOMs",
-        "company/currency",
-        "sales quotations/orders",
-        "customer portal"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/sales-price-lists.js",
-        "views/sales_price_lists.html",
-        "GET /api/v1/commercial/price-lists; POST /api/v1/action/price_list:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -5152,22 +5193,38 @@
       "specPath": "./ops/service_kiosk.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "upstream": [
+        "device registration",
+        "identity/entitlement",
+        "offline sync state"
+      ],
+      "downstream": [
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "service_kiosk:workspace"
+        "Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "device registration",
+        "identity/entitlement",
+        "offline sync state",
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/kiosk.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "service_queue_board",
@@ -5179,30 +5236,17 @@
       "specPath": "./ops/service_queue_board.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "service intake, customer, workshop job"
-      ],
-      "downstream": [
-        "task_manager",
-        "field_service",
-        "finance"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Queue owns routing state; service/workshop/finance domains own downstream effects."
+        "service_queue_board:workspace"
       ],
       "capabilitiesConsumed": [
-        "service intake, customer, workshop job",
-        "task_manager",
-        "field_service",
-        "finance"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Service queue renderer (source path NOT VERIFIED)",
-        "Service queue view (source path NOT VERIFIED)",
-        "GET /api/v1/service/queue; POST /api/v1/action/service:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -5462,30 +5506,17 @@
       "specPath": "./resources/supplier_portal.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "STRENGTHEN",
-      "upstream": [
-        "supplier party/portal grant",
-        "RFQ or purchase order"
-      ],
-      "downstream": [
-        "procurement award/order/receipt",
-        "AP"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Procurement remains authoritative; portal is a constrained participant."
+        "supplier_portal:workspace"
       ],
       "capabilitiesConsumed": [
-        "supplier party/portal grant",
-        "RFQ or purchase order",
-        "procurement award/order/receipt",
-        "AP"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Supplier portal renderer (source path NOT VERIFIED)",
-        "views/supplier_portal.html",
-        "NOT VERIFIED in page-specific evidence"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -5691,34 +5722,17 @@
       "specPath": "./ops/task_manager.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "workshop/my-work",
-        "project task request"
-      ],
-      "downstream": [
-        "my_work",
-        "projects",
-        "procurement",
-        "shopfloor_terminal"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Canonical Work Items own task lifecycle; project page delegates task creation to this authority."
+        "task_manager:workspace"
       ],
       "capabilitiesConsumed": [
-        "workshop/my-work",
-        "project task request",
-        "my_work",
-        "projects",
-        "procurement",
-        "shopfloor_terminal"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/canonical-work-management.js",
-        "views/task_manager.html",
-        "GET /api/v1/work-items; POST /api/v1/action/work_item:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -5733,24 +5747,40 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./finance/tax_compliance.md",
-      "functionalStatus": "THIN",
-      "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "functionalStatus": "PARTIALLY_CONNECTED",
+      "usabilityStatus": "USABLE",
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "upstream": [
+        "posted invoices/bills",
+        "tax configuration",
+        "period state"
+      ],
+      "downstream": [
+        "tax reports",
+        "filings/export",
+        "Finance reversals/corrections"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "tax_compliance:workspace"
+        "Finance tax computation and posting own tax facts; the tax page presents compliance workflow and reports."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted invoices/bills",
+        "tax configuration",
+        "period state",
+        "tax reports",
+        "filings/export",
+        "Finance reversals/corrections"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "modules/tax-compliance.js",
+        "views/tax_compliance.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "telegram",
@@ -5924,22 +5954,38 @@
       "specPath": "./finance/treasury_alerts.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data"
+      ],
+      "downstream": [
+        "payment funding",
+        "cash management",
+        "management reporting"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "treasury_alerts:workspace"
+        "Treasury planning domain owns forecasts, funding proposals, facilities, alerts, and cash position views; Finance owns posted cash facts."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data",
+        "payment funding",
+        "cash management",
+        "management reporting"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/treasury_alerts.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "treasury_cash_position",
@@ -5951,22 +5997,38 @@
       "specPath": "./finance/treasury_cash_position.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "STRENGTHEN",
+      "upstream": [
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data"
+      ],
+      "downstream": [
+        "payment funding",
+        "cash management",
+        "management reporting"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "treasury_cash_position:workspace"
+        "Treasury planning domain owns forecasts, funding proposals, facilities, alerts, and cash position views; Finance owns posted cash facts."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "posted finance cash facts",
+        "open AR/AP",
+        "bank feeds/manual cash data",
+        "payment funding",
+        "cash management",
+        "management reporting"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/treasury_cash_position.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "usage_and_quotas",
@@ -6113,22 +6175,38 @@
       "specPath": "./ops/warehouse_kiosk.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "STRONG",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "upstream": [
+        "device registration",
+        "identity/entitlement",
+        "offline sync state"
+      ],
+      "downstream": [
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "warehouse_kiosk:workspace"
+        "Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "device registration",
+        "identity/entitlement",
+        "offline sync state",
+        "shop-floor/warehouse/service actions",
+        "audit",
+        "offline export"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/kiosk.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "warehouse_large_screen",
@@ -6221,30 +6299,17 @@
       "specPath": "./commercial/warranty.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "STRENGTHEN",
-      "upstream": [
-        "party",
-        "sale order/product/serial evidence"
-      ],
-      "downstream": [
-        "field service/RMA",
-        "finance credit or service charge"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Sales warranty domain owns warranty state; service/RMA/Finance own effects."
+        "warranty:workspace"
       ],
       "capabilitiesConsumed": [
-        "party",
-        "sale order/product/serial evidence",
-        "field service/RMA",
-        "finance credit or service charge"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "Warranty renderer (source path NOT VERIFIED)",
-        "views/warranty.html",
-        "GET /api/v1/commercial/warranty; POST /api/v1/action/sales:warranty:*"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -6369,26 +6434,17 @@
       "specPath": "./ops/work_orders.md",
       "functionalStatus": "THIN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "STRENGTHEN",
-      "upstream": [
-        "customer/sales or workshop intake"
-      ],
-      "downstream": [
-        "shop-floor, quality, delivery, finance"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "UNKNOWN; do not treat this page as authoritative until source and persistence are recovered."
+        "work_orders:workspace"
       ],
       "capabilitiesConsumed": [
-        "customer/sales or workshop intake",
-        "shop-floor, quality, delivery, finance"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/workshop-frontline.js",
-        "views/work_orders.html",
-        "NOT VERIFIED in page module; legacy/local work-order surface"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -6430,24 +6486,40 @@
       "canonicalStatus": "PRIMARY",
       "parent": null,
       "specPath": "./ops/workflow.md",
-      "functionalStatus": "CONNECTED",
+      "functionalStatus": "PARTIALLY_CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "Retain and reconcile",
-      "upstream": [],
-      "downstream": [],
+      "recommendedDisposition": "CONSOLIDATE_WITH_CANONICAL_RUNTIME",
+      "upstream": [
+        "registered actions",
+        "permissions",
+        "workflow canvas definition"
+      ],
+      "downstream": [
+        "approved target actions",
+        "outbox/external effects",
+        "audit"
+      ],
       "aliases": [],
       "capabilitiesOwned": [
-        "workflow:workspace"
+        "Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only."
       ],
       "capabilitiesConsumed": [
-        "Existing catalog evidence"
+        "registered actions",
+        "permissions",
+        "workflow canvas definition",
+        "approved target actions",
+        "outbox/external effects",
+        "audit"
       ],
-      "sourceFiles": [],
-      "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+      "sourceFiles": [
+        "app.js",
+        "views/workflow.html"
+      ],
+      "catalogBaselineSha": "10152af1772bf9efba43cc42bb4226b73b63abca",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
-      "deepReviewWave": null,
-      "deepReviewStatus": "SHALLOW"
+      "deepReviewWave": 4,
+      "deepReviewStatus": "DEEP_REVIEWED"
     },
     {
       "pageId": "workshop_command_center",
@@ -6459,36 +6531,17 @@
       "specPath": "./ops/workshop_command_center.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "company/branch/warehouse context",
-        "workshop readiness"
-      ],
-      "downstream": [
-        "task_manager",
-        "warehouse_task_queue",
-        "picking_execution",
-        "quality_checkpoint",
-        "device_health_monitor"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Command-center aggregation is a read-only briefing; the target operational domain owns every mutation."
+        "workshop_command_center:workspace"
       ],
       "capabilitiesConsumed": [
-        "company/branch/warehouse context",
-        "workshop readiness",
-        "task_manager",
-        "warehouse_task_queue",
-        "picking_execution",
-        "quality_checkpoint",
-        "device_health_monitor"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/workshop-command-center.js",
-        "views/workshop_command_center.html",
-        "GET /api/v1/workshop/command-center"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -6505,28 +6558,17 @@
       "specPath": "./finance/workshop_ledger.md",
       "functionalStatus": "SIMULATED_BY_DESIGN",
       "usabilityStatus": "THIN",
-      "recommendedDisposition": "RETIRE_OR_MIGRATE",
-      "upstream": [
-        "workshop migration JSON",
-        "attendance/advance local state"
-      ],
-      "downstream": [
-        "cashbox/payroll/finance reports NOT VERIFIED"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Current local authority conflicts with canonical Finance; page must not be treated as posted accounting."
+        "workshop_ledger:workspace"
       ],
       "capabilitiesConsumed": [
-        "workshop migration JSON",
-        "attendance/advance local state",
-        "cashbox/payroll/finance reports NOT VERIFIED"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/workshop-ledger.js",
-        "views/workshop_ledger.html",
-        "Fetch /workshop_migration_data.json plus local import/actions; no canonical Finance API shown"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -6543,28 +6585,17 @@
       "specPath": "./commercial/workshop_pack_setup.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "pack registry and approval context"
-      ],
-      "downstream": [
-        "workshop_readiness",
-        "workshop_command_center"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Pack lifecycle owns installation state; readiness consumes the result."
+        "workshop_pack_setup:workspace"
       ],
       "capabilitiesConsumed": [
-        "pack registry and approval context",
-        "workshop_readiness",
-        "workshop_command_center"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/build12-workspaces.js",
-        "views/op_packs.html",
-        "POST /api/v1/action/packs:validate|packs:approve|packs:stage|packs:enable"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
@@ -6581,36 +6612,17 @@
       "specPath": "./ops/workshop_readiness.md",
       "functionalStatus": "CONNECTED",
       "usabilityStatus": "USABLE",
-      "recommendedDisposition": "KEEP_PRIMARY",
-      "upstream": [
-        "company context",
-        "readiness authority checks"
-      ],
-      "downstream": [
-        "workshop_pack_setup",
-        "finance",
-        "procurement",
-        "sales",
-        "warehouse workspaces"
-      ],
+      "recommendedDisposition": "Retain and reconcile",
+      "upstream": [],
+      "downstream": [],
       "aliases": [],
       "capabilitiesOwned": [
-        "Read-only readiness evaluator; it must consume current canonical authorities and never mutate setup."
+        "workshop_readiness:workspace"
       ],
       "capabilitiesConsumed": [
-        "company context",
-        "readiness authority checks",
-        "workshop_pack_setup",
-        "finance",
-        "procurement",
-        "sales",
-        "warehouse workspaces"
+        "Existing catalog evidence"
       ],
-      "sourceFiles": [
-        "modules/workshop-readiness.js",
-        "views/workshop_readiness.html",
-        "GET /api/v1/workshop/readiness"
-      ],
+      "sourceFiles": [],
       "catalogBaselineSha": "3c047bb0d04985cd88a536d4dbb16b74d2d6405a",
       "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
       "engineeringReferenceSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",

@@ -4,179 +4,164 @@ title_en: "Content Approvals"
 title_ar: "اعتمادات المحتوى"
 domain: "commercial"
 navigation_group: "commercial_marketing"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "content_approvals"
 parent_page: null
 aliases: []
 roles: ["system.admin","workshop.manager"]
 permission: "system.admin, workshop.manager"
 entitlement: "UNMAPPED — commercial/SaaS page, no literal saas_plan_entitlements \"page:*\" row found"
-renderer_type: "javascript"
-renderer_sources: ["app.js switchPage","modules/build12-workspaces.js"]
-view_sources: []
-api_sources: ["/api/v1/build12/${resource}","/api/v1/action/${id}"]
-domain_sources: ["services/permissionService.js","modules/build12-workspaces.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/build-12/build12-acceptance-contract.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+renderer_type: "page-specific-or-generic-shell"
+renderer_sources: ["app.js"]
+view_sources: ["views/approvals.html"]
+api_sources: ["POST /api/v1/action/workflow:* candidate; local canvas compatibility path"]
+domain_sources: ["platform/workflow/index.mjs","app.js workflow canvas helpers"]
+tables_or_entities: ["workflow_definitions","workflow_versions","workflow_instances","workflow_steps","workflow_timers","workflow_audit_log","localStorage workflow_viewport_v1","approval_requests","approval_steps","approval_events"]
+test_sources: ["tests/phase02/workflow-approvals.test.mjs"]
+catalog_baseline_sha: "10152af1772bf9efba43cc42bb4226b73b63abca"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
-evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
-functional_status: "CONNECTED"
-usability_status: "STRONG"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 4
+evidence_confidence: "MEDIUM"
+implementation_status: "IMPLEMENTED_OR_PRESENT_AT_ENGINEERING_REFERENCE"
+functional_status: "THIN"
+usability_status: "THIN"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `content_approvals`
-- English: Content Approvals
-- Arabic: اعتمادات المحتوى
-- Domain: `commercial`; navigation group: `commercial_marketing`
-- Route: switchPage('content_approvals') / views/content_approvals.html
-- Page type: PAGE
+- Page ID: `content_approvals`; English: Content Approvals; domain: `commercial`; navigation group: `commercial_marketing`.
+- Route: `switchPage('content_approvals')`; view: `views/approvals.html`; renderer evidence: `app.js`.
+- Canonical status: PRIMARY; this page is a primary navigation destination, not an embedded tab.
 
 # 2. Business Purpose
 
-Content approvals — build12/content-review (risk: high, phase: build12)
+A content owner opens Content Approvals to submit and review content decisions with a durable approval record rather than an informal local status.
 
 # 3. Primary Users
 
-- Declared roles: system.admin, workshop.manager
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: system.admin, workshop.manager.
+- Operational roles: owner/operator/reviewer/approver/manager split is NOT VERIFIED from page-specific evidence.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Content Approvals workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A content owner opens Content Approvals to submit and review content decisions with a durable approval record rather than an informal local status.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/content_approvals.html. Static source counts at baseline: 2 headings, 3 button tags, 2 input/select/textarea controls, 1 tables, 1 forms, and 2 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: app.js switchPage
-- Visible action inventory: (rendered by JS module — not statically inspectable)
-- Empty state: not verified (no view file to inspect — JS-rendered page)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- View: `views/approvals.html`; renderer: `app.js generic/legacy surface`.
+- API/query boundary: POST /api/v1/action/workflow:* candidate; local canvas compatibility path.
+- AS-IS classification: **THIN**; usability: **THIN**.
+- Primary actions:
+- Submit/approve/reject content -> approval action target NOT VERIFIED — permission: server authorization required; persistence: Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.
+- Navigation activation is not persistence, isolation, lifecycle, or release proof.
 
 # 6. Data Sources
 
-- UI → renderer: app.js switchPage
-- Renderer → API/query: /api/v1/build12/${resource}, /api/v1/action/${id}
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: marketing
+- UI to API/query: `POST /api/v1/action/workflow:* candidate; local canvas compatibility path`.
+- Domain authority: `platform/workflow/index.mjs; app.js workflow canvas helpers`.
+- Tables/entities where evidence permits: `workflow_definitions`, `workflow_versions`, `workflow_instances`, `workflow_steps`, `workflow_timers`, `workflow_audit_log`, `localStorage workflow_viewport_v1`, `approval_requests`, `approval_steps`, `approval_events`.
+- Scope requirements: company, branch, period, currency, actor, and role scope must be server-derived where applicable; local-only rows are not canonical posted facts.
 
 # 7. Actions
 
-- UI label: (rendered by JS module — not statically inspectable); action ID/API/domain handler/persistence: NOT VERIFIED by the baseline inventory.
-- UI label: ${esc(buttonText)}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${escapeHtml(t('Refresh', 'تحديث'))}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${esc(label)}; handler/action ID: NOT VERIFIED; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- Submit/approve/reject content -> approval action target NOT VERIFIED — permission: server authorization required; persistence: Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.
 
 # 8. Inputs
 
-- Static controls: (rendered by JS module — not statically inspectable)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Business inputs vary by page: company/group/period, account mapping, amount/date/source document, bank or facility reference, reconciliation decision, workflow definition, tax period, or device/session context.
+- Raw IDs must not bypass tenant, company, period, actor, maker-checker, lifecycle, or entitlement validation.
+- For local or NOT_VERIFIED surfaces, inputs must be treated as provisional until a canonical API/domain persistence proof exists.
 
 # 9. Outputs
 
-The intended output is the page’s named Content Approvals record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+A content owner opens Content Approvals to submit and review content decisions with a durable approval record rather than an informal local status. Expected output: scoped records, decision state, durable source reference, report, alert, or device/session state as appropriate. Exact persisted result is NOT VERIFIED for the page-specific surface.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: registered actions; permissions; workflow canvas definition.
+- Downstream: approved target actions; outbox/external effects; audit.
+- Cross-page edge status: PARTIAL/NOT_VERIFIED; no unproven handoff is treated as complete.
 
 # 11. States
 
-- LOADING: module source contains async loading paths; exact copy/state transitions require browser proof.
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified (no view file to inspect — JS-rendered page)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- DRAFT, ACTIVE, WAITING, RUNNING, COMPLETED, FAILED, CANCELLED, RETIRED, DENIED, VALIDATION_ERROR.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain distinct where supported.
+- Lifecycle authority: Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.
 
 # 12. Permissions & Scope
 
-- Client page gate: system.admin, workshop.manager
-- Entitlement: UNMAPPED — commercial/SaaS page, no literal saas_plan_entitlements "page:*" row found
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client gate: system.admin, workshop.manager.
+- Server authorization and scope: action/resource permission plus company/branch/period/actor/entitlement rules as applicable; direct page isolation is NOT VERIFIED.
+- Approval roles must remain separate from requestor roles; local UI controls are not authorization proof.
 
 # 13. Arabic / English
 
-- Arabic label: اعتمادات المحتوى
-- English label: Content Approvals
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English: Content Approvals; Arabic: اعتمادات المحتوى.
+- Every primary action, state, error, and report period needs a visible bilingual label; mojibake or missing state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve period/company scope, record identity, status, decision, totals, and primary action.
+- Mobile/kiosk: where applicable, prove the smallest safe action, offline/entitlement state, retry, and audit result; direct responsive proof is NOT VERIFIED unless cited in tests.
 
 # 15. AS-IS Functional Assessment
 
-**STRONG** — The baseline contains a page-specific JavaScript renderer and API evidence. This score is evidence-based and does not claim domain completion.
+**THIN / THIN** — The destination and domain candidate exist, but page-specific functional wiring or persistence is incomplete.
 
 # 16. Target Business Contract
 
-The Content Approvals workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A content owner opens Content Approvals to submit and review content decisions with a durable approval record rather than an informal local status. The target contract is a scoped, page-specific workflow that loads authoritative data, exposes lifecycle-valid actions, persists through **Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.**, produces a durable result/reference, and makes missing, denied, stale, validation, and server-error states explicit.
 
 # 17. Identified Gaps
 
-- **PAGE-content_approvals-GAP-004** (P1, PERMISSION) — The review inventory flags this commercial/SaaS page as lacking a matching entitlement mapping in the disposable review database.
-- **PAGE-content_approvals-GAP-005** (P2, TEST) — Documentation contradiction: NAVIGATION_FORENSIC_REPORT.json records app.js switchPage, while the module registry also contains this page. Reconcile renderer ownership after Product Recovery.
+- **content_approvals-W4-01** (P0, AUTHORITY_CONFLICT) — The page exposes a local canvas and localStorage compatibility surface beside a durable workflow registry/runtime with versioning and leases. **Required next step:** Make the canvas an explicit adapter and prove definition/version/instance persistence through the durable runtime.
+- **content_approvals-W4-02** (P1, WORKFLOW_DISCONNECT) — Workflow execution can reference registered actions, but page-level publication-to-run evidence and frozen-entity enforcement are not proven together. **Required next step:** Attach validation, activation, run, retry, timeout, and frozen-zone browser/API evidence.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `content_approvals` unless a later owner decision records another home.
+- Recommended disposition: **OWNER_DECISION_REQUIRED**.
+- Keep separate only when the user goal and lifecycle authority are distinct. Shared Finance tables or adjacent page titles do not prove duplication.
+- Current authority decision: Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `content_approvals` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Content Approvals workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error surface with explicit scope and freshness.
+- Each primary action validates required inputs, authorization, lifecycle, idempotency, and maker-checker rules, then displays the durable resulting state.
+- A direct browser/API/domain test proves the highest-risk transition and persistence; navigation-only proof is insufficient.
+- For this page: A content owner opens Content Approvals to submit and review content decisions with a durable approval record rather than an informal local status.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/build-12/build12-acceptance-contract.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: STATIC/DOMAIN/CONTRACT references listed below; direct page lifecycle is bounded.
+- `tests/phase02/workflow-approvals.test.mjs`
+- Source files verified at engineering reference:
+- `views/approvals.html`
+- `platform/workflow/index.mjs`
+- `tests/phase02/workflow-approvals.test.mjs`
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-- The navigation forensic renderer classification conflicts with the page-specific module registry; reconcile after Product Recovery.
-
+- Catalog starting SHA: `10152af1772bf9efba43cc42bb4226b73b63abca`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 4 is documentation-only; no engineering source, product test, migration, runtime data, or navigation file was changed.
+- A domain test does not automatically prove that this navigation page is wired to that domain.
 
 # 22. Source Evidence
 
-- `app.js`
-- `index.html`
-- `services/permissionService.js`
-- `modules/build12-workspaces.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `views/approvals.html`
+- `platform/workflow/index.mjs`
+- `tests/phase02/workflow-approvals.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 4 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Waves 2-3 were preserved and not redone.
 
 ## CAPABILITIES OWNED
 
-- Content Approvals workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED, NOT VERIFIED, NOT VERIFIED.
+- Durable WorkflowRegistry/WorkflowRuntime should own definitions and instances; the legacy canvas is a compatibility adapter only.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- registered actions; permissions; workflow canvas definition; approved target actions; outbox/external effects; audit

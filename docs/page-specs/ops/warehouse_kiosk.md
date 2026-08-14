@@ -4,183 +4,178 @@ title_en: "Warehouse Kiosk"
 title_ar: "كشك المستودع"
 domain: "ops"
 navigation_group: "ops_kiosks"
-kind: KIOSK
-canonical_status: PRIMARY
+kind: "KIOSK"
+canonical_status: "PRIMARY"
 canonical_home: "warehouse_kiosk"
 parent_page: null
 aliases: []
 roles: ["workshop.user"]
 permission: "workshop.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "javascript"
-renderer_sources: ["modules/build10/renderers/kiosks.js"]
-view_sources: []
-api_sources: ["/api/v1/iot/${pageKey}","/api/v1/iot/fleet/${pageKey}","/api/v1/iot/offline/${pageKey}","/api/v1/iot/kiosk/${pageKey}","/api/v1/iot/boards/${pageKey}","/api/v1/action/${pageKey}"]
-domain_sources: ["modules/build10/renderers/kiosks.js","services/permissionService.js","modules/build10-workspaces.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/build-10/build10-workspaces-contract.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+renderer_type: "page-specific-or-generic-shell"
+renderer_sources: ["app.js"]
+view_sources: ["views/kiosk.html"]
+api_sources: ["GET /api/v1/service/* and kiosk resources; exact page route NOT VERIFIED"]
+domain_sources: ["platform/kiosk/index.mjs","platform/kiosk/kiosk-registry.mjs","platform/kiosk/operational-boards.mjs","platform/service/index.mjs"]
+tables_or_entities: ["kiosk_device_registries","offline_clients","service_entitlements","service_signatures","operational_board_events"]
+test_sources: ["tests/build-07/service-browser-chromium.test.mjs","tests/build-07/service-entitlement-signature-lifecycle.test.mjs","tests/build-10/kiosk-operational-boards.test.mjs","tests/build-10/iot-offline-kiosk-export-contract.test.mjs"]
+catalog_baseline_sha: "10152af1772bf9efba43cc42bb4226b73b63abca"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 4
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
+implementation_status: "IMPLEMENTED_OR_PRESENT_AT_ENGINEERING_REFERENCE"
 functional_status: "CONNECTED"
 usability_status: "STRONG"
-review_status: "BASELINE_REVIEWED"
+review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `warehouse_kiosk`
-- English: Warehouse Kiosk
-- Arabic: كشك المستودع
-- Domain: `ops`; navigation group: `ops_kiosks`
-- Route: switchPage('warehouse_kiosk') / views/warehouse_kiosk.html
-- Page type: KIOSK
+- Page ID: `warehouse_kiosk`; English: Warehouse Kiosk; domain: `ops`; navigation group: `ops_kiosks`.
+- Route: `switchPage('warehouse_kiosk')`; view: `views/kiosk.html`; renderer evidence: `app.js`.
+- Canonical status: PRIMARY; this page is a primary navigation destination, not an embedded tab.
 
 # 2. Business Purpose
 
-Warehouse kiosk — kiosk/warehouse (risk: medium, phase: build10)
+A warehouse operator opens Warehouse Kiosk to use a registered warehouse device for scoped operational work and offline recovery.
 
 # 3. Primary Users
 
-- Declared roles: workshop.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: workshop.user.
+- Operational roles: owner/operator/reviewer/approver/manager split is partly evidenced by domain tests but still requires direct role-isolation proof.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Warehouse Kiosk workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A warehouse operator opens Warehouse Kiosk to use a registered warehouse device for scoped operational work and offline recovery.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/warehouse_kiosk.html. Static source counts at baseline: 8 headings, 9 button tags, 1 input/select/textarea controls, 1 tables, 0 forms, and 6 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: modules/build10/renderers/kiosks.js
-- Visible action inventory: (rendered by JS module — not statically inspectable)
-- Empty state: not verified (no view file to inspect — JS-rendered page)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- View: `views/kiosk.html`; renderer: `app.js generic/legacy surface`.
+- API/query boundary: GET /api/v1/service/* and kiosk resources; exact page route NOT VERIFIED.
+- AS-IS classification: **CONNECTED**; usability: **STRONG**.
+- Primary actions:
+- Start warehouse session/offline sync -> kiosk operational-board boundary; exact page route NOT VERIFIED — permission: server authorization required; persistence: Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.
+- Navigation activation is not persistence, isolation, lifecycle, or release proof.
 
 # 6. Data Sources
 
-- UI → renderer: modules/build10/renderers/kiosks.js
-- Renderer → API/query: /api/v1/iot/${pageKey}, /api/v1/iot/fleet/${pageKey}, /api/v1/iot/offline/${pageKey}, /api/v1/iot/kiosk/${pageKey}, /api/v1/iot/boards/${pageKey}, /api/v1/action/${pageKey}
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `GET /api/v1/service/* and kiosk resources; exact page route NOT VERIFIED`.
+- Domain authority: `platform/kiosk/index.mjs; platform/kiosk/kiosk-registry.mjs; platform/kiosk/operational-boards.mjs; platform/service/index.mjs`.
+- Tables/entities where evidence permits: `kiosk_device_registries`, `offline_clients`, `service_entitlements`, `service_signatures`, `operational_board_events`.
+- Scope requirements: company, branch, period, currency, actor, and role scope must be server-derived where applicable; local-only rows are not canonical posted facts.
 
 # 7. Actions
 
-- UI label: (rendered by JS module — not statically inspectable); action ID/API/domain handler/persistence: NOT VERIFIED by the baseline inventory.
-- UI label: ${isRtl ? 'تسجيل الحضور/الانصراف الذاتي' : 'Employee Self Check-in'}; handler/action ID: window.Build10Engine.openActionDialog(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'مسح باركود سريع' : 'Quick Barcode Scan'}; handler/action ID: window.Build10Engine.openActionDialog(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'تسجيل إنتاج جديد' : 'Record Operation Output'}; handler/action ID: window.Build10Engine.openActionDialog(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'استلام طلب خدمة جديد' : 'New Service Reception'}; handler/action ID: window.Build10Engine.openActionDialog(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'عرض' : 'View'}; handler/action ID: ${pageKey}:view; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'تعديل' : 'Edit'}; handler/action ID: ${pageKey}:edit; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? '+ إضافة جديد' : '+ New Record'}; handler/action ID: ${pageKey}:create; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ${isRtl ? 'تصدير CSV' : 'Export CSV'}; handler/action ID: OctagonBuild10.exportCsv(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: View; handler/action ID: ${pageKey}:view; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- Start warehouse session/offline sync -> kiosk operational-board boundary; exact page route NOT VERIFIED — permission: server authorization required; persistence: Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.
 
 # 8. Inputs
 
-- Static controls: (rendered by JS module — not statically inspectable)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Business inputs vary by page: company/group/period, account mapping, amount/date/source document, bank or facility reference, reconciliation decision, workflow definition, tax period, or device/session context.
+- Raw IDs must not bypass tenant, company, period, actor, maker-checker, lifecycle, or entitlement validation.
+- For local or NOT_VERIFIED surfaces, inputs must be treated as provisional until a canonical API/domain persistence proof exists.
 
 # 9. Outputs
 
-The intended output is the page’s named Warehouse Kiosk record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+A warehouse operator opens Warehouse Kiosk to use a registered warehouse device for scoped operational work and offline recovery. Expected output: scoped records, decision state, durable source reference, report, alert, or device/session state as appropriate. Exact persisted result is partly evidenced by the cited domain.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: device registration; identity/entitlement; offline sync state.
+- Downstream: shop-floor/warehouse/service actions; audit; offline export.
+- Cross-page edge status: CONNECTED domain evidence with page-level gaps documented below.
 
 # 11. States
 
-- LOADING: module source contains async loading paths; exact copy/state transitions require browser proof.
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified (no view file to inspect — JS-rendered page)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- UNREGISTERED, REGISTERED, ONLINE, OFFLINE, READY, BLOCKED, EXPIRED, DENIED, NOT_VERIFIED.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain distinct where supported.
+- Lifecycle authority: Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client gate: workshop.user.
+- Server authorization and scope: action/resource permission plus company/branch/period/actor/entitlement rules as applicable; direct page isolation is partly evidenced.
+- Approval roles must remain separate from requestor roles; local UI controls are not authorization proof.
 
 # 13. Arabic / English
 
-- Arabic label: كشك المستودع
-- English label: Warehouse Kiosk
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English: Warehouse Kiosk; Arabic: كشك المستودع.
+- Every primary action, state, error, and report period needs a visible bilingual label; mojibake or missing state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: mobile/kiosk-oriented page (id or nav group signals mobile use); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve period/company scope, record identity, status, decision, totals, and primary action.
+- Mobile/kiosk: where applicable, prove the smallest safe action, offline/entitlement state, retry, and audit result; direct responsive proof is NOT VERIFIED unless cited in tests.
 
 # 15. AS-IS Functional Assessment
 
-**STRONG** — The baseline contains a page-specific JavaScript renderer and API evidence. This score is evidence-based and does not claim domain completion.
+**CONNECTED / STRONG** — The page has a meaningful renderer/domain boundary, but remaining gaps prevent release closure.
 
 # 16. Target Business Contract
 
-The Warehouse Kiosk workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A warehouse operator opens Warehouse Kiosk to use a registered warehouse device for scoped operational work and offline recovery. The target contract is a scoped, page-specific workflow that loads authoritative data, exposes lifecycle-valid actions, persists through **Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.**, produces a durable result/reference, and makes missing, denied, stale, validation, and server-error states explicit.
 
 # 17. Identified Gaps
 
-- No P0/P1 gap was derived from the inspected baseline sources. This is not a claim that the workspace is complete.
+- **warehouse_kiosk-W4-01** (P1, WORKFLOW_DISCONNECT) — Kiosk domain/tests prove operational lifecycle components, but the selected page-level service route and downstream work completion are not attributed as one flow. **Required next step:** Prove register/entitle/offline/restore and one service action handoff.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `warehouse_kiosk` unless a later owner decision records another home.
+- Recommended disposition: **KEEP_PRIMARY**.
+- Keep separate only when the user goal and lifecycle authority are distinct. Shared Finance tables or adjacent page titles do not prove duplication.
+- Current authority decision: Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `warehouse_kiosk` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Warehouse Kiosk workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error surface with explicit scope and freshness.
+- Each primary action validates required inputs, authorization, lifecycle, idempotency, and maker-checker rules, then displays the durable resulting state.
+- A direct browser/API/domain test proves the highest-risk transition and persistence; navigation-only proof is insufficient.
+- For this page: A warehouse operator opens Warehouse Kiosk to use a registered warehouse device for scoped operational work and offline recovery.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/build-10/build10-workspaces-contract.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: STATIC/DOMAIN/CONTRACT references listed below; direct page lifecycle is bounded.
+- `tests/build-07/service-browser-chromium.test.mjs`
+- `tests/build-07/service-entitlement-signature-lifecycle.test.mjs`
+- `tests/build-10/kiosk-operational-boards.test.mjs`
+- `tests/build-10/iot-offline-kiosk-export-contract.test.mjs`
+- Source files verified at engineering reference:
+- `views/kiosk.html`
+- `platform/kiosk/index.mjs`
+- `platform/kiosk/kiosk-registry.mjs`
+- `platform/kiosk/operational-boards.mjs`
+- `platform/service/index.mjs`
+- `tests/build-07/service-browser-chromium.test.mjs`
+- `tests/build-07/service-entitlement-signature-lifecycle.test.mjs`
+- `tests/build-10/kiosk-operational-boards.test.mjs`
+- `tests/build-10/iot-offline-kiosk-export-contract.test.mjs`
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog starting SHA: `10152af1772bf9efba43cc42bb4226b73b63abca`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 4 is documentation-only; no engineering source, product test, migration, runtime data, or navigation file was changed.
+- A domain test does not automatically prove that this navigation page is wired to that domain.
 
 # 22. Source Evidence
 
-- `modules/build10/renderers/kiosks.js`
-- `index.html`
-- `services/permissionService.js`
-- `modules/build10-workspaces.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `views/kiosk.html`
+- `platform/kiosk/index.mjs`
+- `platform/kiosk/kiosk-registry.mjs`
+- `platform/kiosk/operational-boards.mjs`
+- `platform/service/index.mjs`
+- `tests/build-07/service-browser-chromium.test.mjs`
+- `tests/build-07/service-entitlement-signature-lifecycle.test.mjs`
+- `tests/build-10/kiosk-operational-boards.test.mjs`
+- `tests/build-10/iot-offline-kiosk-export-contract.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 4 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Waves 2-3 were preserved and not redone.
 
 ## CAPABILITIES OWNED
 
-- Warehouse Kiosk workspace presentation and its explicitly verified page-specific actions: window.Build10Engine.openActionDialog(, window.Build10Engine.openActionDialog(, window.Build10Engine.openActionDialog(, window.Build10Engine.openActionDialog(, ${pageKey}:view, ${pageKey}:edit, ${pageKey}:create, OctagonBuild10.exportCsv(, ${pageKey}:view.
+- Kiosk registry and service entitlement/signature domains own device/session/access facts; operational boards consume them.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- device registration; identity/entitlement; offline sync state; shop-floor/warehouse/service actions; audit; offline export

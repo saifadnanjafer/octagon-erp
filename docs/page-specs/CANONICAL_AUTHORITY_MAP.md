@@ -24,3 +24,21 @@ Confidence is bounded by direct source evidence at that SHA.
 | Workshop ledger/payroll-like fact | Finance intended; current local migration writer | Workshop Ledger; Finance | migration JSON/local transactions vs finance documents | Module source and Finance engine | P0 authority conflict. |
 | Installment schedule/payment | Finance AR intended; current local plan | Finance Installments; AR/AP | local plans vs finance documents/payments | Module source and Finance actions | P0 authority conflict. |
 | Workshop readiness | Read-only evaluator | Workshop Readiness | readiness catalog authorities | readiness.mjs/catalog | Table-name mismatch for Sales delivery. |
+
+# Canonical Authority Map — Wave 4
+
+Engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`
+
+| Object/capability | Canonical authority | Page(s) | Confidence | Conflict/unknown |
+|---|---|---|---|---|
+| Posted accounting document/journal | `platform/finance/engine.mjs` | Finance, AR/AP, tax | HIGH | Legacy local writers must not post independently. |
+| Cashbox/expense/income legacy rows | Finance intended; current app.js local helpers | Cashbox, Expenses, Income | HIGH conflict | Migration/source-fact mapping is unresolved. |
+| Budget/variance | Finance budget actions plus Projects budget | Budgeting, Projects | MEDIUM | Page-specific Budgeting action wiring not fully verified. |
+| Consolidation group/run | `platform/consolidation/index.mjs` | Consolidation Groups, Runs | MEDIUM | Page hierarchy and direct API wiring unresolved. |
+| Consolidated report/lineage | Consolidation read/query authority candidate | Reports, Lineage | LOW | Must remain read-only until source lineage is proven. |
+| Treasury forecast/funding/facility | `platform/treasury/liquidity.mjs` and planning domain | Liquidity, Funding, Facilities, Alerts | MEDIUM | Approval/execution and Finance source references unresolved. |
+| Intercompany transaction/reconciliation | `platform/intercompany/operations.mjs` | Transactions, Mismatch, Reconciliation | MEDIUM | Page company-pair isolation and ledger links need proof. |
+| Workflow definition/version/instance | `platform/workflow/index.mjs` | Workflow | HIGH intended | app.js canvas/localStorage remains a compatibility conflict. |
+| Tax calculation/report | Finance engine plus tax module | Tax Compliance | MEDIUM | Submission/amendment lineage needs direct proof. |
+| Kiosk registry/entitlement/signature | `platform/kiosk/*` and `platform/service/*` | Service Kiosk | HIGH domain | Page route/action handoff remains partial. |
+| Content approval | Generic approval domain candidate | Content Approvals | LOW | Target entity and distinct authority unresolved. |

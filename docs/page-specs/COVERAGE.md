@@ -1,68 +1,129 @@
-# Coverage and Forensic Deep Review — Wave 3
+# Coverage and Forensic Deep Review — Wave 4
 
 ## Evidence boundary
 
-- Wave 3 catalog starting SHA: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a` (Wave 2 expected SHA).
+- Wave 4 starting catalog SHA: `10152af1772bf9efba43cc42bb4226b73b63abca`.
 - Moving engineering reference SHA: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
-- Primary catalog population: **231/231** specs present; embedded tabs and compatibility aliases remain outside the primary count.
-- Deep review before Wave 3: **32/231** pages.
-- Wave 3 deep review: **26** pages.
-- Total deep review after Wave 3: **58/231**; shallow remaining: **173**.
-- Wave 3 functional classifications: `CONNECTED` 17, `THIN` 5, `SIMULATED_BY_DESIGN` 3, `PARTIALLY_CONNECTED` 1.
+- Primary specs present: **231/231**.
+- Prior deep reviews preserved: Wave 2 **32**, Wave 3 **26**.
+- Wave 4 deep review: **26** pages.
+- Total deep review: **84/231**; shallow remaining: **147**.
+
+## Wave 4 pages
+
+| Page | Evidence group | AS-IS classification | Disposition | View | Domain authority | Spec |
+|---|---|---|---|---|---|---|
+| `account_mapping` | consolidation | THIN | STRENGTHEN | views/account_mapping.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/account_mapping.md) |
+| `banking` | finance | THIN | STRENGTHEN | views/banking.html | platform/finance/engine.mjs; platform/finance/index.mjs; platform/api/finance.mjs | [spec](./finance/banking.md) |
+| `budgeting` | finance | THIN | STRENGTHEN | views/budgeting.html | platform/finance/engine.mjs; platform/finance/index.mjs; platform/api/finance.mjs | [spec](./finance/budgeting.md) |
+| `cashbox` | legacyFinance | PARTIALLY_CONNECTED | RETIRE_OR_MIGRATE | views/cashbox.html | platform/finance/engine.mjs; app.js legacy finance helpers | [spec](./finance/cashbox.md) |
+| `consolidated_reports` | consolidation | THIN | STRENGTHEN | views/consolidated_reports.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/consolidated_reports.md) |
+| `consolidation_groups` | consolidation | THIN | STRENGTHEN | views/consolidation_groups.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/consolidation_groups.md) |
+| `consolidation_lineage` | consolidation | THIN | STRENGTHEN | views/consolidation_lineage.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/consolidation_lineage.md) |
+| `consolidation_runs` | consolidation | THIN | STRENGTHEN | views/consolidation_runs.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/consolidation_runs.md) |
+| `content_approvals` | workflow | PARTIALLY_CONNECTED | CONSOLIDATE_WITH_CANONICAL_RUNTIME | views/approvals.html | platform/workflow/index.mjs; app.js workflow canvas helpers | [spec](./commercial/content_approvals.md) |
+| `eliminations` | consolidation | THIN | STRENGTHEN | views/eliminations.html | platform/consolidation/index.mjs; platform/finance/engine.mjs | [spec](./finance/eliminations.md) |
+| `expenses` | legacyFinance | PARTIALLY_CONNECTED | RETIRE_OR_MIGRATE | views/expenses.html | platform/finance/engine.mjs; app.js legacy finance helpers | [spec](./finance/expenses.md) |
+| `financing_facilities` | treasury | THIN | STRENGTHEN | views/financing_facilities.html | platform/finance/planning-treasury-intercompany.mjs; platform/treasury/liquidity.mjs | [spec](./finance/financing_facilities.md) |
+| `income` | legacyFinance | PARTIALLY_CONNECTED | RETIRE_OR_MIGRATE | views/income.html | platform/finance/engine.mjs; app.js legacy finance helpers | [spec](./finance/income.md) |
+| `intercompany_reconciliation` | intercompany | THIN | STRENGTHEN | views/intercompany_reconciliation.html | platform/intercompany/operations.mjs; platform/finance/planning-treasury-intercompany.mjs | [spec](./finance/intercompany_reconciliation.md) |
+| `intercompany_transactions` | intercompany | THIN | STRENGTHEN | views/intercompany_transactions.html | platform/intercompany/operations.mjs; platform/finance/planning-treasury-intercompany.mjs | [spec](./finance/intercompany_transactions.md) |
+| `liquidity_forecast` | treasury | THIN | STRENGTHEN | views/liquidity_forecast.html | platform/finance/planning-treasury-intercompany.mjs; platform/treasury/liquidity.mjs | [spec](./finance/liquidity_forecast.md) |
+| `mismatch_queue` | intercompany | THIN | STRENGTHEN | views/mismatch_queue.html | platform/intercompany/operations.mjs; platform/finance/planning-treasury-intercompany.mjs | [spec](./finance/mismatch_queue.md) |
+| `payment_funding_proposals` | treasury | THIN | STRENGTHEN | views/payment_funding_proposals.html | platform/finance/planning-treasury-intercompany.mjs; platform/treasury/liquidity.mjs | [spec](./finance/payment_funding_proposals.md) |
+| `service_kiosk` | service | CONNECTED | KEEP_PRIMARY | views/kiosk.html | platform/kiosk/index.mjs; platform/kiosk/kiosk-registry.mjs; platform/kiosk/operational-boards.mjs; platform/service/index.mjs | [spec](./ops/service_kiosk.md) |
+| `employee_kiosk` | service | CONNECTED | KEEP_PRIMARY | views/kiosk.html | platform/kiosk/index.mjs; platform/kiosk/kiosk-registry.mjs; platform/kiosk/operational-boards.mjs; platform/service/index.mjs | [spec](./ops/employee_kiosk.md) |
+| `warehouse_kiosk` | service | CONNECTED | KEEP_PRIMARY | views/kiosk.html | platform/kiosk/index.mjs; platform/kiosk/kiosk-registry.mjs; platform/kiosk/operational-boards.mjs; platform/service/index.mjs | [spec](./ops/warehouse_kiosk.md) |
+| `kiosk_device_registry` | service | CONNECTED | KEEP_PRIMARY | views/kiosk.html | platform/kiosk/index.mjs; platform/kiosk/kiosk-registry.mjs; platform/kiosk/operational-boards.mjs; platform/service/index.mjs | [spec](./ops/kiosk_device_registry.md) |
+| `tax_compliance` | tax | PARTIALLY_CONNECTED | KEEP_PRIMARY | views/tax_compliance.html | platform/finance/engine.mjs; platform/finance/index.mjs; modules/tax-compliance.js | [spec](./finance/tax_compliance.md) |
+| `treasury_alerts` | treasury | THIN | STRENGTHEN | views/treasury_alerts.html | platform/finance/planning-treasury-intercompany.mjs; platform/treasury/liquidity.mjs | [spec](./finance/treasury_alerts.md) |
+| `treasury_cash_position` | treasury | THIN | STRENGTHEN | views/treasury_cash_position.html | platform/finance/planning-treasury-intercompany.mjs; platform/treasury/liquidity.mjs | [spec](./finance/treasury_cash_position.md) |
+| `workflow` | workflow | PARTIALLY_CONNECTED | CONSOLIDATE_WITH_CANONICAL_RUNTIME | views/workflow.html | platform/workflow/index.mjs; app.js workflow canvas helpers | [spec](./ops/workflow.md) |
 
 ## Coverage by domain
 
 | Domain | Specs present | Deep reviewed | Shallow remaining |
 |---|---:|---:|---:|
 | `admin` | 13 | 0 | 13 |
-| `commercial` | 43 | 7 | 36 |
+| `commercial` | 43 | 8 | 35 |
 | `core` | 11 | 1 | 10 |
-| `finance` | 25 | 5 | 20 |
+| `finance` | 25 | 25 | 0 |
 | `intelligence` | 19 | 0 | 19 |
-| `ops` | 72 | 39 | 33 |
+| `ops` | 72 | 44 | 28 |
 | `resources` | 48 | 6 | 42 |
-
-## Wave 3 deep-reviewed pages
-
-| Page | AS-IS classification | Usability | Disposition | Query/action boundary | Domain authority | Spec |
-|---|---|---|---|---|---|---|
-| `workshop_command_center` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/workshop/command-center | platform/workshop/command-center.mjs | [spec](./ops/workshop_command_center.md) |
-| `my_work` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/workshop/my-work | platform/workshop/my-work.mjs; platform/workshop/my-work-sources.mjs | [spec](./core/my_work.md) |
-| `workshop_readiness` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/workshop/readiness | platform/workshop/readiness.mjs; platform/workshop/readiness-catalog.mjs | [spec](./ops/workshop_readiness.md) |
-| `workshop_pack_setup` | CONNECTED | USABLE | KEEP_PRIMARY | POST /api/v1/action/packs:validate|packs:approve|packs:stage|packs:enable | Build-12 pack lifecycle authority (exact domain source path NOT VERIFIED) | [spec](./commercial/workshop_pack_setup.md) |
-| `task_manager` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/work-items; POST /api/v1/action/work_item:* | Canonical Work Item authority (exact domain source path NOT VERIFIED) | [spec](./ops/task_manager.md) |
-| `work_orders` | THIN | THIN | STRENGTHEN | NOT VERIFIED in page module; legacy/local work-order surface | Legacy workshop job handlers (exact source path NOT VERIFIED) | [spec](./ops/work_orders.md) |
-| `service_queue_board` | CONNECTED | STRONG | KEEP_PRIMARY | GET /api/v1/service/queue; POST /api/v1/action/service:* | Service queue authority (source path NOT VERIFIED) | [spec](./ops/service_queue_board.md) |
-| `parties` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/commercial/parties; POST /api/v1/action/party:* | platform/commercial/parties.mjs | [spec](./ops/parties.md) |
-| `customers` | CONNECTED | USABLE | CONSOLIDATE_WITH_PARTIES_REVIEW | GET /api/v1/commercial/parties?role=customer; GET /api/v1/finance/* | platform/commercial/parties.mjs; platform/finance/engine.mjs | [spec](./finance/customers.md) |
-| `sales` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/commercial/sales/*; POST /api/v1/action/{crm,sales}:* | platform/sales/index.mjs; platform/sales/lifecycle.mjs; platform/sales/orders.mjs | [spec](./commercial/sales.md) |
-| `sales_contracts` | SIMULATED_BY_DESIGN | THIN | CONSOLIDATE_WITH_CANONICAL_SALES | No /api/v1 call in module; browser/local storage save() | platform/sales/contracts.mjs (canonical source exists but is not consumed by this renderer) | [spec](./commercial/sales_contracts.md) |
-| `sales_price_lists` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/commercial/price-lists; POST /api/v1/action/price_list:* | platform/commercial/pricing.mjs; platform/sales/orders.mjs | [spec](./commercial/sales_price_lists.md) |
-| `customer_portal` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/commercial/portal/*; POST /api/v1/action/portal:* | Customer portal authority (source path NOT VERIFIED); platform/sales/orders.mjs; platform/finance/engine.mjs | [spec](./commercial/customer_portal.md) |
-| `warranty` | CONNECTED | THIN | STRENGTHEN | GET /api/v1/commercial/warranty; POST /api/v1/action/sales:warranty:* | platform/sales/warranty.mjs | [spec](./commercial/warranty.md) |
-| `contracts` | THIN | THIN | OWNER_DECISION_REQUIRED | NOT VERIFIED in page-specific evidence | Contracts authority NOT VERIFIED; platform/sales/contracts.mjs is a competing candidate | [spec](./resources/contracts.md) |
-| `procurement` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/procurement/*; POST /api/v1/action/procurement:* | platform/procurement/index.mjs; platform/procurement/governance.mjs; platform/procurement/lifecycle.mjs; platform/procurement/orders.mjs; platform/procurement/matching.mjs | [spec](./resources/procurement.md) |
-| `supplier_portal` | THIN | THIN | STRENGTHEN | NOT VERIFIED in page-specific evidence | platform/procurement authority is the canonical candidate | [spec](./resources/supplier_portal.md) |
-| `logistics` | THIN | THIN | STRENGTHEN | GET /api/v1/commercial/warehouse/* and procurement/stock resources; exact page wiring NOT VERIFIED | Inventory/WMS authority (source paths NOT VERIFIED); platform/api/commercial.mjs | [spec](./resources/logistics.md) |
-| `approvals` | CONNECTED | STRONG | KEEP_PRIMARY | GET /api/v1/approvals; POST /api/v1/action/approval:* | Governance approval authority (source path NOT VERIFIED) | [spec](./resources/approvals.md) |
-| `projects` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/projects/*; POST /api/v1/action/projects:* | platform/projects/index.mjs; platform/projects/projects.mjs; platform/projects/budget.mjs; platform/projects/billing.mjs; platform/projects/effort.mjs; platform/projects/costing.mjs | [spec](./resources/projects.md) |
-| `field_service` | PARTIALLY_CONNECTED | THIN | CONSOLIDATE_WITH_SERVICE_REVIEW | No canonical field-service API shown; local omni.fieldService state and finance bridge | local omni.fieldService; platform/finance engine is a downstream candidate | [spec](./commercial/field_service.md) |
-| `fleet_operations_board` | THIN | THIN | STRENGTHEN | GET /api/v1/fleet/*; exact page wiring NOT VERIFIED | Fleet domain candidate; platform/workshop/readiness.mjs | [spec](./ops/fleet_operations_board.md) |
-| `finance` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/finance/*; POST /api/v1/action/finance:* | platform/finance/index.mjs; platform/finance/engine.mjs | [spec](./finance/finance.md) |
-| `ar_ap` | CONNECTED | USABLE | KEEP_PRIMARY | GET /api/v1/finance/ar|ap/*; POST /api/v1/action/finance_ar|finance_ap:* | platform/finance/engine.mjs; platform/finance/index.mjs | [spec](./finance/ar_ap.md) |
-| `workshop_ledger` | SIMULATED_BY_DESIGN | THIN | RETIRE_OR_MIGRATE | Fetch /workshop_migration_data.json plus local import/actions; no canonical Finance API shown | local workshop_migration_data and local finance transaction helpers | [spec](./finance/workshop_ledger.md) |
-| `finance_installments` | SIMULATED_BY_DESIGN | THIN | RETIRE_OR_MIGRATE | No /api/v1 call; omni.finance.installmentPlans and saveData/local state | local browser finance object; Finance AR is canonical candidate | [spec](./finance/finance_installments.md) |
 
 ## Wave 2 historical record
 
-Wave 2 deepened 32 BUILD-09 operational pages. Their specifications and findings remain in this catalog unchanged except for manifest/index deep-review labeling. The Wave 2 source baseline, page list, and contradictions remain preserved in the prior catalog history and in each Wave 2 spec change history. Wave 3 did not redo those pages.
+Wave 2 deepened 32 BUILD-09 pages; those pages were not redone.
+
+| Page | Title | Domain | Functional | Usability | Spec |
+|---|---|---|---|---|---|
+| `count_session` | Count Session | ops | CONNECTED | USABLE | [spec](./ops/count_session.md) |
+| `crossdock_workspace` | Cross-dock Workspace | ops | CONNECTED | USABLE | [spec](./ops/crossdock_workspace.md) |
+| `cycle_count_plans` | Cycle Count Plans | ops | CONNECTED | USABLE | [spec](./ops/cycle_count_plans.md) |
+| `dock_checkin` | Dock Check-in | ops | CONNECTED | USABLE | [spec](./ops/dock_checkin.md) |
+| `dock_schedule` | Dock Schedule | ops | CONNECTED | USABLE | [spec](./ops/dock_schedule.md) |
+| `downtime_board` | Downtime Board | ops | CONNECTED | USABLE | [spec](./ops/downtime_board.md) |
+| `expiration_queue` | Expiration Queue | ops | CONNECTED | USABLE | [spec](./ops/expiration_queue.md) |
+| `lot_serial_traceability` | Lot and Serial Traceability | ops | CONNECTED | USABLE | [spec](./ops/lot_serial_traceability.md) |
+| `mobile_picking` | Mobile Picking | ops | CONNECTED | USABLE | [spec](./ops/mobile_picking.md) |
+| `mobile_receiving` | Mobile Receiving | ops | CONNECTED | USABLE | [spec](./ops/mobile_receiving.md) |
+| `operational_performance` | Operational Performance | ops | CONNECTED | USABLE | [spec](./ops/operational_performance.md) |
+| `pick_task_queue` | Pick Task Queue | ops | CONNECTED | USABLE | [spec](./ops/pick_task_queue.md) |
+| `production_issue_return` | Production Issue and Return | ops | CONNECTED | USABLE | [spec](./ops/production_issue_return.md) |
+| `production_material_requests` | Production Material Requests | ops | CONNECTED | USABLE | [spec](./ops/production_material_requests.md) |
+| `production_receipt` | Production Receipt | ops | CONNECTED | USABLE | [spec](./ops/production_receipt.md) |
+| `putaway_rules` | Putaway Rules | ops | CONNECTED | USABLE | [spec](./ops/putaway_rules.md) |
+| `putaway_task_queue` | Putaway Task Queue | ops | CONNECTED | USABLE | [spec](./ops/putaway_task_queue.md) |
+| `quality_hold_queue` | Quality Hold Queue | ops | CONNECTED | USABLE | [spec](./ops/quality_hold_queue.md) |
+| `recall_analysis` | Recall Analysis | ops | CONNECTED | USABLE | [spec](./ops/recall_analysis.md) |
+| `receiving_discrepancies` | Receiving Discrepancies | ops | CONNECTED | USABLE | [spec](./ops/receiving_discrepancies.md) |
+| `replenishment_proposals` | Replenishment Proposals | ops | CONNECTED | USABLE | [spec](./ops/replenishment_proposals.md) |
+| `replenishment_rules` | Replenishment Rules | ops | CONNECTED | USABLE | [spec](./ops/replenishment_rules.md) |
+| `rework_workspace` | Rework Workspace | ops | CONNECTED | USABLE | [spec](./ops/rework_workspace.md) |
+| `scrap_approval` | Scrap Approval | ops | CONNECTED | USABLE | [spec](./ops/scrap_approval.md) |
+| `shopfloor_terminal` | Shopfloor Terminal | ops | CONNECTED | USABLE | [spec](./ops/shopfloor_terminal.md) |
+| `staging_board` | Staging Board | ops | CONNECTED | USABLE | [spec](./ops/staging_board.md) |
+| `variance_review` | Variance Review | ops | CONNECTED | USABLE | [spec](./ops/variance_review.md) |
+| `warehouse_topology` | Warehouse Topology | ops | CONNECTED | USABLE | [spec](./ops/warehouse_topology.md) |
+| `wave_execution` | Wave Execution | ops | CONNECTED | USABLE | [spec](./ops/wave_execution.md) |
+| `wave_planning` | Wave Planning | ops | CONNECTED | USABLE | [spec](./ops/wave_planning.md) |
+| `workcenter_queue` | Work-center Queue | ops | CONNECTED | USABLE | [spec](./ops/workcenter_queue.md) |
+| `zone_bin_management` | Zone and Bin Management | ops | CONNECTED | USABLE | [spec](./ops/zone_bin_management.md) |
+
+## Wave 3 historical record
+
+Wave 3 deepened 26 workshop, commercial, procurement, project, service, and finance-handoff pages; those pages were not redone.
+
+| Page | Title | Domain | Functional | Usability | Spec |
+|---|---|---|---|---|---|
+| `approvals` | Approvals | resources | CONNECTED | STRONG | [spec](./resources/approvals.md) |
+| `ar_ap` | Ar Ap | finance | CONNECTED | USABLE | [spec](./finance/ar_ap.md) |
+| `contracts` | Contracts | resources | THIN | THIN | [spec](./resources/contracts.md) |
+| `customer_portal` | Customer Portal | commercial | CONNECTED | USABLE | [spec](./commercial/customer_portal.md) |
+| `customers` | Customers | finance | CONNECTED | USABLE | [spec](./finance/customers.md) |
+| `field_service` | Field Service | commercial | PARTIALLY_CONNECTED | THIN | [spec](./commercial/field_service.md) |
+| `finance` | Finance | finance | CONNECTED | USABLE | [spec](./finance/finance.md) |
+| `finance_installments` | Finance Installments | finance | SIMULATED_BY_DESIGN | THIN | [spec](./finance/finance_installments.md) |
+| `fleet_operations_board` | Fleet Operations Board | ops | THIN | THIN | [spec](./ops/fleet_operations_board.md) |
+| `logistics` | Logistics | resources | THIN | THIN | [spec](./resources/logistics.md) |
+| `my_work` | My Work | core | CONNECTED | USABLE | [spec](./core/my_work.md) |
+| `parties` | Customers &amp; Suppliers | ops | CONNECTED | USABLE | [spec](./ops/parties.md) |
+| `procurement` | Procurement | resources | CONNECTED | USABLE | [spec](./resources/procurement.md) |
+| `projects` | Projects | resources | CONNECTED | USABLE | [spec](./resources/projects.md) |
+| `sales` | Sales | commercial | CONNECTED | USABLE | [spec](./commercial/sales.md) |
+| `sales_contracts` | Sales Contracts | commercial | SIMULATED_BY_DESIGN | THIN | [spec](./commercial/sales_contracts.md) |
+| `sales_price_lists` | Sales Price Lists | commercial | CONNECTED | USABLE | [spec](./commercial/sales_price_lists.md) |
+| `service_queue_board` | Service Queue Board | ops | CONNECTED | STRONG | [spec](./ops/service_queue_board.md) |
+| `supplier_portal` | Supplier Portal | resources | THIN | THIN | [spec](./resources/supplier_portal.md) |
+| `task_manager` | Task Manager | ops | CONNECTED | USABLE | [spec](./ops/task_manager.md) |
+| `warranty` | Warranty | commercial | CONNECTED | THIN | [spec](./commercial/warranty.md) |
+| `work_orders` | Work Orders | ops | THIN | THIN | [spec](./ops/work_orders.md) |
+| `workshop_command_center` | Workshop Command Center | ops | CONNECTED | USABLE | [spec](./ops/workshop_command_center.md) |
+| `workshop_ledger` | Workshop Ledger | finance | SIMULATED_BY_DESIGN | THIN | [spec](./finance/workshop_ledger.md) |
+| `workshop_pack_setup` | Workshop Pack Setup | commercial | CONNECTED | USABLE | [spec](./commercial/workshop_pack_setup.md) |
+| `workshop_readiness` | Workshop Readiness | ops | CONNECTED | USABLE | [spec](./ops/workshop_readiness.md) |
 
 ## Interpretation
 
-A page is documented when its manifest entry and spec exist. Deep review means source/API/domain/table/action/workflow evidence was examined at the recorded engineering reference and the 23-section specification was refreshed. `CONNECTED` means a page-to-domain edge is evidenced; it does not mean every target behavior, role/isolation path, responsive flow, or browser lifecycle is accepted. `SIMULATED_BY_DESIGN`, `THIN`, and `PARTIALLY_CONNECTED` identify recovery or ownership risk.
-
-## Not covered by this wave
-
-- No source/product/test implementation was changed.
-- No engineering worktree files were written.
-- Build-12 commercial remediation, unrelated intelligence/admin pages, and unresolved owner decisions remain for later waves.
+Wave 4 intentionally selected the remaining shallow pages in the finance, treasury, intercompany/consolidation, workflow, tax, approval, and service-kiosk boundary set. A domain source or test is not attributed to a page as functional proof unless the page renderer/API wiring is also evidenced.

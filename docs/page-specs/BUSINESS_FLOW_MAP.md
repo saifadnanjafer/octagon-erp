@@ -24,3 +24,19 @@ Status vocabulary: **VERIFIED** = source/API/domain edge is explicit; **PARTIAL*
 | Workshop Ledger → Finance | Workshop Ledger / local migration data | Finance | MISSING | Local import/pay actions do not prove Finance document/journal persistence or period/company scope. |
 | Installment plan → AR/payment allocation | Finance Installments / local plan | Finance AR | MISSING | No Finance API/action; migrate or retire before treating payment as a receivable fact. |
 | Warranty claim → service/RMA/credit | Warranty / `platform/sales/warranty.mjs` | Field Service/RMA/Finance | PARTIAL | Warranty action authority exists; downstream service and financial outcome edges need explicit contracts/tests. |
+
+# Business Flow Map — Wave 4
+
+Engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`
+
+| Flow | Source | Target | Status | Evidence / next proof |
+|---|---|---|---|---|
+| Legacy cashbox/expense/income row → Finance posted fact | app.js local helpers | Finance engine | MISSING | Local writer and canonical Finance exist, but no verified source-fact handoff for these pages. Freeze/migrate and prove idempotency. |
+| Finance posted facts → cash position/liquidity forecast | Finance engine | Treasury/liquidity | PARTIAL | Treasury domain consumes planning inputs; page freshness, currency, and source references are not page-proven. |
+| Treasury funding proposal → payment execution | Treasury planning | Finance payment/source fact | NOT_VERIFIED | Proposal domain exists; page-level approval/execution edge and resulting Finance reference are not verified. |
+| Intercompany transaction → mismatch → reconciliation | Intercompany operations | Reconciliation/consolidation | PARTIAL | Domain and tests exist; page-level company-pair lifecycle is not proven. |
+| Consolidation group → run → report/lineage | Consolidation domain | Consolidated Reports/Lineage | PARTIAL | Domain/test sources exist; individual page authority and read-only child boundaries remain unclear. |
+| Tax calculation → report/submission → Finance lineage | Tax module | Finance tax/report authority | PARTIAL | Tax renderer and Finance domain coexist; submission/amendment/source lineage needs direct proof. |
+| Workflow canvas → durable definition/version | app.js canvas | WorkflowRegistry | PARTIAL | Durable registry supports immutable versions; local canvas compatibility path must be proven as adapter-only. |
+| Workflow definition → runtime instance → registered action | WorkflowRegistry/Runtime | action executor/outbox | VERIFIED | Runtime source enforces registered actions, leases, versions, idempotency, and frozen-zone checks; page lifecycle proof remains needed. |
+| Kiosk registration/entitlement → service action | Kiosk/service domains | Service Kiosk | PARTIAL | Domain/tests cover registry, entitlement, signatures, and offline behavior; page route handoff not fully verified. |

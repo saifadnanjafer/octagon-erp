@@ -41,3 +41,25 @@ None identified from source evidence. Shared tables/resources are intentional cr
 - **High confidence:** local `sales_contracts`, `workshop_ledger`, and `finance_installments` are migration/retirement candidates because their write surfaces conflict with canonical domains.
 - **Owner decision:** `contracts` versus `sales_contracts`; `customers` versus `parties` if Customers is only a finance-filtered party view.
 - **Do not consolidate solely on shared tables:** Sales, Procurement, Projects, WMS, and Finance intentionally share handoff entities while retaining separate lifecycle ownership.
+
+## Wave 4 findings
+
+| ID | Boundary | Evidence | Required reconciliation | Severity |
+|---|---|---|---|---|
+| C-020 | Legacy cashbox/expense/income writers versus Finance | `app.js` maintains local `finance.transactions` and `addFinanceTransaction` helpers while Finance engine owns canonical documents/journals. | Freeze or migrate local financial writers through Finance source facts; distinguish legacy reconciliation from posted truth. | P0 |
+| C-021 | Finance page family versus canonical API | Finance API/domain and extensive finance tests exist, but many primary finance pages have no page-specific API/module evidence. | Map each page to a canonical query/action or classify it as a report/view/retirement candidate. | P1 |
+| C-022 | Consolidation pages versus consolidation domain | `platform/consolidation/index.mjs` and Build-08 tests exist, but group/run/report/lineage/elimination pages are not individually wired in evidence. | Establish one canonical group/run write home and read-only report/lineage children. | P1 |
+| C-023 | Treasury pages versus planning domain | Treasury/liquidity domain exists, but forecast, alert, cash-position, facility, and funding-proposal page lifecycles are not directly proven. | Define forecast freshness, approval, execution, and Finance source-reference contracts. | P1 |
+| C-024 | Intercompany pages versus reconciliation/consolidation | Intercompany operations and tests exist, but page-level transaction-to-mismatch-to-reconciliation edges are not verified. | Prove company-pair isolation, matching, reconciliation, and ledger/consolidation lineage. | P1 |
+| C-025 | Workflow canvas versus durable runtime | `app.js` local canvas helpers/localStorage coexist with durable WorkflowRegistry/WorkflowRuntime definitions, versions, leases, and instances. | Make the canvas an adapter and prove publish-to-run persistence, frozen-zone enforcement, and idempotency. | P0 |
+| C-026 | Service Kiosk versus service/kiosk authorities | Kiosk and service domain/tests cover registry, entitlement, signatures, and offline boards, while page-level route wiring is not fully identified. | Prove device/session/entitlement to service-action handoff and offline recovery. | P1 |
+| C-027 | Tax Compliance versus Finance posting | Tax module and Finance authority coexist, but tax-period calculation/submission/source lineage is not fully attributed to the page. | Prove tax report lifecycle, amendments, and Finance source-document links. | P1 |
+| C-028 | Content Approvals versus generic Approvals | Content Approvals is a separate primary page while approval domain ownership and content target records are not identified. | Make it a target-specific child/view or document a distinct content approval authority. | P2 |
+| C-029 | Purpose overlap in consolidation pages | Groups, runs, reports, lineage, and eliminations are separately navigable but their user-goal hierarchy is unclear. | Publish a bounded consolidation hierarchy and avoid parallel writes. | P2 |
+
+## Consolidation candidates
+
+- Local Cashbox, Expenses, and Income should be migrated into Finance or explicitly retained as non-posting legacy views.
+- Workflow should retain its page only as the durable runtime’s governed definition/monitoring home; local canvas storage must not remain a parallel authority.
+- Consolidated Reports and Consolidation Lineage are likely read-only children; Consolidation Groups and Runs are the candidate canonical writes.
+- Content Approvals may be a filtered child of Approvals unless owner evidence proves a separate content lifecycle.

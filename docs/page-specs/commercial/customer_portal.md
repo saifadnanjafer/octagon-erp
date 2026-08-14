@@ -4,25 +4,27 @@ title_en: "Customer Portal"
 title_ar: "بوابة العميل"
 domain: "commercial"
 navigation_group: "commercial_relationships"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "customer_portal"
 parent_page: null
 aliases: []
 roles: ["any authenticated user"]
 permission: "none (public/open)"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/customer_portal.html"]
+renderer_type: "page-specific"
+renderer_sources: ["Customer portal renderer (source path NOT VERIFIED)"]
 view_sources: ["views/customer_portal.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["GET /api/v1/commercial/portal/*; POST /api/v1/action/portal:*"]
+domain_sources: ["Customer portal authority (source path NOT VERIFIED)","platform/sales/orders.mjs","platform/finance/engine.mjs"]
+tables_or_entities: ["portal_users","portal_access_grants","sale_orders","stock_pickings","finance_documents","sales_contracts"]
+test_sources: ["tests/phase04-finalization/canonical_sales.test.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
 functional_status: "CONNECTED"
 usability_status: "USABLE"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
@@ -30,147 +32,135 @@ review_status: "REQUIRES_PRODUCT_RECOVERY"
 
 # 1. Identity
 
-- Page ID: `customer_portal`
-- English: Customer Portal
-- Arabic: بوابة العميل
-- Domain: `commercial`; navigation group: `commercial_relationships`
-- Route: switchPage('customer_portal') / views/customer_portal.html
-- Page type: PAGE
+- Page ID: `customer_portal`; English: Customer Portal; domain: `commercial`; navigation group: `commercial_relationships`.
+- Route: `switchPage('customer_portal')`; page-specific renderer: `Customer portal renderer (source path NOT VERIFIED)`; view: `views/customer_portal.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Customer portal — public/customer (risk: low, phase: core)
+A customer-facing user opens the portal to view permitted commercial documents, delivery status, balances, contracts, and service/warranty requests without exposing another company’s data.
 
 # 3. Primary Users
 
-- Declared roles: any authenticated user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "none (public/open)".
+- Business roles: owner/operator/reviewer/approver/manager split is partly evidenced by the cited domain boundary but requires direct role-isolation proof.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Customer Portal workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A customer-facing user opens the portal to view permitted commercial documents, delivery status, balances, contracts, and service/warranty requests without exposing another company’s data.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/customer_portal.html. Static source counts at baseline: 1 headings, 1 button tags, 1 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/customer_portal.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: none — public/open page, no permission gate (PAGE_PERMISSIONS entry is empty array)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `Customer portal renderer (source path NOT VERIFIED)` and `views/customer_portal.html`.
+- Query/action boundary: GET /api/v1/commercial/portal/*; POST /api/v1/action/portal:*.
+- Current classification: **CONNECTED**; usability: **USABLE**.
+- Visible primary actions:
+- View/download/request -> portal read/action boundary; exact mutation set requires server proof
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/customer_portal.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `GET /api/v1/commercial/portal/*; POST /api/v1/action/portal:*`.
+- Domain authority: `Customer portal authority (source path NOT VERIFIED); platform/sales/orders.mjs; platform/finance/engine.mjs`.
+- Persisted entities/tables where source evidence permits: `portal_users`, `portal_access_grants`, `sale_orders`, `stock_pickings`, `finance_documents`, `sales_contracts`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- UI label: نسخ رابط المحاكاة; handler/action ID: copyCustomerPortalLink(); permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- View/download/request -> portal read/action boundary; exact mutation set requires server proof — permission: declared page gate plus server action authorization; persistence: Portal grants control visibility; source sales/finance domains own records.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For connected actions, the server must derive scope and validate stale state before persistence.
 
 # 9. Outputs
 
-The intended output is the page’s named Customer Portal record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Scoped customer document/status view and permitted request reference.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: party/portal identity; sales and finance documents.
+- Downstream: sales support; warranty; finance requests.
+- Workflow classification: CONNECTED for the cited page-to-domain edge; cross-page completion edges marked in gaps are not assumed.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: none — public/open page, no permission gate (PAGE_PERMISSIONS entry is empty array)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- LOADING, READY, EMPTY, DENIED, EXPIRED, SERVER_ERROR.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Portal grants control visibility; source sales/finance domains own records.
 
 # 12. Permissions & Scope
 
-- Client page gate: none (public/open)
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: none (public/open).
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is partly evidenced, not fully proven here.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: بوابة العميل
-- English label: Customer Portal
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Customer Portal; Arabic label source: بوابة العميل.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**USABLE** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**CONNECTED / USABLE** — Customer portal view plus sales/finance source boundaries; direct lifecycle/isolation evidence remains bounded.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Customer Portal workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A customer-facing user opens the portal to view permitted commercial documents, delivery status, balances, contracts, and service/warranty requests without exposing another company’s data. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Portal grants control visibility; source sales/finance domains own records.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-customer_portal-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **customer_portal-W3-01** (P1, ISOLATION_GAP) — Cross-company and delegated-portal isolation is not proven by navigation evidence. **Required next step:** Add browser/API assertions for direct object access, expired grants, and customer-to-party mapping.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `customer_portal` unless a later owner decision records another home.
+- Recommended disposition: **KEEP_PRIMARY**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Portal grants control visibility; source sales/finance domains own records.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `customer_portal` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Customer Portal workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: A customer-facing user opens the portal to view permitted commercial documents, delivery status, balances, contracts, and service/warranty requests without exposing another company’s data.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** NOT VERIFIED by a page-id-specific test in tests/.
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Customer portal view plus sales/finance source boundaries; direct lifecycle/isolation evidence remains bounded.**
+- Cited source/tests:
+- `tests/phase04-finalization/canonical_sales.test.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
 - `views/customer_portal.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `platform/sales/orders.mjs`
+- `platform/finance/engine.mjs`
+- `tests/phase04-finalization/canonical_sales.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Customer Portal workspace presentation and its explicitly verified page-specific actions: copyCustomerPortalLink().
+- Portal grants control visibility; source sales/finance domains own records.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- party/portal identity; sales and finance documents; sales support; warranty; finance requests

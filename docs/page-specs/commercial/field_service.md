@@ -4,174 +4,169 @@ title_en: "Field Service"
 title_ar: "الخدمة الميدانية"
 domain: "commercial"
 navigation_group: "commercial_verticals"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "field_service"
 parent_page: null
 aliases: []
 roles: ["workshop.user"]
 permission: "workshop.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/field_service.html"]
+renderer_type: "page-specific"
+renderer_sources: ["modules/field-service.js"]
 view_sources: ["views/field_service.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["No canonical field-service API shown; local omni.fieldService state and finance bridge"]
+domain_sources: ["local omni.fieldService","platform/finance engine is a downstream candidate"]
+tables_or_entities: ["omni.fieldService.visits","omni finance transaction bridge","parties/customers (read candidate)"]
+test_sources: ["tests/phase03/field_service.test.mjs","tests/navigation/run-click-audit.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
-evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
-functional_status: "THIN"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
+evidence_confidence: "MEDIUM"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
+functional_status: "PARTIALLY_CONNECTED"
 usability_status: "THIN"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `field_service`
-- English: Field Service
-- Arabic: الخدمة الميدانية
-- Domain: `commercial`; navigation group: `commercial_verticals`
-- Route: switchPage('field_service') / views/field_service.html
-- Page type: PAGE
+- Page ID: `field_service`; English: Field Service; domain: `commercial`; navigation group: `commercial_verticals`.
+- Route: `switchPage('field_service')`; page-specific renderer: `modules/field-service.js`; view: `views/field_service.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Field Service — workshop/operations (risk: medium, phase: phase6h)
+A field-service coordinator opens Field Service to schedule and close customer visits, capture technician work and charge context, and hand off any financial result through a canonical authority.
 
 # 3. Primary Users
 
-- Declared roles: workshop.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "workshop.user".
+- Business roles: owner/operator/reviewer/approver/manager split is NOT VERIFIED from the page-specific evidence.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Field Service workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A field-service coordinator opens Field Service to schedule and close customer visits, capture technician work and charge context, and hand off any financial result through a canonical authority.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/field_service.html. Static source counts at baseline: 1 headings, 0 button tags, 0 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/field_service.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `modules/field-service.js` and `views/field_service.html`.
+- Query/action boundary: No canonical field-service API shown; local omni.fieldService state and finance bridge.
+- Current classification: **PARTIALLY_CONNECTED**; usability: **THIN**.
+- Visible primary actions:
+- Create/update/complete visit -> local visits action
+- Record charge -> addFinanceTransaction bridge
+- Audit/history -> local audit helper
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/field_service.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `No canonical field-service API shown; local omni.fieldService state and finance bridge`.
+- Domain authority: `local omni.fieldService; platform/finance engine is a downstream candidate`.
+- Persisted entities/tables where source evidence permits: `omni.fieldService.visits`, `omni finance transaction bridge`, `parties/customers (read candidate)`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- No current action was verified. This is a documented gap, not an inferred absence from the page title.
+- Create/update/complete visit -> local visits action — permission: declared page gate plus server action authorization; persistence: Current authority is local/unclear; Finance must remain the only GL writer.
+- Record charge -> addFinanceTransaction bridge — permission: declared page gate plus server action authorization; persistence: Current authority is local/unclear; Finance must remain the only GL writer.
+- Audit/history -> local audit helper — permission: declared page gate plus server action authorization; persistence: Current authority is local/unclear; Finance must remain the only GL writer.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For connected actions, the server must derive scope and validate stale state before persistence.
 
 # 9. Outputs
 
-The intended output is the page’s named Field Service record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Local field visit and possible finance transaction; canonical invoice/GL result NOT VERIFIED.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: customer/site/technician; service queue.
+- Downstream: finance; warranty/RMA; work orders.
+- Workflow classification: PARTIAL/UNVERIFIED; the page must not be presented as a completed canonical handoff.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- PLANNED, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED (local/partially connected).
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Current authority is local/unclear; Finance must remain the only GL writer.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: workshop.user.
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is NOT VERIFIED.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: الخدمة الميدانية
-- English label: Field Service
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Field Service; Arabic label source: الخدمة الميدانية.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**THIN** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**PARTIALLY_CONNECTED / THIN** — Module comments and source show local omni state, AuditService, and addFinanceTransaction; no canonical API route shown.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Field Service workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A field-service coordinator opens Field Service to schedule and close customer visits, capture technician work and charge context, and hand off any financial result through a canonical authority. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Current authority is local/unclear; Finance must remain the only GL writer.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-field_service-GAP-002** (P1, ACTION) — No meaningful primary action path was verified in the inspected source.
-- **PAGE-field_service-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **field_service-W3-01** (P0, AUTHORITY_CONFLICT) — Field Service writes local visit state and calls a finance bridge while canonical Projects/Sales/Finance authorities exist. **Required next step:** Choose canonical field-service/service-job authority and route financial effects through Finance source facts.
+- **field_service-W3-02** (P1, WORKFLOW_DISCONNECT) — No verified link from field visit to warranty, sales order, project task, or posted finance document. **Required next step:** Define service completion and billing source-document contract.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `field_service` unless a later owner decision records another home.
+- Recommended disposition: **CONSOLIDATE_WITH_SERVICE_REVIEW**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Current authority is local/unclear; Finance must remain the only GL writer.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `field_service` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Field Service workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: A field-service coordinator opens Field Service to schedule and close customer visits, capture technician work and charge context, and hand off any financial result through a canonical authority.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** NOT VERIFIED by a page-id-specific test in tests/.
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Module comments and source show local omni state, AuditService, and addFinanceTransaction; no canonical API route shown.**
+- Cited source/tests:
+- `tests/phase03/field_service.test.mjs`
+- `tests/navigation/run-click-audit.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
+- `modules/field-service.js`
 - `views/field_service.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `tests/phase03/field_service.test.mjs`
+- `tests/navigation/run-click-audit.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Field Service workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED.
+- Current authority is local/unclear; Finance must remain the only GL writer.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- customer/site/technician; service queue; finance; warranty/RMA; work orders

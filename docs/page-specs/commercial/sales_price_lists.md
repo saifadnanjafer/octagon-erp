@@ -4,174 +4,168 @@ title_en: "Sales Price Lists"
 title_ar: "قوائم الأسعار"
 domain: "commercial"
 navigation_group: "commercial_sales"
-kind: LIST
-canonical_status: PRIMARY
+kind: "LIST"
+canonical_status: "PRIMARY"
 canonical_home: "sales_price_lists"
 parent_page: null
 aliases: []
 roles: ["workshop.user","finance.user"]
 permission: "workshop.user, finance.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/sales_price_lists.html"]
+renderer_type: "page-specific"
+renderer_sources: ["modules/sales-price-lists.js"]
 view_sources: ["views/sales_price_lists.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["GET /api/v1/commercial/price-lists; POST /api/v1/action/price_list:*"]
+domain_sources: ["platform/commercial/pricing.mjs","platform/sales/orders.mjs"]
+tables_or_entities: ["product_price_lists","product_price_list_items","product_variants","sale_order_lines"]
+test_sources: ["tests/phase04/canonical_sales.test.mjs","tests/phase04-finalization/canonical_sales.test.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
-functional_status: "THIN"
-usability_status: "THIN"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
+functional_status: "CONNECTED"
+usability_status: "USABLE"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `sales_price_lists`
-- English: Sales Price Lists
-- Arabic: قوائم الأسعار
-- Domain: `commercial`; navigation group: `commercial_sales`
-- Route: switchPage('sales_price_lists') / views/sales_price_lists.html
-- Page type: LIST
+- Page ID: `sales_price_lists`; English: Sales Price Lists; domain: `commercial`; navigation group: `commercial_sales`.
+- Route: `switchPage('sales_price_lists')`; page-specific renderer: `modules/sales-price-lists.js`; view: `views/sales_price_lists.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Sales price lists — sales/pricing (risk: medium, phase: phase7j)
+A sales administrator opens Price Lists to maintain governed product pricing and provide the price context consumed by quotations and orders.
 
 # 3. Primary Users
 
-- Declared roles: workshop.user, finance.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "workshop.user, finance.user".
+- Business roles: owner/operator/reviewer/approver/manager split is partly evidenced by the cited domain boundary but requires direct role-isolation proof.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Sales Price Lists workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A sales administrator opens Price Lists to maintain governed product pricing and provide the price context consumed by quotations and orders.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/sales_price_lists.html. Static source counts at baseline: 1 headings, 0 button tags, 0 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/sales_price_lists.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `modules/sales-price-lists.js` and `views/sales_price_lists.html`.
+- Query/action boundary: GET /api/v1/commercial/price-lists; POST /api/v1/action/price_list:*.
+- Current classification: **CONNECTED**; usability: **USABLE**.
+- Visible primary actions:
+- Create/update/activate price list -> price list action boundary
+- Select price list -> quotation/order pricing query
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/sales_price_lists.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `GET /api/v1/commercial/price-lists; POST /api/v1/action/price_list:*`.
+- Domain authority: `platform/commercial/pricing.mjs; platform/sales/orders.mjs`.
+- Persisted entities/tables where source evidence permits: `product_price_lists`, `product_price_list_items`, `product_variants`, `sale_order_lines`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- No current action was verified. This is a documented gap, not an inferred absence from the page title.
+- Create/update/activate price list -> price list action boundary — permission: declared page gate plus server action authorization; persistence: Commercial pricing domain owns price-list records; Sales consumes resolved prices.
+- Select price list -> quotation/order pricing query — permission: declared page gate plus server action authorization; persistence: Commercial pricing domain owns price-list records; Sales consumes resolved prices.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For connected actions, the server must derive scope and validate stale state before persistence.
 
 # 9. Outputs
 
-The intended output is the page’s named Sales Price Lists record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Effective price list/item values used by commercial transactions.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: products/UOMs; company/currency.
+- Downstream: sales quotations/orders; customer portal.
+- Workflow classification: CONNECTED for the cited page-to-domain edge; cross-page completion edges marked in gaps are not assumed.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- DRAFT, ACTIVE, ARCHIVED, DENIED, VALIDATION_ERROR, SERVER_ERROR.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Commercial pricing domain owns price-list records; Sales consumes resolved prices.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.user, finance.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: workshop.user, finance.user.
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is partly evidenced, not fully proven here.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: قوائم الأسعار
-- English label: Sales Price Lists
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Sales Price Lists; Arabic label source: قوائم الأسعار.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**THIN** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**CONNECTED / USABLE** — Canonical sales module/API and phase04 tests; exact renderer action wiring should be confirmed.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Sales Price Lists workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A sales administrator opens Price Lists to maintain governed product pricing and provide the price context consumed by quotations and orders. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Commercial pricing domain owns price-list records; Sales consumes resolved prices.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-sales_price_lists-GAP-002** (P1, ACTION) — No meaningful primary action path was verified in the inspected source.
-- **PAGE-sales_price_lists-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **sales_price_lists-W3-01** (P1, CREDIBILITY_GAP) — Exact action IDs and precedence when multiple price lists apply are not fully attributed in page evidence. **Required next step:** Attach price resolution tests for customer, product, currency, and validity date.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `sales_price_lists` unless a later owner decision records another home.
+- Recommended disposition: **KEEP_PRIMARY**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Commercial pricing domain owns price-list records; Sales consumes resolved prices.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `sales_price_lists` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Sales Price Lists workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: A sales administrator opens Price Lists to maintain governed product pricing and provide the price context consumed by quotations and orders.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** NOT VERIFIED by a page-id-specific test in tests/.
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Canonical sales module/API and phase04 tests; exact renderer action wiring should be confirmed.**
+- Cited source/tests:
+- `tests/phase04/canonical_sales.test.mjs`
+- `tests/phase04-finalization/canonical_sales.test.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
+- `modules/sales-price-lists.js`
 - `views/sales_price_lists.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `platform/commercial/pricing.mjs`
+- `platform/sales/orders.mjs`
+- `tests/phase04/canonical_sales.test.mjs`
+- `tests/phase04-finalization/canonical_sales.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Sales Price Lists workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED.
+- Commercial pricing domain owns price-list records; Sales consumes resolved prices.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- products/UOMs; company/currency; sales quotations/orders; customer portal

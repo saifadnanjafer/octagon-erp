@@ -4,174 +4,165 @@ title_en: "Workshop Ledger"
 title_ar: "محاسبة ودوام الورشة"
 domain: "finance"
 navigation_group: "finance_accounts"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "workshop_ledger"
 parent_page: null
 aliases: []
 roles: ["workshop.manager","finance.user"]
 permission: "workshop.manager, finance.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/workshop_ledger.html"]
+renderer_type: "page-specific"
+renderer_sources: ["modules/workshop-ledger.js"]
 view_sources: ["views/workshop_ledger.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["Fetch /workshop_migration_data.json plus local import/actions; no canonical Finance API shown"]
+domain_sources: ["local workshop_migration_data and local finance transaction helpers"]
+tables_or_entities: ["workshop_migration_data.json","local finance transactions","attendance/advances local collections"]
+test_sources: ["tests/phase03/workshop_ledger.test.mjs","tests/navigation/run-click-audit.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
-evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
-functional_status: "THIN"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
+evidence_confidence: "MEDIUM"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
+functional_status: "SIMULATED_BY_DESIGN"
 usability_status: "THIN"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
 ---
 
 # 1. Identity
 
-- Page ID: `workshop_ledger`
-- English: Workshop Ledger
-- Arabic: محاسبة ودوام الورشة
-- Domain: `finance`; navigation group: `finance_accounts`
-- Route: switchPage('workshop_ledger') / views/workshop_ledger.html
-- Page type: PAGE
+- Page ID: `workshop_ledger`; English: Workshop Ledger; domain: `finance`; navigation group: `finance_accounts`.
+- Route: `switchPage('workshop_ledger')`; page-specific renderer: `modules/workshop-ledger.js`; view: `views/workshop_ledger.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Workshop ledger — finance/workshop (risk: high, phase: phase6h)
+A workshop finance user opens Workshop Ledger expecting a trustworthy ledger, cashbox, advances, attendance, and payroll-related view tied to canonical Finance.
 
 # 3. Primary Users
 
-- Declared roles: workshop.manager, finance.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "workshop.manager, finance.user".
+- Business roles: owner/operator/reviewer/approver/manager split is NOT VERIFIED from the page-specific evidence.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Workshop Ledger workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A workshop finance user opens Workshop Ledger expecting a trustworthy ledger, cashbox, advances, attendance, and payroll-related view tied to canonical Finance.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/workshop_ledger.html. Static source counts at baseline: 1 headings, 0 button tags, 0 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/workshop_ledger.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `modules/workshop-ledger.js` and `views/workshop_ledger.html`.
+- Query/action boundary: Fetch /workshop_migration_data.json plus local import/actions; no canonical Finance API shown.
+- Current classification: **SIMULATED_BY_DESIGN**; usability: **THIN**.
+- Visible primary actions:
+- Run import/pay salary/audit -> local data mutation and local finance helper
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/workshop_ledger.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `Fetch /workshop_migration_data.json plus local import/actions; no canonical Finance API shown`.
+- Domain authority: `local workshop_migration_data and local finance transaction helpers`.
+- Persisted entities/tables where source evidence permits: `workshop_migration_data.json`, `local finance transactions`, `attendance/advances local collections`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- No current action was verified. This is a documented gap, not an inferred absence from the page title.
+- Run import/pay salary/audit -> local data mutation and local finance helper — permission: declared page gate plus server action authorization; persistence: Current local authority conflicts with canonical Finance; page must not be treated as posted accounting.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For the current local surface, inputs are browser-local and must not be treated as posted business facts.
 
 # 9. Outputs
 
-The intended output is the page’s named Workshop Ledger record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Local ledger/import result; canonical journal/posting reference NOT VERIFIED.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: workshop migration JSON; attendance/advance local state.
+- Downstream: cashbox/payroll/finance reports NOT VERIFIED.
+- Workflow classification: PARTIAL/UNVERIFIED; the page must not be presented as a completed canonical handoff.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- IMPORTED, EDITABLE, PAID, AUDITED (local).
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Current local authority conflicts with canonical Finance; page must not be treated as posted accounting.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.manager, finance.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: workshop.manager, finance.user.
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is NOT VERIFIED.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: محاسبة ودوام الورشة
-- English label: Workshop Ledger
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Workshop Ledger; Arabic label source: محاسبة ودوام الورشة.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**THIN** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**SIMULATED_BY_DESIGN / THIN** — Module source explicitly reads migration JSON and uses local finance helpers; no canonical Finance API wiring shown.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Workshop Ledger workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A workshop finance user opens Workshop Ledger expecting a trustworthy ledger, cashbox, advances, attendance, and payroll-related view tied to canonical Finance. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Current local authority conflicts with canonical Finance; page must not be treated as posted accounting.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-workshop_ledger-GAP-002** (P1, ACTION) — No meaningful primary action path was verified in the inspected source.
-- **PAGE-workshop_ledger-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **workshop_ledger-W3-01** (P0, AUTHORITY_CONFLICT) — Workshop Ledger presents a unified financial table and local pay/import actions while Finance is the canonical GL authority. **Required next step:** Freeze new writes, define migration/source-fact mapping, and replace local posting with Finance actions.
+- **workshop_ledger-W3-02** (P1, CREDIBILITY_GAP) — No tenant/company/period isolation or idempotent migration proof is attributed to the page. **Required next step:** Add migration rehearsal evidence and source-document idempotency.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `workshop_ledger` unless a later owner decision records another home.
+- Recommended disposition: **RETIRE_OR_MIGRATE**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Current local authority conflicts with canonical Finance; page must not be treated as posted accounting.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `workshop_ledger` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Workshop Ledger workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: A workshop finance user opens Workshop Ledger expecting a trustworthy ledger, cashbox, advances, attendance, and payroll-related view tied to canonical Finance.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** NOT VERIFIED by a page-id-specific test in tests/.
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Module source explicitly reads migration JSON and uses local finance helpers; no canonical Finance API wiring shown.**
+- Cited source/tests:
+- `tests/phase03/workshop_ledger.test.mjs`
+- `tests/navigation/run-click-audit.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
+- `modules/workshop-ledger.js`
 - `views/workshop_ledger.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `tests/phase03/workshop_ledger.test.mjs`
+- `tests/navigation/run-click-audit.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Workshop Ledger workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED.
+- Current local authority conflicts with canonical Finance; page must not be treated as posted accounting.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- workshop migration JSON; attendance/advance local state; cashbox/payroll/finance reports NOT VERIFIED

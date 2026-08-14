@@ -4,25 +4,27 @@ title_en: "Finance"
 title_ar: "الداشبورد المالي"
 domain: "finance"
 navigation_group: "finance_accounts"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "finance"
 parent_page: null
 aliases: []
 roles: ["finance.user"]
 permission: "finance.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/finance.html"]
+renderer_type: "page-specific"
+renderer_sources: ["Finance renderer (source path NOT VERIFIED)"]
 view_sources: ["views/finance.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/build-01/rma-foundation.test.mjs","tests/build-08/consolidation-domain.test.mjs","tests/build-08/group-finance-browser-chromium.test.mjs","tests/build-08/treasury-liquidity-domain.test.mjs","tests/build-09/browser-harness.mjs","tests/build-10/cross-domain-scenarios.test.mjs","tests/build-10/offline-sync-engine.test.mjs","tests/build-11/commercial-platform.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["GET /api/v1/finance/*; POST /api/v1/action/finance:*"]
+domain_sources: ["platform/finance/index.mjs","platform/finance/engine.mjs"]
+tables_or_entities: ["finance_documents","finance_document_lines","finance_journal_entries","finance_journal_lines","finance_periods","finance_locks","finance_payments","finance_reconciliations","finance_source_facts"]
+test_sources: ["tests/phase04/canonical_finance.test.mjs","tests/phase04-finalization/canonical_finance.test.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
 functional_status: "CONNECTED"
 usability_status: "USABLE"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
@@ -30,152 +32,139 @@ review_status: "REQUIRES_PRODUCT_RECOVERY"
 
 # 1. Identity
 
-- Page ID: `finance`
-- English: Finance
-- Arabic: الداشبورد المالي
-- Domain: `finance`; navigation group: `finance_accounts`
-- Route: switchPage('finance') / views/finance.html
-- Page type: PAGE
+- Page ID: `finance`; English: Finance; domain: `finance`; navigation group: `finance_accounts`.
+- Route: `switchPage('finance')`; page-specific renderer: `Finance renderer (source path NOT VERIFIED)`; view: `views/finance.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Finance dashboard — finance (risk: high, phase: core)
+A finance user opens Finance to manage documents, journals, periods, payments, reconciliation, budgets, source facts, and reports with Finance as the sole accounting authority.
 
 # 3. Primary Users
 
-- Declared roles: finance.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "finance.user".
+- Business roles: owner/operator/reviewer/approver/manager split is partly evidenced by the cited domain boundary but requires direct role-isolation proof.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Finance workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: A finance user opens Finance to manage documents, journals, periods, payments, reconciliation, budgets, source facts, and reports with Finance as the sole accounting authority.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/finance.html. Static source counts at baseline: 5 headings, 6 button tags, 0 input/select/textarea controls, 1 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/finance.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `Finance renderer (source path NOT VERIFIED)` and `views/finance.html`.
+- Query/action boundary: GET /api/v1/finance/*; POST /api/v1/action/finance:*.
+- Current classification: **CONNECTED**; usability: **USABLE**.
+- Visible primary actions:
+- Create/submit/approve/post/reverse/amend/cancel/write_off -> finance:document:*
+- Periods/payments/reconciliation/budgets/source facts -> finance:* action families
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/finance.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: none/global
+- UI to API/query: `GET /api/v1/finance/*; POST /api/v1/action/finance:*`.
+- Domain authority: `platform/finance/index.mjs; platform/finance/engine.mjs`.
+- Persisted entities/tables where source evidence permits: `finance_documents`, `finance_document_lines`, `finance_journal_entries`, `finance_journal_lines`, `finance_periods`, `finance_locks`, `finance_payments`, `finance_reconciliations`, `finance_source_facts`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- UI label: إضافة أمثلة تجريبية; handler/action ID: addFinanceDemoData(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: لوحة التحكم; handler/action ID: switchFinanceTab(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: القيود اليومية; handler/action ID: switchFinanceTab(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: ميزان المراجعة; handler/action ID: switchFinanceTab(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: الأرباح والخسائر; handler/action ID: switchFinanceTab(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: دفتر الأستاذ; handler/action ID: switchFinanceTab(; permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- Create/submit/approve/post/reverse/amend/cancel/write_off -> finance:document:* — permission: declared page gate plus server action authorization; persistence: Finance engine is the sole GL writer and canonical AR/AP authority.
+- Periods/payments/reconciliation/budgets/source facts -> finance:* action families — permission: declared page gate plus server action authorization; persistence: Finance engine is the sole GL writer and canonical AR/AP authority.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For connected actions, the server must derive scope and validate stale state before persistence.
 
 # 9. Outputs
 
-The intended output is the page’s named Finance record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Finance document/journal/hash-chain and source-fact references.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: sales invoice requests; procurement bills; project billing; payments.
+- Downstream: AR/AP reports; customer/supplier balances; tax/compliance; management reporting.
+- Workflow classification: CONNECTED for the cited page-to-domain edge; cross-page completion edges marked in gaps are not assumed.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- DRAFT, SUBMITTED, APPROVED, POSTED, REVERSED, CANCELLED, WRITTEN_OFF, OPEN, SOFT_CLOSED, HARD_CLOSED, DENIED.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Finance engine is the sole GL writer and canonical AR/AP authority.
 
 # 12. Permissions & Scope
 
-- Client page gate: finance.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: finance.user.
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is partly evidenced, not fully proven here.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: الداشبورد المالي
-- English label: Finance
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Finance; Arabic label source: الداشبورد المالي.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**USABLE** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**CONNECTED / USABLE** — Finance API/index/engine and canonical finance test sources.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Finance workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+A finance user opens Finance to manage documents, journals, periods, payments, reconciliation, budgets, source facts, and reports with Finance as the sole accounting authority. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Finance engine is the sole GL writer and canonical AR/AP authority.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-finance-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **finance-W3-01** (P1, WORKFLOW_DISCONNECT) — Several legacy pages still claim finance-like writes; their migration to source facts is not complete. **Required next step:** Inventory and block non-Finance GL writes, then prove source-document idempotency.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `finance` unless a later owner decision records another home.
+- Recommended disposition: **KEEP_PRIMARY**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Finance engine is the sole GL writer and canonical AR/AP authority.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `finance` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Finance workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: A finance user opens Finance to manage documents, journals, periods, payments, reconciliation, budgets, source facts, and reports with Finance as the sole accounting authority.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/build-01/rma-foundation.test.mjs, tests/build-08/consolidation-domain.test.mjs, tests/build-08/group-finance-browser-chromium.test.mjs, tests/build-08/treasury-liquidity-domain.test.mjs, tests/build-09/browser-harness.mjs, tests/build-10/cross-domain-scenarios.test.mjs, tests/build-10/offline-sync-engine.test.mjs, tests/build-11/commercial-platform.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Finance API/index/engine and canonical finance test sources.**
+- Cited source/tests:
+- `tests/phase04/canonical_finance.test.mjs`
+- `tests/phase04-finalization/canonical_finance.test.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
 - `views/finance.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `platform/finance/index.mjs`
+- `platform/finance/engine.mjs`
+- `tests/phase04/canonical_finance.test.mjs`
+- `tests/phase04-finalization/canonical_finance.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Finance workspace presentation and its explicitly verified page-specific actions: addFinanceDemoData(, switchFinanceTab(, switchFinanceTab(, switchFinanceTab(, switchFinanceTab(, switchFinanceTab(.
+- Finance engine is the sole GL writer and canonical AR/AP authority.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- sales invoice requests; procurement bills; project billing; payments; AR/AP reports; customer/supplier balances; tax/compliance; management reporting

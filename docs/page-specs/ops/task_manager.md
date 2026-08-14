@@ -4,25 +4,27 @@ title_en: "Task Manager"
 title_ar: "إدارة المهام"
 domain: "ops"
 navigation_group: "ops_control"
-kind: PAGE
-canonical_status: PRIMARY
+kind: "PAGE"
+canonical_status: "PRIMARY"
 canonical_home: "task_manager"
 parent_page: null
 aliases: []
 roles: ["workshop.user"]
 permission: "workshop.user"
 entitlement: "none/global (not a commercial/SaaS-gated page)"
-renderer_type: "view"
-renderer_sources: ["views/task_manager.html"]
+renderer_type: "page-specific"
+renderer_sources: ["modules/canonical-work-management.js"]
 view_sources: ["views/task_manager.html"]
-api_sources: []
-domain_sources: ["services/permissionService.js"]
-tables_or_entities: []
-test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json","tests/checkpoint-c/canonical_work_management_ui.test.mjs","tests/page-consolidation/consolidation-contract.test.mjs","tests/phase04/canonical_work_items.test.mjs","tests/workshop/drilldown-domain.test.mjs"]
-catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+api_sources: ["GET /api/v1/work-items; POST /api/v1/action/work_item:*"]
+domain_sources: ["Canonical Work Item authority (exact domain source path NOT VERIFIED)"]
+tables_or_entities: ["work_items","work_item_assignments","work_item_comments","platform_audit_events"]
+test_sources: ["tests/workshop/my-work-domain.test.mjs","tests/checkpoint-d-e/projects_lifecycle.test.mjs","tests/navigation/workshop-pack-setup-to-readiness.test.mjs"]
+catalog_baseline_sha: "3c047bb0d04985cd88a536d4dbb16b74d2d6405a"
 last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+engineering_reference_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+deep_review_wave: 3
 evidence_confidence: "HIGH"
-implementation_status: "IMPLEMENTED_AT_BASELINE"
+implementation_status: "IMPLEMENTED_AT_ENGINEERING_REFERENCE"
 functional_status: "CONNECTED"
 usability_status: "USABLE"
 review_status: "REQUIRES_PRODUCT_RECOVERY"
@@ -30,149 +32,140 @@ review_status: "REQUIRES_PRODUCT_RECOVERY"
 
 # 1. Identity
 
-- Page ID: `task_manager`
-- English: Task Manager
-- Arabic: إدارة المهام
-- Domain: `ops`; navigation group: `ops_control`
-- Route: switchPage('task_manager') / views/task_manager.html
-- Page type: PAGE
+- Page ID: `task_manager`; English: Task Manager; domain: `ops`; navigation group: `ops_control`.
+- Route: `switchPage('task_manager')`; page-specific renderer: `modules/canonical-work-management.js`; view: `views/task_manager.html`.
+- Canonical status: PRIMARY; this is a primary catalog destination, not an embedded tab or compatibility alias.
 
 # 2. Business Purpose
 
-Task manager — workshop/operations (risk: low, phase: core)
+An operator opens Task Manager to create, assign, prioritize, and advance a canonical work item, including a governed procurement or project reference when applicable.
 
 # 3. Primary Users
 
-- Declared roles: workshop.user
-- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+- Declared client gate: "workshop.user".
+- Business roles: owner/operator/reviewer/approver/manager split is partly evidenced by the cited domain boundary but requires direct role-isolation proof.
 
 # 4. Primary User Goal
 
-User opens this page to work with the Task Manager workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+USER OPENS THIS PAGE TO: An operator opens Task Manager to create, assign, prioritize, and advance a canonical work item, including a governed procurement or project reference when applicable.
 
 # 5. AS-IS Runtime Surface
 
-The registered view is views/task_manager.html. Static source counts at baseline: 1 headings, 3 button tags, 0 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
-
-- Renderer evidence: views/task_manager.html
-- Visible action inventory: (no <button> labels found in static view file)
-- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- Generic-shell risk: NO from the inspected page-specific source.
+- Renderer/view: `modules/canonical-work-management.js` and `views/task_manager.html`.
+- Query/action boundary: GET /api/v1/work-items; POST /api/v1/action/work_item:*.
+- Current classification: **CONNECTED**; usability: **USABLE**.
+- Visible primary actions:
+- Create/update/assign/status -> canonical work item action executor
+- Open linked procurement/project -> governed switchPage target
+- The page-specific evidence is separated from navigation proof. A visible route does not prove persistence, permission isolation, or completed workflow.
 
 # 6. Data Sources
 
-- UI → renderer: views/task_manager.html
-- Renderer → API/query: NOT VERIFIED
-- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
-- Required fixture: workshop
+- UI to API/query: `GET /api/v1/work-items; POST /api/v1/action/work_item:*`.
+- Domain authority: `Canonical Work Item authority (exact domain source path NOT VERIFIED)`.
+- Persisted entities/tables where source evidence permits: `work_items`, `work_item_assignments`, `work_item_comments`, `platform_audit_events`.
+- Company/branch/warehouse/actor scope: server-derived scope is required where the cited API/domain supports it; page-specific isolation proof remains a separate acceptance item.
 
 # 7. Actions
 
-- UI label: تغيير العرض; handler/action ID: toggleTaskManagerView(); permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: إضافة فضاء; handler/action ID: addTaskSpace(); permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
-- UI label: إضافة قسم; handler/action ID: addTaskDepartment(); permission and persisted result: NOT VERIFIED unless a page-specific API is listed above.
+- Create/update/assign/status -> canonical work item action executor — permission: declared page gate plus server action authorization; persistence: Canonical Work Items own task lifecycle; project page delegates task creation to this authority.
+- Open linked procurement/project -> governed switchPage target — permission: declared page gate plus server action authorization; persistence: Canonical Work Items own task lifecycle; project page delegates task creation to this authority.
 
 # 8. Inputs
 
-- Static controls: (no <button> labels found in static view file)
-- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+- Required business inputs: record IDs, governed party/product/project/warehouse selectors, lifecycle decisions, quantities/reasons, and source references according to the action.
+- Raw IDs must not bypass company, branch, warehouse, actor, maker-checker, or lifecycle validation.
+- For connected actions, the server must derive scope and validate stale state before persistence.
 
 # 9. Outputs
 
-The intended output is the page’s named Task Manager record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+Persisted work item, assignee/status timeline, and link references.
 
 # 10. Workflow Position
 
-- Upstream: NOT VERIFIED from explicit workflow metadata.
-- Downstream: NOT VERIFIED from page-specific source.
+- Upstream: workshop/my-work; project task request.
+- Downstream: my_work; projects; procurement; shopfloor_terminal.
+- Workflow classification: CONNECTED for the cited page-to-domain edge; cross-page completion edges marked in gaps are not assumed.
 
 # 11. States
 
-- LOADING: NOT VERIFIED
-- READY: route activation passed visible Chromium audit.
-- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
-- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
-- VALIDATION_ERROR: NOT VERIFIED
-- SERVER_ERROR: NOT VERIFIED
-- SUCCESS: NOT VERIFIED
-- Domain lifecycle states: NOT VERIFIED.
+- DRAFT, TODO, ASSIGNED, IN_PROGRESS, BLOCKED, DONE, CANCELLED, DENIED, VALIDATION_ERROR.
+- LOADING, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS/HANDOFF must remain visibly distinct wherever the renderer supports the corresponding state.
+- State persistence and transition authority: Canonical Work Items own task lifecycle; project page delegates task creation to this authority.
 
 # 12. Permissions & Scope
 
-- Client page gate: workshop.user
-- Entitlement: none/global (not a commercial/SaaS-gated page)
-- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
-- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+- Client navigation gate: workshop.user.
+- Server authorization: action/resource permission plus company/branch/warehouse/actor scope as enforced by the cited API/domain; exact matrix is partly evidenced, not fully proven here.
+- A visible button is not authorization proof. Approver/requester separation is required for governed actions.
 
 # 13. Arabic / English
 
-- Arabic label: إدارة المهام
-- English label: Task Manager
-- Baseline language metadata: ar, en
-- Missing labels: NOT VERIFIED beyond static inventory evidence.
+- English label: Task Manager; Arabic label source: إدارة المهام.
+- Every primary action and lifecycle state needs a paired visible Arabic/English label; mojibake or untranslated state text is a usability defect.
 
 # 14. Responsive Requirements
 
-- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
-- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+- Desktop: preserve scope, record identity, state, primary action, errors, and handoff reference without hiding the business decision.
+- Mobile: if used by workshop, warehouse, field, or supplier staff, prove the smallest complete action with controls and validation visible; direct mobile behavior is NOT VERIFIED.
 
 # 15. AS-IS Functional Assessment
 
-**USABLE** — The baseline contains a registered view/renderer, but no literal API evidence was found in the inspected source. This score is evidence-based and does not claim domain completion.
+**CONNECTED / USABLE** — Canonical work-management module and project lifecycle source; direct task browser lifecycle NOT VERIFIED.. This is a source-evidence classification, not a release acceptance claim.
 
 # 16. Target Business Contract
 
-The Task Manager workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+An operator opens Task Manager to create, assign, prioritize, and advance a canonical work item, including a governed procurement or project reference when applicable. The target contract is a governed page-specific workflow that loads scoped data, exposes lifecycle-valid actions, persists through **Canonical Work Items own task lifecycle; project page delegates task creation to this authority.**, returns a durable reference, and distinguishes loading, empty, denied, validation, server-error, and success states. The target is not complete until the gaps and acceptance criteria below have evidence.
 
 # 17. Identified Gaps
 
-- **PAGE-task_manager-GAP-003** (P1, API) — No literal backend API path was verified in the inspected page-specific source; server capability remains NOT VERIFIED.
+- **task_manager-W3-01** (P1, AUTHORITY_OVERLAP) — Legacy project-management and work-order surfaces also expose task/job-like records; only canonical project tasks are explicitly delegated to Work Items. **Required next step:** Name one canonical work-item authority and mark legacy task/job records as adapters or retired.
 
 # 18. Consolidation Analysis
 
-- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
-- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
-- Canonical candidate: `task_manager` unless a later owner decision records another home.
+- Recommended disposition: **KEEP_PRIMARY**.
+- Keep this page separate only when its user goal and lifecycle authority are distinct. Shared tables, tabs, or labels alone are not proof of duplication.
+- Canonical authority decision: Canonical Work Items own task lifecycle; project page delegates task creation to this authority.
 
 # 19. Acceptance Criteria
 
-- A user with the declared permission can open `task_manager` through the visible navigation and see a non-error page-specific surface.
-- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
-- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
-- A scoped browser test proves the named Task Manager workflow; the current 231/231 click audit is route activation evidence only.
+- A permitted user opens the page and sees a non-error page-specific surface in the active scope.
+- Each primary action validates required inputs, actor/tenant scope, lifecycle state, and maker-checker rules; its response shows the resulting state and durable reference.
+- A direct browser/API/domain test proves the highest-risk transition and confirms persistence; navigation-only evidence is insufficient.
+- Cross-page handoffs identified above are either proven in a lifecycle test or explicitly rendered as manual/not verified.
+- For this page specifically: An operator opens Task Manager to create, assign, prioritize, and advance a canonical work item, including a governed procurement or project reference when applicable.
 
 # 20. Test Evidence
 
-- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
-- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
-- **API / DOMAIN:** tests/checkpoint-c/canonical_work_management_ui.test.mjs, tests/page-consolidation/consolidation-contract.test.mjs, tests/phase04/canonical_work_items.test.mjs, tests/workshop/drilldown-domain.test.mjs
-- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+- Evidence class: **Canonical work-management module and project lifecycle source; direct task browser lifecycle NOT VERIFIED.**
+- Cited source/tests:
+- `tests/workshop/my-work-domain.test.mjs`
+- `tests/checkpoint-d-e/projects_lifecycle.test.mjs`
+- `tests/navigation/workshop-pack-setup-to-readiness.test.mjs`
+- Navigation audit, if cited by the existing catalog, proves route activation/visible surface only; it does not prove domain mutation, isolation, or persistence.
 
 # 21. Known Limitations
 
-- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
-- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
-- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
-
+- Catalog baseline: `3c047bb0d04985cd88a536d4dbb16b74d2d6405a`; engineering reference: `25c24df753962bbf3c13301eed71624bc0ee39b6`.
+- Wave 3 is documentation-only. No engineering source, tests, migrations, runtime data, navigation, or product implementation was changed.
+- Source evidence is current to the recorded engineering reference; uncommitted engineering changes are outside this spec.
 
 # 22. Source Evidence
 
+- `modules/canonical-work-management.js`
 - `views/task_manager.html`
-- `index.html`
-- `services/permissionService.js`
-- `docs/review/PAGE_INVENTORY.json`
-- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+- `tests/workshop/my-work-domain.test.mjs`
+- `tests/checkpoint-d-e/projects_lifecycle.test.mjs`
+- `tests/navigation/workshop-pack-setup-to-readiness.test.mjs`
 
 # 23. Change History
 
-- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
-- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+- 2026-08-14 — Wave 3 deep review from engineering reference `25c24df753962bbf3c13301eed71624bc0ee39b6`; Wave 2 pages and catalog history were preserved.
 
 ## CAPABILITIES OWNED
 
-- Task Manager workspace presentation and its explicitly verified page-specific actions: toggleTaskManagerView(), addTaskSpace(), addTaskDepartment().
+- Canonical Work Items own task lifecycle; project page delegates task creation to this authority.
 
 ## CAPABILITIES CONSUMED
 
-- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.
+- workshop/my-work; project task request; my_work; projects; procurement; shopfloor_terminal

@@ -27,7 +27,21 @@ export const REVIEW_ROLES = Object.freeze([
     login: 'review.sysadmin',
     name: 'Review System Administrator',
     roleId: 'review.system_admin',
-    permissions: [READ, WRITE, 'control:admin', 'platform:packs:install', 'platform:packs:enable'],
+    // The wms namespace GET route (platform/api/index.mjs) requires a
+    // resource-scoped `wms:*:view` / `shopfloor:*:view` / `quality:*:view`
+    // token instead of falling back to the generic READ permission every
+    // other query namespace accepts — sysadmin lacked all of them, so it saw
+    // a 403 on every WMS/shopfloor/quality list endpoint despite being the
+    // review environment's superuser. Full list from
+    // platform/api/build09.mjs BUILD09_RESOURCE_PERMISSIONS.
+    permissions: [
+      READ, WRITE, 'control:admin', 'platform:packs:install', 'platform:packs:enable',
+      'wms:topology:view', 'wms:locations:view', 'wms:putaway:view', 'wms:replenishment:view',
+      'wms:receiving:view', 'wms:discrepancies:view', 'wms:picking:view', 'wms:waves:view',
+      'wms:cycle_count:view', 'wms:docks:view', 'wms:crossdock:view', 'wms:traceability:view',
+      'wms:recall:view', 'shopfloor:terminal:view', 'shopfloor:material:view', 'shopfloor:downtime:view',
+      'shopfloor:performance:view', 'quality:checkpoint:view', 'quality:disposition:view', 'quality:rework:view',
+    ],
     isOwner: true,
   },
   {

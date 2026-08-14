@@ -170,23 +170,42 @@ be two different architectures serving what reads as one business area —
 worth re-checking once `sales_price_lists`'s actual behavior is re-observed
 against the new fixture data.
 
-I could not reliably map all 64 files to specific primary nav pages this
-pass: `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`'s `rendererSource`
-field records the initial static view file (`views/work_orders.html`) for
-many of these, not the JS module that populates it at runtime (`work-orders.js`)
-— so a direct cross-reference undercounts. Confirmed by direct code reading
-so far: `work_orders` (P0), `route_health`, `finance_installments`.
+**Follow-up sample, this pass**: `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`'s
+`rendererSource` field records the initial static view file for most P0
+pages (`views/work_orders.html`), not the JS module that actually populates
+it at runtime — so a direct cross-reference undercounts. Sampled all 27 P0
+pages whose renderer is hidden this way, matching each page's container
+`<div id>` against every `modules/*.js` file that references it, then
+confirming by reading the file directly (not just the container-id match,
+which produces false positives on multi-page files like
+`enterprise-suite.js`). **Confirmed legacy by direct evidence (uses `typeof
+omni`, zero canonical `api.query`/`api.call`/`/api/v1` calls) — 9 of 27
+sampled P0 pages**: `work_orders`, `route_health`, `finance_installments`,
+`budgeting`, `tax_compliance`, `workshop_ledger`, `multi_entity`,
+`inventory` (via `advanced-inventory.js` — note this is a **different,
+separate page from `canonical_inventory`**, which is confirmed canonical;
+having both live is itself a possible duplicate-authority pair worth an
+owner look), `mrp` (via `mrp.js`, alongside an apparently-separate
+`canonical-manufacturing.js` — same duplicate-pair pattern as inventory).
+**Confirmed canonical** (clean, no legacy trace): `canonical_console`,
+`canonical_inventory`, `qc_center`, `my_work`, `workshop_command_center`.
+The remaining ~13 P0 pages (`admin_panel`, `ar_ap`, `banking`, `contracts`,
+`security_center` via the shared `enterprise-suite.js` factory;
+`command_center` — inconclusive, likely an aggregator with no direct API
+calls of its own; `cashbox`, `expenses`, `finance`, `home`, `income`,
+`machines`, `report` — no matching module found by this method, needs
+individual reading) are genuinely unresolved by this pass.
+
 **Recommend as a BUILD-13-scoped task, not something to individually patch
-page-by-page**: trace `app.js`'s `switchPage` dispatch table to build a
-precise map of which of the 231 primary pages resolve to a `typeof omni`
-module vs. the canonical platform, before deciding case-by-case whether each
-is retire/port/leave-as-is. This is a bigger, more consequential finding
-than any single page fix in this pass — it may mean a meaningful fraction of
-"Tier 2-5" secondary-domain pages (loyalty, subscriptions, surveys, visitors,
-warranty/RMA, verticals, helpdesk, documents, esign, appointments) never
-touch the canonical database the Golden Workshop Dataset feeds, which would
-explain a lot of thin/empty readings across those domains beyond what any
-fixture expansion can fix.
+page-by-page**: a full `switchPage` dispatch trace across all 231 pages (not
+just the 27 P0 ones sampled here) to close out the remaining uncertainty.
+Given nearly a third of sampled P0 pages are confirmed legacy, and two of
+those are confirmed *duplicate-authority pairs* (`inventory` vs
+`canonical_inventory`, `mrp` vs canonical manufacturing) rather than simple
+single-page issues, this is likely the single highest-leverage finding of
+this recovery pass — bigger than any individual bug fixed here, and squarely
+a "business decision changing canonical process" call, not one this pass
+should make unilaterally.
 
 ## 6. `scenario_planner` (P2) confirmed as a generic-shell template, not a real page
 

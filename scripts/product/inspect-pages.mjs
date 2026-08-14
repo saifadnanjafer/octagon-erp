@@ -38,6 +38,10 @@ const outputPath = path.join(root, 'docs', 'product', 'PAGE_RUNTIME_INSPECTION.j
 const baseUrl = process.env.NAV_AUDIT_URL || 'http://127.0.0.1:8091';
 const itemLimit = Number(process.env.INSPECT_LIMIT || 0);
 const itemOffset = Number(process.env.INSPECT_OFFSET || 0);
+// Targeted re-check by page id, e.g. after a fixture/permission fix, without
+// paying for a full 231-page run. Comma-separated; merges the same way a
+// limit/offset partial run does (see the merge comment near the bottom).
+const itemIds = (process.env.INSPECT_IDS || '').split(',').map((id) => id.trim()).filter(Boolean);
 const reviewPassword = 'Octagon123!'; // disposable local review fixture only
 
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
@@ -241,9 +245,9 @@ try {
   });
 
   const primaryItems = report.items.filter((item) => item.visibleInPrimaryNavigation);
-  const planned = itemLimit > 0
-    ? primaryItems.slice(itemOffset, itemOffset + itemLimit)
-    : primaryItems.slice(itemOffset);
+  const planned = itemIds.length
+    ? primaryItems.filter((item) => itemIds.includes(item.id))
+    : (itemLimit > 0 ? primaryItems.slice(itemOffset, itemOffset + itemLimit) : primaryItems.slice(itemOffset));
 
   let index = 0;
   for (const item of planned) {

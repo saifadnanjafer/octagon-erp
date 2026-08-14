@@ -18,6 +18,7 @@ import { seedReviewIdentities, writeReviewManifest, REVIEW_BIND_HOST } from './i
 import { REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH, ISOLATION_TENANT, ISOLATION_COMPANY, ISOLATION_BRANCH } from './roles.mjs';
 
 import { seedWorkshopFixtures } from './fixtures/workshop.mjs';
+import { seedCommercialPipelineFixtures } from './fixtures/commercial-pipeline.mjs';
 import { seedWarehouseFixtures } from './fixtures/warehouse.mjs';
 import { seedProductionFixtures } from './fixtures/production.mjs';
 import { seedQualityFixtures } from './fixtures/quality.mjs';
@@ -71,6 +72,7 @@ async function main() {
 
     const domains = [
       ['workshop', seedWorkshopFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
+      ['commercial pipeline (CRM/sales/procurement)', seedCommercialPipelineFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['warehouse', seedWarehouseFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['production', seedProductionFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['quality', seedQualityFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],

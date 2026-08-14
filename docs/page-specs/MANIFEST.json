@@ -1,0 +1,5087 @@
+{
+  "schemaVersion": 1,
+  "catalogBaselineSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+  "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6",
+  "generatedAt": "2026-08-14T09:55:31.733Z",
+  "primaryWorkspaceCount": 231,
+  "embeddedTabs": [
+    "calculator",
+    "kanban",
+    "locations",
+    "workshop_tv"
+  ],
+  "compatibilityAliases": [
+    "pos_deepening"
+  ],
+  "pages": [
+    {
+      "pageId": "account_mapping",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "account_mapping:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/account_mapping.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "admin_panel",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "admin_panel:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/admin_panel.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_assistant",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_assistant:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_context_sources",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_context_sources:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_factory",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_factory:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/ai_factory.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_overview",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_overview:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_policy_registry",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_policy_registry:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_prompt_templates",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_prompt_templates:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_proposal_inbox",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_proposal_inbox:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_queue",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_queue:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/jarvis/execute-approved"
+      ],
+      "sourceFiles": [
+        "views/ai_queue.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_run_history",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_run_history:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_status",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_status:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/ai_status.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ai_tools",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ai_tools:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/ai_tools.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "alert_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "alert_board:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "analytics",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "analytics:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/analytics.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "appointments",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "crossdock_workspace",
+        "dock_checkin",
+        "dock_schedule",
+        "staging_board"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "appointments:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/appointments.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build09-dock-workspace.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "approvals",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "approvals:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "views/approvals.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "ar_ap",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "ar_ap:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/ar_ap.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "assets",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "assets:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/assets.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "attribution_insights",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "attribution_insights:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "automation",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "automation:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/automation.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "banking",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "banking:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/banking.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "billing_simulator",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "billing_simulator:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "budgeting",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "budgeting:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/budgeting.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "calendar",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "calendar:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "views/calendar.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "campaigns",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "campaigns:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "modules/jarvis-brain.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "canonical_console",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "canonical_console:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/canonical_console.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "canonical_inventory",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "canonical_inventory:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/canonical_inventory.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "cashbox",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "cashbox:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/cashbox.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "clinic",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "clinic:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/clinic.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "command_center",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "command_center:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "views/command_center.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "commercial_plans",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "commercial_plans:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "competency_profiles",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "competency_profiles:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "configuration_profiles",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "configuration_profiles:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "conflict_resolution",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "conflict_resolution:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/offline.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "consolidated_reports",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "consolidated_reports:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/consolidated_reports.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "consolidation_groups",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "consolidation_groups:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/consolidation_groups.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "consolidation_lineage",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "consolidation_lineage:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/consolidation_lineage.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "consolidation_runs",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "consolidation_runs:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/consolidation_runs.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "content_approvals",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "content_approvals:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "content_calendar",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "content_calendar:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "contracts",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "contracts:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/contracts.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "count_session",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "cycle_count_plans",
+        "variance_review"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "count_session:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-count-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "crossdock_workspace",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "dock_checkin",
+        "dock_schedule",
+        "staging_board"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "crossdock_workspace:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-dock-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "customer_portal",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "customer_portal:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/customer_portal.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "customers",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "customers:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/customers.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "cycle_count_plans",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "count_session",
+        "variance_review"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "cycle_count_plans:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-count-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "data_quality",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "data_quality:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/data_quality.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "demand_planning",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "demand_planning:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/demand_planning.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "deploy_ready",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "deploy_ready:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/deploy_ready.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "development_plans",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "development_plans:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_alerts",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_alerts:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_center",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_center:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/device_center.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_command_center",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_command_center:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_detail",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_detail:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/devices.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_enrollment",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_enrollment:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/devices.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_health_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_health_board:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/boards.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_health_center",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_health_center:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "device_registry",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "device_registry:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/devices.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "dock_checkin",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "crossdock_workspace",
+        "dock_schedule",
+        "staging_board"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "dock_checkin:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-dock-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "dock_schedule",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "crossdock_workspace",
+        "dock_checkin",
+        "staging_board"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "dock_schedule:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-dock-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "documents",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "documents:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/documents.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "downtime_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "operational_performance"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "downtime_board:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-downtime-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "eliminations",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "eliminations:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/eliminations.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "employee_kiosk",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "employee_kiosk:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/kiosks.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "employee_mobile",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "employee_mobile:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/employee_mobile.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "employee_ui",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "employee_ui:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/employee_ui.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "employees",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "employees:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/employees.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "entitlements",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "entitlements:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/service/policies",
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "views/entitlements.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build11-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "equipment",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "equipment:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/equipment.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "esign",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "esign:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/esign.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "event_checkin",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "event_checkin:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "event_planner",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "event_planner:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "event_registrations",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "event_registrations:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "events",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "downtime_board",
+        "operational_performance"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "events:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/",
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}",
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "views/events.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js",
+        "modules/build10-workspaces.js",
+        "modules/build09-downtime-workspace.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "events_overview",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "events_overview:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "expenses",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [
+        "admin_panel"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "expenses:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/expenses.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "expiration_queue",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "lot_serial_traceability"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "expiration_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-expiration-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "extension_installations",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "extension_installations:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "extension_marketplace",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "extension_marketplace:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "field_service",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "field_service:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/field_service.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "finance",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "finance:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/finance.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "finance_installments",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "finance_installments:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/finance_installments.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "financing_facilities",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "financing_facilities:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/financing_facilities.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "firmware_catalogue",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "firmware_catalogue:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "fleet",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "fleet:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "views/fleet.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "fleet_device_mapping",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "fleet_device_mapping:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "fleet_live_map_simulator",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "fleet_live_map_simulator:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "fleet_operations_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "fleet_operations_board:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/boards.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "forecast_accuracy",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "forecast_accuracy:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/forecast_accuracy.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "forecast_overrides",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "forecast_overrides:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/forecast_overrides.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "forecast_versions",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "forecast_versions:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/forecast_versions.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "fuel_telemetry",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "fuel_telemetry:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "gateway_management",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "gateway_management:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/devices.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "geofence_events",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "geofence_events:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "geofence_management",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "geofence_management:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "help_manual",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "help_manual:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/help_manual.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "helpdesk",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "helpdesk:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/helpdesk.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "home",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "home:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/home.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "hotel",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "hotel:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/hotel.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "import",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "import:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/import.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "import_center",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "import_center:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/import-wizard.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "income",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [
+        "admin_panel"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "income:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/income.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "integration_hub",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "integration_hub:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/integration_hub.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "intelligence",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "intelligence:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/intelligence.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "intercompany_reconciliation",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "intercompany_reconciliation:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/intercompany_reconciliation.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "intercompany_transactions",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "intercompany_transactions:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/intercompany_transactions.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "inventory",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "inventory:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/inventory.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "kiosk",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "kiosk:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "views/kiosk.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "kiosk_device_registry",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "kiosk_device_registry:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/kiosks.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "knowledge",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "knowledge:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/knowledge.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "knowledge_base",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "knowledge_base:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/knowledge_base.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "learning_and_certifications",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "learning_and_certifications:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "liquidity_forecast",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "liquidity_forecast:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/liquidity_forecast.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "logistics",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "logistics:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/logistics.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "lot_serial_traceability",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "expiration_queue",
+        "production_issue_return",
+        "production_material_requests",
+        "production_receipt",
+        "recall_analysis"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "lot_serial_traceability:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-expiration-workspace.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build09-production-material-workspaces.js",
+        "modules/build09-trace-workspace.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "loyalty",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "loyalty:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/loyalty.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "machines",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "machines:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/machines.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "maintenance_triggers",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "maintenance_triggers:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "marketing",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "marketing:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "views/marketing.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "marketing_overview",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "marketing_overview:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mismatch_queue",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mismatch_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/mismatch_queue.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mobile_picking",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "pick_task_queue"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mobile_picking:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/action/${actionId}",
+        "/api/v1/wms/pick-tasks?warehouse_id=${encodeURIComponent"
+      ],
+      "sourceFiles": [
+        "modules/build09-mobile-picking.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build09-pick-task-queue-workspace.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mobile_receiving",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mobile_receiving:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/action/${actionId}",
+        "/api/v1/wms/receiving-sessions?warehouse_id=${encodeURIComponent"
+      ],
+      "sourceFiles": [
+        "modules/build09-mobile-receiving.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mps",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mps:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/mps.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mps_proposals",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mps_proposals:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/mps_proposals.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "mrp",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "mrp:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/mrp.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "multi_entity",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "multi_entity:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/multi_entity.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "my_work",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "my_work:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/my_work.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "nl_reports",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "nl_reports:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/nl_reports.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "offline_capability_policies",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "offline_capability_policies:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/offline.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "offline_client_registry",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "offline_client_registry:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/offline.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "offline_queue",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "offline_queue:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/offline.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "omni_communications",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "omni_communications:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/omni_communications.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "op_packs",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "op_packs:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/op_packs.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "operational_performance",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "downtime_board"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "operational_performance:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-downtime-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "parties",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "parties:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/customers_and_suppliers.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "payment_funding_proposals",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "payment_funding_proposals:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/payment_funding_proposals.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "people_development_overview",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "people_development_overview:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "people_ops",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "people_ops:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/people_ops.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "person_skill_evidence",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "person_skill_evidence:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "pharmacy",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "pharmacy:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/pharmacy.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "pick_task_queue",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "mobile_picking"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "pick_task_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-pick-task-queue-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "planning_exceptions",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "planning_exceptions:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/planning_exceptions.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "pos",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "pos:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/pos.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "procurement",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "procurement:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/procurement.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "production_issue_return",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "lot_serial_traceability",
+        "production_material_requests",
+        "production_receipt"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "production_issue_return:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-production-material-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "production_large_screen",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "production_large_screen:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/boards.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "production_material_requests",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "lot_serial_traceability",
+        "production_issue_return",
+        "production_receipt"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "production_material_requests:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-production-material-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "production_receipt",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "lot_serial_traceability",
+        "production_issue_return",
+        "production_material_requests"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "production_receipt:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-action-forms.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build09-production-material-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "products",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "count_session",
+        "crossdock_workspace",
+        "cycle_count_plans",
+        "dock_checkin",
+        "dock_schedule",
+        "lot_serial_traceability",
+        "mobile_receiving",
+        "production_issue_return",
+        "production_material_requests",
+        "production_receipt",
+        "putaway_rules",
+        "putaway_task_queue",
+        "replenishment_proposals",
+        "replenishment_rules",
+        "staging_board",
+        "variance_review"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "products:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/action/${actionId}",
+        "/api/v1/wms/receiving-sessions?warehouse_id=${encodeURIComponent"
+      ],
+      "sourceFiles": [
+        "views/products_and_materials.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build09-action-forms.js",
+        "modules/build09-count-workspace.js",
+        "modules/build09-dock-workspace.js",
+        "modules/build09-mobile-receiving.js",
+        "modules/build09-production-material-workspaces.js",
+        "modules/build09-putaway-workspace.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "projects",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "projects:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/projects.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "putaway_rules",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "putaway_task_queue",
+        "replenishment_proposals",
+        "replenishment_rules"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "putaway_rules:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-putaway-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "putaway_task_queue",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "putaway_rules",
+        "replenishment_proposals",
+        "replenishment_rules"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "putaway_task_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-putaway-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "qc_center",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "qc_center:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/qc_center.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "quality_hold_queue",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "rework_workspace",
+        "scrap_approval"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "quality_hold_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-quality-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "real-estate",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "real-estate:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/real-estate.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "recall_analysis",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "lot_serial_traceability"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "recall_analysis:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-trace-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "receipt",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "receipt:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/receipt.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "receiving_discrepancies",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "receiving_discrepancies:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-receiving-discrepancy-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "rental",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "rental:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/rental.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "replenishment_proposals",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "putaway_rules",
+        "putaway_task_queue",
+        "replenishment_rules"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "replenishment_proposals:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-putaway-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "replenishment_rules",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "putaway_rules",
+        "putaway_task_queue",
+        "replenishment_proposals"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "replenishment_rules:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-putaway-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "report",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "report:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/report.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "restaurant",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "restaurant:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/restaurant.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "retail",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "retail:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/retail.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "rework_workspace",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "quality_hold_queue",
+        "scrap_approval"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "rework_workspace:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-quality-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "risk_compliance",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "risk_compliance:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/risk_compliance.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "rollout_simulator",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "rollout_simulator:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "route_health",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "route_health:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/route_health.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "saas_overview",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "saas_overview:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sales",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sales:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sales.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sales_commission",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sales_commission:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sales_commission.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sales_contracts",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sales_contracts:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sales_contracts.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sales_price_lists",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sales_price_lists:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sales_price_lists.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "scenario_planner",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "scenario_planner:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/scenario_planner.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "scrap_approval",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "quality_hold_queue",
+        "rework_workspace"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "scrap_approval:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-quality-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "seats_and_limits",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "seats_and_limits:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "security_center",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "security_center:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/security_center.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sensor_management",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sensor_management:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/devices.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "service_kiosk",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "service_kiosk:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/kiosks.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "service_queue_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "service_queue_board:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/boards.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "shop_floor_kiosk",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "shop_floor_kiosk:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/kiosks.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "shopfloor_terminal",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "workcenter_queue"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "shopfloor_terminal:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-shopfloor-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "skills_catalog",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "skills_catalog:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sop",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sop:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sop.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sop_review",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sop_review:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sop_review.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sop_scenarios",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sop_scenarios:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/sop_scenarios.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "speed_and_driver_events",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "speed_and_driver_events:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "staging_board",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "crossdock_workspace",
+        "dock_checkin",
+        "dock_schedule"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "staging_board:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-dock-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "subscriptions",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "subscriptions:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "views/subscriptions.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build11-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "supplier_portal",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "supplier_portal:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/supplier_portal.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "supply_demand_balance",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "supply_demand_balance:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/supply_demand_balance.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "surveys",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "surveys:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/surveys.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "suspected_fuel_loss_queue",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "suspected_fuel_loss_queue:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/fleet.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sync_conflicts",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sync_conflicts:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/",
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "sync_sessions",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "sync_sessions:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/offline.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "system_check",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "system_check:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/system-check.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "system_settings",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [
+        "admin_panel"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "system_settings:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/system-settings.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "task_manager",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "task_manager:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/task_manager.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "tax_compliance",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "tax_compliance:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/tax_compliance.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "telegram",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "telegram:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/telegram.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "telemetry_explorer",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "telemetry_explorer:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/telemetry.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "tenant_detail",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "tenant_detail:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "tenant_directory",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "tenant_directory:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "timesheet",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "timesheet:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/timesheet.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "training_lms",
+      "domain": "admin",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "training_lms:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/training_lms.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "treasury_alerts",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "treasury_alerts:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/treasury_alerts.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "treasury_cash_position",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "treasury_cash_position:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/treasury_cash_position.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "usage_and_quotas",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "usage_and_quotas:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "modules/build11-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "variance_review",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "count_session",
+        "cycle_count_plans"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "variance_review:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-count-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "vehicle_trip_timeline",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "vehicle_trip_timeline:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/",
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10-workspaces.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "vertical_packs",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "vertical_packs:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "visitors",
+      "domain": "resources",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "visitors:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/visitors.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "warehouse_kiosk",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "warehouse_kiosk:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/kiosks.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "warehouse_large_screen",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "warehouse_large_screen:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/iot/${pageKey}",
+        "/api/v1/iot/fleet/${pageKey}",
+        "/api/v1/iot/offline/${pageKey}",
+        "/api/v1/iot/kiosk/${pageKey}",
+        "/api/v1/iot/boards/${pageKey}",
+        "/api/v1/action/${pageKey}"
+      ],
+      "sourceFiles": [
+        "modules/build10/renderers/boards.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build10-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "warehouse_topology",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "zone_bin_management"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "warehouse_topology:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-topology-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "warehouses",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "entitlements",
+        "events",
+        "subscriptions"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "warehouses:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/saas/${path}${queryString",
+        "/api/v1/action/${actionId}"
+      ],
+      "sourceFiles": [
+        "views/warehouses_and_locations.html",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build11-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "warranty",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "warranty:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/warranty.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "wave_execution",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "wave_planning"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "wave_execution:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-wave-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "wave_planning",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "wave_execution"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "wave_planning:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-wave-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "wfl_home",
+      "domain": "core",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "wfl_home:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/wfl_home.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "whatsapp",
+      "domain": "intelligence",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "whatsapp:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/whatsapp.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "work_orders",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "work_orders:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/work_orders.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workcenter_queue",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "shopfloor_terminal"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workcenter_queue:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-shopfloor-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workflow",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workflow:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/workflow.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workshop_command_center",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workshop_command_center:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/workshop_command_center.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workshop_ledger",
+      "domain": "finance",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workshop_ledger:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/workshop_ledger.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workshop_pack_setup",
+      "domain": "commercial",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workshop_pack_setup:workspace"
+      ],
+      "capabilitiesConsumed": [
+        "/api/v1/build12/${resource}",
+        "/api/v1/action/${id}"
+      ],
+      "sourceFiles": [
+        "app.js",
+        "index.html",
+        "services/permissionService.js",
+        "modules/build12-workspaces.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "workshop_readiness",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "workshop_readiness:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "views/workshop_readiness.html",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    },
+    {
+      "pageId": "zone_bin_management",
+      "domain": "ops",
+      "upstream": [],
+      "downstream": [
+        "warehouse_topology"
+      ],
+      "parent": null,
+      "aliases": [],
+      "consolidationCandidate": null,
+      "capabilitiesOwned": [
+        "zone_bin_management:workspace"
+      ],
+      "capabilitiesConsumed": [],
+      "sourceFiles": [
+        "modules/build09-topology-workspace.js",
+        "index.html",
+        "services/permissionService.js"
+      ],
+      "lastVerifiedSha": "25c24df753962bbf3c13301eed71624bc0ee39b6"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+---
+page_id: "ai_queue"
+title_en: "Ai Queue"
+title_ar: "طابور الذكاء"
+domain: "intelligence"
+navigation_group: "intelligence_ai"
+kind: QUEUE
+canonical_status: PRIMARY
+canonical_home: "ai_queue"
+parent_page: null
+aliases: []
+roles: ["workshop.manager","finance.manager"]
+permission: "workshop.manager, finance.manager"
+entitlement: "none/global (not a commercial/SaaS-gated page)"
+renderer_type: "view"
+renderer_sources: ["views/ai_queue.html"]
+view_sources: ["views/ai_queue.html"]
+api_sources: ["/api/jarvis/execute-approved"]
+domain_sources: ["services/permissionService.js"]
+tables_or_entities: []
+test_sources: ["docs/navigation/NAVIGATION_FORENSIC_REPORT.json","docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json"]
+catalog_baseline_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+last_verified_sha: "25c24df753962bbf3c13301eed71624bc0ee39b6"
+evidence_confidence: "HIGH"
+implementation_status: "IMPLEMENTED_AT_BASELINE"
+functional_status: "CONNECTED"
+usability_status: "USABLE"
+review_status: "REQUIRES_PRODUCT_RECOVERY"
+---
+
+# 1. Identity
+
+- Page ID: `ai_queue`
+- English: Ai Queue
+- Arabic: طابور الذكاء
+- Domain: `intelligence`; navigation group: `intelligence_ai`
+- Route: switchPage('ai_queue') / views/ai_queue.html
+- Page type: QUEUE
+
+# 2. Business Purpose
+
+AI approval queue — ai/system (risk: high, phase: phase6e)
+
+# 3. Primary Users
+
+- Declared roles: workshop.manager, finance.manager
+- Viewer/operator/reviewer/manager/administrator split: NOT VERIFIED beyond the declared permission gate.
+
+# 4. Primary User Goal
+
+User opens this page to work with the Ai Queue workspace. The exact business completion goal is supported by the review inventory purpose statement above.
+
+# 5. AS-IS Runtime Surface
+
+The registered view is views/ai_queue.html. Static source counts at baseline: 1 headings, 0 button tags, 0 input/select/textarea controls, 0 tables, 0 forms, and 0 literal /api/v1 calls. Dynamic content not visible in static source is NOT VERIFIED.
+
+- Renderer evidence: views/ai_queue.html
+- Visible action inventory: (no <button> labels found in static view file)
+- Empty state: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
+- Denied state: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
+- Generic-shell risk: NO from the inspected page-specific source.
+
+# 6. Data Sources
+
+- UI → renderer: views/ai_queue.html
+- Renderer → API/query: /api/jarvis/execute-approved
+- Domain service → table/entity: NOT VERIFIED; no table is asserted without direct source evidence.
+- Required fixture: none/global
+
+# 7. Actions
+
+- No current action was verified. This is a documented gap, not an inferred absence from the page title.
+
+# 8. Inputs
+
+- Static controls: (no <button> labels found in static view file)
+- Governed selectors versus raw IDs: NOT VERIFIED from the page inventory; inspect the page-specific renderer before implementation.
+
+# 9. Outputs
+
+The intended output is the page’s named Ai Queue record, decision, view, or operational state. Exact persisted object: NOT VERIFIED.
+
+# 10. Workflow Position
+
+- Upstream: NOT VERIFIED from explicit workflow metadata.
+- Downstream: NOT VERIFIED from page-specific source.
+
+# 11. States
+
+- LOADING: NOT VERIFIED
+- READY: route activation passed visible Chromium audit.
+- EMPTY: not verified — no empty-state markup found in static view file (may be rendered dynamically by JS)
+- DENIED: toast "عذراً، ليس لديك صلاحية للوصول إلى هذا القسم" + redirect to calculator/login (app.js switchPage generic denial handling)
+- VALIDATION_ERROR: NOT VERIFIED
+- SERVER_ERROR: NOT VERIFIED
+- SUCCESS: NOT VERIFIED
+- Domain lifecycle states: NOT VERIFIED.
+
+# 12. Permissions & Scope
+
+- Client page gate: workshop.manager, finance.manager
+- Entitlement: none/global (not a commercial/SaaS-gated page)
+- Tenant/company/branch/warehouse/employee scope: NOT VERIFIED in page-specific evidence.
+- Client visibility and server authorization must be treated separately; the navigation click audit proves neither server mutation authorization nor data isolation.
+
+# 13. Arabic / English
+
+- Arabic label: طابور الذكاء
+- English label: Ai Queue
+- Baseline language metadata: ar, en
+- Missing labels: NOT VERIFIED beyond static inventory evidence.
+
+# 14. Responsive Requirements
+
+- Desktop/laptop: the visible navigation audit covered route activation, not layout quality.
+- Mobile: not verified — no mobile-specific markers found (desktop-oriented by default); operational mobile behavior requires a separate browser contract.
+
+# 15. AS-IS Functional Assessment
+
+**USABLE** — The baseline contains a registered view/renderer and API evidence. This score is evidence-based and does not claim domain completion.
+
+# 16. Target Business Contract
+
+The Ai Queue workspace should give its governed users a page-specific way to complete the named business task: load scoped records, accept governed inputs where needed, execute authorized actions, persist the resulting state through the domain authority, and expose explicit loading/empty/denied/validation/server-error/success states. Exact fields and lifecycle transitions remain **NOT VERIFIED** where the baseline source does not define them.
+
+# 17. Identified Gaps
+
+- **PAGE-ai_queue-GAP-002** (P1, ACTION) — No meaningful primary action path was verified in the inspected source.
+
+# 18. Consolidation Analysis
+
+- Remain a primary workspace: **YES pending owner review**, because it is classified as a primary navigation page in the baseline forensic report.
+- Tab/master-detail child/dialog/action/alias/internal-view alternative: NOT VERIFIED; do not consolidate from page title alone.
+- Canonical candidate: `ai_queue` unless a later owner decision records another home.
+
+# 19. Acceptance Criteria
+
+- A user with the declared permission can open `ai_queue` through the visible navigation and see a non-error page-specific surface.
+- The page exposes only actions whose permission, API/domain handler, required inputs, persisted result, and next state are documented and server-authorized.
+- The page distinguishes LOADING, READY, EMPTY, DENIED, VALIDATION_ERROR, SERVER_ERROR, and SUCCESS in a real browser.
+- A scoped browser test proves the named Ai Queue workflow; the current 231/231 click audit is route activation evidence only.
+
+# 20. Test Evidence
+
+- **REAL_BROWSER_VISIBLE_UI:** docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json — authenticated Chromium visible click audit; 231/231 primary navigation items passed, including this page.
+- **STATIC:** docs/review/PAGE_INVENTORY.json and docs/navigation/NAVIGATION_FORENSIC_REPORT.json.
+- **API / DOMAIN:** NOT VERIFIED by a page-id-specific test in tests/.
+- **REAL_BROWSER_DIRECT:** NOT VERIFIED; no direct action lifecycle proof is attributed here.
+
+# 21. Known Limitations
+
+- This catalog is a forensic specification at baseline 25c24df753962bbf3c13301eed71624bc0ee39b6; it does not describe uncommitted engineering changes.
+- Navigation activation is not functional, permission-isolation, lifecycle, or persistence proof.
+- Table/entity ownership is intentionally left NOT VERIFIED unless exact source evidence is available.
+
+
+# 22. Source Evidence
+
+- `views/ai_queue.html`
+- `index.html`
+- `services/permissionService.js`
+- `docs/review/PAGE_INVENTORY.json`
+- `docs/navigation/NAVIGATION_FORENSIC_REPORT.json`
+
+# 23. Change History
+
+- 2026-08-14 — catalog created from baseline 25c24df753962bbf3c13301eed71624bc0ee39b6.
+- Future reconciliation must append the Product Recovery SHA and preserve the AS-IS/TARGET separation.
+
+## CAPABILITIES OWNED
+
+- Ai Queue workspace presentation and its explicitly verified page-specific actions: NOT VERIFIED.
+
+## CAPABILITIES CONSUMED
+
+- Navigation activation, declared page permission gate, and any API paths listed in the front matter. Exact domain capabilities: NOT VERIFIED where no backend path was found.

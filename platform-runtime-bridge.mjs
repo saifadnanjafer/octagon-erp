@@ -706,15 +706,37 @@ export async function mountPlatformApi(authority, prefix = '/api/v1') {
   });
 }
 
+// platform/wms/... query handlers require an explicit warehouse_id (see
+// platform/api/build09.mjs handleBuild09Query) and fail closed with 422 when
+// it's missing -- correct for a company with several warehouses where
+// "which one" is a real question, but every WMS page found by
+// docs/product/PAGE_REALITY_LEDGER.md to 422 on load never had any UI to
+// select one in the first place. The `warehouses` table already carries an
+// `is_default` column (added post-076) that nothing has ever read. Filling
+// ctx.warehouseId from it here is additive only: companies with no warehouse
+// marked default get exactly today's behavior (undefined -> 422), and any
+// handler that doesn't read ctx.warehouseId is unaffected either way.
+function resolveDefaultWarehouseId(dialect, companyId) {
+  if (!companyId) return null;
+  try {
+    const row = dialect.prepare('SELECT id FROM warehouses WHERE company_id = ? AND is_default = 1 AND is_active = 1 LIMIT 1').get(companyId);
+    return row?.id || null;
+  } catch {
+    return null;
+  }
+}
+
 function resolveApiContext(authority, req, requestUrl) {
   const ctx = resolveContextFromRequest(authority, req, { touch: true });
   if (!ctx) return null;
   const headers = req.headers || {};
+  const companyId = ctx.activeCompanyId || ctx.companyId || null;
   return {
     ...ctx,
     userId: ctx.actorId,
-    companyId: ctx.activeCompanyId || ctx.companyId || null,
+    companyId,
     branchId: ctx.activeBranchId || ctx.branchId || null,
+    warehouseId: ctx.warehouseId || resolveDefaultWarehouseId(authority.dialect, companyId),
     correlationId: headers['x-correlation-id'] || requestUrl.searchParams.get('correlation_id') || `corr_${Math.random().toString(36).slice(2)}`,
     idempotencyKey: headers['x-idempotency-key'] ? String(headers['x-idempotency-key']).slice(0, 120) : null,
     sourceChannel: 'api',

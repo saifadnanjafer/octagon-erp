@@ -39,8 +39,12 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
   const nowMs = Date.parse(ts);
   const iso = (offsetDays) => new Date(nowMs + offsetDays * DAY_MS).toISOString();
 
-  dialect.prepare(`INSERT INTO warehouses (id, company_id, name, code, is_active, created_at)
-    VALUES (?, ?, ?, ?, 1, ?) ON CONFLICT(id) DO NOTHING`)
+  // is_default=1: platform-runtime-bridge.mjs's resolveApiContext() fills
+  // ctx.warehouseId from this flag so the many WMS query resources that
+  // require warehouse_id (platform/api/build09.mjs) can resolve it without
+  // a warehouse-picker UI that doesn't exist on any of those pages yet.
+  dialect.prepare(`INSERT INTO warehouses (id, company_id, name, code, is_active, is_default, created_at)
+    VALUES (?, ?, ?, ?, 1, 1, ?) ON CONFLICT(id) DO NOTHING`)
     .run(WAREHOUSE_ID, companyId, '[DEMO] Al-Warsha Main Warehouse', 'REV-WH-01', ts);
 
   // 1. Products (>= 2)

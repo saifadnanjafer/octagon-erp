@@ -258,27 +258,6 @@
     catch (_) { window.prompt('انسخ الرسالة:', msg); }
   };
 
-  window.subLoadDemo = function () {
-    const s = S(); if (!s) return;
-    if (s.plans.length || s.subscriptions.length) { toast('توجد بيانات مسبقاً', 'info'); return; }
-    const p1 = { id: uid('plan'), name: 'عقد صيانة سنوي - ذهبي', price: 1200000, interval: 'yearly', category: 'صيانة', description: 'AMC شامل', is_active: true, companyId: coId(), createdAt: new Date().toISOString() };
-    const p2 = { id: uid('plan'), name: 'اشتراك خدمة شهري', price: 150000, interval: 'monthly', category: 'خدمة', description: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() };
-    const p3 = { id: uid('plan'), name: 'باقة ربع سنوية', price: 400000, interval: 'quarterly', category: 'خدمة', description: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() };
-    s.plans.push(p1, p2, p3);
-    const custs = getCustomers();
-    const pick = (i) => custs[i] || { id: 'cust_demo_' + i, name: 'عميل تجريبي ' + (i + 1) };
-    const back = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };
-    const fwd = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
-    const c0 = pick(0), c1 = pick(1), c2 = pick(2);
-    s.subscriptions.push(
-      { id: uid('sub'), customerId: c0.id, customerName: c0.name, planId: p2.id, planName: p2.name, interval: 'monthly', price: 150000, startDate: back(40), status: 'active', nextRenewal: back(2), lastBilled: back(32), billingCount: 1, autoRenew: true, notes: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('sub'), customerId: c1.id, customerName: c1.name, planId: p1.id, planName: p1.name, interval: 'yearly', price: 1200000, startDate: back(20), status: 'active', nextRenewal: fwd(5), lastBilled: '', billingCount: 0, autoRenew: true, notes: 'AMC مكائن الليزر', is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('sub'), customerId: c2.id, customerName: c2.name, planId: p3.id, planName: p3.name, interval: 'quarterly', price: 400000, startDate: back(10), status: 'paused', nextRenewal: fwd(80), lastBilled: '', billingCount: 0, autoRenew: false, notes: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() }
-    );
-    audit('sub_demo', 'تحميل اشتراكات تجريبية');
-    save(); toast('تم تحميل بيانات تجريبية', 'success'); renderSubs();
-  };
-
   /* ───────────────────────── render ───────────────────────── */
   function kpiCard(label, value, sub, cls) {
     return `<div class="sub-kpi ${cls || ''}"><div class="sub-kpi-val">${value}</div><div class="sub-kpi-label">${label}</div>${sub ? `<div class="sub-kpi-sub">${sub}</div>` : ''}</div>`;
@@ -314,7 +293,6 @@
     el.innerHTML = `
       <div class="sub-toolbar">
         <button class="btn-primary" onclick="subOpenPlanForm('new')">➕ باقة جديدة</button>
-        <button class="sub-mini-btn" onclick="subLoadDemo()">بيانات تجريبية</button>
       </div>
       <table class="sub-table"><thead><tr><th>الباقة</th><th>السعر</th><th>الدورة</th><th>الفئة</th><th>المشتركون</th><th>إجراءات</th></tr></thead>
       <tbody>${plans.map(pl => {
@@ -324,7 +302,7 @@
           <td>${count}</td>
           <td class="sub-actions"><button class="sub-mini-btn" onclick="subOpenPlanForm('${pl.id}')">تعديل</button>
           <button class="sub-mini-btn sub-danger" onclick="subArchivePlan('${pl.id}')">أرشفة</button></td></tr>`;
-      }).join('') || '<tr><td colspan="6" class="sub-empty">لا توجد باقات — أضف باقة أو حمّل بيانات تجريبية</td></tr>'}</tbody></table>`;
+      }).join('') || '<tr><td colspan="6" class="sub-empty">لا توجد باقات — أضف باقة جديدة</td></tr>'}</tbody></table>`;
   }
   function renderPlanForm() {
     const p = editingPlan !== 'new' ? (S()?.plans || []).find(x => x.id === editingPlan) : null;

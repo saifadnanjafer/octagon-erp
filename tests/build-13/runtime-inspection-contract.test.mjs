@@ -11,6 +11,7 @@ const build10BoardsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'buil
 const build10WorkspacesSource = fs.readFileSync(path.join(repoRoot, 'modules', 'build10-workspaces.js'), 'utf8');
 const budgetingSource = fs.readFileSync(path.join(repoRoot, 'modules', 'budgeting.js'), 'utf8');
 const fleetSource = fs.readFileSync(path.join(repoRoot, 'modules', 'fleet.js'), 'utf8');
+const subscriptionsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'subscriptions.js'), 'utf8');
 
 test('runtime page inspection waits for the authenticated warehouse context before navigation', () => {
   assert.match(source, /async function waitForReviewRuntimeContext\(page, timeout = 15000\)/);
@@ -66,4 +67,10 @@ test('Fleet does not expose controls that claim to load or reload demo operation
   assert.match(fleetSource, /flSaveVehicle/);
   assert.match(fleetSource, /flLogFuel/);
   assert.match(fleetSource, /flLogTrip/);
+});
+
+test('Subscriptions does not seed commercial plans, customers, or invoices as demo data', () => {
+  assert.doesNotMatch(subscriptionsSource, /subLoadDemo|sub_demo|cust_demo_|بيانات تجريبية/);
+  assert.match(subscriptionsSource, /subSavePlan/);
+  assert.match(subscriptionsSource, /subGenerateInvoice/);
 });

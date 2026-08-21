@@ -1,14 +1,24 @@
 {
-  "generatedAt": "2026-08-21T18:26:58.433Z",
-  "startedAt": "2026-08-21T18:26:40.318Z",
+  "generatedAt": "2026-08-21T18:21:49.505Z",
+  "startedAt": "2026-08-21T18:21:08.764Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
-    "total": 21,
-    "pass": 21,
+    "total": 25,
+    "pass": 25,
     "fail": 0
   },
   "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -36,10 +46,7 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -74,1082 +81,1158 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 409 (Conflict)"
   ],
   "globalNotFound": [
-    "/claude-review-pointer.json",
     "/claude-status.json",
+    "/claude-review-pointer.json",
     "/claude-status.json",
     "/claude-review-pointer.json"
   ],
   "items": [
     {
-      "id": "variance_review",
+      "id": "campaigns",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
-        "activePageId": "variance_review",
-        "activePageKey": "variance_review",
+        "activePageId": null,
+        "activePageKey": "campaigns",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [],
         "build12Loaded": true,
-        "build12Hosts": []
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "block"
+          }
+        ]
       },
-      "durationMs": 738,
+      "durationMs": 569,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_console",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalConsole",
+        "activePageKey": "pageCanonicalConsole",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 544,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_inventory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalInventory",
+        "activePageKey": "pageCanonicalInventory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1142,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "cashbox",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCashbox",
+        "activePageKey": "pageCashbox",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1865,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "clinic",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageClinic",
+        "activePageKey": "pageClinic",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1628,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "command_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCommandCenter",
+        "activePageKey": "pageCommandCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1903,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "commercial_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "commercial_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1711,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "competency_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "competency_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1668,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "configuration_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "configuration_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1463,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "conflict_resolution",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "conflict_resolution",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1444,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidated_reports",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidated_reports",
+        "activePageKey": "consolidated_reports",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1406,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidation_groups",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidation_groups",
+        "activePageKey": "consolidation_groups",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1351,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "content_approvals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "content_approvals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1541,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "content_calendar",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "content_calendar",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1233,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "contracts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageContracts",
+        "activePageKey": "pageContracts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1332,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "count_session",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "count_session",
+        "activePageKey": "count_session",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1482,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "crossdock_workspace",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "crossdock_workspace",
+        "activePageKey": "crossdock_workspace",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1441,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "customer_portal",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomerPortal",
+        "activePageKey": "pageCustomerPortal",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1450,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "customers",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomers",
+        "activePageKey": "pageCustomers",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1427,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "cycle_count_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "cycle_count_plans",
+        "activePageKey": "cycle_count_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1399,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "data_quality",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDataQuality",
+        "activePageKey": "pageDataQuality",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1332,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "demand_planning",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "demand_planning",
+        "activePageKey": "demand_planning",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1478,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "deploy_ready",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDeployReady",
+        "activePageKey": "pageDeployReady",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1476,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "development_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "development_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          },
+          {
+            "page": "development_plans",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1226,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_alerts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_alerts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_alerts",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_alerts",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          },
+          {
+            "page": "development_plans",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1499,
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 409 (Conflict)"
       ],
-      "notFound": []
-    },
-    {
-      "id": "vehicle_trip_timeline",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "vehicle_trip_timeline",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": true,
-            "display": "block"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": []
-      },
-      "durationMs": 682,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "vertical_packs",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "vertical_packs",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "block"
-          }
-        ]
-      },
-      "durationMs": 546,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "visitors",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageVisitors",
-        "activePageKey": "pageVisitors",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 619,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_kiosk",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "warehouse_kiosk",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": true,
-            "display": "block"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 713,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_large_screen",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "warehouse_large_screen",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": true,
-            "display": "block"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 501,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_topology",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "warehouse_topology",
-        "activePageKey": "warehouse_topology",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 633,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouses",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarehouses",
-        "activePageKey": "pageWarehouses",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 502,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warranty",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarranty",
-        "activePageKey": "pageWarranty",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 668,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_execution",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_execution",
-        "activePageKey": "wave_execution",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_planning",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_planning",
-        "activePageKey": "wave_planning",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 536,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wfl_home",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWflHome",
-        "activePageKey": "pageWflHome",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 514,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "whatsapp",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWhatsapp",
-        "activePageKey": "pageWhatsapp",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 522,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "work_orders",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkOrders",
-        "activePageKey": "pageWorkOrders",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workcenter_queue",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "workcenter_queue",
-        "activePageKey": "workcenter_queue",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 516,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workflow",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkflow",
-        "activePageKey": "pageWorkflow",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 620,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_command_center",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopCommandCenter",
-        "activePageKey": "pageWorkshopCommandCenter",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 629,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_ledger",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopLedger",
-        "activePageKey": "pageWorkshopLedger",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 519,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_pack_setup",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "workshop_pack_setup",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "block"
-          }
-        ]
-      },
-      "durationMs": 630,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_readiness",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopReadiness",
-        "activePageKey": "pageWorkshopReadiness",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 603,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "zone_bin_management",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "zone_bin_management",
-        "activePageKey": "zone_bin_management",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 655,
-      "consoleErrors": [],
       "notFound": []
     }
   ]

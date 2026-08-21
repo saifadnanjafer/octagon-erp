@@ -1,6 +1,6 @@
 # Final Page Architecture
 
-Current product structure at `255be8aa7c2c9faa6b9d7afbd73ea64f82591729`. Group names are business concepts,
+Current product structure at `128be4464221e2a4362da2425778048af2fe882a`. Group names are business concepts,
 not build waves. Entries marked THIN remain visible only as tracked gaps and do
 not make this product ready for internal use.
 
@@ -19,7 +19,7 @@ not make this product ready for internal use.
 - **Device Center** (`device_center`) — Device center — admin/device (risk: high, phase: phase6e); USABLE.
 - **Employee Ui** (`employee_ui`) — Employee self service — employee_self_service (risk: low, phase: phase6e); THIN.
 - **Data Import** (`import_center`) — null; USABLE.
-- **Integration Hub** (`integration_hub`) — Integration hub — admin/integration (risk: critical, phase: phase6e); USABLE.
+- **Integration Hub** (`integration_hub`) — Integration hub — admin/integration (risk: critical, phase: phase6e); STRONG.
 - **Multi Entity** (`multi_entity`) — Multi-entity control — admin/tenant (risk: critical, phase: phase6e); STRONG.
 - **Risk Compliance** (`risk_compliance`) — Risk compliance — compliance (risk: high, phase: phase6b); STRONG.
 - **Security Center** (`security_center`) — Security center — admin/security (risk: critical, phase: phase6e); USABLE.
@@ -133,15 +133,15 @@ not make this product ready for internal use.
 
 - **Calendar** (`calendar`) — Attendance calendar — hr/payroll (risk: medium, phase: phase6e); USABLE.
 - **Employee Mobile** (`employee_mobile`) — Employee mobile — employee_self_service (risk: low, phase: phase6e); USABLE.
-- **Employees** (`employees`) — Employees and balances — hr/payroll (risk: high, phase: core); USABLE.
+- **Employees** (`employees`) — Employees and balances — hr/payroll (risk: high, phase: core); STRONG.
 - **Home** (`home`) — Home dashboard — system/home (risk: low, phase: core); USABLE.
 - **My Work** (`my_work`) — My Work — workshop/operations (risk: low, phase: internal-workshop-wave); USABLE.
-- **Timesheet** (`timesheet`) — Timesheet — hr/payroll (risk: high, phase: phase6e); USABLE.
+- **Timesheet** (`timesheet`) — Timesheet — hr/payroll (risk: high, phase: phase6e); STRONG.
 - **Wfl Home** (`wfl_home`) — Role Home — employee_self_service (risk: low, phase: phase6h); USABLE.
 
 ## ops → ops_inventory
 
-- **Canonical Operations** (`canonical_console`) — Canonical Operations console — platform/canonical (risk: high, phase: visible-expansion); USABLE.
+- **Canonical Operations** (`canonical_console`) — Canonical Operations console — platform/canonical (risk: high, phase: visible-expansion); STRONG.
 - **Canonical Inventory** (`canonical_inventory`) — Canonical Inventory and Warehouses — workshop/inventory (risk: high, phase: visible-expansion); USABLE.
 - **Equipment** (`equipment`) — Equipment — workshop/production (risk: medium, phase: core); STRONG.
 - **Inventory** (`inventory`) — Inventory and stock — workshop/inventory (risk: high, phase: core); STRONG.
@@ -210,7 +210,7 @@ not make this product ready for internal use.
 ## ops → ops_warehouse_fulfillment
 
 - **Count Session** (`count_session`) — Count session — workshop/inventory (risk: high, phase: build09); THIN.
-- **Cycle Count Plans** (`cycle_count_plans`) — Cycle count plans — workshop/inventory (risk: high, phase: build09); THIN.
+- **Cycle Count Plans** (`cycle_count_plans`) — Cycle count plans — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Mobile Picking** (`mobile_picking`) — Mobile picking — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Pick Task Queue** (`pick_task_queue`) — Pick task queue — workshop/inventory (risk: medium, phase: build09); USABLE.
 - **Variance Review** (`variance_review`) — Variance review — workshop/inventory (risk: critical, phase: build09); THIN.
@@ -219,13 +219,13 @@ not make this product ready for internal use.
 
 ## ops → ops_warehouse_traceability
 
-- **Cross-Dock Workspace** (`crossdock_workspace`) — Cross-dock workspace — workshop/logistics (risk: high, phase: build09); THIN.
+- **Cross-Dock Workspace** (`crossdock_workspace`) — Cross-dock workspace — workshop/logistics (risk: high, phase: build09); USABLE.
 - **Dock Check-In** (`dock_checkin`) — Dock check-in — workshop/logistics (risk: medium, phase: build09); USABLE.
 - **Dock Schedule** (`dock_schedule`) — Dock schedule — workshop/logistics (risk: high, phase: build09); USABLE.
 - **Expiration Queue** (`expiration_queue`) — Expiration queue — workshop/quality (risk: high, phase: build09); USABLE.
 - **Lot / Serial Traceability** (`lot_serial_traceability`) — Lot and serial traceability — workshop/inventory (risk: high, phase: build09); THIN.
 - **Recall Analysis** (`recall_analysis`) — Recall analysis — workshop/quality (risk: critical, phase: build09); USABLE.
-- **Staging Board** (`staging_board`) — Staging board — workshop/logistics (risk: medium, phase: build09); THIN.
+- **Staging Board** (`staging_board`) — Staging board — workshop/logistics (risk: medium, phase: build09); USABLE.
 
 ## ops → ops_planning
 
@@ -247,7 +247,7 @@ not make this product ready for internal use.
 
 ## ops → ops_production
 
-- **Downtime Board** (`downtime_board`) — Downtime board — workshop/production (risk: high, phase: build09); THIN.
+- **Downtime Board** (`downtime_board`) — Downtime board — workshop/production (risk: high, phase: build09); USABLE.
 - **Machines** (`machines`) — Machines — workshop/production (risk: medium, phase: core); USABLE.
 - **Mrp** (`mrp`) — Manufacturing MRP II — workshop/production (risk: medium, phase: phase6h); USABLE.
 - **Op Packs** (`op_packs`) — Operation packs — workshop/production (risk: medium, phase: core); USABLE.
@@ -259,7 +259,7 @@ not make this product ready for internal use.
 - **Rework Workspace** (`rework_workspace`) — Rework workspace — workshop/quality (risk: high, phase: build09); USABLE.
 - **Scrap Approval** (`scrap_approval`) — Scrap approval — workshop/quality (risk: critical, phase: build09); USABLE.
 - **Shop-Floor Terminal** (`shopfloor_terminal`) — Shop-floor terminal — workshop/production (risk: high, phase: build09); USABLE.
-- **Work Orders** (`work_orders`) — Work Orders — workshop/production (risk: medium, phase: phase6h); THIN.
+- **Work Orders** (`work_orders`) — Work Orders — workshop/production (risk: medium, phase: phase6h); USABLE.
 - **Work-Center Queue** (`workcenter_queue`) — Work-center queue — workshop/production (risk: medium, phase: build09); USABLE.
 
 ## ops → ops_kiosks

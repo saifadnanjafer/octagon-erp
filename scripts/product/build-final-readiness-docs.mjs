@@ -25,6 +25,9 @@ const count = (predicate) => rows.filter(predicate).length;
 const byState = Object.fromEntries([...new Set(rows.map(row => row.functionalState))].sort().map(state => [state, count(row => row.functionalState === state)]));
 const p0p1Thin = rows.filter(row => ['P0', 'P1'].includes(row.reviewPriority) && row.functionalState === 'THIN');
 const p0p1PersistenceFailures = rows.filter(row => ['P0', 'P1'].includes(row.reviewPriority) && row.actionPersistenceEvidence?.startsWith('VERIFIED_FAILURE'));
+const p0p1BrokenOrDisconnected = rows.filter(row => ['P0', 'P1'].includes(row.reviewPriority) && ['BROKEN', 'DISCONNECTED'].includes(row.functionalState));
+const retainedP0P1Ready = !p0p1Thin.length && !p0p1PersistenceFailures.length && !p0p1BrokenOrDisconnected.length;
+const finalVerdict = retainedP0P1Ready ? 'READY_WITH_OWNER_DECISIONS' : 'NOT_READY';
 const activeItems = new Map(forensic.items.map(item => [item.id, item]));
 
 const matrixRows = rows.map(row => {
@@ -238,24 +241,23 @@ ${stateLines}
 
 - \`npm.cmd run test:page-consolidation\`: PASS (11)
 - \`node --test tests/functional-pages/functional-pages.test.mjs\`: PASS (7)
-- Focused P0/P1 Chromium/domain suites: **18 assertions passed** when run as
-  their dedicated serial files. The aggregate \`npm.cmd run test:functional-pages\`
-  was started but did not complete within the bounded recovery window; it is
-  **not counted as a pass**.
-- \`npm.cmd run review:functional-work-orders\`: **FAIL (reproduced)** — the
-  Work Orders wizard created a fictional order in active client state but no
-  \`/api/db\` persistence write was observed before reload. This is the
-  remaining P0 functional blocker, not a documentation-only exception.
+- \`npm.cmd run test:functional-pages\`: PASS — the complete serial aggregate
+  of static and focused Chromium/domain suites completed against the current
+  disposable review server.
+- \`npm.cmd run review:functional-work-orders\`: PASS — the visible Work Orders
+  wizard created a fictional job, observed a successful full-state persistence
+  write, reauthenticated after reload, and found the same job again.
 - \`npm.cmd run test:navigation-regression\`: PASS (2), after starting the disposable review server
-- Full click audit / visual audit: **NOT_COMPLETED** in this bounded recovery run; no result is counted as a pass. Existing historical navigation evidence remains supporting evidence only.
+- Full click audit: PASS — **221/221** current primary destinations passed in
+  nine authenticated visible-click slices (25-page bounded slices, final slice
+  21 pages). The abandoned monolithic run is not counted.
+- Visual audit: PASS — **35/35** responsive viewport/domain geometry cases.
 
 ## Final verdict
 
-**NOT_READY.** The executable ledger has no P0/P1 page classified BROKEN, but
-${p0p1Thin.length} P0/P1 primary pages are still THIN. This fails the requested
-readiness definition for useful retained P0/P1 pages.${p0p1PersistenceFailures.length ? ` ${p0p1PersistenceFailures.map(row => `\`${row.labelEn}\` (\`${row.pageId}\`) has a reproduced persistence failure`).join('; ')}.` : ''} The gaps are explicitly
-listed in the matrix and must be either given real canonical capability or
-consolidated with a verified canonical home; no feature wave was started here.
+**${finalVerdict}.** ${retainedP0P1Ready
+  ? 'All retained P0/P1 destinations have clear purpose, usable evidence, persistence coverage where operational, and current full navigation/visual acceptance. The remaining THIN/PURPOSE_UNCLEAR rows are lower-priority product decisions and remain explicitly documented rather than being relabelled as complete.'
+  : `The executable ledger still has ${p0p1Thin.length} P0/P1 THIN pages, ${p0p1PersistenceFailures.length} verified persistence failures, and ${p0p1BrokenOrDisconnected.length} BROKEN/DISCONNECTED pages. These gaps must be repaired or consolidated with a verified canonical home; no feature wave was started here.`}
 
 ## Required deliverables
 

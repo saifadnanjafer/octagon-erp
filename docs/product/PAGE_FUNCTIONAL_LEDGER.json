@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-21T17:35:06.895Z",
+  "generatedAt": "2026-08-21T18:41:28.664Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-21T17:10:54.372Z)",
-    "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-14T17:36:04.099Z)"
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-21T18:38:04.629Z)",
+    "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-21T18:20:15.570Z)"
   },
   "totalPrimaryPages": 221,
   "domainCounts": {
@@ -18,15 +18,15 @@
     "core": 11
   },
   "functionalStateCounts": {
-    "STRONG": 74,
-    "USABLE": 124,
-    "THIN": 23
+    "STRONG": 78,
+    "USABLE": 125,
+    "THIN": 18
   },
   "usabilityStateCounts": {
-    "STRONG": 72,
-    "USABLE": 123,
+    "STRONG": 76,
+    "USABLE": 124,
     "CONFUSING": 3,
-    "THIN": 23
+    "THIN": 18
   },
   "priorityCounts": {
     "P3": 12,
@@ -35,7 +35,7 @@
     "P2": 129,
     "UNCLASSIFIED": 3
   },
-  "deadEndCount": 16,
+  "deadEndCount": 6,
   "rows": [
     {
       "pageId": "account_mapping",
@@ -53,7 +53,9 @@
       "businessPurpose": "Consolidation account mapping — finance/consolidation (risk: critical, phase: build08)",
       "owningDomain": "Finance",
       "canonicalApi": null,
-      "observedEndpoints": [],
+      "observedEndpoints": [
+        "/api/db"
+      ],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "ربط الحسابات",
       "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Mapping Upsert",
@@ -88,7 +90,7 @@
         "latinChars": 169
       },
       "runtimeConsoleErrors": 1,
-      "runtimeFailedRequests": 0,
+      "runtimeFailedRequests": 1,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -125,7 +127,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 6552,
+        "textLength": 6548,
         "controls": 73,
         "inputs": 26,
         "searchInputs": 0,
@@ -142,7 +144,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1524,
-        "latinChars": 3933
+        "latinChars": 3931
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -695,7 +697,7 @@
       "usabilityEvidence": "raw JSON visible to a normal user",
       "deadEnd": false,
       "measured": {
-        "textLength": 3699,
+        "textLength": 3815,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
@@ -711,8 +713,8 @@
         },
         "rawIds": 0,
         "rawJson": true,
-        "arabicChars": 801,
-        "latinChars": 2164
+        "arabicChars": 815,
+        "latinChars": 2244
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -866,7 +868,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1828,
+        "textLength": 1876,
         "controls": 31,
         "inputs": 1,
         "searchInputs": 0,
@@ -882,7 +884,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1298,
+        "arabicChars": 1331,
         "latinChars": 31
       },
       "runtimeConsoleErrors": 0,
@@ -923,7 +925,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 796,
+        "textLength": 794,
         "controls": 13,
         "inputs": 10,
         "searchInputs": 0,
@@ -939,7 +941,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 552,
+        "arabicChars": 550,
         "latinChars": 2
       },
       "runtimeConsoleErrors": 0,
@@ -1196,21 +1198,21 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "محرك الأتمتة",
-      "actionsAvailable": "قاعدة مخصصة | 🧾\nمتابعة عرض السعر\nكل عرض سعر جديد يولد مهمة تدقيق ومتابعة. | اختبار | تعديل | حذف | تشغيل المحاكاة",
+      "actionsAvailable": "قاعدة مخصصة | 🧾\nمتابعة عرض السعر\nكل عرض سعر جديد يولد مهمة تدقيق ومتابعة. | تشغيل المحاكاة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, help_manual, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "20 controls, 7 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "8 controls, 7 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "CONFUSING",
       "usabilityEvidence": "raw JSON visible to a normal user",
       "deadEnd": false,
       "measured": {
-        "textLength": 4178,
-        "controls": 20,
-        "inputs": 8,
+        "textLength": 2487,
+        "controls": 8,
+        "inputs": 4,
         "searchInputs": 1,
         "tables": 1,
         "tableRows": 7,
@@ -1224,8 +1226,8 @@
         },
         "rawIds": 0,
         "rawJson": true,
-        "arabicChars": 3109,
-        "latinChars": 140
+        "arabicChars": 1831,
+        "latinChars": 131
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1436,7 +1438,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2547,
+        "textLength": 2643,
         "controls": 36,
         "inputs": 0,
         "searchInputs": 0,
@@ -1452,7 +1454,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1777,
+        "arabicChars": 1838,
         "latinChars": 7
       },
       "runtimeConsoleErrors": 0,
@@ -1514,7 +1516,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1536,42 +1538,42 @@
       "owningDomain": "Platform",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "ACTION WORKSPACE",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "العمليات القانونية الموحّدة",
-      "actionsAvailable": "تحديث | المنتجات والمواد | العملاء والموردون | المخزون والمستودعات | المستودعات | المبيعات | المشتريات | نقطة البيع | إدارة العمل",
+      "actionsAvailable": "تحديث | المنتجات والمواد | العملاء والموردون | المخزون والمستودعات | المستودعات | المبيعات | المشتريات | نقطة البيع | إدارة العمل | منتج جديد",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "USABLE",
-      "functionalEvidence": "9 controls, 0 records, 0 link(s)",
+      "functionalState": "STRONG",
+      "functionalEvidence": "10 controls, 4 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "USABLE",
-      "usabilityEvidence": "titled and actionable",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 468,
-        "controls": 9,
-        "inputs": 0,
+        "textLength": 746,
+        "controls": 10,
+        "inputs": 2,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 4,
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 341,
-        "latinChars": 46
+        "arabicChars": 402,
+        "latinChars": 181
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1628,7 +1630,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1685,7 +1687,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1742,7 +1744,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1766,26 +1768,26 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "🎯\nمركز القيادة التنفيذي",
-      "actionsAvailable": "اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-19 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل | اللوحة | الباقات",
+      "actionsAvailable": "اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الموظف بدون مسؤول محمل بأعمال زائدة (مؤشر العبء 100%) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | فتح المهام | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-21 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, help_manual, intelligence, telegram",
-      "downstreamWorkflow": "kanban, inventory, machines, qc_center, cashbox, sop, op_packs, analytics, employee_ui",
+      "downstreamWorkflow": "kanban, inventory, machines, qc_center, cashbox, task_manager, sop, op_packs, analytics, employee_ui",
       "functionalState": "STRONG",
-      "functionalEvidence": "49 controls, 5 rendered records, 9 workflow link(s)",
+      "functionalEvidence": "51 controls, 5 rendered records, 10 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3442,
-        "controls": 49,
+        "textLength": 3663,
+        "controls": 51,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
         "listItems": 5,
-        "links": 9,
+        "links": 10,
         "states": {
           "loading": false,
           "empty": true,
@@ -1794,12 +1796,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 2499,
+        "arabicChars": 2662,
         "latinChars": 28
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1856,7 +1858,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1913,7 +1915,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1970,7 +1972,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2027,7 +2029,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2084,7 +2086,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2141,7 +2143,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2198,7 +2200,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2255,7 +2257,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2312,7 +2314,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2348,7 +2350,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 289,
+        "textLength": 269,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -2365,11 +2367,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 128,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2391,24 +2393,24 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "FORM/ENTRY",
       "observedTitle": "مساحة العبور المباشر",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "١\nrev_prod_var_gate_hinge_01\nمطابق ٦ من الطلب ٦\nCANDIDATE | تقييم المطابقة",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 0 control(s) and no data surface",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "dead end: content but no action and no onward workflow link",
-      "deadEnd": true,
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
+      "deadEnd": false,
       "measured": {
-        "textLength": 392,
-        "controls": 0,
-        "inputs": 1,
-        "searchInputs": 0,
+        "textLength": 783,
+        "controls": 2,
+        "inputs": 15,
+        "searchInputs": 3,
         "tables": 0,
         "tableRows": 0,
         "listItems": 0,
@@ -2421,12 +2423,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 215,
-        "latinChars": 90
+        "arabicChars": 463,
+        "latinChars": 130
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2483,7 +2485,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2540,7 +2542,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2564,20 +2566,20 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "خطط الجرد الدوري",
-      "actionsAvailable": "إنشاء خطة جرد",
+      "actionsAvailable": "بدء جلسة | إنشاء خطة جرد",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 535,
-        "controls": 1,
+        "textLength": 556,
+        "controls": 2,
         "inputs": 10,
         "searchInputs": 1,
         "tables": 0,
@@ -2586,18 +2588,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 308,
-        "latinChars": 101
+        "arabicChars": 303,
+        "latinChars": 121
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2633,7 +2635,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2266,
+        "textLength": 2437,
         "controls": 8,
         "inputs": 6,
         "searchInputs": 0,
@@ -2650,11 +2652,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1023,
-        "latinChars": 771
+        "latinChars": 909
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2711,7 +2713,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2732,9 +2734,7 @@
       "businessPurpose": "Deployment readiness — system/readiness (risk: high, phase: phase6e)",
       "owningDomain": "System",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/db"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🚀\nجاهزية التشغيل",
       "actionsAvailable": "💾 نسخة احتياطية الآن | 🔄 إعادة الفحص | 📋 نسخ | Refresh | Verify latest backup | Restore dry-run | Mark done",
@@ -2749,7 +2749,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4555,
+        "textLength": 4557,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -2766,11 +2766,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1142,
-        "latinChars": 2230
+        "latinChars": 2234
       },
-      "runtimeConsoleErrors": 1,
-      "runtimeFailedRequests": 1,
-      "navigationStatus": "PASS",
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2825,9 +2825,9 @@
         "arabicChars": 173,
         "latinChars": 148
       },
-      "runtimeConsoleErrors": 1,
+      "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2884,7 +2884,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2941,7 +2941,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2998,7 +2998,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3055,7 +3055,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3112,7 +3112,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3169,7 +3169,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3226,7 +3226,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3248,7 +3248,7 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "تسجيل دخول الرصيف",
       "actionsAvailable": "none rendered",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
@@ -3263,10 +3263,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 284,
-        "controls": 0,
+        "textLength": 520,
+        "controls": 3,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -3275,18 +3275,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 126,
-        "latinChars": 90
+        "arabicChars": 216,
+        "latinChars": 167
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3310,7 +3310,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "جدول الأرصفة",
-      "actionsAvailable": "جدولة الموعد",
+      "actionsAvailable": "[DEMO] Review Carrier Co. | جدولة الموعد",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -3325,8 +3325,8 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": false,
       "measured": {
-        "textLength": 674,
-        "controls": 1,
+        "textLength": 740,
+        "controls": 2,
         "inputs": 11,
         "searchInputs": 0,
         "tables": 0,
@@ -3335,18 +3335,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 395,
-        "latinChars": 95
+        "arabicChars": 371,
+        "latinChars": 160
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3403,7 +3403,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3425,23 +3425,23 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "FORM/ENTRY",
       "observedTitle": "لوحة التوقف",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "إنهاء التوقف | بدء التوقف",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 0 control(s) and no data surface",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "dead end: content but no action and no onward workflow link",
-      "deadEnd": true,
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
+      "deadEnd": false,
       "measured": {
-        "textLength": 516,
-        "controls": 0,
-        "inputs": 2,
+        "textLength": 707,
+        "controls": 2,
+        "inputs": 8,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
@@ -3449,18 +3449,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 302,
-        "latinChars": 90
+        "arabicChars": 405,
+        "latinChars": 144
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3517,7 +3517,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3574,7 +3574,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3610,7 +3610,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 228,
+        "textLength": 233,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -3626,12 +3626,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 161,
+        "arabicChars": 165,
         "latinChars": 2
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3653,21 +3653,21 @@
       "owningDomain": "Employee_self_service",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "MINIMAL",
+      "pageArchetype": "DETAIL/READ",
       "observedTitle": "🧑‍🔧\nلوحة الموظف",
       "actionsAvailable": "none rendered",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "THIN",
-      "functionalEvidence": "almost no rendered content (136 chars, 0 controls, no data surface)",
+      "functionalEvidence": "only 0 control(s) and no data surface",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
-      "deadEnd": false,
+      "usabilityEvidence": "dead end: content but no action and no onward workflow link",
+      "deadEnd": true,
       "measured": {
-        "textLength": 136,
+        "textLength": 295,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -3684,11 +3684,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 104,
-        "latinChars": 0
+        "latinChars": 141
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3710,26 +3710,26 @@
       "owningDomain": "Hr",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "ACTION WORKSPACE",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "👥\nالموظفين والأرصدة",
-      "actionsAvailable": "إضافة موظف | تحديث | تصدير البيانات",
+      "actionsAvailable": "إضافة موظف | تحديث | تصدير البيانات | اسم الموظف ↑ | الراتب الاسمي | آخر نشاط | الحالة | الرصيد الحالي | تفاصيل | حفظ",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "USABLE",
-      "functionalEvidence": "3 controls, 0 records, 0 link(s)",
+      "functionalState": "STRONG",
+      "functionalEvidence": "20 controls, 6 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "USABLE",
-      "usabilityEvidence": "titled and actionable",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 185,
-        "controls": 3,
-        "inputs": 0,
+        "textLength": 994,
+        "controls": 20,
+        "inputs": 19,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 6,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -3740,12 +3740,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 152,
-        "latinChars": 0
+        "arabicChars": 459,
+        "latinChars": 141
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3802,7 +3802,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3859,7 +3859,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3916,7 +3916,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3973,7 +3973,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4030,7 +4030,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4087,7 +4087,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4144,7 +4144,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4201,7 +4201,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4258,7 +4258,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4297,7 +4297,7 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": true,
       "measured": {
-        "textLength": 504,
+        "textLength": 484,
         "controls": 0,
         "inputs": 5,
         "searchInputs": 0,
@@ -4314,11 +4314,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 288,
-        "latinChars": 102
+        "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4375,7 +4375,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4432,7 +4432,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4489,7 +4489,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4525,7 +4525,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2995,
+        "textLength": 2991,
         "controls": 14,
         "inputs": 3,
         "searchInputs": 0,
@@ -4542,11 +4542,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1250,
-        "latinChars": 889
+        "latinChars": 885
       },
-      "runtimeConsoleErrors": 1,
+      "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4603,7 +4603,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4660,7 +4660,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4717,7 +4717,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4774,7 +4774,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4831,7 +4831,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4888,7 +4888,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4948,7 +4948,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5005,7 +5005,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5062,7 +5062,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5119,7 +5119,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5176,7 +5176,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5233,7 +5233,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5290,7 +5290,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5313,7 +5313,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "🌅 صباح الخير، النظام",
+      "observedTitle": "🌙 مساء الخير، مدير النظام",
       "actionsAvailable": "الذهاب إلى: خدمة العملاء | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -5326,7 +5326,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 655,
+        "textLength": 660,
         "controls": 9,
         "inputs": 0,
         "searchInputs": 0,
@@ -5342,12 +5342,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 516,
+        "arabicChars": 520,
         "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5404,7 +5404,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5461,7 +5461,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5518,7 +5518,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5575,7 +5575,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5599,22 +5599,22 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز التكامل",
-      "actionsAvailable": "🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
+      "actionsAvailable": "Refresh | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "USABLE",
-      "functionalEvidence": "14 controls, 5 records, 0 link(s)",
+      "functionalState": "STRONG",
+      "functionalEvidence": "15 controls, 5 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "USABLE",
-      "usabilityEvidence": "titled and actionable",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3059,
-        "controls": 14,
-        "inputs": 0,
-        "searchInputs": 0,
+        "textLength": 3553,
+        "controls": 15,
+        "inputs": 1,
+        "searchInputs": 1,
         "tables": 2,
         "tableRows": 5,
         "listItems": 3,
@@ -5627,12 +5627,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 2020,
-        "latinChars": 404
+        "arabicChars": 2017,
+        "latinChars": 782
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5668,7 +5668,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 9081,
+        "textLength": 9172,
         "controls": 83,
         "inputs": 13,
         "searchInputs": 0,
@@ -5684,12 +5684,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 7266,
+        "arabicChars": 7354,
         "latinChars": 41
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5746,7 +5746,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5803,7 +5803,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5827,24 +5827,24 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧱\nالمخزون والمواد",
-      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية",
+      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية | تسجيل الحركة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "19 controls, 9 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "20 controls, 18 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 1722,
-        "controls": 19,
-        "inputs": 3,
+        "textLength": 2998,
+        "controls": 20,
+        "inputs": 9,
         "searchInputs": 1,
-        "tables": 1,
-        "tableRows": 9,
+        "tables": 3,
+        "tableRows": 18,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -5855,12 +5855,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 586,
-        "latinChars": 787
+        "arabicChars": 1446,
+        "latinChars": 944
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5881,22 +5881,7 @@
       "businessPurpose": "Kiosk Terminal — public/display (risk: low, phase: phase6h)",
       "owningDomain": "Public",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/collection",
-        "/api/collection",
-        "/api/collection",
-        "/api/collection",
-        "/api/collection",
-        "/api/collection",
-        "/api/collection",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "🤖\nروح النظام",
       "actionsAvailable": "💬 المحادثة | ☀️ ملخص المدير | 📝 توليد SOP | 📱 رسالة زبون | 🧠 ذاكرة الورشة | شنو وضعي اليوم؟ | شنو ناقص؟ | أي مكينة مضغوطة؟ | شنو المشاكل المفتوحة؟ | شنو الجاهز للتسليم؟ | 🎤 | إرسال",
@@ -5930,9 +5915,9 @@
         "arabicChars": 368,
         "latinChars": 20
       },
-      "runtimeConsoleErrors": 14,
-      "runtimeFailedRequests": 14,
-      "navigationStatus": "PASS",
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5989,7 +5974,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6010,7 +5995,9 @@
       "businessPurpose": "Knowledge Base & FAQ — workshop/operations (risk: low, phase: phase8d)",
       "owningDomain": "Workshop",
       "canonicalApi": null,
-      "observedEndpoints": [],
+      "observedEndpoints": [
+        "/api/db"
+      ],
       "pageArchetype": "BOARD/QUEUE",
       "observedTitle": "قاعدة المعرفة والأسئلة الشائعة",
       "actionsAvailable": "الأسئلة الشائعة | الأدلة الفنية | المسودات والمراجعة | روح النظام جارفيس | اقتراح مقال / سؤال | كل الأقسام\n309 | أساسيات النظام\n16 | ذكاء جارفيس والذكاء الاصطناعي\n22 | المبيعات والعملاء CRM\n25 | المخازن وإدارة المستودعات\n14 | المالية والمحاسبة والقيود\n31 | الموارد البشرية والرواتب والدوام\n31 | الإنتاج والتشغيل والورشة\n33 | المشاريع وعقود العمل\n14 | الأسطول وحوكمة الوقود\n13 | الاتصالات والربط الخارجي\n16 | التقارير الذكية والتحليلات\n21 | خدمات السحاب وسوق التطبيقات\n18 | الإدارة والصلاحيات والأمان\n29 | التجزئة ونقاط البيع POS\n3 | الضيافة والفنادق والمطاعم\n2 | العيادات والصيدليات الطبية\n2 | إدارة الأصول والصيانة الوقائية\n1 | الدعم والتذاكر وخدمة العملاء\n7 | حوكمة البيانات وجودة المدخلات\n6 | التشخيص الفني وصحة المسارات\n5",
@@ -6044,9 +6031,9 @@
         "arabicChars": 23850,
         "latinChars": 2355
       },
-      "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "runtimeConsoleErrors": 1,
+      "runtimeFailedRequests": 1,
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6103,7 +6090,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6160,7 +6147,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6196,7 +6183,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1353,
+        "textLength": 1352,
         "controls": 10,
         "inputs": 6,
         "searchInputs": 0,
@@ -6217,7 +6204,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6253,7 +6240,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 455,
+        "textLength": 435,
         "controls": 1,
         "inputs": 4,
         "searchInputs": 1,
@@ -6270,11 +6257,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 260,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6331,7 +6318,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6388,7 +6375,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6445,7 +6432,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6502,7 +6489,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6559,7 +6546,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6616,7 +6603,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6652,7 +6639,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 374,
+        "textLength": 354,
         "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
@@ -6669,11 +6656,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 199,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6709,7 +6696,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 389,
+        "textLength": 369,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
@@ -6726,11 +6713,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 215,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6787,7 +6774,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6844,7 +6831,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6901,7 +6888,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6958,7 +6945,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7015,7 +7002,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7072,7 +7059,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7129,7 +7116,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7186,7 +7173,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7243,7 +7230,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7279,7 +7266,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2986,
+        "textLength": 2989,
         "controls": 42,
         "inputs": 0,
         "searchInputs": 0,
@@ -7300,7 +7287,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7336,7 +7323,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 332,
+        "textLength": 665,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -7346,18 +7333,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 165,
-        "latinChars": 90
+        "arabicChars": 421,
+        "latinChars": 103
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7414,7 +7401,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7471,7 +7458,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7528,7 +7515,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7585,7 +7572,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7642,7 +7629,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7699,7 +7686,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7735,7 +7722,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 735,
+        "textLength": 715,
         "controls": 3,
         "inputs": 6,
         "searchInputs": 0,
@@ -7752,11 +7739,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 280,
-        "latinChars": 287
+        "latinChars": 275
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7813,7 +7800,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7870,7 +7857,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7927,7 +7914,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7966,7 +7953,7 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": true,
       "measured": {
-        "textLength": 313,
+        "textLength": 293,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -7983,11 +7970,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 149,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8044,7 +8031,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8083,13 +8070,13 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": false,
       "measured": {
-        "textLength": 626,
-        "controls": 1,
+        "textLength": 1181,
+        "controls": 3,
         "inputs": 14,
         "searchInputs": 5,
         "tables": 0,
         "tableRows": 0,
-        "listItems": 0,
+        "listItems": 5,
         "links": 0,
         "states": {
           "loading": false,
@@ -8099,12 +8086,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 353,
-        "latinChars": 125
+        "arabicChars": 526,
+        "latinChars": 338
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8126,9 +8113,9 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "DASHBOARD/SUMMARY",
       "observedTitle": "استلام الإنتاج",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "فتح التتبع",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -8141,30 +8128,30 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 378,
-        "controls": 0,
+        "textLength": 679,
+        "controls": 2,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
-        "listItems": 0,
+        "listItems": 4,
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 204,
-        "latinChars": 90
+        "arabicChars": 319,
+        "latinChars": 189
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8221,7 +8208,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8278,7 +8265,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8314,7 +8301,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 715,
+        "textLength": 695,
         "controls": 1,
         "inputs": 13,
         "searchInputs": 3,
@@ -8331,11 +8318,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 466,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8371,7 +8358,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 636,
+        "textLength": 616,
         "controls": 2,
         "inputs": 8,
         "searchInputs": 2,
@@ -8388,11 +8375,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 350,
-        "latinChars": 137
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8421,15 +8408,15 @@
       "upstreamWorkflow": "analytics, command_center, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "13 controls, 0 records, 0 link(s)",
+      "functionalEvidence": "16 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1587,
-        "controls": 13,
+        "textLength": 1962,
+        "controls": 16,
         "inputs": 0,
         "searchInputs": 0,
         "tables": 0,
@@ -8438,18 +8425,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": true,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1154,
-        "latinChars": 27
+        "arabicChars": 1307,
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8486,10 +8473,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 335,
-        "controls": 0,
+        "textLength": 403,
+        "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -8498,18 +8485,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 166,
-        "latinChars": 90
+        "arabicChars": 178,
+        "latinChars": 129
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8566,7 +8553,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8605,7 +8592,7 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": false,
       "measured": {
-        "textLength": 402,
+        "textLength": 382,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 1,
@@ -8622,11 +8609,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 216,
-        "latinChars": 90
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8683,7 +8670,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8740,7 +8727,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8776,7 +8763,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 555,
+        "textLength": 535,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -8793,11 +8780,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 258,
-        "latinChars": 170
+        "latinChars": 158
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8821,20 +8808,20 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "📊\nالتقرير النهائي",
-      "actionsAvailable": "إعداد ملخص ذكي للتقرير | طباعة | تصدير التقرير",
+      "actionsAvailable": "Review System Administrator | Review Workshop Manager | Review Operations Coordinator | Review Warehouse Operator | Review Production Operator | Review Quality Reviewer | إعداد ملخص ذكي للتقرير | طباعة | تصدير التقرير",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "3 controls, 0 records, 0 link(s)",
+      "functionalEvidence": "9 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 283,
-        "controls": 3,
+        "textLength": 442,
+        "controls": 9,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -8850,11 +8837,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 210,
-        "latinChars": 6
+        "latinChars": 147
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8911,7 +8898,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8968,7 +8955,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8992,7 +8979,7 @@
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
       "observedTitle": "مساحة إعادة العمل",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "بدء إعادة العمل",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -9005,10 +8992,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 319,
-        "controls": 0,
+        "textLength": 389,
+        "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -9017,18 +9004,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 154,
-        "latinChars": 90
+        "arabicChars": 200,
+        "latinChars": 95
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9085,7 +9072,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9142,7 +9129,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9199,7 +9186,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9256,7 +9243,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9313,7 +9300,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9370,7 +9357,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9427,7 +9414,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9484,7 +9471,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9541,7 +9528,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9578,10 +9565,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 329,
-        "controls": 0,
+        "textLength": 426,
+        "controls": 2,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -9596,12 +9583,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 164,
-        "latinChars": 90
+        "arabicChars": 173,
+        "latinChars": 164
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9658,7 +9645,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9687,19 +9674,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "1 controls, 2 records, 0 link(s)",
+      "functionalEvidence": "1 controls, 269 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1736,
+        "textLength": 28282,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
-        "tables": 2,
-        "tableRows": 2,
+        "tables": 4,
+        "tableRows": 269,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -9710,12 +9697,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 530,
-        "latinChars": 779
+        "arabicChars": 7996,
+        "latinChars": 15214
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9772,7 +9759,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9829,7 +9816,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9886,7 +9873,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9943,7 +9930,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9980,10 +9967,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 292,
-        "controls": 0,
+        "textLength": 306,
+        "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -9992,18 +9979,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 132,
-        "latinChars": 90
+        "arabicChars": 112,
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10060,7 +10047,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10084,7 +10071,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "📚\nمكتبة إجراءات التشغيل",
-      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
+      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178733\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178733\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, help_manual, intelligence, training_lms",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -10117,7 +10104,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10174,7 +10161,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10231,7 +10218,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10288,7 +10275,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10312,20 +10299,20 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "لوحة التجهيز",
-      "actionsAvailable": "تخصيص للممر",
+      "actionsAvailable": "تحرير | تخصيص للممر",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 656,
-        "controls": 1,
+        "textLength": 693,
+        "controls": 2,
         "inputs": 7,
         "searchInputs": 1,
         "tables": 0,
@@ -10340,12 +10327,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 328,
-        "latinChars": 176
+        "arabicChars": 322,
+        "latinChars": 213
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10402,7 +10389,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10459,7 +10446,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10516,7 +10503,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10573,7 +10560,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10630,7 +10617,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10687,7 +10674,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10744,7 +10731,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10801,7 +10788,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10858,7 +10845,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10884,7 +10871,7 @@
       "observedTitle": "إدارة العمل القانونية",
       "actionsAvailable": "تحديث | مدير المهام | كانبان | التقويم | مهامي | عبء الفريق | شاشة الورشة | مهام الجوال | قائمة SLA | الاعتماديات | إنشاء المهمة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "analytics, help_manual, intelligence",
+      "upstreamWorkflow": "analytics, command_center, help_manual, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
       "functionalEvidence": "11 controls, 0 records, 0 link(s)",
@@ -10915,7 +10902,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10972,7 +10959,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11029,7 +11016,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11086,7 +11073,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11143,7 +11130,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11200,7 +11187,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11221,27 +11208,29 @@
       "businessPurpose": "Timesheet — hr/payroll (risk: high, phase: phase6e)",
       "owningDomain": "Hr",
       "canonicalApi": null,
-      "observedEndpoints": [],
-      "pageArchetype": "ACTION WORKSPACE",
+      "observedEndpoints": [
+        "/api/db"
+      ],
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "📋\nالتايم شيت المعالج",
-      "actionsAvailable": "طباعة التايم شيت | 🪄\nتعبئة الأيام المفقودة | ⚙️\nتطبيق القوانين (محلياً) | ➕\nإضافة موظف | يناير | فبراير | مارس | أبريل | مايو | يونيو | يوليو | أغسطس | سبتمبر | أكتوبر | نوفمبر | ديسمبر",
+      "actionsAvailable": "طباعة التايم شيت | 🪄\nتعبئة الأيام المفقودة | ⚙️\nتطبيق القوانين (محلياً) | ➕\nإضافة موظف | يناير | فبراير | مارس | أبريل | مايو | يونيو | يوليو | أغسطس | سبتمبر | أكتوبر | نوفمبر | ديسمبر | إرسال الأمر | تطبيق قوانين الرواتب | توثيق الأيام المعروضة | تثبيت الراتب للرصيد | لوحة الرواتب | فتح كل السلف | مراجعة الراتب بالذكاء الاصطناعي | 🖨️\nطباعة الوصل | +1,000 | +5,000 | تقريب لـ 1,000 | ✅\nتسجيل الدفع",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "USABLE",
-      "functionalEvidence": "16 controls, 0 records, 0 link(s)",
+      "functionalState": "STRONG",
+      "functionalEvidence": "28 controls, 1 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "USABLE",
-      "usabilityEvidence": "titled and actionable",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 573,
-        "controls": 16,
-        "inputs": 1,
+        "textLength": 3187,
+        "controls": 28,
+        "inputs": 19,
         "searchInputs": 1,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 2,
+        "tableRows": 1,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -11252,12 +11241,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 432,
-        "latinChars": 0
+        "arabicChars": 2131,
+        "latinChars": 183
       },
-      "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "runtimeConsoleErrors": 1,
+      "runtimeFailedRequests": 1,
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11314,7 +11303,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11371,7 +11360,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11428,7 +11417,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11485,7 +11474,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11514,15 +11503,15 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "THIN",
-      "functionalEvidence": "only 0 control(s) and no data surface",
+      "functionalEvidence": "only 1 control(s) and no data surface",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "THIN",
-      "usabilityEvidence": "dead end: content but no action and no onward workflow link",
-      "deadEnd": true,
+      "usabilityEvidence": "little to act on",
+      "deadEnd": false,
       "measured": {
-        "textLength": 283,
-        "controls": 0,
+        "textLength": 320,
+        "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -11531,18 +11520,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 127,
-        "latinChars": 90
+        "arabicChars": 135,
+        "latinChars": 110
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11599,7 +11588,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11656,7 +11645,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11713,7 +11702,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11770,7 +11759,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11827,7 +11816,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11863,7 +11852,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 972,
+        "textLength": 1144,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 0,
@@ -11879,12 +11868,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 376,
-        "latinChars": 374
+        "arabicChars": 416,
+        "latinChars": 464
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11941,7 +11930,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11998,7 +11987,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12022,7 +12011,7 @@
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
       "observedTitle": "تنفيذ الموجات",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "↻ تحديث | [DEMO] Morning Outbound Wave\nwave · route\n١ / ٢\nRELEASED",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12035,10 +12024,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 371,
-        "controls": 0,
+        "textLength": 364,
+        "controls": 2,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -12047,18 +12036,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 195,
-        "latinChars": 90
+        "arabicChars": 163,
+        "latinChars": 118
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12094,7 +12083,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 755,
+        "textLength": 735,
         "controls": 2,
         "inputs": 10,
         "searchInputs": 1,
@@ -12111,11 +12100,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 457,
-        "latinChars": 136
+        "latinChars": 124
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12151,7 +12140,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 314,
+        "textLength": 319,
         "controls": 13,
         "inputs": 0,
         "searchInputs": 0,
@@ -12167,12 +12156,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 202,
+        "arabicChars": 206,
         "latinChars": 11
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12229,7 +12218,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12251,29 +12240,29 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🛠️\nأوامر العمل",
       "actionsAvailable": "📥 طلب جديد / إنشاء أمر عمل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface; focused functional blocker (npm.cmd run review:functional-work-orders): Creates a fictional order in active client state, then observes no /api/db persistence write before reload.",
-      "focusedFunctionalEvidence": null,
-      "focusedFunctionalBlocker": {
+      "functionalState": "USABLE",
+      "functionalEvidence": "focused Chromium/domain acceptance (npm.cmd run review:functional-work-orders): Uses the visible Workshop wizard to create a fictional job, observes a successful full-state write, reloads/authenticates, and finds the same job again.",
+      "focusedFunctionalEvidence": {
         "test": "npm.cmd run review:functional-work-orders",
-        "proof": "Creates a fictional order in active client state, then observes no /api/db persistence write before reload."
+        "proof": "Uses the visible Workshop wizard to create a fictional job, observes a successful full-state write, reloads/authenticates, and finds the same job again."
       },
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "focusedFunctionalBlocker": null,
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": false,
       "measured": {
-        "textLength": 339,
-        "controls": 1,
+        "textLength": 647,
+        "controls": 4,
         "inputs": 2,
         "searchInputs": 2,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 3,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -12284,12 +12273,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 258,
-        "latinChars": 0
+        "arabicChars": 389,
+        "latinChars": 53
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12326,10 +12315,10 @@
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
-      "deadEnd": true,
+      "deadEnd": false,
       "measured": {
-        "textLength": 283,
-        "controls": 0,
+        "textLength": 403,
+        "controls": 1,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
@@ -12338,18 +12327,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 125,
-        "latinChars": 90
+        "arabicChars": 180,
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12406,7 +12395,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12463,7 +12452,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12520,7 +12509,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12577,7 +12566,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12601,7 +12590,7 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "◈ Workshop Readiness",
-      "actionsAvailable": "Recheck | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nMISSING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nPERMISSION DENIED | L\nالحوكمة\n3 checks\nREADY | Open setup ↗",
+      "actionsAvailable": "Recheck | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nWARNING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nPERMISSION DENIED | L\nالحوكمة\n3 checks\nREADY | Open setup ↗",
       "actionsDeclaredStatic": "Recheck",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12634,7 +12623,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12670,7 +12659,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 952,
+        "textLength": 1124,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 0,
@@ -12686,12 +12675,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 374,
-        "latinChars": 358
+        "arabicChars": 414,
+        "latinChars": 448
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null

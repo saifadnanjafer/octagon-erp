@@ -1,14 +1,24 @@
 {
-  "generatedAt": "2026-08-21T18:26:58.433Z",
-  "startedAt": "2026-08-21T18:26:40.318Z",
+  "generatedAt": "2026-08-21T18:25:21.312Z",
+  "startedAt": "2026-08-21T18:24:39.121Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
-    "total": 21,
-    "pass": 21,
+    "total": 25,
+    "pass": 25,
     "fail": 0
   },
   "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -37,7 +47,6 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -72,15 +81,7 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -95,13 +96,13 @@
   ],
   "items": [
     {
-      "id": "variance_review",
+      "id": "receipt",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
-        "activePageId": "variance_review",
-        "activePageKey": "variance_review",
+        "activePageId": "pageReceipt",
+        "activePageKey": "pageReceipt",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
@@ -109,31 +110,162 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 738,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "durationMs": 495,
+      "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "vehicle_trip_timeline",
+      "id": "rental",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRental",
+        "activePageKey": "pageRental",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 859,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "replenishment_proposals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "replenishment_proposals",
+        "activePageKey": "replenishment_proposals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 565,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "report",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageReport",
+        "activePageKey": "pageReport",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 526,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "restaurant",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRestaurant",
+        "activePageKey": "pageRestaurant",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 668,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "retail",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRetail",
+        "activePageKey": "pageRetail",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 521,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "rework_workspace",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "rework_workspace",
+        "activePageKey": "rework_workspace",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 515,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "risk_compliance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRiskCompliance",
+        "activePageKey": "pageRiskCompliance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 483,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "rollout_simulator",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "vehicle_trip_timeline",
+        "activePageKey": "rollout_simulator",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": true,
             "display": "block"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "flex"
           }
@@ -141,879 +273,659 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 682,
+      "durationMs": 533,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "vertical_packs",
+      "id": "route_health",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "vertical_packs",
+        "activePageId": "pageRouteHealth",
+        "activePageKey": "pageRouteHealth",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "block"
-          }
-        ]
+        "build12Hosts": []
       },
-      "durationMs": 546,
+      "durationMs": 494,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "visitors",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageVisitors",
-        "activePageKey": "pageVisitors",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 619,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_kiosk",
+      "id": "saas_overview",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "warehouse_kiosk",
+        "activePageKey": "saas_overview",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1839,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSales",
+        "activePageKey": "pageSales",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2232,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_commission",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesCommission",
+        "activePageKey": "pageSalesCommission",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2178,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_contracts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesContracts",
+        "activePageKey": "pageSalesContracts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2009,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_price_lists",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesPriceLists",
+        "activePageKey": "pageSalesPriceLists",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1903,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "scenario_planner",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageScenarioPlanner",
+        "activePageKey": "pageScenarioPlanner",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2067,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "scrap_approval",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "scrap_approval",
+        "activePageKey": "scrap_approval",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2145,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "seats_and_limits",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "seats_and_limits",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1909,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "security_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSecurityCenter",
+        "activePageKey": "pageSecurityCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2239,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sensor_management",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "sensor_management",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": true,
             "display": "block"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
+        "build12Hosts": []
       },
-      "durationMs": 713,
+      "durationMs": 2176,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "warehouse_large_screen",
+      "id": "service_kiosk",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "warehouse_large_screen",
+        "activePageKey": "service_kiosk",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "service_kiosk",
             "active": true,
             "display": "block"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "service_kiosk",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
+        "build12Hosts": []
       },
-      "durationMs": 501,
+      "durationMs": 2012,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "warehouse_topology",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "warehouse_topology",
-        "activePageKey": "warehouse_topology",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 633,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouses",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarehouses",
-        "activePageKey": "pageWarehouses",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 502,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warranty",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarranty",
-        "activePageKey": "pageWarranty",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 668,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_execution",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_execution",
-        "activePageKey": "wave_execution",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_planning",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_planning",
-        "activePageKey": "wave_planning",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 536,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wfl_home",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWflHome",
-        "activePageKey": "pageWflHome",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 514,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "whatsapp",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWhatsapp",
-        "activePageKey": "pageWhatsapp",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 522,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "work_orders",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkOrders",
-        "activePageKey": "pageWorkOrders",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workcenter_queue",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "workcenter_queue",
-        "activePageKey": "workcenter_queue",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 516,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workflow",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkflow",
-        "activePageKey": "pageWorkflow",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 620,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_command_center",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopCommandCenter",
-        "activePageKey": "pageWorkshopCommandCenter",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 629,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_ledger",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopLedger",
-        "activePageKey": "pageWorkshopLedger",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 519,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_pack_setup",
+      "id": "service_queue_board",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "workshop_pack_setup",
+        "activePageKey": "service_queue_board",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "rollout_simulator",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sensor_management",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "service_kiosk",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2343,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "shop_floor_kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "shop_floor_kiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1830,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "shopfloor_terminal",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "shopfloor_terminal",
+        "activePageKey": "shopfloor_terminal",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2087,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "skills_catalog",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "skills_catalog",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "shop_floor_kiosk",
             "active": false,
             "display": "flex"
           }
@@ -1021,134 +933,12 @@
         "build12Loaded": true,
         "build12Hosts": [
           {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
+            "page": "skills_catalog",
             "display": "block"
           }
         ]
       },
-      "durationMs": 630,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_readiness",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopReadiness",
-        "activePageKey": "pageWorkshopReadiness",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 603,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "zone_bin_management",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "zone_bin_management",
-        "activePageKey": "zone_bin_management",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 655,
+      "durationMs": 2014,
       "consoleErrors": [],
       "notFound": []
     }

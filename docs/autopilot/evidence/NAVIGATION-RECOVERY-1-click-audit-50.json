@@ -1,0 +1,1928 @@
+{
+  "generatedAt": "2026-08-21T18:22:39.059Z",
+  "startedAt": "2026-08-21T18:22:18.223Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 25,
+    "pass": 25,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "globalNotFound": [
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json"
+  ],
+  "items": [
+    {
+      "id": "device_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDeviceCenter",
+        "activePageKey": "pageDeviceCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 542,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_command_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_command_center",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 745,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_detail",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_detail",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 666,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_health_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_health_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 680,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_health_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_health_center",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 652,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_registry",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_registry",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 514,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "dock_checkin",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "dock_checkin",
+        "activePageKey": "dock_checkin",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 539,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "dock_schedule",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "dock_schedule",
+        "activePageKey": "dock_schedule",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 484,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "documents",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDocuments",
+        "activePageKey": "pageDocuments",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 563,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "downtime_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "downtime_board",
+        "activePageKey": "downtime_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 663,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "eliminations",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "eliminations",
+        "activePageKey": "eliminations",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 485,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "employee_kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "employee_kiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 663,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "employee_mobile",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEmployeeMobile",
+        "activePageKey": "pageEmployeeMobile",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 504,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "employee_ui",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEmployee_ui",
+        "activePageKey": "pageEmployee_ui",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 515,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "employees",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEmployees",
+        "activePageKey": "pageEmployees",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 567,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "entitlements",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "entitlements",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 697,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "equipment",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEquipment",
+        "activePageKey": "pageEquipment",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 621,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "esign",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEsign",
+        "activePageKey": "pageEsign",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 577,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "event_checkin",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "event_checkin",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 668,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "event_planner",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "event_planner",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 483,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "event_registrations",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "event_registrations",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "none"
+          },
+          {
+            "page": "event_registrations",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 482,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "events",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageEvents",
+        "activePageKey": "pageEvents",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "none"
+          },
+          {
+            "page": "event_registrations",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 634,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "events_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "events_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "none"
+          },
+          {
+            "page": "event_registrations",
+            "display": "none"
+          },
+          {
+            "page": "events_overview",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 516,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "expenses",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageExpenses",
+        "activePageKey": "pageExpenses",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "none"
+          },
+          {
+            "page": "event_registrations",
+            "display": "none"
+          },
+          {
+            "page": "events_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 509,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "expiration_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "expiration_queue",
+        "activePageKey": "expiration_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_command_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_detail",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_health_center",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "employee_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "event_checkin",
+            "display": "none"
+          },
+          {
+            "page": "event_planner",
+            "display": "none"
+          },
+          {
+            "page": "event_registrations",
+            "display": "none"
+          },
+          {
+            "page": "events_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 543,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

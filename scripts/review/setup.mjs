@@ -28,6 +28,7 @@ import { seedAiFixtures } from './fixtures/ai.mjs';
 import { seedPeopleDevelopmentFixtures } from './fixtures/people-development.mjs';
 import { seedMarketingFixtures } from './fixtures/marketing.mjs';
 import { seedEventsFixtures } from './fixtures/events.mjs';
+import { seedLegacyEmployeeFixtures } from './fixtures/legacy-employees.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(here, '..', '..');
@@ -70,6 +71,14 @@ async function main() {
     console.log('[review:setup] seeding review identities…');
     const seeded = seedReviewIdentities(dialect, { dbPath: reviewDbPath });
 
+    console.log('[review:setup] seeding legacy employee compatibility fixtures…');
+    const legacyEmployees = seedLegacyEmployeeFixtures(dialect, {
+      tenantId: REVIEW_TENANT,
+      companyId: REVIEW_COMPANY,
+      branchId: REVIEW_BRANCH,
+      now,
+    });
+
     const domains = [
       ['workshop', seedWorkshopFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['warehouse', seedWarehouseFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
@@ -86,7 +95,7 @@ async function main() {
       ['events', seedEventsFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
     ];
 
-    const summaries = {};
+    const summaries = { 'legacy employee compatibility': legacyEmployees };
     for (const [label, fn, tenantId, companyId, branchId] of domains) {
       console.log(`[review:setup] seeding ${label} fixtures…`);
       summaries[label] = await fn(dialect, { tenantId, companyId, branchId, now });

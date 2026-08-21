@@ -44,10 +44,11 @@ const normalizePath = (p) => p
   .replace(/\/(rev_[a-z0-9_]+|usr_[a-z0-9_]+)(?=\/|$)/gi, '/:id')
   .replace(/=\d+/g, '=:n');
 
-function classifyFailedRequest(status) {
+function classifyFailedRequest(status, detail = '') {
   if (status === 401) return { category: 'EXPECTED_AUTH', note: 'unauthenticated request — normal for a pre-login asset or a session boundary check' };
   if (status === 403) return { category: 'FIXTURE_GAP', note: 'permission denied — most 403s found this pass traced to a permission token missing from the registry entirely (see the fix for wms/shopfloor/quality :view tokens); treat each remaining one as a fixture/registry gap until proven otherwise, not an intentional restriction' };
   if (status === 404) return { category: 'BROKEN_ENDPOINT', note: 'client requested a path the server does not serve' };
+  if (status === 409 && /CANONICAL_AUTHORITY_REQUIRED/.test(detail)) return { category: 'EXPECTED_CANONICAL_GUARD', note: 'the server refused a legacy full-state mutation of a canonical fact; the authority boundary held' };
   if (status === 400 || status === 422) return { category: 'CLIENT_CONTRACT_BUG', note: 'request rejected on page LOAD with no user input involved — the client is sending an incomplete/incorrect default request, not validating real user input' };
   if (status >= 500) return { category: 'SERVER_ERROR', note: 'server threw while handling the request' };
   return { category: 'UNKNOWN', note: `unclassified status ${status}` };
@@ -70,7 +71,7 @@ runtime.pages.forEach((pageEntry) => {
   (pageEntry.failedRequests || []).forEach((req) => {
     const key = `${req.status} ${req.method || 'GET'} ${normalizePath(req.path)}`;
     if (!failedGroups.has(key)) {
-      const { category, note } = classifyFailedRequest(req.status);
+      const { category, note } = classifyFailedRequest(req.status, req.detail);
       failedGroups.set(key, { status: req.status, method: req.method || 'GET', path: normalizePath(req.path), category, note, pages: new Set() });
     }
     failedGroups.get(key).pages.add(pageEntry.id);

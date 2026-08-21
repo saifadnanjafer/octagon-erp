@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T17:10:54.372Z",
-  "startedAt": "2026-08-21T17:10:29.261Z",
+  "generatedAt": "2026-08-21T18:38:04.629Z",
+  "startedAt": "2026-08-21T18:37:43.354Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -18,7 +18,7 @@
       "rendererType": "view",
       "rendererSource": "views/account_mapping.html",
       "requiredPermission": "account_mapping",
-      "durationMs": 1000,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -58,10 +58,17 @@
         "latinChars": 169
       },
       "consoleErrors": [
-        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
       ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "admin_panel",
@@ -72,7 +79,7 @@
       "rendererType": "view",
       "rendererSource": "views/admin_panel.html",
       "requiredPermission": "admin_panel",
-      "durationMs": 972,
+      "durationMs": 1020,
       "error": null,
       "activated": true,
       "observation": {
@@ -110,7 +117,7 @@
           "Work Items"
         ],
         "title": "الإدارة والتحكم بالوحدات",
-        "textLength": 6552,
+        "textLength": 6548,
         "controlCount": 73,
         "controlLabels": [
           "تحديث",
@@ -156,7 +163,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1524,
-        "latinChars": 3933
+        "latinChars": 3931
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -171,7 +178,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_assistant",
-      "durationMs": 5339,
+      "durationMs": 4459,
       "error": null,
       "activated": true,
       "observation": {
@@ -222,7 +229,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_context_sources",
-      "durationMs": 2990,
+      "durationMs": 2595,
       "error": null,
       "activated": true,
       "observation": {
@@ -272,7 +279,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_factory.html",
       "requiredPermission": "ai_factory",
-      "durationMs": 2947,
+      "durationMs": 2348,
       "error": null,
       "activated": true,
       "observation": {
@@ -323,7 +330,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_overview",
-      "durationMs": 2693,
+      "durationMs": 2493,
       "error": null,
       "activated": true,
       "observation": {
@@ -374,7 +381,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_policy_registry",
-      "durationMs": 2691,
+      "durationMs": 2348,
       "error": null,
       "activated": true,
       "observation": {
@@ -425,7 +432,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_prompt_templates",
-      "durationMs": 2684,
+      "durationMs": 2457,
       "error": null,
       "activated": true,
       "observation": {
@@ -475,7 +482,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_proposal_inbox",
-      "durationMs": 2704,
+      "durationMs": 2468,
       "error": null,
       "activated": true,
       "observation": {
@@ -528,7 +535,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_queue.html",
       "requiredPermission": "ai_queue",
-      "durationMs": 2625,
+      "durationMs": 2548,
       "error": null,
       "activated": true,
       "observation": {
@@ -579,7 +586,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_run_history",
-      "durationMs": 2662,
+      "durationMs": 2501,
       "error": null,
       "activated": true,
       "observation": {
@@ -630,7 +637,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_status.html",
       "requiredPermission": "ai_status",
-      "durationMs": 2723,
+      "durationMs": 2490,
       "error": null,
       "activated": true,
       "observation": {
@@ -641,7 +648,7 @@
           "🛡️\nحالة الذكاء الصناعي"
         ],
         "title": "🛡️\nحالة الذكاء الصناعي",
-        "textLength": 3699,
+        "textLength": 3815,
         "controlCount": 5,
         "controlLabels": [
           "🧪 اختبار المزوّد",
@@ -672,8 +679,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": true,
-        "arabicChars": 801,
-        "latinChars": 2164
+        "arabicChars": 815,
+        "latinChars": 2244
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -688,7 +695,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_tools.html",
       "requiredPermission": "ai_tools",
-      "durationMs": 2618,
+      "durationMs": 2368,
       "error": null,
       "activated": true,
       "observation": {
@@ -739,7 +746,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "alert_board",
-      "durationMs": 2906,
+      "durationMs": 2614,
       "error": null,
       "activated": true,
       "observation": {
@@ -791,7 +798,7 @@
       "rendererType": "view",
       "rendererSource": "views/analytics.html",
       "requiredPermission": "analytics",
-      "durationMs": 3135,
+      "durationMs": 2630,
       "error": null,
       "activated": true,
       "observation": {
@@ -810,7 +817,7 @@
           "تنبيهات توقعية"
         ],
         "title": "📈\nالتحليلات والذكاء التشغيلي",
-        "textLength": 1828,
+        "textLength": 1876,
         "controlCount": 31,
         "controlLabels": [
           "مختصر",
@@ -879,7 +886,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1298,
+        "arabicChars": 1331,
         "latinChars": 31
       },
       "consoleErrors": [],
@@ -895,7 +902,7 @@
       "rendererType": "view",
       "rendererSource": "views/appointments.html",
       "requiredPermission": "appointments",
-      "durationMs": 2875,
+      "durationMs": 2520,
       "error": null,
       "activated": true,
       "observation": {
@@ -907,7 +914,7 @@
           "حجز جديد"
         ],
         "title": "المواعيد والحجوزات",
-        "textLength": 796,
+        "textLength": 794,
         "controlCount": 13,
         "controlLabels": [
           "جدول اليوم",
@@ -940,7 +947,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 552,
+        "arabicChars": 550,
         "latinChars": 2
       },
       "consoleErrors": [],
@@ -956,7 +963,7 @@
       "rendererType": "view",
       "rendererSource": "views/approvals.html",
       "requiredPermission": "approvals",
-      "durationMs": 3016,
+      "durationMs": 2648,
       "error": null,
       "activated": true,
       "observation": {
@@ -1009,7 +1016,7 @@
       "rendererType": "view",
       "rendererSource": "views/ar_ap.html",
       "requiredPermission": "ar_ap",
-      "durationMs": 3034,
+      "durationMs": 2697,
       "error": null,
       "activated": true,
       "observation": {
@@ -1073,7 +1080,7 @@
       "rendererType": "view",
       "rendererSource": "views/assets.html",
       "requiredPermission": "assets",
-      "durationMs": 2998,
+      "durationMs": 2628,
       "error": null,
       "activated": true,
       "observation": {
@@ -1128,7 +1135,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "attribution_insights",
-      "durationMs": 2768,
+      "durationMs": 2575,
       "error": null,
       "activated": true,
       "observation": {
@@ -1178,7 +1185,7 @@
       "rendererType": "view",
       "rendererSource": "views/automation.html",
       "requiredPermission": "automation",
-      "durationMs": 3044,
+      "durationMs": 2768,
       "error": null,
       "activated": true,
       "observation": {
@@ -1190,10 +1197,6 @@
           "⚡ محرك أتمتة الورشة",
           "قوالب عملية للورشة",
           "القواعد الحالية",
-          "تصعيد بطاقات الكانبان العالقة\nنشط",
-          "تنبيه نقص المواد الخام في المخزن\nنشط",
-          "متابعة إعداد عرض سعر جديد\nنشط",
-          "تنبيه الأحمال الزائدة على ماكينات CNC\nنشط",
           "سجل التشغيل",
           "صحة الأتمتة والسياسات",
           "مراقب صحة الأتمتة",
@@ -1201,17 +1204,14 @@
           "محاكي الأتمتة التفاعلي"
         ],
         "title": "محرك الأتمتة",
-        "textLength": 4178,
-        "controlCount": 20,
+        "textLength": 2487,
+        "controlCount": 8,
         "controlLabels": [
           "قاعدة مخصصة",
           "🧾\nمتابعة عرض السعر\nكل عرض سعر جديد يولد مهمة تدقيق ومتابعة.",
-          "اختبار",
-          "تعديل",
-          "حذف",
           "تشغيل المحاكاة"
         ],
-        "inputCount": 8,
+        "inputCount": 4,
         "selectCount": 3,
         "searchInputCount": 1,
         "dateInputCount": 0,
@@ -1229,8 +1229,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": true,
-        "arabicChars": 3109,
-        "latinChars": 140
+        "arabicChars": 1831,
+        "latinChars": 131
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1245,7 +1245,7 @@
       "rendererType": "view",
       "rendererSource": "views/banking.html",
       "requiredPermission": "banking",
-      "durationMs": 3267,
+      "durationMs": 2838,
       "error": null,
       "activated": true,
       "observation": {
@@ -1311,7 +1311,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "billing_simulator",
-      "durationMs": 3201,
+      "durationMs": 2662,
       "error": null,
       "activated": true,
       "observation": {
@@ -1362,7 +1362,7 @@
       "rendererType": "view",
       "rendererSource": "views/budgeting.html",
       "requiredPermission": "budgeting",
-      "durationMs": 3053,
+      "durationMs": 3007,
       "error": null,
       "activated": true,
       "observation": {
@@ -1415,7 +1415,7 @@
       "rendererType": "view",
       "rendererSource": "views/calendar.html",
       "requiredPermission": "calendar",
-      "durationMs": 2888,
+      "durationMs": 2680,
       "error": null,
       "activated": true,
       "observation": {
@@ -1425,11 +1425,11 @@
         "headings": [
           "🗓️\nتقويم الدوام الشهري",
           "أغسطس 2026",
-          "الخميس 20 أغسطس 2026",
+          "الجمعة 21 أغسطس 2026",
           "سجل توثيق مصاريف التشغيل"
         ],
         "title": "🗓️\nتقويم الدوام الشهري",
-        "textLength": 2547,
+        "textLength": 2643,
         "controlCount": 36,
         "controlLabels": [
           "الشهر السابق",
@@ -1487,7 +1487,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1777,
+        "arabicChars": 1838,
         "latinChars": 7
       },
       "consoleErrors": [],
@@ -1503,7 +1503,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/jarvis-brain.js",
       "requiredPermission": "campaigns",
-      "durationMs": 3183,
+      "durationMs": 811,
       "error": null,
       "activated": true,
       "observation": {
@@ -1555,7 +1555,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_console.html",
       "requiredPermission": "canonical_console",
-      "durationMs": 3219,
+      "durationMs": 923,
       "error": null,
       "activated": true,
       "observation": {
@@ -1563,11 +1563,12 @@
         "hostId": "pageCanonicalConsole",
         "hostDataPage": null,
         "headings": [
-          "العمليات القانونية الموحّدة"
+          "العمليات القانونية الموحّدة",
+          "المنتجات والمواد"
         ],
         "title": "العمليات القانونية الموحّدة",
-        "textLength": 468,
-        "controlCount": 9,
+        "textLength": 746,
+        "controlCount": 10,
         "controlLabels": [
           "تحديث",
           "المنتجات والمواد",
@@ -1577,18 +1578,19 @@
           "المبيعات",
           "المشتريات",
           "نقطة البيع",
-          "إدارة العمل"
+          "إدارة العمل",
+          "منتج جديد"
         ],
-        "inputCount": 0,
+        "inputCount": 2,
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
+        "tableCount": 1,
+        "tableRows": 4,
+        "tableColumns": 4,
         "listItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": false,
           "error": false,
           "denied": false
@@ -1597,8 +1599,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 341,
-        "latinChars": 46
+        "arabicChars": 402,
+        "latinChars": 181
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1613,7 +1615,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_inventory.html",
       "requiredPermission": "canonical_inventory",
-      "durationMs": 3975,
+      "durationMs": 1549,
       "error": null,
       "activated": true,
       "observation": {
@@ -1670,7 +1672,7 @@
       "rendererType": "view",
       "rendererSource": "views/cashbox.html",
       "requiredPermission": "cashbox",
-      "durationMs": 4566,
+      "durationMs": 1891,
       "error": null,
       "activated": true,
       "observation": {
@@ -1724,7 +1726,7 @@
       "rendererType": "view",
       "rendererSource": "views/clinic.html",
       "requiredPermission": "clinic",
-      "durationMs": 4788,
+      "durationMs": 1950,
       "error": null,
       "activated": true,
       "observation": {
@@ -1781,7 +1783,7 @@
       "rendererType": "view",
       "rendererSource": "views/command_center.html",
       "requiredPermission": "command_center",
-      "durationMs": 4751,
+      "durationMs": 1806,
       "error": null,
       "activated": true,
       "observation": {
@@ -1794,7 +1796,7 @@
           "مركز التحكم والموافقة الموحد",
           "تحليلات الشراء",
           "طلبات الشراء والمتابعة",
-          "اقتراحات ذكية حسب بيانات النظام\n8",
+          "اقتراحات ذكية حسب بيانات النظام\n9",
           "أولويات اليوم",
           "متأخرات",
           "ضغط المكائن",
@@ -1802,8 +1804,8 @@
           "صحة ترابط النظام\n0"
         ],
         "title": "🎯\nمركز القيادة التنفيذي",
-        "textLength": 3442,
-        "controlCount": 49,
+        "textLength": 3663,
+        "controlCount": 51,
         "controlLabels": [
           "اللوحة التنفيذية",
           "المخزون",
@@ -1811,6 +1813,7 @@
           "1 ماكينة في الصيانة: ليزر 125×250",
           "1 فحص جودة فاشل يحتاج إعادة عمل",
           "رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD)",
+          "الموظف بدون مسؤول محمل بأعمال زائدة (مؤشر العبء 100%)",
           "الطلبات المعلقة 1",
           "سجل القرارات 0",
           "الكل\n1",
@@ -1836,15 +1839,14 @@
           "فتح الجودة",
           "فتح الإجراءات",
           "فتح الصندوق",
-          "قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-19",
+          "فتح المهام",
+          "قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-21",
           "ليزر 120×90\nأحمد · طابور 3\nمزدحمة",
           "ليزر 100×80\nعلي · طابور 1\nتعمل",
           "ليزر 125×250\n- · طابور 0\nصيانة",
           "راوتر CNC 125×250\nيوسف · طابور 2\nتعمل",
           "ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة",
-          "طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل",
-          "اللوحة",
-          "الباقات"
+          "طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل"
         ],
         "inputCount": 1,
         "selectCount": 1,
@@ -1866,6 +1868,7 @@
           "machines",
           "qc_center",
           "cashbox",
+          "task_manager",
           "sop",
           "op_packs",
           "analytics",
@@ -1874,7 +1877,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2499,
+        "arabicChars": 2662,
         "latinChars": 28
       },
       "consoleErrors": [],
@@ -1890,7 +1893,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "commercial_plans",
-      "durationMs": 4569,
+      "durationMs": 1891,
       "error": null,
       "activated": true,
       "observation": {
@@ -1941,7 +1944,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "competency_profiles",
-      "durationMs": 4511,
+      "durationMs": 1690,
       "error": null,
       "activated": true,
       "observation": {
@@ -1991,7 +1994,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "configuration_profiles",
-      "durationMs": 4270,
+      "durationMs": 1278,
       "error": null,
       "activated": true,
       "observation": {
@@ -2044,7 +2047,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "conflict_resolution",
-      "durationMs": 4361,
+      "durationMs": 1663,
       "error": null,
       "activated": true,
       "observation": {
@@ -2097,7 +2100,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidated_reports.html",
       "requiredPermission": "consolidated_reports",
-      "durationMs": 3891,
+      "durationMs": 1495,
       "error": null,
       "activated": true,
       "observation": {
@@ -2148,7 +2151,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_groups.html",
       "requiredPermission": "consolidation_groups",
-      "durationMs": 4215,
+      "durationMs": 1545,
       "error": null,
       "activated": true,
       "observation": {
@@ -2201,7 +2204,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_approvals",
-      "durationMs": 4288,
+      "durationMs": 1579,
       "error": null,
       "activated": true,
       "observation": {
@@ -2252,7 +2255,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_calendar",
-      "durationMs": 4038,
+      "durationMs": 1273,
       "error": null,
       "activated": true,
       "observation": {
@@ -2303,7 +2306,7 @@
       "rendererType": "view",
       "rendererSource": "views/contracts.html",
       "requiredPermission": "contracts",
-      "durationMs": 4458,
+      "durationMs": 1458,
       "error": null,
       "activated": true,
       "observation": {
@@ -2366,7 +2369,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "count_session",
-      "durationMs": 4485,
+      "durationMs": 1874,
       "error": null,
       "activated": true,
       "observation": {
@@ -2377,7 +2380,7 @@
           "جلسة الجرد"
         ],
         "title": "جلسة الجرد",
-        "textLength": 289,
+        "textLength": 269,
         "controlCount": 0,
         "controlLabels": [],
         "inputCount": 1,
@@ -2399,7 +2402,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 128,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2414,7 +2417,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "crossdock_workspace",
-      "durationMs": 4230,
+      "durationMs": 1874,
       "error": null,
       "activated": true,
       "observation": {
@@ -2422,15 +2425,20 @@
         "hostId": "crossdock_workspace",
         "hostDataPage": null,
         "headings": [
-          "مساحة العبور المباشر"
+          "مساحة العبور المباشر",
+          "المطابقات حسب الأهلية",
+          "تقييم مطابقة"
         ],
         "title": "مساحة العبور المباشر",
-        "textLength": 392,
-        "controlCount": 0,
-        "controlLabels": [],
-        "inputCount": 1,
-        "selectCount": 1,
-        "searchInputCount": 0,
+        "textLength": 783,
+        "controlCount": 2,
+        "controlLabels": [
+          "١\nrev_prod_var_gate_hinge_01\nمطابق ٦ من الطلب ٦\nCANDIDATE",
+          "تقييم المطابقة"
+        ],
+        "inputCount": 15,
+        "selectCount": 6,
+        "searchInputCount": 3,
         "dateInputCount": 0,
         "tableCount": 0,
         "tableRows": 0,
@@ -2446,8 +2454,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 215,
-        "latinChars": 90
+        "arabicChars": 463,
+        "latinChars": 130
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2462,7 +2470,7 @@
       "rendererType": "view",
       "rendererSource": "views/customer_portal.html",
       "requiredPermission": "customer_portal",
-      "durationMs": 4560,
+      "durationMs": 1710,
       "error": null,
       "activated": true,
       "observation": {
@@ -2516,7 +2524,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers.html",
       "requiredPermission": "customers",
-      "durationMs": 4279,
+      "durationMs": 1579,
       "error": null,
       "activated": true,
       "observation": {
@@ -2570,7 +2578,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "cycle_count_plans",
-      "durationMs": 4858,
+      "durationMs": 1983,
       "error": null,
       "activated": true,
       "observation": {
@@ -2583,9 +2591,10 @@
           "خطة جرد جديدة"
         ],
         "title": "خطط الجرد الدوري",
-        "textLength": 535,
-        "controlCount": 1,
+        "textLength": 556,
+        "controlCount": 2,
         "controlLabels": [
+          "بدء جلسة",
           "إنشاء خطة جرد"
         ],
         "inputCount": 10,
@@ -2598,7 +2607,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -2606,8 +2615,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 308,
-        "latinChars": 101
+        "arabicChars": 303,
+        "latinChars": 121
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2622,7 +2631,7 @@
       "rendererType": "view",
       "rendererSource": "views/data_quality.html",
       "requiredPermission": "data_quality",
-      "durationMs": 4518,
+      "durationMs": 1781,
       "error": null,
       "activated": true,
       "observation": {
@@ -2639,7 +2648,7 @@
           "Phase 7A deployment blockers"
         ],
         "title": "جودة البيانات والترحيل",
-        "textLength": 2266,
+        "textLength": 2437,
         "controlCount": 8,
         "controlLabels": [
           "سحب الإشارات الحية",
@@ -2670,7 +2679,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1023,
-        "latinChars": 771
+        "latinChars": 909
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2685,7 +2694,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 4275,
+      "durationMs": 1758,
       "error": null,
       "activated": true,
       "observation": {
@@ -2737,7 +2746,7 @@
       "rendererType": "view",
       "rendererSource": "views/deploy_ready.html",
       "requiredPermission": "deploy_ready",
-      "durationMs": 4825,
+      "durationMs": 1630,
       "error": null,
       "activated": true,
       "observation": {
@@ -2753,7 +2762,7 @@
           "Training checklist"
         ],
         "title": "🚀\nجاهزية التشغيل",
-        "textLength": 4555,
+        "textLength": 4557,
         "controlCount": 18,
         "controlLabels": [
           "💾 نسخة احتياطية الآن",
@@ -2783,19 +2792,11 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1142,
-        "latinChars": 2230
+        "latinChars": 2234
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "development_plans",
@@ -2806,7 +2807,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "development_plans",
-      "durationMs": 4293,
+      "durationMs": 855,
       "error": null,
       "activated": true,
       "observation": {
@@ -2844,9 +2845,7 @@
         "arabicChars": 173,
         "latinChars": 148
       },
-      "consoleErrors": [
-        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
       "failedRequests": []
     },
@@ -2859,7 +2858,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_alerts",
-      "durationMs": 4601,
+      "durationMs": 1377,
       "error": null,
       "activated": true,
       "observation": {
@@ -2912,7 +2911,7 @@
       "rendererType": "view",
       "rendererSource": "views/device_center.html",
       "requiredPermission": "device_center",
-      "durationMs": 4640,
+      "durationMs": 804,
       "error": null,
       "activated": true,
       "observation": {
@@ -2975,7 +2974,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_command_center",
-      "durationMs": 5548,
+      "durationMs": 1008,
       "error": null,
       "activated": true,
       "observation": {
@@ -3028,7 +3027,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_detail",
-      "durationMs": 4581,
+      "durationMs": 799,
       "error": null,
       "activated": true,
       "observation": {
@@ -3081,7 +3080,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "device_health_board",
-      "durationMs": 4880,
+      "durationMs": 937,
       "error": null,
       "activated": true,
       "observation": {
@@ -3133,7 +3132,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_health_center",
-      "durationMs": 4558,
+      "durationMs": 966,
       "error": null,
       "activated": true,
       "observation": {
@@ -3186,7 +3185,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_registry",
-      "durationMs": 4451,
+      "durationMs": 815,
       "error": null,
       "activated": true,
       "observation": {
@@ -3239,7 +3238,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_checkin",
-      "durationMs": 4778,
+      "durationMs": 931,
       "error": null,
       "activated": true,
       "observation": {
@@ -3247,11 +3246,12 @@
         "hostId": "dock_checkin",
         "hostDataPage": null,
         "headings": [
-          "تسجيل دخول الرصيف"
+          "تسجيل دخول الرصيف",
+          "البوابة"
         ],
         "title": "تسجيل دخول الرصيف",
-        "textLength": 284,
-        "controlCount": 0,
+        "textLength": 520,
+        "controlCount": 3,
         "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
@@ -3263,7 +3263,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -3271,8 +3271,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 126,
-        "latinChars": 90
+        "arabicChars": 216,
+        "latinChars": 167
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3287,7 +3287,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_schedule",
-      "durationMs": 4214,
+      "durationMs": 799,
       "error": null,
       "activated": true,
       "observation": {
@@ -3300,9 +3300,10 @@
           "جدولة موعد"
         ],
         "title": "جدول الأرصفة",
-        "textLength": 674,
-        "controlCount": 1,
+        "textLength": 740,
+        "controlCount": 2,
         "controlLabels": [
+          "[DEMO] Review Carrier Co.",
           "جدولة الموعد"
         ],
         "inputCount": 11,
@@ -3315,7 +3316,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -3323,8 +3324,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 395,
-        "latinChars": 95
+        "arabicChars": 371,
+        "latinChars": 160
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3339,7 +3340,7 @@
       "rendererType": "view",
       "rendererSource": "views/documents.html",
       "requiredPermission": "documents",
-      "durationMs": 4671,
+      "durationMs": 949,
       "error": null,
       "activated": true,
       "observation": {
@@ -3393,7 +3394,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "downtime_board",
-      "durationMs": 4567,
+      "durationMs": 934,
       "error": null,
       "activated": true,
       "observation": {
@@ -3403,14 +3404,18 @@
         "headings": [
           "لوحة التوقف",
           "التوقف النشط",
+          "تسجيل توقف",
           "سجل التوقف"
         ],
         "title": "لوحة التوقف",
-        "textLength": 516,
-        "controlCount": 0,
-        "controlLabels": [],
-        "inputCount": 2,
-        "selectCount": 2,
+        "textLength": 707,
+        "controlCount": 2,
+        "controlLabels": [
+          "إنهاء التوقف",
+          "بدء التوقف"
+        ],
+        "inputCount": 8,
+        "selectCount": 4,
         "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 0,
@@ -3419,7 +3424,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -3427,8 +3432,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 302,
-        "latinChars": 90
+        "arabicChars": 405,
+        "latinChars": 144
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3443,7 +3448,7 @@
       "rendererType": "view",
       "rendererSource": "views/eliminations.html",
       "requiredPermission": "eliminations",
-      "durationMs": 4501,
+      "durationMs": 784,
       "error": null,
       "activated": true,
       "observation": {
@@ -3495,7 +3500,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "employee_kiosk",
-      "durationMs": 4847,
+      "durationMs": 820,
       "error": null,
       "activated": true,
       "observation": {
@@ -3548,7 +3553,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_mobile.html",
       "requiredPermission": "employee_mobile",
-      "durationMs": 4484,
+      "durationMs": 795,
       "error": null,
       "activated": true,
       "observation": {
@@ -3559,7 +3564,7 @@
           "📱\nمهامي اليوم"
         ],
         "title": "📱\nمهامي اليوم",
-        "textLength": 228,
+        "textLength": 233,
         "controlCount": 2,
         "controlLabels": [
           "🚨 عندي مشكلة",
@@ -3583,7 +3588,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 161,
+        "arabicChars": 165,
         "latinChars": 2
       },
       "consoleErrors": [],
@@ -3599,7 +3604,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_ui.html",
       "requiredPermission": "employee_ui",
-      "durationMs": 4374,
+      "durationMs": 798,
       "error": null,
       "activated": true,
       "observation": {
@@ -3610,7 +3615,7 @@
           "🧑‍🔧\nلوحة الموظف"
         ],
         "title": "🧑‍🔧\nلوحة الموظف",
-        "textLength": 136,
+        "textLength": 295,
         "controlCount": 0,
         "controlLabels": [],
         "inputCount": 1,
@@ -3632,7 +3637,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 104,
-        "latinChars": 0
+        "latinChars": 141
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3647,7 +3652,7 @@
       "rendererType": "view",
       "rendererSource": "views/employees.html",
       "requiredPermission": "employees",
-      "durationMs": 4627,
+      "durationMs": 786,
       "error": null,
       "activated": true,
       "observation": {
@@ -3655,24 +3660,30 @@
         "hostId": "pageEmployees",
         "hostDataPage": null,
         "headings": [
-          "👥\nالموظفين والأرصدة",
-          "قائمة الموظفين فارغة"
+          "👥\nالموظفين والأرصدة"
         ],
         "title": "👥\nالموظفين والأرصدة",
-        "textLength": 185,
-        "controlCount": 3,
+        "textLength": 994,
+        "controlCount": 20,
         "controlLabels": [
           "إضافة موظف",
           "تحديث",
-          "تصدير البيانات"
+          "تصدير البيانات",
+          "اسم الموظف ↑",
+          "الراتب الاسمي",
+          "آخر نشاط",
+          "الحالة",
+          "الرصيد الحالي",
+          "تفاصيل",
+          "حفظ"
         ],
-        "inputCount": 0,
-        "selectCount": 0,
+        "inputCount": 19,
+        "selectCount": 6,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
+        "tableCount": 1,
+        "tableRows": 6,
+        "tableColumns": 7,
         "listItems": 0,
         "stateSignals": {
           "loading": false,
@@ -3684,8 +3695,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 152,
-        "latinChars": 0
+        "arabicChars": 459,
+        "latinChars": 141
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3700,7 +3711,7 @@
       "rendererType": "view",
       "rendererSource": "views/entitlements.html",
       "requiredPermission": "entitlements",
-      "durationMs": 4976,
+      "durationMs": 847,
       "error": null,
       "activated": true,
       "observation": {
@@ -3751,7 +3762,7 @@
       "rendererType": "view",
       "rendererSource": "views/equipment.html",
       "requiredPermission": "equipment",
-      "durationMs": 4850,
+      "durationMs": 1001,
       "error": null,
       "activated": true,
       "observation": {
@@ -3813,7 +3824,7 @@
       "rendererType": "view",
       "rendererSource": "views/esign.html",
       "requiredPermission": "esign",
-      "durationMs": 3640,
+      "durationMs": 930,
       "error": null,
       "activated": true,
       "observation": {
@@ -3874,7 +3885,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_checkin",
-      "durationMs": 3560,
+      "durationMs": 949,
       "error": null,
       "activated": true,
       "observation": {
@@ -3925,7 +3936,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_planner",
-      "durationMs": 3250,
+      "durationMs": 791,
       "error": null,
       "activated": true,
       "observation": {
@@ -3976,7 +3987,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_registrations",
-      "durationMs": 3280,
+      "durationMs": 790,
       "error": null,
       "activated": true,
       "observation": {
@@ -4027,7 +4038,7 @@
       "rendererType": "view",
       "rendererSource": "views/events.html",
       "requiredPermission": "events",
-      "durationMs": 3805,
+      "durationMs": 920,
       "error": null,
       "activated": true,
       "observation": {
@@ -4089,7 +4100,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "events_overview",
-      "durationMs": 3717,
+      "durationMs": 812,
       "error": null,
       "activated": true,
       "observation": {
@@ -4140,7 +4151,7 @@
       "rendererType": "view",
       "rendererSource": "views/expenses.html",
       "requiredPermission": "expenses",
-      "durationMs": 3942,
+      "durationMs": 919,
       "error": null,
       "activated": true,
       "observation": {
@@ -4196,7 +4207,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "expiration_queue",
-      "durationMs": 4074,
+      "durationMs": 982,
       "error": null,
       "activated": true,
       "observation": {
@@ -4207,7 +4218,7 @@
           "طابور انتهاء الصلاحية"
         ],
         "title": "طابور انتهاء الصلاحية",
-        "textLength": 504,
+        "textLength": 484,
         "controlCount": 0,
         "controlLabels": [],
         "inputCount": 5,
@@ -4229,7 +4240,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 288,
-        "latinChars": 102
+        "latinChars": 90
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4244,7 +4255,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_installations",
-      "durationMs": 3589,
+      "durationMs": 805,
       "error": null,
       "activated": true,
       "observation": {
@@ -4294,7 +4305,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_marketplace",
-      "durationMs": 3688,
+      "durationMs": 792,
       "error": null,
       "activated": true,
       "observation": {
@@ -4345,7 +4356,7 @@
       "rendererType": "view",
       "rendererSource": "views/field_service.html",
       "requiredPermission": "field_service",
-      "durationMs": 3508,
+      "durationMs": 786,
       "error": null,
       "activated": true,
       "observation": {
@@ -4398,7 +4409,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance.html",
       "requiredPermission": "finance",
-      "durationMs": 895,
+      "durationMs": 965,
       "error": null,
       "activated": true,
       "observation": {
@@ -4416,7 +4427,7 @@
           "Phase 7A period lock foundation"
         ],
         "title": "💹\nالداشبورد المالي",
-        "textLength": 2995,
+        "textLength": 2991,
         "controlCount": 14,
         "controlLabels": [
           "إضافة أمثلة تجريبية",
@@ -4453,11 +4464,9 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1250,
-        "latinChars": 889
+        "latinChars": 885
       },
-      "consoleErrors": [
-        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
       "failedRequests": []
     },
@@ -4470,7 +4479,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance_installments.html",
       "requiredPermission": "finance_installments",
-      "durationMs": 3481,
+      "durationMs": 790,
       "error": null,
       "activated": true,
       "observation": {
@@ -4522,7 +4531,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 3662,
+      "durationMs": 931,
       "error": null,
       "activated": true,
       "observation": {
@@ -4575,7 +4584,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "firmware_catalogue",
-      "durationMs": 3542,
+      "durationMs": 946,
       "error": null,
       "activated": true,
       "observation": {
@@ -4628,7 +4637,7 @@
       "rendererType": "view",
       "rendererSource": "views/fleet.html",
       "requiredPermission": "fleet",
-      "durationMs": 3516,
+      "durationMs": 945,
       "error": null,
       "activated": true,
       "observation": {
@@ -4685,7 +4694,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_device_mapping",
-      "durationMs": 3470,
+      "durationMs": 927,
       "error": null,
       "activated": true,
       "observation": {
@@ -4738,7 +4747,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_live_map_simulator",
-      "durationMs": 3254,
+      "durationMs": 788,
       "error": null,
       "activated": true,
       "observation": {
@@ -4791,7 +4800,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "fleet_operations_board",
-      "durationMs": 3649,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -4843,7 +4852,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_overrides.html",
       "requiredPermission": "forecast_overrides",
-      "durationMs": 3300,
+      "durationMs": 950,
       "error": null,
       "activated": true,
       "observation": {
@@ -4896,7 +4905,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fuel_telemetry",
-      "durationMs": 3727,
+      "durationMs": 937,
       "error": null,
       "activated": true,
       "observation": {
@@ -4949,7 +4958,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "gateway_management",
-      "durationMs": 3557,
+      "durationMs": 938,
       "error": null,
       "activated": true,
       "observation": {
@@ -5002,7 +5011,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "geofence_management",
-      "durationMs": 3312,
+      "durationMs": 939,
       "error": null,
       "activated": true,
       "observation": {
@@ -5055,7 +5064,7 @@
       "rendererType": "view",
       "rendererSource": "views/help_manual.html",
       "requiredPermission": "help_manual",
-      "durationMs": 3448,
+      "durationMs": 790,
       "error": null,
       "activated": true,
       "observation": {
@@ -5122,7 +5131,7 @@
       "rendererType": "view",
       "rendererSource": "views/helpdesk.html",
       "requiredPermission": "helpdesk",
-      "durationMs": 3359,
+      "durationMs": 792,
       "error": null,
       "activated": true,
       "observation": {
@@ -5176,7 +5185,7 @@
       "rendererType": "view",
       "rendererSource": "views/home.html",
       "requiredPermission": "home",
-      "durationMs": 3606,
+      "durationMs": 823,
       "error": null,
       "activated": true,
       "observation": {
@@ -5184,10 +5193,10 @@
         "hostId": "pageHome",
         "hostDataPage": null,
         "headings": [
-          "🌅 صباح الخير، النظام"
+          "🌙 مساء الخير، مدير النظام"
         ],
-        "title": "🌅 صباح الخير، النظام",
-        "textLength": 655,
+        "title": "🌙 مساء الخير، مدير النظام",
+        "textLength": 660,
         "controlCount": 9,
         "controlLabels": [
           "الذهاب إلى: خدمة العملاء",
@@ -5228,7 +5237,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 516,
+        "arabicChars": 520,
         "latinChars": 0
       },
       "consoleErrors": [],
@@ -5244,7 +5253,7 @@
       "rendererType": "view",
       "rendererSource": "views/hotel.html",
       "requiredPermission": "hotel",
-      "durationMs": 3477,
+      "durationMs": 932,
       "error": null,
       "activated": true,
       "observation": {
@@ -5298,7 +5307,7 @@
       "rendererType": "view",
       "rendererSource": "views/import.html",
       "requiredPermission": "import",
-      "durationMs": 3346,
+      "durationMs": 816,
       "error": null,
       "activated": true,
       "observation": {
@@ -5352,7 +5361,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/import-wizard.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 3973,
+      "durationMs": 810,
       "error": null,
       "activated": true,
       "observation": {
@@ -5409,7 +5418,7 @@
       "rendererType": "view",
       "rendererSource": "views/income.html",
       "requiredPermission": "income",
-      "durationMs": 3369,
+      "durationMs": 786,
       "error": null,
       "activated": true,
       "observation": {
@@ -5465,7 +5474,7 @@
       "rendererType": "view",
       "rendererSource": "views/integration_hub.html",
       "requiredPermission": "integration_hub",
-      "durationMs": 3606,
+      "durationMs": 825,
       "error": null,
       "activated": true,
       "observation": {
@@ -5474,6 +5483,13 @@
         "hostDataPage": null,
         "headings": [
           "مركز التكامل",
+          "Collaboration, notifications, and scheduled reporting",
+          "Notifications (0)",
+          "My activities (0)",
+          "Saved Views (0)",
+          "Scheduled reports (0)",
+          "Job Queue",
+          "Delivery health",
           "مركز التكاملات",
           "موصلات المتاجر والمدفوعات (أساس مرحلي)",
           "موصلات المتاجر الإلكترونية",
@@ -5482,16 +5498,17 @@
           "مهام المزامنة المرحلية"
         ],
         "title": "مركز التكامل",
-        "textLength": 3059,
-        "controlCount": 14,
+        "textLength": 3553,
+        "controlCount": 15,
         "controlLabels": [
+          "Refresh",
           "🔌 اختبار الاتصال",
           "تجهيز اتصال",
           "مزامنة مرحلية"
         ],
-        "inputCount": 0,
+        "inputCount": 1,
         "selectCount": 0,
-        "searchInputCount": 0,
+        "searchInputCount": 1,
         "dateInputCount": 0,
         "tableCount": 2,
         "tableRows": 5,
@@ -5507,8 +5524,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2020,
-        "latinChars": 404
+        "arabicChars": 2017,
+        "latinChars": 782
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5523,7 +5540,7 @@
       "rendererType": "view",
       "rendererSource": "views/intelligence.html",
       "requiredPermission": "intelligence",
-      "durationMs": 3436,
+      "durationMs": 992,
       "error": null,
       "activated": true,
       "observation": {
@@ -5554,7 +5571,7 @@
           "فحص صحة المسارات والصفحات"
         ],
         "title": "لوحة الذكاء التشغيلي",
-        "textLength": 9081,
+        "textLength": 9172,
         "controlCount": 83,
         "controlLabels": [
           "إرسال الأمر",
@@ -5653,7 +5670,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 7266,
+        "arabicChars": 7354,
         "latinChars": 41
       },
       "consoleErrors": [],
@@ -5669,7 +5686,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_reconciliation.html",
       "requiredPermission": "intercompany_reconciliation",
-      "durationMs": 4364,
+      "durationMs": 951,
       "error": null,
       "activated": true,
       "observation": {
@@ -5722,7 +5739,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_transactions.html",
       "requiredPermission": "intercompany_transactions",
-      "durationMs": 3863,
+      "durationMs": 984,
       "error": null,
       "activated": true,
       "observation": {
@@ -5775,7 +5792,7 @@
       "rendererType": "view",
       "rendererSource": "views/inventory.html",
       "requiredPermission": "inventory",
-      "durationMs": 3981,
+      "durationMs": 984,
       "error": null,
       "activated": true,
       "observation": {
@@ -5787,11 +5804,12 @@
           "Phase 7I Advanced Inventory and Supply Chain",
           "شجرة المواقع",
           "الأرصدة حسب الموقع",
-          "آخر حركات المخزون"
+          "آخر حركات المخزون",
+          "مواقع التخزين"
         ],
         "title": "🧱\nالمخزون والمواد",
-        "textLength": 1722,
-        "controlCount": 19,
+        "textLength": 2998,
+        "controlCount": 20,
         "controlLabels": [
           "إضافة مادة",
           "Preview reorder suggestions",
@@ -5810,14 +5828,15 @@
           "استلام",
           "صرف",
           "تحويل",
-          "جرد/تسوية"
+          "جرد/تسوية",
+          "تسجيل الحركة"
         ],
-        "inputCount": 3,
-        "selectCount": 2,
+        "inputCount": 9,
+        "selectCount": 6,
         "searchInputCount": 1,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 9,
+        "tableCount": 3,
+        "tableRows": 18,
         "tableColumns": 3,
         "listItems": 0,
         "stateSignals": {
@@ -5830,8 +5849,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 586,
-        "latinChars": 787
+        "arabicChars": 1446,
+        "latinChars": 944
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5846,7 +5865,7 @@
       "rendererType": "view",
       "rendererSource": "views/kiosk.html",
       "requiredPermission": "kiosk",
-      "durationMs": 3772,
+      "durationMs": 954,
       "error": null,
       "activated": true,
       "observation": {
@@ -5894,95 +5913,9 @@
         "arabicChars": 368,
         "latinChars": 20
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/collection",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        },
-        {
-          "status": 400,
-          "path": "/api/db",
-          "method": "POST"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "kiosk_device_registry",
@@ -5993,7 +5926,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "kiosk_device_registry",
-      "durationMs": 3591,
+      "durationMs": 849,
       "error": null,
       "activated": true,
       "observation": {
@@ -6046,7 +5979,7 @@
       "rendererType": "view",
       "rendererSource": "views/knowledge_base.html",
       "requiredPermission": "knowledge_base",
-      "durationMs": 5264,
+      "durationMs": 1139,
       "error": null,
       "activated": true,
       "observation": {
@@ -6262,9 +6195,18 @@
         "arabicChars": 23850,
         "latinChars": 2355
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "learning_and_certifications",
@@ -6275,7 +6217,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "learning_and_certifications",
-      "durationMs": 15994,
+      "durationMs": 9849,
       "error": null,
       "activated": true,
       "observation": {
@@ -6326,7 +6268,7 @@
       "rendererType": "view",
       "rendererSource": "views/liquidity_forecast.html",
       "requiredPermission": "liquidity_forecast",
-      "durationMs": 8384,
+      "durationMs": 3998,
       "error": null,
       "activated": true,
       "observation": {
@@ -6378,7 +6320,7 @@
       "rendererType": "view",
       "rendererSource": "views/logistics.html",
       "requiredPermission": "logistics",
-      "durationMs": 7669,
+      "durationMs": 5155,
       "error": null,
       "activated": true,
       "observation": {
@@ -6394,7 +6336,7 @@
           "إضافة سريعة"
         ],
         "title": "اللوجستيات والتوصيل",
-        "textLength": 1353,
+        "textLength": 1352,
         "controlCount": 10,
         "controlLabels": [
           "📊 اللوحة والعمليات",
@@ -6442,7 +6384,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "lot_serial_traceability",
-      "durationMs": 3431,
+      "durationMs": 848,
       "error": null,
       "activated": true,
       "observation": {
@@ -6454,7 +6396,7 @@
           "هوية التتبع"
         ],
         "title": "تتبع الدفعة والرقم التسلسلي",
-        "textLength": 455,
+        "textLength": 435,
         "controlCount": 1,
         "controlLabels": [
           "تتبع"
@@ -6478,7 +6420,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 260,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6493,7 +6435,7 @@
       "rendererType": "view",
       "rendererSource": "views/loyalty.html",
       "requiredPermission": "loyalty",
-      "durationMs": 3757,
+      "durationMs": 820,
       "error": null,
       "activated": true,
       "observation": {
@@ -6553,7 +6495,7 @@
       "rendererType": "view",
       "rendererSource": "views/machines.html",
       "requiredPermission": "machines",
-      "durationMs": 4937,
+      "durationMs": 963,
       "error": null,
       "activated": true,
       "observation": {
@@ -6616,7 +6558,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "maintenance_triggers",
-      "durationMs": 4115,
+      "durationMs": 998,
       "error": null,
       "activated": true,
       "observation": {
@@ -6669,7 +6611,7 @@
       "rendererType": "view",
       "rendererSource": "views/marketing.html",
       "requiredPermission": "marketing",
-      "durationMs": 4334,
+      "durationMs": 935,
       "error": null,
       "activated": true,
       "observation": {
@@ -6722,7 +6664,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "marketing_overview",
-      "durationMs": 3912,
+      "durationMs": 827,
       "error": null,
       "activated": true,
       "observation": {
@@ -6772,7 +6714,7 @@
       "rendererType": "view",
       "rendererSource": "views/mismatch_queue.html",
       "requiredPermission": "mismatch_queue",
-      "durationMs": 3671,
+      "durationMs": 786,
       "error": null,
       "activated": true,
       "observation": {
@@ -6824,7 +6766,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-picking.js",
       "requiredPermission": "mobile_picking",
-      "durationMs": 4289,
+      "durationMs": 980,
       "error": null,
       "activated": true,
       "observation": {
@@ -6835,7 +6777,7 @@
           "الالتقاط المتنقل"
         ],
         "title": "الالتقاط المتنقل",
-        "textLength": 374,
+        "textLength": 354,
         "controlCount": 1,
         "controlLabels": [
           "↻ تحديث الطابور"
@@ -6859,7 +6801,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 199,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6874,7 +6816,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-receiving.js",
       "requiredPermission": "mobile_receiving",
-      "durationMs": 4738,
+      "durationMs": 782,
       "error": null,
       "activated": true,
       "observation": {
@@ -6885,7 +6827,7 @@
           "الاستلام المتنقل"
         ],
         "title": "الاستلام المتنقل",
-        "textLength": 389,
+        "textLength": 369,
         "controlCount": 1,
         "controlLabels": [
           "بدء جلسة الاستلام"
@@ -6909,7 +6851,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 215,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6924,7 +6866,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps.html",
       "requiredPermission": "mps",
-      "durationMs": 4651,
+      "durationMs": 916,
       "error": null,
       "activated": true,
       "observation": {
@@ -6976,7 +6918,7 @@
       "rendererType": "view",
       "rendererSource": "views/mrp.html",
       "requiredPermission": "mrp",
-      "durationMs": 3974,
+      "durationMs": 917,
       "error": null,
       "activated": true,
       "observation": {
@@ -7039,7 +6981,7 @@
       "rendererType": "view",
       "rendererSource": "views/multi_entity.html",
       "requiredPermission": "multi_entity",
-      "durationMs": 4280,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -7092,7 +7034,7 @@
       "rendererType": "view",
       "rendererSource": "views/my_work.html",
       "requiredPermission": "my_work",
-      "durationMs": 3966,
+      "durationMs": 793,
       "error": null,
       "activated": true,
       "observation": {
@@ -7156,7 +7098,7 @@
       "rendererType": "view",
       "rendererSource": "views/nl_reports.html",
       "requiredPermission": "nl_reports",
-      "durationMs": 3284,
+      "durationMs": 762,
       "error": null,
       "activated": true,
       "observation": {
@@ -7224,7 +7166,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_capability_policies",
-      "durationMs": 3602,
+      "durationMs": 1009,
       "error": null,
       "activated": true,
       "observation": {
@@ -7277,7 +7219,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_client_registry",
-      "durationMs": 3761,
+      "durationMs": 789,
       "error": null,
       "activated": true,
       "observation": {
@@ -7330,7 +7272,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_queue",
-      "durationMs": 3816,
+      "durationMs": 828,
       "error": null,
       "activated": true,
       "observation": {
@@ -7383,7 +7325,7 @@
       "rendererType": "view",
       "rendererSource": "views/omni_communications.html",
       "requiredPermission": "omni_communications",
-      "durationMs": 3438,
+      "durationMs": 915,
       "error": null,
       "activated": true,
       "observation": {
@@ -7439,7 +7381,7 @@
       "rendererType": "view",
       "rendererSource": "views/op_packs.html",
       "requiredPermission": "op_packs",
-      "durationMs": 3688,
+      "durationMs": 811,
       "error": null,
       "activated": true,
       "observation": {
@@ -7459,7 +7401,7 @@
           "أثر باقات العمليات"
         ],
         "title": "📦\nباقات العمليات",
-        "textLength": 2986,
+        "textLength": 2989,
         "controlCount": 42,
         "controlLabels": [
           "باقة جديدة",
@@ -7506,7 +7448,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "operational_performance",
-      "durationMs": 4352,
+      "durationMs": 944,
       "error": null,
       "activated": true,
       "observation": {
@@ -7514,10 +7456,12 @@
         "hostId": "operational_performance",
         "hostDataPage": null,
         "headings": [
-          "لوحة الأداء التشغيلي"
+          "لوحة الأداء التشغيلي",
+          "معدلات مركز العمل",
+          "مقاييس كل جلسة"
         ],
         "title": "لوحة الأداء التشغيلي",
-        "textLength": 332,
+        "textLength": 665,
         "controlCount": 0,
         "controlLabels": [],
         "inputCount": 1,
@@ -7530,7 +7474,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -7538,8 +7482,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 165,
-        "latinChars": 90
+        "arabicChars": 421,
+        "latinChars": 103
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7554,7 +7498,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers_and_suppliers.html",
       "requiredPermission": "parties",
-      "durationMs": 3900,
+      "durationMs": 778,
       "error": null,
       "activated": true,
       "observation": {
@@ -7605,7 +7549,7 @@
       "rendererType": "view",
       "rendererSource": "views/payment_funding_proposals.html",
       "requiredPermission": "payment_funding_proposals",
-      "durationMs": 4800,
+      "durationMs": 816,
       "error": null,
       "activated": true,
       "observation": {
@@ -7658,7 +7602,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "people_development_overview",
-      "durationMs": 4029,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -7708,7 +7652,7 @@
       "rendererType": "view",
       "rendererSource": "views/people_ops.html",
       "requiredPermission": "people_ops",
-      "durationMs": 3545,
+      "durationMs": 780,
       "error": null,
       "activated": true,
       "observation": {
@@ -7765,7 +7709,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "person_skill_evidence",
-      "durationMs": 3554,
+      "durationMs": 767,
       "error": null,
       "activated": true,
       "observation": {
@@ -7816,7 +7760,7 @@
       "rendererType": "view",
       "rendererSource": "views/pharmacy.html",
       "requiredPermission": "pharmacy",
-      "durationMs": 3939,
+      "durationMs": 940,
       "error": null,
       "activated": true,
       "observation": {
@@ -7872,7 +7816,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-pick-task-queue-workspace.js",
       "requiredPermission": "pick_task_queue",
-      "durationMs": 3738,
+      "durationMs": 843,
       "error": null,
       "activated": true,
       "observation": {
@@ -7885,7 +7829,7 @@
           "تفاصيل الإرسال"
         ],
         "title": "طابور مهام الالتقاط",
-        "textLength": 735,
+        "textLength": 715,
         "controlCount": 3,
         "controlLabels": [
           "فتح الالتقاط المتنقل"
@@ -7909,7 +7853,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 280,
-        "latinChars": 287
+        "latinChars": 275
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7924,7 +7868,7 @@
       "rendererType": "view",
       "rendererSource": "views/planning_exceptions.html",
       "requiredPermission": "planning_exceptions",
-      "durationMs": 4400,
+      "durationMs": 791,
       "error": null,
       "activated": true,
       "observation": {
@@ -7975,7 +7919,7 @@
       "rendererType": "view",
       "rendererSource": "views/pos.html",
       "requiredPermission": "pos",
-      "durationMs": 4174,
+      "durationMs": 907,
       "error": null,
       "activated": true,
       "observation": {
@@ -8036,7 +7980,7 @@
       "rendererType": "view",
       "rendererSource": "views/procurement.html",
       "requiredPermission": "procurement",
-      "durationMs": 3717,
+      "durationMs": 933,
       "error": null,
       "activated": true,
       "observation": {
@@ -8099,7 +8043,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_issue_return",
-      "durationMs": 4280,
+      "durationMs": 951,
       "error": null,
       "activated": true,
       "observation": {
@@ -8110,7 +8054,7 @@
           "صرف وإرجاع الإنتاج"
         ],
         "title": "صرف وإرجاع الإنتاج",
-        "textLength": 313,
+        "textLength": 293,
         "controlCount": 0,
         "controlLabels": [],
         "inputCount": 1,
@@ -8132,7 +8076,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 149,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8147,7 +8091,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "production_large_screen",
-      "durationMs": 4465,
+      "durationMs": 941,
       "error": null,
       "activated": true,
       "observation": {
@@ -8199,7 +8143,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_material_requests",
-      "durationMs": 4185,
+      "durationMs": 942,
       "error": null,
       "activated": true,
       "observation": {
@@ -8209,11 +8153,12 @@
         "headings": [
           "طلبات مواد الإنتاج",
           "الطلبات والتحكم بالنقص",
+          "[DEMO] Steel Tube Raw Stock",
           "إنشاء طلب مواد"
         ],
         "title": "طلبات مواد الإنتاج",
-        "textLength": 626,
-        "controlCount": 1,
+        "textLength": 1181,
+        "controlCount": 3,
         "controlLabels": [
           "إنشاء طلب محكوم"
         ],
@@ -8224,7 +8169,7 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 5,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -8235,8 +8180,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 353,
-        "latinChars": 125
+        "arabicChars": 526,
+        "latinChars": 338
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8251,7 +8196,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-action-forms.js",
       "requiredPermission": "production_receipt",
-      "durationMs": 3892,
+      "durationMs": 799,
       "error": null,
       "activated": true,
       "observation": {
@@ -8259,12 +8204,15 @@
         "hostId": "production_receipt",
         "hostDataPage": null,
         "headings": [
-          "استلام الإنتاج"
+          "استلام الإنتاج",
+          "[DEMO] Steel Frame Assembly"
         ],
         "title": "استلام الإنتاج",
-        "textLength": 378,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 679,
+        "controlCount": 2,
+        "controlLabels": [
+          "فتح التتبع"
+        ],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -8272,10 +8220,10 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 4,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -8283,8 +8231,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 204,
-        "latinChars": 90
+        "arabicChars": 319,
+        "latinChars": 189
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8299,7 +8247,7 @@
       "rendererType": "view",
       "rendererSource": "views/products_and_materials.html",
       "requiredPermission": "products",
-      "durationMs": 4167,
+      "durationMs": 949,
       "error": null,
       "activated": true,
       "observation": {
@@ -8350,7 +8298,7 @@
       "rendererType": "view",
       "rendererSource": "views/projects.html",
       "requiredPermission": "projects",
-      "durationMs": 3293,
+      "durationMs": 804,
       "error": null,
       "activated": true,
       "observation": {
@@ -8419,7 +8367,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_rules",
-      "durationMs": 3208,
+      "durationMs": 796,
       "error": null,
       "activated": true,
       "observation": {
@@ -8432,7 +8380,7 @@
           "قاعدة إيداع جديدة"
         ],
         "title": "قواعد الإيداع",
-        "textLength": 715,
+        "textLength": 695,
         "controlCount": 1,
         "controlLabels": [
           "إنشاء القاعدة"
@@ -8456,7 +8404,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 466,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8471,7 +8419,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_task_queue",
-      "durationMs": 3858,
+      "durationMs": 812,
       "error": null,
       "activated": true,
       "observation": {
@@ -8484,7 +8432,7 @@
           "طلب توصية إيداع"
         ],
         "title": "طابور مهام الإيداع",
-        "textLength": 636,
+        "textLength": 616,
         "controlCount": 2,
         "controlLabels": [
           "طلب الإيداع"
@@ -8508,7 +8456,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 350,
-        "latinChars": 137
+        "latinChars": 125
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8523,7 +8471,7 @@
       "rendererType": "view",
       "rendererSource": "views/qc_center.html",
       "requiredPermission": "qc_center",
-      "durationMs": 4360,
+      "durationMs": 934,
       "error": null,
       "activated": true,
       "observation": {
@@ -8538,8 +8486,8 @@
           "فحوصات ناجحة ومكتملة (مغلقة)"
         ],
         "title": "🧪\nمركز الجودة وإعادة العمل",
-        "textLength": 1587,
-        "controlCount": 13,
+        "textLength": 1962,
+        "controlCount": 16,
         "controlLabels": [
           "لوحة الجودة",
           "الفحوصات",
@@ -8562,7 +8510,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": true,
           "denied": false
         },
@@ -8570,8 +8518,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1154,
-        "latinChars": 27
+        "arabicChars": 1307,
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8586,7 +8534,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "quality_hold_queue",
-      "durationMs": 4579,
+      "durationMs": 951,
       "error": null,
       "activated": true,
       "observation": {
@@ -8594,11 +8542,12 @@
         "hostId": "quality_hold_queue",
         "hostDataPage": null,
         "headings": [
-          "طابور حجز الجودة"
+          "طابور حجز الجودة",
+          "السجلات المحجوزة"
         ],
         "title": "طابور حجز الجودة",
-        "textLength": 335,
-        "controlCount": 0,
+        "textLength": 403,
+        "controlCount": 1,
         "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
@@ -8610,7 +8559,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -8618,8 +8567,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 166,
-        "latinChars": 90
+        "arabicChars": 178,
+        "latinChars": 129
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8634,7 +8583,7 @@
       "rendererType": "view",
       "rendererSource": "views/real-estate.html",
       "requiredPermission": "default-client-gate",
-      "durationMs": 3870,
+      "durationMs": 1015,
       "error": null,
       "activated": true,
       "observation": {
@@ -8689,7 +8638,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-trace-workspace.js",
       "requiredPermission": "recall_analysis",
-      "durationMs": 3780,
+      "durationMs": 1015,
       "error": null,
       "activated": true,
       "observation": {
@@ -8701,7 +8650,7 @@
           "تحديد حالة سحب"
         ],
         "title": "تحليل السحب",
-        "textLength": 402,
+        "textLength": 382,
         "controlCount": 1,
         "controlLabels": [
           "تحديد حالة السحب"
@@ -8725,7 +8674,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 216,
-        "latinChars": 90
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8740,7 +8689,7 @@
       "rendererType": "view",
       "rendererSource": "views/receipt.html",
       "requiredPermission": "receipt",
-      "durationMs": 4115,
+      "durationMs": 817,
       "error": null,
       "activated": true,
       "observation": {
@@ -8797,7 +8746,7 @@
       "rendererType": "view",
       "rendererSource": "views/rental.html",
       "requiredPermission": "rental",
-      "durationMs": 3068,
+      "durationMs": 936,
       "error": null,
       "activated": true,
       "observation": {
@@ -8851,7 +8800,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "replenishment_proposals",
-      "durationMs": 3308,
+      "durationMs": 837,
       "error": null,
       "activated": true,
       "observation": {
@@ -8864,7 +8813,7 @@
           "المقترحات"
         ],
         "title": "مقترحات إعادة التعبئة",
-        "textLength": 555,
+        "textLength": 535,
         "controlCount": 2,
         "controlLabels": [
           "احسب الآن",
@@ -8889,7 +8838,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 258,
-        "latinChars": 170
+        "latinChars": 158
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8904,7 +8853,7 @@
       "rendererType": "view",
       "rendererSource": "views/report.html",
       "requiredPermission": "report",
-      "durationMs": 3929,
+      "durationMs": 806,
       "error": null,
       "activated": true,
       "observation": {
@@ -8916,9 +8865,15 @@
           "لا توجد بيانات حضور"
         ],
         "title": "📊\nالتقرير النهائي",
-        "textLength": 283,
-        "controlCount": 3,
+        "textLength": 442,
+        "controlCount": 9,
         "controlLabels": [
+          "Review System Administrator",
+          "Review Workshop Manager",
+          "Review Operations Coordinator",
+          "Review Warehouse Operator",
+          "Review Production Operator",
+          "Review Quality Reviewer",
           "إعداد ملخص ذكي للتقرير",
           "طباعة",
           "تصدير التقرير"
@@ -8942,7 +8897,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 210,
-        "latinChars": 6
+        "latinChars": 147
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8957,7 +8912,7 @@
       "rendererType": "view",
       "rendererSource": "views/restaurant.html",
       "requiredPermission": "restaurant",
-      "durationMs": 4236,
+      "durationMs": 969,
       "error": null,
       "activated": true,
       "observation": {
@@ -9012,7 +8967,7 @@
       "rendererType": "view",
       "rendererSource": "views/retail.html",
       "requiredPermission": "retail",
-      "durationMs": 3910,
+      "durationMs": 795,
       "error": null,
       "activated": true,
       "observation": {
@@ -9068,7 +9023,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "rework_workspace",
-      "durationMs": 3865,
+      "durationMs": 935,
       "error": null,
       "activated": true,
       "observation": {
@@ -9076,12 +9031,15 @@
         "hostId": "rework_workspace",
         "hostDataPage": null,
         "headings": [
-          "مساحة إعادة العمل"
+          "مساحة إعادة العمل",
+          "مسارات إعادة العمل"
         ],
         "title": "مساحة إعادة العمل",
-        "textLength": 319,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 389,
+        "controlCount": 1,
+        "controlLabels": [
+          "بدء إعادة العمل"
+        ],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -9092,7 +9050,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9100,8 +9058,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 154,
-        "latinChars": 90
+        "arabicChars": 200,
+        "latinChars": 95
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9116,7 +9074,7 @@
       "rendererType": "view",
       "rendererSource": "views/risk_compliance.html",
       "requiredPermission": "risk_compliance",
-      "durationMs": 4759,
+      "durationMs": 785,
       "error": null,
       "activated": true,
       "observation": {
@@ -9180,7 +9138,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "rollout_simulator",
-      "durationMs": 4442,
+      "durationMs": 945,
       "error": null,
       "activated": true,
       "observation": {
@@ -9233,7 +9191,7 @@
       "rendererType": "view",
       "rendererSource": "views/route_health.html",
       "requiredPermission": "route_health",
-      "durationMs": 3865,
+      "durationMs": 949,
       "error": null,
       "activated": true,
       "observation": {
@@ -9281,7 +9239,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "saas_overview",
-      "durationMs": 6178,
+      "durationMs": 2555,
       "error": null,
       "activated": true,
       "observation": {
@@ -9332,7 +9290,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales.html",
       "requiredPermission": "sales",
-      "durationMs": 6487,
+      "durationMs": 2385,
       "error": null,
       "activated": true,
       "observation": {
@@ -9399,7 +9357,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_commission.html",
       "requiredPermission": "sales_commission",
-      "durationMs": 5076,
+      "durationMs": 2301,
       "error": null,
       "activated": true,
       "observation": {
@@ -9454,7 +9412,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_contracts.html",
       "requiredPermission": "sales_contracts",
-      "durationMs": 5260,
+      "durationMs": 2272,
       "error": null,
       "activated": true,
       "observation": {
@@ -9506,7 +9464,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_price_lists.html",
       "requiredPermission": "sales_price_lists",
-      "durationMs": 5053,
+      "durationMs": 2176,
       "error": null,
       "activated": true,
       "observation": {
@@ -9556,7 +9514,7 @@
       "rendererType": "view",
       "rendererSource": "views/scenario_planner.html",
       "requiredPermission": "scenario_planner",
-      "durationMs": 5490,
+      "durationMs": 2185,
       "error": null,
       "activated": true,
       "observation": {
@@ -9608,7 +9566,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "scrap_approval",
-      "durationMs": 4829,
+      "durationMs": 2554,
       "error": null,
       "activated": true,
       "observation": {
@@ -9616,11 +9574,12 @@
         "hostId": "scrap_approval",
         "hostDataPage": null,
         "headings": [
-          "اعتماد الإتلاف"
+          "اعتماد الإتلاف",
+          "القرارات"
         ],
         "title": "اعتماد الإتلاف",
-        "textLength": 329,
-        "controlCount": 0,
+        "textLength": 426,
+        "controlCount": 2,
         "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
@@ -9640,8 +9599,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 164,
-        "latinChars": 90
+        "arabicChars": 173,
+        "latinChars": 164
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9656,7 +9615,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "seats_and_limits",
-      "durationMs": 4941,
+      "durationMs": 2242,
       "error": null,
       "activated": true,
       "observation": {
@@ -9707,7 +9666,7 @@
       "rendererType": "view",
       "rendererSource": "views/security_center.html",
       "requiredPermission": "security_center",
-      "durationMs": 4614,
+      "durationMs": 2512,
       "error": null,
       "activated": true,
       "observation": {
@@ -9720,10 +9679,12 @@
           "📋 سجل الأحداث والتدقيق",
           "Phase 7B auth and session status",
           "Phase 7A audit review",
-          "Phase 7A period lock foundation"
+          "Phase 7A period lock foundation",
+          "مصفوفة صلاحيات الأفعال الحساسة",
+          "Phase 6E - سياسة صلاحيات الصفحات"
         ],
         "title": "مركز الأمان والتدقيق",
-        "textLength": 1736,
+        "textLength": 28282,
         "controlCount": 1,
         "controlLabels": [
           "Lock period"
@@ -9732,8 +9693,8 @@
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 2,
-        "tableCount": 2,
-        "tableRows": 2,
+        "tableCount": 4,
+        "tableRows": 269,
         "tableColumns": 5,
         "listItems": 0,
         "stateSignals": {
@@ -9746,8 +9707,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 530,
-        "latinChars": 779
+        "arabicChars": 7996,
+        "latinChars": 15214
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9762,7 +9723,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "sensor_management",
-      "durationMs": 4410,
+      "durationMs": 2394,
       "error": null,
       "activated": true,
       "observation": {
@@ -9815,7 +9776,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "service_kiosk",
-      "durationMs": 6225,
+      "durationMs": 2345,
       "error": null,
       "activated": true,
       "observation": {
@@ -9868,7 +9829,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "service_queue_board",
-      "durationMs": 4854,
+      "durationMs": 2294,
       "error": null,
       "activated": true,
       "observation": {
@@ -9920,7 +9881,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "shop_floor_kiosk",
-      "durationMs": 5363,
+      "durationMs": 2295,
       "error": null,
       "activated": true,
       "observation": {
@@ -9973,7 +9934,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-shopfloor-workspace.js",
       "requiredPermission": "shopfloor_terminal",
-      "durationMs": 6860,
+      "durationMs": 2279,
       "error": null,
       "activated": true,
       "observation": {
@@ -9981,11 +9942,12 @@
         "hostId": "shopfloor_terminal",
         "hostDataPage": null,
         "headings": [
-          "محطة أرض المصنع"
+          "محطة أرض المصنع",
+          "العمليات المفتوحة"
         ],
         "title": "محطة أرض المصنع",
-        "textLength": 292,
-        "controlCount": 0,
+        "textLength": 306,
+        "controlCount": 1,
         "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
@@ -9997,7 +9959,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -10005,8 +9967,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 132,
-        "latinChars": 90
+        "arabicChars": 112,
+        "latinChars": 125
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10021,7 +9983,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "skills_catalog",
-      "durationMs": 4271,
+      "durationMs": 2382,
       "error": null,
       "activated": true,
       "observation": {
@@ -10072,7 +10034,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop.html",
       "requiredPermission": "sop",
-      "durationMs": 4091,
+      "durationMs": 2249,
       "error": null,
       "activated": true,
       "observation": {
@@ -10095,8 +10057,8 @@
           "إضافة SOP",
           "مراجعة الإجراء",
           "مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178717\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178717\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178733\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178733\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
           "مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1"
         ],
         "inputCount": 5,
@@ -10133,7 +10095,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_review.html",
       "requiredPermission": "sop_review",
-      "durationMs": 5641,
+      "durationMs": 2485,
       "error": null,
       "activated": true,
       "observation": {
@@ -10187,7 +10149,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_scenarios.html",
       "requiredPermission": "sop_scenarios",
-      "durationMs": 5801,
+      "durationMs": 2229,
       "error": null,
       "activated": true,
       "observation": {
@@ -10239,7 +10201,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "speed_and_driver_events",
-      "durationMs": 5630,
+      "durationMs": 2563,
       "error": null,
       "activated": true,
       "observation": {
@@ -10292,7 +10254,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "staging_board",
-      "durationMs": 4600,
+      "durationMs": 2525,
       "error": null,
       "activated": true,
       "observation": {
@@ -10307,9 +10269,10 @@
           "تخصيص تجهيز"
         ],
         "title": "لوحة التجهيز",
-        "textLength": 656,
-        "controlCount": 1,
+        "textLength": 693,
+        "controlCount": 2,
         "controlLabels": [
+          "تحرير",
           "تخصيص للممر"
         ],
         "inputCount": 7,
@@ -10330,8 +10293,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 328,
-        "latinChars": 176
+        "arabicChars": 322,
+        "latinChars": 213
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10346,7 +10309,7 @@
       "rendererType": "view",
       "rendererSource": "views/subscriptions.html",
       "requiredPermission": "subscriptions",
-      "durationMs": 6212,
+      "durationMs": 2695,
       "error": null,
       "activated": true,
       "observation": {
@@ -10401,7 +10364,7 @@
       "rendererType": "view",
       "rendererSource": "views/supplier_portal.html",
       "requiredPermission": "supplier_portal",
-      "durationMs": 5147,
+      "durationMs": 2631,
       "error": null,
       "activated": true,
       "observation": {
@@ -10454,7 +10417,7 @@
       "rendererType": "view",
       "rendererSource": "views/supply_demand_balance.html",
       "requiredPermission": "supply_demand_balance",
-      "durationMs": 7417,
+      "durationMs": 2465,
       "error": null,
       "activated": true,
       "observation": {
@@ -10506,7 +10469,7 @@
       "rendererType": "view",
       "rendererSource": "views/surveys.html",
       "requiredPermission": "surveys",
-      "durationMs": 4986,
+      "durationMs": 2219,
       "error": null,
       "activated": true,
       "observation": {
@@ -10566,7 +10529,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "suspected_fuel_loss_queue",
-      "durationMs": 6171,
+      "durationMs": 2447,
       "error": null,
       "activated": true,
       "observation": {
@@ -10619,7 +10582,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "sync_conflicts",
-      "durationMs": 6003,
+      "durationMs": 2280,
       "error": null,
       "activated": true,
       "observation": {
@@ -10672,7 +10635,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "sync_sessions",
-      "durationMs": 5878,
+      "durationMs": 2181,
       "error": null,
       "activated": true,
       "observation": {
@@ -10725,7 +10688,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-check.js",
       "requiredPermission": "system_check",
-      "durationMs": 4867,
+      "durationMs": 2292,
       "error": null,
       "activated": true,
       "observation": {
@@ -10785,7 +10748,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-settings.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 6861,
+      "durationMs": 2172,
       "error": null,
       "activated": true,
       "observation": {
@@ -10838,7 +10801,7 @@
       "rendererType": "view",
       "rendererSource": "views/task_manager.html",
       "requiredPermission": "task_manager",
-      "durationMs": 5662,
+      "durationMs": 2445,
       "error": null,
       "activated": true,
       "observation": {
@@ -10908,7 +10871,7 @@
       "rendererType": "view",
       "rendererSource": "views/tax_compliance.html",
       "requiredPermission": "tax_compliance",
-      "durationMs": 7622,
+      "durationMs": 3667,
       "error": null,
       "activated": true,
       "observation": {
@@ -10961,7 +10924,7 @@
       "rendererType": "view",
       "rendererSource": "views/telegram.html",
       "requiredPermission": "telegram",
-      "durationMs": 7438,
+      "durationMs": 2566,
       "error": null,
       "activated": true,
       "observation": {
@@ -11026,7 +10989,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "telemetry_explorer",
-      "durationMs": 7816,
+      "durationMs": 2811,
       "error": null,
       "activated": true,
       "observation": {
@@ -11079,7 +11042,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_detail",
-      "durationMs": 4904,
+      "durationMs": 2623,
       "error": null,
       "activated": true,
       "observation": {
@@ -11143,7 +11106,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_directory",
-      "durationMs": 7562,
+      "durationMs": 2551,
       "error": null,
       "activated": true,
       "observation": {
@@ -11197,7 +11160,7 @@
       "rendererType": "view",
       "rendererSource": "views/timesheet.html",
       "requiredPermission": "timesheet",
-      "durationMs": 5984,
+      "durationMs": 10626,
       "error": null,
       "activated": true,
       "observation": {
@@ -11206,11 +11169,18 @@
         "hostDataPage": null,
         "headings": [
           "📋\nالتايم شيت المعالج",
-          "اختر شهر أو أكثر للعرض والتوثيق:"
+          "اختر شهر أو أكثر للعرض والتوثيق:",
+          "حاسبة الراتب — Review System Administrator",
+          "🧮\nحاسبة الراتب",
+          "📅\nتوزيع أيام الشهر",
+          "📝\nبيانات الإضافي والتأخير",
+          "💸\nخصومات وإضافات",
+          "📅 معلومات الشهر",
+          "💰\nتسجيل الدفع"
         ],
         "title": "📋\nالتايم شيت المعالج",
-        "textLength": 573,
-        "controlCount": 16,
+        "textLength": 3187,
+        "controlCount": 28,
         "controlLabels": [
           "طباعة التايم شيت",
           "🪄\nتعبئة الأيام المفقودة",
@@ -11227,15 +11197,27 @@
           "سبتمبر",
           "أكتوبر",
           "نوفمبر",
-          "ديسمبر"
+          "ديسمبر",
+          "إرسال الأمر",
+          "تطبيق قوانين الرواتب",
+          "توثيق الأيام المعروضة",
+          "تثبيت الراتب للرصيد",
+          "لوحة الرواتب",
+          "فتح كل السلف",
+          "مراجعة الراتب بالذكاء الاصطناعي",
+          "🖨️\nطباعة الوصل",
+          "+1,000",
+          "+5,000",
+          "تقريب لـ 1,000",
+          "✅\nتسجيل الدفع"
         ],
-        "inputCount": 1,
-        "selectCount": 1,
+        "inputCount": 19,
+        "selectCount": 2,
         "searchInputCount": 1,
         "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
+        "tableCount": 2,
+        "tableRows": 1,
+        "tableColumns": 6,
         "listItems": 0,
         "stateSignals": {
           "loading": false,
@@ -11247,12 +11229,21 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 432,
-        "latinChars": 0
+        "arabicChars": 2131,
+        "latinChars": 183
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "training_lms",
@@ -11263,7 +11254,7 @@
       "rendererType": "view",
       "rendererSource": "views/training_lms.html",
       "requiredPermission": "training_lms",
-      "durationMs": 6498,
+      "durationMs": 2655,
       "error": null,
       "activated": true,
       "observation": {
@@ -11321,7 +11312,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_alerts.html",
       "requiredPermission": "treasury_alerts",
-      "durationMs": 6614,
+      "durationMs": 2615,
       "error": null,
       "activated": true,
       "observation": {
@@ -11373,7 +11364,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_cash_position.html",
       "requiredPermission": "treasury_cash_position",
-      "durationMs": 6221,
+      "durationMs": 2492,
       "error": null,
       "activated": true,
       "observation": {
@@ -11425,7 +11416,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "usage_and_quotas",
-      "durationMs": 5898,
+      "durationMs": 2786,
       "error": null,
       "activated": true,
       "observation": {
@@ -11479,7 +11470,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "variance_review",
-      "durationMs": 7488,
+      "durationMs": 877,
       "error": null,
       "activated": true,
       "observation": {
@@ -11487,11 +11478,12 @@
         "hostId": "variance_review",
         "hostDataPage": null,
         "headings": [
-          "مراجعة الفروقات"
+          "مراجعة الفروقات",
+          "جلسات بانتظار المراجعة"
         ],
         "title": "مراجعة الفروقات",
-        "textLength": 283,
-        "controlCount": 0,
+        "textLength": 320,
+        "controlCount": 1,
         "controlLabels": [],
         "inputCount": 1,
         "selectCount": 1,
@@ -11503,7 +11495,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -11511,8 +11503,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 127,
-        "latinChars": 90
+        "arabicChars": 135,
+        "latinChars": 110
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11527,7 +11519,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "vehicle_trip_timeline",
-      "durationMs": 6671,
+      "durationMs": 959,
       "error": null,
       "activated": true,
       "observation": {
@@ -11580,7 +11572,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "vertical_packs",
-      "durationMs": 7250,
+      "durationMs": 982,
       "error": null,
       "activated": true,
       "observation": {
@@ -11632,7 +11624,7 @@
       "rendererType": "view",
       "rendererSource": "views/visitors.html",
       "requiredPermission": "visitors",
-      "durationMs": 5627,
+      "durationMs": 814,
       "error": null,
       "activated": true,
       "observation": {
@@ -11691,7 +11683,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "warehouse_kiosk",
-      "durationMs": 6580,
+      "durationMs": 838,
       "error": null,
       "activated": true,
       "observation": {
@@ -11744,7 +11736,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "warehouse_large_screen",
-      "durationMs": 6676,
+      "durationMs": 784,
       "error": null,
       "activated": true,
       "observation": {
@@ -11796,7 +11788,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "warehouse_topology",
-      "durationMs": 8563,
+      "durationMs": 928,
       "error": null,
       "activated": true,
       "observation": {
@@ -11810,7 +11802,7 @@
           "شجرة المواقع"
         ],
         "title": "هيكل المستودع",
-        "textLength": 972,
+        "textLength": 1144,
         "controlCount": 1,
         "controlLabels": [
           "إنشاء منطقة ضمن النطاق"
@@ -11833,8 +11825,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 376,
-        "latinChars": 374
+        "arabicChars": 416,
+        "latinChars": 464
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11849,7 +11841,7 @@
       "rendererType": "view",
       "rendererSource": "views/warehouses_and_locations.html",
       "requiredPermission": "warehouses",
-      "durationMs": 6752,
+      "durationMs": 785,
       "error": null,
       "activated": true,
       "observation": {
@@ -11900,7 +11892,7 @@
       "rendererType": "view",
       "rendererSource": "views/warranty.html",
       "requiredPermission": "warranty",
-      "durationMs": 7631,
+      "durationMs": 930,
       "error": null,
       "activated": true,
       "observation": {
@@ -11954,7 +11946,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_execution",
-      "durationMs": 7648,
+      "durationMs": 817,
       "error": null,
       "activated": true,
       "observation": {
@@ -11962,12 +11954,16 @@
         "hostId": "wave_execution",
         "hostDataPage": null,
         "headings": [
-          "تنفيذ الموجات"
+          "تنفيذ الموجات",
+          "الموجات"
         ],
         "title": "تنفيذ الموجات",
-        "textLength": 371,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 364,
+        "controlCount": 2,
+        "controlLabels": [
+          "↻ تحديث",
+          "[DEMO] Morning Outbound Wave\nwave · route\n١ / ٢\nRELEASED"
+        ],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -11978,7 +11974,7 @@
         "listItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -11986,8 +11982,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 195,
-        "latinChars": 90
+        "arabicChars": 163,
+        "latinChars": 118
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12002,7 +11998,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_planning",
-      "durationMs": 6762,
+      "durationMs": 805,
       "error": null,
       "activated": true,
       "observation": {
@@ -12015,7 +12011,7 @@
           "قاعدة التجميع"
         ],
         "title": "تخطيط الموجات",
-        "textLength": 755,
+        "textLength": 735,
         "controlCount": 2,
         "controlLabels": [
           "تحديد الكل",
@@ -12040,7 +12036,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 457,
-        "latinChars": 136
+        "latinChars": 124
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12055,7 +12051,7 @@
       "rendererType": "view",
       "rendererSource": "views/wfl_home.html",
       "requiredPermission": "wfl_home",
-      "durationMs": 6088,
+      "durationMs": 828,
       "error": null,
       "activated": true,
       "observation": {
@@ -12066,7 +12062,7 @@
           "🏠\nالرئيسية"
         ],
         "title": "🏠\nالرئيسية",
-        "textLength": 314,
+        "textLength": 319,
         "controlCount": 13,
         "controlLabels": [
           "📱 شاشة الموبايل",
@@ -12101,7 +12097,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 202,
+        "arabicChars": 206,
         "latinChars": 11
       },
       "consoleErrors": [],
@@ -12117,7 +12113,7 @@
       "rendererType": "view",
       "rendererSource": "views/whatsapp.html",
       "requiredPermission": "whatsapp",
-      "durationMs": 6180,
+      "durationMs": 784,
       "error": null,
       "activated": true,
       "observation": {
@@ -12180,7 +12176,7 @@
       "rendererType": "view",
       "rendererSource": "views/work_orders.html",
       "requiredPermission": "work_orders",
-      "durationMs": 3005,
+      "durationMs": 967,
       "error": null,
       "activated": true,
       "observation": {
@@ -12191,14 +12187,63 @@
           "🛠️\nأوامر العمل"
         ],
         "title": "🛠️\nأوامر العمل",
-        "textLength": 339,
-        "controlCount": 1,
+        "textLength": 647,
+        "controlCount": 4,
         "controlLabels": [
           "📥 طلب جديد / إنشاء أمر عمل"
         ],
         "inputCount": 2,
         "selectCount": 1,
         "searchInputCount": 2,
+        "dateInputCount": 0,
+        "tableCount": 1,
+        "tableRows": 3,
+        "tableColumns": 9,
+        "listItems": 0,
+        "stateSignals": {
+          "loading": false,
+          "empty": false,
+          "error": false,
+          "denied": false
+        },
+        "linkTargets": [],
+        "rawIdCount": 0,
+        "rawIdSamples": [],
+        "rawJson": false,
+        "arabicChars": 389,
+        "latinChars": 53
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": []
+    },
+    {
+      "id": "workcenter_queue",
+      "labelEn": "Work-Center Queue",
+      "labelAr": "طابور مركز العمل",
+      "domain": "ops",
+      "sidebarGroup": "ops_production",
+      "rendererType": "javascript",
+      "rendererSource": "modules/build09-shopfloor-workspace.js",
+      "requiredPermission": "workcenter_queue",
+      "durationMs": 812,
+      "error": null,
+      "activated": true,
+      "observation": {
+        "resolved": true,
+        "hostId": "workcenter_queue",
+        "hostDataPage": null,
+        "headings": [
+          "طابور مركز العمل",
+          "rev_wc_assembly"
+        ],
+        "title": "طابور مركز العمل",
+        "textLength": 403,
+        "controlCount": 1,
+        "controlLabels": [],
+        "inputCount": 1,
+        "selectCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 0,
         "tableRows": 0,
@@ -12214,56 +12259,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 258,
-        "latinChars": 0
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "workcenter_queue",
-      "labelEn": "Work-Center Queue",
-      "labelAr": "طابور مركز العمل",
-      "domain": "ops",
-      "sidebarGroup": "ops_production",
-      "rendererType": "javascript",
-      "rendererSource": "modules/build09-shopfloor-workspace.js",
-      "requiredPermission": "workcenter_queue",
-      "durationMs": 7724,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "workcenter_queue",
-        "hostDataPage": null,
-        "headings": [
-          "طابور مركز العمل"
-        ],
-        "title": "طابور مركز العمل",
-        "textLength": 283,
-        "controlCount": 0,
-        "controlLabels": [],
-        "inputCount": 1,
-        "selectCount": 1,
-        "searchInputCount": 0,
-        "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": true,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 125,
-        "latinChars": 90
+        "arabicChars": 180,
+        "latinChars": 125
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12278,7 +12275,7 @@
       "rendererType": "view",
       "rendererSource": "views/workflow.html",
       "requiredPermission": "workflow",
-      "durationMs": 7420,
+      "durationMs": 944,
       "error": null,
       "activated": true,
       "observation": {
@@ -12355,7 +12352,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_command_center.html",
       "requiredPermission": "workshop_command_center",
-      "durationMs": 7333,
+      "durationMs": 888,
       "error": null,
       "activated": true,
       "observation": {
@@ -12418,7 +12415,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_ledger.html",
       "requiredPermission": "workshop_ledger",
-      "durationMs": 8865,
+      "durationMs": 798,
       "error": null,
       "activated": true,
       "observation": {
@@ -12479,7 +12476,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "workshop_pack_setup",
-      "durationMs": 9251,
+      "durationMs": 950,
       "error": null,
       "activated": true,
       "observation": {
@@ -12533,7 +12530,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_readiness.html",
       "requiredPermission": "workshop_readiness",
-      "durationMs": 8144,
+      "durationMs": 932,
       "error": null,
       "activated": true,
       "observation": {
@@ -12555,7 +12552,7 @@
           "W\nالمستودع\n3 checks\nREADY",
           "G\nالإنتاج\n3 checks\nPERMISSION DENIED",
           "S\nالجودة\n3 checks\nWARNING",
-          "T\nالتسليم\n3 checks\nMISSING",
+          "T\nالتسليم\n3 checks\nWARNING",
           "W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED",
           "T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nPERMISSION DENIED",
           "L\nالحوكمة\n3 checks\nREADY",
@@ -12595,7 +12592,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "zone_bin_management",
-      "durationMs": 7908,
+      "durationMs": 811,
       "error": null,
       "activated": true,
       "observation": {
@@ -12608,7 +12605,7 @@
           "سعة وحالة الخانات"
         ],
         "title": "إدارة المناطق والخانات",
-        "textLength": 952,
+        "textLength": 1124,
         "controlCount": 1,
         "controlLabels": [
           "إنشاء ملف الخانة"
@@ -12631,8 +12628,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 374,
-        "latinChars": 358
+        "arabicChars": 414,
+        "latinChars": 448
       },
       "consoleErrors": [],
       "pageErrors": [],

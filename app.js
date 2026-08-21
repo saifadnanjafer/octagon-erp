@@ -13959,6 +13959,18 @@ function runOmniAutomationTick() {
 let _serverDownWarned = false;
 let _lastFileSaveOk = true;
 
+// Finance accounts are canonical-server facts. `ensureFinance()` enriches the
+// legacy rendering shape with labels/defaults, but those presentation-only
+// additions must not turn an unrelated full-state save into a legacy finance
+// mutation. Keep the exact server projection for the compatibility payload;
+// real finance changes use their canonical actions instead.
+function rememberCanonicalFinanceAccounts(data) {
+  const accounts = data?.finance?.accounts;
+  window.__legacyFullSyncCanonicalFinanceAccounts = Array.isArray(accounts)
+    ? JSON.parse(JSON.stringify(accounts))
+    : null;
+}
+
 function saveData(skipAutomation = false) {
   // Guard: never persist before the initial loadData() has completed at least once.
   // A race where any save fires DURING the loadData() await posts the default/empty
@@ -13980,6 +13992,10 @@ function saveData(skipAutomation = false) {
       selectedEmpIdx,
       reportEmpIdx
     };
+    const canonicalFinanceAccounts = window.__legacyFullSyncCanonicalFinanceAccounts;
+    if (Array.isArray(canonicalFinanceAccounts) && data.finance) {
+      data.finance.accounts = canonicalFinanceAccounts;
+    }
     // T1.2 (schema enforcement, choke-point 2): employees is the ONE
     // protect:true collection in OctagonSchema — an empty-array write is
     // ALWAYS rejected here, regardless of ENFORCE, formalizing the existing
@@ -14137,6 +14153,7 @@ async function loadData() {
       const data = await res.json();
       console.debug('📡 Data received from server:', data);
       if (data && Array.isArray(data.employees)) {
+        rememberCanonicalFinanceAccounts(data);
         employees = data.employees;
         finance = data.finance || defaultFinanceState();
         omni = data.omni || defaultOmniState();
@@ -14212,6 +14229,7 @@ async function loadData() {
     }
     const data = JSON.parse(raw);
     sanitizePersistedArabicText(data);
+    rememberCanonicalFinanceAccounts(data);
     if (data.employees && data.employees.length) {
       employees = data.employees;
     }

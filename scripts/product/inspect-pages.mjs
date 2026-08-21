@@ -236,11 +236,15 @@ const pageErrors = [];
 const networkLog = [];
 page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
 page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)));
-page.on('response', (response) => {
+page.on('response', async (response) => {
   const status = response.status();
   if (status < 400) return;
   const url = new URL(response.url());
-  networkLog.push({ status, path: url.pathname, method: response.request().method() });
+  let detail = '';
+  if (url.pathname === '/api/db' || url.pathname === '/api/collection') {
+    detail = (await response.text().catch(() => '')).slice(0, 500);
+  }
+  networkLog.push({ status, path: url.pathname, method: response.request().method(), detail });
 });
 
 const startedAt = new Date().toISOString();

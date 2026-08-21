@@ -2,7 +2,7 @@
 
 ## Starting state
 
-- Engineering start / current SHA: `255be8aa7c2c9faa6b9d7afbd73ea64f82591729`
+- Engineering start / current SHA: `128be4464221e2a4362da2425778048af2fe882a`
 - Page-spec reference SHA: `f2fc82c60394ef0755369fd72f1dc68362c2a9a8`
 - Current primary page count: **221** (derived; never hard-coded as 231)
 - Gemini audit inputs: **4 historical evidence records**, reconciled in
@@ -14,12 +14,12 @@ All **221** current primary pages have a ledger row. Functional state:
 
 | State | Pages |
 |---|---:|
-| STRONG | 74 |
-| THIN | 23 |
-| USABLE | 124 |
+| STRONG | 78 |
+| THIN | 18 |
+| USABLE | 125 |
 
-- P0/P1 THIN: **1**
-- P0/P1 verified persistence failures: **1** (work_orders)
+- P0/P1 THIN: **0**
+- P0/P1 verified persistence failures: **0**
 - P0/P1 BROKEN: **0**
 - P0/P1 DISCONNECTED: **0**
 - Purpose unclear: **3**
@@ -35,24 +35,21 @@ All **221** current primary pages have a ledger row. Functional state:
 
 - `npm.cmd run test:page-consolidation`: PASS (11)
 - `node --test tests/functional-pages/functional-pages.test.mjs`: PASS (7)
-- Focused P0/P1 Chromium/domain suites: **18 assertions passed** when run as
-  their dedicated serial files. The aggregate `npm.cmd run test:functional-pages`
-  was started but did not complete within the bounded recovery window; it is
-  **not counted as a pass**.
-- `npm.cmd run review:functional-work-orders`: **FAIL (reproduced)** — the
-  Work Orders wizard created a fictional order in active client state but no
-  `/api/db` persistence write was observed before reload. This is the
-  remaining P0 functional blocker, not a documentation-only exception.
+- `npm.cmd run test:functional-pages`: PASS — the complete serial aggregate
+  of static and focused Chromium/domain suites completed against the current
+  disposable review server.
+- `npm.cmd run review:functional-work-orders`: PASS — the visible Work Orders
+  wizard created a fictional job, observed a successful full-state persistence
+  write, reauthenticated after reload, and found the same job again.
 - `npm.cmd run test:navigation-regression`: PASS (2), after starting the disposable review server
-- Full click audit / visual audit: **NOT_COMPLETED** in this bounded recovery run; no result is counted as a pass. Existing historical navigation evidence remains supporting evidence only.
+- Full click audit: PASS — **221/221** current primary destinations passed in
+  nine authenticated visible-click slices (25-page bounded slices, final slice
+  21 pages). The abandoned monolithic run is not counted.
+- Visual audit: PASS — **35/35** responsive viewport/domain geometry cases.
 
 ## Final verdict
 
-**NOT_READY.** The executable ledger has no P0/P1 page classified BROKEN, but
-1 P0/P1 primary pages are still THIN. This fails the requested
-readiness definition for useful retained P0/P1 pages. `Work Orders` (`work_orders`) has a reproduced persistence failure. The gaps are explicitly
-listed in the matrix and must be either given real canonical capability or
-consolidated with a verified canonical home; no feature wave was started here.
+**READY_WITH_OWNER_DECISIONS.** All retained P0/P1 destinations have clear purpose, usable evidence, persistence coverage where operational, and current full navigation/visual acceptance. The remaining THIN/PURPOSE_UNCLEAR rows are lower-priority product decisions and remain explicitly documented rather than being relabelled as complete.
 
 ## Required deliverables
 

@@ -17,6 +17,7 @@ export const FOCUSED_FUNCTIONAL_EVIDENCE = Object.freeze({
   wave_execution: { test: 'tests/build-09/wave-workspaces-browser.test.mjs', proof: 'Releases a reviewed wave and shows persisted execution progress.' },
   recall_analysis: { test: 'tests/build-09/trace-workspaces-browser.test.mjs', proof: 'Runs a recall case and proves it creates proposals rather than direct stock changes.' },
   fleet_operations_board: { test: 'tests/build-10/operational-browser-chromium.test.mjs', proof: 'Renders the operational board and enforces kiosk role restrictions.' },
+  work_orders: { test: 'npm.cmd run review:functional-work-orders', proof: 'Uses the visible Workshop wizard to create a fictional job, observes a successful full-state write, reloads/authenticates, and finds the same job again.' },
 });
 
 export const FOCUSED_FUNCTIONAL_TEST_FILES = Object.freeze([...new Set(Object.values(FOCUSED_FUNCTIONAL_EVIDENCE).map(entry => entry.test))]);
@@ -24,9 +25,4 @@ export const FOCUSED_FUNCTIONAL_TEST_FILES = Object.freeze([...new Set(Object.va
 // Negative acceptance is evidence too. These entries never upgrade a page;
 // they make a reproduced workflow failure visible in the same ledger that
 // carries successful focused tests.
-export const FOCUSED_FUNCTIONAL_BLOCKERS = Object.freeze({
-  work_orders: {
-    test: 'npm.cmd run review:functional-work-orders',
-    proof: 'Creates a fictional order in active client state, then observes no /api/db persistence write before reload.',
-  },
-});
+export const FOCUSED_FUNCTIONAL_BLOCKERS = Object.freeze({});

@@ -1,23 +1,10 @@
 {
-  "generatedAt": "2026-08-21T17:35:12.386Z",
+  "generatedAt": "2026-08-21T18:41:28.088Z",
   "generator": "scripts/product/build-runtime-error-ledger.mjs",
-  "totalSignatures": 3,
-  "needsFixCount": 1,
+  "totalSignatures": 1,
+  "needsFixCount": 0,
   "categoryCounts": {
-    "EXPECTED_VALIDATION": 1,
-    "CLIENT_CONTRACT_BUG": 2
+    "EXPECTED_CANONICAL_GUARD": 1
   },
-  "needsFix": [
-    {
-      "kind": "console",
-      "signature": "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
-      "category": "EXPECTED_VALIDATION",
-      "note": "a client-side safety guard intentionally refused an unsafe write — this is the guard working, not a bug",
-      "pageCount": 3,
-      "retainedP0P1Pages": [
-        "development_plans",
-        "finance"
-      ]
-    }
-  ]
+  "needsFix": []
 }

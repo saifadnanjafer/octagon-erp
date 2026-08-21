@@ -1,14 +1,19 @@
 {
-  "generatedAt": "2026-08-21T18:26:58.433Z",
-  "startedAt": "2026-08-21T18:26:40.318Z",
+  "generatedAt": "2026-08-21T18:26:09.614Z",
+  "startedAt": "2026-08-21T18:25:39.994Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
-    "total": 21,
-    "pass": 21,
+    "total": 25,
+    "pass": 25,
     "fail": 0
   },
   "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -38,9 +43,13 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -72,36 +81,29 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 409 (Conflict)"
   ],
   "globalNotFound": [
-    "/claude-review-pointer.json",
     "/claude-status.json",
+    "/claude-review-pointer.json",
     "/claude-status.json",
     "/claude-review-pointer.json"
   ],
   "items": [
     {
-      "id": "variance_review",
+      "id": "sop",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
-        "activePageId": "variance_review",
-        "activePageKey": "variance_review",
+        "activePageId": "pageSop",
+        "activePageKey": "pageSop",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
@@ -109,31 +111,257 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 738,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "durationMs": 586,
+      "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "vehicle_trip_timeline",
+      "id": "sop_review",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "sop_review",
+        "activePageKey": "sop_review",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 749,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sop_scenarios",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "sop_scenarios",
+        "activePageKey": "sop_scenarios",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 614,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "speed_and_driver_events",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "vehicle_trip_timeline",
+        "activePageKey": "speed_and_driver_events",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": true,
             "display": "block"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 552,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "staging_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "staging_board",
+        "activePageKey": "staging_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 700,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "subscriptions",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "subscriptions",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 564,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "supplier_portal",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSupplierPortal",
+        "activePageKey": "pageSupplierPortal",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 667,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "supply_demand_balance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "supply_demand_balance",
+        "activePageKey": "supply_demand_balance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 670,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "surveys",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSurveys",
+        "activePageKey": "pageSurveys",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 579,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "suspected_fuel_loss_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "suspected_fuel_loss_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
             "active": false,
             "display": "flex"
           }
@@ -146,1009 +374,974 @@
       "notFound": []
     },
     {
-      "id": "vertical_packs",
+      "id": "sync_conflicts",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "vertical_packs",
+        "activePageKey": "sync_conflicts",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "block"
-          }
-        ]
-      },
-      "durationMs": 546,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "visitors",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageVisitors",
-        "activePageKey": "pageVisitors",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 619,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_kiosk",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "warehouse_kiosk",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
             "active": true,
             "display": "block"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "sync_conflicts",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 713,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_large_screen",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": null,
-        "activePageKey": "warehouse_large_screen",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": true,
-            "display": "block"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 501,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouse_topology",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "warehouse_topology",
-        "activePageKey": "warehouse_topology",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 633,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warehouses",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarehouses",
-        "activePageKey": "pageWarehouses",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 502,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "warranty",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWarranty",
-        "activePageKey": "pageWarranty",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 668,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_execution",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_execution",
-        "activePageKey": "wave_execution",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wave_planning",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "wave_planning",
-        "activePageKey": "wave_planning",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 536,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "wfl_home",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWflHome",
-        "activePageKey": "pageWflHome",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
+        "build12Hosts": []
       },
       "durationMs": 514,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "whatsapp",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWhatsapp",
-        "activePageKey": "pageWhatsapp",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 522,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "work_orders",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkOrders",
-        "activePageKey": "pageWorkOrders",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 711,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workcenter_queue",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "workcenter_queue",
-        "activePageKey": "workcenter_queue",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 516,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workflow",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkflow",
-        "activePageKey": "pageWorkflow",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 620,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_command_center",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopCommandCenter",
-        "activePageKey": "pageWorkshopCommandCenter",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 629,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_ledger",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopLedger",
-        "activePageKey": "pageWorkshopLedger",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          }
-        ]
-      },
-      "durationMs": 519,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_pack_setup",
+      "id": "sync_sessions",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
         "activePageId": null,
-        "activePageKey": "workshop_pack_setup",
+        "activePageKey": "sync_sessions",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "suspected_fuel_loss_queue",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "suspected_fuel_loss_queue",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "sync_conflicts",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "sync_conflicts",
             "active": false,
             "display": "flex"
-          }
-        ],
-        "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
           },
           {
-            "page": "workshop_pack_setup",
+            "page": "sync_sessions",
+            "active": true,
             "display": "block"
-          }
-        ]
-      },
-      "durationMs": 630,
-      "consoleErrors": [],
-      "notFound": []
-    },
-    {
-      "id": "workshop_readiness",
-      "status": "PASS",
-      "terminal": {
-        "activeNav": true,
-        "boundNavigation": "1",
-        "activePageId": "pageWorkshopReadiness",
-        "activePageKey": "pageWorkshopReadiness",
-        "activePageHasContent": true,
-        "errorPanel": false,
-        "build10Loaded": true,
-        "build10Hosts": [
-          {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_kiosk",
-            "active": false,
-            "display": "flex"
-          },
-          {
-            "page": "warehouse_large_screen",
-            "active": false,
-            "display": "none"
-          },
-          {
-            "page": "warehouse_large_screen",
+            "page": "sync_sessions",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
-          {
-            "page": "vertical_packs",
-            "display": "none"
-          },
-          {
-            "page": "workshop_pack_setup",
-            "display": "none"
-          }
-        ]
+        "build12Hosts": []
       },
-      "durationMs": 603,
+      "durationMs": 500,
       "consoleErrors": [],
       "notFound": []
     },
     {
-      "id": "zone_bin_management",
+      "id": "system_check",
       "status": "PASS",
       "terminal": {
         "activeNav": true,
         "boundNavigation": "1",
-        "activePageId": "zone_bin_management",
-        "activePageKey": "zone_bin_management",
+        "activePageId": "pageSystemCheck",
+        "activePageKey": "pageSystemCheck",
         "activePageHasContent": true,
         "errorPanel": false,
         "build10Loaded": true,
         "build10Hosts": [
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "none"
           },
           {
-            "page": "vehicle_trip_timeline",
+            "page": "speed_and_driver_events",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "suspected_fuel_loss_queue",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_kiosk",
+            "page": "suspected_fuel_loss_queue",
             "active": false,
             "display": "flex"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "sync_conflicts",
             "active": false,
             "display": "none"
           },
           {
-            "page": "warehouse_large_screen",
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
             "active": false,
             "display": "flex"
           }
         ],
         "build12Loaded": true,
-        "build12Hosts": [
+        "build12Hosts": []
+      },
+      "durationMs": 502,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "system_settings",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSystemSettings",
+        "activePageKey": "pageSystemSettings",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
           {
-            "page": "vertical_packs",
+            "page": "speed_and_driver_events",
+            "active": false,
             "display": "none"
           },
           {
-            "page": "workshop_pack_setup",
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
             "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
           }
-        ]
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
       },
-      "durationMs": 655,
+      "durationMs": 498,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "task_manager",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTaskManager",
+        "activePageKey": "pageTaskManager",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 604,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "tax_compliance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTaxCompliance",
+        "activePageKey": "pageTaxCompliance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 3188,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "telegram",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTelegram",
+        "activePageKey": "pageTelegram",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1788,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "telemetry_explorer",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "telemetry_explorer",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1852,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "tenant_detail",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "tenant_detail",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1040,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "tenant_directory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "tenant_directory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1259,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "timesheet",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTimesheet",
+        "activePageKey": "pageTimesheet",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 910,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "training_lms",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageTrainingLms",
+        "activePageKey": "pageTrainingLms",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 805,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "treasury_alerts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "treasury_alerts",
+        "activePageKey": "treasury_alerts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1059,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "treasury_cash_position",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "treasury_cash_position",
+        "activePageKey": "treasury_cash_position",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1079,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "usage_and_quotas",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "usage_and_quotas",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "speed_and_driver_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "suspected_fuel_loss_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_conflicts",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sync_sessions",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "telemetry_explorer",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1370,
       "consoleErrors": [],
       "notFound": []
     }

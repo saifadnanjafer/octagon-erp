@@ -18,26 +18,12 @@ similar to every other one and buried real duplicates under lifecycle pairs
 
 | Class | Pairs |
 |---|---|
-| A — NEAR-DUPLICATE, CONSOLIDATION CANDIDATE | 2 |
-| B — OVERLAPPING, REVIEW | 10 |
-| C — RELATED, KEEP SEPARATE | 181 |
+| C — RELATED, KEEP SEPARATE | 161 |
 
-Total scored pairs: **193**
+Total scored pairs: **161**
 
 | Class | Page A | Page B | Domain | Same group | Label sim | Purpose sim | Score | A state | B state |
 |---|---|---|---|---|---|---|---|---|---|
-| A | `geofence_events` | `geofence_management` | resources | yes | 0.6 | same category | 0.76 | STRONG/STRONG | STRONG/STRONG |
-| A | `knowledge` | `knowledge_base` | resources | yes | 0.6 | same category | 0.66 | USABLE/USABLE | STRONG/STRONG |
-| B | `consolidation_groups` | `consolidation_lineage` | finance | yes | 0.33 | same category | 0.6 | STRONG/STRONG | USABLE/USABLE |
-| B | `consolidation_groups` | `consolidation_runs` | finance | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `consolidation_lineage` | `consolidation_runs` | finance | yes | 0.33 | same category | 0.6 | USABLE/USABLE | STRONG/STRONG |
-| B | `device_enrollment` | `device_registry` | resources | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `forecast_accuracy` | `forecast_overrides` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `forecast_accuracy` | `forecast_versions` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `forecast_overrides` | `forecast_versions` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `mobile_receiving` | `receiving_discrepancies` | ops | yes | 0.33 | same category | 0.6 | USABLE/USABLE | USABLE/USABLE |
-| B | `mps` | `mps_proposals` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `putaway_rules` | `replenishment_rules` | ops | yes | 0.33 | same category | 0.6 | THIN/THIN | THIN/THIN |
 | C | `device_command_center` | `device_health_center` | resources | yes | 0.5 | different | 0.55 | STRONG/STRONG | STRONG/STRONG |
 | C | `events_overview` | `marketing_overview` | commercial | yes | 0.5 | different | 0.55 | USABLE/USABLE | USABLE/USABLE |
 | C | `pick_task_queue` | `putaway_task_queue` | ops | no | 0.5 | same category | 0.55 | USABLE/USABLE | USABLE/USABLE |
@@ -51,11 +37,9 @@ Total scored pairs: **193**
 | C | `sop_review` | `sop_scenarios` | ops | yes | 0.2 | same category | 0.52 | STRONG/STRONG | STRONG/STRONG |
 | C | `command_center` | `workshop_command_center` | ops | yes | 0.43 | different | 0.51 | STRONG/STRONG | USABLE/USABLE |
 | C | `extension_installations` | `extension_marketplace` | commercial | yes | 0.33 | same category | 0.5 | THIN/THIN | USABLE/USABLE |
-| C | `replenishment_proposals` | `replenishment_rules` | ops | yes | 0.33 | same category | 0.5 | USABLE/USABLE | THIN/THIN |
 | C | `wave_execution` | `wave_planning` | ops | yes | 0.33 | same category | 0.5 | THIN/THIN | USABLE/USABLE |
 | C | `ai_status` | `ai_tools` | intelligence | yes | 0.14 | same category | 0.49 | STRONG/CONFUSING | USABLE/USABLE |
 | C | `demand_planning` | `planning_exceptions` | ops | yes | 0.14 | same category | 0.49 | STRONG/STRONG | USABLE/USABLE |
-| C | `device_detail` | `device_enrollment` | resources | yes | 0.14 | same category | 0.49 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_detail` | `device_registry` | resources | yes | 0.14 | same category | 0.49 | STRONG/STRONG | STRONG/STRONG |
 | C | `home` | `wfl_home` | core | yes | 0.4 | different | 0.49 | USABLE/USABLE | USABLE/USABLE |
 | C | `intercompany_reconciliation` | `intercompany_transactions` | finance | yes | 0.14 | same category | 0.49 | STRONG/STRONG | STRONG/STRONG |
@@ -65,7 +49,6 @@ Total scored pairs: **193**
 | C | `ai_assistant` | `ai_overview` | intelligence | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/CONFUSING |
 | C | `content_approvals` | `content_calendar` | commercial | yes | 0.33 | different | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `count_session` | `cycle_count_plans` | ops | yes | 0.25 | same category | 0.45 | THIN/THIN | THIN/THIN |
-| C | `device_alerts` | `device_enrollment` | resources | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_alerts` | `device_registry` | resources | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `employee_kiosk` | `service_kiosk` | ops | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `employee_kiosk` | `warehouse_kiosk` | ops | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
@@ -80,8 +63,6 @@ Total scored pairs: **193**
 | C | `offline_capability_policies` | `offline_client_registry` | resources | yes | 0.27 | different | 0.41 | STRONG/STRONG | STRONG/STRONG |
 | C | `account_mapping` | `consolidated_reports` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `account_mapping` | `consolidation_groups` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `account_mapping` | `consolidation_lineage` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
-| C | `account_mapping` | `consolidation_runs` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `account_mapping` | `eliminations` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `ai_queue` | `ai_status` | intelligence | yes | 0.17 | same category | 0.4 | USABLE/USABLE | STRONG/CONFUSING |
 | C | `ai_queue` | `ai_tools` | intelligence | yes | 0.17 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
@@ -106,12 +87,8 @@ Total scored pairs: **193**
 | C | `cashbox` | `income` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `conflict_resolution` | `sync_conflicts` | resources | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `consolidated_reports` | `consolidation_groups` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
-| C | `consolidated_reports` | `consolidation_lineage` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `consolidated_reports` | `consolidation_runs` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
 | C | `consolidated_reports` | `eliminations` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
 | C | `consolidation_groups` | `eliminations` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `consolidation_lineage` | `eliminations` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
-| C | `consolidation_runs` | `eliminations` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `count_session` | `mobile_picking` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
 | C | `count_session` | `variance_review` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `count_session` | `wave_execution` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
@@ -120,14 +97,10 @@ Total scored pairs: **193**
 | C | `customers` | `income` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `cycle_count_plans` | `pick_task_queue` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
 | C | `cycle_count_plans` | `wave_planning` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
-| C | `demand_planning` | `forecast_accuracy` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `demand_planning` | `forecast_overrides` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `demand_planning` | `forecast_versions` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_alerts` | `device_command_center` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_alerts` | `device_health_center` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `device_command_center` | `device_enrollment` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_command_center` | `device_registry` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `device_enrollment` | `device_health_center` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `device_health_center` | `device_registry` | resources | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `dock_schedule` | `staging_board` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `documents` | `esign` | resources | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
@@ -151,13 +124,10 @@ Total scored pairs: **193**
 | C | `financing_facilities` | `treasury_alerts` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `financing_facilities` | `treasury_cash_position` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `firmware_catalogue` | `rollout_simulator` | resources | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `forecast_accuracy` | `planning_exceptions` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `forecast_overrides` | `planning_exceptions` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
-| C | `forecast_versions` | `planning_exceptions` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `helpdesk` | `warranty` | commercial | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `intercompany_reconciliation` | `mismatch_queue` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `intercompany_transactions` | `mismatch_queue` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `knowledge` | `surveys` | resources | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `liquidity_forecast` | `payment_funding_proposals` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `liquidity_forecast` | `treasury_alerts` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `liquidity_forecast` | `treasury_cash_position` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
@@ -167,7 +137,6 @@ Total scored pairs: **193**
 | C | `mobile_picking` | `wave_execution` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | THIN/THIN |
 | C | `mobile_receiving` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `mps` | `supply_demand_balance` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `mps_proposals` | `supply_demand_balance` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `mrp` | `op_packs` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `operational_performance` | `production_issue_return` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `operational_performance` | `production_receipt` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
@@ -181,10 +150,8 @@ Total scored pairs: **193**
 | C | `production_issue_return` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `production_receipt` | `work_orders` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `production_receipt` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
-| C | `putaway_task_queue` | `replenishment_rules` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | THIN/THIN |
 | C | `quality_hold_queue` | `rework_workspace` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `quality_hold_queue` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
-| C | `receiving_discrepancies` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `rework_workspace` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `service_kiosk` | `shop_floor_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `shop_floor_kiosk` | `warehouse_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
@@ -197,7 +164,6 @@ Total scored pairs: **193**
 | C | `tenant_detail` | `tenant_directory` | commercial | yes | 0.14 | same category | 0.39 | USABLE/USABLE | STRONG/STRONG |
 | C | `crossdock_workspace` | `dock_schedule` | ops | yes | 0.13 | same category | 0.38 | THIN/THIN | THIN/THIN |
 | C | `dock_checkin` | `dock_schedule` | ops | yes | 0.13 | same category | 0.38 | THIN/THIN | THIN/THIN |
-| C | `geofence_events` | `speed_and_driver_events` | resources | yes | 0.22 | different | 0.38 | STRONG/STRONG | STRONG/STRONG |
 | C | `ai_context_sources` | `ai_prompt_templates` | intelligence | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_context_sources` | `ai_proposal_inbox` | intelligence | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_context_sources` | `ai_run_history` | intelligence | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |

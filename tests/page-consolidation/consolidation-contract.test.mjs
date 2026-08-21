@@ -145,3 +145,20 @@ test('every ledger row carries the evidence behind its classification', () => {
     assert.equal(/PENDING_INSPECTION/.test(JSON.stringify(row)), false, `${row.pageId} still contains PENDING_INSPECTION placeholder content`);
   }
 });
+
+test('the runtime navigation registry contains business groups, never BUILD-wave groups', () => {
+  const appJs = readText(P('app.js'));
+  const start = appJs.indexOf('const navDomains =');
+  const end = appJs.indexOf('function getNavGroupForPage');
+  assert.ok(start >= 0 && end > start, 'app.js must retain the generated runtime navigation registry');
+  const registrySource = appJs.slice(start, end);
+  assert.equal(/build[-_]?\d+/i.test(registrySource), false, 'runtime navigation groups must be business concepts, not BUILD-wave names');
+});
+
+test('the final check matrix is generated from the same canonical primary inventory', () => {
+  const matrixPath = P('docs', 'product', 'FINAL_PAGE_CHECK_MATRIX.json');
+  assert.ok(fs.existsSync(matrixPath), 'FINAL_PAGE_CHECK_MATRIX.json must exist — run scripts/product/build-final-readiness-docs.mjs');
+  const matrix = readJson(matrixPath);
+  assert.equal(matrix.primaryPageCount, primaryIds.length, 'final check matrix must derive its count from the live canonical primary inventory');
+  assert.deepEqual(matrix.rows.map(row => row.pageId).sort(), [...primaryIds].sort(), 'final check matrix must cover every and only canonical primary pages');
+});

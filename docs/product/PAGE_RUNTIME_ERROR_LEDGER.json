@@ -1,12 +1,11 @@
 {
-  "generatedAt": "2026-08-14T17:24:50.452Z",
+  "generatedAt": "2026-08-21T09:26:53.766Z",
   "generator": "scripts/product/build-runtime-error-ledger.mjs",
-  "totalSignatures": 9,
+  "totalSignatures": 3,
   "needsFixCount": 1,
   "categoryCounts": {
-    "CLIENT_CONTRACT_BUG": 2,
     "EXPECTED_VALIDATION": 1,
-    "BROKEN_ENDPOINT": 6
+    "CLIENT_CONTRACT_BUG": 2
   },
   "needsFix": [
     {
@@ -17,7 +16,7 @@
       "pageCount": 3,
       "retainedP0P1Pages": [
         "development_plans",
-        "finance_installments"
+        "finance"
       ]
     }
   ]

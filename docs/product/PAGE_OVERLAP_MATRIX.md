@@ -35,7 +35,7 @@ Total scored pairs: **193**
 | B | `forecast_accuracy` | `forecast_overrides` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
 | B | `forecast_accuracy` | `forecast_versions` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
 | B | `forecast_overrides` | `forecast_versions` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
-| B | `mobile_receiving` | `receiving_discrepancies` | ops | yes | 0.33 | same category | 0.6 | USABLE/USABLE | THIN/THIN |
+| B | `mobile_receiving` | `receiving_discrepancies` | ops | yes | 0.33 | same category | 0.6 | USABLE/USABLE | USABLE/USABLE |
 | B | `mps` | `mps_proposals` | ops | yes | 0.33 | same category | 0.6 | STRONG/STRONG | STRONG/STRONG |
 | B | `putaway_rules` | `replenishment_rules` | ops | yes | 0.33 | same category | 0.6 | THIN/THIN | THIN/THIN |
 | C | `device_command_center` | `device_health_center` | resources | yes | 0.5 | different | 0.55 | STRONG/STRONG | STRONG/STRONG |
@@ -184,7 +184,7 @@ Total scored pairs: **193**
 | C | `putaway_task_queue` | `replenishment_rules` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | THIN/THIN |
 | C | `quality_hold_queue` | `rework_workspace` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `quality_hold_queue` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
-| C | `receiving_discrepancies` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
+| C | `receiving_discrepancies` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `rework_workspace` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `service_kiosk` | `shop_floor_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `shop_floor_kiosk` | `warehouse_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
@@ -194,7 +194,7 @@ Total scored pairs: **193**
 | C | `warehouse_topology` | `zone_bin_management` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
 | C | `workflow` | `workshop_command_center` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `workshop_command_center` | `workshop_readiness` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `tenant_detail` | `tenant_directory` | commercial | yes | 0.14 | same category | 0.39 | THIN/THIN | STRONG/STRONG |
+| C | `tenant_detail` | `tenant_directory` | commercial | yes | 0.14 | same category | 0.39 | USABLE/USABLE | STRONG/STRONG |
 | C | `crossdock_workspace` | `dock_schedule` | ops | yes | 0.13 | same category | 0.38 | THIN/THIN | THIN/THIN |
 | C | `dock_checkin` | `dock_schedule` | ops | yes | 0.13 | same category | 0.38 | THIN/THIN | THIN/THIN |
 | C | `geofence_events` | `speed_and_driver_events` | resources | yes | 0.22 | different | 0.38 | STRONG/STRONG | STRONG/STRONG |

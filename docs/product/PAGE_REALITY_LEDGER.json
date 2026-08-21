@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-14T17:24:49.604Z",
+  "generatedAt": "2026-08-21T09:26:53.683Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-14T17:24:48.779Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-21T09:26:53.593Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 231,
   "emptinessCauseCounts": {
-    "G": 10,
+    "G": 7,
     "H": 31
   },
   "recommendedDispositionCounts": {
-    "KEEP_PRIMARY": 190,
-    "STRENGTHEN": 10,
+    "KEEP_PRIMARY": 193,
+    "STRENGTHEN": 7,
     "DEFER": 31
   },
   "rows": [
@@ -62,7 +62,7 @@
         "arabicChars": 198,
         "latinChars": 169
       },
-      "runtimeConsoleErrors": 0,
+      "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
@@ -306,7 +306,7 @@
         "arabicChars": 266,
         "latinChars": 20
       },
-      "runtimeConsoleErrors": 1,
+      "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
@@ -958,7 +958,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 794,
+        "textLength": 796,
         "controls": 13,
         "inputs": 10,
         "searchInputs": 0,
@@ -974,7 +974,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 550,
+        "arabicChars": 552,
         "latinChars": 2
       },
       "runtimeConsoleErrors": 0,
@@ -1507,7 +1507,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2643,
+        "textLength": 2547,
         "controls": 36,
         "inputs": 0,
         "searchInputs": 0,
@@ -1523,7 +1523,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1838,
+        "arabicChars": 1777,
         "latinChars": 7
       },
       "runtimeConsoleErrors": 0,
@@ -1863,7 +1863,7 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "🎯\nمركز القيادة التنفيذي",
-      "actionsAvailable": "اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-14 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل | اللوحة | الباقات",
+      "actionsAvailable": "اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-19 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل | اللوحة | الباقات",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, help_manual, intelligence, telegram",
       "downstreamWorkflow": "kanban, inventory, machines, qc_center, cashbox, sop, op_packs, analytics, employee_ui",
@@ -1902,7 +1902,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Command Center: Command Center — available here: اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-14 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل | اللوحة | الباقات, then hands off to kanban, inventory, machines, qc_center, cashbox, sop, op_packs, analytics, employee_ui.",
+      "whatUserAccomplishes": "Command Center: Command Center — available here: اللوحة التنفيذية | المخزون | سجل التحديثات | 1 ماكينة في الصيانة: ليزر 125×250 | 1 فحص جودة فاشل يحتاج إعادة عمل | رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD) | الطلبات المعلقة 1 | سجل القرارات 0 | الكل\n1 | شراء\n1 | إجازات وسلف | تصحيح بصمة | جودة / إعادة عمل | SOP | مقترحات AI | طلبات مالية | أخرى | موافقة | رفض | فتح المصدر | النشطة | بانتظار الموافقة | معتمدة | مطلوبة | جزئية | مستلمة | فتح المكائن | فتح مركز الجودة | فتح الجودة | فتح الإجراءات | فتح الصندوق | قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-19 | ليزر 120×90\nأحمد · طابور 3\nمزدحمة | ليزر 100×80\nعلي · طابور 1\nتعمل | ليزر 125×250\n- · طابور 0\nصيانة | راوتر CNC 125×250\nيوسف · طابور 2\nتعمل | ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة | طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل | اللوحة | الباقات, then hands off to kanban, inventory, machines, qc_center, cashbox, sop, op_packs, analytics, employee_ui.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -2605,7 +2605,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 231,
+        "textLength": 289,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -2621,7 +2621,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 79,
+        "arabicChars": 128,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -2666,7 +2666,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 334,
+        "textLength": 392,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -2682,7 +2682,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 166,
+        "arabicChars": 215,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -2849,7 +2849,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 477,
+        "textLength": 535,
         "controls": 1,
         "inputs": 10,
         "searchInputs": 1,
@@ -2865,7 +2865,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 259,
+        "arabicChars": 308,
         "latinChars": 101
       },
       "runtimeConsoleErrors": 0,
@@ -2910,7 +2910,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2410,
+        "textLength": 2266,
         "controls": 8,
         "inputs": 6,
         "searchInputs": 0,
@@ -2927,7 +2927,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1023,
-        "latinChars": 890
+        "latinChars": 771
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3034,7 +3034,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4566,
+        "textLength": 4555,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -3050,8 +3050,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1143,
-        "latinChars": 2237
+        "arabicChars": 1142,
+        "latinChars": 2230
       },
       "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 1,
@@ -3644,7 +3644,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 226,
+        "textLength": 284,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -3660,7 +3660,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 77,
+        "arabicChars": 126,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -3669,10 +3669,10 @@
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null,
-      "emptinessCause": "G — renderer is only a generic shell with no page-specific implementation",
+      "emptinessCause": "H — page has no meaningful domain implementation behind it",
       "emptinessCauseConfidence": "INFERRED",
-      "emptinessCauseEvidence": "renderer source shared by 4 primary pages, and this instance renders almost nothing page-specific (226 chars, 0 controls)",
-      "recommendedDisposition": "STRENGTHEN or CONSOLIDATE — confirm this page has page-specific value beyond the shared template, else fold into a sibling",
+      "emptinessCauseEvidence": "no discoverable canonical API and no rendered data surface or actions — nothing to point a fixture at",
+      "recommendedDisposition": "DEFER — no implementation to seed a fixture against yet",
       "whatUserAccomplishes": "Dock Check-In: Dock check-in — available here: no actions currently rendered.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
@@ -3705,7 +3705,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 616,
+        "textLength": 674,
         "controls": 1,
         "inputs": 11,
         "searchInputs": 0,
@@ -3721,7 +3721,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 346,
+        "arabicChars": 395,
         "latinChars": 95
       },
       "runtimeConsoleErrors": 0,
@@ -3827,7 +3827,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 458,
+        "textLength": 516,
         "controls": 0,
         "inputs": 2,
         "searchInputs": 0,
@@ -3843,7 +3843,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 253,
+        "arabicChars": 302,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -4209,8 +4209,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 57,
-        "latinChars": 1589
+        "arabicChars": 63,
+        "latinChars": 1583
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4742,7 +4742,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 446,
+        "textLength": 504,
         "controls": 0,
         "inputs": 5,
         "searchInputs": 0,
@@ -4758,7 +4758,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 239,
+        "arabicChars": 288,
         "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
@@ -4986,7 +4986,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2777,
+        "textLength": 2995,
         "controls": 14,
         "inputs": 3,
         "searchInputs": 0,
@@ -5002,10 +5002,10 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1092,
+        "arabicChars": 1250,
         "latinChars": 889
       },
-      "runtimeConsoleErrors": 0,
+      "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
@@ -5066,7 +5066,7 @@
         "arabicChars": 158,
         "latinChars": 0
       },
-      "runtimeConsoleErrors": 1,
+      "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
@@ -5095,15 +5095,7 @@
       "businessPurpose": "Financing facilities — finance/treasury (risk: high, phase: build08)",
       "owningDomain": "Finance",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تسهيلات التمويل",
       "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Facility Create | Facility Utilize",
@@ -5135,8 +5127,8 @@
         "arabicChars": 206,
         "latinChars": 190
       },
-      "runtimeConsoleErrors": 7,
-      "runtimeFailedRequests": 7,
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -5482,7 +5474,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 421,
+        "textLength": 435,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -5498,7 +5490,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 179,
+        "arabicChars": 190,
         "latinChars": 148
       },
       "runtimeConsoleErrors": 0,
@@ -6020,7 +6012,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "🌙 مساء الخير، النظام",
+      "observedTitle": "🌅 صباح الخير، النظام",
       "actionsAvailable": "الذهاب إلى: خدمة العملاء | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -6323,9 +6315,7 @@
       "businessPurpose": "Integration hub — admin/integration (risk: critical, phase: phase6e)",
       "owningDomain": "Admin",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/v1/platform/notifications"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز التكامل",
       "actionsAvailable": "🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
@@ -6357,8 +6347,8 @@
         "arabicChars": 2020,
         "latinChars": 404
       },
-      "runtimeConsoleErrors": 1,
-      "runtimeFailedRequests": 1,
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -6386,13 +6376,7 @@
       "businessPurpose": "AI intelligence — ai/system (risk: high, phase: core)",
       "owningDomain": "Ai",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/v1/platform/activities",
-        "/api/v1/platform/notification-health",
-        "/api/v1/platform/saved-views",
-        "/api/v1/platform/job-health",
-        "/api/v1/platform/scheduled-reports"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "لوحة الذكاء التشغيلي",
       "actionsAvailable": "إرسال الأمر | الأتمتة | رسائل العملاء | إرسال لعقل النظام | إغلاق فجوات الذكاء | الطلبات المتأخرة | نقص المواد | رواتب آمن | صياغة AI | إصدار | حفظ إعدادات الذكاء | تشغيل / اقتراح | فتح | مهمة | الحاسبة الذكية | جدول الدوام الذكي | تقويم الحضور | استيراد البيانات | الموظفون | لوحة المالية | صندوق الورشة | المصاريف | الإيرادات | أرصدة العملاء | منشئ الفواتير | التقرير الختامي | مركز القيادة | اللوحة التنفيذية | مصمم العمليات | باقات العمليات | مدير المهام | مكتبة الإجراءات | التحكم بالمكائن | المخزون | المعدات | مركز الجودة | التحليلات والذكاء | تقارير اللغة الطبيعية | لوحة تحكم الذكاء | محرك الأتمتة",
@@ -6424,8 +6408,8 @@
         "arabicChars": 7266,
         "latinChars": 41
       },
-      "runtimeConsoleErrors": 5,
-      "runtimeFailedRequests": 5,
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -6578,22 +6562,22 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧱\nالمخزون والمواد",
-      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | تسجيل الحركة",
+      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "3 controls, 18 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "19 controls, 9 rendered records, 0 workflow link(s)",
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2347,
-        "controls": 3,
-        "inputs": 6,
-        "searchInputs": 0,
-        "tables": 3,
-        "tableRows": 18,
+        "textLength": 1722,
+        "controls": 19,
+        "inputs": 3,
+        "searchInputs": 1,
+        "tables": 1,
+        "tableRows": 9,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -6604,8 +6588,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 942,
-        "latinChars": 935
+        "arabicChars": 586,
+        "latinChars": 787
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6617,7 +6601,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Inventory: Inventory and stock — available here: إضافة مادة | Preview reorder suggestions | تسجيل الحركة.",
+      "whatUserAccomplishes": "Inventory: Inventory and stock — available here: إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -6643,7 +6627,14 @@
         "/api/collection",
         "/api/collection",
         "/api/collection",
-        "/api/collection"
+        "/api/collection",
+        "/api/db",
+        "/api/db",
+        "/api/db",
+        "/api/db",
+        "/api/db",
+        "/api/db",
+        "/api/db"
       ],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "🤖\nروح النظام",
@@ -6676,8 +6667,8 @@
         "arabicChars": 368,
         "latinChars": 20
       },
-      "runtimeConsoleErrors": 7,
-      "runtimeFailedRequests": 7,
+      "runtimeConsoleErrors": 14,
+      "runtimeFailedRequests": 14,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -6705,15 +6696,7 @@
       "businessPurpose": "Kiosk device registry — kiosk/registry (risk: high, phase: build10)",
       "owningDomain": "Kiosk",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db",
-        "/api/db"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "سجل أجهزة الكشك الخدمي",
       "actionsAvailable": "+ إضافة جديد | تصدير CSV | عرض | تعديل",
@@ -6745,8 +6728,8 @@
         "arabicChars": 99,
         "latinChars": 97
       },
-      "runtimeConsoleErrors": 7,
-      "runtimeFailedRequests": 7,
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -7031,7 +7014,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1352,
+        "textLength": 1353,
         "controls": 10,
         "inputs": 6,
         "searchInputs": 0,
@@ -8910,24 +8893,24 @@
       "owningDomain": "Procurement",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "ACTION WORKSPACE",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "المشتريات",
       "actionsAvailable": "لوحة المشتريات | طلبات الشراء | الاحتياجات | طلبات التسعير | عروض الموردين | المقارنة | أوامر الشراء | الاستلامات | المطابقة الثلاثية | طلبات فواتير الموردين | مرتجعات الموردين | أداء الموردين | تقارير المشتريات",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "13 controls, 0 records, 0 link(s)",
+      "functionalEvidence": "13 controls, 4 records, 0 link(s)",
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 350,
+        "textLength": 616,
         "controls": 13,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 4,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -8938,8 +8921,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 266,
-        "latinChars": 31
+        "arabicChars": 422,
+        "latinChars": 72
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8983,7 +8966,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 255,
+        "textLength": 313,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -8999,7 +8982,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 100,
+        "arabicChars": 149,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -9105,7 +9088,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 568,
+        "textLength": 626,
         "controls": 1,
         "inputs": 14,
         "searchInputs": 5,
@@ -9121,7 +9104,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 304,
+        "arabicChars": 353,
         "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
@@ -9166,7 +9149,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 320,
+        "textLength": 378,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -9182,7 +9165,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 155,
+        "arabicChars": 204,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -9349,7 +9332,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 657,
+        "textLength": 715,
         "controls": 1,
         "inputs": 13,
         "searchInputs": 3,
@@ -9365,7 +9348,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 417,
+        "arabicChars": 466,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -9410,7 +9393,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 578,
+        "textLength": 636,
         "controls": 2,
         "inputs": 8,
         "searchInputs": 2,
@@ -9426,7 +9409,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 301,
+        "arabicChars": 350,
         "latinChars": 137
       },
       "runtimeConsoleErrors": 0,
@@ -9532,7 +9515,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 277,
+        "textLength": 335,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -9548,7 +9531,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 117,
+        "arabicChars": 166,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -9654,7 +9637,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 344,
+        "textLength": 402,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 1,
@@ -9670,7 +9653,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 167,
+        "arabicChars": 216,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -9766,19 +9749,19 @@
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
       "observedTitle": "فروقات الاستلام",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "تسجيل قرار محكوم",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 0 control(s) and no data surface",
-      "usabilityState": "THIN",
-      "usabilityEvidence": "dead end: content but no action and no onward workflow link",
-      "deadEnd": true,
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
+      "deadEnd": false,
       "measured": {
-        "textLength": 219,
-        "controls": 0,
-        "inputs": 1,
+        "textLength": 807,
+        "controls": 2,
+        "inputs": 4,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
@@ -9792,8 +9775,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 74,
-        "latinChars": 90
+        "arabicChars": 387,
+        "latinChars": 240
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9801,11 +9784,11 @@
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null,
-      "emptinessCause": "H — page has no meaningful domain implementation behind it",
-      "emptinessCauseConfidence": "INFERRED",
-      "emptinessCauseEvidence": "no discoverable canonical API and no rendered data surface or actions — nothing to point a fixture at",
-      "recommendedDisposition": "DEFER — no implementation to seed a fixture against yet",
-      "whatUserAccomplishes": "Receiving Discrepancies: Receiving discrepancies — available here: no actions currently rendered.",
+      "emptinessCause": null,
+      "emptinessCauseConfidence": null,
+      "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "whatUserAccomplishes": "Receiving Discrepancies: Receiving discrepancies — available here: تسجيل قرار محكوم.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -9898,7 +9881,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 497,
+        "textLength": 555,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -9914,7 +9897,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 209,
+        "arabicChars": 258,
         "latinChars": 170
       },
       "runtimeConsoleErrors": 0,
@@ -9959,7 +9942,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 669,
+        "textLength": 727,
         "controls": 1,
         "inputs": 15,
         "searchInputs": 3,
@@ -9975,7 +9958,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 364,
+        "arabicChars": 413,
         "latinChars": 143
       },
       "runtimeConsoleErrors": 0,
@@ -10203,7 +10186,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 261,
+        "textLength": 319,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -10219,7 +10202,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 105,
+        "arabicChars": 154,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -10496,25 +10479,25 @@
       "owningDomain": "Sales",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "ACTION WORKSPACE",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "المبيعات",
-      "actionsAvailable": "تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات",
+      "actionsAvailable": "تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات | [DEMO] rev_so_quotation_draft_01 | [DEMO] rev_so_quotation_sent_01 | [DEMO] rev_so_confirmed_01 | [DEMO] rev_so_cancelled_01",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "home, intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "12 controls, 0 records, 0 link(s)",
+      "functionalEvidence": "16 controls, 4 records, 0 link(s)",
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 316,
-        "controls": 12,
+        "textLength": 901,
+        "controls": 16,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
-        "listItems": 0,
+        "tables": 1,
+        "tableRows": 4,
+        "listItems": 7,
         "links": 0,
         "states": {
           "loading": false,
@@ -10524,8 +10507,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 265,
-        "latinChars": 3
+        "arabicChars": 511,
+        "latinChars": 193
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10537,7 +10520,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Sales: Sales — available here: تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات.",
+      "whatUserAccomplishes": "Sales: Sales — available here: تحديث | لوحة المبيعات | العملاء المحتملون | الفرص | عروض الأسعار | طلبات المبيعات | الحجوزات | التسليمات | المرتجعات | طلبات الفواتير | أرصدة العملاء | تقارير المبيعات | [DEMO] rev_so_quotation_draft_01 | [DEMO] rev_so_quotation_sent_01 | [DEMO] rev_so_confirmed_01 | [DEMO] rev_so_cancelled_01.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -10813,7 +10796,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 271,
+        "textLength": 329,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -10829,7 +10812,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 115,
+        "arabicChars": 164,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -11240,7 +11223,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 234,
+        "textLength": 292,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -11256,7 +11239,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 83,
+        "arabicChars": 132,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -11317,8 +11300,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 113,
-        "latinChars": 212
+        "arabicChars": 119,
+        "latinChars": 206
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11352,7 +11335,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "📚\nمكتبة إجراءات التشغيل",
-      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178672\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178672\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
+      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, help_manual, intelligence, training_lms",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11391,7 +11374,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Sop: SOP library — available here: فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178672\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178672\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1.",
+      "whatUserAccomplishes": "Sop: SOP library — available here: فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178717\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -11606,7 +11589,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 598,
+        "textLength": 656,
         "controls": 1,
         "inputs": 7,
         "searchInputs": 1,
@@ -11622,7 +11605,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 279,
+        "arabicChars": 328,
         "latinChars": 176
       },
       "runtimeConsoleErrors": 0,
@@ -11683,8 +11666,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 98,
-        "latinChars": 825
+        "arabicChars": 104,
+        "latinChars": 819
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12216,7 +12199,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2857,
+        "textLength": 2858,
         "controls": 11,
         "inputs": 23,
         "searchInputs": 1,
@@ -12232,7 +12215,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 577,
+        "arabicChars": 578,
         "latinChars": 1653
       },
       "runtimeConsoleErrors": 0,
@@ -12448,36 +12431,36 @@
       "owningDomain": "Commercial",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "MINIMAL",
+      "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "Tenant Detail",
-      "actionsAvailable": "تحديث",
+      "actionsAvailable": "تحديث | overview | companies | subscription | entitlements | seats | usage | provisioning | extensions | audit | Begin / resume provisioning | تعيين grace | تعيين suspended | تعيين cancelled | تعيين archived",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "functionalState": "USABLE",
+      "functionalEvidence": "15 controls, 0 records, 0 link(s)",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 137,
-        "controls": 1,
-        "inputs": 0,
+        "textLength": 643,
+        "controls": 15,
+        "inputs": 3,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 24,
-        "latinChars": 88
+        "arabicChars": 42,
+        "latinChars": 461
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12485,11 +12468,11 @@
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null,
-      "emptinessCause": "G — renderer is only a generic shell with no page-specific implementation",
-      "emptinessCauseConfidence": "INFERRED",
-      "emptinessCauseEvidence": "renderer source shared by 9 primary pages, and this instance renders almost nothing page-specific (137 chars, 1 controls)",
-      "recommendedDisposition": "STRENGTHEN or CONSOLIDATE — confirm this page has page-specific value beyond the shared template, else fold into a sibling",
-      "whatUserAccomplishes": "Tenant Detail: Tenant detail — available here: تحديث.",
+      "emptinessCause": null,
+      "emptinessCauseConfidence": null,
+      "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "whatUserAccomplishes": "Tenant Detail: Tenant detail — available here: تحديث | overview | companies | subscription | entitlements | seats | usage | provisioning | extensions | audit | Begin / resume provisioning | تعيين grace | تعيين suspended | تعيين cancelled | تعيين archived.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -12521,7 +12504,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 810,
+        "textLength": 807,
         "controls": 6,
         "inputs": 9,
         "searchInputs": 1,
@@ -12537,8 +12520,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 127,
-        "latinChars": 539
+        "arabicChars": 130,
+        "latinChars": 533
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12842,8 +12825,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 131,
-        "latinChars": 587
+        "arabicChars": 137,
+        "latinChars": 581
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12887,7 +12870,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 225,
+        "textLength": 283,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -12903,7 +12886,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 78,
+        "arabicChars": 127,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -12997,24 +12980,24 @@
       "owningDomain": "Build12",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "MINIMAL",
+      "pageArchetype": "LIST/REGISTER",
       "observedTitle": "الحزم الرأسية",
-      "actionsAvailable": "تحديث",
+      "actionsAvailable": "تحديث | Validate | Approve",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "functionalState": "USABLE",
+      "functionalEvidence": "3 controls, 1 records, 0 link(s)",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 139,
-        "controls": 1,
+        "textLength": 424,
+        "controls": 3,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 0,
-        "tableRows": 0,
+        "tables": 1,
+        "tableRows": 1,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -13025,8 +13008,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 86,
-        "latinChars": 24
+        "arabicChars": 207,
+        "latinChars": 128
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -13034,11 +13017,11 @@
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null,
-      "emptinessCause": "G — renderer is only a generic shell with no page-specific implementation",
-      "emptinessCauseConfidence": "INFERRED",
-      "emptinessCauseEvidence": "renderer source shared by 24 primary pages, and this instance renders almost nothing page-specific (139 chars, 1 controls)",
-      "recommendedDisposition": "STRENGTHEN or CONSOLIDATE — confirm this page has page-specific value beyond the shared template, else fold into a sibling",
-      "whatUserAccomplishes": "Vertical Packs: Vertical packs — available here: تحديث.",
+      "emptinessCause": null,
+      "emptinessCauseConfidence": null,
+      "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
+      "recommendedDisposition": "KEEP_PRIMARY",
+      "whatUserAccomplishes": "Vertical Packs: Vertical packs — available here: تحديث | Validate | Approve.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -13253,7 +13236,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 914,
+        "textLength": 972,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 0,
@@ -13269,7 +13252,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 327,
+        "arabicChars": 376,
         "latinChars": 374
       },
       "runtimeConsoleErrors": 0,
@@ -13436,7 +13419,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 313,
+        "textLength": 371,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -13452,7 +13435,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 146,
+        "arabicChars": 195,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -13497,7 +13480,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 697,
+        "textLength": 755,
         "controls": 2,
         "inputs": 10,
         "searchInputs": 1,
@@ -13513,7 +13496,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 408,
+        "arabicChars": 457,
         "latinChars": 136
       },
       "runtimeConsoleErrors": 0,
@@ -13741,7 +13724,7 @@
       "usabilityEvidence": "dead end: content but no action and no onward workflow link",
       "deadEnd": true,
       "measured": {
-        "textLength": 225,
+        "textLength": 283,
         "controls": 0,
         "inputs": 1,
         "searchInputs": 0,
@@ -13757,7 +13740,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 76,
+        "arabicChars": 125,
         "latinChars": 90
       },
       "runtimeConsoleErrors": 0,
@@ -14107,7 +14090,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 894,
+        "textLength": 952,
         "controls": 1,
         "inputs": 6,
         "searchInputs": 0,
@@ -14123,7 +14106,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 325,
+        "arabicChars": 374,
         "latinChars": 358
       },
       "runtimeConsoleErrors": 0,

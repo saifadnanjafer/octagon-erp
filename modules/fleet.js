@@ -298,10 +298,6 @@
     save(); toast(t('تم تسجيل الرحلة', 'Trip log saved'), 'success'); render();
   };
 
-  window.flLoadDemo = function () {
-    toast(DEMO_NOTE, 'info');
-  };
-
   const DEMO_VEHICLES = [
     { id: 'demo-dt1', plate: 'B-1045', name: { ar: 'شاحنة ديزل كبيرة', en: 'Large Diesel Truck' }, type: 'truck', driver: { ar: 'سعد', en: 'Saad' }, odometer: 84200, fuelType: { ar: 'ديزل', en: 'Diesel' }, licenseExpiry: dateShift(12), insuranceExpiry: dateShift(75), status: 'active', notes: { ar: 'مشروع الكرادة — الموقع A', en: 'Karrada Project — Site A' }, project: { ar: 'مشروع الكرادة', en: 'Karrada Project' }, site: { ar: 'الموقع A', en: 'Site A' }, tankCapacity: 220 },
     { id: 'demo-dl2', plate: 'EQ-77', name: { ar: 'لودر موقع', en: 'Site Loader' }, type: 'loader', driver: { ar: 'حيدر', en: 'Haider' }, odometer: 12800, fuelType: { ar: 'ديزل', en: 'Diesel' }, licenseExpiry: dateShift(90), insuranceExpiry: dateShift(180), status: 'active', notes: { ar: 'مشروع بسماية — الموقع B', en: 'Bismayah Project — Site B' }, project: { ar: 'مشروع بسماية', en: 'Bismayah Project' }, site: { ar: 'الموقع B', en: 'Site B' }, tankCapacity: 310 },
@@ -595,7 +591,6 @@
     el.innerHTML = `${demoBadge}
       <div class="fl-toolbar">
         <button class="btn-primary" onclick="flOpenForm('new')">➕ ${t('مركبة', 'Vehicle')}</button>
-        <button class="fl-mini-btn" onclick="flLoadDemo()">${t('بيانات تجريبية', 'Load Demo Data')}</button>
         <input class="fl-input" placeholder="${t('بحث...', 'Search...')}" value="${esc(search)}" oninput="flSearch(this.value)" style="max-width:200px">
       </div>
       <table class="fl-table"><thead><tr><th>${tx('اللوحة')}</th><th>${tx('النوع')}</th><th>${tx('السائق')}</th><th>${tx('العداد')}</th><th>${tx('الإجازة')}</th><th>${tx('التأمين')}</th><th>${tx('الحالة')}</th><th>${tx('إجراءات')}</th></tr></thead>
@@ -745,9 +740,6 @@
             • ${t('حساسات خزان وقود — مقاومات/مكثفات / ضغط', 'Digital Fuel Sensors — resistive/capacitive/pressure telemetry')}<br>
             • ${t('قارئات RFID للوقود — لكل مركبة ومضخة', 'RFID Fuel Rings — authorize pumps per vehicle registration')}<br>
             • ${t('تكامل مع كاميرات الموقع — للتحقق البصري', 'CCTV Site Integration — visual verification matches fuel logs')}</div>
-          </div>
-          <div class="fl-toolbar">
-            <button class="btn-primary" onclick="flLoadDemo()">${t('تحميل بيانات تجريبية', 'Reload Mock Demo Data')}</button>
           </div>
         </div>
       </div>`;

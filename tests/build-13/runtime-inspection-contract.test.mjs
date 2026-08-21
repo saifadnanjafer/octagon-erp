@@ -10,6 +10,7 @@ const build12Source = fs.readFileSync(path.join(repoRoot, 'modules', 'build12-wo
 const build10BoardsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'build10', 'renderers', 'boards.js'), 'utf8');
 const build10WorkspacesSource = fs.readFileSync(path.join(repoRoot, 'modules', 'build10-workspaces.js'), 'utf8');
 const budgetingSource = fs.readFileSync(path.join(repoRoot, 'modules', 'budgeting.js'), 'utf8');
+const fleetSource = fs.readFileSync(path.join(repoRoot, 'modules', 'fleet.js'), 'utf8');
 
 test('runtime page inspection waits for the authenticated warehouse context before navigation', () => {
   assert.match(source, /async function waitForReviewRuntimeContext\(page, timeout = 15000\)/);
@@ -58,4 +59,11 @@ test('P0 budgeting does not offer fabricated budget lines as operational data', 
   assert.doesNotMatch(budgetingSource, /bgLoadDemo|budget_demo|بيانات تجريبية/);
   assert.match(budgetingSource, /bgSaveLine/);
   assert.match(budgetingSource, /getFinanceTransactions/);
+});
+
+test('Fleet does not expose controls that claim to load or reload demo operations', () => {
+  assert.doesNotMatch(fleetSource, /flLoadDemo|Load Demo Data|Reload Mock Demo Data/);
+  assert.match(fleetSource, /flSaveVehicle/);
+  assert.match(fleetSource, /flLogFuel/);
+  assert.match(fleetSource, /flLogTrip/);
 });

@@ -4475,6 +4475,15 @@ function switchPage(page) {
   if (page === 'calculator' && (!window.PermissionService || window.PermissionService.checkPage('timesheet'))) {
     return window.switchPage('timesheet'); // window.switchPage = template-guard wrapper (hydrates the view first)
   }
+  // Owner-approved consolidated page redirects (zero capability loss: demoted -> canonical parent)
+  if (page === 'knowledge') return switchPage('knowledge_base');
+  if (page === 'geofence_events') return switchPage('geofence_management');
+  if (page === 'consolidation_lineage' || page === 'consolidation_runs') return switchPage('consolidation_groups');
+  if (page === 'forecast_accuracy' || page === 'forecast_versions') return switchPage('forecast_overrides');
+  if (page === 'device_enrollment') return switchPage('device_registry');
+  if (page === 'replenishment_rules') return switchPage('putaway_rules');
+  if (page === 'receiving_discrepancies') return switchPage('mobile_receiving');
+  if (page === 'mps_proposals') return switchPage('mps');
   const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
   if (!stored) {
     const isDevMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;

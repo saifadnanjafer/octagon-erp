@@ -36,6 +36,16 @@ const RECLASSIFIED = [
   { id: 'locations', type: 'TAB', parent: 'warehouses' },
   { id: 'pos_deepening', type: 'ALIAS', parent: 'pos' },
   { id: 'workshop_tv', type: 'TAB', parent: 'task_manager' },
+  { id: 'knowledge', type: 'ALIAS', parent: 'knowledge_base' },
+  { id: 'geofence_events', type: 'TAB', parent: 'geofence_management' },
+  { id: 'consolidation_lineage', type: 'TAB', parent: 'consolidation_groups' },
+  { id: 'consolidation_runs', type: 'TAB', parent: 'consolidation_groups' },
+  { id: 'forecast_accuracy', type: 'TAB', parent: 'forecast_overrides' },
+  { id: 'forecast_versions', type: 'TAB', parent: 'forecast_overrides' },
+  { id: 'device_enrollment', type: 'TAB', parent: 'device_registry' },
+  { id: 'replenishment_rules', type: 'TAB', parent: 'putaway_rules' },
+  { id: 'receiving_discrepancies', type: 'TAB', parent: 'mobile_receiving' },
+  { id: 'mps_proposals', type: 'TAB', parent: 'mps' },
 ];
 
 // Orphan surfaces the owner decided to PRESERVE. Deleting these view files

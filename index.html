@@ -1601,7 +1601,7 @@
               <span class="nav-label">التوقيع الإلكتروني</span>
               <span class="nav-indicator"></span>
             </button>
-            <button class="nav-btn" data-page="knowledge" id="navKnowledge" onclick="switchPage('knowledge')">
+            <button class="nav-btn" data-page="knowledge" id="navKnowledge" hidden onclick="switchPage('knowledge')">
               <span class="nav-icon">📖</span>
               <span class="nav-label">قاعدة المعرفة</span>
               <span class="nav-indicator"></span>
@@ -1826,12 +1826,12 @@
         </button>
         <div class="nav-group-body" id="navGroup_build08_planning">
           <button class="nav-btn" id="nav_demand_planning" data-page="demand_planning" onclick="switchPage('demand_planning')"><span class="nav-icon">·</span><span>تخطيط الطلب</span></button>
-          <button class="nav-btn" id="nav_forecast_versions" data-page="forecast_versions" onclick="switchPage('forecast_versions')"><span class="nav-icon">·</span><span>إصدارات التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_versions" data-page="forecast_versions" hidden onclick="switchPage('forecast_versions')"><span class="nav-icon">·</span><span>إصدارات التنبؤ</span></button>
           <button class="nav-btn" id="nav_forecast_overrides" data-page="forecast_overrides" onclick="switchPage('forecast_overrides')"><span class="nav-icon">·</span><span>تعديلات التنبؤ</span></button>
-          <button class="nav-btn" id="nav_forecast_accuracy" data-page="forecast_accuracy" onclick="switchPage('forecast_accuracy')"><span class="nav-icon">·</span><span>دقة التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_accuracy" data-page="forecast_accuracy" hidden onclick="switchPage('forecast_accuracy')"><span class="nav-icon">·</span><span>دقة التنبؤ</span></button>
           <button class="nav-btn" id="nav_planning_exceptions" data-page="planning_exceptions" onclick="switchPage('planning_exceptions')"><span class="nav-icon">·</span><span>استثناءات التخطيط</span></button>
           <button class="nav-btn" id="nav_mps" data-page="mps" onclick="switchPage('mps')"><span class="nav-icon">·</span><span>جدول الإنتاج الرئيسي</span></button>
-          <button class="nav-btn" id="nav_mps_proposals" data-page="mps_proposals" onclick="switchPage('mps_proposals')"><span class="nav-icon">·</span><span>مقترحات الإنتاج</span></button>
+          <button class="nav-btn" id="nav_mps_proposals" data-page="mps_proposals" hidden onclick="switchPage('mps_proposals')"><span class="nav-icon">·</span><span>مقترحات الإنتاج</span></button>
           <button class="nav-btn" id="nav_supply_demand_balance" data-page="supply_demand_balance" onclick="switchPage('supply_demand_balance')"><span class="nav-icon">·</span><span>توازن العرض والطلب</span></button>
           <button class="nav-btn" id="nav_sop_scenarios" data-page="sop_scenarios" onclick="switchPage('sop_scenarios')"><span class="nav-icon">·</span><span>سيناريوهات S&OP</span></button>
           <button class="nav-btn" id="nav_sop_review" data-page="sop_review" onclick="switchPage('sop_review')"><span class="nav-icon">·</span><span>مراجعة S&OP</span></button>
@@ -1866,10 +1866,10 @@
         <div class="nav-group-body" id="navGroup_build08_consolidation">
           <button class="nav-btn" id="nav_consolidation_groups" data-page="consolidation_groups" onclick="switchPage('consolidation_groups')"><span class="nav-icon">·</span><span>مجموعات التوحيد</span></button>
           <button class="nav-btn" id="nav_account_mapping" data-page="account_mapping" onclick="switchPage('account_mapping')"><span class="nav-icon">·</span><span>ربط الحسابات</span></button>
-          <button class="nav-btn" id="nav_consolidation_runs" data-page="consolidation_runs" onclick="switchPage('consolidation_runs')"><span class="nav-icon">·</span><span>عمليات التوحيد</span></button>
+          <button class="nav-btn" id="nav_consolidation_runs" data-page="consolidation_runs" hidden onclick="switchPage('consolidation_runs')"><span class="nav-icon">·</span><span>عمليات التوحيد</span></button>
           <button class="nav-btn" id="nav_eliminations" data-page="eliminations" onclick="switchPage('eliminations')"><span class="nav-icon">·</span><span>قيود الاستبعاد</span></button>
           <button class="nav-btn" id="nav_consolidated_reports" data-page="consolidated_reports" onclick="switchPage('consolidated_reports')"><span class="nav-icon">·</span><span>التقارير الموحدة</span></button>
-          <button class="nav-btn" id="nav_consolidation_lineage" data-page="consolidation_lineage" onclick="switchPage('consolidation_lineage')"><span class="nav-icon">·</span><span>تتبع التوحيد</span></button>
+          <button class="nav-btn" id="nav_consolidation_lineage" data-page="consolidation_lineage" hidden onclick="switchPage('consolidation_lineage')"><span class="nav-icon">·</span><span>تتبع التوحيد</span></button>
         </div>
       </div>
       <!-- BUILD-09: advanced WMS and operational automation workspaces -->
@@ -1882,10 +1882,10 @@
           <button class="nav-btn" data-page="zone_bin_management" onclick="switchPage('zone_bin_management')"><span>Zone and Bin Management</span></button>
           <button class="nav-btn" data-page="putaway_rules" onclick="switchPage('putaway_rules')"><span>Putaway Rules</span></button>
           <button class="nav-btn" data-page="putaway_task_queue" onclick="switchPage('putaway_task_queue')"><span>Putaway Task Queue</span></button>
-          <button class="nav-btn" data-page="replenishment_rules" onclick="switchPage('replenishment_rules')"><span>Replenishment Rules</span></button>
+          <button class="nav-btn" data-page="replenishment_rules" hidden onclick="switchPage('replenishment_rules')"><span>Replenishment Rules</span></button>
           <button class="nav-btn" data-page="replenishment_proposals" onclick="switchPage('replenishment_proposals')"><span>Replenishment Proposals</span></button>
           <button class="nav-btn" data-page="mobile_receiving" onclick="switchPage('mobile_receiving')"><span>Mobile Receiving</span></button>
-          <button class="nav-btn" data-page="receiving_discrepancies" onclick="switchPage('receiving_discrepancies')"><span>Receiving Discrepancies</span></button>
+          <button class="nav-btn" data-page="receiving_discrepancies" hidden onclick="switchPage('receiving_discrepancies')"><span>Receiving Discrepancies</span></button>
           <button class="nav-btn" data-page="mobile_picking" onclick="switchPage('mobile_picking')"><span>Mobile Picking</span></button>
           <button class="nav-btn" data-page="pick_task_queue" onclick="switchPage('pick_task_queue')"><span>Pick Task Queue</span></button>
           <button class="nav-btn" data-page="wave_planning" onclick="switchPage('wave_planning')"><span>Wave Planning</span></button>

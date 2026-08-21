@@ -863,7 +863,7 @@
       }
       return '<label class="' + (name === 'note' ? 'ent-form-full' : '') + '">' + esc(label) + '<input id="' + esc(id) + '" class="ent-input" type="' + esc(type) + '" value="' + (type === 'date' ? todayISO() : '') + '"></label>';
     }).join('') + '</div>'
-      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">حفظ السطر</button><button class="ent-btn" onclick="entLoadDemo(\'' + esc(page) + '\')">تحميل بيانات تجريبية</button>' + (cfg.extraActions || '') + '</div>';
+      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">حفظ السطر</button>' + (cfg.extraActions || '') + '</div>';
   }
   function renderPage(page) {
     ensureData();
@@ -1037,144 +1037,6 @@
     rec.archivedAt = new Date().toISOString();
     rec.archivedBy = currentUserName();
     audit(page, 'record_archive', rec.name || id, rec);
-    save();
-    renderPage(page);
-  };
-  window.entLoadDemo = function (page) {
-    const cfg = PAGES[page];
-    if (!cfg || !Array.isArray(cfg.demo) || !cfg.demo.length) {
-      toast('No demo pack for this tab', 'info');
-      return;
-    }
-    if (records(page, true).length) {
-      toast('This tab already has records', 'info');
-      return;
-    }
-    
-    if (page === 'contracts') {
-      ensureData();
-      if (!O().documents) O().documents = { docs: [] };
-      
-      const doc1Id = uid('doc');
-      const doc4Id = uid('doc');
-      const doc3Id = uid('doc');
-      
-      const demoDocs = [
-        {
-          id: doc1Id,
-          title: 'عقد صيانة المخرطة CNC - الرافدين',
-          category: 'contract',
-          refNumber: 'CON-DMS-7712',
-          owner: 'ورشة أوكتاجون',
-          issuer: 'شركة الرافدين للتكنولوجيا',
-          issueDate: plusDays(-300),
-          expiryDate: plusDays(90),
-          reminderDays: 30,
-          tags: 'عقد, صيانة, DMS',
-          fileNote: 'mock_contracts/CNC_maintenance.pdf',
-          notes: 'مستند DMS مرتبط بعقد الصيانة الفعلي',
-          value: 2500000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        },
-        {
-          id: doc4Id,
-          title: 'رخصة السلامة المهنية ومكافحة الحرائق - الدفاع المدني',
-          category: 'contract',
-          refNumber: 'CON-DMS-8812',
-          owner: 'إدارة الإنتاج',
-          issuer: 'وزارة الداخلية/الدفاع المدني',
-          issueDate: plusDays(-350),
-          expiryDate: plusDays(10),
-          reminderDays: 30,
-          tags: 'رخصة, سلامة, DMS',
-          fileNote: 'mock_contracts/Safety_license.pdf',
-          notes: 'رخصة سلامة الدفاع المدني السنوية',
-          value: 500000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        },
-        {
-          id: doc3Id,
-          title: 'عقد إيجار مستودع المواد الأولية - بابل',
-          category: 'contract',
-          refNumber: 'CON-DMS-9922',
-          owner: 'الإدارة المالية',
-          issuer: 'مالك العقار',
-          issueDate: plusDays(-120),
-          expiryDate: plusDays(-15),
-          reminderDays: 30,
-          tags: 'عقد, إيجار, DMS',
-          fileNote: 'mock_contracts/Warehouse_lease.pdf',
-          notes: 'عقد الإيجار السنوي لمخزن الخامات الرئيسي',
-          value: 12000000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        }
-      ];
-      
-      demoDocs.forEach(d => O().documents.docs.push(d));
-      
-      const demoContracts = [
-        {
-          name: 'عقد صيانة المخرطة CNC',
-          party: 'شركة الرافدين للتكنولوجيا',
-          amount: 2500000,
-          date: plusDays(90),
-          status: 'open',
-          note: 'عقد صيانة سنوي شامل قطع الغيار والدعم الطارئ للمخرطة CNC',
-          linkedDocId: doc1Id
-        },
-        {
-          name: 'رخصة السلامة المهنية ومكافحة الحرائق',
-          party: 'وزارة الداخلية/الدفاع المدني',
-          amount: 500000,
-          date: plusDays(10),
-          status: 'review',
-          note: 'متابعة شروط السلامة مع الدفاع المدني وتجهيز طفايات الحريق للتفتيش',
-          linkedDocId: doc4Id
-        },
-        {
-          name: 'عقد توريد حديد صلب ومقاطع معدنية',
-          party: 'الشركة العامة للحديد والصلب',
-          amount: 8500000,
-          date: plusDays(-5),
-          status: 'review',
-          note: 'عقد توريد دفعات الحديد للمصنع - غير مرتبط بوثيقة DMS الرقمية حالياً',
-          linkedDocId: null
-        }
-      ];
-      
-      demoContracts.forEach(row => {
-        hub('contracts').records.push(stamp({
-          id: uid('ent'),
-          ...row,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: currentUserName()
-        }));
-      });
-      
-      audit('contracts', 'demo_load', 'Contracts and DMS demo data loaded', { count: demoContracts.length });
-      save();
-      renderPage('contracts');
-      toast('تم تحميل بيانات تجريبية للعقود ومستندات DMS بنجاح', 'success');
-      return;
-    }
-    
-    cfg.demo.forEach(row => {
-      hub(page).records.push(stamp({
-        id: uid('ent'),
-        ...row,
-        is_active: true,
-        createdAt: new Date().toISOString(),
-        createdBy: currentUserName()
-      }));
-    });
-    audit(page, 'demo_load', cfg.title + ' demo data loaded', { count: cfg.demo.length });
     save();
     renderPage(page);
   };
@@ -1422,97 +1284,6 @@
       }
     });
   }
-
-  window.entLoadMockBankStatement = function () {
-    const list = getUnmatchedTransactions();
-    const mock = [];
-
-    list.slice(0, 5).forEach((t, index) => {
-      if (index === 0) {
-        mock.push({
-          id: 'mock_' + t.id,
-          date: t.date,
-          description: t.description || ('حوالة واردة من ' + (t.partyName || 'عميل')),
-          amount: t.amount,
-          direction: t.direction || 'in',
-          matchedTxId: null
-        });
-      } else if (index === 1) {
-        const d = new Date(t.date);
-        d.setDate(d.getDate() + 2);
-        mock.push({
-          id: 'mock_' + t.id,
-          date: d.toISOString().slice(0, 10),
-          description: 'تحويل بنكي - ' + (t.partyName || t.description || 'مورد'),
-          amount: t.amount,
-          direction: t.direction || 'out',
-          matchedTxId: null
-        });
-      } else if (index === 2) {
-        const d = new Date(t.date);
-        d.setDate(d.getDate() - 1);
-        mock.push({
-          id: 'mock_' + t.id,
-          date: d.toISOString().slice(0, 10),
-          description: 'عملية دفع بطاقة: ' + (t.partyName || 'مصاريف'),
-          amount: t.amount,
-          direction: t.direction || 'out',
-          matchedTxId: null
-        });
-      } else {
-        mock.push({
-          id: 'mock_' + t.id,
-          date: t.date,
-          description: 'تسوية حساب - ' + (t.partyName || 'الجهة المستلمة'),
-          amount: t.amount,
-          direction: t.direction || 'in',
-          matchedTxId: null
-        });
-      }
-    });
-
-    mock.push({
-      id: 'mock_fee_1',
-      date: todayISO(),
-      description: 'رسوم خدمات بنكية شهرية - الرافدين',
-      amount: 15000,
-      direction: 'out',
-      matchedTxId: null
-    });
-
-    mock.push({
-      id: 'mock_interest_1',
-      date: todayISO(),
-      description: 'فوائد دائنة - حساب جاري',
-      amount: 45000,
-      direction: 'in',
-      matchedTxId: null
-    });
-
-    if (mock.length <= 2) {
-      mock.push({
-        id: 'mock_fb_1',
-        date: todayISO(),
-        description: 'دفعة نقدية مسجلة بالخطأ بالبنك',
-        amount: 250000,
-        direction: 'in',
-        matchedTxId: null
-      });
-      mock.push({
-        id: 'mock_fb_2',
-        date: todayISO(),
-        description: 'شراء قرطاسية مكتبية - دفع فيزا',
-        amount: 32000,
-        direction: 'out',
-        matchedTxId: null
-      });
-    }
-
-    bankStatementLines = mock;
-    toast('تم إنشاء كشف حساب بنكي تجريبي بنجاح', 'success');
-    entAutoMatch();
-    renderPage('banking');
-  };
 
   window.entMatchLine = function (lineId, txId) {
     const line = bankStatementLines.find(l => l.id === lineId);
@@ -1763,6 +1534,15 @@
     }
 
     return `
+      <div class="recon-uploader" style="margin-bottom:16px; direction:rtl;">
+        <i class="fa-solid fa-file-csv" style="color:#22c55e;"></i>
+        <p>استيراد كشف حساب بنكي فعلي بصيغة CSV</p>
+        <label class="ent-btn primary" style="display:inline-flex; width:auto; cursor:pointer;">
+          اختيار ملف CSV
+          <input type="file" accept=".csv,text/csv" onchange="entHandleReconCsvUpload(event)" style="display:none;">
+        </label>
+        <span style="display:block; margin-top:8px; font-size:11px; color:#94a3b8;">الأعمدة المدعومة: التاريخ، البيان، المبلغ، ونوع الحركة. لا تُنشأ أي سطور افتراضية.</span>
+      </div>
       <div class="recon-workspace">
         <div class="recon-pane">
           <div class="recon-pane-title">
@@ -1883,8 +1663,11 @@
            ondrop="entHandleDmsContractDrop(event)">
         <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i>
         <p>قم بسحب وإفلات ملف العقد (PDF) هنا</p>
-        <span style="font-size:11px; color:#94a3b8;">أو انقر لاختيار ملف تجريبي</span>
-        <button class="ent-btn primary" onclick="entUploadMockContract()">تحميل عقد تجريبي سريع</button>
+        <label class="ent-btn primary" style="display:inline-flex; width:auto; cursor:pointer;">
+          اختيار ملف العقد
+          <input type="file" accept=".pdf,application/pdf" onchange="entHandleDmsContractFile(event)" style="display:none;">
+        </label>
+        <span style="display:block; margin-top:8px; font-size:11px; color:#94a3b8;">تُسجَّل بيانات العقد التي يدخلها المشغّل فقط؛ لا تُنشأ بيانات تجريبية.</span>
       </div>
     `;
     
@@ -2148,54 +1931,80 @@
     overlay.style.display = 'flex';
   };
   
-  window.entUploadMockContract = function () {
-    ensureData();
-    const docTitles = [
-      'عقد صيانة أجهزة المخرطة CNC - الرافدين',
-      'عقد إيجار مستودع المواد الأولية - بابل',
-      'رخصة السلامة المهنية ومكافحة الحرائق - الدفاع المدني',
-      'عقد توريد حديد صلب ومقاطع معدنية - حديد العراق',
-      'عقد رعاية وتدريب وتأهيل الكوادر الفنية - معهد التدريب'
-    ];
-    const owners = ['ورشة أوكتاجون', 'الإدارة المالية', 'إدارة الإنتاج', 'قسم الخدمات والFleet'];
-    const issuers = ['شركة الرافدين للتكنولوجيا', 'مالك العقار', 'وزارة الداخلية/الدفاع المدني', 'الشركة العامة للحديد والصلب', 'مركز التدريب المهني'];
-    const values = [2500000, 12000000, 500000, 8500000, 1800000];
-    
-    const rIdx = Math.floor(Math.random() * docTitles.length);
-    
-    const offsets = [-15, 10, 25, 45, 90];
-    const offset = offsets[Math.floor(Math.random() * offsets.length)];
-    const expiry = plusDays(offset);
-    const issue = plusDays(offset - 365);
-    
-    if (!O().documents) O().documents = { docs: [] };
-    
-    const newDoc = {
-      id: uid('doc'),
-      title: docTitles[rIdx],
-      category: 'contract',
-      refNumber: 'CON-DMS-' + Math.floor(Math.random() * 9000 + 1000),
-      owner: owners[Math.floor(Math.random() * owners.length)],
-      issuer: issuers[rIdx],
-      issueDate: issue,
-      expiryDate: expiry,
-      reminderDays: 30,
-      tags: 'عقد, DMS',
-      fileNote: 'mock_contracts/' + docTitles[rIdx].replace(/ /g, '_') + '.pdf',
-      notes: 'تم توليده تجريبياً لتجربة الربط والمطابقة',
-      value: values[rIdx],
-      is_active: true,
-      createdAt: new Date().toISOString(),
-      createdBy: currentUserName()
+  function entOpenDmsContractImport(file) {
+    const overlay = document.getElementById('omniModalOverlay');
+    const title = document.getElementById('omniModalTitle');
+    const body = document.getElementById('omniModalBody');
+    const btnCancel = document.getElementById('omniModalCancel');
+    const btnConfirm = document.getElementById('omniModalConfirm');
+    if (!overlay || !title || !body || !btnCancel || !btnConfirm) return;
+
+    const fileName = String(file?.name || '').trim();
+    if (!fileName) {
+      toast('تعذر قراءة اسم ملف العقد', 'error');
+      return;
+    }
+
+    title.textContent = 'تسجيل مستند عقد فعلي';
+    body.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px; direction:rtl;">
+        <div style="font-size:12px; color:#94a3b8;">الملف المحدد: <strong>${esc(fileName)}</strong></div>
+        <label>اسم العقد أو المستند *<input id="ent_dms_title" class="ent-input" value="${esc(fileName.replace(/\.[^/.]+$/, '').replace(/_/g, ' '))}"></label>
+        <label>الرقم المرجعي<input id="ent_dms_reference" class="ent-input" value=""></label>
+        <label>المالك / القسم<input id="ent_dms_owner" class="ent-input" value=""></label>
+        <label>الجهة المصدرة<input id="ent_dms_issuer" class="ent-input" value=""></label>
+        <label>تاريخ الإصدار<input id="ent_dms_issue_date" class="ent-input" type="date" value=""></label>
+        <label>تاريخ الانتهاء<input id="ent_dms_expiry_date" class="ent-input" type="date" value=""></label>
+        <label>القيمة التعاقدية<input id="ent_dms_value" class="ent-input" type="number" min="0" step="0.01" value=""></label>
+      </div>
+    `;
+    btnCancel.textContent = 'إلغاء';
+    btnCancel.onclick = function () { overlay.style.display = 'none'; };
+    btnConfirm.style.display = 'inline-block';
+    btnConfirm.textContent = 'حفظ المستند';
+    btnConfirm.onclick = function () {
+      const docTitle = document.getElementById('ent_dms_title')?.value?.trim();
+      if (!docTitle) {
+        toast('اسم العقد أو المستند مطلوب', 'warning');
+        return;
+      }
+      const value = Number(document.getElementById('ent_dms_value')?.value || 0);
+      ensureData();
+      if (!O().documents) O().documents = { docs: [] };
+      const newDoc = {
+        id: uid('doc'),
+        title: docTitle,
+        category: 'contract',
+        refNumber: document.getElementById('ent_dms_reference')?.value?.trim() || '',
+        owner: document.getElementById('ent_dms_owner')?.value?.trim() || '',
+        issuer: document.getElementById('ent_dms_issuer')?.value?.trim() || '',
+        issueDate: document.getElementById('ent_dms_issue_date')?.value || '',
+        expiryDate: document.getElementById('ent_dms_expiry_date')?.value || '',
+        reminderDays: 30,
+        tags: 'عقد مرفوع, DMS',
+        fileNote: 'dms_uploads/' + fileName,
+        notes: 'تم تسجيله من ملف اختاره المشغّل',
+        value: Number.isFinite(value) && value >= 0 ? value : 0,
+        is_active: true,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUserName()
+      };
+      O().documents.docs.push(newDoc);
+      audit('documents', 'doc_create_upload', 'Contract file registered: ' + newDoc.title, { id: newDoc.id, fileName });
+      save();
+      overlay.style.display = 'none';
+      toast('تم تسجيل مستند العقد بنجاح', 'success');
+      renderPage('contracts');
     };
-    
-    O().documents.docs.push(newDoc);
-    audit('documents', 'doc_create_mock', 'Mock contract uploaded: ' + newDoc.title, newDoc);
-    save();
-    toast('تم تحميل عقد تجريبي بنظام DMS بنجاح', 'success');
-    renderPage('contracts');
+    overlay.style.display = 'flex';
+  }
+
+  window.entHandleDmsContractFile = function (event) {
+    const file = event?.target?.files?.[0];
+    if (file) entOpenDmsContractImport(file);
+    if (event?.target) event.target.value = '';
   };
-  
+
   window.entHandleDmsContractDrop = function (event) {
     event.preventDefault();
     const uploader = document.getElementById('dms_contract_uploader');
@@ -2204,39 +2013,8 @@
       uploader.style.background = '';
     }
     
-    let filename = 'عقد_مرفوع.pdf';
-    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-      filename = event.dataTransfer.files[0].name;
-    }
-    
-    ensureData();
-    if (!O().documents) O().documents = { docs: [] };
-    
-    const expiry = plusDays(25);
-    const newDoc = {
-      id: uid('doc'),
-      title: filename.replace(/\.[^/.]+$/, "").replace(/_/g, ' '),
-      category: 'contract',
-      refNumber: 'CON-DROP-' + Math.floor(Math.random() * 9000 + 1000),
-      owner: 'الورشة الرئيسية',
-      issuer: 'مورد خارجي',
-      issueDate: plusDays(-340),
-      expiryDate: expiry,
-      reminderDays: 30,
-      tags: 'عقد مرفوع, DMS',
-      fileNote: 'dms_uploads/' + filename,
-      notes: 'عقد تم رفعه عبر السحب والإفلات',
-      value: 3500000,
-      is_active: true,
-      createdAt: new Date().toISOString(),
-      createdBy: currentUserName()
-    };
-    
-    O().documents.docs.push(newDoc);
-    audit('documents', 'doc_create_drop', 'Contract dropped: ' + newDoc.title, newDoc);
-    save();
-    toast('تم رفع المستند وإنشاؤه بنظام DMS بنجاح', 'success');
-    renderPage('contracts');
+    const file = event.dataTransfer?.files?.[0];
+    if (file) entOpenDmsContractImport(file);
   };
 
   window.entTriggerRenewalTask = function (contractId) {

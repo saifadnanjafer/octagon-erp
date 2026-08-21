@@ -12,6 +12,7 @@ const build10WorkspacesSource = fs.readFileSync(path.join(repoRoot, 'modules', '
 const budgetingSource = fs.readFileSync(path.join(repoRoot, 'modules', 'budgeting.js'), 'utf8');
 const fleetSource = fs.readFileSync(path.join(repoRoot, 'modules', 'fleet.js'), 'utf8');
 const subscriptionsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'subscriptions.js'), 'utf8');
+const enterpriseSuiteSource = fs.readFileSync(path.join(repoRoot, 'modules', 'enterprise-suite.js'), 'utf8');
 
 test('runtime page inspection waits for the authenticated warehouse context before navigation', () => {
   assert.match(source, /async function waitForReviewRuntimeContext\(page, timeout = 15000\)/);
@@ -73,4 +74,13 @@ test('Subscriptions does not seed commercial plans, customers, or invoices as de
   assert.doesNotMatch(subscriptionsSource, /subLoadDemo|sub_demo|cust_demo_|بيانات تجريبية/);
   assert.match(subscriptionsSource, /subSavePlan/);
   assert.match(subscriptionsSource, /subGenerateInvoice/);
+});
+
+test('Enterprise Suite accepts operator-provided bank and contract inputs without demo seeders', () => {
+  assert.doesNotMatch(enterpriseSuiteSource, /entLoadDemo|entLoadMockBankStatement|entUploadMockContract|doc_create_mock/);
+  assert.match(enterpriseSuiteSource, /entHandleReconCsvUpload/);
+  assert.match(enterpriseSuiteSource, /accept="\.csv,text\/csv"/);
+  assert.match(enterpriseSuiteSource, /entHandleDmsContractFile/);
+  assert.match(enterpriseSuiteSource, /entOpenDmsContractImport/);
+  assert.match(enterpriseSuiteSource, /doc_create_upload/);
 });

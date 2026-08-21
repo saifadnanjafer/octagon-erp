@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-21T19:10:20.767Z",
-  "startedAt": "2026-08-21T19:10:10.137Z",
-  "baseUrl": "http://127.0.0.1:8090",
+  "generatedAt": "2026-08-21T20:08:17.562Z",
+  "startedAt": "2026-08-21T20:07:55.629Z",
+  "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
     "total": 221,
@@ -1260,7 +1260,7 @@
       "rendererType": "view",
       "rendererSource": "views/banking.html",
       "requiredPermission": "banking",
-      "durationMs": 2838,
+      "durationMs": 2778,
       "error": null,
       "activated": true,
       "observation": {
@@ -1277,8 +1277,8 @@
           "المطابقة البنكية"
         ],
         "title": "الحسابات البنكية والخزينة",
-        "textLength": 2744,
-        "controlCount": 11,
+        "textLength": 2723,
+        "controlCount": 10,
         "controlLabels": [
           "📊 اللوحة العامة والعمليات",
           "🩺 مطابقة كشف الحساب البنكي",
@@ -1288,7 +1288,6 @@
           "تحديث",
           "إنشاء مهمة",
           "حفظ السطر",
-          "تحميل بيانات تجريبية",
           "إضافة سطر",
           "طلب تسوية/مراجعة"
         ],
@@ -1300,6 +1299,7 @@
         "tableRows": 2,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1310,7 +1310,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1920,
+        "arabicChars": 1902,
         "latinChars": 93
       },
       "consoleErrors": [],
@@ -2321,7 +2321,7 @@
       "rendererType": "view",
       "rendererSource": "views/contracts.html",
       "requiredPermission": "contracts",
-      "durationMs": 1458,
+      "durationMs": 3112,
       "error": null,
       "activated": true,
       "observation": {
@@ -2337,8 +2337,8 @@
           "إضافة سريعة"
         ],
         "title": "العقود والشؤون القانونية",
-        "textLength": 1334,
-        "controlCount": 9,
+        "textLength": 1313,
+        "controlCount": 8,
         "controlLabels": [
           "📊 سجل العقود والالتزامات",
           "📂 مستندات العقود الرقمية (DMS)",
@@ -2347,8 +2347,7 @@
           "إنشاء متابعة",
           "تحديث",
           "إنشاء مهمة",
-          "حفظ السطر",
-          "تحميل بيانات تجريبية"
+          "حفظ السطر"
         ],
         "inputCount": 6,
         "selectCount": 1,
@@ -2358,6 +2357,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -2368,7 +2368,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 974,
+        "arabicChars": 956,
         "latinChars": 85
       },
       "consoleErrors": [],

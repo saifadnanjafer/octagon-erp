@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-21T19:08:51.304Z",
+  "generatedAt": "2026-08-21T20:08:53.622Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-21T19:08:51.158Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-21T20:08:50.776Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -853,9 +853,7 @@
       "businessPurpose": "Alert board — boards/alerts (risk: low, phase: build10)",
       "owningDomain": "Boards",
       "canonicalApi": null,
-      "observedEndpoints": [
-        "/api/db"
-      ],
+      "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "شاشة التنبيهات المركزية",
       "actionsAvailable": "فتح المصدر",
@@ -870,7 +868,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 466,
+        "textLength": 517,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -880,17 +878,17 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 282,
-        "latinChars": 87
+        "arabicChars": 323,
+        "latinChars": 102
       },
-      "runtimeConsoleErrors": 1,
-      "runtimeFailedRequests": 1,
+      "runtimeConsoleErrors": 0,
+      "runtimeFailedRequests": 0,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -1362,20 +1360,20 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "الحسابات البنكية والخزينة",
-      "actionsAvailable": "📊 اللوحة العامة والعمليات | 🩺 مطابقة كشف الحساب البنكي | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | تحميل بيانات تجريبية | إضافة سطر | طلب تسوية/مراجعة",
+      "actionsAvailable": "📊 اللوحة العامة والعمليات | 🩺 مطابقة كشف الحساب البنكي | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | إضافة سطر | طلب تسوية/مراجعة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "11 controls, 2 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "10 controls, 2 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2744,
-        "controls": 11,
+        "textLength": 2723,
+        "controls": 10,
         "inputs": 13,
         "searchInputs": 0,
         "tables": 2,
@@ -1390,7 +1388,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1920,
+        "arabicChars": 1902,
         "latinChars": 93
       },
       "runtimeConsoleErrors": 0,
@@ -1403,7 +1401,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Banking: Banking and treasury — available here: 📊 اللوحة العامة والعمليات | 🩺 مطابقة كشف الحساب البنكي | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | تحميل بيانات تجريبية | إضافة سطر | طلب تسوية/مراجعة.",
+      "whatUserAccomplishes": "Banking: Banking and treasury — available here: 📊 اللوحة العامة والعمليات | 🩺 مطابقة كشف الحساب البنكي | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | إضافة سطر | طلب تسوية/مراجعة.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -2496,20 +2494,20 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "العقود والشؤون القانونية",
-      "actionsAvailable": "📊 سجل العقود والالتزامات | 📂 مستندات العقود الرقمية (DMS) | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | تحميل بيانات تجريبية",
+      "actionsAvailable": "📊 سجل العقود والالتزامات | 📂 مستندات العقود الرقمية (DMS) | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "9 controls, 0 records, 0 link(s)",
+      "functionalEvidence": "8 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1334,
-        "controls": 9,
+        "textLength": 1313,
+        "controls": 8,
         "inputs": 6,
         "searchInputs": 0,
         "tables": 0,
@@ -2524,7 +2522,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 974,
+        "arabicChars": 956,
         "latinChars": 85
       },
       "runtimeConsoleErrors": 0,
@@ -2537,7 +2535,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Contracts: Contracts Hub — available here: 📊 سجل العقود والالتزامات | 📂 مستندات العقود الرقمية (DMS) | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر | تحميل بيانات تجريبية.",
+      "whatUserAccomplishes": "Contracts: Contracts Hub — available here: 📊 سجل العقود والالتزامات | 📂 مستندات العقود الرقمية (DMS) | سحب الإشارات الحية | فتح المصدر | إنشاء متابعة | تحديث | إنشاء مهمة | حفظ السطر.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -3394,7 +3392,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 474,
+        "textLength": 525,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -3404,14 +3402,14 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 284,
-        "latinChars": 90
+        "arabicChars": 325,
+        "latinChars": 105
       },
       "runtimeConsoleErrors": 1,
       "runtimeFailedRequests": 1,
@@ -5424,7 +5422,7 @@
       "usabilityEvidence": "focused workflow acceptance renders and operates the page-specific surface",
       "deadEnd": false,
       "measured": {
-        "textLength": 479,
+        "textLength": 530,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -5434,14 +5432,14 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 293,
-        "latinChars": 87
+        "arabicChars": 334,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8831,7 +8829,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 484,
+        "textLength": 535,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -8841,14 +8839,14 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 292,
-        "latinChars": 90
+        "arabicChars": 333,
+        "latinChars": 105
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10865,7 +10863,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 469,
+        "textLength": 520,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -10875,14 +10873,14 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 284,
-        "latinChars": 87
+        "arabicChars": 325,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -13012,7 +13010,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 471,
+        "textLength": 522,
         "controls": 4,
         "inputs": 0,
         "searchInputs": 0,
@@ -13022,14 +13020,14 @@
         "links": 4,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 287,
-        "latinChars": 87
+        "arabicChars": 328,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

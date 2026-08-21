@@ -45,6 +45,15 @@ The legacy Fleet page can retain manual records while presenting simulated
 telematics; its full consolidation therefore requires an explicit
 source-mapping and cutover decision.
 
+## Verified continuation: Enterprise Suite input recovery
+
+The retained Enterprise Suite no longer exposes a shared demo-record loader,
+mock bank-statement generator, or mock-contract uploader. Bank reconciliation
+now accepts an operator-selected CSV, and the DMS contract surface accepts an
+operator-selected PDF before prompting for the actual contract metadata. The
+authenticated Chromium inspection rechecked both primary pages and the
+functional, reality, and product ledgers were regenerated from that evidence.
+
 ## Consolidate
 
 - Primary destinations before / after: **231 / 221**
@@ -54,7 +63,7 @@ source-mapping and cutover decision.
 
 ## Tests executed for this recovery
 
-- `npm.cmd run test:build-13`: PASS (8) — static contracts for authenticated
+- `npm.cmd run test:build-13`: PASS (12) — static contracts for authenticated
   runtime hydration, governed record evidence, metadata presentation, and
   fail-closed large-screen boards.
 - `npm.cmd run test:build-10`: PASS — platform/domain and Chromium acceptance

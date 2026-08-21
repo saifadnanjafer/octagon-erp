@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T20:14:49.195Z",
-  "startedAt": "2026-08-21T20:14:12.604Z",
+  "generatedAt": "2026-08-21T22:40:03.430Z",
+  "startedAt": "2026-08-21T22:39:55.867Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -4689,7 +4689,7 @@
       "rendererType": "view",
       "rendererSource": "views/fleet.html",
       "requiredPermission": "fleet",
-      "durationMs": 945,
+      "durationMs": 1796,
       "error": null,
       "activated": true,
       "observation": {
@@ -4720,6 +4720,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,

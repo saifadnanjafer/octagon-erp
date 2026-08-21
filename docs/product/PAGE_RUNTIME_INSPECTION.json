@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T20:08:17.562Z",
-  "startedAt": "2026-08-21T20:07:55.629Z",
+  "generatedAt": "2026-08-21T20:14:49.195Z",
+  "startedAt": "2026-08-21T20:14:12.604Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -1687,7 +1687,7 @@
       "rendererType": "view",
       "rendererSource": "views/cashbox.html",
       "requiredPermission": "cashbox",
-      "durationMs": 1891,
+      "durationMs": 2767,
       "error": null,
       "activated": true,
       "observation": {
@@ -1698,11 +1698,10 @@
           "🏦\nقاصة الورشة"
         ],
         "title": "🏦\nقاصة الورشة",
-        "textLength": 264,
-        "controlCount": 5,
+        "textLength": 243,
+        "controlCount": 4,
         "controlLabels": [
           "إضافة حركة نقدية",
-          "إضافة بيانات تجريبية",
           "›",
           "اليوم",
           "‹"
@@ -1715,6 +1714,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1725,7 +1725,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 193,
+        "arabicChars": 175,
         "latinChars": 8
       },
       "consoleErrors": [],
@@ -2550,7 +2550,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers.html",
       "requiredPermission": "customers",
-      "durationMs": 1579,
+      "durationMs": 2683,
       "error": null,
       "activated": true,
       "observation": {
@@ -2563,10 +2563,9 @@
           "إضافة مطالبة على عميل"
         ],
         "title": "🧾\nأرصدة العملاء",
-        "textLength": 422,
-        "controlCount": 3,
+        "textLength": 402,
+        "controlCount": 2,
         "controlLabels": [
-          "إضافة أمثلة تجريبية",
           "إضافة العميل",
           "إضافة على الرصيد"
         ],
@@ -2578,6 +2577,7 @@
         "tableRows": 1,
         "tableColumns": 8,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2588,7 +2588,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 324,
+        "arabicChars": 307,
         "latinChars": 8
       },
       "consoleErrors": [],
@@ -4190,7 +4190,7 @@
       "rendererType": "view",
       "rendererSource": "views/expenses.html",
       "requiredPermission": "expenses",
-      "durationMs": 919,
+      "durationMs": 2772,
       "error": null,
       "activated": true,
       "observation": {
@@ -4203,10 +4203,9 @@
           "إعدادات المصروفات"
         ],
         "title": "📤\nالمصروفات",
-        "textLength": 512,
-        "controlCount": 3,
+        "textLength": 492,
+        "controlCount": 2,
         "controlLabels": [
-          "إضافة أمثلة تجريبية",
           "تسجيل المصروف",
           "فتح لوحة الأدمن"
         ],
@@ -4218,6 +4217,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -4230,7 +4230,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 410,
+        "arabicChars": 393,
         "latinChars": 8
       },
       "consoleErrors": [],
@@ -4461,7 +4461,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance.html",
       "requiredPermission": "finance",
-      "durationMs": 965,
+      "durationMs": 2897,
       "error": null,
       "activated": true,
       "observation": {
@@ -4479,10 +4479,9 @@
           "Phase 7A period lock foundation"
         ],
         "title": "💹\nالداشبورد المالي",
-        "textLength": 2991,
-        "controlCount": 14,
+        "textLength": 2975,
+        "controlCount": 13,
         "controlLabels": [
-          "إضافة أمثلة تجريبية",
           "لوحة التحكم",
           "أعمار ديون العملاء والموردين",
           "القيود المحاسبية",
@@ -4505,6 +4504,7 @@
         "tableRows": 10,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -4515,8 +4515,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1250,
-        "latinChars": 885
+        "arabicChars": 1233,
+        "latinChars": 889
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5474,7 +5474,7 @@
       "rendererType": "view",
       "rendererSource": "views/income.html",
       "requiredPermission": "income",
-      "durationMs": 786,
+      "durationMs": 3119,
       "error": null,
       "activated": true,
       "observation": {
@@ -5487,10 +5487,9 @@
           "إعدادات الواردات"
         ],
         "title": "📥\nالواردات",
-        "textLength": 405,
-        "controlCount": 3,
+        "textLength": 385,
+        "controlCount": 2,
         "controlLabels": [
-          "إضافة أمثلة تجريبية",
           "تسجيل الوارد",
           "فتح لوحة الأدمن"
         ],
@@ -5502,6 +5501,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -5514,7 +5514,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 326,
+        "arabicChars": 309,
         "latinChars": 8
       },
       "consoleErrors": [],
@@ -8754,7 +8754,7 @@
       "rendererType": "view",
       "rendererSource": "views/receipt.html",
       "requiredPermission": "receipt",
-      "durationMs": 817,
+      "durationMs": 3100,
       "error": null,
       "activated": true,
       "observation": {
@@ -8768,10 +8768,9 @@
           "الوصلات المحفوظة"
         ],
         "title": "🖨️\nالوصلات",
-        "textLength": 793,
-        "controlCount": 5,
+        "textLength": 773,
+        "controlCount": 4,
         "controlLabels": [
-          "إضافة أمثلة تجريبية",
           "إضافة بند",
           "تحديث الوصل",
           "حفظ وتسجيل الحركة",
@@ -8785,6 +8784,7 @@
         "tableRows": 1,
         "tableColumns": 10,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -8795,7 +8795,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 599,
+        "arabicChars": 582,
         "latinChars": 14
       },
       "consoleErrors": [],

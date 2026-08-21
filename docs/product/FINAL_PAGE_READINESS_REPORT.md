@@ -54,6 +54,14 @@ operator-selected PDF before prompting for the actual contract metadata. The
 authenticated Chromium inspection rechecked both primary pages and the
 functional, reality, and product ledgers were regenerated from that evidence.
 
+## Verified continuation: P0 finance source honesty
+
+Cashbox, Finance, Income, Expenses, Customer Balances, and Receipts no longer
+offer the shared action that appended fabricated cash movements and a fictional
+customer. Their existing operator-entry and transaction-posting paths remain.
+All six primary pages were re-inspected through authenticated Chromium and the
+product ledgers were regenerated from the updated measurements.
+
 ## Consolidate
 
 - Primary destinations before / after: **231 / 221**
@@ -63,7 +71,7 @@ functional, reality, and product ledgers were regenerated from that evidence.
 
 ## Tests executed for this recovery
 
-- `npm.cmd run test:build-13`: PASS (12) — static contracts for authenticated
+- `npm.cmd run test:build-13`: PASS (13) — static contracts for authenticated
   runtime hydration, governed record evidence, metadata presentation, and
   fail-closed large-screen boards.
 - `npm.cmd run test:build-10`: PASS — platform/domain and Chromium acceptance

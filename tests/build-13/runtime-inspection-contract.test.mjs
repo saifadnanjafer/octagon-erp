@@ -13,6 +13,10 @@ const budgetingSource = fs.readFileSync(path.join(repoRoot, 'modules', 'budgetin
 const fleetSource = fs.readFileSync(path.join(repoRoot, 'modules', 'fleet.js'), 'utf8');
 const subscriptionsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'subscriptions.js'), 'utf8');
 const enterpriseSuiteSource = fs.readFileSync(path.join(repoRoot, 'modules', 'enterprise-suite.js'), 'utf8');
+const appSource = fs.readFileSync(path.join(repoRoot, 'app.js'), 'utf8');
+const financeViews = ['receipt.html', 'income.html', 'finance.html', 'expenses.html', 'customers.html', 'cashbox.html']
+  .map((file) => fs.readFileSync(path.join(repoRoot, 'views', file), 'utf8'))
+  .join('\n');
 
 test('runtime page inspection waits for the authenticated warehouse context before navigation', () => {
   assert.match(source, /async function waitForReviewRuntimeContext\(page, timeout = 15000\)/);
@@ -83,4 +87,11 @@ test('Enterprise Suite accepts operator-provided bank and contract inputs withou
   assert.match(enterpriseSuiteSource, /entHandleDmsContractFile/);
   assert.match(enterpriseSuiteSource, /entOpenDmsContractImport/);
   assert.match(enterpriseSuiteSource, /doc_create_upload/);
+});
+
+test('P0 finance pages do not append fabricated cash movements or customers', () => {
+  assert.doesNotMatch(appSource, /function addFinanceDemoData/);
+  assert.doesNotMatch(financeViews, /addFinanceDemoData|إضافة أمثلة تجريبية|إضافة بيانات تجريبية/);
+  assert.match(appSource, /function addFinanceTransaction/);
+  assert.match(appSource, /function openCashboxTransactionModal/);
 });

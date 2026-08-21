@@ -6027,28 +6027,6 @@ function renderCustomersPage() {
   }).join('') : '<tr><td colspan="8" class="empty-cell">لا توجد أرصدة عملاء بعد</td></tr>';
 }
 
-function addFinanceDemoData(scope = 'all') {
-  ensureFinance();
-  if (!confirm('إضافة أمثلة تجريبية واضحة؟ لن يتم حذف أو استبدال أي بيانات حالية.')) return;
-  const demoTag = `demo_${scope}_${Date.now()}`;
-  let customer = finance.customers.find(c => c.name === 'عميل تجريبي');
-  if (!customer) {
-    customer = { id: makeId('cust'), name: 'عميل تجريبي', phone: '000', openingBalance: 0, notes: 'Demo record' };
-    finance.customers.push(customer);
-  }
-  const txs = [
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 250000, categoryId: 'cat_sales', departmentId: 'dept_sales', description: 'DEMO - قبض بيع نقدي', partyName: customer.name, customerId: customer.id },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 75000, categoryId: 'cat_materials', departmentId: 'dept_workshop', description: 'DEMO - شراء مواد', partyName: 'مورد تجريبي' },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 40000, categoryId: 'cat_maintenance', departmentId: 'dept_workshop', description: 'DEMO - صيانة معدات', partyName: 'فني تجريبي' },
-    { type: 'customer_charge', direction: 'neutral', sourceType: 'ledger', amount: 180000, departmentId: 'dept_projects', description: 'DEMO - مطالبة مبيعات آجلة', partyName: customer.name, customerId: customer.id },
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 90000, categoryId: 'cat_customer_payment', departmentId: 'dept_sales', description: 'DEMO - تسديد عميل', partyName: customer.name, customerId: customer.id }
-  ];
-  txs.forEach((tx, idx) => addFinanceTransaction({ ...tx, date: todayISO(), sourceId: `${demoTag}_${idx}`, receiptNo: `DEMO-${idx + 1}`, paymentMethod: tx.sourceType === 'cashbox' ? 'cash' : 'ledger' }, { skipSave: true }));
-  saveData();
-  financeRefreshAll();
-  showToast('تمت إضافة البيانات التجريبية وربطها بالداشبورد والقاصة والعملاء', 'success');
-}
-
 function financeRefreshAll() {
   renderFinanceDashboard();
   renderCashbox();

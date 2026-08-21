@@ -239,6 +239,13 @@ ${stateLines}
 
 ## Tests executed for this recovery
 
+- \`npm.cmd run test:build-13\`: PASS (8) — static contracts for authenticated
+  runtime hydration, governed record evidence, metadata presentation, and
+  fail-closed large-screen boards.
+- \`npm.cmd run test:build-10\`: PASS — platform/domain and Chromium acceptance
+  for device, fleet, offline, kiosk, and responsive workspace behavior.
+- Targeted real-Chromium reinspection: PASS — all six large-screen boards
+  expose governed source links with no illustrative live metrics or raw JSON.
 - \`npm.cmd run test:page-consolidation\`: PASS (11)
 - \`node --test tests/functional-pages/functional-pages.test.mjs\`: PASS (7)
 - \`npm.cmd run test:functional-pages\`: PASS — the complete serial aggregate

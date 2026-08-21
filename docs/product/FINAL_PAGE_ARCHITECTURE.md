@@ -1,6 +1,6 @@
 # Final Page Architecture
 
-Current product structure at `128be4464221e2a4362da2425778048af2fe882a`. Group names are business concepts,
+Current product structure at `cabcb07d8cef915f29e37ec570e0262f6302504a`. Group names are business concepts,
 not build waves. Entries marked THIN remain visible only as tracked gaps and do
 not make this product ready for internal use.
 
@@ -47,12 +47,12 @@ not make this product ready for internal use.
 
 ## ops → ops_boards
 
-- **Alert Board** (`alert_board`) — Alert board — boards/alerts (risk: low, phase: build10); THIN.
-- **Device Health Board** (`device_health_board`) — Device health board — boards/health (risk: low, phase: build10); THIN.
+- **Alert Board** (`alert_board`) — Alert board — boards/alerts (risk: low, phase: build10); USABLE.
+- **Device Health Board** (`device_health_board`) — Device health board — boards/health (risk: low, phase: build10); USABLE.
 - **Fleet Operations Board** (`fleet_operations_board`) — Fleet operations board — boards/fleet (risk: low, phase: build10); USABLE.
-- **Production Large Screen** (`production_large_screen`) — Production large screen — boards/production (risk: low, phase: build10); THIN.
-- **Service Queue Board** (`service_queue_board`) — Service queue board — boards/service (risk: low, phase: build10); THIN.
-- **Warehouse Large Screen** (`warehouse_large_screen`) — Warehouse large screen — boards/warehouse (risk: low, phase: build10); THIN.
+- **Production Large Screen** (`production_large_screen`) — Production large screen — boards/production (risk: low, phase: build10); USABLE.
+- **Service Queue Board** (`service_queue_board`) — Service queue board — boards/service (risk: low, phase: build10); USABLE.
+- **Warehouse Large Screen** (`warehouse_large_screen`) — Warehouse large screen — boards/warehouse (risk: low, phase: build10); USABLE.
 
 ## intelligence → intelligence_core
 
@@ -148,9 +148,9 @@ not make this product ready for internal use.
 - **Customers &amp; Suppliers** (`parties`) — (no PAGE_METADATA entry — inferred label only: Customers & Suppliers); USABLE.
 - **Products &amp; Materials** (`products`) — (no PAGE_METADATA entry — inferred label only: Products & Materials); USABLE.
 - **Qc Center** (`qc_center`) — QC center — workshop/quality (risk: medium, phase: core); USABLE.
-- **Warehouse Topology** (`warehouse_topology`) — Warehouse topology — workshop/inventory (risk: medium, phase: build09); THIN.
+- **Warehouse Topology** (`warehouse_topology`) — Warehouse topology — workshop/inventory (risk: medium, phase: build09); USABLE.
 - **Warehouses** (`warehouses`) — (no PAGE_METADATA entry — inferred label only: Warehouses); USABLE.
-- **Zone and Bin Management** (`zone_bin_management`) — Zone and bin management — workshop/inventory (risk: high, phase: build09); THIN.
+- **Zone and Bin Management** (`zone_bin_management`) — Zone and bin management — workshop/inventory (risk: high, phase: build09); USABLE.
 
 ## commercial → commercial_verticals
 
@@ -209,11 +209,11 @@ not make this product ready for internal use.
 
 ## ops → ops_warehouse_fulfillment
 
-- **Count Session** (`count_session`) — Count session — workshop/inventory (risk: high, phase: build09); THIN.
+- **Count Session** (`count_session`) — Count session — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Cycle Count Plans** (`cycle_count_plans`) — Cycle count plans — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Mobile Picking** (`mobile_picking`) — Mobile picking — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Pick Task Queue** (`pick_task_queue`) — Pick task queue — workshop/inventory (risk: medium, phase: build09); USABLE.
-- **Variance Review** (`variance_review`) — Variance review — workshop/inventory (risk: critical, phase: build09); THIN.
+- **Variance Review** (`variance_review`) — Variance review — workshop/inventory (risk: critical, phase: build09); USABLE.
 - **Wave Execution** (`wave_execution`) — Wave execution — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Wave Planning** (`wave_planning`) — Wave planning — workshop/inventory (risk: high, phase: build09); USABLE.
 
@@ -314,7 +314,7 @@ not make this product ready for internal use.
 ## ops → ops_warehouse_inbound
 
 - **Mobile Receiving** (`mobile_receiving`) — Mobile receiving — workshop/inventory (risk: high, phase: build09); USABLE.
-- **Putaway Rules** (`putaway_rules`) — Putaway rules — workshop/inventory (risk: high, phase: build09); THIN.
+- **Putaway Rules** (`putaway_rules`) — Putaway rules — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Putaway Task Queue** (`putaway_task_queue`) — Putaway task queue — workshop/inventory (risk: medium, phase: build09); USABLE.
 - **Replenishment Proposals** (`replenishment_proposals`) — Replenishment proposals — workshop/inventory (risk: high, phase: build09); USABLE.
 

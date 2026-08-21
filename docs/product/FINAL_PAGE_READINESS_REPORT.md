@@ -2,7 +2,7 @@
 
 ## Starting state
 
-- Engineering start / current SHA: `128be4464221e2a4362da2425778048af2fe882a`
+- Engineering start / current SHA: `cabcb07d8cef915f29e37ec570e0262f6302504a`
 - Page-spec reference SHA: `f2fc82c60394ef0755369fd72f1dc68362c2a9a8`
 - Current primary page count: **221** (derived; never hard-coded as 231)
 - Gemini audit inputs: **4 historical evidence records**, reconciled in
@@ -15,8 +15,8 @@ All **221** current primary pages have a ledger row. Functional state:
 | State | Pages |
 |---|---:|
 | STRONG | 78 |
-| THIN | 18 |
-| USABLE | 125 |
+| THIN | 8 |
+| USABLE | 135 |
 
 - P0/P1 THIN: **0**
 - P0/P1 verified persistence failures: **0**
@@ -33,6 +33,13 @@ All **221** current primary pages have a ledger row. Functional state:
 
 ## Tests executed for this recovery
 
+- `npm.cmd run test:build-13`: PASS (8) — static contracts for authenticated
+  runtime hydration, governed record evidence, metadata presentation, and
+  fail-closed large-screen boards.
+- `npm.cmd run test:build-10`: PASS — platform/domain and Chromium acceptance
+  for device, fleet, offline, kiosk, and responsive workspace behavior.
+- Targeted real-Chromium reinspection: PASS — all six large-screen boards
+  expose governed source links with no illustrative live metrics or raw JSON.
 - `npm.cmd run test:page-consolidation`: PASS (11)
 - `node --test tests/functional-pages/functional-pages.test.mjs`: PASS (7)
 - `npm.cmd run test:functional-pages`: PASS — the complete serial aggregate

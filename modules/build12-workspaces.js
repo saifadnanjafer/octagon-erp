@@ -34,7 +34,21 @@
   const isRtl = () => document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
   const t = (en, ar) => isRtl() ? ar : en;
   const list = (v) => Array.isArray(v) ? v : (v && typeof v === 'object' ? [v] : []);
-  const text = (v) => Array.isArray(v) ? v.join(', ') : (v && typeof v === 'object' ? Object.entries(v).map(([k, x]) => `${k}: ${x}`).join(' · ') : esc(v));
+  // API rows sometimes carry governed policy/audit metadata serialized as JSON
+  // strings. Rendering that payload verbatim exposes an implementation shape
+  // to normal users; present the same facts as labelled values instead.
+  const displayValue = (value) => {
+    if (Array.isArray(value)) return value.map(displayValue).join(', ');
+    if (value && typeof value === 'object') return Object.entries(value).map(([key, item]) => `${key.replaceAll('_', ' ')}: ${displayValue(item)}`).join(' · ');
+    if (typeof value === 'string') {
+      const candidate = value.trim();
+      if ((candidate.startsWith('{') && candidate.endsWith('}')) || (candidate.startsWith('[') && candidate.endsWith(']'))) {
+        try { return displayValue(JSON.parse(candidate)); } catch (_) { /* ordinary text that resembles JSON stays text */ }
+      }
+    }
+    return String(value ?? '—');
+  };
+  const text = (v) => esc(displayValue(v));
   async function api(resource) {
     const response = await fetch(`/api/v1/build12/${resource}`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
     const payload = await response.json().catch(() => ({}));

@@ -55,11 +55,11 @@ const UNKNOWN = 'NOT_OBSERVED (runtime inspection missing — run scripts/produc
  * ------------------------------------------------------------------------- */
 function deriveArchetype(observation) {
   if (!observation?.resolved) return UNKNOWN;
-  const { tableCount, tableRows, listItems, inputCount, controlCount, textLength } = observation;
+  const { tableCount, tableRows, listItems, governedRecordItems = 0, inputCount, controlCount, textLength } = observation;
   if (tableCount > 0 && tableRows > 0) return 'LIST/REGISTER';
   if (tableCount > 0) return 'LIST/REGISTER (currently empty)';
   if (inputCount >= 5) return 'FORM/ENTRY';
-  if (listItems >= 6 && controlCount >= 2) return 'BOARD/QUEUE';
+  if ((listItems >= 6 || governedRecordItems > 0) && controlCount >= 2) return 'BOARD/QUEUE';
   if (/\d/.test(observation.title || '') || (controlCount <= 3 && textLength > 400 && listItems >= 3)) return 'DASHBOARD/SUMMARY';
   if (controlCount >= 3) return 'ACTION WORKSPACE';
   if (textLength > 200) return 'DETAIL/READ';
@@ -83,9 +83,9 @@ function deriveFunctionalState(entry) {
   const serverErrors = (entry.failedRequests || []).filter((request) => request.status >= 500);
   if (serverErrors.length) return { state: 'BROKEN', reasons: [`server error ${serverErrors[0].status} on ${serverErrors[0].path}`] };
 
-  const { textLength, controlCount, tableCount, tableRows, listItems, inputCount, searchInputCount, linkTargets, stateSignals } = observation;
-  const hasData = tableRows > 0 || listItems >= 3;
-  const hasDataSurface = tableCount > 0 || listItems >= 3;
+  const { textLength, controlCount, tableCount, tableRows, listItems, governedRecordItems = 0, inputCount, searchInputCount, linkTargets, stateSignals } = observation;
+  const hasData = tableRows > 0 || listItems >= 3 || governedRecordItems > 0;
+  const hasDataSurface = tableCount > 0 || listItems >= 3 || governedRecordItems > 0;
   const hasActions = controlCount >= 1;
 
   if (stateSignals.error && textLength < 300) return { state: 'BROKEN', reasons: ['renders an error state with almost no content'] };
@@ -97,7 +97,7 @@ function deriveFunctionalState(entry) {
   const strong = controlCount >= 3 && hasDataSurface && (searchInputCount > 0 || inputCount > 0 || linkTargets.length > 0);
   if (strong && hasData) { reasons.push(`${controlCount} controls, ${tableRows || listItems} rendered records, ${linkTargets.length} workflow link(s)`); return { state: 'STRONG', reasons }; }
   if (strong) { reasons.push(`${controlCount} controls and filters present, but no records rendered in the review fixture`); return { state: 'USABLE', reasons }; }
-  reasons.push(`${controlCount} controls, ${tableRows || listItems} records, ${linkTargets.length} link(s)`);
+  reasons.push(`${controlCount} controls, ${tableRows || listItems || governedRecordItems} records, ${linkTargets.length} link(s)`);
   return { state: 'USABLE', reasons };
 }
 

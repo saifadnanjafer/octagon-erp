@@ -126,6 +126,18 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
     'rev_mfr_receipt_batch1', companyId, branch, null, 'production_receipt',
     'rev_prod_finished', 8.0, 8.0, 8.0, 'completed', REVIEWER, REVIEWER, ts, ts,
   );
+  // The page-level Issue / Return workspace reads governed material-flow
+  // requests, while the canonical execution records below are intentionally a
+  // different table. Seed both sides of that boundary so the review UI shows
+  // the completed request that led to each fictional canonical movement.
+  insertFlow.run(
+    'rev_mfr_issue_tube_batch1', companyId, branch, 'rev_matreq_tube_batch1', 'issue',
+    'rev_prod_component', 76.0, 76.0, 76.0, 'completed', REVIEWER, REVIEWER, ts, ts,
+  );
+  insertFlow.run(
+    'rev_mfr_return_tube_batch1', companyId, branch, 'rev_matreq_tube_batch1', 'return',
+    'rev_prod_component', 4.0, 4.0, 4.0, 'completed', REVIEWER, REVIEWER, ts, ts,
+  );
 
   // ---- 1 issue + 1 return (canonical execution layer) ----
   const insertIssue = dialect.prepare(`INSERT INTO mfg_material_issues

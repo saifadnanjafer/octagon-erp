@@ -79,8 +79,8 @@ function deriveEmptinessCause(row) {
   if (!rt || !rt.observation) return { cause: null, confidence: null, evidence: 'not applicable — page not inspected' };
 
   const obs = rt.observation;
-  const hasDataSurface = obs.tableCount > 0 || obs.listItems >= 3;
-  const hasRecords = obs.tableRows > 0 || obs.listItems >= 3;
+  const hasDataSurface = obs.tableCount > 0 || obs.listItems >= 3 || (obs.governedRecordItems || 0) > 0;
+  const hasRecords = obs.tableRows > 0 || obs.listItems >= 3 || (obs.governedRecordItems || 0) > 0;
   const looksEmpty = row.functionalState === 'THIN' || (hasDataSurface && !hasRecords) || (!hasDataSurface && obs.controlCount <= 1);
 
   // BROKEN pages are a different defect class (a crash/5xx), not an

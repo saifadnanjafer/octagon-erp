@@ -130,6 +130,21 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
       '[DEMO] Fictional review fixture - 4 units short versus the purchase order line.', WAREHOUSE_OPERATOR, ts);
 
   // 5. Putaway
+  // A governed fallback rule gives the Putaway Rules page a real, reviewable
+  // authority record. It directs released inbound material to the bulk-storage
+  // zone and deliberately uses the same destination as the recommendation
+  // below, so the fixture demonstrates policy -> recommendation rather than
+  // two unrelated demo facts.
+  dialect.prepare(`INSERT INTO wms_putaway_rules
+    (id, company_id, warehouse_id, name, rule_type, product_id, category_id, supplier_id,
+     receipt_type, lot_pattern, destination_zone_id, destination_location_id,
+     temperature_min, temperature_max, hazard_class, requires_quality_status,
+     strategy, priority, allow_split, is_active, conditions_json, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'fallback', NULL, NULL, NULL, NULL, NULL, ?, ?, NULL, NULL, NULL, 'released',
+      'priority', 50, 1, 1, '{}', ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_putaway_rule_01', companyId, WAREHOUSE_ID, '[DEMO] Released Inbound to Bulk Storage',
+      'rev_wms_zone_storage', 'rev_loc_storage_bin_a', OPS_COORDINATOR, ts, ts);
+
   dialect.prepare(`INSERT INTO wms_putaway_recommendations
     (id, company_id, warehouse_id, source_location_id, product_id, lot_id, quantity, status, requested_by, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, 'suggested', ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
@@ -183,6 +198,25 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
     VALUES (?, ?, ?, ?, ?, ?, ?, 'released', 'wms_receiving_session', ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
     .run('rev_wms_trace_profile_01', companyId, 'rev_prod_var_gate_hinge_01', LOT_ID, 'REV-LOT-HINGE-0001',
       iso(-20), nearExpiry, RECEIVING_SESSION_ID, WAREHOUSE_OPERATOR, ts, ts);
+
+  // Expiration is warehouse-scoped through the most recent canonical stock
+  // move line. The lot/profile alone is intentionally insufficient: without
+  // a current location, the server correctly refuses to guess a warehouse.
+  // This completed fictional receipt makes the existing traceable lot visible
+  // in the expiration queue without changing any operational stock record.
+  dialect.prepare(`INSERT INTO stock_moves
+    (id, company_id, reference, product_id, uom_id, product_qty, location_id, location_dest_id,
+     state, unit_cost, total_value, move_date, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'done', 0, 0, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run('rev_stock_move_lot_hinges_01', companyId, '[DEMO] REV-PO-1001 receipt', 'rev_prod_var_gate_hinge_01',
+      'rev_uom_each', 36, 'rev_loc_receiving_dock', 'rev_loc_storage_bin_a', ts, ts);
+  dialect.prepare(`INSERT INTO stock_move_lines
+    (id, company_id, move_id, product_id, lot_id, serial_id, package_id, source_document_type,
+     source_document_id, source_line_id, quantity, uom_id, idempotency_key, reversal_of_line_id, created_at)
+    VALUES (?, ?, ?, ?, ?, NULL, NULL, 'wms_receiving_session', ?, ?, ?, ?, ?, NULL, ?)
+    ON CONFLICT(id) DO NOTHING`)
+    .run('rev_stock_move_line_lot_hinges_01', companyId, 'rev_stock_move_lot_hinges_01', 'rev_prod_var_gate_hinge_01', LOT_ID,
+      RECEIVING_SESSION_ID, RECEIVING_LINE_ID, 36, 'rev_uom_each', 'review-fixture-lot-hinges-01', ts);
 
   // 9. Docks, appointments, staging, cross-dock — one physical inbound flow:
   // an inbound appointment checked in at a dock, its stock staged, and a
@@ -285,6 +319,24 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
     .run('rev_wms_count_line_01', COUNT_SESSION_ID, 'rev_loc_storage_bin_a', 'rev_prod_var_steel_tube_01',
       '[DEMO] Fictional review fixture - 3 tubes short of book stock.', WAREHOUSE_OPERATOR, ts);
 
+  // Keep one independent counting session open. The count-session workspace
+  // intentionally excludes sessions already awaiting variance review, so the
+  // review environment needs both states to demonstrate its counter workflow
+  // and the separate approval workspace without inventing operational data.
+  const OPEN_COUNT_SESSION_ID = 'rev_wms_count_session_open_01';
+  dialect.prepare(`INSERT INTO wms_count_sessions_v2
+    (id, company_id, branch_id, warehouse_id, plan_id, session_type, status, assigned_to, blind_count,
+     snapshot_at, variance_count, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 'planned', 'counting', ?, 1, ?, 0, ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run(OPEN_COUNT_SESSION_ID, companyId, branchId, WAREHOUSE_ID, COUNT_PLAN_ID, WAREHOUSE_OPERATOR, ts,
+      OPS_COORDINATOR, ts, ts);
+
+  dialect.prepare(`INSERT INTO wms_count_lines_v2
+    (id, session_id, location_id, product_id, theoretical_quantity, counted_quantity, variance_quantity,
+     variance_percent, tolerance_exceeded, discrepancy_reason, counted_by, counted_at, status)
+    VALUES (?, ?, ?, ?, 20, NULL, NULL, NULL, 0, NULL, NULL, NULL, 'pending') ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_count_line_open_01', OPEN_COUNT_SESSION_ID, 'rev_loc_storage_bin_b', 'rev_prod_var_gate_hinge_01');
+
   return {
     summary: {
       productsCreated: VARIANTS.length,
@@ -293,6 +345,7 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
       receivingSessions: 1,
       discrepancies: 1,
       putawayRecommendations: 1,
+      putawayRules: 1,
       replenishmentProposals: 1,
       pickTasksCreated: PICK_TASKS.length,
       nearExpirationRows: 1,
@@ -303,7 +356,7 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
       crossdockMatches: 1,
       pickWaves: 1,
       countPlans: 1,
-      countSessions: 1,
+      countSessions: 2,
       traceabilityNote: 'rev_lot_gate_hinges_01 links wms_receiving_lines -> wms_trace_profiles -> wms_pick_tasks_v2 (task 02)',
       warehouseId: WAREHOUSE_ID,
       tenantId, companyId, branchId,

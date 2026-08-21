@@ -1,6 +1,6 @@
 # Gemini Audit Reconciliation
 
-Current engineering SHA: `128be4464221e2a4362da2425778048af2fe882a`. Historical Gemini material was read as
+Current engineering SHA: `cabcb07d8cef915f29e37ec570e0262f6302504a`. Historical Gemini material was read as
 supporting evidence only. Current source, runtime inspection, and disposable
 test results supersede historical closure labels.
 

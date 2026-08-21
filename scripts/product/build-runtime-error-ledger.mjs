@@ -105,7 +105,11 @@ failedGroups.forEach((group) => {
   rows.push({
     kind: 'network', status: group.status, method: group.method, path: group.path,
     category: group.category, note: group.note, pages, pageCount: pages.length,
-    retainedP0P1Pages: retainedP0P1, needsFix: retainedP0P1.length > 0,
+    // A canonical-authority rejection proves the server protected the
+    // record from a legacy writer. Keep it visible, but never make it an
+    // actionable defect by weakening that authority boundary.
+    retainedP0P1Pages: retainedP0P1,
+    needsFix: retainedP0P1.length > 0 && !['EXPECTED_AUTH', 'EXPECTED_CANONICAL_GUARD'].includes(group.category),
   });
 });
 consoleGroups.forEach((group) => {
@@ -137,7 +141,7 @@ md.push('A validation-shaped 4xx on an unattended page load means the client sen
 md.push('incomplete default request, not that a user typed something wrong.');
 md.push('');
 md.push(`Unique error signatures: **${rows.length}** (${failedGroups.size} network, ${consoleGroups.size} console)`);
-md.push(`Signatures that hit a retained P0/P1 page (must fix before closing this recovery wave): **${needsFixRows.length}**`);
+md.push(`Actionable signatures on retained P0/P1 pages (must fix before closing this recovery wave): **${needsFixRows.length}**`);
 md.push('');
 md.push('## Category distribution');
 md.push('');
@@ -146,7 +150,7 @@ md.push('|---|---|');
 Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).forEach(([cat, count]) => md.push(`| ${cat} | ${count} |`));
 md.push('');
 
-md.push(`## Signatures on retained P0/P1 pages — fix these (${needsFixRows.length})`);
+md.push(`## Actionable signatures on retained P0/P1 pages — fix these (${needsFixRows.length})`);
 md.push('');
 md.push('| Kind | Signature | Category | Pages hit | P0/P1 pages needing fix | Note |');
 md.push('|---|---|---|---|---|---|');

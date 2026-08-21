@@ -119,33 +119,17 @@
     const activeWarehouse = getActiveWarehouse();
     const isBoard = meta.category === 'boards' || pageKey.includes('board') || pageKey.includes('screen');
 
+    // Board pages have no authoritative aggregate metric endpoint.  Their
+    // dedicated renderer is deliberately fail-closed: it states that no live
+    // metric is verified and offers links to the governed source workspaces.
+    // Do not fall through to the legacy illustrative board cards here.
+    if (isBoard && root.Build10BoardsRenderer && typeof root.Build10BoardsRenderer.render === 'function') {
+      container.innerHTML = root.Build10BoardsRenderer.render(pageKey, null, isRtl, readOnly);
+      return container;
+    }
+
     let contentHtml = '';
-    if (isBoard) {
-      contentHtml = `
-        <div class="b10-board-grid">
-          <div class="b10-board-card">
-            <h3>Active Assets</h3>
-            <div class="b10-board-metric">142</div>
-            <div class="b10-status" data-phase="online">Operational</div>
-          </div>
-          <div class="b10-board-card">
-            <h3>Active Trips</h3>
-            <div class="b10-board-metric">18</div>
-            <div class="b10-status" data-phase="moving">In Transit</div>
-          </div>
-          <div class="b10-board-card">
-            <h3>Geofence Events</h3>
-            <div class="b10-board-metric">4</div>
-            <div class="b10-status" data-phase="warning">Breaches</div>
-          </div>
-          <div class="b10-board-card">
-            <h3>Offline Sync</h3>
-            <div class="b10-board-metric">99.8%</div>
-            <div class="b10-status" data-phase="synced">Healthy</div>
-          </div>
-        </div>
-      `;
-    } else {
+    if (!isBoard) {
       const records = mockDataForPage(pageKey);
       const rows = records.map(r => `
         <tr data-record-id="${r.id}">

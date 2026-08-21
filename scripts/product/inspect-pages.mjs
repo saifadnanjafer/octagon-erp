@@ -94,6 +94,18 @@ async function waitForActivation(page, pageId, timeout = 6000) {
   return false;
 }
 
+// The review login and company/branch selection complete before this script
+// reloads the shell, but the client runtime context is fetched asynchronously
+// after that reload. BUILD-09 workspaces read its warehouse id on activation.
+// Starting navigation before it is ready sends an empty warehouse_id, which
+// made live, populated pages look like clean empty states in the evidence.
+async function waitForReviewRuntimeContext(page, timeout = 15000) {
+  await page.waitForFunction(() => {
+    const context = window.OctagonRuntimeContext;
+    return Boolean(context?.ready && context.userId && context.companyId && context.warehouseId);
+  }, { timeout });
+}
+
 async function navigateTo(page, item) {
   await clickVisible(page, `.module-domain-tab${selectorFor('data-nav-domain', item.topLevelSection)}`);
   const group = `[data-nav-group="${item.sidebarGroup}"]`;
@@ -101,9 +113,12 @@ async function navigateTo(page, item) {
   if (isCollapsed) await clickVisible(page, `${group} .nav-group-toggle`);
   await clickVisible(page, `${group} .nav-btn${selectorFor('data-page', item.id)}`);
   const activated = await waitForActivation(page, item.id);
-  // Data usually lands after first paint; give async table/list population a
-  // bounded chance so row counts reflect a loaded page rather than a skeleton.
-  await sleep(activated ? 450 : 250);
+  // Data usually lands after first paint; some governed BUILD-09 workspaces
+  // make several scoped reads after activation. Their observed local range is
+  // 100–1200 ms, so 450 ms was short enough to record a real list as empty.
+  // Keep this bounded (rather than waiting indefinitely for all pages) while
+  // allowing the loaded workspace, not its initial skeleton, to be measured.
+  await sleep(activated ? 1250 : 250);
   return activated;
 }
 
@@ -155,7 +170,15 @@ function inspectActivePage() {
   const tableColumns = tables.length ? tables[0].querySelectorAll('thead th').length : 0;
   // Card/list surfaces that are not <table> — many workspaces render lists as
   // repeated card divs, and counting only <table> would score them as empty.
-  const listItems = [...host.querySelectorAll('[data-row], [data-id], .list-item, .card-row, li')].filter(visible).length;
+  // BUILD-09's governed workspaces deliberately use their own shared classes
+  // instead of generic card-row/list-item, so include those semantic rows too.
+  const listItemNodes = new Set([...host.querySelectorAll('[data-row], [data-id], .list-item, .card-row, li, .b09r-pool-row, .b09r-queue-row, .b09r-wave-row, .b09r-tree-row, .b09r-scan-row, .b09r-count-line, .b09r-card, .b09r-downtime-row')].filter(visible));
+  const listItems = listItemNodes.size;
+  // Unlike an arbitrary <li>, these classes are emitted only once per
+  // governed BUILD-09 domain record. Keep a separate count so one real
+  // variance/topology record is never erased by the generic three-item UI
+  // heuristic that protects prose-heavy legacy pages from false positives.
+  const governedRecordItems = new Set([...host.querySelectorAll('.b09r-pool-row, .b09r-queue-row, .b09r-wave-row, .b09r-scan-row, .b09r-count-line, .b09r-card, .b09r-downtime-row')].filter(visible)).size;
 
   const headings = [...host.querySelectorAll('h1, h2, h3')].filter(visible).map((element) => element.innerText.trim()).filter(Boolean);
 
@@ -217,6 +240,7 @@ function inspectActivePage() {
     tableRows,
     tableColumns,
     listItems,
+    governedRecordItems,
     stateSignals,
     linkTargets: [...linkTargets],
     rawIdCount: rawIdMatches.length,
@@ -257,6 +281,7 @@ try {
     const overlay = document.getElementById('loginOverlay') || document.querySelector('.login-overlay, #systemLoginOverlay');
     if (overlay) overlay.style.display = 'none';
   });
+  await waitForReviewRuntimeContext(page);
 
   const primaryItems = report.items.filter((item) => item.visibleInPrimaryNavigation);
   const planned = itemIds.length

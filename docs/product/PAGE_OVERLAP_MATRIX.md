@@ -18,17 +18,17 @@ similar to every other one and buried real duplicates under lifecycle pairs
 
 | Class | Pairs |
 |---|---|
-| C — RELATED, KEEP SEPARATE | 153 |
+| C — RELATED, KEEP SEPARATE | 151 |
 
-Total scored pairs: **153**
+Total scored pairs: **151**
 
 | Class | Page A | Page B | Domain | Same group | Label sim | Purpose sim | Score | A state | B state |
 |---|---|---|---|---|---|---|---|---|---|
 | C | `device_command_center` | `device_health_center` | resources | yes | 0.5 | different | 0.55 | STRONG/STRONG | STRONG/STRONG |
 | C | `events_overview` | `marketing_overview` | commercial | yes | 0.5 | different | 0.55 | USABLE/USABLE | USABLE/USABLE |
 | C | `pick_task_queue` | `putaway_task_queue` | ops | no | 0.5 | same category | 0.55 | USABLE/USABLE | USABLE/USABLE |
-| C | `production_large_screen` | `warehouse_large_screen` | ops | yes | 0.5 | different | 0.55 | THIN/THIN | THIN/THIN |
-| C | `putaway_rules` | `putaway_task_queue` | ops | yes | 0.25 | same category | 0.55 | THIN/THIN | USABLE/USABLE |
+| C | `production_large_screen` | `warehouse_large_screen` | ops | yes | 0.5 | different | 0.55 | USABLE/USABLE | USABLE/USABLE |
+| C | `putaway_rules` | `putaway_task_queue` | ops | yes | 0.25 | same category | 0.55 | USABLE/USABLE | USABLE/USABLE |
 | C | `canonical_inventory` | `inventory` | ops | yes | 0.4 | same category | 0.54 | USABLE/USABLE | STRONG/STRONG |
 | C | `fuel_telemetry` | `suspected_fuel_loss_queue` | resources | yes | 0.2 | same category | 0.52 | STRONG/STRONG | STRONG/STRONG |
 | C | `offline_capability_policies` | `offline_queue` | resources | yes | 0.44 | different | 0.52 | STRONG/STRONG | STRONG/STRONG |
@@ -36,22 +36,21 @@ Total scored pairs: **153**
 | C | `command_center` | `workshop_command_center` | ops | yes | 0.43 | different | 0.51 | STRONG/STRONG | USABLE/USABLE |
 | C | `extension_installations` | `extension_marketplace` | commercial | yes | 0.33 | same category | 0.5 | THIN/THIN | USABLE/USABLE |
 | C | `wave_execution` | `wave_planning` | ops | yes | 0.33 | same category | 0.5 | USABLE/USABLE | USABLE/USABLE |
-| C | `ai_status` | `ai_tools` | intelligence | yes | 0.14 | same category | 0.49 | STRONG/CONFUSING | USABLE/USABLE |
+| C | `ai_status` | `ai_tools` | intelligence | yes | 0.14 | same category | 0.49 | STRONG/STRONG | USABLE/USABLE |
 | C | `demand_planning` | `planning_exceptions` | ops | yes | 0.14 | same category | 0.49 | STRONG/STRONG | USABLE/USABLE |
 | C | `device_detail` | `device_registry` | resources | yes | 0.14 | same category | 0.49 | STRONG/STRONG | STRONG/STRONG |
 | C | `home` | `wfl_home` | core | yes | 0.4 | different | 0.49 | USABLE/USABLE | USABLE/USABLE |
 | C | `intercompany_reconciliation` | `intercompany_transactions` | finance | yes | 0.14 | same category | 0.49 | STRONG/STRONG | STRONG/STRONG |
 | C | `crossdock_workspace` | `dock_schedule` | ops | yes | 0.13 | same category | 0.47 | USABLE/USABLE | USABLE/USABLE |
 | C | `treasury_alerts` | `treasury_cash_position` | finance | yes | 0.13 | same category | 0.47 | STRONG/STRONG | STRONG/STRONG |
-| C | `ai_assistant` | `ai_overview` | intelligence | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/CONFUSING |
+| C | `ai_assistant` | `ai_overview` | intelligence | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `content_approvals` | `content_calendar` | commercial | yes | 0.33 | different | 0.45 | USABLE/USABLE | USABLE/USABLE |
-| C | `count_session` | `cycle_count_plans` | ops | yes | 0.25 | same category | 0.45 | THIN/THIN | USABLE/USABLE |
+| C | `count_session` | `cycle_count_plans` | ops | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `device_alerts` | `device_registry` | resources | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `employee_kiosk` | `service_kiosk` | ops | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `employee_kiosk` | `warehouse_kiosk` | ops | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `mobile_picking` | `mobile_receiving` | ops | no | 0.33 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `production_issue_return` | `production_receipt` | ops | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
-| C | `production_issue_return` | `shopfloor_terminal` | ops | yes | 0.09 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `production_material_requests` | `production_receipt` | ops | yes | 0.25 | same category | 0.45 | USABLE/USABLE | USABLE/USABLE |
 | C | `service_kiosk` | `warehouse_kiosk` | ops | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
 | C | `sync_conflicts` | `sync_sessions` | resources | yes | 0.33 | different | 0.45 | STRONG/STRONG | STRONG/STRONG |
@@ -63,11 +62,11 @@ Total scored pairs: **153**
 | C | `account_mapping` | `consolidated_reports` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `account_mapping` | `consolidation_groups` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `account_mapping` | `eliminations` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `ai_queue` | `ai_status` | intelligence | yes | 0.17 | same category | 0.4 | USABLE/USABLE | STRONG/CONFUSING |
+| C | `ai_queue` | `ai_status` | intelligence | yes | 0.17 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
 | C | `ai_queue` | `ai_tools` | intelligence | yes | 0.17 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `alert_board` | `device_health_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | THIN/THIN |
-| C | `alert_board` | `fleet_operations_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | USABLE/USABLE |
-| C | `alert_board` | `service_queue_board` | ops | yes | 0.25 | different | 0.4 | THIN/THIN | THIN/THIN |
+| C | `alert_board` | `device_health_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
+| C | `alert_board` | `fleet_operations_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
+| C | `alert_board` | `service_queue_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `automation` | `intelligence` | intelligence | yes | 0 | same category | 0.4 | STRONG/CONFUSING | STRONG/STRONG |
 | C | `banking` | `budgeting` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `banking` | `cashbox` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
@@ -90,9 +89,9 @@ Total scored pairs: **153**
 | C | `consolidated_reports` | `consolidation_groups` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
 | C | `consolidated_reports` | `eliminations` | finance | yes | 0 | same category | 0.4 | USABLE/USABLE | STRONG/STRONG |
 | C | `consolidation_groups` | `eliminations` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
-| C | `count_session` | `mobile_picking` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
-| C | `count_session` | `variance_review` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
-| C | `count_session` | `wave_execution` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
+| C | `count_session` | `mobile_picking` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
+| C | `count_session` | `variance_review` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
+| C | `count_session` | `wave_execution` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `crossdock_workspace` | `staging_board` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `customers` | `expenses` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `customers` | `finance` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
@@ -130,26 +129,24 @@ Total scored pairs: **153**
 | C | `liquidity_forecast` | `treasury_cash_position` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `machines` | `mrp` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `machines` | `op_packs` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `mobile_picking` | `variance_review` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | THIN/THIN |
+| C | `mobile_picking` | `variance_review` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `mobile_picking` | `wave_execution` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `mobile_receiving` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `mps` | `supply_demand_balance` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `mrp` | `op_packs` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `operational_performance` | `production_issue_return` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
 | C | `operational_performance` | `shopfloor_terminal` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
 | C | `operational_performance` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
 | C | `payment_funding_proposals` | `treasury_alerts` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `payment_funding_proposals` | `treasury_cash_position` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `pick_task_queue` | `wave_planning` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `production_issue_return` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `quality_hold_queue` | `rework_workspace` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `quality_hold_queue` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `rework_workspace` | `scrap_approval` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `service_kiosk` | `shop_floor_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `shop_floor_kiosk` | `warehouse_kiosk` | ops | yes | 0.25 | different | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `shopfloor_terminal` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `variance_review` | `wave_execution` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
-| C | `warehouse_topology` | `zone_bin_management` | ops | yes | 0 | same category | 0.4 | THIN/THIN | THIN/THIN |
+| C | `variance_review` | `wave_execution` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
+| C | `warehouse_topology` | `zone_bin_management` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `workflow` | `workshop_command_center` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `workshop_command_center` | `workshop_readiness` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `tenant_detail` | `tenant_directory` | commercial | yes | 0.14 | same category | 0.39 | USABLE/USABLE | STRONG/STRONG |
@@ -161,20 +158,21 @@ Total scored pairs: **153**
 | C | `ai_prompt_templates` | `ai_run_history` | intelligence | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_proposal_inbox` | `ai_run_history` | intelligence | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `crossdock_workspace` | `dock_checkin` | ops | yes | 0.11 | same category | 0.37 | USABLE/USABLE | USABLE/USABLE |
-| C | `device_health_board` | `fleet_operations_board` | ops | yes | 0.2 | different | 0.37 | THIN/THIN | USABLE/USABLE |
-| C | `device_health_board` | `service_queue_board` | ops | yes | 0.2 | different | 0.37 | THIN/THIN | THIN/THIN |
+| C | `device_health_board` | `fleet_operations_board` | ops | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
+| C | `device_health_board` | `service_queue_board` | ops | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `event_planner` | `events` | commercial | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
-| C | `fleet_operations_board` | `service_queue_board` | ops | yes | 0.2 | different | 0.37 | USABLE/USABLE | THIN/THIN |
+| C | `fleet_operations_board` | `service_queue_board` | ops | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `mobile_picking` | `pick_task_queue` | ops | yes | 0.11 | same category | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `production_receipt` | `shopfloor_terminal` | ops | yes | 0.11 | same category | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `quality_hold_queue` | `workcenter_queue` | ops | yes | 0.2 | different | 0.37 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_assistant` | `ai_queue` | intelligence | yes | 0.17 | different | 0.35 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_policy_registry` | `ai_run_history` | intelligence | yes | 0.33 | different | 0.35 | USABLE/USABLE | USABLE/USABLE |
-| C | `ai_status` | `intelligence` | intelligence | no | 0.17 | same category | 0.35 | STRONG/CONFUSING | STRONG/STRONG |
+| C | `ai_status` | `intelligence` | intelligence | no | 0.17 | same category | 0.35 | STRONG/STRONG | STRONG/STRONG |
 | C | `ai_tools` | `intelligence` | intelligence | no | 0.17 | same category | 0.35 | USABLE/USABLE | STRONG/STRONG |
 | C | `data_quality` | `import_center` | admin | yes | 0.33 | different | 0.35 | STRONG/STRONG | USABLE/USABLE |
 | C | `event_planner` | `event_registrations` | commercial | yes | 0.33 | different | 0.35 | USABLE/USABLE | USABLE/USABLE |
 | C | `events` | `events_overview` | commercial | yes | 0.33 | different | 0.35 | USABLE/USABLE | USABLE/USABLE |
+| C | `production_issue_return` | `shopfloor_terminal` | ops | yes | 0.09 | same category | 0.35 | USABLE/USABLE | USABLE/USABLE |
 | C | `production_material_requests` | `shopfloor_terminal` | ops | yes | 0.09 | same category | 0.35 | USABLE/USABLE | USABLE/USABLE |
 | C | `system_check` | `system_settings` | admin | yes | 0.33 | different | 0.35 | USABLE/USABLE | USABLE/USABLE |
 

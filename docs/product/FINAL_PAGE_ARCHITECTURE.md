@@ -1,6 +1,6 @@
 # Final Page Architecture
 
-Current product structure at `5d88a0d043f2b337e140b8037f81a9131a72082d`. Group names are business concepts,
+Current product structure at `a5b2943e26665912f547b58b8b8f5ea83c9f3315`. Group names are business concepts,
 not build waves. Entries marked THIN remain visible only as tracked gaps and do
 not make this product ready for internal use.
 

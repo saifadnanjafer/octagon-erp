@@ -2,7 +2,7 @@
 
 ## Starting state
 
-- Engineering start / current SHA: `5d88a0d043f2b337e140b8037f81a9131a72082d`
+- Engineering start / current SHA: `a5b2943e26665912f547b58b8b8f5ea83c9f3315`
 - Page-spec reference SHA: `f2fc82c60394ef0755369fd72f1dc68362c2a9a8`
 - Current primary page count: **221** (derived; never hard-coded as 231)
 - Gemini audit inputs: **4 historical evidence records**, reconciled in
@@ -35,7 +35,7 @@ All **221** current primary pages have a ledger row. Functional state:
 - `npm.cmd run test:page-consolidation`: PASS (9)
 - `npm.cmd run test:functional-pages`: PASS (7)
 - `npm.cmd run test:navigation-regression`: PASS (2), after starting the disposable review server
-- Full click audit / visual audit: recorded only when their processes complete; this report does not treat an in-progress process as a pass.
+- Full click audit / visual audit: **NOT_COMPLETED** in this bounded recovery run; no result is counted as a pass. Existing historical navigation evidence remains supporting evidence only.
 
 ## Final verdict
 

@@ -237,7 +237,7 @@ ${stateLines}
 - \`npm.cmd run test:page-consolidation\`: PASS (9)
 - \`npm.cmd run test:functional-pages\`: PASS (7)
 - \`npm.cmd run test:navigation-regression\`: PASS (2), after starting the disposable review server
-- Full click audit / visual audit: recorded only when their processes complete; this report does not treat an in-progress process as a pass.
+- Full click audit / visual audit: **NOT_COMPLETED** in this bounded recovery run; no result is counted as a pass. Existing historical navigation evidence remains supporting evidence only.
 
 ## Final verdict
 

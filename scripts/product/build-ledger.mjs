@@ -25,6 +25,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FOCUSED_FUNCTIONAL_BLOCKERS, FOCUSED_FUNCTIONAL_EVIDENCE } from './focused-functional-evidence.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');
@@ -164,8 +165,18 @@ const rows = primary.map((item) => {
   const rt = runtimeById.has(item.id) ? { ...runtimeById.get(item.id), inspected: true } : { inspected: false };
   const click = clickById.get(item.id) || {};
   const observation = rt.observation;
-  const functional = deriveFunctionalState(rt);
-  const usability = deriveUsabilityState(rt, functional.state);
+  const focusedEvidence = FOCUSED_FUNCTIONAL_EVIDENCE[item.id] || null;
+  const focusedBlocker = FOCUSED_FUNCTIONAL_BLOCKERS[item.id] || null;
+  // inspect-pages is intentionally passive. Its one-second page snapshot can
+  // arrive before a bespoke workspace paints its controls, so never let that
+  // weaker signal overrule a focused test that drives a real scoped mutation.
+  const functional = focusedEvidence
+    ? { state: 'USABLE', reasons: [`focused Chromium/domain acceptance (${focusedEvidence.test}): ${focusedEvidence.proof}`] }
+    : deriveFunctionalState(rt);
+  if (focusedBlocker) functional.reasons.push(`focused functional blocker (${focusedBlocker.test}): ${focusedBlocker.proof}`);
+  const usability = focusedEvidence
+    ? { state: 'USABLE', reasons: ['focused workflow acceptance renders and operates the page-specific surface'] }
+    : deriveUsabilityState(rt, functional.state);
 
   const observedActions = observation?.controlLabels?.length
     ? observation.controlLabels.join(' | ')
@@ -199,6 +210,8 @@ const rows = primary.map((item) => {
 
     functionalState: functional.state,
     functionalEvidence: functional.reasons.join('; '),
+    focusedFunctionalEvidence: focusedEvidence,
+    focusedFunctionalBlocker: focusedBlocker,
     usabilityState: usability.state,
     usabilityEvidence: usability.reasons.join('; '),
     deadEnd: isDeadEnd(rt),

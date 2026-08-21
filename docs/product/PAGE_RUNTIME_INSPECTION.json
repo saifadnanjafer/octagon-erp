@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-21T09:26:31.345Z",
-  "startedAt": "2026-08-21T09:26:24.493Z",
+  "generatedAt": "2026-08-21T17:10:54.372Z",
+  "startedAt": "2026-08-21T17:10:29.261Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
-    "total": 231,
-    "resolved": 231,
+    "total": 221,
+    "resolved": 221,
     "unresolved": 0
   },
   "pages": [
@@ -2193,112 +2193,6 @@
       "failedRequests": []
     },
     {
-      "id": "consolidation_lineage",
-      "labelEn": "Consolidation Lineage",
-      "labelAr": "· تتبع التوحيد",
-      "domain": "finance",
-      "sidebarGroup": "finance_consolidation",
-      "rendererType": "view",
-      "rendererSource": "views/consolidation_lineage.html",
-      "requiredPermission": "consolidation_lineage",
-      "durationMs": 4317,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "consolidation_lineage",
-        "hostDataPage": null,
-        "headings": [
-          "تتبع التوحيد"
-        ],
-        "title": "تتبع التوحيد",
-        "textLength": 468,
-        "controlCount": 2,
-        "controlLabels": [
-          "↻ تحديث",
-          "⇩ تصدير CSV"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 6,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": true,
-          "empty": true,
-          "error": true,
-          "denied": true
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 183,
-        "latinChars": 183
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "consolidation_runs",
-      "labelEn": "Consolidation Runs",
-      "labelAr": "· عمليات التوحيد",
-      "domain": "finance",
-      "sidebarGroup": "finance_consolidation",
-      "rendererType": "view",
-      "rendererSource": "views/consolidation_runs.html",
-      "requiredPermission": "consolidation_runs",
-      "durationMs": 4289,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "consolidation_runs",
-        "hostDataPage": null,
-        "headings": [
-          "عمليات التوحيد"
-        ],
-        "title": "عمليات التوحيد",
-        "textLength": 510,
-        "controlCount": 6,
-        "controlLabels": [
-          "↻ تحديث",
-          "⇩ تصدير CSV",
-          "Period Create",
-          "Snapshot Capture",
-          "Run Calculate",
-          "Finalize"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": true,
-          "empty": true,
-          "error": true,
-          "denied": true
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 206
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
       "id": "content_approvals",
       "labelEn": "Content Approvals",
       "labelAr": "اعتمادات المحتوى",
@@ -3173,59 +3067,6 @@
         "rawJson": false,
         "arabicChars": 92,
         "latinChars": 83
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "device_enrollment",
-      "labelEn": "Device Enrollment",
-      "labelAr": "تسجيل الأجهزة",
-      "domain": "resources",
-      "sidebarGroup": "resources_devices",
-      "rendererType": "javascript",
-      "rendererSource": "modules/build10/renderers/devices.js",
-      "requiredPermission": "device_enrollment",
-      "durationMs": 4224,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": null,
-        "hostDataPage": "device_enrollment",
-        "headings": [
-          "تسجيل وتفعيل الأجهزة"
-        ],
-        "title": "تسجيل وتفعيل الأجهزة",
-        "textLength": 238,
-        "controlCount": 6,
-        "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": false,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 98,
-        "latinChars": 91
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4994,58 +4835,6 @@
       "failedRequests": []
     },
     {
-      "id": "forecast_accuracy",
-      "labelEn": "Forecast Accuracy",
-      "labelAr": "· دقة التنبؤ",
-      "domain": "ops",
-      "sidebarGroup": "ops_planning",
-      "rendererType": "view",
-      "rendererSource": "views/forecast_accuracy.html",
-      "requiredPermission": "forecast_accuracy",
-      "durationMs": 3823,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "forecast_accuracy",
-        "hostDataPage": null,
-        "headings": [
-          "دقة التنبؤ"
-        ],
-        "title": "دقة التنبؤ",
-        "textLength": 435,
-        "controlCount": 3,
-        "controlLabels": [
-          "↻ تحديث",
-          "⇩ تصدير CSV",
-          "Calculate"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": true,
-          "empty": true,
-          "error": true,
-          "denied": true
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 190,
-        "latinChars": 148
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
       "id": "forecast_overrides",
       "labelEn": "Forecast Overrides",
       "labelAr": "· تعديلات التنبؤ",
@@ -5093,59 +4882,6 @@
         "rawJson": false,
         "arabicChars": 200,
         "latinChars": 183
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "forecast_versions",
-      "labelEn": "Forecast Versions",
-      "labelAr": "· إصدارات التنبؤ",
-      "domain": "ops",
-      "sidebarGroup": "ops_planning",
-      "rendererType": "view",
-      "rendererSource": "views/forecast_versions.html",
-      "requiredPermission": "forecast_versions",
-      "durationMs": 3472,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "forecast_versions",
-        "hostDataPage": null,
-        "headings": [
-          "إصدارات التنبؤ"
-        ],
-        "title": "إصدارات التنبؤ",
-        "textLength": 445,
-        "controlCount": 4,
-        "controlLabels": [
-          "↻ تحديث",
-          "⇩ تصدير CSV",
-          "Calculate",
-          "Publish"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": true,
-          "empty": true,
-          "error": true,
-          "denied": true
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 196,
-        "latinChars": 152
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5252,59 +4988,6 @@
         "rawJson": false,
         "arabicChars": 93,
         "latinChars": 93
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "geofence_events",
-      "labelEn": "Geofence Events",
-      "labelAr": "أحداث السياج الجغرافي",
-      "domain": "resources",
-      "sidebarGroup": "resources_fleet",
-      "rendererType": "javascript",
-      "rendererSource": "modules/build10/renderers/fleet.js",
-      "requiredPermission": "geofence_events",
-      "durationMs": 3359,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": null,
-        "hostDataPage": "geofence_events",
-        "headings": [
-          "أحداث دخول وخروج النطاقات"
-        ],
-        "title": "أحداث دخول وخروج النطاقات",
-        "textLength": 239,
-        "controlCount": 6,
-        "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": false,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 102,
-        "latinChars": 87
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6355,66 +6038,6 @@
       "failedRequests": []
     },
     {
-      "id": "knowledge",
-      "labelEn": "Knowledge",
-      "labelAr": "قاعدة المعرفة",
-      "domain": "resources",
-      "sidebarGroup": "resources_knowledge",
-      "rendererType": "view",
-      "rendererSource": "views/knowledge.html",
-      "requiredPermission": "knowledge",
-      "durationMs": 4484,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "pageKnowledge",
-        "hostDataPage": null,
-        "headings": [
-          "قاعدة المعرفة",
-          "الأكثر مشاهدة",
-          "أحدث التحديثات"
-        ],
-        "title": "قاعدة المعرفة",
-        "textLength": 652,
-        "controlCount": 12,
-        "controlLabels": [
-          "نظرة عامة",
-          "تصفّح المقالات",
-          "مقال جديد",
-          "البدء والإعداد\n1",
-          "الأسئلة الشائعة\n1",
-          "العمليات والتشغيل\n0",
-          "استكشاف الأخطاء\n1",
-          "كيف أبدأ استخدام النظام؟\n البدء والإعداد · 42 مشاهدة\nمنشور",
-          "كيف أنشئ نسخة احتياطية؟\n الأسئلة الشائعة · 27 مشاهدة\nمنشور"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": false,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 504,
-        "latinChars": 0
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
       "id": "knowledge_base",
       "labelEn": "Knowledge Base",
       "labelAr": "قاعدة المعرفة (الفنية)",
@@ -7339,59 +6962,6 @@
         "rawJson": false,
         "arabicChars": 200,
         "latinChars": 164
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "mps_proposals",
-      "labelEn": "Mps Proposals",
-      "labelAr": "· مقترحات الإنتاج",
-      "domain": "ops",
-      "sidebarGroup": "ops_planning",
-      "rendererType": "view",
-      "rendererSource": "views/mps_proposals.html",
-      "requiredPermission": "mps_proposals",
-      "durationMs": 3753,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "mps_proposals",
-        "hostDataPage": null,
-        "headings": [
-          "مقترحات جدول الإنتاج"
-        ],
-        "title": "مقترحات جدول الإنتاج",
-        "textLength": 479,
-        "controlCount": 4,
-        "controlLabels": [
-          "↻ تحديث",
-          "⇩ تصدير CSV",
-          "Proposal Approve",
-          "Proposal Release Request"
-        ],
-        "inputCount": 1,
-        "selectCount": 0,
-        "searchInputCount": 1,
-        "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 1,
-        "tableColumns": 5,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": true,
-          "empty": true,
-          "error": true,
-          "denied": true
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 176
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9219,58 +8789,6 @@
       "failedRequests": []
     },
     {
-      "id": "receiving_discrepancies",
-      "labelEn": "Receiving Discrepancies",
-      "labelAr": "فروقات الاستلام",
-      "domain": "ops",
-      "sidebarGroup": "ops_warehouse_inbound",
-      "rendererType": "javascript",
-      "rendererSource": "modules/build09-receiving-discrepancy-workspace.js",
-      "requiredPermission": "receiving_discrepancies",
-      "durationMs": 4281,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "receiving_discrepancies",
-        "hostDataPage": null,
-        "headings": [
-          "فروقات الاستلام",
-          "طابور استثناءات الاستلام",
-          "مراجعة الاستثناء"
-        ],
-        "title": "فروقات الاستلام",
-        "textLength": 807,
-        "controlCount": 2,
-        "controlLabels": [
-          "تسجيل قرار محكوم"
-        ],
-        "inputCount": 4,
-        "selectCount": 3,
-        "searchInputCount": 0,
-        "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": false,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 387,
-        "latinChars": 240
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
       "id": "rental",
       "labelEn": "Rental",
       "labelAr": "تأجير المعدات",
@@ -9372,58 +8890,6 @@
         "rawJson": false,
         "arabicChars": 258,
         "latinChars": 170
-      },
-      "consoleErrors": [],
-      "pageErrors": [],
-      "failedRequests": []
-    },
-    {
-      "id": "replenishment_rules",
-      "labelEn": "Replenishment Rules",
-      "labelAr": "قواعد التجديد",
-      "domain": "ops",
-      "sidebarGroup": "ops_warehouse_inbound",
-      "rendererType": "javascript",
-      "rendererSource": "modules/build09-putaway-workspace.js",
-      "requiredPermission": "replenishment_rules",
-      "durationMs": 4421,
-      "error": null,
-      "activated": true,
-      "observation": {
-        "resolved": true,
-        "hostId": "replenishment_rules",
-        "hostDataPage": null,
-        "headings": [
-          "قواعد إعادة التعبئة",
-          "قواعد إعادة التعبئة",
-          "قاعدة إعادة تعبئة جديدة"
-        ],
-        "title": "قواعد إعادة التعبئة",
-        "textLength": 727,
-        "controlCount": 1,
-        "controlLabels": [
-          "إنشاء القاعدة"
-        ],
-        "inputCount": 15,
-        "selectCount": 5,
-        "searchInputCount": 3,
-        "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
-        "listItems": 0,
-        "stateSignals": {
-          "loading": false,
-          "empty": false,
-          "error": false,
-          "denied": false
-        },
-        "linkTargets": [],
-        "rawIdCount": 0,
-        "rawIdSamples": [],
-        "rawJson": false,
-        "arabicChars": 413,
-        "latinChars": 143
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12714,7 +12180,7 @@
       "rendererType": "view",
       "rendererSource": "views/work_orders.html",
       "requiredPermission": "work_orders",
-      "durationMs": 6912,
+      "durationMs": 3005,
       "error": null,
       "activated": true,
       "observation": {

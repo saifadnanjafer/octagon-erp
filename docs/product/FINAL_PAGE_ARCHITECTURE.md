@@ -1,6 +1,6 @@
 # Final Page Architecture
 
-Current product structure at `a5b2943e26665912f547b58b8b8f5ea83c9f3315`. Group names are business concepts,
+Current product structure at `255be8aa7c2c9faa6b9d7afbd73ea64f82591729`. Group names are business concepts,
 not build waves. Entries marked THIN remain visible only as tracked gaps and do
 not make this product ready for internal use.
 
@@ -49,7 +49,7 @@ not make this product ready for internal use.
 
 - **Alert Board** (`alert_board`) — Alert board — boards/alerts (risk: low, phase: build10); THIN.
 - **Device Health Board** (`device_health_board`) — Device health board — boards/health (risk: low, phase: build10); THIN.
-- **Fleet Operations Board** (`fleet_operations_board`) — Fleet operations board — boards/fleet (risk: low, phase: build10); THIN.
+- **Fleet Operations Board** (`fleet_operations_board`) — Fleet operations board — boards/fleet (risk: low, phase: build10); USABLE.
 - **Production Large Screen** (`production_large_screen`) — Production large screen — boards/production (risk: low, phase: build10); THIN.
 - **Service Queue Board** (`service_queue_board`) — Service queue board — boards/service (risk: low, phase: build10); THIN.
 - **Warehouse Large Screen** (`warehouse_large_screen`) — Warehouse large screen — boards/warehouse (risk: low, phase: build10); THIN.
@@ -214,17 +214,17 @@ not make this product ready for internal use.
 - **Mobile Picking** (`mobile_picking`) — Mobile picking — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Pick Task Queue** (`pick_task_queue`) — Pick task queue — workshop/inventory (risk: medium, phase: build09); USABLE.
 - **Variance Review** (`variance_review`) — Variance review — workshop/inventory (risk: critical, phase: build09); THIN.
-- **Wave Execution** (`wave_execution`) — Wave execution — workshop/inventory (risk: high, phase: build09); THIN.
+- **Wave Execution** (`wave_execution`) — Wave execution — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Wave Planning** (`wave_planning`) — Wave planning — workshop/inventory (risk: high, phase: build09); USABLE.
 
 ## ops → ops_warehouse_traceability
 
 - **Cross-Dock Workspace** (`crossdock_workspace`) — Cross-dock workspace — workshop/logistics (risk: high, phase: build09); THIN.
-- **Dock Check-In** (`dock_checkin`) — Dock check-in — workshop/logistics (risk: medium, phase: build09); THIN.
-- **Dock Schedule** (`dock_schedule`) — Dock schedule — workshop/logistics (risk: high, phase: build09); THIN.
-- **Expiration Queue** (`expiration_queue`) — Expiration queue — workshop/quality (risk: high, phase: build09); THIN.
+- **Dock Check-In** (`dock_checkin`) — Dock check-in — workshop/logistics (risk: medium, phase: build09); USABLE.
+- **Dock Schedule** (`dock_schedule`) — Dock schedule — workshop/logistics (risk: high, phase: build09); USABLE.
+- **Expiration Queue** (`expiration_queue`) — Expiration queue — workshop/quality (risk: high, phase: build09); USABLE.
 - **Lot / Serial Traceability** (`lot_serial_traceability`) — Lot and serial traceability — workshop/inventory (risk: high, phase: build09); THIN.
-- **Recall Analysis** (`recall_analysis`) — Recall analysis — workshop/quality (risk: critical, phase: build09); THIN.
+- **Recall Analysis** (`recall_analysis`) — Recall analysis — workshop/quality (risk: critical, phase: build09); USABLE.
 - **Staging Board** (`staging_board`) — Staging board — workshop/logistics (risk: medium, phase: build09); THIN.
 
 ## ops → ops_planning
@@ -252,15 +252,15 @@ not make this product ready for internal use.
 - **Mrp** (`mrp`) — Manufacturing MRP II — workshop/production (risk: medium, phase: phase6h); USABLE.
 - **Op Packs** (`op_packs`) — Operation packs — workshop/production (risk: medium, phase: core); USABLE.
 - **Operational Performance** (`operational_performance`) — Operational performance — workshop/production (risk: medium, phase: build09); THIN.
-- **Production Issue / Return** (`production_issue_return`) — Production issue and return — workshop/production (risk: high, phase: build09); THIN.
-- **Production Material Requests** (`production_material_requests`) — Production material requests — workshop/production (risk: high, phase: build09); THIN.
-- **Production Receipt** (`production_receipt`) — Production receipt — workshop/production (risk: high, phase: build09); THIN.
-- **Quality Hold Queue** (`quality_hold_queue`) — Quality hold queue — workshop/quality (risk: high, phase: build09); THIN.
-- **Rework Workspace** (`rework_workspace`) — Rework workspace — workshop/quality (risk: high, phase: build09); THIN.
-- **Scrap Approval** (`scrap_approval`) — Scrap approval — workshop/quality (risk: critical, phase: build09); THIN.
-- **Shop-Floor Terminal** (`shopfloor_terminal`) — Shop-floor terminal — workshop/production (risk: high, phase: build09); THIN.
+- **Production Issue / Return** (`production_issue_return`) — Production issue and return — workshop/production (risk: high, phase: build09); USABLE.
+- **Production Material Requests** (`production_material_requests`) — Production material requests — workshop/production (risk: high, phase: build09); USABLE.
+- **Production Receipt** (`production_receipt`) — Production receipt — workshop/production (risk: high, phase: build09); USABLE.
+- **Quality Hold Queue** (`quality_hold_queue`) — Quality hold queue — workshop/quality (risk: high, phase: build09); USABLE.
+- **Rework Workspace** (`rework_workspace`) — Rework workspace — workshop/quality (risk: high, phase: build09); USABLE.
+- **Scrap Approval** (`scrap_approval`) — Scrap approval — workshop/quality (risk: critical, phase: build09); USABLE.
+- **Shop-Floor Terminal** (`shopfloor_terminal`) — Shop-floor terminal — workshop/production (risk: high, phase: build09); USABLE.
 - **Work Orders** (`work_orders`) — Work Orders — workshop/production (risk: medium, phase: phase6h); THIN.
-- **Work-Center Queue** (`workcenter_queue`) — Work-center queue — workshop/production (risk: medium, phase: build09); THIN.
+- **Work-Center Queue** (`workcenter_queue`) — Work-center queue — workshop/production (risk: medium, phase: build09); USABLE.
 
 ## ops → ops_kiosks
 

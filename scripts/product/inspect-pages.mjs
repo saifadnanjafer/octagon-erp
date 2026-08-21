@@ -124,7 +124,17 @@ function inspectActivePage() {
   const host = hostCandidates.find((element) => element.classList.contains('page-active') && visible(element))
     || hostCandidates.find((element) => visible(element))
     || null;
-  if (!host) return { resolved: false };
+  if (!host) {
+    // Preserve enough bounded context to diagnose an activation that marks a
+    // nav item active while leaving every page host hidden. This is still
+    // read-only observation and avoids turning an unexplained blank surface
+    // into a misleading generic THIN classification.
+    return {
+      resolved: false,
+      activePageIds: hostCandidates.filter((element) => element.classList.contains('page-active')).map((element) => element.id || element.dataset.page || '(unnamed)'),
+      visiblePageIds: hostCandidates.filter(visible).map((element) => element.id || element.dataset.page || '(unnamed)').slice(0, 12),
+    };
+  }
 
   const text = (host.innerText || '').trim();
   const controls = [...host.querySelectorAll('button, [role="button"], a.btn, .btn, [onclick]')].filter(visible);

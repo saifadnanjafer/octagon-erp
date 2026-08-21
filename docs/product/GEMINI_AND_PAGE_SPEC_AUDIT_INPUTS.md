@@ -8,10 +8,10 @@ The page-spec worktree was inspected read-only at
 
 | File | Source / author | Modified | Reference | Major finding | Status |
 |---|---|---|---|---|---|
-| `docs/evidence/model-execution-ledger.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:05.550Z | `a5b2943e2666` | Historical model work and corrections; not current page-function proof. | STALE |
-| `docs/evidence/phase-03/finance-authority-cutover.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:10.334Z | `a5b2943e2666` | Explicitly records aspirational cutover claims corrected by a later audit. | PARTIALLY_VERIFIED |
-| `docs/evidence/phase-04/PHASE_04_CLOSURE.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:11.326Z | `a5b2943e2666` | Records that initial closure did not prove runtime, UI, writer retirement, migration, or browser evidence. | PARTIALLY_VERIFIED |
-| `docs/evidence/phase-04/local-source-inventory.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:11.334Z | `a5b2943e2666` | Historical inventory of Phase 04 sources; not a current runtime audit. | STALE |
+| `docs/evidence/model-execution-ledger.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:05.550Z | `255be8aa7c2c` | Historical model work and corrections; not current page-function proof. | STALE |
+| `docs/evidence/phase-03/finance-authority-cutover.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:10.334Z | `255be8aa7c2c` | Explicitly records aspirational cutover claims corrected by a later audit. | PARTIALLY_VERIFIED |
+| `docs/evidence/phase-04/PHASE_04_CLOSURE.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:11.326Z | `255be8aa7c2c` | Records that initial closure did not prove runtime, UI, writer retirement, migration, or browser evidence. | PARTIALLY_VERIFIED |
+| `docs/evidence/phase-04/local-source-inventory.md` | Gemini 3.6 Flash (historical record) | 2026-08-01T16:40:11.334Z | `255be8aa7c2c` | Historical inventory of Phase 04 sources; not a current runtime audit. | STALE |
 | `docs/page-specs/INDEX.md` | Page-spec catalog (documentation worktree) | 2026-08-14T11:48:28.499Z | `f2fc82c60394` | Catalogued intended and observed page contracts. | PARTIALLY_VERIFIED |
 | `docs/page-specs/MANIFEST.json` | Page-spec catalog (documentation worktree) | 2026-08-14T11:48:28.498Z | `f2fc82c60394` | 231-spec metadata baseline; catalog remains separate and read-only. | PARTIALLY_VERIFIED |
 | `docs/page-specs/COVERAGE.md` | Page-spec catalog (documentation worktree) | 2026-08-14T11:48:34.299Z | `f2fc82c60394` | Coverage and evidence quality by spec wave. | PARTIALLY_VERIFIED |

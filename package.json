@@ -30,7 +30,7 @@
     "test:navigation-visual": "node scripts/navigation/run-visual-acceptance.mjs",
     "test:navigation-regression": "node --test \"tests/navigation/*.test.mjs\"",
     "test:page-consolidation": "node --test \"tests/page-consolidation/*.test.mjs\"",
-    "test:functional-pages": "node --test \"tests/functional-pages/*.test.mjs\"",
+    "test:functional-pages": "node --test --test-concurrency=1 tests/functional-pages/functional-pages.test.mjs tests/build-09/dock-workspaces-browser.test.mjs tests/build-09/expiration-queue-browser.test.mjs tests/build-09/production-material-workspaces-browser.test.mjs tests/build-09/quality-workspaces-browser.test.mjs tests/build-09/quality-rework-scrap-domain.test.mjs tests/build-09/shopfloor-workspaces-browser.test.mjs tests/build-09/wave-workspaces-browser.test.mjs tests/build-09/trace-workspaces-browser.test.mjs tests/build-10/operational-browser-chromium.test.mjs",
     "product:inspect-pages": "node scripts/product/inspect-pages.mjs",
     "product:ledger": "node scripts/product/build-ledger.mjs",
     "product:reality-ledger": "node scripts/product/build-reality-ledger.mjs",
@@ -46,6 +46,7 @@
     "review:verify": "node scripts/review/verify.mjs",
     "review:credentials": "node scripts/review/credentials.mjs",
     "review:functional-matrix": "node scripts/review/functional-matrix.mjs",
+    "review:functional-work-orders": "node scripts/product/check-work-orders-functional.mjs",
     "review:page-inventory": "node scripts/review/page-inventory.mjs",
     "review:uiux-matrix": "node scripts/review/uiux-matrix.mjs"
   },

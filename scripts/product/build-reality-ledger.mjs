@@ -161,7 +161,11 @@ const rows = ledger.rows.map((row) => {
     whatUserAccomplishes: row.businessPurpose && row.actionsAvailable
       ? `${row.labelEn}: ${row.businessPurpose.split('—')[0].trim()} — available here: ${row.actionsAvailable === 'none rendered' ? 'no actions currently rendered' : row.actionsAvailable}${row.downstreamWorkflow && !row.downstreamWorkflow.startsWith('none') && !row.downstreamWorkflow.startsWith('NOT_OBSERVED') ? `, then hands off to ${row.downstreamWorkflow}` : ''}.`
       : null,
-    actionPersistenceEvidence: rt?.observation?.resolved
+    actionPersistenceEvidence: row.focusedFunctionalBlocker
+      ? `VERIFIED_FAILURE_BY_FOCUSED_FUNCTIONAL_TEST — ${row.focusedFunctionalBlocker.test}: ${row.focusedFunctionalBlocker.proof}`
+      : row.focusedFunctionalEvidence
+      ? `VERIFIED_BY_FOCUSED_FUNCTIONAL_TEST — ${row.focusedFunctionalEvidence.test}: ${row.focusedFunctionalEvidence.proof}`
+      : rt?.observation?.resolved
       ? (p0
         ? 'NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page\'s own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist'
         : 'NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data')
@@ -211,11 +215,10 @@ md.push('heuristic guess for the cases where no runtime signal distinguishes "no
 md.push('this resource" from "zero is correct" — those need one owner judgment call, not');
 md.push('another automated pass).');
 md.push('');
-md.push('**Action-persistence gap, stated plainly**: nothing in this ledger proves a button');
-md.push('actually writes data. `inspect-pages.mjs` never clicks a page\'s own action buttons');
-md.push('by design (it must stay read-only). Every row says so explicitly rather than implying');
-md.push('proof that was never gathered — see `actionPersistenceEvidence`. Closing that gap for');
-md.push('P0/P1 pages is the job of the not-yet-written `test:functional-pages` suite.');
+md.push('**Action-persistence evidence, stated plainly**: the read-only inspection proves no button');
+md.push('write. Focused browser/domain tests may add either a verified persistence result or a');
+md.push('verified failure; every remaining row says `NOT_MEASURED` rather than implying proof that');
+md.push('was never gathered — see `actionPersistenceEvidence`.');
 md.push('');
 md.push('## Emptiness cause distribution (THIN/BROKEN pages and zero-record surfaces only)');
 md.push('');

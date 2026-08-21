@@ -170,6 +170,11 @@
     const button = dialog.querySelector('[data-command="submit"]'); button.disabled = true;
     try {
       await root.OctagonApiClient.post(`/api/v1/action/${actionId}`, input);
+      // Governed lookup results are cached for the session and were never
+      // invalidated, so a record created here stayed missing from every picker
+      // until a full reload — create a zone, then try to select it while
+      // creating a location, and it simply was not in the list.
+      try { root.OctagonGovernedLookups?.clear(); } catch (_) {}
       if (dialog.close) dialog.close(); else dialog.hidden = true; setStatus(id, 'success', rtl() ? 'تم الإجراء وتسجيله في التدقيق.' : 'Action completed and recorded in audit.'); await fetchRows(id);
     } catch (error) { errorNode.textContent = error.message; } finally { button.disabled = false; }
   }

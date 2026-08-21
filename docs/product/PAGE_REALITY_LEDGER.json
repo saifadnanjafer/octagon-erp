@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-21T23:19:42.900Z",
+  "generatedAt": "2026-08-21T23:49:01.810Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-21T23:19:42.232Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-21T23:49:01.096Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -6875,7 +6875,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 435,
+        "textLength": 445,
         "controls": 1,
         "inputs": 4,
         "searchInputs": 1,
@@ -6891,8 +6891,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 260,
-        "latinChars": 78
+        "arabicChars": 253,
+        "latinChars": 89
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

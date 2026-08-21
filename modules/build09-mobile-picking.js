@@ -167,14 +167,44 @@
     container.querySelectorAll('[data-lookup-resource]').forEach((wrapper) => {
       if (wrapper.dataset.ptBound) return; wrapper.dataset.ptBound = 'true';
       const resource = wrapper.dataset.lookupResource, queryInput = wrapper.querySelector('.b09-lookup-query'), resultSelect = wrapper.querySelector('.b09-lookup-select');
+      // Rewriting the option list destroys any current selection, so a late
+      // response must never overwrite a newer one — nor the preload overwrite a
+      // choice the operator has already made.
+      let seq = 0;
+      const fill = async (query, isPreload) => {
+        if (!root.OctagonGovernedLookups) return;
+        const mySeq = ++seq;
+        const rows = await root.OctagonGovernedLookups.search(resource, { query }).catch(() => null);
+        // A failed search must not blank a picker the operator is already using.
+        if (rows === null || mySeq !== seq) return;
+        if (isPreload && (resultSelect.value || resultSelect.options.length > 1)) return;
+        const head = rows.length
+          ? (rtl() ? '— اختر —' : '— Select —')
+          : (query ? (rtl() ? 'لا توجد نتائج' : 'No match') : (rtl() ? 'لا توجد عناصر' : 'None available'));
+        // Replacing the options wipes the current selection. Refining the search
+        // after choosing must not silently discard that choice, so it is carried
+        // across the rebuild — re-added as its own option when the new result
+        // page no longer contains it.
+        const prevValue = resultSelect.value;
+        const prevLabel = prevValue ? (resultSelect.options[resultSelect.selectedIndex]?.text || '') : '';
+        resultSelect.innerHTML = `<option value="">${head}</option>` + rows.map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join('');
+        if (prevValue) {
+          if (!Array.prototype.some.call(resultSelect.options, (o) => o.value === prevValue)) {
+            const kept = document.createElement('option');
+            kept.value = prevValue; kept.text = prevLabel || prevValue;
+            resultSelect.appendChild(kept);
+          }
+          resultSelect.value = prevValue;
+        }
+      };
       let timer = null;
       queryInput.addEventListener('input', () => {
         clearTimeout(timer);
-        timer = setTimeout(async () => {
-          const rows = await root.OctagonGovernedLookups.search(resource, { query: queryInput.value }).catch(() => []);
-          resultSelect.innerHTML = `<option value="">${rtl() ? '— بحث ثم اختيار —' : '— Search then select —'}</option>` + rows.map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join('');
-        }, 250);
+        timer = setTimeout(() => { fill(queryInput.value); }, 250);
       });
+      // Populate the first page up front — on a handheld, typing a location code
+      // from memory is exactly what the picker exists to avoid.
+      fill('', true);
     });
   }
 

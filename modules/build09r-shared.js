@@ -39,11 +39,17 @@
 
   /** A single POST helper so every group inherits warehouse scope + idempotency identically. */
   async function call(actionId, input = {}) {
-    return root.OctagonApiClient.post(`/api/v1/action/${actionId}`, {
+    const result = await root.OctagonApiClient.post(`/api/v1/action/${actionId}`, {
       ...input,
       warehouse_id: input.warehouse_id || warehouseId(),
       idempotency_key: input.idempotency_key || `${actionId}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     });
+    // Governed lookup results are cached for the session and were never
+    // invalidated, so a record created through one dialog stayed missing from
+    // every picker until a full reload — create a zone, then try to select it
+    // while creating a location, and it simply was not in the list.
+    try { root.OctagonGovernedLookups?.clear(); } catch (_) {}
+    return result;
   }
 
   /** Read the canonical BUILD-09 query surface (platform/api/build09.mjs). */
@@ -117,14 +123,50 @@
       const resource = wrapper.dataset.lookupResource;
       const queryInput = wrapper.querySelector('.b09-lookup-query');
       const resultSelect = wrapper.querySelector('.b09-lookup-select');
+
+      // Rewriting the option list destroys any current selection, so a late
+      // response must never overwrite a newer one — nor the preload overwrite a
+      // choice the operator has already made.
+      let seq = 0;
+      const fill = async (query, isPreload) => {
+        const mySeq = ++seq;
+        const rows = await root.OctagonGovernedLookups.search(resource, { query }).catch(() => null);
+        // A failed search must not blank a picker the operator is already using.
+        if (rows === null || mySeq !== seq) return;
+        if (isPreload && (resultSelect.value || resultSelect.options.length > 1)) return;
+        const head = rows.length
+          ? `<option value="">${escapeHtml(t('— Select —', '— اختر —'))}</option>`
+          : `<option value="">${escapeHtml(query ? t('No match', 'لا توجد نتائج') : t('None available', 'لا توجد عناصر'))}</option>`;
+        // Replacing the options wipes the current selection. Refining the search
+        // after choosing must not silently discard that choice, so it is carried
+        // across the rebuild — re-added as its own option when the new result
+        // page no longer contains it.
+        const prevValue = resultSelect.value;
+        const prevLabel = prevValue ? (resultSelect.options[resultSelect.selectedIndex]?.text || '') : '';
+        resultSelect.innerHTML = head + rows.map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join('');
+        if (prevValue) {
+          if (!Array.prototype.some.call(resultSelect.options, (o) => o.value === prevValue)) {
+            const kept = document.createElement('option');
+            kept.value = prevValue; kept.text = prevLabel || prevValue;
+            resultSelect.appendChild(kept);
+          }
+          resultSelect.value = prevValue;
+        }
+      };
+
       let timer = null;
       queryInput.addEventListener('input', () => {
         clearTimeout(timer);
-        timer = setTimeout(async () => {
-          const rows = await root.OctagonGovernedLookups.search(resource, { query: queryInput.value }).catch(() => []);
-          resultSelect.innerHTML = `<option value="">${escapeHtml(t('— Search then select —', '— بحث ثم اختيار —'))}</option>` + rows.map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.label)}</option>`).join('');
-        }, 250);
+        timer = setTimeout(() => { fill(queryInput.value); }, 250);
       });
+
+      // Populate the first page up front. Previously the select stayed empty
+      // until the operator typed, so any picker whose values they could not
+      // already recite from memory was a dead end — on Lot/Serial Traceability
+      // that meant the page could not be used at all without knowing a lot
+      // number in advance. The search service pages (limit 25) and caches, so
+      // this costs one cached request per resource.
+      fill('', true);
     });
   }
 

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T23:19:34.149Z",
-  "startedAt": "2026-08-21T23:19:26.863Z",
+  "generatedAt": "2026-08-21T23:48:53.534Z",
+  "startedAt": "2026-08-21T23:48:41.105Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -6452,7 +6452,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "lot_serial_traceability",
-      "durationMs": 1930,
+      "durationMs": 1832,
       "error": null,
       "activated": true,
       "observation": {
@@ -6464,7 +6464,7 @@
           "هوية التتبع"
         ],
         "title": "تتبع الدفعة والرقم التسلسلي",
-        "textLength": 435,
+        "textLength": 445,
         "controlCount": 1,
         "controlLabels": [
           "تتبع"
@@ -6488,8 +6488,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 260,
-        "latinChars": 78
+        "arabicChars": 253,
+        "latinChars": 89
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6835,7 +6835,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-picking.js",
       "requiredPermission": "mobile_picking",
-      "durationMs": 980,
+      "durationMs": 1734,
       "error": null,
       "activated": true,
       "observation": {
@@ -6859,6 +6859,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 7,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -6885,7 +6886,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-receiving.js",
       "requiredPermission": "mobile_receiving",
-      "durationMs": 782,
+      "durationMs": 1614,
       "error": null,
       "activated": true,
       "observation": {
@@ -6909,6 +6910,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 6,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11885,7 +11887,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "warehouse_topology",
-      "durationMs": 1831,
+      "durationMs": 1723,
       "error": null,
       "activated": true,
       "observation": {

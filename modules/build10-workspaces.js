@@ -56,40 +56,70 @@
   }
 
   function getEndpointForPage(pageKey) {
-    if (pageKey.startsWith('device_') || pageKey.includes('gateway') || pageKey.includes('sensor') || pageKey.includes('telemetry') || pageKey.includes('firmware') || pageKey.includes('rollout') || pageKey.includes('configuration')) {
-      return `/api/v1/iot/${pageKey}`;
-    }
-    if (pageKey.startsWith('fleet_') || pageKey.includes('vehicle') || pageKey.includes('geofence') || pageKey.includes('speed') || pageKey.includes('fuel') || pageKey.includes('maintenance')) {
-      return `/api/v1/iot/fleet/${pageKey}`;
-    }
-    if (pageKey.startsWith('offline_') || pageKey.includes('sync') || pageKey.includes('conflict')) {
-      return `/api/v1/iot/offline/${pageKey}`;
-    }
-    if (pageKey.includes('kiosk')) {
-      return `/api/v1/iot/kiosk/${pageKey}`;
-    }
-    return `/api/v1/iot/boards/${pageKey}`;
+    return `/api/v1/build10/${encodeURIComponent(pageKey)}`;
   }
 
-  function mockDataForPage(pageKey) {
-    const company = getActiveCompany();
-    const warehouse = getActiveWarehouse();
-    if (pageKey === 'vehicle_trip_timeline') {
-      return [
-        { id: 'TRIP-101', trip_code: 'TRIP-101', vehicle_id: 'veh-browser-b10', driver_name: 'Driver Alpha', start_time: new Date(Date.now() - 3600000).toISOString(), end_time: new Date().toISOString(), distance_km: 42.5, max_speed_kmh: 88, status: 'completed', company_id: company, warehouse_id: warehouse },
-        { id: 'TRIP-102', trip_code: 'TRIP-102', vehicle_id: 'veh-browser-b10', driver_name: 'Driver Beta', start_time: new Date(Date.now() - 7200000).toISOString(), end_time: new Date(Date.now() - 3600000).toISOString(), distance_km: 18.2, max_speed_kmh: 65, status: 'completed', company_id: company, warehouse_id: warehouse }
-      ];
+  const recordsByPage = new Map();
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  }
+
+  function rowValue(row, keys, fallback = '—') {
+    for (const key of keys) {
+      if (row[key] !== undefined && row[key] !== null && row[key] !== '') return row[key];
     }
-    if (pageKey === 'sync_conflicts') {
-      return [
-        { id: 'CONF-201', conflict_uuid: 'CONF-201', client_id: 'PWA-BROWSER-99', entity_name: 'inventory_count', entity_id: 'quant-99', conflict_type: 'version_mismatch', status: 'pending', created_at: new Date().toISOString(), company_id: company, warehouse_id: warehouse },
-        { id: 'CONF-202', conflict_uuid: 'CONF-202', client_id: 'PWA-BROWSER-99', entity_name: 'sales_order', entity_id: 'so-404', conflict_type: 'concurrent_edit', status: 'resolved', created_at: new Date().toISOString(), company_id: company, warehouse_id: warehouse }
-      ];
+    return fallback;
+  }
+
+  function renderRows(records, isRtl) {
+    if (!records.length) {
+      return `<tr data-state="empty"><td colspan="4">${isRtl ? 'لا توجد سجلات مؤكدة ضمن نطاق الشركة الحالي.' : 'No verified records exist in the current company scope.'}</td></tr>`;
     }
-    return [
-      { id: `${pageKey}-1`, code: `REF-${pageKey.slice(0, 4).toUpperCase()}-1`, name: `${pageKey} Item 1`, status: 'active', company_id: company, warehouse_id: warehouse, updated_at: new Date().toISOString() },
-      { id: `${pageKey}-2`, code: `REF-${pageKey.slice(0, 4).toUpperCase()}-2`, name: `${pageKey} Item 2`, status: 'operational', company_id: company, warehouse_id: warehouse, updated_at: new Date().toISOString() }
-    ];
+    return records.map((record) => {
+      const id = rowValue(record, ['trip_code', 'conflict_uuid', 'client_uuid', 'device_code', 'code', 'id']);
+      const name = rowValue(record, ['name', 'device_name', 'vehicle_id', 'client_id', 'entity_name', 'kiosk_type']);
+      const status = rowValue(record, ['status', 'health_state', 'lifecycle_state', 'sync_status', 'event_classification']);
+      const updated = rowValue(record, ['updated_at', 'created_at', 'timestamp', 'start_time', 'received_at']);
+      return `<tr data-record-id="${escapeHtml(rowValue(record, ['id'], id))}"><td><strong>${escapeHtml(id)}</strong></td><td>${escapeHtml(name)}</td><td><span class="b10-badge b10-badge-success">${escapeHtml(status)}</span></td><td>${escapeHtml(updated)}</td></tr>`;
+    }).join('');
+  }
+
+  function setStatus(container, phase, message) {
+    const status = container.querySelector('[data-role="status"]');
+    if (!status) return;
+    status.dataset.phase = phase;
+    status.textContent = message;
+  }
+
+  async function refreshRecords(pageKey, container, isRtl) {
+    setStatus(container, 'loading', isRtl ? 'جارٍ تحميل السجلات المؤكدة…' : 'Loading verified records…');
+    try {
+      const response = await fetch(getEndpointForPage(pageKey), { headers: { accept: 'application/json' } });
+      const payload = await response.json();
+      if (!response.ok || payload?.success === false) throw new Error(payload?.error || `HTTP ${response.status}`);
+      const records = Array.isArray(payload?.data) ? payload.data : [];
+      recordsByPage.set(pageKey, records);
+      const tbody = container.querySelector('tbody');
+      if (tbody) tbody.innerHTML = renderRows(records, isRtl);
+      setStatus(container, records.length ? 'loaded' : 'empty', records.length
+        ? (isRtl ? `جاهز · ${records.length} سجل مؤكد` : `Ready · ${records.length} verified record${records.length === 1 ? '' : 's'}`)
+        : (isRtl ? 'لا توجد سجلات مؤكدة ضمن نطاق الشركة الحالي.' : 'No verified records in the current company scope.'));
+    } catch (error) {
+      recordsByPage.set(pageKey, []);
+      const tbody = container.querySelector('tbody');
+      if (tbody) {
+        const row = document.createElement('tr');
+        row.dataset.state = 'error';
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = isRtl ? 'تعذر تحميل السجلات المؤكدة.' : 'Verified records could not be loaded.';
+        row.appendChild(cell);
+        tbody.replaceChildren(row);
+      }
+      setStatus(container, 'error', isRtl ? 'تعذر تحميل السجلات المؤكدة.' : 'Verified records could not be loaded.');
+      console.warn(`BUILD-10 read model unavailable for ${pageKey}:`, error);
+    }
   }
 
   function renderPage(pageKey, targetContainer = null) {
@@ -130,25 +160,10 @@
 
     let contentHtml = '';
     if (!isBoard) {
-      const records = mockDataForPage(pageKey);
-      const rows = records.map(r => `
-        <tr data-record-id="${r.id}">
-          <td><strong>${r.trip_code || r.conflict_uuid || r.code || r.id}</strong></td>
-          <td>${r.vehicle_id || r.client_id || r.name || 'Record Name'}</td>
-          <td>${r.driver_name || r.entity_name || r.status || 'Active'}</td>
-          <td><span class="b10-badge b10-badge-success">${r.status || 'active'}</span></td>
-          <td>
-            <button class="b10-btn b10-btn-sm" data-action="${pageKey}:view" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'view')">${isRtl ? 'عرض' : 'View'}</button>
-            <button class="b10-btn b10-btn-sm b10-btn-primary" data-action="${pageKey}:edit" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'edit')">${isRtl ? 'تعديل' : 'Edit'}</button>
-          </td>
-        </tr>
-      `).join('');
-
       contentHtml = `
         <div class="b10-controls">
-          <input type="text" class="b10-search-input" placeholder="${isRtl ? 'بحث...' : 'Search...'}" oninput="OctagonBuild10.handleSearch('${pageKey}', this.value)" />
-          <button class="b10-btn b10-btn-primary" data-action="${pageKey}:create" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'create')">${isRtl ? '+ إضافة جديد' : '+ New Record'}</button>
-          <button class="b10-btn" onclick="OctagonBuild10.exportCsv('${pageKey}')">${isRtl ? 'تصدير CSV' : 'Export CSV'}</button>
+          <button class="b10-btn b10-btn-primary" data-command="refresh">${isRtl ? 'تحديث السجلات' : 'Refresh records'}</button>
+          <button class="b10-btn" data-command="export">${isRtl ? 'تصدير CSV' : 'Export CSV'}</button>
         </div>
         <div class="b10-table-wrap">
           <table class="b10-table">
@@ -156,13 +171,12 @@
               <tr>
                 <th>${isRtl ? 'الرمز' : 'Code/ID'}</th>
                 <th>${isRtl ? 'الاسم' : 'Name/Entity'}</th>
-                <th>${isRtl ? 'التفاصيل' : 'Details'}</th>
                 <th>${isRtl ? 'الحالة' : 'Status'}</th>
-                <th>${isRtl ? 'إجراءات' : 'Actions'}</th>
+                <th>${isRtl ? 'آخر تحديث' : 'Updated'}</th>
               </tr>
             </thead>
             <tbody>
-              ${rows}
+              ${renderRows([], isRtl)}
             </tbody>
           </table>
         </div>
@@ -176,7 +190,7 @@
             <span class="b10-header-icon">${meta.icon}</span>
             <h2>${isRtl ? meta.titleAr : meta.titleEn}</h2>
           </div>
-          <div class="b10-status" data-role="status" data-phase="loaded">${isRtl ? 'جاهز · تم تحميل البيانات' : 'Ready · data loaded'}</div>
+          <div class="b10-status" data-role="status" data-phase="loading">${isRtl ? 'جارٍ تحميل السجلات المؤكدة…' : 'Loading verified records…'}</div>
         </header>
         <main class="b10-workspace-body">
           ${contentHtml}
@@ -184,42 +198,22 @@
       </div>
     `;
 
-    if (readOnly) {
-      container.querySelectorAll('[data-action]').forEach(btn => {
-        btn.disabled = true;
-      });
-    }
-
-    // Attempt API fetch if available
-    const endpoint = getEndpointForPage(pageKey);
-    fetch(endpoint).then(r => r.json()).then(res => {
-      if (res && res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-        const tbody = container.querySelector('tbody');
-        if (tbody) {
-          tbody.innerHTML = res.data.map(r => `
-            <tr data-record-id="${r.id}">
-              <td><strong>${r.code || r.id}</strong></td>
-              <td>${r.name || r.device_name || 'Item'}</td>
-              <td>${r.status || 'Active'}</td>
-              <td><span class="b10-badge b10-badge-success">${r.status || 'active'}</span></td>
-              <td>
-                <button class="b10-btn b10-btn-sm" data-action="${pageKey}:view" onclick="OctagonBuild10.openActionDialog('${pageKey}', 'view')">View</button>
-              </td>
-            </tr>
-          `).join('');
-          if (readOnly) {
-            container.querySelectorAll('[data-action]').forEach(btn => btn.disabled = true);
-          }
-        }
-      }
-    }).catch(() => {});
+    container.querySelector('[data-command="refresh"]')?.addEventListener('click', () => { void refreshRecords(pageKey, container, isRtl); });
+    container.querySelector('[data-command="export"]')?.addEventListener('click', () => exportCsv(pageKey));
+    void refreshRecords(pageKey, container, isRtl);
 
     return container;
   }
 
   function exportCsv(pageKey) {
-    const meta = PAGES[pageKey] || {};
-    const content = `ID,Name,Status\nREF-10001,${meta.titleEn || pageKey},active\n`;
+    const records = recordsByPage.get(pageKey) || [];
+    const quote = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const content = ['ID,Name,Status,Updated', ...records.map((record) => [
+      rowValue(record, ['trip_code', 'conflict_uuid', 'client_uuid', 'device_code', 'code', 'id'], ''),
+      rowValue(record, ['name', 'device_name', 'vehicle_id', 'client_id', 'entity_name', 'kiosk_type'], ''),
+      rowValue(record, ['status', 'health_state', 'lifecycle_state', 'sync_status', 'event_classification'], ''),
+      rowValue(record, ['updated_at', 'created_at', 'timestamp', 'start_time', 'received_at'], '')
+    ].map(quote).join(','))].join('\n') + '\n';
     const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -227,20 +221,6 @@
     a.download = `${pageKey}_export.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  }
-
-  function openActionDialog(pageKey, actionId) {
-    const actionPath = `/api/v1/action/${pageKey}`;
-    const build10ActionDialog = document.getElementById('build10ActionDialog');
-    if (build10ActionDialog) {
-      build10ActionDialog.style.display = 'block';
-    } else {
-      console.log(`build10ActionDialog opened for ${pageKey} -> ${actionPath}`);
-    }
-  }
-
-  function handleSearch(pageKey, query) {
-    console.log(`Searching ${pageKey} with query: ${query}`);
   }
 
   function setupSwitchPageHook() {
@@ -301,8 +281,7 @@
     PAGES,
     renderPage,
     exportCsv,
-    openActionDialog,
-    handleSearch,
+    refreshRecords,
     getActiveCompany,
     getActiveWarehouse
   };

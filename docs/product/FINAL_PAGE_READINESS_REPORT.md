@@ -24,6 +24,21 @@ All **221** current primary pages have a ledger row. Functional state:
 - P0/P1 DISCONNECTED: **0**
 - Purpose unclear: **3**
 
+## Verified continuation: BUILD-10 source-truth recovery
+
+The BUILD-10 generic workspace shell no longer creates illustrative rows,
+placeholder mutation controls, or sample CSV records. It now reads only from
+the dedicated, company-scoped `/api/v1/build10/:page` projections over the
+existing platform tables. A page without a registered source remains visibly
+empty; kiosk commands without a registered governed action remain unavailable.
+
+Real Chromium acceptance now proves that a browser-created fleet trip and a
+browser-created offline sync conflict are rendered from their respective
+canonical tables. The same test proves the trip projection is empty when the
+company context changes, and confirms the read model advertises `readOnly`.
+This is a bounded evidence improvement, not a canonical-authority decision:
+the owner decisions listed in the final verdict still apply.
+
 ## Consolidate
 
 - Primary destinations before / after: **231 / 221**
@@ -37,7 +52,8 @@ All **221** current primary pages have a ledger row. Functional state:
   runtime hydration, governed record evidence, metadata presentation, and
   fail-closed large-screen boards.
 - `npm.cmd run test:build-10`: PASS — platform/domain and Chromium acceptance
-  for device, fleet, offline, kiosk, and responsive workspace behavior.
+  for device, fleet, offline, kiosk, responsive workspace behavior, scoped
+  BUILD-10 read models, and removal of legacy renderer fixture fallbacks.
 - Targeted real-Chromium reinspection: PASS — all six large-screen boards
   expose governed source links with no illustrative live metrics or raw JSON.
 - `npm.cmd run test:page-consolidation`: PASS (11)

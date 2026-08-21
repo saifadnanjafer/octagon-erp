@@ -71,8 +71,8 @@ export async function openBuild10Browser(t, { name, initialPage }) {
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
     if (api(req, res, requestUrl)) return;
 
-    if (requestUrl.pathname === '/modules/build10-workspaces.js' || requestUrl.pathname === '/modules/build10-workspaces.css') {
-      const file = requestUrl.pathname.endsWith('.js') ? 'build10-workspaces.js' : 'build10-workspaces.css';
+    if (requestUrl.pathname === '/modules/build10-workspaces.js' || requestUrl.pathname === '/modules/build10-workspaces.css' || requestUrl.pathname === '/modules/build10/renderers/boards.js') {
+      const file = requestUrl.pathname === '/modules/build10/renderers/boards.js' ? path.join('build10', 'renderers', 'boards.js') : (requestUrl.pathname.endsWith('.js') ? 'build10-workspaces.js' : 'build10-workspaces.css');
       res.writeHead(200, { 'content-type': file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8' });
       res.end(fs.readFileSync(path.join(ROOT, 'modules', file)));
       return;
@@ -80,7 +80,7 @@ export async function openBuild10Browser(t, { name, initialPage }) {
 
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build10-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__octagonBootstrap={actor:{activeCompanyId:${JSON.stringify(seed.companyId)}},warehouseId:'wh-main',actions:[{id:'db_write',enabled:true}]};localStorage.setItem('octagon_active_warehouse_id','wh-main');window.switchPage=function(){};</script><script src="/modules/build10-workspaces.js"></script><script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
+      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build10-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__octagonBootstrap={actor:{activeCompanyId:${JSON.stringify(seed.companyId)}},warehouseId:'wh-main',actions:[{id:'db_write',enabled:true}]};window.Build10Registry={getPage:(pageKey)=>({titleAr:pageKey,titleEn:pageKey,icon:'fa-table'})};localStorage.setItem('octagon_active_warehouse_id','wh-main');window.switchPage=function(){};</script><script src="/modules/build10/renderers/boards.js"></script><script src="/modules/build10-workspaces.js"></script><script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;
     }
 

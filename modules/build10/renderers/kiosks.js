@@ -10,9 +10,7 @@
     const title = isRtl ? meta.titleAr : meta.titleEn;
 
     if (pageKey === 'kiosk_device_registry') {
-      let sampleRows = data && data.length > 0 ? data : [
-        { id: 'KIOSK-BROWSER-1', code: 'KIOSK-BROWSER-1', name: 'Browser Fleet Board Kiosk', kiosk_type: 'warehouse', status: 'active', last_ping_at: new Date().toISOString() }
-      ];
+      const sampleRows = Array.isArray(data) ? data : [];
       const controls = comps.renderControlsBar(pageKey, isRtl, readOnly);
       const table = comps.renderTable(pageKey, meta.columns, sampleRows, isRtl);
       return `
@@ -33,36 +31,16 @@
 
     // Touch Kiosk Terminals (employee_kiosk, warehouse_kiosk, shop_floor_kiosk, service_kiosk)
     let kioskNotice = '';
-    let kioskActions = '';
+    const kioskActions = `<p data-state="unavailable" style="color:#94a3b8;text-align:center;">${isRtl ? 'لا يتوفر إجراء كشك محكوم لهذه الشاشة حتى يتم تسجيل عقد الإجراء.' : 'No governed kiosk action is registered for this screen yet.'}</p>`;
 
     if (pageKey === 'employee_kiosk') {
       kioskNotice = isRtl ? 'كشك الخدمة الذاتية للموظفين (تسجيل الحضور والجدول اليومي) - لا يتم عرض معلومات الرواتب أو البيانات الخاصة.' : 'Employee Self-Service Kiosk (Check-in & Shift Schedule) - Sensitive HR & Payroll records are strictly excluded.';
-      kioskActions = `
-        <button class="b10-btn b10-btn-primary" style="font-size:1.1rem;padding:0.75rem 1.5rem;" ${readOnly ? 'disabled' : ''} onclick="window.Build10Engine.openActionDialog('${pageKey}', 'kiosk:employee_checkin')">
-          <i class="fa-solid fa-user-check"></i> ${isRtl ? 'تسجيل الحضور/الانصراف الذاتي' : 'Employee Self Check-in'}
-        </button>
-      `;
     } else if (pageKey === 'warehouse_kiosk') {
       kioskNotice = isRtl ? 'كشك العمليات المخزنية (مسح وتنفيذ استلام / التقاط سريع)' : 'Warehouse Operations Touch Terminal (Fast Receiving & Picking Scan)';
-      kioskActions = `
-        <button class="b10-btn b10-btn-primary" style="font-size:1.1rem;padding:0.75rem 1.5rem;" ${readOnly ? 'disabled' : ''} onclick="window.Build10Engine.openActionDialog('${pageKey}', 'kiosk:warehouse_quick_scan')">
-          <i class="fa-solid fa-barcode"></i> ${isRtl ? 'مسح باركود سريع' : 'Quick Barcode Scan'}
-        </button>
-      `;
     } else if (pageKey === 'shop_floor_kiosk') {
       kioskNotice = isRtl ? 'كشك صالة الإنتاج (تسجيل بدء العمليات، الإخراج والتوقفات)' : 'Shop Floor Terminal (Start/Pause Operation & Record Output)';
-      kioskActions = `
-        <button class="b10-btn b10-btn-primary" style="font-size:1.1rem;padding:0.75rem 1.5rem;" ${readOnly ? 'disabled' : ''} onclick="window.Build10Engine.openActionDialog('${pageKey}', 'kiosk:shopfloor_quick_output')">
-          <i class="fa-solid fa-industry"></i> ${isRtl ? 'تسجيل إنتاج جديد' : 'Record Operation Output'}
-        </button>
-      `;
     } else if (pageKey === 'service_kiosk') {
       kioskNotice = isRtl ? 'كشك الخدمة والصيانة (استقبال الأجهزة وطلبات الصيانة)' : 'Service Desk Terminal (Reception & Service Checklist)';
-      kioskActions = `
-        <button class="b10-btn b10-btn-primary" style="font-size:1.1rem;padding:0.75rem 1.5rem;" ${readOnly ? 'disabled' : ''} onclick="window.Build10Engine.openActionDialog('${pageKey}', 'kiosk:service_checkin')">
-          <i class="fa-solid fa-headset"></i> ${isRtl ? 'استلام طلب خدمة جديد' : 'New Service Reception'}
-        </button>
-      `;
     }
 
     return `

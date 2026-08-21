@@ -37,6 +37,7 @@ import { handleServiceQuery } from './service.mjs';
 import { handleBuild08Query } from './build08.mjs';
 import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
 import { handleWorkshopQuery, WORKSHOP_RESOURCE_PERMISSIONS } from './workshop.mjs';
+import { handleBuild10Query } from './build10.mjs';
 import { listSaas } from '../build11/index.mjs';
 import { listBuild12 } from '../build12/index.mjs';
 
@@ -340,7 +341,20 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
-      if (['iot', 'offline', 'kiosk', 'boards'].includes(namespace) && req.method === 'GET') {
+      if (namespace === 'build10' && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const build10Result = handleBuild10Query({ dialect, ctx, resource, query });
+        if (build10Result.error) return sendJson(res, build10Result.status || 404, envelope(null, build10Result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(build10Result.data, null, build10Result.meta, ctx.correlationId));
+      }
+
+      if (['iot', 'offline', 'kiosk'].includes(namespace) && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        return sendJson(res, 200, envelope([], null, { total: 0 }, ctx.correlationId));
+      }
+
+      if (namespace === 'boards' && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         return sendJson(res, 200, envelope([], null, { total: 0 }, ctx.correlationId));
       }

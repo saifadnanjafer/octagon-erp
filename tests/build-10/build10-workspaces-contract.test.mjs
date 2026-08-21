@@ -9,6 +9,15 @@ const source = read('modules/build10-workspaces.js');
 const styles = read('modules/build10-workspaces.css');
 const index = read('index.html');
 const permissions = read('services/permissionService.js');
+const legacyRenderers = [
+  'modules/build10/components.js',
+  'modules/build10/renderers/devices.js',
+  'modules/build10/renderers/telemetry.js',
+  'modules/build10/renderers/fleet.js',
+  'modules/build10/renderers/offline.js',
+  'modules/build10/renderers/kiosks.js',
+  'modules/build10/renderers/boards.js',
+].map(read).join('\n');
 
 const expectedPages = [
   'device_registry', 'device_detail', 'device_enrollment', 'gateway_management',
@@ -37,11 +46,10 @@ test('BUILD-10 publishes exactly 38 configured and reachable functional workspac
   }
 });
 
-test('BUILD-10 workspace shell exposes governed state, scope, actions, and export behavior', () => {
+test('BUILD-10 workspace shell exposes scoped read models, state, and export behavior', () => {
   assert.match(index, /modules\/build10-workspaces\.css/);
   assert.match(index, /modules\/build10-workspaces\.js/);
-  assert.match(source, /\/api\/v1\/iot\//);
-  assert.match(source, /\/api\/v1\/action\//);
+  assert.match(source, /\/api\/v1\/build10\//);
   assert.match(source, /activeCompany/);
   assert.match(source, /activeWarehouse/);
   // The shell must expose a governed-state node (data-role="status" with a
@@ -56,17 +64,24 @@ test('BUILD-10 workspace shell exposes governed state, scope, actions, and expor
   assert.match(source, /data-role="status" data-phase="[a-z]+"/);
   assert.doesNotMatch(source, /Loading · empty · error · denied/, 'the dead placeholder legend must not return');
   assert.match(source, /exportCsv/);
+  assert.match(source, /refreshRecords/);
+  assert.doesNotMatch(source, /mockDataForPage|REF-10001|TRIP-101|CONF-201/, 'workspace rows must come only from the scoped read model');
   assert.match(source, /PermissionService\.checkPage/);
   assert.match(source, /octagon:language-changed/);
 });
 
-test('BUILD-10 supports kiosk boards, RTL, responsive tables, and action dialogs', () => {
+test('BUILD-10 supports kiosk boards, RTL, responsive tables, and read-only workspaces', () => {
   assert.match(source, /b10-board/);
   assert.match(source, /document\.documentElement\.dir === 'rtl'/);
-  assert.match(source, /build10ActionDialog/);
+  assert.doesNotMatch(source, /data-action=/, 'the read-only shell must not expose placeholder mutation controls');
   assert.match(styles, /@media\(max-width:760px\)/);
   assert.match(styles, /html\[dir=rtl\]/);
   assert.match(styles, /\.b10-table-wrap/);
   assert.match(styles, /\.b10-board-grid/);
   assert.match(styles, /\.b10-status\[data-phase=error\]/);
+});
+
+test('BUILD-10 legacy renderers do not fabricate fallback business records or commands', () => {
+  assert.doesNotMatch(legacyRenderers, /openActionDialog|sampleRows\s*=\s*\[/);
+  assert.doesNotMatch(legacyRenderers, /TRIP-1001|DEV-1001|PWA-BROWSER-99|KIOSK-BROWSER-1/);
 });

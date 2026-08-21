@@ -23,6 +23,12 @@ test('real Chromium completes telematics location tracking, trip calculation, ge
   // 4. Switch to trip timeline page and test mobile viewport & layout
   await page.evaluate(() => window.switchPage('vehicle_trip_timeline'));
   await page.waitForFunction(() => document.querySelector('[data-build10-page="vehicle_trip_timeline"] tbody tr[data-record-id]'));
+  const scopedTripRead = await browserQuery(page, 'build10', 'vehicle_trip_timeline');
+  assert.equal(scopedTripRead.status, 200);
+  assert.equal(scopedTripRead.meta.source, 'fleet_trip_projections');
+  assert.equal(scopedTripRead.meta.readOnly, true);
+  assert.equal(scopedTripRead.data.some((record) => record.id === trip.id), true);
+  assert.deepEqual((await browserQuery(page, 'build10', 'vehicle_trip_timeline', { company: 'other-company' })).data, []);
   await page.setViewport({ width: 390, height: 844 });
   assert.equal(await page.$eval('[data-build10-page="vehicle_trip_timeline"] .b10-table td', (element) => getComputedStyle(element).display), 'grid');
 
@@ -60,11 +66,14 @@ test('real Chromium completes offline PWA batch push, conflict resolution, LTR/R
   // 3. Test LTR/RTL toggle & DOM switch
   await page.evaluate(() => { document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr'; window.switchPage('sync_conflicts'); });
   await page.waitForFunction(() => document.querySelector('[data-build10-page="sync_conflicts"] tbody tr[data-record-id]'));
+  const scopedConflictRead = await browserQuery(page, 'build10', 'sync_conflicts');
+  assert.equal(scopedConflictRead.meta.source, 'offline_conflict_records');
+  assert.equal(scopedConflictRead.data.some((record) => record.id === conflict.id), true);
   assert.equal(await page.$eval('html', (element) => element.dir), 'ltr');
 
-  // 4. Test read-only mode override
+  // 4. Read-only workspaces expose no placeholder mutation controls.
   await page.evaluate(() => { window.__BUILD10_FORCE_READ_ONLY__ = true; window.OctagonBuild10.renderPage('sync_conflicts'); });
-  assert.ok(await page.$eval('[data-build10-page="sync_conflicts"] [data-action]', (button) => button.disabled));
+  assert.equal(await page.$$eval('[data-build10-page="sync_conflicts"] [data-action]', (buttons) => buttons.length), 0);
 
   assert.equal(consoleErrors.length, 0, consoleErrors.join('\n'));
 });

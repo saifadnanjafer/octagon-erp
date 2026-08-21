@@ -18,27 +18,14 @@
     return `<span class="b10-badge b10-badge-offline">${s}</span>`;
   }
 
-  function renderControlsBar(pageKey, isRtl, readOnly = false) {
-    const registry = root.Build10Registry;
-    const meta = registry ? registry.getPage(pageKey) : null;
-    const actions = meta?.actions || [];
-
-    const actionButtons = actions.map(actId => {
-      const formDef = root.Build10Forms ? root.Build10Forms.getForm(actId) : null;
-      const btnTitle = formDef ? (isRtl ? formDef.titleAr : formDef.titleEn) : actId.split(':')[1] || actId;
-      return `<button class="b10-btn b10-btn-primary" data-action="${actId}" ${readOnly ? 'disabled' : ''} onclick="window.Build10Engine.openActionDialog('${pageKey}', '${actId}')">
-        <i class="fa-solid fa-play"></i> ${btnTitle}
-      </button>`;
-    }).join('');
-
+  function renderControlsBar(pageKey, isRtl) {
     return `
       <div class="b10-controls-bar">
-        <input type="text" class="b10-search-input" data-role="filter" placeholder="${isRtl ? 'بحث في السجلات...' : 'Search records...'}" oninput="window.Build10Engine.handleSearch('${pageKey}', this.value)" />
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <button class="b10-btn b10-btn-secondary" onclick="window.Build10Engine.exportCsv('${pageKey}')">
             <i class="fa-solid fa-file-csv"></i> ${isRtl ? 'تصدير CSV' : 'Export CSV'}
           </button>
-          ${actionButtons}
+          <span data-state="unavailable" style="color:#94a3b8;align-self:center;">${isRtl ? 'لا تتوفر أوامر غير مسجلة.' : 'No unregistered commands are exposed.'}</span>
         </div>
       </div>
     `;

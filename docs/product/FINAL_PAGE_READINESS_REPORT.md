@@ -39,6 +39,12 @@ company context changes, and confirms the read model advertises `readOnly`.
 This is a bounded evidence improvement, not a canonical-authority decision:
 the owner decisions listed in the final verdict still apply.
 
+The remaining Fleet telemetry boundary is documented in
+[BUILD13_FLEET_TELEMETRY_CONSOLIDATION.md](BUILD13_FLEET_TELEMETRY_CONSOLIDATION.md).
+The legacy Fleet page can retain manual records while presenting simulated
+telematics; its full consolidation therefore requires an explicit
+source-mapping and cutover decision.
+
 ## Consolidate
 
 - Primary destinations before / after: **231 / 221**

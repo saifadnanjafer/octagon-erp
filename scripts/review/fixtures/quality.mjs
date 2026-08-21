@@ -48,7 +48,7 @@ export async function seedQualityFixtures(dialect, { companyId, now } = {}) {
     ON CONFLICT(id) DO NOTHING`).run(companyId, ts);
 
   dialect.prepare(`INSERT INTO warehouses (id, company_id, name, code, is_active, created_at)
-    VALUES ('rev_warehouse_main', ?, '[DEMO] Review Main Warehouse', 'DEMO-WH', 1, ?) ON CONFLICT(id) DO NOTHING`)
+    VALUES ('rev_wh_alwarsha_main', ?, '[DEMO] Review Main Warehouse', 'DEMO-WH', 1, ?) ON CONFLICT(id) DO NOTHING`)
     .run(companyId, ts);
 
   // ---- Inspections backing the checkpoint / accepted / failed bullets ----
@@ -75,7 +75,7 @@ export async function seedQualityFixtures(dialect, { companyId, now } = {}) {
   const insertCheckpoint = dialect.prepare(`INSERT INTO quality_operational_checkpoints
     (id, company_id, warehouse_id, checkpoint_type, source_type, source_id, inspection_id, product_id,
      sample_size, accepted_quantity, rejected_quantity, status, ncr_id, opened_by, decided_by, created_at, updated_at)
-    VALUES (?, ?, 'rev_warehouse_main', ?, ?, ?, ?, 'rev_prod_finished', ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, 'rev_wh_alwarsha_main', ?, ?, ?, ?, 'rev_prod_finished', ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`);
   insertCheckpoint.run('rev_qoc_open', companyId, 'final', 'work_order', 'rev_wo_batch1_op10', 'rev_qi_open_final', 5.0, 0.0, 0.0, 'pending', null, REVIEWER, null, ts, ts);
   insertCheckpoint.run('rev_qoc_failed', companyId, 'in_process', 'work_order', 'rev_wo_batch1_op10', 'rev_qi_failed', 5.0, 2.0, 3.0, 'ncr', 'rev_ncr_1', REVIEWER, REVIEWER, ts, ts);
@@ -83,7 +83,7 @@ export async function seedQualityFixtures(dialect, { companyId, now } = {}) {
   // ---- 1 rework disposition + 1 scrap-approval example ----
   const insertDisposition = dialect.prepare(`INSERT INTO quality_disposition_requests
     (id, company_id, warehouse_id, checkpoint_id, disposition_type, quantity, reason_code, ncr_id, status, requested_by, approved_by, created_at, updated_at)
-    VALUES (?, ?, 'rev_warehouse_main', 'rev_qoc_failed', ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, 'rev_wh_alwarsha_main', 'rev_qoc_failed', ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`);
   insertDisposition.run('rev_qdr_rework', companyId, 'rework', 3.0, 'weld_porosity', 'rev_ncr_1', 'approved', REVIEWER, REVIEWER, ts, ts);
   insertDisposition.run('rev_qdr_scrap', companyId, 'scrap', 1.0, 'unrepairable_crack', null, 'approved', REVIEWER, REVIEWER, ts, ts);

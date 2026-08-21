@@ -60,8 +60,14 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
   insertVariant.run('rev_prod_finished', 'rev_tmpl_finished', companyId, 'DEMO-SF-100', '[DEMO] Steel Frame Assembly', 450000, ts);
   insertVariant.run('rev_prod_component', 'rev_tmpl_component', companyId, 'DEMO-TUBE-01', '[DEMO] Steel Tube Raw Stock', 18000, ts);
 
-  dialect.prepare(`INSERT INTO warehouses (id, company_id, name, code, is_active, created_at)
-    VALUES ('rev_warehouse_main', ?, '[DEMO] Review Main Warehouse', 'DEMO-WH', 1, ?) ON CONFLICT(id) DO NOTHING`)
+  // The shared default review warehouse (also created by warehouse.mjs with
+  // is_default=1 — ON CONFLICT makes this a no-op when the full fixture set
+  // runs in setup order, and keeps this file standalone-safe). BUILD-09 WMS
+  // resources scope by ctx.warehouseId, which defaults to this warehouse, so
+  // every production/quality fixture row below must point here or the
+  // warehouse-scoped pages would render empty.
+  dialect.prepare(`INSERT INTO warehouses (id, company_id, name, code, is_active, is_default, created_at)
+    VALUES ('rev_wh_alwarsha_main', ?, '[DEMO] Al-Warsha Main Warehouse', 'REV-WH-01', 1, 1, ?) ON CONFLICT(id) DO NOTHING`)
     .run(companyId, ts);
 
   dialect.prepare(`INSERT INTO work_centers
@@ -86,7 +92,7 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
     (id, company_id, branch_id, order_number, product_id, bom_version_id, planned_quantity, uom_id,
      warehouse_id, wip_location_id, finished_location_id, state, priority, created_by, created_at, updated_at)
     VALUES (?, ?, ?, ?, 'rev_prod_finished', 'rev_bomver_steel_frame_v1', ?, 'rev_uom_each',
-     'rev_warehouse_main', 'rev_wip_loc_demo', 'rev_fg_loc_demo', ?, 'medium', ?, ?, ?)
+     'rev_wh_alwarsha_main', 'rev_wip_loc_demo', 'rev_fg_loc_demo', ?, 'medium', ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`);
   insertPO.run('rev_po_steel_frame_batch1', companyId, branch, 'DEMO-PO-0001', 20.0, 'in_progress', REVIEWER, ts, ts);
   insertPO.run('rev_po_steel_frame_batch2', companyId, branch, 'DEMO-PO-0002', 15.0, 'planned', REVIEWER, ts, ts);
@@ -109,7 +115,7 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
   const insertFlow = dialect.prepare(`INSERT INTO mfg_material_flow_requests
     (id, company_id, branch_id, warehouse_id, production_order_id, work_order_id, requirement_id, request_type,
      product_id, requested_quantity, approved_quantity, fulfilled_quantity, status, requested_by, approved_by, created_at, updated_at)
-    VALUES (?, ?, ?, 'rev_warehouse_main', 'rev_po_steel_frame_batch1', 'rev_wo_batch1_op10', ?, ?,
+    VALUES (?, ?, ?, 'rev_wh_alwarsha_main', 'rev_po_steel_frame_batch1', 'rev_wo_batch1_op10', ?, ?,
      ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`);
   insertFlow.run(
@@ -126,7 +132,7 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
     (id, company_id, production_order_id, requirement_id, component_id, uom_id, quantity, issue_type,
      warehouse_id, location_id, wip_location_id, issued_by, issued_at, created_at)
     VALUES (?, ?, 'rev_po_steel_frame_batch1', 'rev_matreq_tube_batch1', 'rev_prod_component', 'rev_uom_each', ?, ?,
-     'rev_warehouse_main', 'rev_wip_loc_demo', 'rev_wip_loc_demo', ?, ?, ?)
+     'rev_wh_alwarsha_main', 'rev_wip_loc_demo', 'rev_wip_loc_demo', ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`);
   insertIssue.run('rev_issue_tube_batch1', companyId, 76.0, 'issue', REVIEWER, ts, ts);
   insertIssue.run('rev_return_tube_batch1', companyId, 4.0, 'return', REVIEWER, ts, ts);
@@ -135,7 +141,7 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
   dialect.prepare(`INSERT INTO mfg_shopfloor_sessions
     (id, company_id, branch_id, warehouse_id, production_order_id, work_order_id, work_center_id, operator_id,
      produced_quantity, status, created_by, created_at, updated_at, actual_start_at)
-    VALUES ('rev_sf_session_batch1', ?, ?, 'rev_warehouse_main', 'rev_po_steel_frame_batch1', 'rev_wo_batch1_op10', 'rev_wc_assembly', ?,
+    VALUES ('rev_sf_session_batch1', ?, ?, 'rev_wh_alwarsha_main', 'rev_po_steel_frame_batch1', 'rev_wo_batch1_op10', 'rev_wc_assembly', ?,
      8.0, 'running', ?, ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`).run(companyId, branch, REVIEWER, REVIEWER, ts, ts, ts);
 
@@ -148,7 +154,7 @@ export async function seedProductionFixtures(dialect, { companyId, branchId, now
   dialect.prepare(`INSERT INTO mfg_downtime_events
     (id, company_id, warehouse_id, session_id, work_order_id, work_center_id, reason_code, reason_category,
      planned, starts_at, ends_at, duration_minutes, notes, status, opened_by, created_at, updated_at)
-    VALUES ('rev_downtime_batch1', ?, 'rev_warehouse_main', 'rev_sf_session_batch1', 'rev_wo_batch1_op10', 'rev_wc_assembly',
+    VALUES ('rev_downtime_batch1', ?, 'rev_wh_alwarsha_main', 'rev_sf_session_batch1', 'rev_wo_batch1_op10', 'rev_wc_assembly',
      'machine_jam', 'breakdown', 0, ?, NULL, NULL, '[DEMO] Conveyor jam during batch 1 assembly', 'open', ?, ?, ?)
     ON CONFLICT(id) DO NOTHING`).run(companyId, ts, REVIEWER, ts, ts);
 

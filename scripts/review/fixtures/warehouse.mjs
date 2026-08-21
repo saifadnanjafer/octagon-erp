@@ -8,8 +8,11 @@
 //      wms_replenishment_rules_v2, wms_replenishment_proposals_v2)
 //   database/migrations/077_build09_mobile_execution.mjs
 //     (wms_receiving_sessions, wms_receiving_lines, wms_receiving_discrepancies,
-//      wms_pick_tasks_v2)
-//   database/migrations/078_build09_dock_crossdock_traceability.mjs (wms_trace_profiles)
+//      wms_pick_tasks_v2, wms_pick_waves, wms_pick_wave_tasks,
+//      wms_count_plans_v2, wms_count_sessions_v2, wms_count_lines_v2)
+//   database/migrations/078_build09_dock_crossdock_traceability.mjs
+//     (wms_trace_profiles, wms_docks_v2, wms_dock_appointments_v2,
+//      wms_staging_allocations, wms_crossdock_matches)
 //
 // Never real data, never written outside a disposable review database. All
 // invented ids are prefixed `rev_` and every insert is idempotent via
@@ -79,6 +82,12 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
     { id: 'rev_loc_storage_bin_a', name: '[DEMO] Storage Bin A1', usage: 'internal', zoneId: 'rev_wms_zone_storage', code: 'REV-LOC-BIN-A1', type: 'bin' },
     { id: 'rev_loc_storage_bin_b', name: '[DEMO] Storage Bin A2', usage: 'internal', zoneId: 'rev_wms_zone_storage', code: 'REV-LOC-BIN-A2', type: 'bin' },
     { id: 'rev_loc_staging', name: '[DEMO] Outbound Staging', usage: 'internal', zoneId: 'rev_wms_zone_receiving', code: 'REV-LOC-STAGE-A', type: 'staging' },
+    // Production fixtures reference these two location ids (WIP line-side and
+    // finished goods); they live in the same default warehouse so shop-floor,
+    // material-flow and quality pages join real location names instead of
+    // rendering raw ids.
+    { id: 'rev_wip_loc_demo', name: '[DEMO] WIP Line-Side', usage: 'production', zoneId: 'rev_wms_zone_storage', code: 'REV-LOC-WIP-01', type: 'production_supply' },
+    { id: 'rev_fg_loc_demo', name: '[DEMO] Finished Goods', usage: 'internal', zoneId: 'rev_wms_zone_storage', code: 'REV-LOC-FG-01', type: 'bin' },
   ];
   const insertLocation = dialect.prepare(`INSERT INTO stock_locations (id, company_id, warehouse_id, name, complete_name, usage, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING`);
@@ -175,6 +184,107 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
     .run('rev_wms_trace_profile_01', companyId, 'rev_prod_var_gate_hinge_01', LOT_ID, 'REV-LOT-HINGE-0001',
       iso(-20), nearExpiry, RECEIVING_SESSION_ID, WAREHOUSE_OPERATOR, ts, ts);
 
+  // 9. Docks, appointments, staging, cross-dock — one physical inbound flow:
+  // an inbound appointment checked in at a dock, its stock staged, and a
+  // candidate cross-dock match against an outbound appointment. Grounded in
+  // database/migrations/078_build09_dock_crossdock_traceability.mjs.
+  const DOCK_ID = 'rev_wms_dock_inbound_01';
+  dialect.prepare(`INSERT INTO wms_docks_v2
+    (id, company_id, warehouse_id, code, name, dock_type, capacity_units, staging_location_id, is_active, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, 'REV-DOCK-01', '[DEMO] Inbound Dock 1', 'inbound', 2, ?, 1, ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run(DOCK_ID, companyId, WAREHOUSE_ID, 'rev_loc_staging', WAREHOUSE_OPERATOR, ts, ts);
+
+  const APPT_IN_ID = 'rev_wms_dock_appt_in_01';
+  dialect.prepare(`INSERT INTO wms_dock_appointments_v2
+    (id, company_id, branch_id, warehouse_id, appointment_type, source_document_type, source_document_id,
+     carrier_name, vehicle_reference, supplier_id, expected_arrival, expected_departure, actual_arrival,
+     dock_id, staging_location_id, expected_units, status, created_by, checked_in_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'inbound', 'purchase_order', ?, '[DEMO] Review Carrier Co.', 'REV-TRUCK-01', NULL,
+      ?, ?, ?, ?, ?, 40, 'checked_in', ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run(APPT_IN_ID, companyId, branchId, WAREHOUSE_ID, RECEIVING_SESSION_ID,
+      iso(-0.02), iso(0.02), iso(-0.01), DOCK_ID, 'rev_loc_staging',
+      WAREHOUSE_OPERATOR, WAREHOUSE_OPERATOR, ts, ts);
+
+  const APPT_OUT_ID = 'rev_wms_dock_appt_out_01';
+  dialect.prepare(`INSERT INTO wms_dock_appointments_v2
+    (id, company_id, branch_id, warehouse_id, appointment_type, source_document_type, source_document_id,
+     carrier_name, vehicle_reference, customer_id, expected_arrival, expected_departure,
+     staging_location_id, expected_units, status, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'outbound', 'sales_delivery', ?, '[DEMO] Review Carrier Co.', 'REV-TRUCK-02', NULL,
+      ?, ?, ?, 12, 'scheduled', ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run(APPT_OUT_ID, companyId, branchId, WAREHOUSE_ID, '[DEMO] REV-SO-01 Sales Delivery',
+      iso(1), iso(1.05), 'rev_loc_staging', OPS_COORDINATOR, ts, ts);
+
+  // One more inbound appointment still only expected, so dock_schedule has a
+  // future booking as well as a live one.
+  dialect.prepare(`INSERT INTO wms_dock_appointments_v2
+    (id, company_id, branch_id, warehouse_id, appointment_type, source_document_type, source_document_id,
+     carrier_name, vehicle_reference, expected_arrival, expected_departure, expected_units, status,
+     created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'inbound', 'purchase_order', '[DEMO] REV-PO-1002 Steel Tube Delivery',
+      '[DEMO] Review Carrier Co.', 'REV-TRUCK-03', ?, ?, 60, 'expected', ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_dock_appt_in_02', companyId, branchId, WAREHOUSE_ID, iso(1.1), iso(1.2), OPS_COORDINATOR, ts, ts);
+
+  dialect.prepare(`INSERT INTO wms_staging_allocations
+    (id, company_id, warehouse_id, staging_location_id, source_type, source_id, product_id, quantity,
+     capacity_before, capacity_after, status, allocated_by, allocated_at)
+    VALUES (?, ?, ?, ?, 'pick_task', ?, ?, 6, 0, 6, 'occupied', ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_staging_alloc_01', companyId, WAREHOUSE_ID, 'rev_loc_staging', 'rev_wms_pick_task_02',
+      'rev_prod_var_gate_hinge_01', WAREHOUSE_OPERATOR, ts);
+
+  dialect.prepare(`INSERT INTO wms_crossdock_matches
+    (id, company_id, branch_id, warehouse_id, inbound_appointment_id, outbound_appointment_id,
+     inbound_source_type, inbound_source_id, outbound_source_type, outbound_source_id,
+     product_id, lot_id, available_quantity, demand_quantity, matched_quantity,
+     staging_location_id, outbound_location_id, eligibility_score, status, proposed_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, 'purchase_order', ?, 'sales_delivery', ?, ?, ?, 36, 6, 6, ?, ?, 0.8, 'candidate', ?, ?, ?)
+    ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_crossdock_match_01', companyId, branchId, WAREHOUSE_ID, APPT_IN_ID, APPT_OUT_ID,
+      RECEIVING_SESSION_ID, '[DEMO] REV-SO-02 Sales Delivery', 'rev_prod_var_gate_hinge_01', LOT_ID,
+      'rev_loc_staging', 'rev_loc_staging', OPS_COORDINATOR, ts, ts);
+
+  // 10. A released pick wave containing both pick tasks, so wave_planning and
+  // wave_execution have a real wave to review and drive.
+  const WAVE_ID = 'rev_wms_wave_01';
+  dialect.prepare(`INSERT INTO wms_pick_waves
+    (id, company_id, branch_id, warehouse_id, name, wave_type, grouping_strategy, staging_location_id,
+     status, operator_id, task_count, completed_task_count, created_by, released_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, '[DEMO] Morning Outbound Wave', 'wave', 'route', ?, 'released', ?, 2, 1, ?, ?, ?, ?)
+    ON CONFLICT(id) DO NOTHING`)
+    .run(WAVE_ID, companyId, branchId, WAREHOUSE_ID, 'rev_loc_staging', WAREHOUSE_OPERATOR,
+      OPS_COORDINATOR, WAREHOUSE_OPERATOR, ts, ts);
+
+  const insertWaveTask = dialect.prepare(`INSERT INTO wms_pick_wave_tasks
+    (wave_id, pick_task_id, zone_id, sequence) VALUES (?, ?, ?, ?) ON CONFLICT(wave_id,pick_task_id) DO NOTHING`);
+  insertWaveTask.run(WAVE_ID, 'rev_wms_pick_task_01', 'rev_wms_zone_storage', 1);
+  insertWaveTask.run(WAVE_ID, 'rev_wms_pick_task_02', 'rev_wms_zone_storage', 2);
+
+  // 11. Cycle counting: one active plan, one session already in
+  // variance_review with a single out-of-tolerance line, so cycle_count_plans,
+  // count_session and variance_review each have a real record to work with.
+  const COUNT_PLAN_ID = 'rev_wms_count_plan_01';
+  dialect.prepare(`INSERT INTO wms_count_plans_v2
+    (id, company_id, warehouse_id, name, count_scope, zone_id, frequency_days, tolerance_quantity,
+     tolerance_percent, blind_count, directed_count, is_active, next_count_date, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, '[DEMO] Weekly Bulk Zone Cycle Count', 'zone', ?, 7, 0, 2, 1, 1, 1, ?, ?, ?, ?)
+    ON CONFLICT(id) DO NOTHING`)
+    .run(COUNT_PLAN_ID, companyId, WAREHOUSE_ID, 'rev_wms_zone_storage', iso(2), OPS_COORDINATOR, ts, ts);
+
+  const COUNT_SESSION_ID = 'rev_wms_count_session_01';
+  dialect.prepare(`INSERT INTO wms_count_sessions_v2
+    (id, company_id, branch_id, warehouse_id, plan_id, session_type, status, assigned_to, blind_count,
+     snapshot_at, variance_count, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 'planned', 'variance_review', ?, 1, ?, 1, ?, ?, ?) ON CONFLICT(id) DO NOTHING`)
+    .run(COUNT_SESSION_ID, companyId, branchId, WAREHOUSE_ID, COUNT_PLAN_ID, WAREHOUSE_OPERATOR, ts,
+      OPS_COORDINATOR, ts, ts);
+
+  dialect.prepare(`INSERT INTO wms_count_lines_v2
+    (id, session_id, location_id, product_id, theoretical_quantity, counted_quantity, variance_quantity,
+     variance_percent, tolerance_exceeded, discrepancy_reason, counted_by, counted_at, status)
+    VALUES (?, ?, ?, ?, 100, 97, -3, -3, 1, ?, ?, ?, 'variance') ON CONFLICT(id) DO NOTHING`)
+    .run('rev_wms_count_line_01', COUNT_SESSION_ID, 'rev_loc_storage_bin_a', 'rev_prod_var_steel_tube_01',
+      '[DEMO] Fictional review fixture - 3 tubes short of book stock.', WAREHOUSE_OPERATOR, ts);
+
   return {
     summary: {
       productsCreated: VARIANTS.length,
@@ -187,6 +297,13 @@ export async function seedWarehouseFixtures(dialect, { tenantId, companyId, bran
       pickTasksCreated: PICK_TASKS.length,
       nearExpirationRows: 1,
       traceabilityExamples: 1,
+      docksCreated: 1,
+      dockAppointments: 3,
+      stagingAllocations: 1,
+      crossdockMatches: 1,
+      pickWaves: 1,
+      countPlans: 1,
+      countSessions: 1,
       traceabilityNote: 'rev_lot_gate_hinges_01 links wms_receiving_lines -> wms_trace_profiles -> wms_pick_tasks_v2 (task 02)',
       warehouseId: WAREHOUSE_ID,
       tenantId, companyId, branchId,

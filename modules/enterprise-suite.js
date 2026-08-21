@@ -3740,14 +3740,36 @@
   };
 
   // ─── Phase 7: Scenario Planner — AI-Driven Cash & Ops Scenarios ───
+  // A planner has to let the operator vary something, otherwise it is a report.
+  // These are the assumptions applied to the real recorded figures below.
+  const SCENARIO_DEFAULTS = Object.freeze({ collectionRate: 60, expenseChange: 0, horizonDays: 30 });
+  const SCENARIO_BOUNDS = Object.freeze({
+    collectionRate: { min: 0, max: 100 },
+    expenseChange: { min: -50, max: 100 },
+    horizonDays: { min: 7, max: 180 }
+  });
+  let scenarioAssumptions = { ...SCENARIO_DEFAULTS };
+
   function renderScenarioWorkspace() {
     const openJobs = activeJobOrders().filter(w => !['closed', 'delivered', 'cancelled'].includes(String(w.state || w.status || '').toLowerCase()));
     const netCash = txs().reduce((s, t) => s + (t.direction === 'in' ? money(t.amount) : t.direction === 'out' ? -money(t.amount) : 0), 0);
     const totalIn = txs().filter(t => t.direction === 'in').reduce((s, t) => s + money(t.amount), 0);
     const totalOut = txs().filter(t => t.direction === 'out').reduce((s, t) => s + money(t.amount), 0);
     const lowStockCount = lowStock().length;
-    const customersWithBalance = customers().filter(c => customerBalance(c) > 0).length;
+    const withBalance = customers().filter(c => customerBalance(c) > 0);
+    const customersWithBalance = withBalance.length;
+    const receivable = withBalance.reduce((s, c) => s + money(customerBalance(c)), 0);
     const currency = activeProfile().currencySymbol || 'IQD';
+
+    // Projection over the operator's own assumptions. Every input to this is a
+    // real recorded figure — recorded income, recorded expenses and the actual
+    // outstanding customer balances — and only the assumptions are theirs, so
+    // nothing here invents an amount the books do not already contain.
+    const a = scenarioAssumptions;
+    const days = Math.max(1, money(a.horizonDays));
+    const collected = Math.round(receivable * (Math.min(100, Math.max(0, money(a.collectionRate))) / 100));
+    const projectedOut = Math.round(totalOut * (1 + money(a.expenseChange) / 100));
+    const projectedNet = netCash + collected - (projectedOut - totalOut);
 
     const scenarios = [
       {
@@ -3758,14 +3780,18 @@
         metrics: [
           { value: fmt(totalIn), label: 'إجمالي الدخل' },
           { value: fmt(totalOut), label: 'إجمالي المصروف' },
-          { value: fmt(netCash), label: 'الصافي' },
-          { value: customersWithBalance, label: 'عملاء غير محصّلين' }
+          { value: fmt(netCash), label: 'الصافي الحالي' },
+          { value: fmt(projectedNet), label: 'الصافي المتوقع (' + days + ' يوم)' }
         ],
         actions: [
           { icon: netCash >= 0 ? 'fa-check-circle ok' : 'fa-exclamation-triangle bad', text: netCash >= 0 ? 'التدفق النقدي مستقر' : 'يُنصح بمراجعة المدفوعات المعلقة' },
-          { icon: customersWithBalance ? 'fa-exclamation-circle warn' : 'fa-check-circle ok', text: customersWithBalance ? customersWithBalance + ' عميل لديهم مبالغ غير محصّلة — تعجيل التحصيل' : 'جميع رصيد العملاء مسدّد' },
-          { icon: 'fa-arrow-trend-up ok', text: 'استهدف نمو 10% في المبيعات للمرونة في السيولة' },
+          { icon: customersWithBalance ? 'fa-exclamation-circle warn' : 'fa-check-circle ok', text: customersWithBalance ? customersWithBalance + ' عميل لديهم ' + fmt(receivable) + ' ' + currency + ' غير محصّلة — بافتراض التحصيل الحالي يدخل ' + fmt(collected) + ' ' + currency : 'جميع رصيد العملاء مسدّد' },
+          { icon: projectedNet >= netCash ? 'fa-arrow-trend-up ok' : 'fa-arrow-trend-down bad', text: 'أثر الافتراضات على الصافي: ' + (projectedNet - netCash >= 0 ? '+' : '') + fmt(projectedNet - netCash) + ' ' + currency },
           { icon: 'fa-calendar warn', text: 'مطابقة الكشف البنكي شهرياً قبل الرواتب' }
+        ],
+        links: [
+          ['customers', 'فتح كشف العملاء'],
+          ['finance', 'فتح المالية']
         ]
       },
       {
@@ -3784,6 +3810,10 @@
           { icon: openJobs.length > 5 ? 'fa-fire bad' : 'fa-circle-check ok', text: openJobs.length > 5 ? openJobs.length + ' طلب عمل مفتوح — ضغط على الطاقة الإنتاجية' : 'حجم الطلبات ضمن الطاقة التشغيلية' },
           { icon: 'fa-truck warn', text: 'تنسيق مع الموردين المفضلين لضمان الإمداد السريع' },
           { icon: 'fa-list-check ok', text: 'استخدم بوابة الموردين لمقارنة العروض وتحديد أفضل مورد بديل' }
+        ],
+        links: [
+          ['supplier_portal', 'فتح بوابة الموردين'],
+          ['inventory', 'فتح المخزون']
         ]
       },
       {
@@ -3802,6 +3832,10 @@
           { icon: 'fa-truck-fast ok', text: 'الطلبات الجاهزة للتوصيل: ' + openJobs.filter(w => ['ready_for_delivery', 'delivery_ready'].includes(String(w.state || ''))).length + ' وحدة' },
           { icon: 'fa-gear warn', text: 'نسّق قدرة الآلات مع الطلبات المستلمة لتجنب تأخير الإنجاز' },
           { icon: 'fa-star ok', text: 'تأكد من جاهزية فريق التوصيل للطلبات العاجلة (COD)' }
+        ],
+        links: [
+          ['my_work', 'فتح طلبات العمل'],
+          ['machines', 'فتح الآلات']
         ]
       }
     ];
@@ -3815,6 +3849,13 @@
         `<div class="scenario-action-item"><i class="fa-solid ${esc(a.icon)}"></i>${esc(a.text)}</div>`
       ).join('');
 
+      // Each scenario names a concrete next step; without a way to reach the
+      // page that step happens on, the planner is a dead end that tells the
+      // operator to go somewhere and then strands them.
+      const linksHtml = (s.links || []).map(([page, label]) =>
+        `<button type="button" class="ent-btn" onclick="switchPage('${esc(page)}')">${esc(label)}</button>`
+      ).join('');
+
       return `
         <div class="scenario-card">
           <div class="scenario-header">
@@ -3826,14 +3867,55 @@
           </div>
           <div class="scenario-metrics-bar">${metricsHtml}</div>
           <div class="scenario-action-grid">${actionsHtml}</div>
+          ${linksHtml ? `<div class="ent-actions scenario-card-actions">${linksHtml}</div>` : ''}
         </div>
       `;
     }).join('');
 
-    return `<div class="scenario-workspace">${scenariosHtml}</div>`;
+    const assumption = (key, label, suffix, step) => {
+      const b = SCENARIO_BOUNDS[key];
+      return `<label class="scenario-assumption">
+        <span>${esc(label)}</span>
+        <input type="number" class="ent-input" value="${esc(String(a[key]))}" min="${b.min}" max="${b.max}" step="${step}"
+          onchange="entSetScenarioAssumption('${esc(key)}', this.value)">
+        <em>${esc(suffix)}</em>
+      </label>`;
+    };
+
+    const assumptionsHtml = `<section class="ent-panel scenario-assumptions">
+      <div class="ent-panel-head">
+        <div><h3>افتراضات التخطيط</h3><p>تُطبَّق على الأرقام المسجّلة فعلياً — لا تُنشئ أي مبلغ جديد ولا تُعدّل أي سجل.</p></div>
+        <div class="ent-actions"><button type="button" class="ent-btn" onclick="entResetScenarioAssumptions()">إعادة الافتراضات</button></div>
+      </div>
+      <div class="scenario-assumption-grid">
+        ${assumption('collectionRate', 'نسبة تحصيل الذمم المتوقعة', '%', 5)}
+        ${assumption('expenseChange', 'تغيّر المصروفات المتوقع', '%', 5)}
+        ${assumption('horizonDays', 'أفق التخطيط', 'يوم', 1)}
+      </div>
+      <div class="ent-signal-strip">
+        <span class="ent-chip">ذمم قائمة: ${esc(fmt(receivable))} ${esc(currency)}</span>
+        <span class="ent-chip">متوقع تحصيله: ${esc(fmt(collected))} ${esc(currency)}</span>
+        <span class="ent-chip ${projectedNet >= 0 ? 'ok' : 'bad'}">الصافي المتوقع: ${esc(fmt(projectedNet))} ${esc(currency)}</span>
+      </div>
+    </section>`;
+
+    return `<div class="scenario-workspace">${assumptionsHtml}${scenariosHtml}</div>`;
   }
 
   window.entSetScenarioTab = function (tab) {
+    renderPage('scenario_planner');
+  };
+
+  window.entSetScenarioAssumption = function (key, value) {
+    if (!Object.prototype.hasOwnProperty.call(scenarioAssumptions, key)) return;
+    const bounds = SCENARIO_BOUNDS[key];
+    const next = Math.min(bounds.max, Math.max(bounds.min, money(value)));
+    scenarioAssumptions[key] = next;
+    renderPage('scenario_planner');
+  };
+
+  window.entResetScenarioAssumptions = function () {
+    scenarioAssumptions = { ...SCENARIO_DEFAULTS };
     renderPage('scenario_planner');
   };
 

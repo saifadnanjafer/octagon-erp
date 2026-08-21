@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T23:48:53.534Z",
-  "startedAt": "2026-08-21T23:48:41.105Z",
+  "generatedAt": "2026-08-21T23:55:41.757Z",
+  "startedAt": "2026-08-21T23:55:33.963Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -9604,7 +9604,7 @@
       "rendererType": "view",
       "rendererSource": "views/scenario_planner.html",
       "requiredPermission": "scenario_planner",
-      "durationMs": 2185,
+      "durationMs": 1680,
       "error": null,
       "activated": true,
       "observation": {
@@ -9614,15 +9614,24 @@
         "headings": [
           "مخطط السيناريوهات الذكي",
           "مخطط السيناريوهات الذكي",
+          "افتراضات التخطيط",
           "سيناريو: صافي التدفق النقدي والسيولة",
           "سيناريو: ضغط نقص المواد والإنتاج",
           "سيناريو: الطاقة التشغيلية والتوصيل"
         ],
         "title": "مخطط السيناريوهات الذكي",
-        "textLength": 1341,
-        "controlCount": 0,
-        "controlLabels": [],
-        "inputCount": 0,
+        "textLength": 1671,
+        "controlCount": 7,
+        "controlLabels": [
+          "إعادة الافتراضات",
+          "فتح كشف العملاء",
+          "فتح المالية",
+          "فتح بوابة الموردين",
+          "فتح المخزون",
+          "فتح طلبات العمل",
+          "فتح الآلات"
+        ],
+        "inputCount": 3,
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
@@ -9630,17 +9639,25 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
           "error": false,
           "denied": false
         },
-        "linkTargets": [],
+        "linkTargets": [
+          "customers",
+          "finance",
+          "supplier_portal",
+          "inventory",
+          "my_work",
+          "machines"
+        ],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1024,
+        "arabicChars": 1277,
         "latinChars": 37
       },
       "consoleErrors": [],

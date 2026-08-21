@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T22:40:03.430Z",
-  "startedAt": "2026-08-21T22:39:55.867Z",
+  "generatedAt": "2026-08-21T23:19:34.149Z",
+  "startedAt": "2026-08-21T23:19:26.863Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -647,7 +647,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_status.html",
       "requiredPermission": "ai_status",
-      "durationMs": 1598,
+      "durationMs": 1826,
       "error": null,
       "activated": true,
       "observation": {
@@ -693,9 +693,18 @@
         "arabicChars": 826,
         "latinChars": 2042
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "ai_tools",
@@ -5242,7 +5251,7 @@
       "rendererType": "view",
       "rendererSource": "views/home.html",
       "requiredPermission": "home",
-      "durationMs": 823,
+      "durationMs": 1613,
       "error": null,
       "activated": true,
       "observation": {
@@ -5250,13 +5259,13 @@
         "hostId": "pageHome",
         "hostDataPage": null,
         "headings": [
-          "🌙 مساء الخير، مدير النظام"
+          "🌅 صباح الخير، النظام"
         ],
-        "title": "🌙 مساء الخير، مدير النظام",
-        "textLength": 660,
+        "title": "🌅 صباح الخير، النظام",
+        "textLength": 661,
         "controlCount": 9,
         "controlLabels": [
-          "الذهاب إلى: خدمة العملاء",
+          "الذهاب إلى: حالة الذكاء الصناعي",
           "📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب",
           "💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود",
           "🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة",
@@ -5274,6 +5283,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -5281,7 +5291,7 @@
           "denied": false
         },
         "linkTargets": [
-          "helpdesk",
+          "ai_status",
           "timesheet",
           "finance",
           "workshop_ledger",
@@ -5294,7 +5304,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 520,
+        "arabicChars": 521,
         "latinChars": 0
       },
       "consoleErrors": [],
@@ -5849,7 +5859,7 @@
       "rendererType": "view",
       "rendererSource": "views/inventory.html",
       "requiredPermission": "inventory",
-      "durationMs": 984,
+      "durationMs": 1632,
       "error": null,
       "activated": true,
       "observation": {
@@ -5896,6 +5906,7 @@
         "tableRows": 18,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9257,7 +9268,7 @@
       "rendererType": "view",
       "rendererSource": "views/route_health.html",
       "requiredPermission": "route_health",
-      "durationMs": 949,
+      "durationMs": 1633,
       "error": null,
       "activated": true,
       "observation": {
@@ -9268,9 +9279,12 @@
           "🩺\nفحص صحة النظام"
         ],
         "title": "🩺\nفحص صحة النظام",
-        "textLength": 107,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 1509,
+        "controlCount": 2,
+        "controlLabels": [
+          "🔄 إعادة الفحص",
+          "📋 نسخ التقرير"
+        ],
         "inputCount": 0,
         "selectCount": 0,
         "searchInputCount": 0,
@@ -9279,6 +9293,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9289,12 +9304,19 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 84,
-        "latinChars": 0
+        "arabicChars": 582,
+        "latinChars": 622
       },
       "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "saas_overview",

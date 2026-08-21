@@ -4578,6 +4578,12 @@ function switchPage(page) {
     canonical_console: 'pageCanonicalConsole',
     canonical_inventory: 'pageCanonicalInventory'
   };
+  // Publish the canonical page → section-id routing table read-only. Diagnostics
+  // (route_health) previously had to guess this mapping from id string matching,
+  // which mis-reported every page whose section id does not contain its page key
+  // (e.g. parties → pageCustomersAndSuppliers). Read-only: nothing may route
+  // through this copy, it is for inspection only.
+  try { window.__octagonPageMap = Object.freeze(Object.assign({}, pageMap)); } catch (_) {}
   const navMap = {
     home: 'navHome',
     calculator: 'navCalculator',

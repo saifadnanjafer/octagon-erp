@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-21T22:40:19.224Z",
+  "generatedAt": "2026-08-21T23:19:42.232Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-21T22:40:03.430Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-21T23:19:34.149Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-21T18:42:24.967Z)"
   },
   "totalPrimaryPages": 221,
@@ -19,14 +19,14 @@
   },
   "functionalStateCounts": {
     "STRONG": 75,
-    "USABLE": 138,
-    "THIN": 8
+    "USABLE": 139,
+    "THIN": 7
   },
   "usabilityStateCounts": {
     "STRONG": 74,
-    "USABLE": 138,
+    "USABLE": 139,
     "CONFUSING": 1,
-    "THIN": 8
+    "THIN": 7
   },
   "priorityCounts": {
     "P3": 12,
@@ -684,12 +684,14 @@
       "businessPurpose": "AI status — ai/system (risk: medium, phase: phase6e)",
       "owningDomain": "Ai",
       "canonicalApi": null,
-      "observedEndpoints": [],
+      "observedEndpoints": [
+        "/api/db"
+      ],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🛡️\nحالة الذكاء الصناعي",
       "actionsAvailable": "🧪 اختبار المزوّد | ↻ تحديث | سجل الأدوات | طابور الموافقات | مصنع التطوير",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "none — no other workspace links here",
+      "upstreamWorkflow": "home",
       "downstreamWorkflow": "ai_tools, ai_queue, ai_factory",
       "functionalState": "STRONG",
       "functionalEvidence": "5 controls, 8 rendered records, 3 workflow link(s)",
@@ -718,8 +720,8 @@
         "arabicChars": 826,
         "latinChars": 2042
       },
-      "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
+      "runtimeConsoleErrors": 1,
+      "runtimeFailedRequests": 1,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -5267,7 +5269,7 @@
       "observedTitle": "🎫\nخدمة العملاء — التذاكر",
       "actionsAvailable": "📊 اللوحة | 🎫 التذاكر | كل التذاكر",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "home",
+      "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
       "functionalEvidence": "3 controls, 1 records, 0 link(s)",
@@ -5321,11 +5323,11 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "🌙 مساء الخير، مدير النظام",
-      "actionsAvailable": "الذهاب إلى: خدمة العملاء | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
+      "observedTitle": "🌅 صباح الخير، النظام",
+      "actionsAvailable": "الذهاب إلى: حالة الذكاء الصناعي | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
-      "downstreamWorkflow": "helpdesk, timesheet, finance, workshop_ledger, inventory, sales, customers, report, admin_panel",
+      "downstreamWorkflow": "ai_status, timesheet, finance, workshop_ledger, inventory, sales, customers, report, admin_panel",
       "functionalState": "USABLE",
       "functionalEvidence": "9 controls, 0 records, 9 link(s)",
       "focusedFunctionalEvidence": null,
@@ -5334,7 +5336,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 660,
+        "textLength": 661,
         "controls": 9,
         "inputs": 0,
         "searchInputs": 0,
@@ -5350,7 +5352,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 520,
+        "arabicChars": 521,
         "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
@@ -9158,23 +9160,25 @@
       "businessPurpose": "Route health — system/diagnostic (risk: medium, phase: phase6e)",
       "owningDomain": "System",
       "canonicalApi": null,
-      "observedEndpoints": [],
-      "pageArchetype": "MINIMAL",
+      "observedEndpoints": [
+        "/api/db"
+      ],
+      "pageArchetype": "DETAIL/READ",
       "observedTitle": "🩺\nفحص صحة النظام",
-      "actionsAvailable": "none rendered",
+      "actionsAvailable": "🔄 إعادة الفحص | 📋 نسخ التقرير",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "risk_compliance",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "almost no rendered content (107 chars, 0 controls, no data surface)",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 107,
-        "controls": 0,
+        "textLength": 1509,
+        "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
         "tables": 0,
@@ -9189,11 +9193,11 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 84,
-        "latinChars": 0
+        "arabicChars": 582,
+        "latinChars": 622
       },
       "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
+      "runtimeFailedRequests": 1,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,

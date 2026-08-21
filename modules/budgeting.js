@@ -109,20 +109,6 @@
   };
   window.bgArchive = function (id) { const l = (B()?.lines || []).find(x => x.id === id); if (!l) return; if (!confirm(`أرشفة بند الموازنة "${l.name}"؟`)) return; l.is_active = false; audit('budget_archive', `أرشفة ${l.name}`); save(); render(); };
 
-  window.bgLoadDemo = function () {
-    const b = B(); if (!b) return;
-    if (b.lines.length) { toast('توجد بنود مسبقاً', 'info'); return; }
-    const pm = thisMonth();
-    b.lines.push(
-      { id: uid('bgt'), name: 'مصروف المواد', scope: 'expense', period: pm, amount: 5000000, departmentId: '', note: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('bgt'), name: 'الرواتب والأجور', scope: 'expense', period: pm, amount: 8000000, departmentId: '', note: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('bgt'), name: 'مصاريف تشغيل عامة', scope: 'expense', period: pm, amount: 2000000, departmentId: '', note: 'نقل/كهرباء/صيانة', is_active: true, companyId: coId(), createdAt: new Date().toISOString() },
-      { id: uid('bgt'), name: 'هدف الإيرادات', scope: 'income', period: pm, amount: 20000000, departmentId: '', note: '', is_active: true, companyId: coId(), createdAt: new Date().toISOString() }
-    );
-    audit('budget_demo', 'تحميل موازنة تجريبية');
-    save(); toast('تم تحميل بيانات تجريبية', 'success'); render();
-  };
-
   function kpi(label, value, sub, cls) { return `<div class="bg-kpi ${cls || ''}"><div class="bg-kpi-val">${value}</div><div class="bg-kpi-label">${label}</div>${sub ? `<div class="bg-kpi-sub">${sub}</div>` : ''}</div>`; }
 
   function renderDashboard() {
@@ -166,7 +152,6 @@
     el.innerHTML = `
       <div class="bg-toolbar">
         <button class="btn-primary" onclick="bgOpenForm('new')">➕ بند موازنة</button>
-        <button class="bg-mini-btn" onclick="bgLoadDemo()">بيانات تجريبية</button>
         <select class="bg-input" onchange="bgPeriodFilter(this.value)" style="max-width:180px">${pOpt}</select>
       </div>
       ${renderTable(getLines().filter(l => periodFilter === 'all' || l.period === periodFilter).concat([]).map(l => l))}

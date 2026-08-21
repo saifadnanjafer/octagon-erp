@@ -9,6 +9,7 @@ const source = fs.readFileSync(path.join(repoRoot, 'scripts', 'product', 'inspec
 const build12Source = fs.readFileSync(path.join(repoRoot, 'modules', 'build12-workspaces.js'), 'utf8');
 const build10BoardsSource = fs.readFileSync(path.join(repoRoot, 'modules', 'build10', 'renderers', 'boards.js'), 'utf8');
 const build10WorkspacesSource = fs.readFileSync(path.join(repoRoot, 'modules', 'build10-workspaces.js'), 'utf8');
+const budgetingSource = fs.readFileSync(path.join(repoRoot, 'modules', 'budgeting.js'), 'utf8');
 
 test('runtime page inspection waits for the authenticated warehouse context before navigation', () => {
   assert.match(source, /async function waitForReviewRuntimeContext\(page, timeout = 15000\)/);
@@ -51,4 +52,10 @@ test('large-screen boards do not present illustrative values as live operational
   assert.match(build10WorkspacesSource, /root\.Build10BoardsRenderer\.render\(pageKey, null, isRtl, readOnly\)/);
   assert.doesNotMatch(build10WorkspacesSource, /<h3>Active Assets<\/h3>/);
   assert.doesNotMatch(build10WorkspacesSource, /<div class="b10-board-metric">142<\/div>/);
+});
+
+test('P0 budgeting does not offer fabricated budget lines as operational data', () => {
+  assert.doesNotMatch(budgetingSource, /bgLoadDemo|budget_demo|بيانات تجريبية/);
+  assert.match(budgetingSource, /bgSaveLine/);
+  assert.match(budgetingSource, /getFinanceTransactions/);
 });

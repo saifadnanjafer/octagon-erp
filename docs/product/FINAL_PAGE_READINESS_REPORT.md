@@ -14,9 +14,9 @@ All **221** current primary pages have a ledger row. Functional state:
 
 | State | Pages |
 |---|---:|
-| STRONG | 78 |
+| STRONG | 75 |
 | THIN | 8 |
-| USABLE | 135 |
+| USABLE | 138 |
 
 - P0/P1 THIN: **0**
 - P0/P1 verified persistence failures: **0**

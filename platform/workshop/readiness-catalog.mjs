@@ -77,7 +77,7 @@ export const READINESS_CATEGORIES = Object.freeze([
   {
     id: 'delivery', label: 'Delivery', labelAr: 'التسليم', icon: 'truck',
     checks: [
-      check('sales_authority', 'Sales order authority', 'سلطة أوامر البيع', 'platform:db:read', 'sales_order_list', true, ({ dialect }) => tableExists(dialect, 'sales_orders') ? { state: 'READY', value: 1, detail: 'Canonical sales orders installed' } : { state: 'MISSING', value: 0, detail: 'Sales order authority unavailable' }),
+      check('sales_authority', 'Sales order authority', 'سلطة أوامر البيع', 'platform:db:read', 'sales_order_list', true, ({ dialect }) => tableExists(dialect, 'sale_orders') ? { state: 'READY', value: 1, detail: 'Canonical sales orders installed' } : { state: 'MISSING', value: 0, detail: 'Sales order authority unavailable' }),
       check('delivery_locations', 'Customer delivery locations', 'مواقع تسليم العملاء', 'wms:locations:view', 'zone_bin_management', true, tableCount('stock_locations', "company_id=? AND usage IN ('customer','transit')", (scope) => [scope.companyId], { emptyState: 'WARNING' })),
       check('picking_authority', 'Delivery picking authority', 'سلطة التقاط التسليم', 'wms:picking:view', 'picking_execution', false, ({ dialect }) => tableExists(dialect, 'wms_pick_tasks_v2') ? { state: 'READY', value: 1, detail: 'Mobile picking authority installed' } : { state: 'OPTIONAL', value: 0, detail: 'Advanced picking is optional' }),
     ],

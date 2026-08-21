@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build12-089.json",
+  "acceptedSourceCommit": "2f873e488102a0a202df6ddafbd0bf4581f18579",
+  "acceptanceTimestamp": "2026-08-19T00:00:00.000Z",
+  "acceptanceReason": "Product Recovery 1 registration of missing WMS, shopfloor, and quality view permissions to allow authorized role access.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "090_build09_wms_shopfloor_quality_view_permissions_followup",
+      "relativePath": "database/migrations/090_build09_wms_shopfloor_quality_view_permissions_followup.mjs",
+      "algorithm": "sha256",
+      "checksum": "910f4f42489bc9c7935d8f9eea6ebe3aa43201862c37982281f9c9286cd4c656"
+    }
+  ]
+}

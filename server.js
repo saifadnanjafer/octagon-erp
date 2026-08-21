@@ -2300,6 +2300,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(200);
         res.end(JSON.stringify({ success: true }));
       } catch (e) {
+        console.error('[/api/db POST] unhandled error:', e);
         res.setHeader("Content-Type", "application/json; charset=utf-8");
         res.writeHead(400);
         res.end(JSON.stringify({ error: e.message || 'Invalid JSON' }));

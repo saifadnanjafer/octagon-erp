@@ -16,6 +16,18 @@
 //     never carries a raw secret
 //   - hiding is presentation; the server denies the same call independently
 //   - Arabic/RTL identity is preserved: `locale`/`direction` come from the user
+//
+// REGRESSION — see docs/product/BUILD13_FEATURE_GAP_REGISTER.md (GAP-008).
+// The invariant above, and four other client-facing guarantees, are currently
+// NOT met. Commit 7aff6fc ("master data governance & data quality full engine")
+// removed `actor.locale`/`actor.direction`, `impersonation` (the visible
+// banner), `fields` (per-field hidden/masked/readOnly for forms), `canOpen()`
+// (deep-link protection) and `switchCompany()` (membership-validated company
+// switch) from this payload while leaving these invariants documented as true.
+// `RouteCoverageRegistry.clientMetadata()` still implements the old contract but
+// is called only from tests. The phase02 §56 suite still asserts the documented
+// contract and therefore fails; that failure is the evidence, so do not "fix" it
+// by deleting the assertions. Server-side denial is unaffected.
 
 'use strict';
 

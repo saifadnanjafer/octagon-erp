@@ -11,8 +11,8 @@ guessed.
 
 | | Count |
 |---|---|
-| Total gaps logged | 9 |
-| Owner decision required | 5 |
+| Total gaps logged | 10 |
+| Owner decision required | 6 |
 | Verified / fixed this pass | 1 (GAP-005) |
 | Fixture-only, closed this pass | 1 (GAP-007) |
 | Open P1 | 1 (GAP-006) |
@@ -62,6 +62,54 @@ Root cause found via direct HTTP trace (`curl` against the live review server, a
 
 ### GAP-007 — CRM/Sales/Procurement fixture gap (FIXTURE_ONLY — closed this pass)
 `platform/sales/*`, `platform/procurement/*`, and `modules/canonical-sales.js` were real, wired, and fully unpopulated. Closed via `scripts/review/fixtures/commercial-pipeline.mjs`. Verified: `sales` moved from a false-positive "STRONG, 7 records" (tab-button chrome) to genuine USABLE with real rendered data. `sales_price_lists`/`supplier_portal` remain thin, but are now understood to be a **different, legacy-authority issue** (see GAP-004) rather than the same fixture gap.
+
+### GAP-008 — BUILD-07 silently dropped five client governance guarantees (P1, owner decision required)
+
+**Evidence**: `git show 7aff6fc -- platform/client/governance-bootstrap.mjs` — a commit
+titled "master data governance & data quality full engine" removed 107 lines from the
+client bootstrap payload, including:
+
+| Removed | What it delivered |
+|---|---|
+| `actor.locale` / `actor.direction` | Arabic/RTL identity for the shell |
+| `impersonation: { active, by, bannerAr }` | the visible "you are acting as another user" banner |
+| `fields` | per-entity hidden / masked / readOnly field lists so forms disable rather than silently drop |
+| `canOpen(ctx, pageId)` | deep-link page protection helper |
+| `switchCompany(actorId, companyId)` | membership-validated company switch |
+
+The module's own invariant block still documents `locale`/`direction` as preserved, which
+is how this stayed invisible. `RouteCoverageRegistry.clientMetadata()`
+(`platform/authorization/route-coverage/index.mjs:92`) still implements the old contract
+in full — including `impersonation` and `hiddenPageCount` — but a repo-wide search shows
+it is called **only from tests**, never from production.
+
+**Not a security hole**: the server still denies every one of these independently
+(`authorizeRoute`, the permission evaluator, and `/api/auth/context` membership checks are
+untouched). What was lost is the client-facing *communication* of those decisions.
+
+**Blast radius** — three phase02 suites still assert the documented contract and therefore
+fail, across seven cases:
+
+| Suite | Failing cases |
+|---|---|
+| `security-suite.test.mjs` | §58.1 hidden-action payload, §56 role-specific bootstrap + RTL, §56 impersonation banner + field metadata |
+| `browser-evidence.test.mjs` | bootstrap payload shape / RTL identity, bootstrap page catalogue vs server contract |
+| `browser-live-evidence.test.mjs` | RTL identity on owner login, role-specific navigation hides privileged pages |
+
+`payload.version` and `payload.generatedAt` were dropped by the same commit.
+
+**Evidence preserved deliberately**: those assertions still describe the documented
+contract and therefore fail. Those assertions were left failing on
+purpose — migrating them to the current shape would have deleted the only remaining signal
+that these guarantees regressed. The naming-only drift in the sibling phase02 suites
+(`navigation.pages` → `grantedPages`, `hiddenPageCount` → `deniedPagesCount`, top-level
+`actions` → `permissions.actions`) *was* migrated, because there the capability is intact
+and only the field name changed.
+
+**Ask**: was the leaner BUILD-07 payload deliberate? If yes, the invariant comment and the
+§56 tests should be retired and `clientMetadata()` deleted as dead code. If no, restore the
+five capabilities (the removed implementation is recoverable from `7aff6fc^`). Either way
+this is a product/architecture call, not a test fix.
 
 ## What this register deliberately does not claim
 

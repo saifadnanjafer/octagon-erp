@@ -120,9 +120,19 @@ async function testRegistryConsistencyAndSnapshot() {
   const { registry } = bootstrap(dialect);
   const report = registry.consistencyReport();
   assert.strictEqual(report.consistent, true, JSON.stringify(report.problems));
-  assert.strictEqual(report.total, PERMS.length);
   const snapshot = registry.snapshot();
-  assert.strictEqual(snapshot.length, PERMS.length);
+  // `setup()` runs a full freshInstall, so the real platform modules register
+  // their own permission tokens before this fixture adds PERMS on top. Asserting
+  // the registry contains *only* PERMS was a world that stopped existing once
+  // those migrations shipped. The invariants that actually matter are that the
+  // registry is internally coherent and that every fixture permission really is
+  // registered — which an equality on the count never checked.
+  assert.strictEqual(report.total, snapshot.length);
+  assert.ok(report.total >= PERMS.length, `registry lost permissions: ${report.total} < ${PERMS.length}`);
+  const registeredIds = new Set(snapshot.map((l) => l.split('|')[0]));
+  for (const perm of PERMS) {
+    assert.ok(registeredIds.has(perm.id), `fixture permission not registered: ${perm.id}`);
+  }
   assert.ok(snapshot.every((l) => l.split('|').length === 5));
 
   // a grant to an unregistered permission is caught by the consistency check

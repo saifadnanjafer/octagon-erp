@@ -111,9 +111,20 @@ async function testServerStartsAndLoginWorks() {
     const bootstrap = await withCookie(base, cookies, 'GET', '/api/auth/bootstrap');
     assert.strictEqual(bootstrap.res.status, 200);
     assert.strictEqual(bootstrap.payload.success, true);
-    assert.ok(Array.isArray(bootstrap.payload.navigation?.pages));
-    assert.ok(Array.isArray(bootstrap.payload.actions));
-    assert.ok(bootstrap.payload.actor?.locale === 'ar' || bootstrap.payload.actor?.direction === 'rtl', 'RTL identity preserved');
+    // The governance bootstrap (platform/client/governance-bootstrap.mjs) returns
+    // the permission-filtered page list as `navigation.grantedPages` and the
+    // granted actions under `permissions.actions`; `actor` was replaced by
+    // `context` + `user`. These assert the same facts under their current names.
+    assert.ok(Array.isArray(bootstrap.payload.navigation?.grantedPages), 'bootstrap must return the permission-filtered page list');
+    assert.ok(Array.isArray(bootstrap.payload.permissions?.actions), 'bootstrap must return granted actions');
+    assert.ok(bootstrap.payload.context?.userId, 'bootstrap must identify the acting user');
+
+    // RTL identity moved to the runtime context endpoint, so assert it where it
+    // now lives rather than dropping the check.
+    const runtimeCtx = await withCookie(base, cookies, 'GET', '/api/v1/runtime/context');
+    assert.strictEqual(runtimeCtx.res.status, 200);
+    const rc = runtimeCtx.payload?.data || runtimeCtx.payload;
+    assert.ok(rc?.locale === 'ar' || rc?.direction === 'rtl', 'RTL identity preserved');
 
     const dbRead = await withCookie(base, cookies, 'GET', '/api/db');
     assert.strictEqual(dbRead.res.status, 200, `owner should be allowed db read, got ${dbRead.res.status}`);

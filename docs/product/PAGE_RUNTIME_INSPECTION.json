@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T05:25:57.927Z",
-  "startedAt": "2026-08-22T05:11:20.719Z",
+  "generatedAt": "2026-08-22T08:54:10.687Z",
+  "startedAt": "2026-08-22T08:53:40.644Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -2726,7 +2726,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 4341,
+      "durationMs": 2622,
       "error": null,
       "activated": true,
       "observation": {
@@ -2737,7 +2737,7 @@
           "تخطيط الطلب"
         ],
         "title": "تخطيط الطلب",
-        "textLength": 452,
+        "textLength": 437,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -2754,17 +2754,17 @@
         "listItems": 0,
         "governedRecordItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 237,
-        "latinChars": 115
+        "arabicChars": 321,
+        "latinChars": 21
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3486,7 +3486,7 @@
       "rendererType": "view",
       "rendererSource": "views/eliminations.html",
       "requiredPermission": "eliminations",
-      "durationMs": 4479,
+      "durationMs": 3025,
       "error": null,
       "activated": true,
       "observation": {
@@ -3497,7 +3497,7 @@
           "قيود الاستبعاد"
         ],
         "title": "قيود الاستبعاد",
-        "textLength": 471,
+        "textLength": 468,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -3514,17 +3514,17 @@
         "listItems": 0,
         "governedRecordItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 261,
-        "latinChars": 111
+        "arabicChars": 351,
+        "latinChars": 21
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4594,7 +4594,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 3445,
+      "durationMs": 2834,
       "error": null,
       "activated": true,
       "observation": {
@@ -4605,7 +4605,7 @@
           "تسهيلات التمويل"
         ],
         "title": "تسهيلات التمويل",
-        "textLength": 507,
+        "textLength": 490,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
@@ -4623,17 +4623,17 @@
         "listItems": 0,
         "governedRecordItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 278,
-        "latinChars": 125
+        "arabicChars": 370,
+        "latinChars": 21
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6942,7 +6942,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps.html",
       "requiredPermission": "mps",
-      "durationMs": 3749,
+      "durationMs": 3135,
       "error": null,
       "activated": true,
       "observation": {
@@ -6953,7 +6953,7 @@
           "جدول الإنتاج الرئيسي"
         ],
         "title": "جدول الإنتاج الرئيسي",
-        "textLength": 482,
+        "textLength": 463,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -6970,17 +6970,17 @@
         "listItems": 0,
         "governedRecordItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 243,
-        "latinChars": 135
+        "arabicChars": 343,
+        "latinChars": 21
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11477,7 +11477,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_alerts.html",
       "requiredPermission": "treasury_alerts",
-      "durationMs": 3859,
+      "durationMs": 3048,
       "error": null,
       "activated": true,
       "observation": {
@@ -11488,7 +11488,7 @@
           "تنبيهات الخزينة"
         ],
         "title": "تنبيهات الخزينة",
-        "textLength": 467,
+        "textLength": 460,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -11505,17 +11505,17 @@
         "listItems": 0,
         "governedRecordItems": 0,
         "stateSignals": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 252,
-        "latinChars": 115
+        "arabicChars": 344,
+        "latinChars": 21
       },
       "consoleErrors": [],
       "pageErrors": [],

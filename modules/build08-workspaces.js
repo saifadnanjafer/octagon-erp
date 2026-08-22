@@ -116,6 +116,26 @@
     return states.get(pageId);
   };
 
+  // The 24 BUILD-08 view shells are static HTML and were authored in English.
+  // Title, subtitle, company and headers are already replaced at render; the
+  // eyebrow, search affordances, landmark labels and footnotes were not, so
+  // they stayed English on an Arabic page — and the two aria-labels meant a
+  // screen reader announced the workspace in English. Filled from the same
+  // config as the title so all 24 pages are covered in one place.
+  function localizeShell(host, title) {
+    if (!isArabic()) return;
+    const set = (selector, apply) => { const node = host.querySelector(selector); if (node) apply(node); };
+    set('.b08-eyebrow', (node) => { node.textContent = `BUILD-08 · ${title}`; });
+    set('.b08-toolbar', (node) => node.setAttribute('aria-label', `أدوات ${title}`));
+    set('.b08-card', (node) => node.setAttribute('aria-label', `سجلات ${title}`));
+    set('.b08-search .sr-only', (node) => { node.textContent = `تصفية ${title}`; });
+    set('[data-role="filter"]', (node) => node.setAttribute('placeholder', 'تصفية السجلات المعروضة…'));
+    set('.b08-empty', (node) => { node.textContent = 'جارٍ تحميل مساحة العمل…'; });
+    const footnotes = host.querySelectorAll('.b08-footnote span');
+    if (footnotes[0]) footnotes[0].textContent = 'نموذج قراءة معتمد · ضمن نطاق الشركة';
+    if (footnotes[1]) footnotes[1].textContent = 'حالات التحميل والفراغ والخطأ والمنع';
+  }
+
   function setStatus(pageId, phase, message) {
     const status = document.querySelector(`[data-build08-page="${pageId}"] [data-role="status"]`);
     if (!status) return;
@@ -154,6 +174,7 @@
       ? 'مساحة عمل محكومة بنطاق الشركة مع مصدر بيانات وخط تدقيق موحّد.'
       : 'Company-scoped workspace with a governed data source and audit trail.';
     host.querySelector('[data-role="company"]').textContent = `${isArabic() ? 'الشركة' : 'Company'}: ${company()}`;
+    localizeShell(host, title);
     const head = host.querySelector('[data-role="head"]');
     head.innerHTML = `<tr>${config.columns.map((column) => `<th scope="col">${escapeHtml(fieldLabel(column))}</th>`).join('')}</tr>`;
     const actionBar = host.querySelector('[data-role="actions"]');

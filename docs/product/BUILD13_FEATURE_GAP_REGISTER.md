@@ -11,8 +11,8 @@ guessed.
 
 | | Count |
 |---|---|
-| Total gaps logged | 10 |
-| Owner decision required | 6 |
+| Total gaps logged | 11 |
+| Owner decision required | 7 |
 | Verified / fixed this pass | 1 (GAP-005) |
 | Fixture-only, closed this pass | 1 (GAP-007) |
 | Open P1 | 1 (GAP-006) |
@@ -110,6 +110,33 @@ and only the field name changed.
 §56 tests should be retired and `clientMetadata()` deleted as dead code. If no, restore the
 five capabilities (the removed implementation is recoverable from `7aff6fc^`). Either way
 this is a product/architecture call, not a test fix.
+
+### GAP-009 — nine generic platform actions are registered against `sale_contract` (P2, owner decision required)
+
+**Evidence**: `platform-runtime-bridge.mjs:209-226`. Every collaboration, notification,
+saved-view and scheduled-report action is registered with `entity_id: 'sale_contract'`:
+
+`chatter:post`, `chatter:follow`, `activity:create`, `activity:complete`,
+`notification:mark_read`, `notification:archive`, `saved_view:save`,
+`scheduled_report:create`, `scheduled_report:pause`.
+
+None of these is about sales contracts — `chatter.post()` takes the target entity from
+`input.entity` at call time. The registry row is simply anchored to an arbitrary entity.
+
+**Consequence**: `sale_contract` is created by migration `065_commercial_contract_authority`,
+so `createPlatformAuthority()` throws `FOREIGN KEY constraint failed` on any database whose
+schema predates 065. It works in production only because a full install always reaches 065.
+
+**Regression, with a date**: `tests/phase04/remediation_phase04.test.mjs` (2026-07-28)
+stages a Phase-04-era migration tree (up to 044) and has failed since commit `bbf5bba`
+"govern collaboration and notification commands" (2026-08-01) introduced this coupling.
+The test is correct; the coupling broke it and the failure was never picked up. It is the
+single failing case in an otherwise green 47-test phase04 suite.
+
+**Ask**: these actions should be anchored to a kernel-owned entity that exists from
+migration 001, or the registry should allow an entity-agnostic action. Choosing the anchor
+changes how these actions are authorization-scoped, so it is a platform call rather than a
+test fix — the test was left failing rather than restaged to hide it.
 
 ## What this register deliberately does not claim
 

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T03:21:11.437Z",
-  "startedAt": "2026-08-22T03:21:02.499Z",
+  "generatedAt": "2026-08-22T03:28:42.004Z",
+  "startedAt": "2026-08-22T03:28:35.068Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -1325,7 +1325,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "billing_simulator",
-      "durationMs": 3377,
+      "durationMs": 1777,
       "error": null,
       "activated": true,
       "observation": {
@@ -1336,7 +1336,7 @@
           "محاكي الفوترة"
         ],
         "title": "محاكي الفوترة",
-        "textLength": 493,
+        "textLength": 487,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -1361,8 +1361,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 180,
-        "latinChars": 209
+        "arabicChars": 194,
+        "latinChars": 189
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1912,7 +1912,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "commercial_plans",
-      "durationMs": 4620,
+      "durationMs": 1570,
       "error": null,
       "activated": true,
       "observation": {
@@ -1923,7 +1923,7 @@
           "الخطط التجارية"
         ],
         "title": "الخطط التجارية",
-        "textLength": 777,
+        "textLength": 771,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -1948,8 +1948,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 184,
-        "latinChars": 381
+        "arabicChars": 206,
+        "latinChars": 353
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3752,7 +3752,7 @@
       "rendererType": "view",
       "rendererSource": "views/entitlements.html",
       "requiredPermission": "entitlements",
-      "durationMs": 3900,
+      "durationMs": 1635,
       "error": null,
       "activated": true,
       "observation": {
@@ -3763,11 +3763,11 @@
           "الاستحقاقات"
         ],
         "title": "الاستحقاقات",
-        "textLength": 2553,
+        "textLength": 2540,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
-          "Explain decision"
+          "شرح القرار"
         ],
         "inputCount": 2,
         "selectCount": 2,
@@ -3788,8 +3788,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 166,
-        "latinChars": 1438
+        "arabicChars": 199,
+        "latinChars": 1392
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4308,7 +4308,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_installations",
-      "durationMs": 3294,
+      "durationMs": 1599,
       "error": null,
       "activated": true,
       "observation": {
@@ -4359,7 +4359,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_marketplace",
-      "durationMs": 3389,
+      "durationMs": 1616,
       "error": null,
       "activated": true,
       "observation": {
@@ -4370,7 +4370,7 @@
           "سوق الإضافات"
         ],
         "title": "سوق الإضافات",
-        "textLength": 819,
+        "textLength": 814,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4395,8 +4395,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 215,
-        "latinChars": 456
+        "arabicChars": 226,
+        "latinChars": 440
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9359,7 +9359,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "saas_overview",
-      "durationMs": 4454,
+      "durationMs": 1602,
       "error": null,
       "activated": true,
       "observation": {
@@ -9760,7 +9760,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "seats_and_limits",
-      "durationMs": 3482,
+      "durationMs": 1596,
       "error": null,
       "activated": true,
       "observation": {
@@ -9771,11 +9771,11 @@
           "المقاعد والحدود"
         ],
         "title": "المقاعد والحدود",
-        "textLength": 388,
+        "textLength": 381,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
-          "Assign seat"
+          "إسناد مقعد"
         ],
         "inputCount": 2,
         "selectCount": 1,
@@ -9796,8 +9796,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 168,
-        "latinChars": 134
+        "arabicChars": 200,
+        "latinChars": 96
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10460,7 +10460,7 @@
       "rendererType": "view",
       "rendererSource": "views/subscriptions.html",
       "requiredPermission": "subscriptions",
-      "durationMs": 4914,
+      "durationMs": 1746,
       "error": null,
       "activated": true,
       "observation": {
@@ -10471,15 +10471,15 @@
           "الاشتراكات"
         ],
         "title": "الاشتراكات",
-        "textLength": 1242,
+        "textLength": 1191,
         "controlCount": 26,
         "controlLabels": [
           "تحديث",
-          "Create subscription",
-          "active",
-          "grace",
-          "suspended",
-          "cancelled"
+          "إنشاء اشتراك",
+          "نشط",
+          "فترة سماح",
+          "موقوف",
+          "ملغى"
         ],
         "inputCount": 5,
         "selectCount": 3,
@@ -10500,8 +10500,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 235,
-        "latinChars": 693
+        "arabicChars": 400,
+        "latinChars": 471
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11206,7 +11206,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_detail",
-      "durationMs": 3811,
+      "durationMs": 1736,
       "error": null,
       "activated": true,
       "observation": {
@@ -11217,24 +11217,24 @@
           "تفاصيل المستأجر"
         ],
         "title": "تفاصيل المستأجر",
-        "textLength": 641,
+        "textLength": 626,
         "controlCount": 15,
         "controlLabels": [
           "تحديث",
-          "overview",
-          "companies",
-          "subscription",
-          "entitlements",
-          "seats",
-          "usage",
-          "provisioning",
-          "extensions",
-          "audit",
-          "Begin / resume provisioning",
-          "تعيين grace",
-          "تعيين suspended",
-          "تعيين cancelled",
-          "تعيين archived"
+          "نظرة عامة",
+          "الشركات",
+          "الاشتراك",
+          "الاستحقاقات",
+          "المقاعد",
+          "الاستخدام",
+          "التزويد",
+          "الإضافات",
+          "التدقيق",
+          "بدء التزويد أو متابعته",
+          "تعيين فترة سماح",
+          "تعيين موقوف",
+          "تعيين ملغى",
+          "تعيين مؤرشف"
         ],
         "inputCount": 3,
         "selectCount": 2,
@@ -11255,8 +11255,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 400
+        "arabicChars": 254,
+        "latinChars": 232
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11271,7 +11271,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_directory",
-      "durationMs": 5733,
+      "durationMs": 1578,
       "error": null,
       "activated": true,
       "observation": {
@@ -11283,7 +11283,7 @@
           "إنشاء مستأجر"
         ],
         "title": "دليل المستأجرين",
-        "textLength": 784,
+        "textLength": 767,
         "controlCount": 6,
         "controlLabels": [
           "تحديث",
@@ -11310,8 +11310,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 248,
-        "latinChars": 392
+        "arabicChars": 316,
+        "latinChars": 306
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11577,7 +11577,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "usage_and_quotas",
-      "durationMs": 4502,
+      "durationMs": 1584,
       "error": null,
       "activated": true,
       "observation": {
@@ -11586,16 +11586,16 @@
         "hostDataPage": "usage_and_quotas",
         "headings": [
           "الاستخدام والحصص",
-          "Current period",
-          "Bounded usage-event history"
+          "الفترة الحالية",
+          "سجل أحداث الاستخدام المحدود"
         ],
         "title": "الاستخدام والحصص",
-        "textLength": 853,
+        "textLength": 838,
         "controlCount": 3,
         "controlLabels": [
           "تحديث",
-          "Record simulated usage",
-          "Reconcile"
+          "تسجيل استخدام محاكى",
+          "تسوية"
         ],
         "inputCount": 5,
         "selectCount": 2,
@@ -11616,8 +11616,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 193,
-        "latinChars": 515
+        "arabicChars": 306,
+        "latinChars": 387
       },
       "consoleErrors": [],
       "pageErrors": [],

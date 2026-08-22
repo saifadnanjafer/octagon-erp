@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-22T03:21:30.650Z",
+  "generatedAt": "2026-08-22T03:28:58.834Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:21:21.350Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:28:58.262Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -1431,7 +1431,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 493,
+        "textLength": 487,
         "controls": 2,
         "inputs": 7,
         "searchInputs": 0,
@@ -1447,8 +1447,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 180,
-        "latinChars": 209
+        "arabicChars": 194,
+        "latinChars": 189
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1998,7 +1998,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 777,
+        "textLength": 771,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -2014,8 +2014,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 184,
-        "latinChars": 381
+        "arabicChars": 206,
+        "latinChars": 353
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4134,7 +4134,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "الاستحقاقات",
-      "actionsAvailable": "تحديث | Explain decision",
+      "actionsAvailable": "تحديث | شرح القرار",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -4146,7 +4146,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2553,
+        "textLength": 2540,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -4162,8 +4162,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 166,
-        "latinChars": 1438
+        "arabicChars": 199,
+        "latinChars": 1392
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4175,7 +4175,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Entitlements: Entitlements — available here: تحديث | Explain decision.",
+      "whatUserAccomplishes": "Entitlements: Entitlements — available here: تحديث | شرح القرار.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -4842,7 +4842,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 819,
+        "textLength": 814,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -4858,8 +4858,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 215,
-        "latinChars": 456
+        "arabicChars": 226,
+        "latinChars": 440
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10587,7 +10587,7 @@
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
       "observedTitle": "المقاعد والحدود",
-      "actionsAvailable": "تحديث | Assign seat",
+      "actionsAvailable": "تحديث | إسناد مقعد",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -10599,7 +10599,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 388,
+        "textLength": 381,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -10615,8 +10615,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 168,
-        "latinChars": 134
+        "arabicChars": 200,
+        "latinChars": 96
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10628,7 +10628,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Seats and Limits: Seats and limits — available here: تحديث | Assign seat.",
+      "whatUserAccomplishes": "Seats and Limits: Seats and limits — available here: تحديث | إسناد مقعد.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -11409,7 +11409,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "الاشتراكات",
-      "actionsAvailable": "تحديث | Create subscription | active | grace | suspended | cancelled",
+      "actionsAvailable": "تحديث | إنشاء اشتراك | نشط | فترة سماح | موقوف | ملغى",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11421,7 +11421,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 1242,
+        "textLength": 1191,
         "controls": 26,
         "inputs": 5,
         "searchInputs": 0,
@@ -11437,8 +11437,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 235,
-        "latinChars": 693
+        "arabicChars": 400,
+        "latinChars": 471
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11450,7 +11450,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Subscriptions: Subscriptions — available here: تحديث | Create subscription | active | grace | suspended | cancelled.",
+      "whatUserAccomplishes": "Subscriptions: Subscriptions — available here: تحديث | إنشاء اشتراك | نشط | فترة سماح | موقوف | ملغى.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -12228,7 +12228,7 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "تفاصيل المستأجر",
-      "actionsAvailable": "تحديث | overview | companies | subscription | entitlements | seats | usage | provisioning | extensions | audit | Begin / resume provisioning | تعيين grace | تعيين suspended | تعيين cancelled | تعيين archived",
+      "actionsAvailable": "تحديث | نظرة عامة | الشركات | الاشتراك | الاستحقاقات | المقاعد | الاستخدام | التزويد | الإضافات | التدقيق | بدء التزويد أو متابعته | تعيين فترة سماح | تعيين موقوف | تعيين ملغى | تعيين مؤرشف",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12240,7 +12240,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 641,
+        "textLength": 626,
         "controls": 15,
         "inputs": 3,
         "searchInputs": 0,
@@ -12256,8 +12256,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 400
+        "arabicChars": 254,
+        "latinChars": 232
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12269,7 +12269,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Tenant Detail: Tenant detail — available here: تحديث | overview | companies | subscription | entitlements | seats | usage | provisioning | extensions | audit | Begin / resume provisioning | تعيين grace | تعيين suspended | تعيين cancelled | تعيين archived.",
+      "whatUserAccomplishes": "Tenant Detail: Tenant detail — available here: تحديث | نظرة عامة | الشركات | الاشتراك | الاستحقاقات | المقاعد | الاستخدام | التزويد | الإضافات | التدقيق | بدء التزويد أو متابعته | تعيين فترة سماح | تعيين موقوف | تعيين ملغى | تعيين مؤرشف.",
       "actionPersistenceEvidence": "NOT_MEASURED — scripts/product/inspect-pages.mjs is read-only by design (never clicks a page's own action buttons); this P0/P1 page needs coverage in test:functional-pages before any action can be called proven to persist"
     },
     {
@@ -12303,7 +12303,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 784,
+        "textLength": 767,
         "controls": 6,
         "inputs": 9,
         "searchInputs": 1,
@@ -12319,8 +12319,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 248,
-        "latinChars": 392
+        "arabicChars": 316,
+        "latinChars": 306
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12606,7 +12606,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "الاستخدام والحصص",
-      "actionsAvailable": "تحديث | Record simulated usage | Reconcile",
+      "actionsAvailable": "تحديث | تسجيل استخدام محاكى | تسوية",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12618,7 +12618,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 853,
+        "textLength": 838,
         "controls": 3,
         "inputs": 5,
         "searchInputs": 0,
@@ -12634,8 +12634,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 193,
-        "latinChars": 515
+        "arabicChars": 306,
+        "latinChars": 387
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12647,7 +12647,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Usage and Quotas: Usage and quotas — available here: تحديث | Record simulated usage | Reconcile.",
+      "whatUserAccomplishes": "Usage and Quotas: Usage and quotas — available here: تحديث | تسجيل استخدام محاكى | تسوية.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {

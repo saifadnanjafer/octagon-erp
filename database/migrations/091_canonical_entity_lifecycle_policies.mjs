@@ -1,3 +1,10 @@
+// RENUMBERED 086 -> 091 (2026-08-22). This migration was authored on the
+// wip/july-2026-payroll-workbook-sync branch at the same time main independently
+// created its own 086_build10_actions_and_permissions_followup. Two different
+// migrations therefore claimed 086. main's chain 086-090 is already applied to
+// the operational database, so this one is re-parented to run after 090. Its
+// content is unchanged: a descriptive correction to entity lifecycle labels,
+// which does not depend on its position in the chain.
 // Forward safety correction for descriptive lifecycle labels introduced by
 // post-062 migrations. The entity descriptor vocabulary is intentionally
 // closed; "governed" and "explicit" describe governance, not lifecycle
@@ -7,11 +14,11 @@
 'use strict';
 
 export const migration = {
-  id: '086_canonical_entity_lifecycle_policies',
+  id: '091_canonical_entity_lifecycle_policies',
   owner: 'platform.kernel',
   version: '10.5.0',
-  parent: '085_build10_kiosk_operational_boards',
-  dependsOn: ['085_build10_kiosk_operational_boards'],
+  parent: '090_build09_wms_shopfloor_quality_view_permissions_followup',
+  dependsOn: ['090_build09_wms_shopfloor_quality_view_permissions_followup'],
   dialect: ['sqlite'],
   transactionPolicy: 'required',
   rollbackPolicy: 'irreversible-safety-correction',

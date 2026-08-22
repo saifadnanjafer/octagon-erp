@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build09-090.json",
+  "acceptedSourceCommit": "295fc265a5022a3242a812749c983b9ef0297a50",
+  "acceptanceTimestamp": "2026-08-09T00:00:00.000Z",
+  "acceptanceReason": "Forward safety correction (originally accepted as 086 on wip/july-2026-payroll-workbook-sync). Renumbered to 091 because main independently created a different 086; content unchanged, re-parented to run after 090.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "091_canonical_entity_lifecycle_policies",
+      "relativePath": "database/migrations/091_canonical_entity_lifecycle_policies.mjs",
+      "algorithm": "sha256",
+      "checksum": "aaf8042318a5ee85ae8b836992e019b98d1ac544b1416f9e2fb3aeefedd1a337"
+    }
+  ]
+}

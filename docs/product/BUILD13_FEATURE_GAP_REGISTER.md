@@ -192,6 +192,44 @@ inspection's `empty` signal flips true → false on `device_registry`, `gateway_
 and `fleet_live_map_simulator`. Telemetry was deliberately left sparse: no speed, fuel or
 trip history was fabricated.
 
+### GAP-008 / GAP-009 — CLOSED 2026-08-22
+
+Both are fixed and their suites are green: **phase02 11/11** (was 3 files / 10 cases
+failing) and **phase04 47/47** (was 1 failing). Full regression sweep after the change:
+phase03 12, phase04-finalization 100, checkpoint-c 100, checkpoint-d-e 56, checkpoint-f 27,
+checkpoint-g 85, permissions 40/40, unit 12, migration 5 — **zero regressions**.
+
+**GAP-008** was recorded here as an owner decision. That was wrong: the tests specified the
+contract in full and every value was already on the decision context, so it was unfinished
+work, not a decision. Restored in `platform/client/governance-bootstrap.mjs`, each field from
+its real source — `actor.locale`/`direction` from `identity_users.locale`, `fields` from the
+evaluator's existing `fieldPartition()`, `impersonation` from `actorType`/`impersonatorId`,
+memberships from `MembershipDirectory`. `context` and `grantedPages` stay as aliases so
+consumers written against the later shape keep working. One deliberate behaviour change:
+`actions` now reports every action with an `enabled` flag instead of dropping denied ones —
+a disabled button explains itself, a missing one does not.
+
+Also added back: `canOpen()` (deep-link protection, distinguishing `PAGE_UNKNOWN` from a
+permission denial) and `switchCompany()` (refuses with `COMPANY_NOT_A_MEMBERSHIP` unless the
+target is an active membership).
+
+**A third defect surfaced while doing it, and was never in this register.**
+`listUserMemberships()` does not exist on `MembershipDirectory` — the real API is
+`companies()` / `list()`. The original `build()` called the non-existent method inside a
+silent `try/catch`, so it threw on every single call and `availableCompanies` was
+**permanently empty**: the company switcher had nothing to switch to, with no error anywhere.
+It only came to light because restoring `switchCompany()` copied the same wrong call and
+failed loudly. Both call sites now use the real API.
+
+**GAP-009** was worse than a failing test. Nine generic collaboration actions were anchored to
+`sale_contract`, created by migration **065**. The runtime bridge starts against whatever
+schema it is handed, so on any database below 065 the foreign key failed and
+`createPlatformAuthority()` threw — taking down the whole platform authority, not just
+chatter. Live startup never saw it because the live database is past 065; the Phase 04 suite
+caught it because it stages the first 44 migrations deliberately. Re-anchored to a kernel
+entity seeded by migration 002. A dedicated collaboration entity would read better, but any
+new migration would sit above 044 and reintroduce the same failure — noted in the code.
+
 ## Running `test:review`
 
 `npm run test:review` requires a **freshly reset review database that has never been

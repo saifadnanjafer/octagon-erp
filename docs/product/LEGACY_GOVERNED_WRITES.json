@@ -1,0 +1,265 @@
+{
+  "generatedAt": "2026-08-22T12:21:13.136Z",
+  "total": 37,
+  "findings": [
+    {
+      "file": "modules/jarvis-brain.js",
+      "line": 2047,
+      "key": "materials",
+      "domain": "COMMERCIAL",
+      "snippet": "if (scopes.indexOf('inventory') !== -1 && omni && db.omni && Array.isArray(db.omni.materials)) omni.materials = db.omni."
+    },
+    {
+      "file": "modules/jarvis-brain.js",
+      "line": 2048,
+      "key": "taskManager",
+      "domain": "WORK_ITEM",
+      "snippet": "if (scopes.indexOf('tasks') !== -1 && omni && db.omni && db.omni.taskManager) omni.taskManager = db.omni.taskManager;"
+    },
+    {
+      "file": "modules/mrp.js",
+      "line": 124,
+      "key": "boms",
+      "domain": "ENGINEERING",
+      "snippet": "if (!Array.isArray(omni.boms)) omni.boms = [];"
+    },
+    {
+      "file": "modules/mrp.js",
+      "line": 126,
+      "key": "boms",
+      "domain": "ENGINEERING",
+      "snippet": "omni.opPacks.forEach(p => { try { omni.boms.push(bomFromPack(p)); } catch (_) {} });"
+    },
+    {
+      "file": "modules/page-qc.js",
+      "line": 424,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 6476,
+      "key": "materials",
+      "domain": "COMMERCIAL",
+      "snippet": "if (!Array.isArray(omni.materials) || !omni.materials.length) omni.materials = defaultMaterials();"
+    },
+    {
+      "file": "app.js",
+      "line": 23823,
+      "key": "materials",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.materials.push(newMat);"
+    },
+    {
+      "file": "app.js",
+      "line": 23825,
+      "key": "materials",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.materials.push({ id: makeId('mat'), ...result, companyId: currentCoId, reserved: 0, reservedQty: 0, reservations: ["
+    },
+    {
+      "file": "app.js",
+      "line": 23844,
+      "key": "materials",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.materials.push(outcome.material);"
+    },
+    {
+      "file": "app.js",
+      "line": 7117,
+      "key": "suppliers",
+      "domain": "COMMERCIAL",
+      "snippet": "if (!Array.isArray(omni.suppliers)) omni.suppliers = [];"
+    },
+    {
+      "file": "app.js",
+      "line": 7152,
+      "key": "suppliers",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.suppliers.push(sup);"
+    },
+    {
+      "file": "app.js",
+      "line": 7187,
+      "key": "suppliers",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.suppliers = omni.suppliers || [];"
+    },
+    {
+      "file": "app.js",
+      "line": 7188,
+      "key": "suppliers",
+      "domain": "COMMERCIAL",
+      "snippet": "omni.suppliers.push(sup);"
+    },
+    {
+      "file": "app.js",
+      "line": 35191,
+      "key": "lots",
+      "domain": "INVENTORY",
+      "snippet": "if (!Array.isArray(omni.lots)) omni.lots = [];"
+    },
+    {
+      "file": "app.js",
+      "line": 7062,
+      "key": "purchaseOrders",
+      "domain": "PROCUREMENT",
+      "snippet": "if (!Array.isArray(omni.purchaseOrders)) omni.purchaseOrders = [];"
+    },
+    {
+      "file": "app.js",
+      "line": 8357,
+      "key": "purchaseOrders",
+      "domain": "PROCUREMENT",
+      "snippet": "omni.purchaseOrders.unshift(po);"
+    },
+    {
+      "file": "app.js",
+      "line": 8864,
+      "key": "purchaseOrders",
+      "domain": "PROCUREMENT",
+      "snippet": "omni.purchaseOrders.unshift(po);"
+    },
+    {
+      "file": "app.js",
+      "line": 6465,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards = Array.isArray(omni.kanban.cards) ? omni.kanban.cards : defaults.kanban.cards;"
+    },
+    {
+      "file": "app.js",
+      "line": 8372,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 8761,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 18436,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(newCard);"
+    },
+    {
+      "file": "app.js",
+      "line": 18549,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards = omni.kanban.cards.filter(c => c.id !== cardId);"
+    },
+    {
+      "file": "app.js",
+      "line": 18562,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards = omni.kanban.cards.filter(c => c.columnId !== colId);"
+    },
+    {
+      "file": "app.js",
+      "line": 19939,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 21147,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "function createKanbanCardFromTask(taskId) { const task = findTaskById(taskId); if (!task) return; if (task.kanbanCardId "
+    },
+    {
+      "file": "app.js",
+      "line": 21925,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 34848,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 36816,
+      "key": "kanban.cards",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.kanban.cards.push(card);"
+    },
+    {
+      "file": "app.js",
+      "line": 6469,
+      "key": "taskManager",
+      "domain": "WORK_ITEM",
+      "snippet": "omni.taskManager = omni.taskManager || defaults.taskManager;"
+    },
+    {
+      "file": "app.js",
+      "line": 6718,
+      "key": "taskManager",
+      "domain": "WORK_ITEM",
+      "snippet": "if (!omni.taskManager) omni.taskManager = { spaces: [] };"
+    },
+    {
+      "file": "app.js",
+      "line": 20663,
+      "key": "taskManager",
+      "domain": "WORK_ITEM",
+      "snippet": "if (!omni.taskManager) omni.taskManager = { spaces: [] };"
+    },
+    {
+      "file": "app.js",
+      "line": 27619,
+      "key": "taskManager",
+      "domain": "WORK_ITEM",
+      "snippet": "if (!omni.taskManager) omni.taskManager = { selectedSpaceId: '', spaces: [] };"
+    },
+    {
+      "file": "app.js",
+      "line": 6645,
+      "key": "workOrders",
+      "domain": "MANUFACTURING",
+      "snippet": "if (!Array.isArray(omni.workOrders)) omni.workOrders = [];"
+    },
+    {
+      "file": "app.js",
+      "line": 6673,
+      "key": "workOrders",
+      "domain": "MANUFACTURING",
+      "snippet": "omni.workOrders.push(wo);"
+    },
+    {
+      "file": "app.js",
+      "line": 21954,
+      "key": "workOrders",
+      "domain": "MANUFACTURING",
+      "snippet": "if (!Array.isArray(omni.workOrders)) omni.workOrders = [];"
+    },
+    {
+      "file": "app.js",
+      "line": 21955,
+      "key": "workOrders",
+      "domain": "MANUFACTURING",
+      "snippet": "omni.workOrders.push(wo);"
+    },
+    {
+      "file": "app.js",
+      "line": 35161,
+      "key": "workOrders",
+      "domain": "MANUFACTURING",
+      "snippet": "if (!Array.isArray(omni.workOrders)) omni.workOrders = [];"
+    }
+  ]
+}

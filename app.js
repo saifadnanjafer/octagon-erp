@@ -32005,6 +32005,34 @@ function renderAutomationHealthAndPoliciesContent() {
   };
 
   const selectedPresetJson = JSON.stringify(presetPreviews[omniSelectedSimPreset], null, 2);
+
+  // The preset payload used to be dumped straight into a <pre> as raw JSON,
+  // which is the shape the automation engine consumes but not something a
+  // workshop user can read. It is rendered as Arabic label/value rows instead,
+  // with the exact payload kept one click away for whoever is authoring rules.
+  const SIM_FIELD_AR = {
+    card: 'البطاقة', material: 'المادة', machine: 'الماكينة', qc: 'فحص الجودة',
+    request: 'الطلب', whatsappSuggestion: 'اقتراح المحادثة',
+    id: 'المعرّف', title: 'العنوان', priority: 'الأولوية', dueDate: 'تاريخ الاستحقاق',
+    name: 'الاسم', stock: 'الرصيد الحالي', minimum: 'الحد الأدنى', type: 'النوع',
+    status: 'الحالة', label: 'الوصف', text: 'النص',
+    diffHours: 'عدد الساعات', totalMinutes: 'إجمالي الدقائق'
+  };
+  const simLabel = (key) => SIM_FIELD_AR[key] || key;
+  const simRow = (key, value) => `
+    <div style="display:flex; gap:8px; justify-content:space-between; padding:3px 0; font-size:12px;">
+      <span style="color:var(--text-muted);">${escapeHtml(simLabel(key))}</span>
+      <span style="color:#e2e8f0; text-align:left; direction:ltr;">${escapeHtml(String(value))}</span>
+    </div>`;
+  const presetRowsHtml = Object.entries(presetPreviews[omniSelectedSimPreset] || {}).map(([key, value]) => {
+    if (value && typeof value === 'object') {
+      return `<div style="margin-bottom:6px;">
+        <div style="font-size:11px; color:#7dd3fc; margin-bottom:2px;">${escapeHtml(simLabel(key))}</div>
+        ${Object.entries(value).map(([k, v]) => simRow(k, v)).join('')}
+      </div>`;
+    }
+    return simRow(key, value);
+  }).join('') || '<div style="font-size:12px; color:var(--text-muted);">لا توجد بيانات لهذه الحالة.</div>';
   const consoleOutputHtml = omniSimulationConsoleLogs.length > 0 
     ? omniSimulationConsoleLogs.map(l => {
         let cls = 'sim-log-info';
@@ -32074,7 +32102,13 @@ function renderAutomationHealthAndPoliciesContent() {
           
           <div>
             <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات حدث تجريبية للمحاكاة — ليست سجلاً حقيقياً</label>
-            <pre style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px; font-size:11px; color:#a7f3d0; margin:0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px;">
+              ${presetRowsHtml}
+              <details style="margin-top:8px;">
+                <summary style="font-size:11px; color:var(--text-muted); cursor:pointer;">عرض الحمولة التقنية (JSON)</summary>
+                <pre style="font-size:11px; color:#a7f3d0; margin:6px 0 0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
+              </details>
+            </div>
           </div>
           
           <button class="btn-primary" style="width:100%; padding:10px;" onclick="triggerRuleSimulation()"><i class="fa-solid fa-play"></i> تشغيل المحاكاة</button>

@@ -67,7 +67,7 @@ Total scored pairs: **146**
 | C | `alert_board` | `device_health_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `alert_board` | `fleet_operations_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `alert_board` | `service_queue_board` | ops | yes | 0.25 | different | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `automation` | `intelligence` | intelligence | yes | 0 | same category | 0.4 | STRONG/CONFUSING | STRONG/STRONG |
+| C | `automation` | `intelligence` | intelligence | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `banking` | `budgeting` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `banking` | `cashbox` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `banking` | `customers` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |

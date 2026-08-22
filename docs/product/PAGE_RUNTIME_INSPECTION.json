@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T04:05:24.441Z",
-  "startedAt": "2026-08-22T04:05:15.945Z",
+  "generatedAt": "2026-08-22T04:59:06.396Z",
+  "startedAt": "2026-08-22T04:59:00.150Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -1198,7 +1198,7 @@
       "rendererType": "view",
       "rendererSource": "views/automation.html",
       "requiredPermission": "automation",
-      "durationMs": 3360,
+      "durationMs": 1675,
       "error": null,
       "activated": true,
       "observation": {
@@ -1217,7 +1217,7 @@
           "محاكي الأتمتة التفاعلي"
         ],
         "title": "محرك الأتمتة",
-        "textLength": 2515,
+        "textLength": 2503,
         "controlCount": 8,
         "controlLabels": [
           "قاعدة مخصصة",
@@ -1242,9 +1242,9 @@
         "linkTargets": [],
         "rawIdCount": 0,
         "rawIdSamples": [],
-        "rawJson": true,
-        "arabicChars": 1853,
-        "latinChars": 131
+        "rawJson": false,
+        "arabicChars": 1928,
+        "latinChars": 96
       },
       "consoleErrors": [],
       "pageErrors": [],

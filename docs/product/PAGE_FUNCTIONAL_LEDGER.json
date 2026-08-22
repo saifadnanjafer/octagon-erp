@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-22T04:55:13.904Z",
+  "generatedAt": "2026-08-22T04:59:12.516Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T04:05:24.441Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T04:59:06.396Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-22T01:46:39.262Z)"
   },
   "totalPrimaryPages": 221,
@@ -23,9 +23,8 @@
     "THIN": 3
   },
   "usabilityStateCounts": {
-    "STRONG": 45,
+    "STRONG": 46,
     "USABLE": 172,
-    "CONFUSING": 1,
     "THIN": 3
   },
   "priorityCounts": {
@@ -1204,11 +1203,11 @@
       "functionalEvidence": "8 controls, 7 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "CONFUSING",
-      "usabilityEvidence": "raw JSON visible to a normal user",
+      "usabilityState": "STRONG",
+      "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2515,
+        "textLength": 2503,
         "controls": 8,
         "inputs": 4,
         "searchInputs": 1,
@@ -1223,9 +1222,9 @@
           "denied": false
         },
         "rawIds": 0,
-        "rawJson": true,
-        "arabicChars": 1853,
-        "latinChars": 131
+        "rawJson": false,
+        "arabicChars": 1928,
+        "latinChars": 96
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

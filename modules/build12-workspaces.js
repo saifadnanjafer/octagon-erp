@@ -1,5 +1,15 @@
 (function () {
   'use strict';
+
+  // The bootstrap renamed `actor` to `context`. Reading only `actor` yielded
+  // undefined and sent the literal 'default', and the server rejects a
+  // tenant_id that differs from the verified session with a 403 — so every
+  // packs:enable / packs:disable / packs:rollback click failed closed.
+  // Returning '' omits it, letting the server scope from the session.
+  const build12TenantId = () => {
+    const bootstrap = root.__octagonBootstrap || {};
+    return bootstrap.context?.tenantId || bootstrap.actor?.tenantId || '';
+  };
   const root = window;
   const PAGES = {
     ai_overview: ['AI Overview', 'نظرة الذكاء الاصطناعي', 'overview', 'platform:ai:read'],
@@ -168,7 +178,7 @@
   function bind(host, pageId) {
     host.querySelector('[data-b12-refresh]')?.addEventListener('click', () => load(host, pageId));
     host.querySelectorAll('form[data-b12-action]').forEach((formNode) => formNode.addEventListener('submit', (event) => { event.preventDefault(); const values = Object.fromEntries(new FormData(formNode).entries()); const actionId = formNode.dataset.b12Action; if (actionId === 'ai:task_run') { values.context_sources = String(values.context_refs || '').split(',').map((x) => x.trim()).filter(Boolean).map((source) => ({ source_type: 'reference', source_label: source, classification: 'internal', content: `${source} scoped reference` })); delete values.context_refs; } if (actionId === 'ai:policy_upsert') { values.max_context_rows = Number(values.max_context_rows); values.require_review = values.require_review === '1'; } if (actionId === 'events:event_create') values.capacity = Number(values.capacity); execute(host, pageId, actionId, values); }));
-    host.querySelectorAll('[data-b12-button]').forEach((buttonNode) => buttonNode.addEventListener('click', () => { const actionId = buttonNode.dataset.b12Button; const id = buttonNode.dataset.b12Id || buttonNode.dataset.b12Package_id; const input = actionId.startsWith('ai:proposal') ? { proposal_id: id, reason: 'Governed UI review' } : actionId.startsWith('marketing:content') ? { content_id: id, reason: 'Governed UI review' } : actionId.startsWith('packs:') ? { package_id: id, installation_id: id, tenant_id: root.__octagonBootstrap?.actor?.tenantId || 'default' } : {}; execute(host, pageId, actionId, input); }));
+    host.querySelectorAll('[data-b12-button]').forEach((buttonNode) => buttonNode.addEventListener('click', () => { const actionId = buttonNode.dataset.b12Button; const id = buttonNode.dataset.b12Id || buttonNode.dataset.b12Package_id; const input = actionId.startsWith('ai:proposal') ? { proposal_id: id, reason: 'Governed UI review' } : actionId.startsWith('marketing:content') ? { content_id: id, reason: 'Governed UI review' } : actionId.startsWith('packs:') ? { package_id: id, installation_id: id, tenant_id: build12TenantId() } : {}; execute(host, pageId, actionId, input); }));
   }
   async function load(host, pageId) { frame(host, pageId); try { await RENDERERS[pageId](host); bind(host, pageId); setStatus(host, 'ready', t('Ready · governed data loaded', 'جاهز · تم تحميل البيانات المحكومة')); } catch (e) { setContent(host, `<div class="b12-denied" data-state="${e.status === 403 ? 'denied' : 'error'}">${esc(e.message)}</div>`); setStatus(host, e.status === 403 ? 'denied' : 'error', e.message); bind(host, pageId); } }
   // mySeq: a self-contained staleness guard for this deferred activation. This

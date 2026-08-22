@@ -47,7 +47,7 @@
 
   function getActiveCompany() {
     const bootstrap = root.__octagonBootstrap || {};
-    return bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
+    return bootstrap.context?.companyId || bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
   }
 
   function getActiveWarehouse() {

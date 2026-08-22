@@ -9,10 +9,10 @@
       return root.OctagonRuntimeContext.getContext();
     }
     const bootstrap = root.__octagonBootstrap || {};
-    const companyId = bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
+    const companyId = bootstrap.context?.companyId || bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
     const warehouseId = root.localStorage?.getItem('octagon_active_warehouse_id') || bootstrap.warehouseId || 'wh-main';
     const branchId = bootstrap.branchId || 'branch-a';
-    const userId = bootstrap.actor?.id || 'browser-manager';
+    const userId = bootstrap.context?.userId || bootstrap.actor?.id || 'browser-manager';
     return { companyId, warehouseId, branchId, userId };
   }
 

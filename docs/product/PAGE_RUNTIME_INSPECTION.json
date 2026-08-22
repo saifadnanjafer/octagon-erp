@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T05:05:17.021Z",
-  "startedAt": "2026-08-22T05:05:05.405Z",
+  "generatedAt": "2026-08-22T05:10:23.147Z",
+  "startedAt": "2026-08-22T05:10:09.671Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -2726,7 +2726,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 4623,
+      "durationMs": 1637,
       "error": null,
       "activated": true,
       "observation": {
@@ -2737,7 +2737,7 @@
           "تخطيط الطلب"
         ],
         "title": "تخطيط الطلب",
-        "textLength": 438,
+        "textLength": 452,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
@@ -2764,7 +2764,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 237,
-        "latinChars": 102
+        "latinChars": 115
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3220,7 +3220,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_registry",
-      "durationMs": 4297,
+      "durationMs": 1742,
       "error": null,
       "activated": true,
       "observation": {
@@ -4594,7 +4594,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 3702,
+      "durationMs": 1587,
       "error": null,
       "activated": true,
       "observation": {
@@ -4605,7 +4605,7 @@
           "تسهيلات التمويل"
         ],
         "title": "تسهيلات التمويل",
-        "textLength": 493,
+        "textLength": 507,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
@@ -4633,7 +4633,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 278,
-        "latinChars": 112
+        "latinChars": 125
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4810,7 +4810,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_live_map_simulator",
-      "durationMs": 3465,
+      "durationMs": 1618,
       "error": null,
       "activated": true,
       "observation": {
@@ -12661,7 +12661,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "workshop_pack_setup",
-      "durationMs": 5220,
+      "durationMs": 1724,
       "error": null,
       "activated": true,
       "observation": {

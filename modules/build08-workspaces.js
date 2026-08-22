@@ -100,7 +100,7 @@
   };
   const company = () => {
     const bootstrap = root.__octagonBootstrap || {};
-    return bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || root.__octagonServerSession?.activeCompanyId || '—';
+    return bootstrap.context?.companyId || bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || root.__octagonServerSession?.activeCompanyId || '—';
   };
   const canWrite = () => {
     if (root.__BUILD08_FORCE_READ_ONLY__ === true) return false;

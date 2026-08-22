@@ -4,18 +4,23 @@
   const PAGE_IDS = ['saas_overview', 'tenant_directory', 'tenant_detail', 'commercial_plans', 'subscriptions', 'entitlements', 'seats_and_limits', 'usage_and_quotas', 'billing_simulator', 'extension_marketplace', 'extension_installations'];
   const REGISTERED_METRICS = ['api_calls', 'ai_usage', 'storage_bytes', 'full_user', 'operational_user', 'employee_self_service', 'external_portal', 'device_kiosk', 'companies', 'branches', 'warehouses', 'devices', 'integrations', 'offline_clients', 'generated_documents', 'reports'];
   const SAFE_CONTRIBUTIONS = ['terminology_overlay', 'navigation_page', 'view_metadata', 'report_definition', 'print_template', 'permission_declaration', 'safe_role_template', 'workflow_template', 'settings_schema', 'vertical_dependency', 'controlled_seed', 'integration_metadata'];
+  // Titles carry both languages like every other string in this module. They used
+  // to be rendered raw, so all eleven BUILD-11 pages showed an English heading and
+  // subtitle inside an Arabic-first shell whose kicker, buttons and status line
+  // were already translated. Arabic titles match the sidebar labels for each page
+  // so the heading and the nav entry name the same thing.
   const PAGE_META = {
-    saas_overview: { title: 'SaaS Overview', subtitle: 'Commercial health with bounded, server-generated drilldowns.', permission: 'platform:saas:read' },
-    tenant_directory: { title: 'Tenant Directory', subtitle: 'Searchable tenant portfolio with lifecycle and provisioning risk.', permission: 'platform:saas:cross_tenant' },
-    tenant_detail: { title: 'Tenant Detail', subtitle: 'Governed lifecycle, ownership, commercial state, and audit.', permission: 'platform:saas:tenant_admin' },
-    commercial_plans: { title: 'Commercial Plans', subtitle: 'Immutable published versions with capabilities, limits, and pricing.', permission: 'platform:saas:plans:publish' },
-    subscriptions: { title: 'Subscriptions', subtitle: 'Tenant subscription status, policy dates, and lifecycle timeline.', permission: 'platform:saas:tenant_admin' },
-    entitlements: { title: 'Entitlements', subtitle: 'Explainable capability decisions kept separate from permissions.', permission: 'platform:saas:read' },
-    seats_and_limits: { title: 'Seats and Limits', subtitle: 'Assignments and governed capacity without granting permissions.', permission: 'platform:saas:tenant_admin' },
-    usage_and_quotas: { title: 'Usage and Quotas', subtitle: 'Registered metrics, counters, thresholds, and reconciliation.', permission: 'platform:saas:usage:record' },
-    billing_simulator: { title: 'Billing Simulator', subtitle: 'Simulation-only invoices and payment outcomes.', permission: 'platform:saas:billing:simulate' },
-    extension_marketplace: { title: 'Extension Marketplace', subtitle: 'Guided safe manifest validation and review lifecycle.', permission: 'platform:saas:packages:review' },
-    extension_installations: { title: 'Extension Installations', subtitle: 'Tenant-scoped staged packages and governed enablement.', permission: 'platform:saas:packages:manage' },
+    saas_overview: { title: 'SaaS Overview', titleAr: 'نظرة عامة على البرمجيات كخدمة', subtitle: 'Commercial health with bounded, server-generated drilldowns.', subtitleAr: 'الصحة التجارية مع تفاصيل محدودة يولّدها الخادم.', permission: 'platform:saas:read' },
+    tenant_directory: { title: 'Tenant Directory', titleAr: 'دليل المستأجرين', subtitle: 'Searchable tenant portfolio with lifecycle and provisioning risk.', subtitleAr: 'محفظة مستأجرين قابلة للبحث مع دورة الحياة ومخاطر التزويد.', permission: 'platform:saas:cross_tenant' },
+    tenant_detail: { title: 'Tenant Detail', titleAr: 'تفاصيل المستأجر', subtitle: 'Governed lifecycle, ownership, commercial state, and audit.', subtitleAr: 'دورة حياة مُدارة، والملكية، والحالة التجارية، والتدقيق.', permission: 'platform:saas:tenant_admin' },
+    commercial_plans: { title: 'Commercial Plans', titleAr: 'الخطط التجارية', subtitle: 'Immutable published versions with capabilities, limits, and pricing.', subtitleAr: 'إصدارات منشورة غير قابلة للتعديل مع القدرات والحدود والتسعير.', permission: 'platform:saas:plans:publish' },
+    subscriptions: { title: 'Subscriptions', titleAr: 'الاشتراكات', subtitle: 'Tenant subscription status, policy dates, and lifecycle timeline.', subtitleAr: 'حالة اشتراك المستأجر وتواريخ السياسة والخط الزمني لدورة الحياة.', permission: 'platform:saas:tenant_admin' },
+    entitlements: { title: 'Entitlements', titleAr: 'الاستحقاقات', subtitle: 'Explainable capability decisions kept separate from permissions.', subtitleAr: 'قرارات قدرات قابلة للتفسير، تبقى منفصلة عن الصلاحيات.', permission: 'platform:saas:read' },
+    seats_and_limits: { title: 'Seats and Limits', titleAr: 'المقاعد والحدود', subtitle: 'Assignments and governed capacity without granting permissions.', subtitleAr: 'الإسنادات والسعة المُدارة دون منح أي صلاحيات.', permission: 'platform:saas:tenant_admin' },
+    usage_and_quotas: { title: 'Usage and Quotas', titleAr: 'الاستخدام والحصص', subtitle: 'Registered metrics, counters, thresholds, and reconciliation.', subtitleAr: 'المقاييس المسجّلة والعدادات والعتبات والتسوية.', permission: 'platform:saas:usage:record' },
+    billing_simulator: { title: 'Billing Simulator', titleAr: 'محاكي الفوترة', subtitle: 'Simulation-only invoices and payment outcomes.', subtitleAr: 'فواتير ونتائج دفع للمحاكاة فقط — لا تُنشئ أي مستند حقيقي.', permission: 'platform:saas:billing:simulate' },
+    extension_marketplace: { title: 'Extension Marketplace', titleAr: 'سوق الإضافات', subtitle: 'Guided safe manifest validation and review lifecycle.', subtitleAr: 'تحقّق موجّه وآمن من بيان الإضافة ودورة حياة المراجعة.', permission: 'platform:saas:packages:review' },
+    extension_installations: { title: 'Extension Installations', titleAr: 'تثبيت الإضافات', subtitle: 'Tenant-scoped staged packages and governed enablement.', subtitleAr: 'حزم مُجهّزة ضمن نطاق المستأجر وتفعيل مُدار.', permission: 'platform:saas:packages:manage' },
   };
   const PAGE_STATE = new Map(PAGE_IDS.map((id) => [id, { selectedTenantId: root.__octagonBootstrap?.actor?.tenantId || 'default', activeTab: 'overview', filters: {} }]));
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -50,7 +55,7 @@
   function form(name, content, actionText = '') { return `<form class="b11-form" data-b11-form="${escapeHtml(name)}">${content}${actionText ? `<button class="b11-btn primary" type="submit">${escapeHtml(actionText)}</button>` : ''}</form>`; }
   function frame(host, pageId, body) {
     const meta = PAGE_META[pageId];
-    host.innerHTML = `<div class="b11-shell"><header class="b11-header"><div><span class="b11-kicker">${label('COMMERCIAL AND SAAS', 'التجاري و SaaS')}</span><h2>${escapeHtml(meta.title)}</h2><p>${escapeHtml(meta.subtitle)}</p></div><div class="b11-header-actions"><span class="b11-permission" data-role="permission">${escapeHtml(meta.permission)}</span><button class="b11-btn" type="button" data-b11-refresh="${pageId}">${escapeHtml(label('Refresh', 'تحديث'))}</button></div></header><div class="b11-status" data-role="status" data-phase="loading">${escapeHtml(label('Loading…', 'جارٍ التحميل…'))}</div><div class="b11-content" data-role="content">${body || ''}</div></div>`;
+    host.innerHTML = `<div class="b11-shell"><header class="b11-header"><div><span class="b11-kicker">${label('COMMERCIAL AND SAAS', 'التجاري و SaaS')}</span><h2>${escapeHtml(label(meta.title, meta.titleAr))}</h2><p>${escapeHtml(label(meta.subtitle, meta.subtitleAr))}</p></div><div class="b11-header-actions"><span class="b11-permission" data-role="permission">${escapeHtml(meta.permission)}</span><button class="b11-btn" type="button" data-b11-refresh="${pageId}">${escapeHtml(label('Refresh', 'تحديث'))}</button></div></header><div class="b11-status" data-role="status" data-phase="loading">${escapeHtml(label('Loading…', 'جارٍ التحميل…'))}</div><div class="b11-content" data-role="content">${body || ''}</div></div>`;
   }
   function setStatus(host, phase, message) { const node = host.querySelector('[data-role="status"]'); if (node) { node.dataset.phase = phase; node.textContent = message; } }
   function setContent(host, html) { host.querySelector('[data-role="content"]').innerHTML = html; }

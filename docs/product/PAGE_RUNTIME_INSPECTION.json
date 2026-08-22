@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T00:02:57.571Z",
-  "startedAt": "2026-08-22T00:02:49.066Z",
+  "generatedAt": "2026-08-22T00:06:31.081Z",
+  "startedAt": "2026-08-22T00:06:12.306Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -1335,7 +1335,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "billing_simulator",
-      "durationMs": 2662,
+      "durationMs": 1816,
       "error": null,
       "activated": true,
       "observation": {
@@ -1343,10 +1343,10 @@
         "hostId": null,
         "hostDataPage": "billing_simulator",
         "headings": [
-          "Billing Simulator"
+          "محاكي الفوترة"
         ],
-        "title": "Billing Simulator",
-        "textLength": 486,
+        "title": "محاكي الفوترة",
+        "textLength": 493,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -1360,6 +1360,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1370,12 +1371,21 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 123,
-        "latinChars": 265
+        "arabicChars": 180,
+        "latinChars": 209
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "budgeting",
@@ -1917,7 +1927,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "commercial_plans",
-      "durationMs": 1891,
+      "durationMs": 1817,
       "error": null,
       "activated": true,
       "observation": {
@@ -1925,10 +1935,10 @@
         "hostId": null,
         "hostDataPage": "commercial_plans",
         "headings": [
-          "Commercial Plans"
+          "الخطط التجارية"
         ],
-        "title": "Commercial Plans",
-        "textLength": 788,
+        "title": "الخطط التجارية",
+        "textLength": 779,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -1942,6 +1952,7 @@
         "tableRows": 3,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -1952,12 +1963,21 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 79,
-        "latinChars": 496
+        "arabicChars": 144,
+        "latinChars": 423
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "competency_profiles",
@@ -3774,7 +3794,7 @@
       "rendererType": "view",
       "rendererSource": "views/entitlements.html",
       "requiredPermission": "entitlements",
-      "durationMs": 847,
+      "durationMs": 1629,
       "error": null,
       "activated": true,
       "observation": {
@@ -3782,10 +3802,10 @@
         "hostId": null,
         "hostDataPage": "entitlements",
         "headings": [
-          "Entitlements"
+          "الاستحقاقات"
         ],
-        "title": "Entitlements",
-        "textLength": 2594,
+        "title": "الاستحقاقات",
+        "textLength": 2582,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -3799,6 +3819,7 @@
         "tableRows": 14,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3809,8 +3830,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 63,
-        "latinChars": 1583
+        "arabicChars": 119,
+        "latinChars": 1514
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4331,7 +4352,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_installations",
-      "durationMs": 805,
+      "durationMs": 1598,
       "error": null,
       "activated": true,
       "observation": {
@@ -4339,10 +4360,10 @@
         "hostId": null,
         "hostDataPage": "extension_installations",
         "headings": [
-          "Extension Installations"
+          "تثبيت الإضافات"
         ],
-        "title": "Extension Installations",
-        "textLength": 230,
+        "title": "تثبيت الإضافات",
+        "textLength": 210,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -4355,6 +4376,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -4365,8 +4387,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 74,
-        "latinChars": 101
+        "arabicChars": 123,
+        "latinChars": 32
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4381,7 +4403,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_marketplace",
-      "durationMs": 792,
+      "durationMs": 1586,
       "error": null,
       "activated": true,
       "observation": {
@@ -4389,10 +4411,10 @@
         "hostId": null,
         "hostDataPage": "extension_marketplace",
         "headings": [
-          "Extension Marketplace"
+          "سوق الإضافات"
         ],
-        "title": "Extension Marketplace",
-        "textLength": 842,
+        "title": "سوق الإضافات",
+        "textLength": 833,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4406,6 +4428,7 @@
         "tableRows": 1,
         "tableColumns": 8,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4416,8 +4439,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 105,
-        "latinChars": 591
+        "arabicChars": 160,
+        "latinChars": 525
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9353,7 +9376,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "saas_overview",
-      "durationMs": 2555,
+      "durationMs": 1583,
       "error": null,
       "activated": true,
       "observation": {
@@ -9361,10 +9384,10 @@
         "hostId": null,
         "hostDataPage": "saas_overview",
         "headings": [
-          "SaaS Overview"
+          "نظرة عامة على البرمجيات كخدمة"
         ],
-        "title": "SaaS Overview",
-        "textLength": 922,
+        "title": "نظرة عامة على البرمجيات كخدمة",
+        "textLength": 925,
         "controlCount": 12,
         "controlLabels": [
           "تحديث",
@@ -9378,6 +9401,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9388,8 +9412,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 285,
-        "latinChars": 441
+        "arabicChars": 350,
+        "latinChars": 377
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9746,7 +9770,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "seats_and_limits",
-      "durationMs": 2242,
+      "durationMs": 1595,
       "error": null,
       "activated": true,
       "observation": {
@@ -9754,10 +9778,10 @@
         "hostId": null,
         "hostDataPage": "seats_and_limits",
         "headings": [
-          "Seats and Limits"
+          "المقاعد والحدود"
         ],
-        "title": "Seats and Limits",
-        "textLength": 407,
+        "title": "المقاعد والحدود",
+        "textLength": 388,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -9771,6 +9795,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9781,8 +9806,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 116,
-        "latinChars": 204
+        "arabicChars": 168,
+        "latinChars": 134
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10444,7 +10469,7 @@
       "rendererType": "view",
       "rendererSource": "views/subscriptions.html",
       "requiredPermission": "subscriptions",
-      "durationMs": 2695,
+      "durationMs": 1601,
       "error": null,
       "activated": true,
       "observation": {
@@ -10452,10 +10477,10 @@
         "hostId": null,
         "hostDataPage": "subscriptions",
         "headings": [
-          "Subscriptions"
+          "الاشتراكات"
         ],
-        "title": "Subscriptions",
-        "textLength": 1239,
+        "title": "الاشتراكات",
+        "textLength": 1234,
         "controlCount": 26,
         "controlLabels": [
           "تحديث",
@@ -10473,6 +10498,7 @@
         "tableRows": 6,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10483,8 +10509,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 819
+        "arabicChars": 168,
+        "latinChars": 751
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11177,7 +11203,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_detail",
-      "durationMs": 2623,
+      "durationMs": 1730,
       "error": null,
       "activated": true,
       "observation": {
@@ -11185,10 +11211,10 @@
         "hostId": null,
         "hostDataPage": "tenant_detail",
         "headings": [
-          "Tenant Detail"
+          "تفاصيل المستأجر"
         ],
-        "title": "Tenant Detail",
-        "textLength": 643,
+        "title": "تفاصيل المستأجر",
+        "textLength": 641,
         "controlCount": 15,
         "controlLabels": [
           "تحديث",
@@ -11215,6 +11241,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11225,8 +11252,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 42,
-        "latinChars": 461
+        "arabicChars": 104,
+        "latinChars": 400
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11241,7 +11268,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_directory",
-      "durationMs": 2551,
+      "durationMs": 1581,
       "error": null,
       "activated": true,
       "observation": {
@@ -11249,11 +11276,11 @@
         "hostId": null,
         "hostDataPage": "tenant_directory",
         "headings": [
-          "Tenant Directory",
+          "دليل المستأجرين",
           "إنشاء مستأجر"
         ],
-        "title": "Tenant Directory",
-        "textLength": 807,
+        "title": "دليل المستأجرين",
+        "textLength": 798,
         "controlCount": 6,
         "controlLabels": [
           "تحديث",
@@ -11269,6 +11296,7 @@
         "tableRows": 3,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11279,8 +11307,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 533
+        "arabicChars": 192,
+        "latinChars": 461
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11551,7 +11579,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "usage_and_quotas",
-      "durationMs": 2786,
+      "durationMs": 1583,
       "error": null,
       "activated": true,
       "observation": {
@@ -11559,12 +11587,12 @@
         "hostId": null,
         "hostDataPage": "usage_and_quotas",
         "headings": [
-          "Usage and Quotas",
+          "الاستخدام والحصص",
           "Current period",
           "Bounded usage-event history"
         ],
-        "title": "Usage and Quotas",
-        "textLength": 868,
+        "title": "الاستخدام والحصص",
+        "textLength": 853,
         "controlCount": 3,
         "controlLabels": [
           "تحديث",
@@ -11579,6 +11607,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -11589,8 +11618,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 137,
-        "latinChars": 581
+        "arabicChars": 193,
+        "latinChars": 515
       },
       "consoleErrors": [],
       "pageErrors": [],

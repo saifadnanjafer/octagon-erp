@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-22T00:03:04.867Z",
+  "generatedAt": "2026-08-22T00:06:39.635Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T00:02:57.571Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T00:06:31.081Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-21T18:42:24.967Z)"
   },
   "totalPrimaryPages": 221,
@@ -1313,9 +1313,11 @@
       "businessPurpose": "Billing simulator — commercial/billing (risk: high, phase: build11)",
       "owningDomain": "Commercial",
       "canonicalApi": null,
-      "observedEndpoints": [],
+      "observedEndpoints": [
+        "/api/db"
+      ],
       "pageArchetype": "FORM/ENTRY",
-      "observedTitle": "Billing Simulator",
+      "observedTitle": "محاكي الفوترة",
       "actionsAvailable": "تحديث | Generate simulated invoice",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -1328,7 +1330,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 486,
+        "textLength": 493,
         "controls": 2,
         "inputs": 7,
         "searchInputs": 0,
@@ -1344,11 +1346,11 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 123,
-        "latinChars": 265
+        "arabicChars": 180,
+        "latinChars": 209
       },
-      "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
+      "runtimeConsoleErrors": 1,
+      "runtimeFailedRequests": 1,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -1826,9 +1828,11 @@
       "businessPurpose": "Commercial plans — commercial/plans (risk: high, phase: build11)",
       "owningDomain": "Commercial",
       "canonicalApi": null,
-      "observedEndpoints": [],
+      "observedEndpoints": [
+        "/api/db"
+      ],
       "pageArchetype": "LIST/REGISTER",
-      "observedTitle": "Commercial Plans",
+      "observedTitle": "الخطط التجارية",
       "actionsAvailable": "تحديث | Publish immutable version",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -1841,7 +1845,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 788,
+        "textLength": 779,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -1857,11 +1861,11 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 79,
-        "latinChars": 496
+        "arabicChars": 144,
+        "latinChars": 423
       },
-      "runtimeConsoleErrors": 0,
-      "runtimeFailedRequests": 0,
+      "runtimeConsoleErrors": 1,
+      "runtimeFailedRequests": 1,
       "navigationStatus": "PASS",
       "consolidationRecommendation": null,
       "canonicalDestination": null,
@@ -3778,7 +3782,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
-      "observedTitle": "Entitlements",
+      "observedTitle": "الاستحقاقات",
       "actionsAvailable": "تحديث | Explain decision",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -3791,7 +3795,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2594,
+        "textLength": 2582,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -3807,8 +3811,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 63,
-        "latinChars": 1583
+        "arabicChars": 119,
+        "latinChars": 1514
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4353,7 +4357,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
-      "observedTitle": "Extension Installations",
+      "observedTitle": "تثبيت الإضافات",
       "actionsAvailable": "تحديث",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -4366,7 +4370,7 @@
       "usabilityEvidence": "little to act on",
       "deadEnd": false,
       "measured": {
-        "textLength": 230,
+        "textLength": 210,
         "controls": 1,
         "inputs": 0,
         "searchInputs": 0,
@@ -4382,8 +4386,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 74,
-        "latinChars": 101
+        "arabicChars": 123,
+        "latinChars": 32
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4410,7 +4414,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
-      "observedTitle": "Extension Marketplace",
+      "observedTitle": "سوق الإضافات",
       "actionsAvailable": "تحديث | Validate guided manifest",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -4423,7 +4427,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 842,
+        "textLength": 833,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -4439,8 +4443,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 105,
-        "latinChars": 591
+        "arabicChars": 160,
+        "latinChars": 525
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9223,7 +9227,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "SaaS Overview",
+      "observedTitle": "نظرة عامة على البرمجيات كخدمة",
       "actionsAvailable": "تحديث | فحص الصفوف المحدودة",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -9236,7 +9240,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 922,
+        "textLength": 925,
         "controls": 12,
         "inputs": 0,
         "searchInputs": 0,
@@ -9252,8 +9256,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 285,
-        "latinChars": 441
+        "arabicChars": 350,
+        "latinChars": 377
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9625,7 +9629,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "DETAIL/READ",
-      "observedTitle": "Seats and Limits",
+      "observedTitle": "المقاعد والحدود",
       "actionsAvailable": "تحديث | Assign seat",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -9638,7 +9642,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 407,
+        "textLength": 388,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -9654,8 +9658,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 116,
-        "latinChars": 204
+        "arabicChars": 168,
+        "latinChars": 134
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10369,7 +10373,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
-      "observedTitle": "Subscriptions",
+      "observedTitle": "الاشتراكات",
       "actionsAvailable": "تحديث | Create subscription | active | grace | suspended | cancelled",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -10382,7 +10386,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 1239,
+        "textLength": 1234,
         "controls": 26,
         "inputs": 5,
         "searchInputs": 0,
@@ -10398,8 +10402,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 819
+        "arabicChars": 168,
+        "latinChars": 751
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11110,7 +11114,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "Tenant Detail",
+      "observedTitle": "تفاصيل المستأجر",
       "actionsAvailable": "تحديث | overview | companies | subscription | entitlements | seats | usage | provisioning | extensions | audit | Begin / resume provisioning | تعيين grace | تعيين suspended | تعيين cancelled | تعيين archived",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -11123,7 +11127,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 643,
+        "textLength": 641,
         "controls": 15,
         "inputs": 3,
         "searchInputs": 0,
@@ -11139,8 +11143,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 42,
-        "latinChars": 461
+        "arabicChars": 104,
+        "latinChars": 400
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11167,7 +11171,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
-      "observedTitle": "Tenant Directory",
+      "observedTitle": "دليل المستأجرين",
       "actionsAvailable": "تحديث | Apply filters | Create tenant | فتح التفاصيل",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -11180,7 +11184,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 807,
+        "textLength": 798,
         "controls": 6,
         "inputs": 9,
         "searchInputs": 1,
@@ -11196,8 +11200,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 533
+        "arabicChars": 192,
+        "latinChars": 461
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11454,7 +11458,7 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
-      "observedTitle": "Usage and Quotas",
+      "observedTitle": "الاستخدام والحصص",
       "actionsAvailable": "تحديث | Record simulated usage | Reconcile",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
@@ -11467,7 +11471,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 868,
+        "textLength": 853,
         "controls": 3,
         "inputs": 5,
         "searchInputs": 0,
@@ -11483,8 +11487,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 137,
-        "latinChars": 581
+        "arabicChars": 193,
+        "latinChars": 515
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

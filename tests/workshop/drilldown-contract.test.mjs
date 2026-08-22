@@ -10,7 +10,9 @@ test('drilldown panel is an accessible modal with a canonical target action', ()
   const view = read('views/workshop_command_center.html');
   assert.match(view, /id="workshopDrilldown"[^>]+role="dialog"[^>]+aria-modal="true"/);
   assert.match(view, /aria-labelledby="workshopDrilldownTitle"/);
-  assert.match(view, /id="workshopDrilldownClose"[^>]+aria-label="Close details"/);
+  // aria-label is Arabic now — the assertion is that the close control still
+  // carries an accessible name, not that the name is in English.
+  assert.match(view, /id="workshopDrilldownClose"[^>]+aria-label="إغلاق التفاصيل"/);
   assert.match(view, /id="workshopDrilldownOpenTarget"/);
 });
 

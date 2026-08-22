@@ -29,7 +29,8 @@ test('Chromium flow 1: Supervisor login reaches scoped Command Center KPI and ca
   assert.match(scopeText, new RegExp(seed.companyId));
   assert.match(scopeText, new RegExp(seed.warehouse.id));
   const generated = await page.$eval('#workshopCommandFreshness', (node) => node.textContent);
-  assert.match(generated, /Updated/);
+  // The workshop-ops pages render Arabic; the freshness stamp reads "حُدِّث …".
+  assert.match(generated, /حُدِّث/);
   const targetCard = await page.$('.workshop-command-card[data-target="my_work"]');
   assert.ok(targetCard, 'a real KPI must deep-link to My Work');
   await targetCard.click();

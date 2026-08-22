@@ -58,7 +58,7 @@
     if (el.briefing) {
       const briefing = payload.briefing || {};
       const coverage = briefing.coverage || {};
-      el.briefing.innerHTML = `<strong>${root.WorkshopShell.escapeHtml(briefing.summary || 'Operational briefing unavailable.')}</strong>
+      el.briefing.innerHTML = `<strong>${root.WorkshopShell.escapeHtml(briefing.summary || 'تعذّر تحميل الملخص التشغيلي.')}</strong>
         <span>${Number(coverage.ready || 0)} ready · ${Number(coverage.unavailable || 0)} unavailable · ${Number(coverage.permissionDenied || 0)} permission-hidden</span>`;
     }
     if (el.partial) {
@@ -87,7 +87,7 @@
       paint(payload);
     } catch (error) {
       state.error = error;
-      el.body.innerHTML = root.WorkshopShell.errorPanel(error?.message || 'Unknown server error', 'workshopCommandRetry');
+      el.body.innerHTML = root.WorkshopShell.errorPanel(error?.message || 'خطأ غير معروف من الخادم', 'workshopCommandRetry');
       document.getElementById('workshopCommandRetry')?.addEventListener('click', () => load(true));
     } finally {
       state.loading = false;

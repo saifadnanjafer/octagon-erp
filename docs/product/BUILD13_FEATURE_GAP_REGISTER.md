@@ -155,6 +155,16 @@ inspection's `empty` signal flips true → false on `device_registry`, `gateway_
 and `fleet_live_map_simulator`. Telemetry was deliberately left sparse: no speed, fuel or
 trip history was fabricated.
 
+## Running `test:review`
+
+`npm run test:review` requires a **freshly reset review database that has never been
+served**. Run `npm run review:reset` and run the suite before `review:start`.
+
+Once the review server has run against `.review-data`, it creates `database.json` and
+SQLite WAL/SHM files, and five of the seventeen cases fail — the ones asserting that the
+environment leaves no trace outside `.review-data` and that reset is deterministic. That is
+the suite's precondition, not a defect: 17/17 on pristine data, 12/17 after a server run.
+
 ## What this register deliberately does not claim
 
 - It is not a complete map of all 231 pages' architecture (legacy vs canonical) — only a sample of P0 pages plus what surfaced incidentally. `docs/product/OWNER_PRODUCT_DECISIONS.md` §5b scopes the full trace as its own task.

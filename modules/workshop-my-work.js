@@ -2,8 +2,8 @@
   'use strict';
 
   const PRESETS = [
-    ['assigned', 'Assigned'], ['waiting', 'Waiting on me'], ['approvals', 'Approvals'],
-    ['today', 'Due today'], ['overdue', 'Overdue'], ['blocked', 'Blocked'], ['recent', 'Recent completion'],
+    ['assigned', 'المُسند إليّ'], ['waiting', 'بانتظاري'], ['approvals', 'الموافقات'],
+    ['today', 'يستحق اليوم'], ['overdue', 'متأخر'], ['blocked', 'معطّل'], ['recent', 'أُنجز مؤخراً'],
   ];
   const state = { view: 'assigned', loading: false, payload: null, savedViews: [], request: 0, bound: false };
 
@@ -30,8 +30,8 @@
 
   function summaryHtml(summary = {}) {
     const cards = [
-      ['assigned', 'Assigned'], ['waiting', 'Waiting'], ['dueToday', 'Due today'],
-      ['overdue', 'Overdue'], ['blocked', 'Blocked'], ['recent', 'Recent'],
+      ['assigned', 'مُسند'], ['waiting', 'بالانتظار'], ['dueToday', 'يستحق اليوم'],
+      ['overdue', 'متأخر'], ['blocked', 'معطّل'], ['recent', 'حديث'],
     ];
     return cards.map(([key, label]) => `<button type="button" class="my-work-summary-card" data-summary="${key}"><strong>${Number(summary[key] || 0)}</strong><span>${label}</span></button>`).join('');
   }
@@ -39,7 +39,7 @@
   function itemHtml(item) {
     const shell = root.WorkshopShell;
     const flags = Object.entries(item.flags || {}).filter(([, active]) => active).map(([flag]) => `<span class="my-work-flag my-work-flag-${shell.escapeHtml(flag)}">${shell.escapeHtml(flag)}</span>`).join('');
-    const due = item.dueAt ? new Date(item.dueAt).toLocaleString(shell.locale()) : 'No due date';
+    const due = item.dueAt ? new Date(item.dueAt).toLocaleString(shell.locale()) : 'بلا تاريخ استحقاق';
     return `<button type="button" class="my-work-item" data-target="${shell.escapeHtml(item.target)}">
       <span class="my-work-item-priority" data-priority="${shell.escapeHtml(item.priority)}"></span>
       <span class="my-work-item-main"><strong>${shell.escapeHtml(item.title)}</strong><small>${shell.escapeHtml(item.description || item.sourceLabel)}</small></span>
@@ -116,7 +116,7 @@
       const payload = await root.OctagonApiClient.get(`/api/v1/workshop/my-work?${params()}`);
       if (request === state.request) paint(payload);
     } catch (error) {
-      nodes.body.innerHTML = root.WorkshopShell.errorPanel(error?.message || 'My Work unavailable', 'myWorkRetry');
+      nodes.body.innerHTML = root.WorkshopShell.errorPanel(error?.message || 'تعذّر تحميل صفحة عملي', 'myWorkRetry');
       document.getElementById('myWorkRetry')?.addEventListener('click', load);
     } finally {
       state.loading = false; nodes.refresh.disabled = false;

@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-22T01:30:05.553Z",
+  "generatedAt": "2026-08-22T03:21:21.350Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T01:27:05.042Z)",
-    "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-21T18:42:24.967Z)"
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T03:21:11.437Z)",
+    "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-22T01:46:39.262Z)"
   },
   "totalPrimaryPages": 221,
   "domainCounts": {
@@ -688,19 +688,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "ai_tools, ai_queue, ai_factory",
       "functionalState": "STRONG",
-      "functionalEvidence": "5 controls, 13 rendered records, 3 workflow link(s)",
+      "functionalEvidence": "5 controls, 8 rendered records, 3 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 4121,
+        "textLength": 3506,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 2,
-        "tableRows": 13,
+        "tables": 1,
+        "tableRows": 8,
         "listItems": 0,
         "links": 3,
         "states": {
@@ -711,8 +711,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1106,
-        "latinChars": 2173
+        "arabicChars": 1075,
+        "latinChars": 1775
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1208,7 +1208,7 @@
       "usabilityEvidence": "raw JSON visible to a normal user",
       "deadEnd": false,
       "measured": {
-        "textLength": 2487,
+        "textLength": 2515,
         "controls": 8,
         "inputs": 4,
         "searchInputs": 1,
@@ -1224,7 +1224,7 @@
         },
         "rawIds": 0,
         "rawJson": true,
-        "arabicChars": 1831,
+        "arabicChars": 1853,
         "latinChars": 131
       },
       "runtimeConsoleErrors": 0,
@@ -1514,7 +1514,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1571,7 +1571,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1628,7 +1628,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1685,7 +1685,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1742,7 +1742,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1799,7 +1799,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1856,7 +1856,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1913,7 +1913,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -1970,7 +1970,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2027,7 +2027,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2084,7 +2084,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2141,7 +2141,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2198,7 +2198,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2255,7 +2255,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2312,7 +2312,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2369,7 +2369,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2426,7 +2426,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2483,7 +2483,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2540,7 +2540,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2597,7 +2597,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2626,19 +2626,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "7 controls, 5 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "7 controls, 7 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2309,
+        "textLength": 2556,
         "controls": 7,
         "inputs": 6,
         "searchInputs": 0,
         "tables": 1,
-        "tableRows": 5,
+        "tableRows": 7,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -2650,11 +2650,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 968,
-        "latinChars": 856
+        "latinChars": 1052
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2711,7 +2711,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2747,7 +2747,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4555,
+        "textLength": 4522,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -2764,11 +2764,11 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1142,
-        "latinChars": 2236
+        "latinChars": 2219
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2825,7 +2825,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2861,7 +2861,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 166,
+        "textLength": 145,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -2871,18 +2871,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 131,
-        "latinChars": 3
+        "arabicChars": 72,
+        "latinChars": 20
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2939,7 +2939,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -2996,7 +2996,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3032,7 +3032,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 157,
+        "textLength": 136,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -3042,18 +3042,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 123,
-        "latinChars": 3
+        "arabicChars": 64,
+        "latinChars": 20
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3110,7 +3110,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3146,7 +3146,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 160,
+        "textLength": 142,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -3156,18 +3156,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 125,
-        "latinChars": 3
+        "arabicChars": 66,
+        "latinChars": 23
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3203,7 +3203,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 156,
+        "textLength": 135,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -3213,18 +3213,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 119,
-        "latinChars": 6
+        "arabicChars": 60,
+        "latinChars": 23
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3284,7 +3284,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3344,7 +3344,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3401,7 +3401,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3437,7 +3437,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 707,
+        "textLength": 706,
         "controls": 2,
         "inputs": 8,
         "searchInputs": 0,
@@ -3453,12 +3453,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 405,
+        "arabicChars": 404,
         "latinChars": 144
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3515,7 +3515,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3551,7 +3551,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 163,
+        "textLength": 151,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -3561,18 +3561,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 128,
-        "latinChars": 3
+        "arabicChars": 80,
+        "latinChars": 19
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3629,7 +3629,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3686,7 +3686,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3743,7 +3743,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3800,7 +3800,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3836,7 +3836,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 7274,
+        "textLength": 7273,
         "controls": 203,
         "inputs": 43,
         "searchInputs": 4,
@@ -3852,12 +3852,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 4745,
+        "arabicChars": 4746,
         "latinChars": 294
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3914,7 +3914,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -3971,7 +3971,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4028,7 +4028,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4085,7 +4085,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4142,7 +4142,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4199,7 +4199,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4256,7 +4256,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4316,7 +4316,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4373,7 +4373,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4430,7 +4430,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4487,7 +4487,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4544,7 +4544,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4601,7 +4601,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4658,7 +4658,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4715,7 +4715,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4772,7 +4772,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4829,7 +4829,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4865,7 +4865,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 165,
+        "textLength": 162,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -4875,18 +4875,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 129,
-        "latinChars": 3
+        "arabicChars": 70,
+        "latinChars": 33
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -4946,7 +4946,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5003,7 +5003,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5060,7 +5060,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5096,7 +5096,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 158,
+        "textLength": 154,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -5106,18 +5106,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 124,
-        "latinChars": 3
+        "arabicChars": 84,
+        "latinChars": 16
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5174,7 +5174,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5231,7 +5231,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5288,7 +5288,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5345,7 +5345,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5402,7 +5402,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5459,7 +5459,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5516,7 +5516,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5573,7 +5573,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5630,7 +5630,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5687,7 +5687,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5744,7 +5744,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5801,7 +5801,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5825,24 +5825,24 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧱\nالمخزون والمواد",
-      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية",
+      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية | تسجيل الحركة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, home, intelligence, scenario_planner",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "19 controls, 9 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "20 controls, 12 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 1690,
-        "controls": 19,
-        "inputs": 3,
+        "textLength": 2516,
+        "controls": 20,
+        "inputs": 9,
         "searchInputs": 1,
-        "tables": 1,
-        "tableRows": 9,
+        "tables": 3,
+        "tableRows": 12,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -5853,12 +5853,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 566,
-        "latinChars": 791
+        "arabicChars": 1138,
+        "latinChars": 882
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5915,7 +5915,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -5951,7 +5951,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 167,
+        "textLength": 155,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -5961,18 +5961,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 3
+        "arabicChars": 82,
+        "latinChars": 19
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6008,7 +6008,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 34488,
+        "textLength": 34487,
         "controls": 176,
         "inputs": 4,
         "searchInputs": 1,
@@ -6024,12 +6024,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 23849,
+        "arabicChars": 23850,
         "latinChars": 2355
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6086,7 +6086,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6143,7 +6143,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6200,7 +6200,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6257,7 +6257,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6314,7 +6314,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6371,7 +6371,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6428,7 +6428,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6485,7 +6485,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6542,7 +6542,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6599,7 +6599,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6656,7 +6656,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6713,7 +6713,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6770,7 +6770,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6827,7 +6827,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6884,7 +6884,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6907,8 +6907,8 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
-      "observedTitle": "✓ My Work",
-      "actionsAvailable": "Refresh | 0\nAssigned | 0\nWaiting | 0\nDue today | 0\nOverdue | 0\nBlocked | 0\nRecent | Assigned | Waiting on me | الموافقات | Due today | Overdue | Blocked | Recent completion | Clear",
+      "observedTitle": "✓ عملي",
+      "actionsAvailable": "تحديث | 0\nمُسند | 0\nبالانتظار | 0\nيستحق اليوم | 0\nمتأخر | 0\nمعطّل | 0\nحديث | المُسند إليّ | بانتظاري | الموافقات | يستحق اليوم | متأخر | معطّل | أُنجز مؤخراً | مسح",
       "actionsDeclaredStatic": "Refresh; Clear",
       "upstreamWorkflow": "scenario_planner",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -6920,7 +6920,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 739,
+        "textLength": 695,
         "controls": 15,
         "inputs": 5,
         "searchInputs": 0,
@@ -6936,12 +6936,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 21,
-        "latinChars": 566
+        "arabicChars": 351,
+        "latinChars": 198
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -6998,7 +6998,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7055,7 +7055,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7091,7 +7091,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 176,
+        "textLength": 172,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -7101,18 +7101,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 140,
-        "latinChars": 3
+        "arabicChars": 96,
+        "latinChars": 18
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7169,7 +7169,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7226,7 +7226,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7283,7 +7283,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7340,7 +7340,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7397,7 +7397,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7454,7 +7454,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7511,7 +7511,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7568,7 +7568,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7625,7 +7625,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7682,7 +7682,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7739,7 +7739,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7796,7 +7796,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7853,7 +7853,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7910,7 +7910,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -7970,7 +7970,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8027,7 +8027,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8087,7 +8087,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8147,7 +8147,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8204,7 +8204,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8261,7 +8261,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8318,7 +8318,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8375,7 +8375,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8432,7 +8432,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8492,7 +8492,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8549,7 +8549,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8609,7 +8609,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8666,7 +8666,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8723,7 +8723,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8780,7 +8780,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8837,7 +8837,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8894,7 +8894,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -8951,7 +8951,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9011,7 +9011,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9068,7 +9068,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9125,7 +9125,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9182,7 +9182,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9239,7 +9239,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9296,7 +9296,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9353,7 +9353,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9410,7 +9410,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9446,7 +9446,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 266,
+        "textLength": 268,
         "controls": 3,
         "inputs": 3,
         "searchInputs": 0,
@@ -9462,12 +9462,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 200,
+        "arabicChars": 202,
         "latinChars": 9
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9524,7 +9524,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9584,7 +9584,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9641,7 +9641,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9677,7 +9677,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1835,
+        "textLength": 1643,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
@@ -9693,12 +9693,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 566,
-        "latinChars": 793
+        "arabicChars": 502,
+        "latinChars": 765
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9755,7 +9755,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9791,7 +9791,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 163,
+        "textLength": 151,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -9801,18 +9801,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 128,
-        "latinChars": 3
+        "arabicChars": 80,
+        "latinChars": 19
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9869,7 +9869,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9905,7 +9905,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 160,
+        "textLength": 148,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -9915,18 +9915,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 125,
-        "latinChars": 3
+        "arabicChars": 77,
+        "latinChars": 19
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -9986,7 +9986,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10043,7 +10043,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10067,7 +10067,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "📚\nمكتبة إجراءات التشغيل",
-      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178735\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178735\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
+      "actionsAvailable": "فهرس الذكاء الاصطناعي | إضافة SOP | مراجعة الإجراء | مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178736\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-178736\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1 | مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, help_manual, intelligence, training_lms",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -10100,7 +10100,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10157,7 +10157,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10214,7 +10214,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10271,7 +10271,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10328,7 +10328,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10385,7 +10385,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10421,7 +10421,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1062,
+        "textLength": 1061,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
@@ -10442,7 +10442,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10499,7 +10499,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10556,7 +10556,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10613,7 +10613,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10670,7 +10670,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10727,7 +10727,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10784,7 +10784,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10841,7 +10841,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10898,7 +10898,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10955,7 +10955,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -10991,7 +10991,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2887,
+        "textLength": 2889,
         "controls": 15,
         "inputs": 9,
         "searchInputs": 0,
@@ -11007,12 +11007,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1899,
+        "arabicChars": 1900,
         "latinChars": 393
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11069,7 +11069,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11126,7 +11126,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11183,7 +11183,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11240,7 +11240,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11297,7 +11297,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11354,7 +11354,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11411,7 +11411,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11468,7 +11468,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11525,7 +11525,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11582,7 +11582,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11639,7 +11639,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11696,7 +11696,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11732,7 +11732,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 165,
+        "textLength": 153,
         "controls": 2,
         "inputs": 0,
         "searchInputs": 0,
@@ -11742,18 +11742,18 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 130,
-        "latinChars": 3
+        "arabicChars": 82,
+        "latinChars": 19
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11810,7 +11810,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11867,7 +11867,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11924,7 +11924,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -11981,7 +11981,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12041,7 +12041,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12098,7 +12098,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12155,7 +12155,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12212,7 +12212,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12272,7 +12272,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12332,7 +12332,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12389,7 +12389,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12412,8 +12412,8 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "⌁ Workshop Command Center",
-      "actionsAvailable": "Refresh | READY\n1\nمستحق اليوم\nOpen canonical work due today\n↗ | READY\n1\nالاستلام قيد التنفيذ\nWarehouse REV-WH-01\n↗ | READY\n2\nعمل متأخر\nOpen work past its due date\n↗ | READY\n4\nعمل محظور\nBlocked or SLA-breached canonical work\n↗ | READY\n2\nمهام الالتقاط\nActive pick execution queue\n↗ | READY\n0\nتنبيهات الأجهزة\nOpen IoT health alerts\n↗ | READY\n26\nالوحدات المفعلة\nPlatform module registry\n↗ | READY\n0\nبانتظاري\nAssigned work requiring actor attention\n↗",
+      "observedTitle": "⌁ مركز قيادة الورشة",
+      "actionsAvailable": "تحديث | READY\n1\nمستحق اليوم\nOpen canonical work due today\n↗ | READY\n1\nالاستلام قيد التنفيذ\nWarehouse REV-WH-01\n↗ | READY\n2\nعمل متأخر\nOpen work past its due date\n↗ | READY\n4\nعمل محظور\nBlocked or SLA-breached canonical work\n↗ | READY\n2\nمهام الالتقاط\nActive pick execution queue\n↗ | READY\n1\nتنبيهات الأجهزة\nOpen IoT health alerts\n↗ | READY\n26\nالوحدات المفعلة\nPlatform module registry\n↗ | READY\n0\nبانتظاري\nAssigned work requiring actor attention\n↗",
       "actionsDeclaredStatic": "Refresh; &times;; Open canonical workspace",
       "upstreamWorkflow": "alert_board, service_queue_board",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12425,7 +12425,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1518,
+        "textLength": 1469,
         "controls": 17,
         "inputs": 0,
         "searchInputs": 0,
@@ -12441,12 +12441,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 263,
-        "latinChars": 936
+        "arabicChars": 396,
+        "latinChars": 758
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12503,7 +12503,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12560,7 +12560,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12583,8 +12583,8 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "◈ Workshop Readiness",
-      "actionsAvailable": "Recheck | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nWARNING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nPERMISSION DENIED | L\nالحوكمة\n3 checks\nREADY | Open setup ↗",
+      "observedTitle": "◈ جاهزية الورشة",
+      "actionsAvailable": "إعادة الفحص | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nWARNING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nREADY | L\nالحوكمة\n3 checks\nREADY | Open setup ↗",
       "actionsDeclaredStatic": "Recheck",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12596,7 +12596,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1378,
+        "textLength": 1299,
         "controls": 12,
         "inputs": 0,
         "searchInputs": 0,
@@ -12612,12 +12612,12 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 162,
-        "latinChars": 943
+        "arabicChars": 402,
+        "latinChars": 628
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null
@@ -12674,7 +12674,7 @@
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
-      "navigationStatus": "PASS",
+      "navigationStatus": null,
       "consolidationRecommendation": null,
       "canonicalDestination": null,
       "consolidationRationale": null

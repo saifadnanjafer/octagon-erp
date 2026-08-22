@@ -26,7 +26,8 @@ test('Readiness browser visibly renders formula, states, canonical links, and ze
   assert.match(module, /formula\.exclusions/);
   assert.match(module, /PERMISSION_DENIED/);
   assert.match(module, /WorkshopShell\.navigate/);
-  assert.match(view, /Zero-mutation policy/i);
+  // The zero-mutation promise is still stated on the page, in Arabic.
+  assert.match(view, /سياسة عدم التعديل/);
   assert.doesNotMatch(module, /OctagonApiClient\.post|fetch\([^)]*method:\s*['"]POST/);
 });
 

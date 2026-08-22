@@ -25,13 +25,13 @@
   }
 
   function formatFreshness(value) {
-    if (!value) return 'Not loaded';
+    if (!value) return 'لم يُحمَّل بعد';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return String(value);
     const seconds = Math.max(0, Math.round((Date.now() - parsed.getTime()) / 1000));
-    if (seconds < 10) return 'Updated just now';
-    if (seconds < 60) return `Updated ${seconds}s ago`;
-    return `Updated ${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 10) return 'حُدِّث الآن';
+    if (seconds < 60) return `حُدِّث قبل ${seconds} ثانية`;
+    return `حُدِّث قبل ${Math.floor(seconds / 60)} دقيقة`;
   }
 
   function navigate(page) {
@@ -42,10 +42,10 @@
   function renderScope(host, scope) {
     if (!host) return;
     const rows = [
-      ['Company', scope.companyId],
-      ['Branch', scope.branchId || 'All permitted'],
-      ['Warehouse', scope.warehouseId || 'Select a warehouse'],
-      ['Actor', scope.actorId || 'Session actor'],
+      ['الشركة', scope.companyId],
+      ['الفرع', scope.branchId || 'كل المسموح'],
+      ['المستودع', scope.warehouseId || 'اختر مستودعاً'],
+      ['المستخدم', scope.actorId || 'مستخدم الجلسة'],
     ];
     host.innerHTML = rows.map(([label, value]) => `<span class="workshop-scope-pill">${escapeHtml(label)}<strong>${escapeHtml(value)}</strong></span>`).join('');
   }

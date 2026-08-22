@@ -34,6 +34,10 @@ export function seedLegacyCommercialFixtures(dialect, { tenantId, companyId, bra
     INSERT INTO collections (collection, id, data) VALUES (?, ?, ?)
     ON CONFLICT(collection, id) DO UPDATE SET data = excluded.data
   `);
+  const upsertMeta = dialect.prepare(`
+    INSERT INTO metadata (key, value) VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+  `);
   const scope = { tenantId, companyId, branchId, source: 'disposable-review-fixture' };
 
   for (const [id, name, stock, minStock, unit, price] of MATERIALS) {
@@ -67,13 +71,44 @@ export function seedLegacyCommercialFixtures(dialect, { tenantId, companyId, bra
     ...scope,
   }));
 
+  // `omni.priceLists` is an object ({lists, items}), not an array, so the server's
+  // collection extractor stores it as a metadata blob rather than per-id rows.
+  // Seed one wholesale list carrying one priced line for the low-stock material,
+  // so Sales Price Lists is not THIN purely for want of a record. Its create /
+  // lookup / persist path is exercised separately through the page itself.
+  const priceListId = 'spl_review_wholesale_01';
+  upsertMeta.run('omni.priceLists', JSON.stringify({
+    lists: [{
+      id: priceListId,
+      name: 'قائمة أسعار المراجعة — جملة',
+      type: 'wholesale',
+      customerId: '',
+      active: true,
+      createdAt: timestamp,
+      ...scope,
+    }],
+    items: [{
+      id: 'spli_review_wholesale_line_01',
+      listId: priceListId,
+      materialId: MATERIALS[0][0],
+      materialName: MATERIALS[0][1],
+      price: 13750,
+      minQty: 1,
+      createdAt: timestamp,
+      ...scope,
+    }],
+  }));
+
   return {
     summary: {
+      priceLists: 1,
+      priceListItems: 1,
       materialsCreated: MATERIALS.length,
       materialsBelowMinimum: 1,
       suppliersCreated: SUPPLIERS.length,
       openPurchaseOrders: 1,
       collections: ['omni.materials', 'omni.suppliers', 'omni.purchaseOrders'],
+      metadata: ['omni.priceLists'],
       tenantId,
       companyId,
       branchId,

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T03:28:42.004Z",
-  "startedAt": "2026-08-22T03:28:35.068Z",
+  "generatedAt": "2026-08-22T03:31:06.460Z",
+  "startedAt": "2026-08-22T03:30:47.988Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -171,7 +171,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_assistant",
-      "durationMs": 5169,
+      "durationMs": 1799,
       "error": null,
       "activated": true,
       "observation": {
@@ -182,7 +182,7 @@
           "مساعد الذكاء الاصطناعي"
         ],
         "title": "مساعد الذكاء الاصطناعي",
-        "textLength": 727,
+        "textLength": 725,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -207,8 +207,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 381,
-        "latinChars": 208
+        "arabicChars": 418,
+        "latinChars": 168
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -378,7 +378,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_policy_registry",
-      "durationMs": 3129,
+      "durationMs": 1593,
       "error": null,
       "activated": true,
       "observation": {
@@ -389,7 +389,7 @@
           "سجل سياسات الذكاء"
         ],
         "title": "سجل سياسات الذكاء",
-        "textLength": 417,
+        "textLength": 416,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -414,8 +414,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 252,
-        "latinChars": 81
+        "arabicChars": 295,
+        "latinChars": 37
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1520,7 +1520,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/jarvis-brain.js",
       "requiredPermission": "campaigns",
-      "durationMs": 3447,
+      "durationMs": 1607,
       "error": null,
       "activated": true,
       "observation": {
@@ -1531,7 +1531,7 @@
           "الحملات"
         ],
         "title": "الحملات",
-        "textLength": 393,
+        "textLength": 382,
         "controlCount": 4,
         "controlLabels": [
           "تحديث",
@@ -1557,8 +1557,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 165,
-        "latinChars": 147
+        "arabicChars": 197,
+        "latinChars": 104
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2837,7 +2837,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "development_plans",
-      "durationMs": 4410,
+      "durationMs": 1729,
       "error": null,
       "activated": true,
       "observation": {
@@ -2848,7 +2848,7 @@
           "خطط التطوير"
         ],
         "title": "خطط التطوير",
-        "textLength": 426,
+        "textLength": 425,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -2873,8 +2873,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 210,
-        "latinChars": 114
+        "arabicChars": 245,
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3981,7 +3981,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_planner",
-      "durationMs": 3595,
+      "durationMs": 1774,
       "error": null,
       "activated": true,
       "observation": {
@@ -3992,7 +3992,7 @@
           "مخطط الفعاليات"
         ],
         "title": "مخطط الفعاليات",
-        "textLength": 267,
+        "textLength": 263,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4017,8 +4017,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 72
+        "arabicChars": 186,
+        "latinChars": 25
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4033,7 +4033,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_registrations",
-      "durationMs": 3623,
+      "durationMs": 1598,
       "error": null,
       "activated": true,
       "observation": {
@@ -4044,7 +4044,7 @@
           "تسجيلات الفعاليات"
         ],
         "title": "تسجيلات الفعاليات",
-        "textLength": 1578,
+        "textLength": 1572,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4069,8 +4069,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 812
+        "arabicChars": 176,
+        "latinChars": 773
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7797,7 +7797,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "person_skill_evidence",
-      "durationMs": 3742,
+      "durationMs": 1721,
       "error": null,
       "activated": true,
       "observation": {
@@ -7808,7 +7808,7 @@
           "أدلة المهارة"
         ],
         "title": "أدلة المهارة",
-        "textLength": 319,
+        "textLength": 301,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -7833,8 +7833,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 135,
-        "latinChars": 126
+        "arabicChars": 175,
+        "latinChars": 68
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10130,7 +10130,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "skills_catalog",
-      "durationMs": 4014,
+      "durationMs": 1566,
       "error": null,
       "activated": true,
       "observation": {
@@ -10141,7 +10141,7 @@
           "دليل المهارات"
         ],
         "title": "دليل المهارات",
-        "textLength": 405,
+        "textLength": 407,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -10166,8 +10166,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 138,
-        "latinChars": 190
+        "arabicChars": 158,
+        "latinChars": 172
       },
       "consoleErrors": [],
       "pageErrors": [],

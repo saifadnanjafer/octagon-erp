@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-22T03:28:58.262Z",
+  "generatedAt": "2026-08-22T03:31:19.414Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T03:28:42.004Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T03:31:06.460Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-22T01:46:39.262Z)"
   },
   "totalPrimaryPages": 221,
@@ -182,7 +182,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 727,
+        "textLength": 725,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -198,8 +198,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 381,
-        "latinChars": 208
+        "arabicChars": 418,
+        "latinChars": 168
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -410,7 +410,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 417,
+        "textLength": 416,
         "controls": 2,
         "inputs": 4,
         "searchInputs": 0,
@@ -426,8 +426,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 252,
-        "latinChars": 81
+        "arabicChars": 295,
+        "latinChars": 37
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1493,7 +1493,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 393,
+        "textLength": 382,
         "controls": 4,
         "inputs": 3,
         "searchInputs": 0,
@@ -1509,8 +1509,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 165,
-        "latinChars": 147
+        "arabicChars": 197,
+        "latinChars": 104
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2804,7 +2804,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 426,
+        "textLength": 425,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -2820,8 +2820,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 210,
-        "latinChars": 114
+        "arabicChars": 245,
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4007,7 +4007,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 267,
+        "textLength": 263,
         "controls": 2,
         "inputs": 5,
         "searchInputs": 0,
@@ -4023,8 +4023,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 72
+        "arabicChars": 186,
+        "latinChars": 25
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4064,7 +4064,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1578,
+        "textLength": 1572,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -4080,8 +4080,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 812
+        "arabicChars": 176,
+        "latinChars": 773
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7604,7 +7604,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 319,
+        "textLength": 301,
         "controls": 2,
         "inputs": 4,
         "searchInputs": 0,
@@ -7620,8 +7620,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 135,
-        "latinChars": 126
+        "arabicChars": 175,
+        "latinChars": 68
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10022,7 +10022,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 405,
+        "textLength": 407,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -10038,8 +10038,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 138,
-        "latinChars": 190
+        "arabicChars": 158,
+        "latinChars": 172
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

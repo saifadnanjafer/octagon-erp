@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-22T03:28:58.834Z",
+  "generatedAt": "2026-08-22T03:31:20.030Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:28:58.262Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:31:19.414Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -171,7 +171,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 727,
+        "textLength": 725,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -187,8 +187,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 381,
-        "latinChars": 208
+        "arabicChars": 418,
+        "latinChars": 168
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -423,7 +423,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 417,
+        "textLength": 416,
         "controls": 2,
         "inputs": 4,
         "searchInputs": 0,
@@ -439,8 +439,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 252,
-        "latinChars": 81
+        "arabicChars": 295,
+        "latinChars": 37
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1620,7 +1620,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 393,
+        "textLength": 382,
         "controls": 4,
         "inputs": 3,
         "searchInputs": 0,
@@ -1636,8 +1636,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 165,
-        "latinChars": 147
+        "arabicChars": 197,
+        "latinChars": 104
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3069,7 +3069,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 426,
+        "textLength": 425,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -3085,8 +3085,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 210,
-        "latinChars": 114
+        "arabicChars": 245,
+        "latinChars": 78
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4398,7 +4398,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 267,
+        "textLength": 263,
         "controls": 2,
         "inputs": 5,
         "searchInputs": 0,
@@ -4414,8 +4414,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 72
+        "arabicChars": 186,
+        "latinChars": 25
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4461,7 +4461,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1578,
+        "textLength": 1572,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -4477,8 +4477,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 143,
-        "latinChars": 812
+        "arabicChars": 176,
+        "latinChars": 773
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8373,7 +8373,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 319,
+        "textLength": 301,
         "controls": 2,
         "inputs": 4,
         "searchInputs": 0,
@@ -8389,8 +8389,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 135,
-        "latinChars": 126
+        "arabicChars": 175,
+        "latinChars": 68
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11043,7 +11043,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 405,
+        "textLength": 407,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
@@ -11059,8 +11059,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 138,
-        "latinChars": 190
+        "arabicChars": 158,
+        "latinChars": 172
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

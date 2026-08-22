@@ -173,7 +173,7 @@ async function testForwardMigrationsAreAcceptedNotSilent() {
     const entry = accepted.get(id);
     assert.ok(entry, `forward migration "${id}" is on disk but not accepted in any manifest`);
     const abs = path.join(REPO_ROOT, entry.relativePath);
-    assert.strictEqual(sha256(abs), entry.checksum, `forward migration "${id}" does not match its accepted checksum`);
+    assert.strictEqual(sha256(abs, entry.checksum), entry.checksum, `forward migration "${id}" does not match its accepted checksum`);
   }
 
   console.log(`PASS: forwardMigrationsAreAcceptedNotSilent (${onDisk.length} forward, all accepted)`);

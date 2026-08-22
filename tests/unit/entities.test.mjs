@@ -74,6 +74,18 @@ async function testDefaultEntitiesSeeded() {
   console.log('PASS: defaultEntitiesSeeded');
 }
 
+async function testSeededLifecyclePoliciesAreCanonical() {
+  const { dialect, dbPath } = await setup();
+  const invalid = dialect.prepare(`
+    SELECT COUNT(*) AS n
+    FROM platform_entities
+    WHERE lifecycle_policy NOT IN ('generic', 'state_machine', 'workflow', 'immutable', 'append_only')
+  `).get().n;
+  assert.strictEqual(Number(invalid), 0);
+  await cleanup(dialect, dbPath);
+  console.log('PASS: seededLifecyclePoliciesAreCanonical');
+}
+
 async function testRelationValidation() {
   const { dialect, dbPath, registry } = await setup();
   assert.throws(
@@ -112,6 +124,7 @@ async function main() {
   await testDuplicateEntity();
   await testModuleMustBeEnabled();
   await testDefaultEntitiesSeeded();
+  await testSeededLifecyclePoliciesAreCanonical();
   await testRelationValidation();
   await testUnregisterEntity();
   await testAuditWritten();

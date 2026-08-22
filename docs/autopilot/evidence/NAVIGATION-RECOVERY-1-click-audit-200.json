@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T18:26:58.433Z",
-  "startedAt": "2026-08-21T18:26:40.318Z",
+  "generatedAt": "2026-08-22T01:51:12.396Z",
+  "startedAt": "2026-08-22T01:50:53.757Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
@@ -9,6 +9,17 @@
     "fail": 0
   },
   "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
@@ -37,59 +48,47 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ],
   "globalNotFound": [
-    "/claude-review-pointer.json",
     "/claude-status.json",
+    "/claude-review-pointer.json",
     "/claude-status.json",
     "/claude-review-pointer.json"
   ],
@@ -109,10 +108,8 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 738,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "durationMs": 574,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -141,7 +138,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 682,
+      "durationMs": 562,
       "consoleErrors": [],
       "notFound": []
     },
@@ -176,7 +173,7 @@
           }
         ]
       },
-      "durationMs": 546,
+      "durationMs": 684,
       "consoleErrors": [],
       "notFound": []
     },
@@ -211,7 +208,7 @@
           }
         ]
       },
-      "durationMs": 619,
+      "durationMs": 651,
       "consoleErrors": [],
       "notFound": []
     },
@@ -256,7 +253,7 @@
           }
         ]
       },
-      "durationMs": 713,
+      "durationMs": 659,
       "consoleErrors": [],
       "notFound": []
     },
@@ -311,7 +308,7 @@
           }
         ]
       },
-      "durationMs": 501,
+      "durationMs": 571,
       "consoleErrors": [],
       "notFound": []
     },
@@ -366,7 +363,7 @@
           }
         ]
       },
-      "durationMs": 633,
+      "durationMs": 565,
       "consoleErrors": [],
       "notFound": []
     },
@@ -421,7 +418,7 @@
           }
         ]
       },
-      "durationMs": 502,
+      "durationMs": 508,
       "consoleErrors": [],
       "notFound": []
     },
@@ -476,7 +473,7 @@
           }
         ]
       },
-      "durationMs": 668,
+      "durationMs": 623,
       "consoleErrors": [],
       "notFound": []
     },
@@ -531,7 +528,7 @@
           }
         ]
       },
-      "durationMs": 711,
+      "durationMs": 552,
       "consoleErrors": [],
       "notFound": []
     },
@@ -586,7 +583,7 @@
           }
         ]
       },
-      "durationMs": 536,
+      "durationMs": 554,
       "consoleErrors": [],
       "notFound": []
     },
@@ -641,7 +638,7 @@
           }
         ]
       },
-      "durationMs": 514,
+      "durationMs": 532,
       "consoleErrors": [],
       "notFound": []
     },
@@ -696,7 +693,7 @@
           }
         ]
       },
-      "durationMs": 522,
+      "durationMs": 546,
       "consoleErrors": [],
       "notFound": []
     },
@@ -751,7 +748,7 @@
           }
         ]
       },
-      "durationMs": 711,
+      "durationMs": 716,
       "consoleErrors": [],
       "notFound": []
     },
@@ -806,7 +803,7 @@
           }
         ]
       },
-      "durationMs": 516,
+      "durationMs": 554,
       "consoleErrors": [],
       "notFound": []
     },
@@ -861,7 +858,7 @@
           }
         ]
       },
-      "durationMs": 620,
+      "durationMs": 579,
       "consoleErrors": [],
       "notFound": []
     },
@@ -916,7 +913,7 @@
           }
         ]
       },
-      "durationMs": 629,
+      "durationMs": 566,
       "consoleErrors": [],
       "notFound": []
     },
@@ -971,7 +968,7 @@
           }
         ]
       },
-      "durationMs": 519,
+      "durationMs": 502,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1030,7 +1027,7 @@
           }
         ]
       },
-      "durationMs": 630,
+      "durationMs": 533,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1089,7 +1086,7 @@
           }
         ]
       },
-      "durationMs": 603,
+      "durationMs": 729,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1148,7 +1145,7 @@
           }
         ]
       },
-      "durationMs": 655,
+      "durationMs": 644,
       "consoleErrors": [],
       "notFound": []
     }

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T18:23:49.424Z",
-  "startedAt": "2026-08-21T18:23:12.815Z",
+  "generatedAt": "2026-08-22T01:49:05.271Z",
+  "startedAt": "2026-08-22T01:48:26.284Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
@@ -83,11 +83,8 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ],
   "globalNotFound": [
     "/claude-status.json",
@@ -111,7 +108,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 687,
+      "durationMs": 566,
       "consoleErrors": [],
       "notFound": []
     },
@@ -130,7 +127,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 730,
+      "durationMs": 745,
       "consoleErrors": [],
       "notFound": []
     },
@@ -149,7 +146,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 678,
+      "durationMs": 575,
       "consoleErrors": [],
       "notFound": []
     },
@@ -179,7 +176,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 623,
+      "durationMs": 597,
       "consoleErrors": [],
       "notFound": []
     },
@@ -209,10 +206,8 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 1009,
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "durationMs": 1104,
+      "consoleErrors": [],
       "notFound": []
     },
     {
@@ -246,7 +241,7 @@
           }
         ]
       },
-      "durationMs": 9355,
+      "durationMs": 10298,
       "consoleErrors": [],
       "notFound": []
     },
@@ -281,7 +276,7 @@
           }
         ]
       },
-      "durationMs": 3343,
+      "durationMs": 3866,
       "consoleErrors": [],
       "notFound": []
     },
@@ -316,7 +311,7 @@
           }
         ]
       },
-      "durationMs": 4503,
+      "durationMs": 5084,
       "consoleErrors": [],
       "notFound": []
     },
@@ -351,7 +346,7 @@
           }
         ]
       },
-      "durationMs": 641,
+      "durationMs": 700,
       "consoleErrors": [],
       "notFound": []
     },
@@ -386,7 +381,7 @@
           }
         ]
       },
-      "durationMs": 637,
+      "durationMs": 750,
       "consoleErrors": [],
       "notFound": []
     },
@@ -421,7 +416,7 @@
           }
         ]
       },
-      "durationMs": 556,
+      "durationMs": 576,
       "consoleErrors": [],
       "notFound": []
     },
@@ -466,7 +461,7 @@
           }
         ]
       },
-      "durationMs": 830,
+      "durationMs": 806,
       "consoleErrors": [],
       "notFound": []
     },
@@ -511,7 +506,7 @@
           }
         ]
       },
-      "durationMs": 642,
+      "durationMs": 581,
       "consoleErrors": [],
       "notFound": []
     },
@@ -560,7 +555,7 @@
           }
         ]
       },
-      "durationMs": 519,
+      "durationMs": 518,
       "consoleErrors": [],
       "notFound": []
     },
@@ -609,7 +604,7 @@
           }
         ]
       },
-      "durationMs": 507,
+      "durationMs": 481,
       "consoleErrors": [],
       "notFound": []
     },
@@ -658,7 +653,7 @@
           }
         ]
       },
-      "durationMs": 659,
+      "durationMs": 667,
       "consoleErrors": [],
       "notFound": []
     },
@@ -707,7 +702,7 @@
           }
         ]
       },
-      "durationMs": 515,
+      "durationMs": 534,
       "consoleErrors": [],
       "notFound": []
     },
@@ -756,7 +751,7 @@
           }
         ]
       },
-      "durationMs": 634,
+      "durationMs": 633,
       "consoleErrors": [],
       "notFound": []
     },
@@ -805,7 +800,7 @@
           }
         ]
       },
-      "durationMs": 667,
+      "durationMs": 701,
       "consoleErrors": [],
       "notFound": []
     },
@@ -854,7 +849,7 @@
           }
         ]
       },
-      "durationMs": 668,
+      "durationMs": 622,
       "consoleErrors": [],
       "notFound": []
     },
@@ -903,7 +898,7 @@
           }
         ]
       },
-      "durationMs": 496,
+      "durationMs": 558,
       "consoleErrors": [],
       "notFound": []
     },
@@ -952,7 +947,7 @@
           }
         ]
       },
-      "durationMs": 519,
+      "durationMs": 543,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1011,7 +1006,7 @@
           }
         ]
       },
-      "durationMs": 717,
+      "durationMs": 572,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1080,7 +1075,7 @@
           }
         ]
       },
-      "durationMs": 529,
+      "durationMs": 518,
       "consoleErrors": [],
       "notFound": []
     },
@@ -1159,7 +1154,7 @@
           }
         ]
       },
-      "durationMs": 500,
+      "durationMs": 516,
       "consoleErrors": [],
       "notFound": []
     }

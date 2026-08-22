@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T18:24:33.758Z",
-  "startedAt": "2026-08-21T18:24:13.646Z",
+  "generatedAt": "2026-08-22T01:49:29.029Z",
+  "startedAt": "2026-08-22T01:49:07.539Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
   "totals": {
@@ -82,10 +82,8 @@
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
     "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ],
   "globalNotFound": [
     "/claude-review-pointer.json",
@@ -109,7 +107,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 570,
+      "durationMs": 692,
       "consoleErrors": [],
       "notFound": []
     },
@@ -128,7 +126,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 574,
+      "durationMs": 595,
       "consoleErrors": [],
       "notFound": []
     },
@@ -147,7 +145,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 699,
+      "durationMs": 724,
       "consoleErrors": [],
       "notFound": []
     },
@@ -166,7 +164,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 491,
+      "durationMs": 605,
       "consoleErrors": [],
       "notFound": []
     },
@@ -185,7 +183,7 @@
         "build12Loaded": true,
         "build12Hosts": []
       },
-      "durationMs": 531,
+      "durationMs": 522,
       "consoleErrors": [],
       "notFound": []
     },
@@ -209,7 +207,7 @@
           }
         ]
       },
-      "durationMs": 668,
+      "durationMs": 709,
       "consoleErrors": [],
       "notFound": []
     },
@@ -233,7 +231,7 @@
           }
         ]
       },
-      "durationMs": 480,
+      "durationMs": 501,
       "consoleErrors": [],
       "notFound": []
     },
@@ -261,7 +259,7 @@
           }
         ]
       },
-      "durationMs": 469,
+      "durationMs": 482,
       "consoleErrors": [],
       "notFound": []
     },
@@ -289,7 +287,7 @@
           }
         ]
       },
-      "durationMs": 629,
+      "durationMs": 515,
       "consoleErrors": [],
       "notFound": []
     },
@@ -317,7 +315,7 @@
           }
         ]
       },
-      "durationMs": 650,
+      "durationMs": 652,
       "consoleErrors": [],
       "notFound": []
     },
@@ -345,7 +343,7 @@
           }
         ]
       },
-      "durationMs": 633,
+      "durationMs": 617,
       "consoleErrors": [],
       "notFound": []
     },
@@ -373,7 +371,7 @@
           }
         ]
       },
-      "durationMs": 670,
+      "durationMs": 567,
       "consoleErrors": [],
       "notFound": []
     },
@@ -401,7 +399,7 @@
           }
         ]
       },
-      "durationMs": 500,
+      "durationMs": 681,
       "consoleErrors": [],
       "notFound": []
     },
@@ -429,7 +427,7 @@
           }
         ]
       },
-      "durationMs": 662,
+      "durationMs": 634,
       "consoleErrors": [],
       "notFound": []
     },
@@ -468,7 +466,7 @@
           }
         ]
       },
-      "durationMs": 583,
+      "durationMs": 650,
       "consoleErrors": [],
       "notFound": []
     },
@@ -507,7 +505,7 @@
           }
         ]
       },
-      "durationMs": 626,
+      "durationMs": 667,
       "consoleErrors": [],
       "notFound": []
     },
@@ -546,7 +544,7 @@
           }
         ]
       },
-      "durationMs": 512,
+      "durationMs": 532,
       "consoleErrors": [],
       "notFound": []
     },
@@ -585,7 +583,7 @@
           }
         ]
       },
-      "durationMs": 628,
+      "durationMs": 668,
       "consoleErrors": [],
       "notFound": []
     },
@@ -624,7 +622,7 @@
           }
         ]
       },
-      "durationMs": 489,
+      "durationMs": 593,
       "consoleErrors": [],
       "notFound": []
     },
@@ -663,7 +661,7 @@
           }
         ]
       },
-      "durationMs": 531,
+      "durationMs": 521,
       "consoleErrors": [],
       "notFound": []
     },
@@ -702,7 +700,7 @@
           }
         ]
       },
-      "durationMs": 512,
+      "durationMs": 534,
       "consoleErrors": [],
       "notFound": []
     },
@@ -741,7 +739,7 @@
           }
         ]
       },
-      "durationMs": 647,
+      "durationMs": 512,
       "consoleErrors": [],
       "notFound": []
     },
@@ -780,7 +778,7 @@
           }
         ]
       },
-      "durationMs": 692,
+      "durationMs": 706,
       "consoleErrors": [],
       "notFound": []
     },
@@ -819,7 +817,7 @@
           }
         ]
       },
-      "durationMs": 643,
+      "durationMs": 511,
       "consoleErrors": [],
       "notFound": []
     },
@@ -858,7 +856,7 @@
           }
         ]
       },
-      "durationMs": 520,
+      "durationMs": 665,
       "consoleErrors": [],
       "notFound": []
     }

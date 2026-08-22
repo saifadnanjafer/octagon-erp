@@ -1,6 +1,6 @@
 # Final Page Architecture
 
-Current product structure at `cabcb07d8cef915f29e37ec570e0262f6302504a`. Group names are business concepts,
+Current product structure at `bbd8ec676051a8a3c4a9286f438dc970526dbaa4`. Group names are business concepts,
 not build waves. Entries marked THIN remain visible only as tracked gaps and do
 not make this product ready for internal use.
 
@@ -35,7 +35,7 @@ not make this product ready for internal use.
 - **Ai Queue** (`ai_queue`) — AI approval queue — ai/system (risk: high, phase: phase6e); USABLE.
 - **Ai Status** (`ai_status`) — AI status — ai/system (risk: medium, phase: phase6e); STRONG.
 - **Ai Tools** (`ai_tools`) — AI tools — ai/system (risk: critical, phase: phase6e); USABLE.
-- **Scenario Planner** (`scenario_planner`) — Scenario planner — manager/planning (risk: medium, phase: phase6e); THIN.
+- **Scenario Planner** (`scenario_planner`) — Scenario planner — manager/planning (risk: medium, phase: phase6e); USABLE.
 
 ## intelligence → intelligence_governance
 
@@ -60,7 +60,7 @@ not make this product ready for internal use.
 - **Automation** (`automation`) — Automation engine — ai/system (risk: critical, phase: core); STRONG.
 - **Intelligence** (`intelligence`) — AI intelligence — ai/system (risk: high, phase: core); STRONG.
 - **Nl Reports** (`nl_reports`) — Natural language reports — manager/reporting (risk: medium, phase: core); STRONG.
-- **Route Health** (`route_health`) — Route health — system/diagnostic (risk: medium, phase: phase6e); THIN.
+- **Route Health** (`route_health`) — Route health — system/diagnostic (risk: medium, phase: phase6e); USABLE.
 - **Telegram** (`telegram`) — Telegram connector — ai/customer_comms (risk: high, phase: core); STRONG.
 - **Whatsapp** (`whatsapp`) — WhatsApp control — ai/customer_comms (risk: high, phase: core); USABLE.
 
@@ -81,7 +81,7 @@ not make this product ready for internal use.
 - **Logistics** (`logistics`) — Logistics cargo — workshop/logistics (risk: medium, phase: phase6h); USABLE.
 - **Procurement** (`procurement`) — Procurement — procurement/finance (risk: high, phase: phase6e); USABLE.
 - **Projects** (`projects`) — Project Hub — workshop/operations (risk: medium, phase: phase6h); USABLE.
-- **Supplier Portal** (`supplier_portal`) — Supplier portal — procurement/finance (risk: high, phase: phase6e); THIN.
+- **Supplier Portal** (`supplier_portal`) — Supplier portal — procurement/finance (risk: high, phase: phase6e); USABLE.
 
 ## finance → finance_accounts
 
@@ -89,11 +89,11 @@ not make this product ready for internal use.
 - **Banking** (`banking`) — Banking and treasury — finance (risk: high, phase: phase6a); STRONG.
 - **Budgeting** (`budgeting`) — Budgeting — finance (risk: high, phase: phase6e); USABLE.
 - **Cashbox** (`cashbox`) — Cashbox — finance (risk: high, phase: core); STRONG.
-- **Customers** (`customers`) — Customer balances — finance (risk: medium, phase: core); STRONG.
-- **Expenses** (`expenses`) — Expenses — finance (risk: high, phase: core); STRONG.
+- **Customers** (`customers`) — Customer balances — finance (risk: medium, phase: core); USABLE.
+- **Expenses** (`expenses`) — Expenses — finance (risk: high, phase: core); USABLE.
 - **Finance** (`finance`) — Finance dashboard — finance (risk: high, phase: core); STRONG.
 - **Finance Installments** (`finance_installments`) — Finance installments — finance/installments (risk: high, phase: phase7j); USABLE.
-- **Income** (`income`) — Income — finance (risk: high, phase: core); STRONG.
+- **Income** (`income`) — Income — finance (risk: high, phase: core); USABLE.
 - **Tax Compliance** (`tax_compliance`) — Tax compliance — finance/compliance (risk: high, phase: phase6b); USABLE.
 - **Workshop Ledger** (`workshop_ledger`) — Workshop ledger — finance/workshop (risk: high, phase: phase6h); USABLE.
 
@@ -141,7 +141,7 @@ not make this product ready for internal use.
 
 ## ops → ops_inventory
 
-- **Canonical Operations** (`canonical_console`) — Canonical Operations console — platform/canonical (risk: high, phase: visible-expansion); STRONG.
+- **Canonical Operations** (`canonical_console`) — Canonical Operations console — platform/canonical (risk: high, phase: visible-expansion); USABLE.
 - **Canonical Inventory** (`canonical_inventory`) — Canonical Inventory and Warehouses — workshop/inventory (risk: high, phase: visible-expansion); USABLE.
 - **Equipment** (`equipment`) — Equipment — workshop/production (risk: medium, phase: core); STRONG.
 - **Inventory** (`inventory`) — Inventory and stock — workshop/inventory (risk: high, phase: core); STRONG.
@@ -167,7 +167,7 @@ not make this product ready for internal use.
 
 ## ops → ops_control
 
-- **Command Center** (`command_center`) — Command Center — manager/system (risk: high, phase: core); STRONG.
+- **Command Center** (`command_center`) — Command Center — manager/system (risk: high, phase: core); USABLE.
 - **Sop** (`sop`) — SOP library — workshop/quality (risk: low, phase: core); USABLE.
 - **Task Manager** (`task_manager`) — Task manager — workshop/operations (risk: low, phase: core); USABLE.
 - **Workflow** (`workflow`) — Workflow designer — workshop/operations (risk: medium, phase: core); USABLE.
@@ -186,33 +186,33 @@ not make this product ready for internal use.
 
 ## resources → resources_devices
 
-- **Configuration Profiles** (`configuration_profiles`) — Configuration profiles — iot/config (risk: high, phase: build10); STRONG.
-- **Device Alerts** (`device_alerts`) — Device alerts — iot/alerts (risk: high, phase: build10); STRONG.
-- **Device Command Center** (`device_command_center`) — Device command center — iot/commands (risk: critical, phase: build10); STRONG.
-- **Device Detail** (`device_detail`) — Device detail — iot/devices (risk: low, phase: build10); STRONG.
-- **Device Health Center** (`device_health_center`) — Device health center — iot/health (risk: medium, phase: build10); STRONG.
-- **Device Registry** (`device_registry`) — Device registry — iot/devices (risk: medium, phase: build10); STRONG.
-- **Firmware Catalogue** (`firmware_catalogue`) — Firmware catalogue — iot/firmware (risk: high, phase: build10); STRONG.
-- **Gateway Management** (`gateway_management`) — Gateway management — iot/gateways (risk: high, phase: build10); STRONG.
-- **Rollout Simulator** (`rollout_simulator`) — Rollout simulator — iot/firmware (risk: high, phase: build10); STRONG.
-- **Sensor Management** (`sensor_management`) — Sensor management — iot/sensors (risk: medium, phase: build10); STRONG.
-- **Telemetry Explorer** (`telemetry_explorer`) — Telemetry explorer — iot/telemetry (risk: low, phase: build10); STRONG.
+- **Configuration Profiles** (`configuration_profiles`) — Configuration profiles — iot/config (risk: high, phase: build10); USABLE.
+- **Device Alerts** (`device_alerts`) — Device alerts — iot/alerts (risk: high, phase: build10); USABLE.
+- **Device Command Center** (`device_command_center`) — Device command center — iot/commands (risk: critical, phase: build10); USABLE.
+- **Device Detail** (`device_detail`) — Device detail — iot/devices (risk: low, phase: build10); USABLE.
+- **Device Health Center** (`device_health_center`) — Device health center — iot/health (risk: medium, phase: build10); USABLE.
+- **Device Registry** (`device_registry`) — Device registry — iot/devices (risk: medium, phase: build10); USABLE.
+- **Firmware Catalogue** (`firmware_catalogue`) — Firmware catalogue — iot/firmware (risk: high, phase: build10); USABLE.
+- **Gateway Management** (`gateway_management`) — Gateway management — iot/gateways (risk: high, phase: build10); USABLE.
+- **Rollout Simulator** (`rollout_simulator`) — Rollout simulator — iot/firmware (risk: high, phase: build10); USABLE.
+- **Sensor Management** (`sensor_management`) — Sensor management — iot/sensors (risk: medium, phase: build10); USABLE.
+- **Telemetry Explorer** (`telemetry_explorer`) — Telemetry explorer — iot/telemetry (risk: low, phase: build10); USABLE.
 
 ## resources → resources_offline
 
-- **Conflict Resolution** (`conflict_resolution`) — Conflict resolution — offline/conflicts (risk: high, phase: build10); STRONG.
-- **Offline Capability Policies** (`offline_capability_policies`) — Offline capability policies — offline/policies (risk: high, phase: build10); STRONG.
-- **Offline Client Registry** (`offline_client_registry`) — Offline client registry — offline/clients (risk: high, phase: build10); STRONG.
-- **Offline Queue** (`offline_queue`) — Offline queue — offline/queue (risk: medium, phase: build10); STRONG.
-- **Sync Conflicts** (`sync_conflicts`) — Sync conflicts — offline/conflicts (risk: high, phase: build10); STRONG.
-- **Sync Sessions** (`sync_sessions`) — Sync sessions — offline/sessions (risk: low, phase: build10); STRONG.
+- **Conflict Resolution** (`conflict_resolution`) — Conflict resolution — offline/conflicts (risk: high, phase: build10); USABLE.
+- **Offline Capability Policies** (`offline_capability_policies`) — Offline capability policies — offline/policies (risk: high, phase: build10); USABLE.
+- **Offline Client Registry** (`offline_client_registry`) — Offline client registry — offline/clients (risk: high, phase: build10); USABLE.
+- **Offline Queue** (`offline_queue`) — Offline queue — offline/queue (risk: medium, phase: build10); USABLE.
+- **Sync Conflicts** (`sync_conflicts`) — Sync conflicts — offline/conflicts (risk: high, phase: build10); USABLE.
+- **Sync Sessions** (`sync_sessions`) — Sync sessions — offline/sessions (risk: low, phase: build10); USABLE.
 
 ## ops → ops_warehouse_fulfillment
 
 - **Count Session** (`count_session`) — Count session — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Cycle Count Plans** (`cycle_count_plans`) — Cycle count plans — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Mobile Picking** (`mobile_picking`) — Mobile picking — workshop/inventory (risk: high, phase: build09); USABLE.
-- **Pick Task Queue** (`pick_task_queue`) — Pick task queue — workshop/inventory (risk: medium, phase: build09); USABLE.
+- **Pick Task Queue** (`pick_task_queue`) — Pick task queue — workshop/inventory (risk: medium, phase: build09); STRONG.
 - **Variance Review** (`variance_review`) — Variance review — workshop/inventory (risk: critical, phase: build09); USABLE.
 - **Wave Execution** (`wave_execution`) — Wave execution — workshop/inventory (risk: high, phase: build09); USABLE.
 - **Wave Planning** (`wave_planning`) — Wave planning — workshop/inventory (risk: high, phase: build09); USABLE.
@@ -251,7 +251,7 @@ not make this product ready for internal use.
 - **Machines** (`machines`) — Machines — workshop/production (risk: medium, phase: core); USABLE.
 - **Mrp** (`mrp`) — Manufacturing MRP II — workshop/production (risk: medium, phase: phase6h); USABLE.
 - **Op Packs** (`op_packs`) — Operation packs — workshop/production (risk: medium, phase: core); USABLE.
-- **Operational Performance** (`operational_performance`) — Operational performance — workshop/production (risk: medium, phase: build09); THIN.
+- **Operational Performance** (`operational_performance`) — Operational performance — workshop/production (risk: medium, phase: build09); STRONG.
 - **Production Issue / Return** (`production_issue_return`) — Production issue and return — workshop/production (risk: high, phase: build09); USABLE.
 - **Production Material Requests** (`production_material_requests`) — Production material requests — workshop/production (risk: high, phase: build09); USABLE.
 - **Production Receipt** (`production_receipt`) — Production receipt — workshop/production (risk: high, phase: build09); USABLE.
@@ -264,12 +264,12 @@ not make this product ready for internal use.
 
 ## ops → ops_kiosks
 
-- **Employee Kiosk** (`employee_kiosk`) — Employee kiosk — kiosk/employee (risk: low, phase: build10); STRONG.
+- **Employee Kiosk** (`employee_kiosk`) — Employee kiosk — kiosk/employee (risk: low, phase: build10); USABLE.
 - **Kiosk** (`kiosk`) — Kiosk Terminal — public/display (risk: low, phase: phase6h); USABLE.
-- **Kiosk Device Registry** (`kiosk_device_registry`) — Kiosk device registry — kiosk/registry (risk: high, phase: build10); STRONG.
-- **Service Kiosk** (`service_kiosk`) — Service kiosk — kiosk/service (risk: low, phase: build10); STRONG.
-- **Shop Floor Kiosk** (`shop_floor_kiosk`) — Shop floor kiosk — kiosk/shopfloor (risk: medium, phase: build10); STRONG.
-- **Warehouse Kiosk** (`warehouse_kiosk`) — Warehouse kiosk — kiosk/warehouse (risk: medium, phase: build10); STRONG.
+- **Kiosk Device Registry** (`kiosk_device_registry`) — Kiosk device registry — kiosk/registry (risk: high, phase: build10); USABLE.
+- **Service Kiosk** (`service_kiosk`) — Service kiosk — kiosk/service (risk: low, phase: build10); USABLE.
+- **Shop Floor Kiosk** (`shop_floor_kiosk`) — Shop floor kiosk — kiosk/shopfloor (risk: medium, phase: build10); USABLE.
+- **Warehouse Kiosk** (`warehouse_kiosk`) — Warehouse kiosk — kiosk/warehouse (risk: medium, phase: build10); USABLE.
 
 ## finance → finance_treasury
 
@@ -281,14 +281,14 @@ not make this product ready for internal use.
 
 ## resources → resources_fleet
 
-- **Fleet Device Mapping** (`fleet_device_mapping`) — Fleet device mapping — fleet/devices (risk: medium, phase: build10); STRONG.
-- **Fleet Live Map Simulator** (`fleet_live_map_simulator`) — Fleet live map simulator — fleet/map (risk: low, phase: build10); STRONG.
-- **Fuel Telemetry** (`fuel_telemetry`) — Fuel telemetry — fleet/fuel (risk: medium, phase: build10); STRONG.
-- **Geofence Management** (`geofence_management`) — Geofence management — fleet/geofences (risk: medium, phase: build10); STRONG.
-- **Maintenance Triggers** (`maintenance_triggers`) — Maintenance triggers — fleet/maintenance (risk: high, phase: build10); STRONG.
-- **Speed and Driver Events** (`speed_and_driver_events`) — Speed and driver events — fleet/speed (risk: medium, phase: build10); STRONG.
-- **Suspected Fuel Loss Queue** (`suspected_fuel_loss_queue`) — Suspected fuel loss queue — fleet/fuel (risk: high, phase: build10); STRONG.
-- **Vehicle Trip Timeline** (`vehicle_trip_timeline`) — Vehicle trip timeline — fleet/trips (risk: low, phase: build10); STRONG.
+- **Fleet Device Mapping** (`fleet_device_mapping`) — Fleet device mapping — fleet/devices (risk: medium, phase: build10); USABLE.
+- **Fleet Live Map Simulator** (`fleet_live_map_simulator`) — Fleet live map simulator — fleet/map (risk: low, phase: build10); USABLE.
+- **Fuel Telemetry** (`fuel_telemetry`) — Fuel telemetry — fleet/fuel (risk: medium, phase: build10); USABLE.
+- **Geofence Management** (`geofence_management`) — Geofence management — fleet/geofences (risk: medium, phase: build10); USABLE.
+- **Maintenance Triggers** (`maintenance_triggers`) — Maintenance triggers — fleet/maintenance (risk: high, phase: build10); USABLE.
+- **Speed and Driver Events** (`speed_and_driver_events`) — Speed and driver events — fleet/speed (risk: medium, phase: build10); USABLE.
+- **Suspected Fuel Loss Queue** (`suspected_fuel_loss_queue`) — Suspected fuel loss queue — fleet/fuel (risk: high, phase: build10); USABLE.
+- **Vehicle Trip Timeline** (`vehicle_trip_timeline`) — Vehicle trip timeline — fleet/trips (risk: low, phase: build10); USABLE.
 
 ## core → core_records
 
@@ -309,7 +309,7 @@ not make this product ready for internal use.
 - **Pos** (`pos`) — Point of Sale — workshop/pos (risk: medium, phase: phase6h); USABLE.
 - **Sales** (`sales`) — Sales — sales/commerce (risk: medium, phase: core); USABLE.
 - **Sales Commission** (`sales_commission`) — Sales commission — sales/commission (risk: high, phase: phase7j); USABLE.
-- **Sales Price Lists** (`sales_price_lists`) — Sales price lists — sales/pricing (risk: medium, phase: phase7j); THIN.
+- **Sales Price Lists** (`sales_price_lists`) — Sales price lists — sales/pricing (risk: medium, phase: phase7j); STRONG.
 
 ## ops → ops_warehouse_inbound
 

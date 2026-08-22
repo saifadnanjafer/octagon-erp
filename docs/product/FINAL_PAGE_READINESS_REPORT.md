@@ -2,7 +2,7 @@
 
 ## Starting state
 
-- Engineering start / current SHA: `cabcb07d8cef915f29e37ec570e0262f6302504a`
+- Engineering start / current SHA: `bbd8ec676051a8a3c4a9286f438dc970526dbaa4`
 - Page-spec reference SHA: `f2fc82c60394ef0755369fd72f1dc68362c2a9a8`
 - Current primary page count: **221** (derived; never hard-coded as 231)
 - Gemini audit inputs: **4 historical evidence records**, reconciled in
@@ -14,53 +14,15 @@ All **221** current primary pages have a ledger row. Functional state:
 
 | State | Pages |
 |---|---:|
-| STRONG | 75 |
-| THIN | 8 |
-| USABLE | 138 |
+| STRONG | 46 |
+| THIN | 3 |
+| USABLE | 172 |
 
 - P0/P1 THIN: **0**
 - P0/P1 verified persistence failures: **0**
 - P0/P1 BROKEN: **0**
 - P0/P1 DISCONNECTED: **0**
 - Purpose unclear: **3**
-
-## Verified continuation: BUILD-10 source-truth recovery
-
-The BUILD-10 generic workspace shell no longer creates illustrative rows,
-placeholder mutation controls, or sample CSV records. It now reads only from
-the dedicated, company-scoped `/api/v1/build10/:page` projections over the
-existing platform tables. A page without a registered source remains visibly
-empty; kiosk commands without a registered governed action remain unavailable.
-
-Real Chromium acceptance now proves that a browser-created fleet trip and a
-browser-created offline sync conflict are rendered from their respective
-canonical tables. The same test proves the trip projection is empty when the
-company context changes, and confirms the read model advertises `readOnly`.
-This is a bounded evidence improvement, not a canonical-authority decision:
-the owner decisions listed in the final verdict still apply.
-
-The remaining Fleet telemetry boundary is documented in
-[BUILD13_FLEET_TELEMETRY_CONSOLIDATION.md](BUILD13_FLEET_TELEMETRY_CONSOLIDATION.md).
-The legacy Fleet page can retain manual records while presenting simulated
-telematics; its full consolidation therefore requires an explicit
-source-mapping and cutover decision.
-
-## Verified continuation: Enterprise Suite input recovery
-
-The retained Enterprise Suite no longer exposes a shared demo-record loader,
-mock bank-statement generator, or mock-contract uploader. Bank reconciliation
-now accepts an operator-selected CSV, and the DMS contract surface accepts an
-operator-selected PDF before prompting for the actual contract metadata. The
-authenticated Chromium inspection rechecked both primary pages and the
-functional, reality, and product ledgers were regenerated from that evidence.
-
-## Verified continuation: P0 finance source honesty
-
-Cashbox, Finance, Income, Expenses, Customer Balances, and Receipts no longer
-offer the shared action that appended fabricated cash movements and a fictional
-customer. Their existing operator-entry and transaction-posting paths remain.
-All six primary pages were re-inspected through authenticated Chromium and the
-product ledgers were regenerated from the updated measurements.
 
 ## Consolidate
 
@@ -69,29 +31,114 @@ product ledgers were regenerated from the updated measurements.
 - Capability loss: **0**
 - Compatibility routes: retained by `switchPage` redirects
 
-## Tests executed for this recovery
+## Tests executed for this closure
 
-- `npm.cmd run test:build-13`: PASS (13) — static contracts for authenticated
-  runtime hydration, governed record evidence, metadata presentation, and
-  fail-closed large-screen boards.
-- `npm.cmd run test:build-10`: PASS — platform/domain and Chromium acceptance
-  for device, fleet, offline, kiosk, responsive workspace behavior, scoped
-  BUILD-10 read models, and removal of legacy renderer fixture fallbacks.
-- Targeted real-Chromium reinspection: PASS — all six large-screen boards
-  expose governed source links with no illustrative live metrics or raw JSON.
-- `npm.cmd run test:page-consolidation`: PASS (11)
-- `node --test tests/functional-pages/functional-pages.test.mjs`: PASS (7)
-- `npm.cmd run test:functional-pages`: PASS — the complete serial aggregate
-  of static and focused Chromium/domain suites completed against the current
-  disposable review server.
-- `npm.cmd run review:functional-work-orders`: PASS — the visible Work Orders
-  wizard created a fictional job, observed a successful full-state persistence
-  write, reauthenticated after reload, and found the same job again.
-- `npm.cmd run test:navigation-regression`: PASS (2), after starting the disposable review server
-- Full click audit: PASS — **221/221** current primary destinations passed in
-  nine authenticated visible-click slices (25-page bounded slices, final slice
-  21 pages). The abandoned monolithic run is not counted.
-- Visual audit: PASS — **35/35** responsive viewport/domain geometry cases.
+Counts are the suites' own reported totals, not narrative claims.
+
+| Suite | Result |
+|---|---|
+| `test:unit` | PASS |
+| `test:migration` | PASS |
+| `test:permissions` | PASS 40/40 |
+| `test:autopilot` | PASS 3/3 |
+| `test:workshop` | PASS 80/80 |
+| `test:page-consolidation` | PASS 11/11 |
+| `test:build-08` | PASS 17/17 |
+| `test:build-09` | PASS 65/65 |
+| `test:build-10` | PASS 38/38 |
+| `test:build-11` | PASS 19/19 |
+| `test:build-12` | PASS 17/17 |
+| `test:build-13` | PASS 13/13 |
+| `test:checkpoint-c` | PASS 100/100 |
+| `test:checkpoint-d-e` | PASS 56/56 |
+| `test:checkpoint-f` | PASS 27/27 (was 26/27 at the start of this pass — a pre-existing failure, fixed here) |
+| `test:checkpoint-g` | PASS 85/85 |
+| `review:functional-work-orders` | PASS — a fictional workshop job was created through the visible wizard, persisted, and found again after reload |
+| Runtime inspection | 221/221 pages, **0 console errors, 0 failed requests** |
+
+## Closure pass — the three remaining THIN pages, individually resolved
+
+Every remaining THIN row was opened in authenticated Chromium and its workflow
+exercised, not inferred. Two pages that were THIN at the start of this pass
+(`sales_price_lists`, `supplier_portal`) are no longer THIN.
+
+| Page | Classification | Proof |
+|---|---|---|
+| `employee_ui` | **A — LEGITIMATE_EMPTY_OPERATIONAL_PAGE** (selector-gated) | Selecting a seeded employee renders the full portal: attendance state, open tasks, pending requests, notifications, salary/advances and five real actions. It scores THIN only because a read-only inspector never picks an employee. Payroll/attendance were read, never written — the frozen zone was not crossed. |
+| `lot_serial_traceability` | **A — LEGITIMATE_EMPTY_OPERATIONAL_PAGE** (search-gated) | Traced a seeded lot end-to-end: backward and forward chains, quality status, current location, expiry, 13 KPIs. It was genuinely unusable before this pass — the governed lot picker never populated — which is now fixed. |
+| `extension_installations` | **A — LEGITIMATE_EMPTY_OPERATIONAL_PAGE** | No package is staged in the fixture, and the page says so in Arabic. Honest empty state, not a shell. |
+| `sales_price_lists` *(resolved)* | **B — FIXTURE_GAP** | Created a price list, added a priced item through the real material lookup, and found both again after a full reload. CRUD, lookup, scope and persistence all proven. |
+| `supplier_portal` *(resolved)* | **B — FIXTURE_GAP** | With two suppliers, two materials (one below minimum) and one open PO seeded, the page derives its real signals: 1 critical stock item, 1 RFQ candidate, 1 open PO, 2 registered suppliers. |
+
+The disposable fixture was extended (`scripts/review/fixtures/legacy-commercial.mjs`)
+rather than leaving pages THIN for want of a record. It seeds deterministic
+fictional records into the legacy `omni` collections and is never operational truth.
+
+## Closure pass — fake operational data
+
+| Case | Disposition |
+|---|---|
+| Supplier Portal invented three named supplier companies, generated `Math.random()` quote prices and stamped one "✓ أفضل" | **REMOVED** — fails closed; no comparison is drawn until real quotes exist. No quote record exists anywhere in the system. |
+| Fleet's "بيانات تجريبية" banner | **REMOVED** — after the earlier fail-closed fix it was mislabelling a real empty vehicle register as demo data. |
+| Automation rule simulator preset payload | **KEPT, RELABELLED** — an explicit simulator whose input payload is the subject matter. Now labelled "بيانات حدث تجريبية للمحاكاة — ليست سجلاً حقيقياً" so it cannot read as a live job. |
+| Repository sweep for `DEMO_`/`MOCK_`/`SAMPLE_`/`Math.random` operational values | **CLEAN** — no remaining constant or generator produces operational-looking values. |
+
+## Closure pass — the read-path 409, root-caused
+
+**Root cause.** The server accepts the legacy full-sync only when every governed
+path is echoed byte-for-byte. Finance was cut over in Phase 03, so the legacy
+blob carries no `finance` key at all — while `ensureFinance()` still synthesises
+a fully populated finance object for rendering. Two client paths posted that
+synthesised object:
+
+1. `saveData()` sent the synthesised accounts array.
+2. `finance` **aliased** `data.finance`, so `ensureFinance()` wrote those
+   synthesised accounts straight into the cached server projection that
+   PentagonDB/auditService later full-syncs.
+
+**Disposition.** Both removed on the client. The guard, `server.js` and the
+canonical authority map are byte-identical — nothing was weakened, allowed,
+silenced or caught-and-hidden. `finance.customers`, the one path the canonical
+map deliberately leaves ungoverned, still persists local edits.
+
+**Evidence.** Both writers return 200; only `finance.customers` is written; zero
+governed finance paths leak; the runtime error ledger reports **0 unique
+signatures** and the full inspection **0 failed requests across 221 pages**
+(previously 7 pages).
+
+## Closure pass — remaining owner decisions
+
+These are recorded, not resolved. Each is a business-authority call.
+
+1. `inventory` vs `canonical_inventory` — duplicate stock authority (GAP-001).
+2. `contracts` vs `sales_contracts` — one contract authority (C-010/C-011).
+3. Field Service, Workshop Ledger and Finance Installments local financial
+   writers (C-012/C-013/C-014).
+4. `home` vs `wfl_home` — which landing page is canonical.
+5. `content_approvals` vs `approvals` (C-028).
+6. The canonical domain for `build12_governed_intelligence` — marketing, events,
+   people development and AI facts have no declared domain; the coverage test
+   exempts it with an explicit note rather than inventing one.
+
+## Closure pass — genuine remaining feature gaps (BUILD-13 stays PENDING)
+
+Derived from `octagon-page-spec-catalog` `BUSINESS_FLOW_MAP.md`, which records
+flow edges as VERIFIED / PARTIAL / NOT_VERIFIED / MISSING. Page readiness is not
+the same as business completeness, and these are business capability gaps:
+
+| Gap | Status |
+|---|---|
+| Sale → workshop/service job | NOT_VERIFIED — no direct source link in the inspected Sales lifecycle |
+| Workshop material shortage → procurement request | NOT_VERIFIED — no material-demand-to-purchase-request link |
+| Treasury funding proposal → payment execution | NOT_VERIFIED |
+| Field visit → Finance | MISSING — local bridge, not a canonical source fact |
+| Workshop Ledger → Finance | MISSING — no Finance document/journal persistence proof |
+| Installment plan → AR/payment allocation | MISSING — no Finance API |
+| Legacy cashbox/expense/income row → Finance posted fact | MISSING — no verified source-fact handoff |
+| Procurement receipt/match → AP | PARTIAL — bill-posting browser evidence incomplete |
+
+**BUILD-13 recommendation: keep PENDING.** The pages are clean; the business
+chains above are not closed. Do not start BUILD-14.
 
 ## Final verdict
 

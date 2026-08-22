@@ -39,3 +39,48 @@ Catalog Reference SHA: `f2fc82c60394ef0755369fd72f1dc68362c2a9a8`
 - **Engineering Change**: Deepened review fixtures in `scripts/review/fixtures/production.mjs` and `quality.mjs` with Al-Warsha main warehouse ID (`rev_wh_alwarsha_main`).
 - **New Verified Behavior**: Work orders, material flows, shopfloor sessions, quality checkpoints, rework requests, and scrap approvals align to the active warehouse context.
 - **Recommended Spec Update**: Update inventory/quality authority handoffs in `CANONICAL_AUTHORITY_MAP.md` to reflect warehouse-scoped canonical persistence.
+
+---
+
+## Closure pass additions (engineering SHA `bbd8ec6`)
+
+### 5. Canonical guard no longer fires on read-only visits
+- **Spec path**: `docs/page-specs/finance/*`, `CROSS_PAGE_CONTRADICTIONS.md` C-020
+- **Engineering change**: the legacy full-sync now echoes the governed finance
+  projection byte-for-byte instead of posting the array `ensureFinance()`
+  synthesises for rendering, and `finance` is cloned rather than aliased so that
+  enrichment cannot leak into the cached projection.
+- **New verified behaviour**: 0 failed requests and 0 console errors across all
+  221 primary pages; the guard itself is unchanged and still refuses governed
+  finance writes.
+- **Recommended spec update**: record C-020 as `PARTIALLY_RESOLVED_IN_CODE` — the
+  spurious write is gone, the legacy/canonical authority question is not.
+
+### 6. Governed lookup layer (BUILD-09)
+- **Spec path**: `docs/page-specs/ops/*` (traceability, recall, mobile flows)
+- **Engineering change**: governed pickers preload their first page, preserve the
+  operator's selection across a refresh, and the lookup cache is invalidated when
+  a governed action succeeds.
+- **New verified behaviour**: Lot/Serial Traceability is reachable and traces
+  end-to-end; `test:build-09` 65/65 including the Chromium topology dialog flow.
+- **Recommended spec update**: C-007 evidence can move from "identity required"
+  to "identity selectable and proven".
+
+### 7. Arabic-first contract for BUILD-11 and BUILD-12
+- **Spec path**: `docs/page-specs/commercial/*`, `intelligence/*`
+- **Engineering change**: page titles/subtitles (BUILD-11) and every table column
+  and action label (BUILD-11 and BUILD-12) now resolve through each module's
+  existing translation helper.
+- **New verified behaviour**: all 11 BUILD-11 and 24 BUILD-12 workspaces render
+  Arabic headings, columns and actions with live data.
+- **Recommended spec update**: add a language row to the workspace contract so a
+  future wave checks labels, not only headings.
+
+### 8. Disposable legacy commercial fixture
+- **Spec path**: `docs/page-specs/commercial/sales_price_lists.md`, `resources/supplier_portal.md`
+- **Engineering change**: `scripts/review/fixtures/legacy-commercial.mjs` seeds the
+  legacy `omni` materials/suppliers/purchase-order collections.
+- **New verified behaviour**: both pages derive real signals and persist real
+  records; neither is THIN any more.
+- **Recommended spec update**: mark both `FIXTURE_VERIFIED`, and record that they
+  remain legacy-authority surfaces (GAP-004), which is a separate question.

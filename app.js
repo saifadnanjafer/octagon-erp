@@ -28798,7 +28798,20 @@ function renderEmployeePortal() {
 
   const empIdx = getPortalEmployeeId();
   if (empIdx < 0 || !employees[empIdx]) {
-    body.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:16px;"><i class="fa-solid fa-user-lock" style="font-size:40px;display:block;margin-bottom:15px;"></i>اختر موظفاً من القائمة أعلاه لعرض لوحته الشخصية</p>';
+    // Read-only empty state. Payroll, attendance and timesheet data are frozen,
+    // so this branch never creates or edits an employee — it only says which of
+    // the two situations the operator is actually in (no employees on file at
+    // all, versus none picked yet) and points at the page that owns that data,
+    // instead of being a dead end that just says "choose someone".
+    const hasEmployees = Array.isArray(employees) && employees.length > 0;
+    const message = hasEmployees
+      ? 'اختر موظفاً من القائمة أعلاه لعرض لوحته الشخصية'
+      : 'لا يوجد موظفون مسجلون بعد، فلا توجد لوحة يمكن عرضها.';
+    body.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:16px;">'
+      + '<i class="fa-solid fa-user-lock" style="font-size:40px;display:block;margin-bottom:15px;"></i>'
+      + '<p style="margin-bottom:18px;">' + message + '</p>'
+      + '<button class="btn-secondary" onclick="switchPage(\'employees\')">فتح سجل الموظفين</button>'
+      + '</div>';
     return;
   }
 

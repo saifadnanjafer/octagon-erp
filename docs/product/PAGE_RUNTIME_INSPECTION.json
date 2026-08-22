@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T00:01:30.207Z",
-  "startedAt": "2026-08-22T00:01:22.511Z",
+  "generatedAt": "2026-08-22T00:02:57.571Z",
+  "startedAt": "2026-08-22T00:02:49.066Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -3662,7 +3662,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_ui.html",
       "requiredPermission": "employee_ui",
-      "durationMs": 798,
+      "durationMs": 1646,
       "error": null,
       "activated": true,
       "observation": {
@@ -3673,9 +3673,11 @@
           "🧑‍🔧\nلوحة الموظف"
         ],
         "title": "🧑‍🔧\nلوحة الموظف",
-        "textLength": 295,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 313,
+        "controlCount": 1,
+        "controlLabels": [
+          "فتح سجل الموظفين"
+        ],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -3684,17 +3686,20 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
           "error": false,
           "denied": false
         },
-        "linkTargets": [],
+        "linkTargets": [
+          "employees"
+        ],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
+        "arabicChars": 118,
         "latinChars": 141
       },
       "consoleErrors": [],

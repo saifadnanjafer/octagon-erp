@@ -375,14 +375,14 @@
     const cards = items.map(item => {
       const labelText = t(item.title.ar, item.title.en);
       const summaryText = item.summary ? t(item.summary.ar, item.summary.en) : '';
-      const jarvisIcon = item.jarvisReadable ? '<span class="jarvis-badge" title="Jarvis Readable"><i class="fa-solid fa-brain"></i> AI</span>' : '';
+      const jarvisIcon = item.jarvisReadable ? '<span class="jarvis-badge" title="' + t('مقروء لأومني', 'Jarvis Readable') + '"><i class="fa-solid fa-brain"></i> AI</span>' : '';
       const visBadge = `<span class="vis-badge ${item.visibility}">${item.visibility}</span>`;
       const typeBadge = `<span class="type-badge">${item.type || 'FAQ'}</span>`;
       
       const isDemoOnly = ['fleet_fuel', 'messaging_connect', 'saas_marketplace'].includes(item.categoryId) || (item.tags && item.tags.includes('demo'));
       const statusBadge = isDemoOnly 
-        ? `<span class="status-badge demo" title="Demo / Future Feature">${t('تجريبي / مستقبل', 'Demo / Future')}</span>`
-        : `<span class="status-badge prod" title="Live Production Feature">${t('إنتاجي حقيقي', 'Production')}</span>`;
+        ? `<span class="status-badge demo" title="${t('تجريبي / ميزة مستقبلية', 'Demo / Future Feature')}">${t('تجريبي / مستقبل', 'Demo / Future')}</span>`
+        : `<span class="status-badge prod" title="${t('ميزة إنتاجية فعلية', 'Live Production Feature')}">${t('إنتاجي حقيقي', 'Production')}</span>`;
 
       return `
         <div class="kb-item-card glass" onclick="kbOpenItem('${item.id}', '${item.type === 'FAQ' ? 'faq' : 'article'}')">

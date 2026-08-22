@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-22T08:54:41.663Z",
+  "generatedAt": "2026-08-22T11:54:25.465Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T08:54:10.687Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T11:54:12.295Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-22T05:50:14.662Z)"
   },
   "totalPrimaryPages": 221,
@@ -19,13 +19,11 @@
   },
   "functionalStateCounts": {
     "STRONG": 48,
-    "USABLE": 171,
-    "THIN": 2
+    "USABLE": 173
   },
   "usabilityStateCounts": {
     "STRONG": 48,
-    "USABLE": 171,
-    "THIN": 2
+    "USABLE": 173
   },
   "priorityCounts": {
     "P3": 12,
@@ -67,7 +65,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 466,
+        "textLength": 453,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -76,15 +74,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 249,
-        "latinChars": 115
+        "arabicChars": 335,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -687,19 +685,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "ai_tools, ai_queue, ai_factory",
       "functionalState": "STRONG",
-      "functionalEvidence": "5 controls, 10 rendered records, 3 workflow link(s)",
+      "functionalEvidence": "5 controls, 12 rendered records, 3 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3768,
+        "textLength": 4070,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
         "tables": 2,
-        "tableRows": 10,
+        "tableRows": 12,
         "listItems": 0,
         "links": 3,
         "states": {
@@ -710,8 +708,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1072,
-        "latinChars": 1963
+        "arabicChars": 1100,
+        "latinChars": 2151
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2062,7 +2060,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 508,
+        "textLength": 493,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -2071,15 +2069,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 278,
-        "latinChars": 125
+        "arabicChars": 372,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2119,7 +2117,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 482,
+        "textLength": 465,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -2128,15 +2126,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 255,
-        "latinChars": 125
+        "arabicChars": 347,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2625,19 +2623,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "7 controls, 4 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "7 controls, 5 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2044,
+        "textLength": 2265,
         "controls": 7,
         "inputs": 6,
         "searchInputs": 0,
         "tables": 1,
-        "tableRows": 4,
+        "tableRows": 5,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -2649,7 +2647,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1067,
-        "latinChars": 552
+        "latinChars": 724
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2746,7 +2744,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4648,
+        "textLength": 4652,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -2762,8 +2760,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1570,
-        "latinChars": 1883
+        "arabicChars": 1576,
+        "latinChars": 1881
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3650,38 +3648,38 @@
       "owningDomain": "Employee_self_service",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "🧑‍🔧\nلوحة الموظف",
-      "actionsAvailable": "فتح سجل الموظفين",
+      "actionsAvailable": "تسجيل دخول | طلب تصحيح بصمة | طلب كشف حساب كامل | تقديم طلب إجازة | تقديم طلب سلفة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "analytics, command_center, intelligence",
-      "downstreamWorkflow": "employees",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
+      "upstreamWorkflow": "analytics, command_center, home, intelligence",
+      "downstreamWorkflow": "none — no onward workflow link rendered",
+      "functionalState": "USABLE",
+      "functionalEvidence": "5 controls, 0 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 313,
-        "controls": 1,
+        "textLength": 883,
+        "controls": 5,
         "inputs": 1,
         "searchInputs": 0,
         "tables": 0,
         "tableRows": 0,
         "listItems": 0,
-        "links": 1,
+        "links": 0,
         "states": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 118,
-        "latinChars": 141
+        "arabicChars": 507,
+        "latinChars": 144
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3711,7 +3709,7 @@
       "observedTitle": "👥\nالموظفين والأرصدة",
       "actionsAvailable": "إضافة موظف | تحديث | تصدير البيانات | اسم الموظف ↑ | الراتب الاسمي | آخر نشاط | الحالة | الرصيد الحالي | تفاصيل | حفظ",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "employee_ui, intelligence",
+      "upstreamWorkflow": "intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
       "functionalEvidence": "20 controls, 6 rendered records, 0 workflow link(s)",
@@ -4341,7 +4339,7 @@
       "observedTitle": "تثبيت الإضافات",
       "actionsAvailable": "تحديث | تعطيل | التراجع",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
-      "upstreamWorkflow": "none — no other workspace links here",
+      "upstreamWorkflow": "integration_hub",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
       "functionalEvidence": "3 controls, 1 records, 0 link(s)",
@@ -4398,7 +4396,7 @@
       "observedTitle": "سوق الإضافات",
       "actionsAvailable": "تحديث | التحقق من البيان الموجّه",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
-      "upstreamWorkflow": "none — no other workspace links here",
+      "upstreamWorkflow": "integration_hub",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
       "functionalEvidence": "2 controls, 1 records, 0 link(s)",
@@ -4981,7 +4979,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 482,
+        "textLength": 467,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -4990,15 +4988,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 260,
-        "latinChars": 121
+        "arabicChars": 350,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5256,7 +5254,7 @@
       "observedTitle": "🎫\nخدمة العملاء — التذاكر",
       "actionsAvailable": "📊 اللوحة | 🎫 التذاكر | كل التذاكر",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
-      "upstreamWorkflow": "home",
+      "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
       "functionalEvidence": "3 controls, 1 records, 0 link(s)",
@@ -5310,11 +5308,11 @@
       "canonicalApi": null,
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
-      "observedTitle": "🌅 صباح الخير، مدير النظام",
-      "actionsAvailable": "الذهاب إلى: خدمة العملاء | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
+      "observedTitle": "☀️ مساء الخير، مدير النظام",
+      "actionsAvailable": "الذهاب إلى: لوحة الموظف | 📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب | 💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود | 🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة | 📦\nالمخزون والمواد\nالمخزون وحركات المواد | 🤝\nالمبيعات والعملاء\nالمبيعات والعملاء المحتملون | 👥\nأرصدة العملاء\nملفات العملاء والأرصدة | 📊\nالتقرير النهائي\nتقارير الرواتب والدوام | ⚙️\nلوحة الإدارة\nالإعدادات وإدارة النظام",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
-      "downstreamWorkflow": "helpdesk, timesheet, finance, workshop_ledger, inventory, sales, customers, report, admin_panel",
+      "downstreamWorkflow": "employee_ui, timesheet, finance, workshop_ledger, inventory, sales, customers, report, admin_panel",
       "functionalState": "USABLE",
       "functionalEvidence": "9 controls, 0 records, 9 link(s)",
       "focusedFunctionalEvidence": null,
@@ -5323,7 +5321,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 659,
+        "textLength": 658,
         "controls": 9,
         "inputs": 0,
         "searchInputs": 0,
@@ -5339,7 +5337,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 519,
+        "arabicChars": 518,
         "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
@@ -5596,36 +5594,36 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز التكامل",
-      "actionsAvailable": "تحديث | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
+      "actionsAvailable": "تحديث | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية | سوق الإضافات المحكوم | الإضافات المثبَّتة للمستأجر | إنشاء مفتاح مقيّد",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
-      "downstreamWorkflow": "none — no onward workflow link rendered",
+      "downstreamWorkflow": "extension_marketplace, extension_installations",
       "functionalState": "STRONG",
-      "functionalEvidence": "15 controls, 5 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "19 controls, 14 rendered records, 2 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3544,
-        "controls": 15,
+        "textLength": 5539,
+        "controls": 19,
         "inputs": 1,
         "searchInputs": 1,
-        "tables": 2,
-        "tableRows": 5,
+        "tables": 4,
+        "tableRows": 14,
         "listItems": 3,
-        "links": 0,
+        "links": 2,
         "states": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": true,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 2140,
-        "latinChars": 651
+        "arabicChars": 2592,
+        "latinChars": 1839
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5722,7 +5720,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 488,
+        "textLength": 469,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -5731,15 +5729,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 249,
-        "latinChars": 139
+        "arabicChars": 351,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5779,7 +5777,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 524,
+        "textLength": 513,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -5788,15 +5786,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 285,
-        "latinChars": 135
+        "arabicChars": 391,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5824,24 +5822,24 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧱\nالمخزون والمواد",
-      "actionsAvailable": "إضافة مادة | معاينة مقترحات إعادة الطلب | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية | تسجيل الحركة",
+      "actionsAvailable": "إضافة مادة | معاينة مقترحات إعادة الطلب | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, home, intelligence, scenario_planner",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "20 controls, 12 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "19 controls, 9 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2509,
-        "controls": 20,
-        "inputs": 9,
+        "textLength": 1683,
+        "controls": 19,
+        "inputs": 3,
         "searchInputs": 1,
-        "tables": 3,
-        "tableRows": 12,
+        "tables": 1,
+        "tableRows": 9,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -5852,8 +5850,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1173,
-        "latinChars": 839
+        "arabicChars": 601,
+        "latinChars": 748
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5995,7 +5993,7 @@
       "observedEndpoints": [],
       "pageArchetype": "BOARD/QUEUE",
       "observedTitle": "قاعدة المعرفة والأسئلة الشائعة",
-      "actionsAvailable": "الأسئلة الشائعة | الأدلة الفنية | المسودات والمراجعة | روح النظام جارفيس | اقتراح مقال / سؤال | كل الأقسام\n309 | أساسيات النظام\n16 | ذكاء جارفيس والذكاء الاصطناعي\n22 | المبيعات والعملاء CRM\n25 | المخازن وإدارة المستودعات\n14 | المالية والمحاسبة والقيود\n31 | الموارد البشرية والرواتب والدوام\n31 | الإنتاج والتشغيل والورشة\n33 | المشاريع وعقود العمل\n14 | الأسطول وحوكمة الوقود\n13 | الاتصالات والربط الخارجي\n16 | التقارير الذكية والتحليلات\n21 | خدمات السحاب وسوق التطبيقات\n18 | الإدارة والصلاحيات والأمان\n29 | التجزئة ونقاط البيع POS\n3 | الضيافة والفنادق والمطاعم\n2 | العيادات والصيدليات الطبية\n2 | إدارة الأصول والصيانة الوقائية\n1 | الدعم والتذاكر وخدمة العملاء\n7 | حوكمة البيانات وجودة المدخلات\n6 | التشخيص الفني وصحة المسارات\n5",
+      "actionsAvailable": "الأسئلة الشائعة | الأدلة الفنية | المسودات والمراجعة | روح النظام جارفيس | اقتراح مقال / سؤال | كل الأقسام\n309 | أساسيات النظام\n16 | ذكاء جارفيس والذكاء الاصطناعي\n22 | المبيعات والعملاء CRM\n25 | المخازن وإدارة المستودعات\n14 | المالية والمحاسبة والقيود\n31 | الموارد البشرية والرواتب والدوام\n31 | الإنتاج والتشغيل والورشة\n33 | المشاريع وعقود العمل\n14 | الأسطول وحوكمة الوقود\n13 | الاتصالات والربط الخارجي\n16 | التقارير الذكية والتحليلات\n21 | خدمات السحاب وسوق التطبيقات\n18 | الإدارة والصلاحيات والأمان\n29 | التجزئة ونقاط البيع POS\n3 | الضيافة والفنادق والمطاعم\n2 | العيادات والصيدليات الطبية\n2 | إدارة الأصول والصيانة الوقائية\n1 | الدعم والتذاكر وخدمة العملاء\n7 | حوكمة البيانات وجودة المدخلات\n6 | التشخيص الفني وصحة المس��رات\n5",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -6007,7 +6005,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 34489,
+        "textLength": 34508,
         "controls": 176,
         "inputs": 4,
         "searchInputs": 1,
@@ -6023,7 +6021,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 23848,
+        "arabicChars": 23837,
         "latinChars": 2355
       },
       "runtimeConsoleErrors": 0,
@@ -6121,7 +6119,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 465,
+        "textLength": 446,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -6130,15 +6128,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 243,
-        "latinChars": 121
+        "arabicChars": 329,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6221,27 +6219,27 @@
       "owningDomain": "Workshop",
       "canonicalApi": null,
       "observedEndpoints": [],
-      "pageArchetype": "DETAIL/READ",
+      "pageArchetype": "BOARD/QUEUE",
       "observedTitle": "تتبع الدفعة والرقم التسلسلي",
-      "actionsAvailable": "تتبع",
+      "actionsAvailable": "تتبع | تتبّع",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
-      "functionalState": "THIN",
-      "functionalEvidence": "only 1 control(s) and no data surface",
+      "functionalState": "USABLE",
+      "functionalEvidence": "2 controls, 1 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
-      "usabilityState": "THIN",
-      "usabilityEvidence": "little to act on",
+      "usabilityState": "USABLE",
+      "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 445,
-        "controls": 1,
+        "textLength": 572,
+        "controls": 2,
         "inputs": 4,
         "searchInputs": 1,
         "tables": 0,
         "tableRows": 0,
-        "listItems": 0,
+        "listItems": 1,
         "links": 0,
         "states": {
           "loading": false,
@@ -6251,8 +6249,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 253,
-        "latinChars": 89
+        "arabicChars": 331,
+        "latinChars": 106
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6577,7 +6575,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 462,
+        "textLength": 461,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -6586,15 +6584,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 248,
-        "latinChars": 113
+        "arabicChars": 342,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7432,7 +7430,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 510,
+        "textLength": 493,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -7441,15 +7439,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 269,
-        "latinChars": 133
+        "arabicChars": 373,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7774,7 +7772,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 455,
+        "textLength": 444,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -7783,15 +7781,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 236,
-        "latinChars": 123
+        "arabicChars": 332,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7831,7 +7829,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 606,
+        "textLength": 312,
         "controls": 11,
         "inputs": 0,
         "searchInputs": 0,
@@ -7847,8 +7845,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 455,
-        "latinChars": 29
+        "arabicChars": 236,
+        "latinChars": 26
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8239,7 +8237,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 607,
+        "textLength": 363,
         "controls": 19,
         "inputs": 0,
         "searchInputs": 0,
@@ -8249,13 +8247,13 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 501,
+        "arabicChars": 305,
         "latinChars": 3
       },
       "runtimeConsoleErrors": 0,
@@ -9046,7 +9044,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 1151,
+        "textLength": 1152,
         "controls": 11,
         "inputs": 9,
         "searchInputs": 0,
@@ -9062,7 +9060,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 884,
+        "arabicChars": 883,
         "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
@@ -9676,7 +9674,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1773,
+        "textLength": 1869,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
@@ -9692,8 +9690,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 814,
-        "latinChars": 529
+        "arabicChars": 846,
+        "latinChars": 543
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10135,7 +10133,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 491,
+        "textLength": 512,
         "controls": 5,
         "inputs": 1,
         "searchInputs": 1,
@@ -10144,15 +10142,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 281,
-        "latinChars": 105
+        "arabicChars": 391,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10192,7 +10190,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 493,
+        "textLength": 516,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -10201,15 +10199,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 278,
-        "latinChars": 111
+        "arabicChars": 396,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10477,7 +10475,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 514,
+        "textLength": 497,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -10486,15 +10484,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 280,
-        "latinChars": 125
+        "arabicChars": 376,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11164,7 +11162,7 @@
         "textLength": 765,
         "controls": 6,
         "inputs": 9,
-        "searchInputs": 1,
+        "searchInputs": 2,
         "tables": 1,
         "tableRows": 3,
         "listItems": 0,
@@ -11389,7 +11387,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 492,
+        "textLength": 479,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -11398,15 +11396,15 @@
         "listItems": 0,
         "links": 0,
         "states": {
-          "loading": true,
+          "loading": false,
           "empty": true,
           "error": true,
-          "denied": true
+          "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 259,
-        "latinChars": 127
+        "arabicChars": 357,
+        "latinChars": 21
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

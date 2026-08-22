@@ -27,11 +27,30 @@
   const traceability = S.createWorkspace({
     pageId: 'lot_serial_traceability',
     prefix: 'tr',
-    initialState: () => ({ identityType: 'lot', trace: null, searched: false, loading: false }),
+    initialState: () => ({ identityType: 'lot', trace: null, searched: false, loading: false, recentLots: [], recentSerials: [] }),
+
+    // A trace tool answers a question about one identity, so before you type
+    // anything there is legitimately nothing to trace. That left the page with
+    // no data surface at all — you had to already know a lot number to get
+    // started. Loading the real lots and serials in scope gives somewhere to
+    // begin: browse what exists, click one, read its chains. Nothing here is
+    // invented; it is the same governed source the picker searches.
+    async onActivate(state) {
+      const lookups = root.OctagonGovernedLookups;
+      if (!lookups) return;
+      const load = async (kind) => {
+        const rows = await lookups.search(kind, { query: '' }).catch(() => null);
+        return Array.isArray(rows) ? rows.slice(0, 8) : [];
+      };
+      const [lots, serials] = await Promise.all([load('lots'), load('serials')]);
+      state.recentLots = lots;
+      state.recentSerials = serials;
+    },
 
     render(state) {
       const header = scopeLine([state.trace ? `${t('Product', 'المنتج')}: ${esc(state.trace.identity?.productId || '—')}` : '']);
-      return `${header}${identityPanel(state)}${state.trace ? tracePanels(state.trace) : (state.searched ? muted('No trace data was returned for that identity.', 'لم تُرجع أي بيانات تتبع لهذه الهوية.') : '')}`;
+      const idle = state.trace ? '' : recentIdentitiesPanel(state);
+      return `${header}${identityPanel(state)}${idle}${state.trace ? tracePanels(state.trace) : (state.searched ? muted('No trace data was returned for that identity.', 'لم تُرجع أي بيانات تتبع لهذه الهوية.') : '')}`;
     },
 
     bind(container, state, api) {
@@ -43,6 +62,20 @@
           slot.innerHTML = state.identityType === 'serial' ? lookup('serials', 'serial_id', 'Serial', 'الرقم التسلسلي') : lookup('lots', 'lot_id', 'Lot', 'الدفعة');
           S.wireLookups(slot, 'trBound');
         }
+      });
+
+      // Clicking a listed identity traces it directly, so the browse list is a
+      // real entry point rather than decoration.
+      container.querySelectorAll('[data-role="tr-pick"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const identityId = button.dataset.identityId;
+          if (!identityId) return;
+          api.guarded(async () => {
+            const identity = state.identityType === 'serial' ? { serial_id: identityId } : { lot_id: identityId };
+            state.trace = await api.query('trace', identity);
+            state.searched = true;
+          });
+        });
       });
 
       const form = container.querySelector('[data-role="tr-form"]');
@@ -58,6 +91,33 @@
       });
     },
   });
+
+  /** Real lots and serials in scope, as a starting point for a trace. */
+  function recentIdentitiesPanel(state) {
+    const rows = state.identityType === 'serial' ? state.recentSerials : state.recentLots;
+    const labelField = state.identityType === 'serial' ? 'serial_number' : 'lot_number';
+    const heading = state.identityType === 'serial'
+      ? t('Serials in scope', 'الأرقام التسلسلية ضمن النطاق')
+      : t('Lots in scope', 'الدفعات ضمن النطاق');
+    if (!Array.isArray(rows) || !rows.length) {
+      return `<div class="b09r-panel"><div class="b09r-panel-head"><h2>${esc(heading)}</h2></div>
+        ${muted('No lots or serials are recorded in this scope yet.', 'لا توجد دفعات أو أرقام تسلسلية مسجَّلة في هذا النطاق بعد.')}</div>`;
+    }
+    const items = rows.map((row) => {
+      const id = row?.id || row?.value || '';
+      const label = row?.[labelField] || row?.label || id;
+      const status = row?.status ? badge(row.status, QUALITY_TONE[row.status] ?? '') : '';
+      const expires = row?.expires_at ? `<span>${esc(t('Expires', 'ينتهي'))}: ${esc(when(row.expires_at))}</span>` : '';
+      return `<div class="b09r-scan-row">
+        <span>${esc(label)}</span>
+        <span>${status}${expires}</span>
+        <button type="button" class="b09-button" data-role="tr-pick" data-identity-id="${esc(id)}" data-identity-label="${esc(label)}">${esc(t('Trace', 'تتبّع'))}</button>
+      </div>`;
+    }).join('');
+    return `<div class="b09r-panel"><div class="b09r-panel-head"><h2>${esc(heading)}</h2></div>
+      <p>${esc(t('Pick one to read its backward and forward chains.', 'اختر واحدة لقراءة سلسلتها الخلفية والأمامية.'))}</p>
+      <div class="b09r-scan-list">${items}</div></div>`;
+  }
 
   function identityPanel(state) {
     return `<form class="b09r-panel" data-role="tr-form">

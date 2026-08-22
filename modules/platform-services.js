@@ -2,6 +2,11 @@
 (function () {
   'use strict';
 
+  // aria-label / placeholder are invisible to the control-label metric, so they
+  // stayed English after the visible chrome was translated.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   // These panels build HTML by concatenating quoted fragments, so their English
   // literals cannot each be wrapped in a translate call. The rendered container
   // is translated once instead, by text node, so listeners attached after
@@ -24,7 +29,7 @@
     try { [inbox, activities, health, views, schedules, jobs] = await Promise.all([api('notifications'), api('activities'), api('notification-health'), api('saved-views?entity=sale_contract'), api('scheduled-reports'), api('job-health')]); } catch (e) { error = e.message; }
     const old = document.getElementById('platformServicesWorkspace'); if (old) old.remove();
     const section = document.createElement('section'); section.id = 'platformServicesWorkspace'; section.className = 'pmk-shell';
-    const headline = '<div class="pmk-hero"><div><div class="pmk-kicker">Platform Services</div><h3>Collaboration, notifications, and scheduled reporting</h3><p>All operational data is read from governed APIs; no direct browser writes or live external provider activation.</p><input id="platformGlobalSearch" class="form-input" placeholder="Search registered entities and actions" style="max-width:360px" /></div><button class="btn-secondary" onclick="PlatformServices.refresh()">Refresh</button></div>';
+    const headline = '<div class="pmk-hero"><div><div class="pmk-kicker">Platform Services</div><h3>Collaboration, notifications, and scheduled reporting</h3><p>All operational data is read from governed APIs; no direct browser writes or live external provider activation.</p><input id="platformGlobalSearch" class="form-input" placeholder="' + arAttr('Search registered entities and actions', 'ابحث في الكيانات والإجراءات المسجَّلة') + '" style="max-width:360px" /></div><button class="btn-secondary" onclick="PlatformServices.refresh()">Refresh</button></div>';
     if (error) section.innerHTML = headline + '<div class="pmk-panel"><strong>Unable to load platform services:</strong> ' + esc(error) + '</div>';
     else section.innerHTML = headline + '<div class="pmk-grid">'
       + cards('Notifications', inbox, (n) => '<p><strong>' + esc(n.subject || n.eventKey) + '</strong><br>' + esc(n.body) + '</p>', 'No notifications.')

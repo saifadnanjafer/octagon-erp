@@ -2,6 +2,12 @@
 (function build09Workspaces(root) {
   'use strict';
 
+  // Attribute values are invisible to the control-label metric, so these stayed
+  // English after the visible chrome was translated. aria-label in particular is
+  // what a screen reader announces.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   // filters: [name, [labelEn, labelAr], [[value, optionEn, optionAr], ...]] — optional data-query selects, independent of `required`.
   const STATUS = (options) => ['status', ['Status', 'الحالة'], options];
   const PAGES = {
@@ -81,7 +87,7 @@
     return `<section id="${escapeHtml(id)}" class="page b09-workspace${page.mobile ? ' b09-mobile' : ''}" data-build09-page="${escapeHtml(id)}" aria-labelledby="${escapeHtml(id)}Title">
       <header class="b09-hero"><div><p class="b09-eyebrow">BUILD-09 · WMS & Operations</p><h1 id="${escapeHtml(id)}Title" data-role="title">${escapeHtml(page.title)}</h1><p data-role="subtitle"></p></div>${root.OctagonScopeSelector.markup()}</header>
       <div class="b09-query-fields">${requiredInputs}${optionalFilters}</div>
-      <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">Filter</span><input data-role="filter" type="search" placeholder="Filter visible records…"></label><div class="b09-actions" data-role="actions"></div></div>
+      <div class="b09-toolbar"><label class="b09-search"><span aria-hidden="true">⌕</span><span class="sr-only">${arAttr('Filter', 'تصفية')}</span><input data-role="filter" type="search" placeholder="${arAttr('Filter visible records…', 'تصفية السجلات المعروضة…')}"></label><div class="b09-actions" data-role="actions"></div></div>
       <p class="b09-notice" data-role="permission" hidden></p><p class="b09-status" data-role="status" data-phase="idle" aria-live="polite">Ready for a scoped query.</p>
       <article class="b09-card"><div class="b09-table-wrap"><table class="b09-table"><thead data-role="head"></thead><tbody data-role="rows"><tr><td class="b09-empty">Loading workspace…</td></tr></tbody></table></div>
       <footer><span>Canonical read model · company and warehouse scoped</span><span>${rtl() ? 'يُحدَّث عند الطلب' : 'Refreshed on demand'}</span></footer></article></section>`;
@@ -194,7 +200,7 @@
 
   function installDialog() {
     if (document.getElementById('build09ActionDialog')) return;
-    document.body.insertAdjacentHTML('beforeend', `<dialog id="build09ActionDialog" class="b09-dialog"><form method="dialog"><header><div><small>BUILD-09 governed action</small><h2 data-role="action-name"></h2></div><button value="cancel" aria-label="Close">×</button></header><p>${rtl() ? 'أدخل بيانات الإجراء المطلوبة.' : 'Complete the governed action form.'}</p><div data-role="form-fields"></div><p data-role="dialog-error" class="b09-dialog-error"></p><footer><button value="cancel" class="b09-button">${rtl() ? 'إلغاء' : 'Cancel'}</button><button type="button" class="b09-button b09-primary" data-command="submit">${rtl() ? 'تنفيذ' : 'Run'}</button></footer></form></dialog>`);
+    document.body.insertAdjacentHTML('beforeend', `<dialog id="build09ActionDialog" class="b09-dialog"><form method="dialog"><header><div><small>BUILD-09 governed action</small><h2 data-role="action-name"></h2></div><button value="cancel" aria-label="${arAttr('Close', 'إغلاق')}">×</button></header><p>${rtl() ? 'أدخل بيانات الإجراء المطلوبة.' : 'Complete the governed action form.'}</p><div data-role="form-fields"></div><p data-role="dialog-error" class="b09-dialog-error"></p><footer><button value="cancel" class="b09-button">${rtl() ? 'إلغاء' : 'Cancel'}</button><button type="button" class="b09-button b09-primary" data-command="submit">${rtl() ? 'تنفيذ' : 'Run'}</button></footer></form></dialog>`);
     document.querySelector('#build09ActionDialog [data-command="submit"]').addEventListener('click', submitAction);
   }
 

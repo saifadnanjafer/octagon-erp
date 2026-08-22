@@ -5043,6 +5043,16 @@ function validateDays() {
 }
 
 // ─── Calculator Page ───
+// views/calculator.html wires the "الرصيد السابق (سلف سابقة)" field to this,
+// but it was never defined anywhere — so editing that field silently did
+// nothing while its sibling (سلف الشهر الحالي) recalculated normally. The value
+// is already read by recalculate() below, so the only thing missing was the
+// trigger. Read-only: this recomputes the displayed figures and never writes
+// payroll, attendance or advance records.
+function onCalcPrevAdvanceChange() {
+  recalculate();
+}
+
 function recalculate() {
   const cfg = getConfig();
 
@@ -20398,9 +20408,9 @@ function renderTaskManager_deprecated_dup1() {
           <div class="task-type"><div class="task-level-head"><b><span onclick="renameTaskManagerLevel('${type.id}')" style="cursor:pointer" title="تعديل الاسم">${escapeHtml(type.name)} <i class="fa-solid fa-pen" style="font-size:10px;color:#aaa"></i></span></b><button class="btn-primary" onclick="addClickupTask('${space.id}','${dep.id}','${sec.id}','${type.id}')">إضافة Task</button></div>
           <div class="task-list">${type.tasks.map(task => {
             const taskIndicators = [];
-            if ((task.sopIds||[]).length) taskIndicators.push('<span class="task-ind" title="SOP" style="color:#818cf8"><i class="fa-solid fa-book"></i></span>');
-            if ((task.machineIds||[]).length) taskIndicators.push('<span class="task-ind" title="Machine" style="color:#22d3ee"><i class="fa-solid fa-gear"></i></span>');
-            if ((task.materialRequirements||[]).length) taskIndicators.push('<span class="task-ind" title="Material" style="color:#fb923c"><i class="fa-solid fa-cube"></i></span>');
+            if ((task.sopIds||[]).length) taskIndicators.push('<span class="task-ind" title="إجراء تشغيل قياسي" style="color:#818cf8"><i class="fa-solid fa-book"></i></span>');
+            if ((task.machineIds||[]).length) taskIndicators.push('<span class="task-ind" title="ماكينة" style="color:#22d3ee"><i class="fa-solid fa-gear"></i></span>');
+            if ((task.materialRequirements||[]).length) taskIndicators.push('<span class="task-ind" title="مادة" style="color:#fb923c"><i class="fa-solid fa-cube"></i></span>');
             if ((task.qcRecordIds||[]).length) taskIndicators.push('<span class="task-ind" title="QC" style="color:#fbbf24"><i class="fa-solid fa-microscope"></i></span>');
             const dueR = task.dueDate ? calculateDueRisk(task) : 'none';
             const dueStyle = dueR === 'overdue' ? 'color:#f87171;font-weight:bold' : dueR === 'due_today' ? 'color:#fbbf24' : '';
@@ -28834,6 +28844,35 @@ async function submitAttendanceCorrectionRequest(empIdx) {
   createEmployeeRequest('attendance_correction', { employeeIdx: empIdx, title: `طلب تصحيح بصمة ${r.date}`, date: r.date, correctedInTime: r.correctedInTime, correctedOutTime: r.correctedOutTime, reason: r.reason, notes: r.notes });
 }
 
+// Which employee record belongs to the person currently signed in. Employee
+// records carry the same id as the platform user (and an email), so the
+// self-service portal can open on the viewer's own record instead of asking
+// them to find themselves in a list of everyone.
+function currentUserEmployeeIndex() {
+  let user = null;
+  try { user = window.PentagonAuth?.getCurrentUser?.() || window.OctagonAuth?.getCurrentUser?.() || null; } catch (_) {}
+  let storedId = '';
+  try { storedId = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id') || ''; } catch (_) {}
+  // Employee records are keyed by the PLATFORM user id. The legacy client auth
+  // and localStorage hold a different one ('system_admin'), so matching on those
+  // never hits. The verified session identity is the one that lines up.
+  let sessionId = '';
+  try {
+    sessionId = window.__octagonBootstrap?.context?.userId
+      || window.__octagonServerSession?.userId
+      || '';
+  } catch (_) {}
+  const userId = String(sessionId || user?.id || storedId || '').trim();
+  const email = String(user?.email || '').trim().toLowerCase();
+  if (!userId && !email) return -1;
+  if (!Array.isArray(employees)) return -1;
+  return employees.findIndex(emp => {
+    const empId = String(emp?.id || '').trim();
+    const empEmail = String(emp?.email || '').trim().toLowerCase();
+    return (userId && empId && empId === userId) || (email && empEmail && empEmail === email);
+  });
+}
+
 function renderEmployeePortal() {
   ensureOmni();
   normalizeEmployeePortalData();
@@ -28851,6 +28890,16 @@ function renderEmployeePortal() {
     sel.appendChild(opt);
   });
   if (curVal !== '') sel.value = curVal;
+
+  // Open on the viewer's own record the first time only. Defaulting to an
+  // arbitrary employee would show that person's salary to whoever opened the
+  // page; defaulting to your own is the whole point of a self-service portal.
+  // Guarded so it never overrides a selection the operator made themselves.
+  if (sel.value === '' && sel.dataset.selfSelected !== '1') {
+    sel.dataset.selfSelected = '1';
+    const ownIdx = currentUserEmployeeIndex();
+    if (ownIdx >= 0) sel.value = String(ownIdx);
+  }
 
   const empIdx = getPortalEmployeeId();
   if (empIdx < 0 || !employees[empIdx]) {

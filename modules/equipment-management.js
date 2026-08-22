@@ -437,7 +437,7 @@ function renderEquipmentDispatchScannerPanel() {
         </label>
         <label class="field" style="display:grid; gap:5px;">
           <span>قارئ الباركود</span>
-          <input type="text" id="eqDispatchScanInput" class="form-input" autocomplete="off" placeholder="Scan / Enter" onkeydown="window.handleEquipmentDispatchScanKey(event)" oninput="window.handleEquipmentDispatchScanInput(this.value)" style="width:100%; background:rgba(2,6,23,0.72); border:1px solid rgba(56,189,248,0.42); color:#e0f2fe; padding:10px 12px; border-radius:9px; font-family:monospace; font-size:13px; outline:none;">
+          <input type="text" id="eqDispatchScanInput" class="form-input" autocomplete="off" placeholder="امسح أو أدخل" onkeydown="window.handleEquipmentDispatchScanKey(event)" oninput="window.handleEquipmentDispatchScanInput(this.value)" style="width:100%; background:rgba(2,6,23,0.72); border:1px solid rgba(56,189,248,0.42); color:#e0f2fe; padding:10px 12px; border-radius:9px; font-family:monospace; font-size:13px; outline:none;">
         </label>
       </div>
       <div style="display:grid; gap:8px;">

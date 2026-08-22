@@ -2,6 +2,12 @@
 (function build08Workspaces(root) {
   'use strict';
 
+  // Attribute values are invisible to the control-label metric, so these stayed
+  // English after the visible chrome was translated. aria-label in particular is
+  // what a screen reader announces.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   const PAGE_DEFINITIONS = {
     demand_planning: ['Demand Planning', 'تخطيط الطلب', 'planning/horizons', ['name', 'bucket_type', 'start_date', 'end_date', 'status'], ['forecast:version_create']],
     forecast_versions: ['Forecast Versions', 'إصدارات التنبؤ', 'planning/forecasts', ['name', 'method', 'horizon_id', 'status', 'published_at'], ['forecast:calculate', 'forecast:publish']],
@@ -292,7 +298,7 @@
     if (document.getElementById('build08ActionDialog')) return;
     document.body.insertAdjacentHTML('beforeend', `<dialog id="build08ActionDialog" class="b08-dialog" aria-labelledby="build08DialogTitle">
       <form method="dialog" class="b08-dialog-card">
-        <header><div><small data-role="action-id"></small><h2 id="build08DialogTitle" data-role="dialog-title"></h2></div><button value="cancel" aria-label="Close">×</button></header>
+        <header><div><small data-role="action-id"></small><h2 id="build08DialogTitle" data-role="dialog-title"></h2></div><button value="cancel" aria-label="${arAttr('Close', 'إغلاق')}">×</button></header>
         <p>${isArabic() ? 'أدخل حمولة الإجراء. يتحقق الخادم من الشركة والصلاحية وسير العمل.' : 'Enter the action payload. The server validates company, permission, and workflow.'}</p>
         <label>${isArabic() ? 'حمولة JSON' : 'JSON payload'}<textarea rows="12" spellcheck="false"></textarea></label>
         <p class="b08-dialog-error" data-role="dialog-error" aria-live="polite"></p>

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T00:06:31.081Z",
-  "startedAt": "2026-08-22T00:06:12.306Z",
+  "generatedAt": "2026-08-22T01:27:05.042Z",
+  "startedAt": "2026-08-22T01:26:55.177Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -18,7 +18,7 @@
       "rendererType": "view",
       "rendererSource": "views/account_mapping.html",
       "requiredPermission": "account_mapping",
-      "durationMs": 933,
+      "durationMs": 1658,
       "error": null,
       "activated": true,
       "observation": {
@@ -44,6 +44,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -57,18 +58,9 @@
         "arabicChars": 198,
         "latinChars": 169
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "admin_panel",
@@ -79,7 +71,7 @@
       "rendererType": "view",
       "rendererSource": "views/admin_panel.html",
       "requiredPermission": "admin_panel",
-      "durationMs": 1020,
+      "durationMs": 1815,
       "error": null,
       "activated": true,
       "observation": {
@@ -152,6 +144,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -178,7 +171,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_assistant",
-      "durationMs": 4459,
+      "durationMs": 5421,
       "error": null,
       "activated": true,
       "observation": {
@@ -203,6 +196,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -229,7 +223,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_context_sources",
-      "durationMs": 2595,
+      "durationMs": 3426,
       "error": null,
       "activated": true,
       "observation": {
@@ -240,7 +234,7 @@
           "مصادر سياق الذكاء"
         ],
         "title": "مصادر سياق الذكاء",
-        "textLength": 548,
+        "textLength": 526,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -253,6 +247,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -263,8 +258,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 311,
-        "latinChars": 129
+        "arabicChars": 349,
+        "latinChars": 77
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -279,7 +274,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_factory.html",
       "requiredPermission": "ai_factory",
-      "durationMs": 2348,
+      "durationMs": 3125,
       "error": null,
       "activated": true,
       "observation": {
@@ -304,6 +299,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -330,7 +326,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_overview",
-      "durationMs": 1784,
+      "durationMs": 3175,
       "error": null,
       "activated": true,
       "observation": {
@@ -342,7 +338,7 @@
           "تشغيلات الذكاء المحكومة الأخيرة"
         ],
         "title": "نظرة الذكاء الاصطناعي",
-        "textLength": 1202,
+        "textLength": 1200,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -366,21 +362,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 358,
-        "latinChars": 523
+        "arabicChars": 386,
+        "latinChars": 493
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "ai_policy_registry",
@@ -391,7 +378,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_policy_registry",
-      "durationMs": 2348,
+      "durationMs": 3148,
       "error": null,
       "activated": true,
       "observation": {
@@ -416,6 +403,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -442,7 +430,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_prompt_templates",
-      "durationMs": 2457,
+      "durationMs": 3208,
       "error": null,
       "activated": true,
       "observation": {
@@ -453,7 +441,7 @@
           "قوالب المطالبات"
         ],
         "title": "قوالب المطالبات",
-        "textLength": 910,
+        "textLength": 908,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -466,6 +454,7 @@
         "tableRows": 6,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -476,8 +465,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 272,
-        "latinChars": 456
+        "arabicChars": 316,
+        "latinChars": 410
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -492,7 +481,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_proposal_inbox",
-      "durationMs": 2468,
+      "durationMs": 3273,
       "error": null,
       "activated": true,
       "observation": {
@@ -503,13 +492,13 @@
           "صندوق مقترحات الذكاء"
         ],
         "title": "صندوق مقترحات الذكاء",
-        "textLength": 632,
+        "textLength": 603,
         "controlCount": 10,
         "controlLabels": [
           "تحديث",
-          "Approve",
-          "Reject",
-          "Withdraw"
+          "اعتماد",
+          "رفض",
+          "سحب"
         ],
         "inputCount": 0,
         "selectCount": 0,
@@ -519,6 +508,7 @@
         "tableRows": 3,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -529,8 +519,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 273,
-        "latinChars": 240
+        "arabicChars": 352,
+        "latinChars": 132
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -545,7 +535,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_queue.html",
       "requiredPermission": "ai_queue",
-      "durationMs": 2548,
+      "durationMs": 3301,
       "error": null,
       "activated": true,
       "observation": {
@@ -570,6 +560,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -596,7 +587,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "ai_run_history",
-      "durationMs": 2501,
+      "durationMs": 3238,
       "error": null,
       "activated": true,
       "observation": {
@@ -607,7 +598,7 @@
           "سجل تشغيل الذكاء"
         ],
         "title": "سجل تشغيل الذكاء",
-        "textLength": 1153,
+        "textLength": 1142,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -621,6 +612,7 @@
         "tableRows": 5,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -631,8 +623,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 221,
-        "latinChars": 716
+        "arabicChars": 278,
+        "latinChars": 658
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -647,7 +639,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_status.html",
       "requiredPermission": "ai_status",
-      "durationMs": 1826,
+      "durationMs": 1798,
       "error": null,
       "activated": true,
       "observation": {
@@ -658,7 +650,7 @@
           "🛡️\nحالة الذكاء الصناعي"
         ],
         "title": "🛡️\nحالة الذكاء الصناعي",
-        "textLength": 3537,
+        "textLength": 4121,
         "controlCount": 5,
         "controlLabels": [
           "🧪 اختبار المزوّد",
@@ -671,8 +663,8 @@
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 8,
+        "tableCount": 2,
+        "tableRows": 13,
         "tableColumns": 6,
         "listItems": 0,
         "governedRecordItems": 0,
@@ -690,21 +682,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 826,
-        "latinChars": 2042
+        "arabicChars": 1106,
+        "latinChars": 2173
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "ai_tools",
@@ -715,7 +698,7 @@
       "rendererType": "view",
       "rendererSource": "views/ai_tools.html",
       "requiredPermission": "ai_tools",
-      "durationMs": 2368,
+      "durationMs": 3178,
       "error": null,
       "activated": true,
       "observation": {
@@ -726,7 +709,7 @@
           "🧰\nسجل أدوات الذكاء الصناعي"
         ],
         "title": "🧰\nسجل أدوات الذكاء الصناعي",
-        "textLength": 5667,
+        "textLength": 5643,
         "controlCount": 51,
         "controlLabels": [
           "● مُفعّل",
@@ -740,6 +723,7 @@
         "tableRows": 51,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -750,8 +734,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2003,
-        "latinChars": 2648
+        "arabicChars": 2009,
+        "latinChars": 2624
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -766,7 +750,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "alert_board",
-      "durationMs": 1786,
+      "durationMs": 3410,
       "error": null,
       "activated": true,
       "observation": {
@@ -777,7 +761,7 @@
           "شاشة التنبيهات المركزية"
         ],
         "title": "شاشة التنبيهات المركزية",
-        "textLength": 517,
+        "textLength": 545,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -806,8 +790,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 323,
-        "latinChars": 102
+        "arabicChars": 297,
+        "latinChars": 153
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -822,7 +806,7 @@
       "rendererType": "view",
       "rendererSource": "views/analytics.html",
       "requiredPermission": "analytics",
-      "durationMs": 2630,
+      "durationMs": 3512,
       "error": null,
       "activated": true,
       "observation": {
@@ -841,7 +825,7 @@
           "تنبيهات توقعية"
         ],
         "title": "📈\nالتحليلات والذكاء التشغيلي",
-        "textLength": 1876,
+        "textLength": 1828,
         "controlCount": 31,
         "controlLabels": [
           "مختصر",
@@ -884,6 +868,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -910,7 +895,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1331,
+        "arabicChars": 1298,
         "latinChars": 31
       },
       "consoleErrors": [],
@@ -926,7 +911,7 @@
       "rendererType": "view",
       "rendererSource": "views/appointments.html",
       "requiredPermission": "appointments",
-      "durationMs": 2520,
+      "durationMs": 3484,
       "error": null,
       "activated": true,
       "observation": {
@@ -938,7 +923,7 @@
           "حجز جديد"
         ],
         "title": "المواعيد والحجوزات",
-        "textLength": 794,
+        "textLength": 793,
         "controlCount": 13,
         "controlLabels": [
           "جدول اليوم",
@@ -961,6 +946,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -971,7 +957,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 550,
+        "arabicChars": 549,
         "latinChars": 2
       },
       "consoleErrors": [],
@@ -987,7 +973,7 @@
       "rendererType": "view",
       "rendererSource": "views/approvals.html",
       "requiredPermission": "approvals",
-      "durationMs": 2648,
+      "durationMs": 3556,
       "error": null,
       "activated": true,
       "observation": {
@@ -1014,6 +1000,7 @@
         "tableRows": 1,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1040,7 +1027,7 @@
       "rendererType": "view",
       "rendererSource": "views/ar_ap.html",
       "requiredPermission": "ar_ap",
-      "durationMs": 2697,
+      "durationMs": 3577,
       "error": null,
       "activated": true,
       "observation": {
@@ -1056,8 +1043,8 @@
           "إضافة سريعة"
         ],
         "title": "الذمم المدينة والدائنة",
-        "textLength": 1304,
-        "controlCount": 10,
+        "textLength": 1283,
+        "controlCount": 9,
         "controlLabels": [
           "📊 اللوحة والملخص",
           "💰 المقبوضات والتحصيل (AR)",
@@ -1067,8 +1054,7 @@
           "إنشاء متابعة",
           "تحديث",
           "إنشاء مهمة",
-          "حفظ السطر",
-          "تحميل بيانات تجريبية"
+          "حفظ السطر"
         ],
         "inputCount": 6,
         "selectCount": 1,
@@ -1078,6 +1064,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1088,7 +1075,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 966,
+        "arabicChars": 948,
         "latinChars": 67
       },
       "consoleErrors": [],
@@ -1104,7 +1091,7 @@
       "rendererType": "view",
       "rendererSource": "views/assets.html",
       "requiredPermission": "assets",
-      "durationMs": 2628,
+      "durationMs": 3877,
       "error": null,
       "activated": true,
       "observation": {
@@ -1133,6 +1120,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1159,7 +1147,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "attribution_insights",
-      "durationMs": 2575,
+      "durationMs": 3467,
       "error": null,
       "activated": true,
       "observation": {
@@ -1170,7 +1158,7 @@
           "تحليلات الإسناد"
         ],
         "title": "تحليلات الإسناد",
-        "textLength": 393,
+        "textLength": 397,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -1183,6 +1171,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -1193,8 +1182,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 174,
-        "latinChars": 146
+        "arabicChars": 215,
+        "latinChars": 108
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1209,7 +1198,7 @@
       "rendererType": "view",
       "rendererSource": "views/automation.html",
       "requiredPermission": "automation",
-      "durationMs": 2768,
+      "durationMs": 1738,
       "error": null,
       "activated": true,
       "observation": {
@@ -1243,6 +1232,7 @@
         "tableRows": 7,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1269,7 +1259,7 @@
       "rendererType": "view",
       "rendererSource": "views/banking.html",
       "requiredPermission": "banking",
-      "durationMs": 2778,
+      "durationMs": 3896,
       "error": null,
       "activated": true,
       "observation": {
@@ -1335,7 +1325,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "billing_simulator",
-      "durationMs": 1816,
+      "durationMs": 3749,
       "error": null,
       "activated": true,
       "observation": {
@@ -1374,18 +1364,9 @@
         "arabicChars": 180,
         "latinChars": 209
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "budgeting",
@@ -1396,7 +1377,7 @@
       "rendererType": "view",
       "rendererSource": "views/budgeting.html",
       "requiredPermission": "budgeting",
-      "durationMs": 3007,
+      "durationMs": 3841,
       "error": null,
       "activated": true,
       "observation": {
@@ -1423,6 +1404,7 @@
         "tableRows": 1,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1449,7 +1431,7 @@
       "rendererType": "view",
       "rendererSource": "views/calendar.html",
       "requiredPermission": "calendar",
-      "durationMs": 2680,
+      "durationMs": 3781,
       "error": null,
       "activated": true,
       "observation": {
@@ -1459,11 +1441,11 @@
         "headings": [
           "🗓️\nتقويم الدوام الشهري",
           "أغسطس 2026",
-          "الجمعة 21 أغسطس 2026",
+          "السبت 22 أغسطس 2026",
           "سجل توثيق مصاريف التشغيل"
         ],
         "title": "🗓️\nتقويم الدوام الشهري",
-        "textLength": 2643,
+        "textLength": 2546,
         "controlCount": 36,
         "controlLabels": [
           "الشهر السابق",
@@ -1511,6 +1493,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1521,7 +1504,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1838,
+        "arabicChars": 1776,
         "latinChars": 7
       },
       "consoleErrors": [],
@@ -1537,7 +1520,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/jarvis-brain.js",
       "requiredPermission": "campaigns",
-      "durationMs": 811,
+      "durationMs": 3907,
       "error": null,
       "activated": true,
       "observation": {
@@ -1548,12 +1531,12 @@
           "الحملات"
         ],
         "title": "الحملات",
-        "textLength": 403,
+        "textLength": 393,
         "controlCount": 4,
         "controlLabels": [
           "تحديث",
           "إنشاء حملة",
-          "Submit for review"
+          "إرسال للمراجعة"
         ],
         "inputCount": 3,
         "selectCount": 0,
@@ -1563,6 +1546,7 @@
         "tableRows": 2,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -1573,8 +1557,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 107,
-        "latinChars": 213
+        "arabicChars": 165,
+        "latinChars": 147
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1589,7 +1573,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_console.html",
       "requiredPermission": "canonical_console",
-      "durationMs": 923,
+      "durationMs": 3899,
       "error": null,
       "activated": true,
       "observation": {
@@ -1597,12 +1581,11 @@
         "hostId": "pageCanonicalConsole",
         "hostDataPage": null,
         "headings": [
-          "العمليات القانونية الموحّدة",
-          "المنتجات والمواد"
+          "العمليات القانونية الموحّدة"
         ],
         "title": "العمليات القانونية الموحّدة",
-        "textLength": 746,
-        "controlCount": 10,
+        "textLength": 468,
+        "controlCount": 9,
         "controlLabels": [
           "تحديث",
           "المنتجات والمواد",
@@ -1612,19 +1595,19 @@
           "المبيعات",
           "المشتريات",
           "نقطة البيع",
-          "إدارة العمل",
-          "منتج جديد"
+          "إدارة العمل"
         ],
-        "inputCount": 2,
+        "inputCount": 0,
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 4,
-        "tableColumns": 4,
+        "tableCount": 0,
+        "tableRows": 0,
+        "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
-          "loading": false,
+          "loading": true,
           "empty": false,
           "error": false,
           "denied": false
@@ -1633,8 +1616,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 402,
-        "latinChars": 181
+        "arabicChars": 341,
+        "latinChars": 46
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1649,7 +1632,7 @@
       "rendererType": "view",
       "rendererSource": "views/canonical_inventory.html",
       "requiredPermission": "canonical_inventory",
-      "durationMs": 1549,
+      "durationMs": 4607,
       "error": null,
       "activated": true,
       "observation": {
@@ -1680,6 +1663,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": false,
@@ -1706,7 +1690,7 @@
       "rendererType": "view",
       "rendererSource": "views/cashbox.html",
       "requiredPermission": "cashbox",
-      "durationMs": 2767,
+      "durationMs": 5023,
       "error": null,
       "activated": true,
       "observation": {
@@ -1760,7 +1744,7 @@
       "rendererType": "view",
       "rendererSource": "views/clinic.html",
       "requiredPermission": "clinic",
-      "durationMs": 1950,
+      "durationMs": 5093,
       "error": null,
       "activated": true,
       "observation": {
@@ -1771,7 +1755,7 @@
           "🏥\nالعيادة"
         ],
         "title": "🏥\nالعيادة",
-        "textLength": 236,
+        "textLength": 235,
         "controlCount": 8,
         "controlLabels": [
           "📊 لوحة",
@@ -1791,6 +1775,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -1801,7 +1786,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 149,
+        "arabicChars": 148,
         "latinChars": 0
       },
       "consoleErrors": [],
@@ -1817,7 +1802,7 @@
       "rendererType": "view",
       "rendererSource": "views/command_center.html",
       "requiredPermission": "command_center",
-      "durationMs": 1806,
+      "durationMs": 5052,
       "error": null,
       "activated": true,
       "observation": {
@@ -1830,7 +1815,7 @@
           "مركز التحكم والموافقة الموحد",
           "تحليلات الشراء",
           "طلبات الشراء والمتابعة",
-          "اقتراحات ذكية حسب بيانات النظام\n9",
+          "اقتراحات ذكية حسب بيانات النظام\n8",
           "أولويات اليوم",
           "متأخرات",
           "ضغط المكائن",
@@ -1838,8 +1823,8 @@
           "صحة ترابط النظام\n0"
         ],
         "title": "🎯\nمركز القيادة التنفيذي",
-        "textLength": 3663,
-        "controlCount": 51,
+        "textLength": 3463,
+        "controlCount": 50,
         "controlLabels": [
           "اللوحة التنفيذية",
           "المخزون",
@@ -1847,7 +1832,6 @@
           "1 ماكينة في الصيانة: ليزر 125×250",
           "1 فحص جودة فاشل يحتاج إعادة عمل",
           "رصيد الصندوق منخفض جداً: 0 IQD (الحد الأدنى 500,000 IQD)",
-          "الموظف بدون مسؤول محمل بأعمال زائدة (مؤشر العبء 100%)",
           "الطلبات المعلقة 1",
           "سجل القرارات 0",
           "الكل\n1",
@@ -1868,19 +1852,20 @@
           "مطلوبة",
           "جزئية",
           "مستلمة",
+          "فتح المخزون",
           "فتح المكائن",
           "فتح مركز الجودة",
           "فتح الجودة",
           "فتح الإجراءات",
           "فتح الصندوق",
-          "فتح المهام",
-          "قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-21",
+          "قص ليزر للطلبية الجديدة\nقسم الليزر · 2026-08-22",
           "ليزر 120×90\nأحمد · طابور 3\nمزدحمة",
           "ليزر 100×80\nعلي · طابور 1\nتعمل",
           "ليزر 125×250\n- · طابور 0\nصيانة",
           "راوتر CNC 125×250\nيوسف · طابور 2\nتعمل",
           "ماركر ألياف ضوئية\nسيف · طابور 0\nمتاحة",
-          "طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل"
+          "طابعة ثلاثية الأبعاد\nأشرف · طابور 1\nتعمل",
+          "اللوحة"
         ],
         "inputCount": 1,
         "selectCount": 1,
@@ -1889,7 +1874,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 5,
+        "listItems": 2,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -1902,7 +1888,6 @@
           "machines",
           "qc_center",
           "cashbox",
-          "task_manager",
           "sop",
           "op_packs",
           "analytics",
@@ -1911,8 +1896,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2662,
-        "latinChars": 28
+        "arabicChars": 2510,
+        "latinChars": 32
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -1927,7 +1912,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "commercial_plans",
-      "durationMs": 1817,
+      "durationMs": 5202,
       "error": null,
       "activated": true,
       "observation": {
@@ -1938,7 +1923,7 @@
           "الخطط التجارية"
         ],
         "title": "الخطط التجارية",
-        "textLength": 779,
+        "textLength": 777,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -1963,21 +1948,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 144,
-        "latinChars": 423
+        "arabicChars": 184,
+        "latinChars": 381
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "competency_profiles",
@@ -1988,7 +1964,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "competency_profiles",
-      "durationMs": 1690,
+      "durationMs": 4898,
       "error": null,
       "activated": true,
       "observation": {
@@ -2012,6 +1988,7 @@
         "tableRows": 2,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2022,8 +1999,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 166,
-        "latinChars": 103
+        "arabicChars": 191,
+        "latinChars": 78
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2038,7 +2015,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "configuration_profiles",
-      "durationMs": 1278,
+      "durationMs": 5161,
       "error": null,
       "activated": true,
       "observation": {
@@ -2049,25 +2026,24 @@
           "ملفات إعدادات الأجهزة"
         ],
         "title": "ملفات إعدادات الأجهزة",
-        "textLength": 249,
-        "controlCount": 6,
+        "textLength": 165,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -2075,8 +2051,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 99,
-        "latinChars": 101
+        "arabicChars": 130,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2091,7 +2067,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "conflict_resolution",
-      "durationMs": 1663,
+      "durationMs": 5159,
       "error": null,
       "activated": true,
       "observation": {
@@ -2102,25 +2078,24 @@
           "معالجة وتصفية التعارضات"
         ],
         "title": "معالجة وتصفية التعارضات",
-        "textLength": 244,
-        "controlCount": 6,
+        "textLength": 166,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -2128,8 +2103,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 101,
-        "latinChars": 95
+        "arabicChars": 132,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2144,7 +2119,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidated_reports.html",
       "requiredPermission": "consolidated_reports",
-      "durationMs": 1495,
+      "durationMs": 4706,
       "error": null,
       "activated": true,
       "observation": {
@@ -2169,6 +2144,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -2195,7 +2171,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_groups.html",
       "requiredPermission": "consolidation_groups",
-      "durationMs": 1545,
+      "durationMs": 4880,
       "error": null,
       "activated": true,
       "observation": {
@@ -2222,6 +2198,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -2248,7 +2225,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_approvals",
-      "durationMs": 1579,
+      "durationMs": 4711,
       "error": null,
       "activated": true,
       "observation": {
@@ -2259,11 +2236,11 @@
           "اعتمادات المحتوى"
         ],
         "title": "اعتمادات المحتوى",
-        "textLength": 449,
+        "textLength": 452,
         "controlCount": 3,
         "controlLabels": [
           "تحديث",
-          "Approve"
+          "اعتماد"
         ],
         "inputCount": 0,
         "selectCount": 0,
@@ -2273,6 +2250,7 @@
         "tableRows": 2,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2283,8 +2261,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 162,
-        "latinChars": 200
+        "arabicChars": 202,
+        "latinChars": 163
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2299,7 +2277,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "content_calendar",
-      "durationMs": 1273,
+      "durationMs": 4784,
       "error": null,
       "activated": true,
       "observation": {
@@ -2324,6 +2302,7 @@
         "tableRows": 2,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2334,8 +2313,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 113,
-        "latinChars": 258
+        "arabicChars": 138,
+        "latinChars": 233
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2350,7 +2329,7 @@
       "rendererType": "view",
       "rendererSource": "views/contracts.html",
       "requiredPermission": "contracts",
-      "durationMs": 3112,
+      "durationMs": 5142,
       "error": null,
       "activated": true,
       "observation": {
@@ -2413,7 +2392,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "count_session",
-      "durationMs": 1692,
+      "durationMs": 5043,
       "error": null,
       "activated": true,
       "observation": {
@@ -2450,18 +2429,9 @@
         "arabicChars": 132,
         "latinChars": 115
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "crossdock_workspace",
@@ -2472,7 +2442,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "crossdock_workspace",
-      "durationMs": 1874,
+      "durationMs": 4909,
       "error": null,
       "activated": true,
       "observation": {
@@ -2485,7 +2455,7 @@
           "تقييم مطابقة"
         ],
         "title": "مساحة العبور المباشر",
-        "textLength": 783,
+        "textLength": 1138,
         "controlCount": 2,
         "controlLabels": [
           "١\nrev_prod_var_gate_hinge_01\nمطابق ٦ من الطلب ٦\nCANDIDATE",
@@ -2498,7 +2468,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2509,8 +2480,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 463,
-        "latinChars": 130
+        "arabicChars": 440,
+        "latinChars": 413
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2525,7 +2496,7 @@
       "rendererType": "view",
       "rendererSource": "views/customer_portal.html",
       "requiredPermission": "customer_portal",
-      "durationMs": 1710,
+      "durationMs": 5063,
       "error": null,
       "activated": true,
       "observation": {
@@ -2553,6 +2524,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -2579,7 +2551,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers.html",
       "requiredPermission": "customers",
-      "durationMs": 2683,
+      "durationMs": 4905,
       "error": null,
       "activated": true,
       "observation": {
@@ -2633,7 +2605,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "cycle_count_plans",
-      "durationMs": 1983,
+      "durationMs": 5479,
       "error": null,
       "activated": true,
       "observation": {
@@ -2646,7 +2618,7 @@
           "خطة جرد جديدة"
         ],
         "title": "خطط الجرد الدوري",
-        "textLength": 556,
+        "textLength": 682,
         "controlCount": 2,
         "controlLabels": [
           "بدء جلسة",
@@ -2659,7 +2631,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2670,8 +2643,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 303,
-        "latinChars": 121
+        "arabicChars": 296,
+        "latinChars": 220
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2686,7 +2659,7 @@
       "rendererType": "view",
       "rendererSource": "views/data_quality.html",
       "requiredPermission": "data_quality",
-      "durationMs": 1781,
+      "durationMs": 5122,
       "error": null,
       "activated": true,
       "observation": {
@@ -2703,8 +2676,8 @@
           "Phase 7A deployment blockers"
         ],
         "title": "جودة البيانات والترحيل",
-        "textLength": 2437,
-        "controlCount": 8,
+        "textLength": 2309,
+        "controlCount": 7,
         "controlLabels": [
           "سحب الإشارات الحية",
           "فتح المصدر",
@@ -2712,7 +2685,6 @@
           "تحديث",
           "إنشاء مهمة",
           "حفظ السطر",
-          "تحميل بيانات تجريبية",
           "تشغيل فحص حي"
         ],
         "inputCount": 6,
@@ -2723,6 +2695,7 @@
         "tableRows": 5,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -2733,8 +2706,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1023,
-        "latinChars": 909
+        "arabicChars": 968,
+        "latinChars": 856
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2749,7 +2722,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 1758,
+      "durationMs": 5114,
       "error": null,
       "activated": true,
       "observation": {
@@ -2775,6 +2748,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -2801,7 +2775,7 @@
       "rendererType": "view",
       "rendererSource": "views/deploy_ready.html",
       "requiredPermission": "deploy_ready",
-      "durationMs": 1630,
+      "durationMs": 5024,
       "error": null,
       "activated": true,
       "observation": {
@@ -2817,7 +2791,7 @@
           "Training checklist"
         ],
         "title": "🚀\nجاهزية التشغيل",
-        "textLength": 4557,
+        "textLength": 4555,
         "controlCount": 18,
         "controlLabels": [
           "💾 نسخة احتياطية الآن",
@@ -2836,6 +2810,7 @@
         "tableRows": 10,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -2847,7 +2822,7 @@
         "rawIdSamples": [],
         "rawJson": false,
         "arabicChars": 1142,
-        "latinChars": 2234
+        "latinChars": 2236
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2862,7 +2837,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "development_plans",
-      "durationMs": 855,
+      "durationMs": 5095,
       "error": null,
       "activated": true,
       "observation": {
@@ -2873,7 +2848,7 @@
           "خطط التطوير"
         ],
         "title": "خطط التطوير",
-        "textLength": 423,
+        "textLength": 426,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -2887,6 +2862,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -2897,8 +2873,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 173,
-        "latinChars": 148
+        "arabicChars": 210,
+        "latinChars": 114
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2913,7 +2889,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_alerts",
-      "durationMs": 1377,
+      "durationMs": 5596,
       "error": null,
       "activated": true,
       "observation": {
@@ -2924,25 +2900,24 @@
           "تنبيهات وأعطال الأجهزة"
         ],
         "title": "تنبيهات وأعطال الأجهزة",
-        "textLength": 232,
-        "controlCount": 6,
+        "textLength": 166,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -2950,8 +2925,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 100,
-        "latinChars": 83
+        "arabicChars": 131,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2966,7 +2941,7 @@
       "rendererType": "view",
       "rendererSource": "views/device_center.html",
       "requiredPermission": "device_center",
-      "durationMs": 804,
+      "durationMs": 4968,
       "error": null,
       "activated": true,
       "observation": {
@@ -2982,8 +2957,8 @@
           "إضافة سريعة"
         ],
         "title": "مركز الأجهزة وإنترنت الأشياء",
-        "textLength": 1798,
-        "controlCount": 9,
+        "textLength": 1777,
+        "controlCount": 8,
         "controlLabels": [
           "📊 لوحة الأجهزة والتحكم",
           "📷 كاميرا فحص الرموز QR",
@@ -2992,8 +2967,7 @@
           "إنشاء متابعة",
           "تحديث",
           "إنشاء مهمة",
-          "حفظ السطر",
-          "تحميل بيانات تجريبية"
+          "حفظ السطر"
         ],
         "inputCount": 6,
         "selectCount": 1,
@@ -3003,6 +2977,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -3013,7 +2988,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1341,
+        "arabicChars": 1323,
         "latinChars": 119
       },
       "consoleErrors": [],
@@ -3029,7 +3004,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_command_center",
-      "durationMs": 1008,
+      "durationMs": 4851,
       "error": null,
       "activated": true,
       "observation": {
@@ -3040,25 +3015,24 @@
           "مركز أوامر الأجهزة"
         ],
         "title": "مركز أوامر الأجهزة",
-        "textLength": 244,
-        "controlCount": 6,
+        "textLength": 162,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -3066,8 +3040,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 96,
-        "latinChars": 97
+        "arabicChars": 127,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3082,7 +3056,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_detail",
-      "durationMs": 799,
+      "durationMs": 5182,
       "error": null,
       "activated": true,
       "observation": {
@@ -3093,25 +3067,24 @@
           "تفاصيل الجهاز"
         ],
         "title": "تفاصيل الجهاز",
-        "textLength": 223,
-        "controlCount": 6,
+        "textLength": 157,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -3119,8 +3092,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 92,
-        "latinChars": 83
+        "arabicChars": 123,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3135,7 +3108,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "device_health_board",
-      "durationMs": 1835,
+      "durationMs": 5247,
       "error": null,
       "activated": true,
       "observation": {
@@ -3146,7 +3119,7 @@
           "لوحة صحة وشبكة الأجهزة"
         ],
         "title": "لوحة صحة وشبكة الأجهزة",
-        "textLength": 525,
+        "textLength": 531,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -3175,21 +3148,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 325,
+        "arabicChars": 330,
         "latinChars": 105
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "device_health_center",
@@ -3200,7 +3164,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "device_health_center",
-      "durationMs": 966,
+      "durationMs": 5669,
       "error": null,
       "activated": true,
       "observation": {
@@ -3211,25 +3175,24 @@
           "مركز صحة الأجهزة"
         ],
         "title": "مركز صحة الأجهزة",
-        "textLength": 240,
-        "controlCount": 6,
+        "textLength": 160,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -3237,8 +3200,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 94,
-        "latinChars": 95
+        "arabicChars": 125,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3253,7 +3216,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "device_registry",
-      "durationMs": 815,
+      "durationMs": 5325,
       "error": null,
       "activated": true,
       "observation": {
@@ -3264,25 +3227,24 @@
           "سجل أجهزة IoT"
         ],
         "title": "سجل أجهزة IoT",
-        "textLength": 226,
-        "controlCount": 6,
+        "textLength": 156,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -3290,8 +3252,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 88,
-        "latinChars": 90
+        "arabicChars": 119,
+        "latinChars": 6
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3306,7 +3268,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_checkin",
-      "durationMs": 931,
+      "durationMs": 5761,
       "error": null,
       "activated": true,
       "observation": {
@@ -3318,7 +3280,7 @@
           "البوابة"
         ],
         "title": "تسجيل دخول الرصيف",
-        "textLength": 520,
+        "textLength": 519,
         "controlCount": 3,
         "controlLabels": [],
         "inputCount": 1,
@@ -3328,7 +3290,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 3,
+        "governedRecordItems": 3,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3339,7 +3302,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 216,
+        "arabicChars": 215,
         "latinChars": 167
       },
       "consoleErrors": [],
@@ -3355,7 +3318,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "dock_schedule",
-      "durationMs": 799,
+      "durationMs": 5331,
       "error": null,
       "activated": true,
       "observation": {
@@ -3382,6 +3345,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3408,7 +3372,7 @@
       "rendererType": "view",
       "rendererSource": "views/documents.html",
       "requiredPermission": "documents",
-      "durationMs": 949,
+      "durationMs": 5545,
       "error": null,
       "activated": true,
       "observation": {
@@ -3436,6 +3400,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3462,7 +3427,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "downtime_board",
-      "durationMs": 1807,
+      "durationMs": 5743,
       "error": null,
       "activated": true,
       "observation": {
@@ -3476,7 +3441,7 @@
           "سجل التوقف"
         ],
         "title": "لوحة التوقف",
-        "textLength": 710,
+        "textLength": 707,
         "controlCount": 2,
         "controlLabels": [
           "إنهاء التوقف",
@@ -3501,21 +3466,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 407,
+        "arabicChars": 405,
         "latinChars": 144
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "eliminations",
@@ -3526,7 +3482,7 @@
       "rendererType": "view",
       "rendererSource": "views/eliminations.html",
       "requiredPermission": "eliminations",
-      "durationMs": 784,
+      "durationMs": 5454,
       "error": null,
       "activated": true,
       "observation": {
@@ -3552,6 +3508,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -3578,7 +3535,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "employee_kiosk",
-      "durationMs": 820,
+      "durationMs": 5673,
       "error": null,
       "activated": true,
       "observation": {
@@ -3589,25 +3546,24 @@
           "كشك الموظفين الذاتي"
         ],
         "title": "كشك الموظفين الذاتي",
-        "textLength": 231,
-        "controlCount": 6,
+        "textLength": 163,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -3615,8 +3571,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 97,
-        "latinChars": 85
+        "arabicChars": 128,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3631,7 +3587,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_mobile.html",
       "requiredPermission": "employee_mobile",
-      "durationMs": 795,
+      "durationMs": 5781,
       "error": null,
       "activated": true,
       "observation": {
@@ -3656,6 +3612,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3682,7 +3639,7 @@
       "rendererType": "view",
       "rendererSource": "views/employee_ui.html",
       "requiredPermission": "employee_ui",
-      "durationMs": 1646,
+      "durationMs": 5477,
       "error": null,
       "activated": true,
       "observation": {
@@ -3735,7 +3692,7 @@
       "rendererType": "view",
       "rendererSource": "views/employees.html",
       "requiredPermission": "employees",
-      "durationMs": 786,
+      "durationMs": 5371,
       "error": null,
       "activated": true,
       "observation": {
@@ -3768,6 +3725,7 @@
         "tableRows": 6,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -3794,7 +3752,7 @@
       "rendererType": "view",
       "rendererSource": "views/entitlements.html",
       "requiredPermission": "entitlements",
-      "durationMs": 1629,
+      "durationMs": 4711,
       "error": null,
       "activated": true,
       "observation": {
@@ -3805,7 +3763,7 @@
           "الاستحقاقات"
         ],
         "title": "الاستحقاقات",
-        "textLength": 2582,
+        "textLength": 2553,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -3830,8 +3788,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 119,
-        "latinChars": 1514
+        "arabicChars": 166,
+        "latinChars": 1438
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3846,7 +3804,7 @@
       "rendererType": "view",
       "rendererSource": "views/equipment.html",
       "requiredPermission": "equipment",
-      "durationMs": 1001,
+      "durationMs": 4947,
       "error": null,
       "activated": true,
       "observation": {
@@ -3857,7 +3815,7 @@
           "🔨\nمعدات وأدوات الورشة"
         ],
         "title": "🔨\nمعدات وأدوات الورشة",
-        "textLength": 7273,
+        "textLength": 7274,
         "controlCount": 203,
         "controlLabels": [
           "➕ إضافة معدة",
@@ -3882,6 +3840,7 @@
         "tableRows": 39,
         "tableColumns": 9,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -3892,7 +3851,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 4746,
+        "arabicChars": 4745,
         "latinChars": 294
       },
       "consoleErrors": [],
@@ -3908,7 +3867,7 @@
       "rendererType": "view",
       "rendererSource": "views/esign.html",
       "requiredPermission": "esign",
-      "durationMs": 930,
+      "durationMs": 4737,
       "error": null,
       "activated": true,
       "observation": {
@@ -3943,6 +3902,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3969,7 +3929,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_checkin",
-      "durationMs": 949,
+      "durationMs": 4532,
       "error": null,
       "activated": true,
       "observation": {
@@ -3980,7 +3940,7 @@
           "تسجيل حضور الفعالية"
         ],
         "title": "تسجيل حضور الفعالية",
-        "textLength": 895,
+        "textLength": 893,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -3994,6 +3954,7 @@
         "tableRows": 17,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4004,8 +3965,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 193,
-        "latinChars": 469
+        "arabicChars": 213,
+        "latinChars": 447
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4020,7 +3981,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_planner",
-      "durationMs": 791,
+      "durationMs": 4307,
       "error": null,
       "activated": true,
       "observation": {
@@ -4045,6 +4006,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -4071,7 +4033,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "event_registrations",
-      "durationMs": 790,
+      "durationMs": 4310,
       "error": null,
       "activated": true,
       "observation": {
@@ -4082,7 +4044,7 @@
           "تسجيلات الفعاليات"
         ],
         "title": "تسجيلات الفعاليات",
-        "textLength": 1580,
+        "textLength": 1578,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4096,6 +4058,7 @@
         "tableRows": 17,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4106,8 +4069,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 117,
-        "latinChars": 840
+        "arabicChars": 143,
+        "latinChars": 812
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4122,7 +4085,7 @@
       "rendererType": "view",
       "rendererSource": "views/events.html",
       "requiredPermission": "events",
-      "durationMs": 920,
+      "durationMs": 4793,
       "error": null,
       "activated": true,
       "observation": {
@@ -4158,6 +4121,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4184,7 +4148,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "events_overview",
-      "durationMs": 812,
+      "durationMs": 4414,
       "error": null,
       "activated": true,
       "observation": {
@@ -4209,6 +4173,7 @@
         "tableRows": 7,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4219,8 +4184,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 115,
-        "latinChars": 477
+        "arabicChars": 144,
+        "latinChars": 448
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4235,7 +4200,7 @@
       "rendererType": "view",
       "rendererSource": "views/expenses.html",
       "requiredPermission": "expenses",
-      "durationMs": 2772,
+      "durationMs": 4762,
       "error": null,
       "activated": true,
       "observation": {
@@ -4291,7 +4256,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "expiration_queue",
-      "durationMs": 1793,
+      "durationMs": 4805,
       "error": null,
       "activated": true,
       "observation": {
@@ -4302,7 +4267,7 @@
           "طابور انتهاء الصلاحية"
         ],
         "title": "طابور انتهاء الصلاحية",
-        "textLength": 546,
+        "textLength": 545,
         "controlCount": 2,
         "controlLabels": [
           "تتبع",
@@ -4327,21 +4292,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 280,
+        "arabicChars": 279,
         "latinChars": 141
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "extension_installations",
@@ -4352,7 +4308,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_installations",
-      "durationMs": 1598,
+      "durationMs": 4327,
       "error": null,
       "activated": true,
       "observation": {
@@ -4403,7 +4359,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "extension_marketplace",
-      "durationMs": 1586,
+      "durationMs": 5177,
       "error": null,
       "activated": true,
       "observation": {
@@ -4414,7 +4370,7 @@
           "سوق الإضافات"
         ],
         "title": "سوق الإضافات",
-        "textLength": 833,
+        "textLength": 819,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -4439,8 +4395,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 160,
-        "latinChars": 525
+        "arabicChars": 215,
+        "latinChars": 456
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4455,7 +4411,7 @@
       "rendererType": "view",
       "rendererSource": "views/field_service.html",
       "requiredPermission": "field_service",
-      "durationMs": 786,
+      "durationMs": 5984,
       "error": null,
       "activated": true,
       "observation": {
@@ -4482,6 +4438,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -4508,7 +4465,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance.html",
       "requiredPermission": "finance",
-      "durationMs": 2897,
+      "durationMs": 5091,
       "error": null,
       "activated": true,
       "observation": {
@@ -4578,7 +4535,7 @@
       "rendererType": "view",
       "rendererSource": "views/finance_installments.html",
       "requiredPermission": "finance_installments",
-      "durationMs": 790,
+      "durationMs": 5283,
       "error": null,
       "activated": true,
       "observation": {
@@ -4604,6 +4561,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -4630,7 +4588,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 931,
+      "durationMs": 6695,
       "error": null,
       "activated": true,
       "observation": {
@@ -4657,6 +4615,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -4683,7 +4642,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "firmware_catalogue",
-      "durationMs": 946,
+      "durationMs": 5113,
       "error": null,
       "activated": true,
       "observation": {
@@ -4694,25 +4653,24 @@
           "كتالوج البرامج الثابتة"
         ],
         "title": "كتالوج البرامج الثابتة",
-        "textLength": 242,
-        "controlCount": 6,
+        "textLength": 166,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -4720,8 +4678,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 100,
-        "latinChars": 93
+        "arabicChars": 131,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4736,7 +4694,7 @@
       "rendererType": "view",
       "rendererSource": "views/fleet.html",
       "requiredPermission": "fleet",
-      "durationMs": 1796,
+      "durationMs": 5378,
       "error": null,
       "activated": true,
       "observation": {
@@ -4748,7 +4706,7 @@
           "🚨 وثائق تحتاج تجديداً"
         ],
         "title": "🚚\nغرفة تحكم الأسطول",
-        "textLength": 483,
+        "textLength": 434,
         "controlCount": 7,
         "controlLabels": [
           "📊 لوحة السيطرة",
@@ -4770,7 +4728,7 @@
         "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -4778,8 +4736,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 359,
-        "latinChars": 6
+        "arabicChars": 327,
+        "latinChars": 0
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4794,7 +4752,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_device_mapping",
-      "durationMs": 927,
+      "durationMs": 6251,
       "error": null,
       "activated": true,
       "observation": {
@@ -4805,25 +4763,24 @@
           "ربط أجهزة أسطول السيارات"
         ],
         "title": "ربط أجهزة أسطول السيارات",
-        "textLength": 248,
-        "controlCount": 6,
+        "textLength": 168,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -4831,8 +4788,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 101,
-        "latinChars": 95
+        "arabicChars": 132,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4847,7 +4804,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fleet_live_map_simulator",
-      "durationMs": 788,
+      "durationMs": 4207,
       "error": null,
       "activated": true,
       "observation": {
@@ -4858,25 +4815,24 @@
           "خريطة التتبع المباشر"
         ],
         "title": "خريطة التتبع المباشر",
-        "textLength": 253,
-        "controlCount": 6,
+        "textLength": 165,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -4884,8 +4840,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 98,
-        "latinChars": 101
+        "arabicChars": 129,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4900,7 +4856,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "fleet_operations_board",
-      "durationMs": 1591,
+      "durationMs": 6346,
       "error": null,
       "activated": true,
       "observation": {
@@ -4911,7 +4867,7 @@
           "لوحة عمليات الأسطول"
         ],
         "title": "لوحة عمليات الأسطول",
-        "textLength": 530,
+        "textLength": 556,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -4940,7 +4896,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 334,
+        "arabicChars": 356,
         "latinChars": 102
       },
       "consoleErrors": [],
@@ -4956,7 +4912,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_overrides.html",
       "requiredPermission": "forecast_overrides",
-      "durationMs": 950,
+      "durationMs": 6310,
       "error": null,
       "activated": true,
       "observation": {
@@ -4983,6 +4939,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -5009,7 +4966,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "fuel_telemetry",
-      "durationMs": 937,
+      "durationMs": 4502,
       "error": null,
       "activated": true,
       "observation": {
@@ -5020,25 +4977,24 @@
           "قياسات واستهلاك الوقود"
         ],
         "title": "قياسات واستهلاك الوقود",
-        "textLength": 233,
-        "controlCount": 6,
+        "textLength": 165,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -5046,8 +5002,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 100,
-        "latinChars": 85
+        "arabicChars": 131,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5062,7 +5018,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "gateway_management",
-      "durationMs": 938,
+      "durationMs": 5925,
       "error": null,
       "activated": true,
       "observation": {
@@ -5073,25 +5029,24 @@
           "إدارة البوابات"
         ],
         "title": "إدارة البوابات",
-        "textLength": 234,
-        "controlCount": 6,
+        "textLength": 158,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -5099,8 +5054,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 93,
-        "latinChars": 93
+        "arabicChars": 124,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5115,7 +5070,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "geofence_management",
-      "durationMs": 939,
+      "durationMs": 5093,
       "error": null,
       "activated": true,
       "observation": {
@@ -5126,25 +5081,24 @@
           "إدارة النطاقات الجغرافية"
         ],
         "title": "إدارة النطاقات الجغرافية",
-        "textLength": 246,
-        "controlCount": 6,
+        "textLength": 168,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -5152,8 +5106,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 102,
-        "latinChars": 95
+        "arabicChars": 133,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5168,7 +5122,7 @@
       "rendererType": "view",
       "rendererSource": "views/help_manual.html",
       "requiredPermission": "help_manual",
-      "durationMs": 790,
+      "durationMs": 5137,
       "error": null,
       "activated": true,
       "observation": {
@@ -5202,6 +5156,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -5235,7 +5190,7 @@
       "rendererType": "view",
       "rendererSource": "views/helpdesk.html",
       "requiredPermission": "helpdesk",
-      "durationMs": 792,
+      "durationMs": 5045,
       "error": null,
       "activated": true,
       "observation": {
@@ -5263,6 +5218,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -5289,7 +5245,7 @@
       "rendererType": "view",
       "rendererSource": "views/home.html",
       "requiredPermission": "home",
-      "durationMs": 1613,
+      "durationMs": 4378,
       "error": null,
       "activated": true,
       "observation": {
@@ -5297,13 +5253,13 @@
         "hostId": "pageHome",
         "hostDataPage": null,
         "headings": [
-          "🌅 صباح الخير، النظام"
+          "🌅 صباح الخير، مدير النظام"
         ],
-        "title": "🌅 صباح الخير، النظام",
-        "textLength": 661,
+        "title": "🌅 صباح الخير، مدير النظام",
+        "textLength": 659,
         "controlCount": 9,
         "controlLabels": [
-          "الذهاب إلى: حالة الذكاء الصناعي",
+          "الذهاب إلى: خدمة العملاء",
           "📅\nالتايم شيت الذكي\nالدوام والرواتب وحاسبة الراتب",
           "💰\nالداشبورد المالي\nالمحاسبة المزدوجة والقيود",
           "🏭\nمحاسبة ودوام الورشة\nمحاسبة ودوام الورشة",
@@ -5329,7 +5285,7 @@
           "denied": false
         },
         "linkTargets": [
-          "ai_status",
+          "helpdesk",
           "timesheet",
           "finance",
           "workshop_ledger",
@@ -5342,7 +5298,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 521,
+        "arabicChars": 519,
         "latinChars": 0
       },
       "consoleErrors": [],
@@ -5358,7 +5314,7 @@
       "rendererType": "view",
       "rendererSource": "views/hotel.html",
       "requiredPermission": "hotel",
-      "durationMs": 932,
+      "durationMs": 6302,
       "error": null,
       "activated": true,
       "observation": {
@@ -5386,6 +5342,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -5412,7 +5369,7 @@
       "rendererType": "view",
       "rendererSource": "views/import.html",
       "requiredPermission": "import",
-      "durationMs": 816,
+      "durationMs": 4204,
       "error": null,
       "activated": true,
       "observation": {
@@ -5440,6 +5397,7 @@
         "tableRows": 7,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -5466,7 +5424,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/import-wizard.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 810,
+      "durationMs": 5224,
       "error": null,
       "activated": true,
       "observation": {
@@ -5497,6 +5455,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -5523,7 +5482,7 @@
       "rendererType": "view",
       "rendererSource": "views/income.html",
       "requiredPermission": "income",
-      "durationMs": 3119,
+      "durationMs": 5806,
       "error": null,
       "activated": true,
       "observation": {
@@ -5579,7 +5538,7 @@
       "rendererType": "view",
       "rendererSource": "views/integration_hub.html",
       "requiredPermission": "integration_hub",
-      "durationMs": 825,
+      "durationMs": 6109,
       "error": null,
       "activated": true,
       "observation": {
@@ -5603,7 +5562,7 @@
           "مهام المزامنة المرحلية"
         ],
         "title": "مركز التكامل",
-        "textLength": 3553,
+        "textLength": 3555,
         "controlCount": 15,
         "controlLabels": [
           "Refresh",
@@ -5619,6 +5578,7 @@
         "tableRows": 5,
         "tableColumns": 2,
         "listItems": 3,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -5629,7 +5589,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2017,
+        "arabicChars": 2020,
         "latinChars": 782
       },
       "consoleErrors": [],
@@ -5645,7 +5605,7 @@
       "rendererType": "view",
       "rendererSource": "views/intelligence.html",
       "requiredPermission": "intelligence",
-      "durationMs": 992,
+      "durationMs": 5866,
       "error": null,
       "activated": true,
       "observation": {
@@ -5676,7 +5636,7 @@
           "فحص صحة المسارات والصفحات"
         ],
         "title": "لوحة الذكاء التشغيلي",
-        "textLength": 9172,
+        "textLength": 9082,
         "controlCount": 83,
         "controlLabels": [
           "إرسال الأمر",
@@ -5728,6 +5688,7 @@
         "tableRows": 75,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -5775,7 +5736,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 7354,
+        "arabicChars": 7266,
         "latinChars": 41
       },
       "consoleErrors": [],
@@ -5791,7 +5752,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_reconciliation.html",
       "requiredPermission": "intercompany_reconciliation",
-      "durationMs": 951,
+      "durationMs": 6092,
       "error": null,
       "activated": true,
       "observation": {
@@ -5818,6 +5779,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -5844,7 +5806,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_transactions.html",
       "requiredPermission": "intercompany_transactions",
-      "durationMs": 984,
+      "durationMs": 4394,
       "error": null,
       "activated": true,
       "observation": {
@@ -5871,6 +5833,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -5897,7 +5860,7 @@
       "rendererType": "view",
       "rendererSource": "views/inventory.html",
       "requiredPermission": "inventory",
-      "durationMs": 1632,
+      "durationMs": 6621,
       "error": null,
       "activated": true,
       "observation": {
@@ -5909,12 +5872,11 @@
           "Phase 7I Advanced Inventory and Supply Chain",
           "شجرة المواقع",
           "الأرصدة حسب الموقع",
-          "آخر حركات المخزون",
-          "مواقع التخزين"
+          "آخر حركات المخزون"
         ],
         "title": "🧱\nالمخزون والمواد",
-        "textLength": 2998,
-        "controlCount": 20,
+        "textLength": 1690,
+        "controlCount": 19,
         "controlLabels": [
           "إضافة مادة",
           "Preview reorder suggestions",
@@ -5933,15 +5895,14 @@
           "استلام",
           "صرف",
           "تحويل",
-          "جرد/تسوية",
-          "تسجيل الحركة"
+          "جرد/تسوية"
         ],
-        "inputCount": 9,
-        "selectCount": 6,
+        "inputCount": 3,
+        "selectCount": 2,
         "searchInputCount": 1,
         "dateInputCount": 0,
-        "tableCount": 3,
-        "tableRows": 18,
+        "tableCount": 1,
+        "tableRows": 9,
         "tableColumns": 3,
         "listItems": 0,
         "governedRecordItems": 0,
@@ -5955,8 +5916,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1446,
-        "latinChars": 944
+        "arabicChars": 566,
+        "latinChars": 791
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5971,7 +5932,7 @@
       "rendererType": "view",
       "rendererSource": "views/kiosk.html",
       "requiredPermission": "kiosk",
-      "durationMs": 954,
+      "durationMs": 6530,
       "error": null,
       "activated": true,
       "observation": {
@@ -6006,6 +5967,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -6032,7 +5994,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "kiosk_device_registry",
-      "durationMs": 849,
+      "durationMs": 5137,
       "error": null,
       "activated": true,
       "observation": {
@@ -6043,25 +6005,24 @@
           "سجل أجهزة الكشك الخدمي"
         ],
         "title": "سجل أجهزة الكشك الخدمي",
-        "textLength": 249,
-        "controlCount": 6,
+        "textLength": 167,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -6069,8 +6030,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 99,
-        "latinChars": 97
+        "arabicChars": 130,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6085,7 +6046,7 @@
       "rendererType": "view",
       "rendererSource": "views/knowledge_base.html",
       "requiredPermission": "knowledge_base",
-      "durationMs": 1139,
+      "durationMs": 6357,
       "error": null,
       "activated": true,
       "observation": {
@@ -6230,7 +6191,7 @@
           "سؤال متكرر رقم 130 حول استخدام تدقيق جودة البيانات؟",
           "سؤال متكرر رقم 131 حول استخدام مستشار سلامة المسارات؟",
           "سؤال متكرر رقم 132 حول استخدام مخطط سيناريوهات المستقبل؟",
-          "سؤال متكرر رقم 133 حول استخدام مركز ربط الأجهزة والـ IoT؟",
+          "سؤال متكرر رق�� 133 حول استخدام مركز ربط الأجهزة والـ IoT؟",
           "سؤال متكرر رقم 134 حول استخدام منصة تدريب الموظفين؟",
           "سؤال متكرر رقم 135 حول استخدام المخاطر والامتثال التنظيمي؟",
           "سؤال متكرر رقم 136 حول استخدام تخطيط المشتريات والتوريد؟",
@@ -6250,7 +6211,7 @@
           "سؤال متكرر رقم 150 حول استخدام موزع مهام الورشة؟"
         ],
         "title": "قاعدة المعرفة والأسئلة الشائعة",
-        "textLength": 34487,
+        "textLength": 34488,
         "controlCount": 176,
         "controlLabels": [
           "الأسئلة الشائعة",
@@ -6288,6 +6249,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 21,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -6298,21 +6260,12 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 23850,
+        "arabicChars": 23849,
         "latinChars": 2355
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "learning_and_certifications",
@@ -6323,7 +6276,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "learning_and_certifications",
-      "durationMs": 9849,
+      "durationMs": 19633,
       "error": null,
       "activated": true,
       "observation": {
@@ -6334,7 +6287,7 @@
           "التعلم والشهادات"
         ],
         "title": "التعلم والشهادات",
-        "textLength": 342,
+        "textLength": 332,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -6348,6 +6301,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -6358,8 +6312,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 122,
-        "latinChars": 139
+        "arabicChars": 140,
+        "latinChars": 111
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6374,7 +6328,7 @@
       "rendererType": "view",
       "rendererSource": "views/liquidity_forecast.html",
       "requiredPermission": "liquidity_forecast",
-      "durationMs": 3998,
+      "durationMs": 12055,
       "error": null,
       "activated": true,
       "observation": {
@@ -6400,6 +6354,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -6426,7 +6381,7 @@
       "rendererType": "view",
       "rendererSource": "views/logistics.html",
       "requiredPermission": "logistics",
-      "durationMs": 5155,
+      "durationMs": 12883,
       "error": null,
       "activated": true,
       "observation": {
@@ -6442,8 +6397,8 @@
           "إضافة سريعة"
         ],
         "title": "اللوجستيات والتوصيل",
-        "textLength": 1352,
-        "controlCount": 10,
+        "textLength": 1332,
+        "controlCount": 9,
         "controlLabels": [
           "📊 اللوحة والعمليات",
           "🚚 لوحة الشحن والتوزيع",
@@ -6453,8 +6408,7 @@
           "إنشاء متابعة",
           "تحديث",
           "إنشاء مهمة",
-          "حفظ السطر",
-          "تحميل بيانات تجريبية"
+          "حفظ السطر"
         ],
         "inputCount": 6,
         "selectCount": 1,
@@ -6464,6 +6418,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -6474,7 +6429,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 996,
+        "arabicChars": 978,
         "latinChars": 76
       },
       "consoleErrors": [],
@@ -6490,7 +6445,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-expiration-workspace.js",
       "requiredPermission": "lot_serial_traceability",
-      "durationMs": 1832,
+      "durationMs": 5652,
       "error": null,
       "activated": true,
       "observation": {
@@ -6542,7 +6497,7 @@
       "rendererType": "view",
       "rendererSource": "views/loyalty.html",
       "requiredPermission": "loyalty",
-      "durationMs": 820,
+      "durationMs": 6268,
       "error": null,
       "activated": true,
       "observation": {
@@ -6576,6 +6531,7 @@
         "tableRows": 2,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -6602,7 +6558,7 @@
       "rendererType": "view",
       "rendererSource": "views/machines.html",
       "requiredPermission": "machines",
-      "durationMs": 963,
+      "durationMs": 6528,
       "error": null,
       "activated": true,
       "observation": {
@@ -6639,6 +6595,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -6665,7 +6622,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "maintenance_triggers",
-      "durationMs": 998,
+      "durationMs": 6868,
       "error": null,
       "activated": true,
       "observation": {
@@ -6676,25 +6633,24 @@
           "محفزات الصيانة التلقائية"
         ],
         "title": "محفزات الصيانة التلقائية",
-        "textLength": 248,
-        "controlCount": 6,
+        "textLength": 168,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -6702,8 +6658,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 102,
-        "latinChars": 97
+        "arabicChars": 133,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6718,7 +6674,7 @@
       "rendererType": "view",
       "rendererSource": "views/marketing.html",
       "requiredPermission": "marketing",
-      "durationMs": 935,
+      "durationMs": 6270,
       "error": null,
       "activated": true,
       "observation": {
@@ -6745,6 +6701,7 @@
         "tableRows": 1,
         "tableColumns": 7,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -6771,7 +6728,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "marketing_overview",
-      "durationMs": 827,
+      "durationMs": 5554,
       "error": null,
       "activated": true,
       "observation": {
@@ -6782,7 +6739,7 @@
           "نظرة التسويق"
         ],
         "title": "نظرة التسويق",
-        "textLength": 570,
+        "textLength": 566,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -6795,6 +6752,7 @@
         "tableRows": 2,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -6805,8 +6763,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 284,
-        "latinChars": 134
+        "arabicChars": 308,
+        "latinChars": 106
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6821,7 +6779,7 @@
       "rendererType": "view",
       "rendererSource": "views/mismatch_queue.html",
       "requiredPermission": "mismatch_queue",
-      "durationMs": 786,
+      "durationMs": 5691,
       "error": null,
       "activated": true,
       "observation": {
@@ -6847,6 +6805,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -6873,7 +6832,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-picking.js",
       "requiredPermission": "mobile_picking",
-      "durationMs": 1734,
+      "durationMs": 5350,
       "error": null,
       "activated": true,
       "observation": {
@@ -6924,7 +6883,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-mobile-receiving.js",
       "requiredPermission": "mobile_receiving",
-      "durationMs": 1614,
+      "durationMs": 7344,
       "error": null,
       "activated": true,
       "observation": {
@@ -6975,7 +6934,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps.html",
       "requiredPermission": "mps",
-      "durationMs": 916,
+      "durationMs": 5905,
       "error": null,
       "activated": true,
       "observation": {
@@ -7001,6 +6960,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -7027,7 +6987,7 @@
       "rendererType": "view",
       "rendererSource": "views/mrp.html",
       "requiredPermission": "mrp",
-      "durationMs": 917,
+      "durationMs": 5141,
       "error": null,
       "activated": true,
       "observation": {
@@ -7064,6 +7024,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -7090,7 +7051,7 @@
       "rendererType": "view",
       "rendererSource": "views/multi_entity.html",
       "requiredPermission": "multi_entity",
-      "durationMs": 933,
+      "durationMs": 4878,
       "error": null,
       "activated": true,
       "observation": {
@@ -7101,7 +7062,7 @@
           "🌐\nالفروع والعملات"
         ],
         "title": "🌐\nالفروع والعملات",
-        "textLength": 1167,
+        "textLength": 1151,
         "controlCount": 4,
         "controlLabels": [
           "💱 العملات والصرف",
@@ -7117,6 +7078,7 @@
         "tableRows": 10,
         "tableColumns": 3,
         "listItems": 1,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -7143,7 +7105,7 @@
       "rendererType": "view",
       "rendererSource": "views/my_work.html",
       "requiredPermission": "my_work",
-      "durationMs": 793,
+      "durationMs": 4630,
       "error": null,
       "activated": true,
       "observation": {
@@ -7181,6 +7143,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7207,7 +7170,7 @@
       "rendererType": "view",
       "rendererSource": "views/nl_reports.html",
       "requiredPermission": "nl_reports",
-      "durationMs": 762,
+      "durationMs": 4387,
       "error": null,
       "activated": true,
       "observation": {
@@ -7247,6 +7210,7 @@
         "tableRows": 1,
         "tableColumns": 1,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -7275,7 +7239,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_capability_policies",
-      "durationMs": 1009,
+      "durationMs": 4152,
       "error": null,
       "activated": true,
       "observation": {
@@ -7286,25 +7250,24 @@
           "سياسات الصلاحيات الميدانية"
         ],
         "title": "سياسات الصلاحيات الميدانية",
-        "textLength": 265,
-        "controlCount": 6,
+        "textLength": 171,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -7312,8 +7275,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 109
+        "arabicChars": 135,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7328,7 +7291,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_client_registry",
-      "durationMs": 789,
+      "durationMs": 4458,
       "error": null,
       "activated": true,
       "observation": {
@@ -7339,25 +7302,24 @@
           "سجل التطبيقات الميدانية المستقلة"
         ],
         "title": "سجل التطبيقات الميدانية المستقلة",
-        "textLength": 262,
-        "controlCount": 6,
+        "textLength": 176,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -7365,8 +7327,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 109,
-        "latinChars": 101
+        "arabicChars": 140,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7381,7 +7343,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "offline_queue",
-      "durationMs": 828,
+      "durationMs": 4390,
       "error": null,
       "activated": true,
       "observation": {
@@ -7392,25 +7354,24 @@
           "طابور الأوامر غير المتصلة"
         ],
         "title": "طابور الأوامر غير المتصلة",
-        "textLength": 235,
-        "controlCount": 6,
+        "textLength": 169,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -7418,8 +7379,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 102,
-        "latinChars": 83
+        "arabicChars": 133,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7434,7 +7395,7 @@
       "rendererType": "view",
       "rendererSource": "views/omni_communications.html",
       "requiredPermission": "omni_communications",
-      "durationMs": 915,
+      "durationMs": 4763,
       "error": null,
       "activated": true,
       "observation": {
@@ -7464,6 +7425,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7490,7 +7452,7 @@
       "rendererType": "view",
       "rendererSource": "views/op_packs.html",
       "requiredPermission": "op_packs",
-      "durationMs": 811,
+      "durationMs": 4243,
       "error": null,
       "activated": true,
       "observation": {
@@ -7510,7 +7472,7 @@
           "أثر باقات العمليات"
         ],
         "title": "📦\nباقات العمليات",
-        "textLength": 2989,
+        "textLength": 2970,
         "controlCount": 42,
         "controlLabels": [
           "باقة جديدة",
@@ -7531,6 +7493,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 3,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7541,7 +7504,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 2095,
+        "arabicChars": 2089,
         "latinChars": 51
       },
       "consoleErrors": [],
@@ -7557,7 +7520,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "operational_performance",
-      "durationMs": 1851,
+      "durationMs": 4871,
       "error": null,
       "activated": true,
       "observation": {
@@ -7570,7 +7533,7 @@
           "مقاييس كل جلسة"
         ],
         "title": "لوحة الأداء التشغيلي",
-        "textLength": 726,
+        "textLength": 723,
         "controlCount": 4,
         "controlLabels": [
           "إعادة الحساب",
@@ -7601,7 +7564,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 471,
+        "arabicChars": 469,
         "latinChars": 103
       },
       "consoleErrors": [],
@@ -7617,7 +7580,7 @@
       "rendererType": "view",
       "rendererSource": "views/customers_and_suppliers.html",
       "requiredPermission": "parties",
-      "durationMs": 778,
+      "durationMs": 4461,
       "error": null,
       "activated": true,
       "observation": {
@@ -7642,6 +7605,7 @@
         "tableRows": 1,
         "tableColumns": 9,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7668,7 +7632,7 @@
       "rendererType": "view",
       "rendererSource": "views/payment_funding_proposals.html",
       "requiredPermission": "payment_funding_proposals",
-      "durationMs": 816,
+      "durationMs": 4657,
       "error": null,
       "activated": true,
       "observation": {
@@ -7695,6 +7659,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -7721,7 +7686,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "people_development_overview",
-      "durationMs": 933,
+      "durationMs": 4521,
       "error": null,
       "activated": true,
       "observation": {
@@ -7732,7 +7697,7 @@
           "تطوير الأشخاص"
         ],
         "title": "تطوير الأشخاص",
-        "textLength": 516,
+        "textLength": 506,
         "controlCount": 1,
         "controlLabels": [
           "تحديث"
@@ -7745,6 +7710,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7755,8 +7721,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 310,
-        "latinChars": 89
+        "arabicChars": 328,
+        "latinChars": 61
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7771,7 +7737,7 @@
       "rendererType": "view",
       "rendererSource": "views/people_ops.html",
       "requiredPermission": "people_ops",
-      "durationMs": 780,
+      "durationMs": 4475,
       "error": null,
       "activated": true,
       "observation": {
@@ -7802,6 +7768,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -7828,7 +7795,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "person_skill_evidence",
-      "durationMs": 767,
+      "durationMs": 4603,
       "error": null,
       "activated": true,
       "observation": {
@@ -7853,6 +7820,7 @@
         "tableRows": 1,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7863,8 +7831,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 111,
-        "latinChars": 150
+        "arabicChars": 135,
+        "latinChars": 126
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7879,7 +7847,7 @@
       "rendererType": "view",
       "rendererSource": "views/pharmacy.html",
       "requiredPermission": "pharmacy",
-      "durationMs": 940,
+      "durationMs": 3996,
       "error": null,
       "activated": true,
       "observation": {
@@ -7909,6 +7877,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7935,7 +7904,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-pick-task-queue-workspace.js",
       "requiredPermission": "pick_task_queue",
-      "durationMs": 843,
+      "durationMs": 4738,
       "error": null,
       "activated": true,
       "observation": {
@@ -7960,7 +7929,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 2,
+        "governedRecordItems": 2,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -7987,7 +7957,7 @@
       "rendererType": "view",
       "rendererSource": "views/planning_exceptions.html",
       "requiredPermission": "planning_exceptions",
-      "durationMs": 791,
+      "durationMs": 5005,
       "error": null,
       "activated": true,
       "observation": {
@@ -8012,6 +7982,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -8038,7 +8009,7 @@
       "rendererType": "view",
       "rendererSource": "views/pos.html",
       "requiredPermission": "pos",
-      "durationMs": 907,
+      "durationMs": 3960,
       "error": null,
       "activated": true,
       "observation": {
@@ -8073,6 +8044,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8099,7 +8071,7 @@
       "rendererType": "view",
       "rendererSource": "views/procurement.html",
       "requiredPermission": "procurement",
-      "durationMs": 933,
+      "durationMs": 4963,
       "error": null,
       "activated": true,
       "observation": {
@@ -8136,6 +8108,7 @@
         "tableRows": 4,
         "tableColumns": 3,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8162,7 +8135,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_issue_return",
-      "durationMs": 1754,
+      "durationMs": 4524,
       "error": null,
       "activated": true,
       "observation": {
@@ -8174,7 +8147,7 @@
           "صرف المواد"
         ],
         "title": "صرف وإرجاع الإنتاج",
-        "textLength": 709,
+        "textLength": 706,
         "controlCount": 2,
         "controlLabels": [],
         "inputCount": 1,
@@ -8196,7 +8169,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 286,
+        "arabicChars": 283,
         "latinChars": 224
       },
       "consoleErrors": [],
@@ -8212,7 +8185,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "production_large_screen",
-      "durationMs": 1591,
+      "durationMs": 4788,
       "error": null,
       "activated": true,
       "observation": {
@@ -8223,7 +8196,7 @@
           "شاشة خط الإنتاج الكبيرة"
         ],
         "title": "شاشة خط الإنتاج الكبيرة",
-        "textLength": 535,
+        "textLength": 533,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -8252,8 +8225,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 333,
-        "latinChars": 105
+        "arabicChars": 276,
+        "latinChars": 164
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8268,7 +8241,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-production-material-workspaces.js",
       "requiredPermission": "production_material_requests",
-      "durationMs": 942,
+      "durationMs": 4973,
       "error": null,
       "activated": true,
       "observation": {
@@ -8282,8 +8255,8 @@
           "إنشاء طلب مواد"
         ],
         "title": "طلبات مواد الإنتاج",
-        "textLength": 1181,
-        "controlCount": 3,
+        "textLength": 1806,
+        "controlCount": 5,
         "controlLabels": [
           "إنشاء طلب محكوم"
         ],
@@ -8294,7 +8267,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 5,
+        "listItems": 7,
+        "governedRecordItems": 4,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -8305,8 +8279,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 526,
-        "latinChars": 338
+        "arabicChars": 491,
+        "latinChars": 821
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8321,7 +8295,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-action-forms.js",
       "requiredPermission": "production_receipt",
-      "durationMs": 799,
+      "durationMs": 4607,
       "error": null,
       "activated": true,
       "observation": {
@@ -8346,6 +8320,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 4,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8372,7 +8347,7 @@
       "rendererType": "view",
       "rendererSource": "views/products_and_materials.html",
       "requiredPermission": "products",
-      "durationMs": 949,
+      "durationMs": 5143,
       "error": null,
       "activated": true,
       "observation": {
@@ -8397,6 +8372,7 @@
         "tableRows": 1,
         "tableColumns": 10,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8423,7 +8399,7 @@
       "rendererType": "view",
       "rendererSource": "views/projects.html",
       "requiredPermission": "projects",
-      "durationMs": 804,
+      "durationMs": 4148,
       "error": null,
       "activated": true,
       "observation": {
@@ -8466,6 +8442,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -8492,7 +8469,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_rules",
-      "durationMs": 1763,
+      "durationMs": 4411,
       "error": null,
       "activated": true,
       "observation": {
@@ -8505,7 +8482,7 @@
           "قاعدة إيداع جديدة"
         ],
         "title": "قواعد الإيداع",
-        "textLength": 786,
+        "textLength": 1055,
         "controlCount": 1,
         "controlLabels": [
           "إنشاء القاعدة"
@@ -8529,8 +8506,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 464,
-        "latinChars": 152
+        "arabicChars": 443,
+        "latinChars": 372
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8545,7 +8522,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "putaway_task_queue",
-      "durationMs": 812,
+      "durationMs": 5068,
       "error": null,
       "activated": true,
       "observation": {
@@ -8558,7 +8535,7 @@
           "طلب توصية إيداع"
         ],
         "title": "طابور مهام الإيداع",
-        "textLength": 616,
+        "textLength": 847,
         "controlCount": 2,
         "controlLabels": [
           "طلب الإيداع"
@@ -8570,7 +8547,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8581,8 +8559,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 350,
-        "latinChars": 125
+        "arabicChars": 336,
+        "latinChars": 309
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8597,7 +8575,7 @@
       "rendererType": "view",
       "rendererSource": "views/qc_center.html",
       "requiredPermission": "qc_center",
-      "durationMs": 934,
+      "durationMs": 8092,
       "error": null,
       "activated": true,
       "observation": {
@@ -8612,8 +8590,8 @@
           "فحوصات ناجحة ومكتملة (مغلقة)"
         ],
         "title": "🧪\nمركز الجودة وإعادة العمل",
-        "textLength": 1962,
-        "controlCount": 16,
+        "textLength": 1587,
+        "controlCount": 13,
         "controlLabels": [
           "لوحة الجودة",
           "الفحوصات",
@@ -8634,9 +8612,10 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": true,
           "denied": false
         },
@@ -8644,8 +8623,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1307,
-        "latinChars": 78
+        "arabicChars": 1154,
+        "latinChars": 27
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8660,7 +8639,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "quality_hold_queue",
-      "durationMs": 951,
+      "durationMs": 7212,
       "error": null,
       "activated": true,
       "observation": {
@@ -8682,7 +8661,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8709,7 +8689,7 @@
       "rendererType": "view",
       "rendererSource": "views/real-estate.html",
       "requiredPermission": "default-client-gate",
-      "durationMs": 1015,
+      "durationMs": 8537,
       "error": null,
       "activated": true,
       "observation": {
@@ -8738,6 +8718,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8764,7 +8745,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-trace-workspace.js",
       "requiredPermission": "recall_analysis",
-      "durationMs": 1015,
+      "durationMs": 5549,
       "error": null,
       "activated": true,
       "observation": {
@@ -8776,7 +8757,7 @@
           "تحديد حالة سحب"
         ],
         "title": "تحليل السحب",
-        "textLength": 382,
+        "textLength": 392,
         "controlCount": 1,
         "controlLabels": [
           "تحديد حالة السحب"
@@ -8789,6 +8770,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8799,8 +8781,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 216,
-        "latinChars": 78
+        "arabicChars": 209,
+        "latinChars": 89
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -8815,7 +8797,7 @@
       "rendererType": "view",
       "rendererSource": "views/receipt.html",
       "requiredPermission": "receipt",
-      "durationMs": 3100,
+      "durationMs": 7496,
       "error": null,
       "activated": true,
       "observation": {
@@ -8872,7 +8854,7 @@
       "rendererType": "view",
       "rendererSource": "views/rental.html",
       "requiredPermission": "rental",
-      "durationMs": 936,
+      "durationMs": 7282,
       "error": null,
       "activated": true,
       "observation": {
@@ -8900,6 +8882,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8926,7 +8909,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-putaway-workspace.js",
       "requiredPermission": "replenishment_proposals",
-      "durationMs": 837,
+      "durationMs": 8310,
       "error": null,
       "activated": true,
       "observation": {
@@ -8952,7 +8935,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -8979,7 +8963,7 @@
       "rendererType": "view",
       "rendererSource": "views/report.html",
       "requiredPermission": "report",
-      "durationMs": 806,
+      "durationMs": 7191,
       "error": null,
       "activated": true,
       "observation": {
@@ -9012,6 +8996,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9038,7 +9023,7 @@
       "rendererType": "view",
       "rendererSource": "views/restaurant.html",
       "requiredPermission": "restaurant",
-      "durationMs": 969,
+      "durationMs": 7442,
       "error": null,
       "activated": true,
       "observation": {
@@ -9067,6 +9052,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9093,7 +9079,7 @@
       "rendererType": "view",
       "rendererSource": "views/retail.html",
       "requiredPermission": "retail",
-      "durationMs": 795,
+      "durationMs": 7654,
       "error": null,
       "activated": true,
       "observation": {
@@ -9123,6 +9109,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9149,7 +9136,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "rework_workspace",
-      "durationMs": 935,
+      "durationMs": 6678,
       "error": null,
       "activated": true,
       "observation": {
@@ -9173,7 +9160,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9200,7 +9188,7 @@
       "rendererType": "view",
       "rendererSource": "views/risk_compliance.html",
       "requiredPermission": "risk_compliance",
-      "durationMs": 785,
+      "durationMs": 4821,
       "error": null,
       "activated": true,
       "observation": {
@@ -9235,6 +9223,7 @@
         "tableRows": 2,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9264,7 +9253,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "rollout_simulator",
-      "durationMs": 945,
+      "durationMs": 7861,
       "error": null,
       "activated": true,
       "observation": {
@@ -9275,25 +9264,24 @@
           "محاكي التحديث الميداني"
         ],
         "title": "محاكي التحديث الميداني",
-        "textLength": 240,
-        "controlCount": 6,
+        "textLength": 166,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -9301,8 +9289,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 100,
-        "latinChars": 91
+        "arabicChars": 131,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9317,7 +9305,7 @@
       "rendererType": "view",
       "rendererSource": "views/route_health.html",
       "requiredPermission": "route_health",
-      "durationMs": 1633,
+      "durationMs": 9649,
       "error": null,
       "activated": true,
       "observation": {
@@ -9358,14 +9346,7 @@
       },
       "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "saas_overview",
@@ -9376,7 +9357,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "saas_overview",
-      "durationMs": 1583,
+      "durationMs": 5497,
       "error": null,
       "activated": true,
       "observation": {
@@ -9428,7 +9409,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales.html",
       "requiredPermission": "sales",
-      "durationMs": 2385,
+      "durationMs": 5115,
       "error": null,
       "activated": true,
       "observation": {
@@ -9469,6 +9450,7 @@
         "tableRows": 4,
         "tableColumns": 4,
         "listItems": 7,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9495,7 +9477,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_commission.html",
       "requiredPermission": "sales_commission",
-      "durationMs": 2301,
+      "durationMs": 4872,
       "error": null,
       "activated": true,
       "observation": {
@@ -9524,6 +9506,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9550,7 +9533,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_contracts.html",
       "requiredPermission": "sales_contracts",
-      "durationMs": 2272,
+      "durationMs": 4586,
       "error": null,
       "activated": true,
       "observation": {
@@ -9576,6 +9559,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -9602,7 +9586,7 @@
       "rendererType": "view",
       "rendererSource": "views/sales_price_lists.html",
       "requiredPermission": "sales_price_lists",
-      "durationMs": 2176,
+      "durationMs": 4501,
       "error": null,
       "activated": true,
       "observation": {
@@ -9613,22 +9597,25 @@
           "قوائم الأسعار"
         ],
         "title": "قوائم الأسعار",
-        "textLength": 179,
-        "controlCount": 1,
+        "textLength": 266,
+        "controlCount": 3,
         "controlLabels": [
-          "➕ إضافة"
+          "➕ إضافة",
+          "✏️ تحرير",
+          "حذف"
         ],
         "inputCount": 3,
         "selectCount": 2,
         "searchInputCount": 0,
         "dateInputCount": 0,
-        "tableCount": 0,
-        "tableRows": 0,
-        "tableColumns": 0,
+        "tableCount": 1,
+        "tableRows": 1,
+        "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
@@ -9636,8 +9623,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 140,
-        "latinChars": 0
+        "arabicChars": 200,
+        "latinChars": 9
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9652,7 +9639,7 @@
       "rendererType": "view",
       "rendererSource": "views/scenario_planner.html",
       "requiredPermission": "scenario_planner",
-      "durationMs": 1680,
+      "durationMs": 3755,
       "error": null,
       "activated": true,
       "observation": {
@@ -9668,7 +9655,7 @@
           "سيناريو: الطاقة التشغيلية والتوصيل"
         ],
         "title": "مخطط السيناريوهات الذكي",
-        "textLength": 1671,
+        "textLength": 1690,
         "controlCount": 7,
         "controlLabels": [
           "إعادة الافتراضات",
@@ -9705,8 +9692,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1277,
-        "latinChars": 37
+        "arabicChars": 1285,
+        "latinChars": 40
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9721,7 +9708,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-quality-workspace.js",
       "requiredPermission": "scrap_approval",
-      "durationMs": 2554,
+      "durationMs": 4836,
       "error": null,
       "activated": true,
       "observation": {
@@ -9743,7 +9730,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 2,
+        "governedRecordItems": 2,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9770,7 +9758,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "seats_and_limits",
-      "durationMs": 1595,
+      "durationMs": 3993,
       "error": null,
       "activated": true,
       "observation": {
@@ -9822,7 +9810,7 @@
       "rendererType": "view",
       "rendererSource": "views/security_center.html",
       "requiredPermission": "security_center",
-      "durationMs": 2512,
+      "durationMs": 5533,
       "error": null,
       "activated": true,
       "observation": {
@@ -9835,12 +9823,10 @@
           "📋 سجل الأحداث والتدقيق",
           "Phase 7B auth and session status",
           "Phase 7A audit review",
-          "Phase 7A period lock foundation",
-          "مصفوفة صلاحيات الأفعال الحساسة",
-          "Phase 6E - سياسة صلاحيات الصفحات"
+          "Phase 7A period lock foundation"
         ],
         "title": "مركز الأمان والتدقيق",
-        "textLength": 28282,
+        "textLength": 1835,
         "controlCount": 1,
         "controlLabels": [
           "Lock period"
@@ -9849,10 +9835,11 @@
         "selectCount": 0,
         "searchInputCount": 0,
         "dateInputCount": 2,
-        "tableCount": 4,
-        "tableRows": 269,
+        "tableCount": 2,
+        "tableRows": 2,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -9863,8 +9850,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 7996,
-        "latinChars": 15214
+        "arabicChars": 566,
+        "latinChars": 793
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9879,7 +9866,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/devices.js",
       "requiredPermission": "sensor_management",
-      "durationMs": 2394,
+      "durationMs": 7756,
       "error": null,
       "activated": true,
       "observation": {
@@ -9890,25 +9877,24 @@
           "إدارة الحساسات"
         ],
         "title": "إدارة الحساسات",
-        "textLength": 232,
-        "controlCount": 6,
+        "textLength": 158,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -9916,8 +9902,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 93,
-        "latinChars": 91
+        "arabicChars": 124,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9932,7 +9918,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "service_kiosk",
-      "durationMs": 2345,
+      "durationMs": 6718,
       "error": null,
       "activated": true,
       "observation": {
@@ -9943,25 +9929,24 @@
           "كشك الخدمة والصيانة"
         ],
         "title": "كشك الخدمة والصيانة",
-        "textLength": 229,
-        "controlCount": 6,
+        "textLength": 163,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -9969,8 +9954,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 97,
-        "latinChars": 83
+        "arabicChars": 128,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -9985,7 +9970,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "service_queue_board",
-      "durationMs": 1593,
+      "durationMs": 5349,
       "error": null,
       "activated": true,
       "observation": {
@@ -9996,7 +9981,7 @@
           "شاشة طابور الصيانة"
         ],
         "title": "شاشة طابور الصيانة",
-        "textLength": 520,
+        "textLength": 550,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -10025,8 +10010,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 325,
-        "latinChars": 102
+        "arabicChars": 331,
+        "latinChars": 123
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10041,7 +10026,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "shop_floor_kiosk",
-      "durationMs": 2295,
+      "durationMs": 5151,
       "error": null,
       "activated": true,
       "observation": {
@@ -10052,25 +10037,24 @@
           "كشك صالة الإنتاج"
         ],
         "title": "كشك صالة الإنتاج",
-        "textLength": 232,
-        "controlCount": 6,
+        "textLength": 160,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -10078,8 +10062,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 94,
-        "latinChars": 87
+        "arabicChars": 125,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10094,7 +10078,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-shopfloor-workspace.js",
       "requiredPermission": "shopfloor_terminal",
-      "durationMs": 2279,
+      "durationMs": 5804,
       "error": null,
       "activated": true,
       "observation": {
@@ -10116,7 +10100,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10143,7 +10128,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "skills_catalog",
-      "durationMs": 2382,
+      "durationMs": 5340,
       "error": null,
       "activated": true,
       "observation": {
@@ -10154,7 +10139,7 @@
           "دليل المهارات"
         ],
         "title": "دليل المهارات",
-        "textLength": 402,
+        "textLength": 405,
         "controlCount": 2,
         "controlLabels": [
           "تحديث",
@@ -10168,6 +10153,7 @@
         "tableRows": 3,
         "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10178,8 +10164,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 119,
-        "latinChars": 206
+        "arabicChars": 138,
+        "latinChars": 190
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10194,7 +10180,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop.html",
       "requiredPermission": "sop",
-      "durationMs": 2249,
+      "durationMs": 4357,
       "error": null,
       "activated": true,
       "observation": {
@@ -10217,8 +10203,8 @@
           "إضافة SOP",
           "مراجعة الإجراء",
           "مسودة\n 4\nSOP-QC\nخطوات فحص الجودة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178733\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
-          "مسودة\n 3\nSOP-178733\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178735\nدليل التشغيل للطباعة\n0 خطوة\n0 بند\nv1",
+          "مسودة\n 3\nSOP-178735\nدليل هوية الورشة\n0 خطوة\n0 بند\nv1",
           "مسودة\n 3\nSOP-SAFETY\nسلامة ماكينة الليزر\n0 خطوة\n0 بند\nv1"
         ],
         "inputCount": 5,
@@ -10229,6 +10215,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10255,7 +10242,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_review.html",
       "requiredPermission": "sop_review",
-      "durationMs": 2485,
+      "durationMs": 5627,
       "error": null,
       "activated": true,
       "observation": {
@@ -10283,6 +10270,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -10309,7 +10297,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_scenarios.html",
       "requiredPermission": "sop_scenarios",
-      "durationMs": 2229,
+      "durationMs": 5449,
       "error": null,
       "activated": true,
       "observation": {
@@ -10335,6 +10323,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -10361,7 +10350,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "speed_and_driver_events",
-      "durationMs": 2563,
+      "durationMs": 4863,
       "error": null,
       "activated": true,
       "observation": {
@@ -10372,25 +10361,24 @@
           "أحداث السرعة والسياقة"
         ],
         "title": "أحداث السرعة والسياقة",
-        "textLength": 252,
-        "controlCount": 6,
+        "textLength": 166,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -10398,8 +10386,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 99,
-        "latinChars": 99
+        "arabicChars": 130,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10414,7 +10402,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-dock-workspace.js",
       "requiredPermission": "staging_board",
-      "durationMs": 2525,
+      "durationMs": 4206,
       "error": null,
       "activated": true,
       "observation": {
@@ -10429,7 +10417,7 @@
           "تخصيص تجهيز"
         ],
         "title": "لوحة التجهيز",
-        "textLength": 693,
+        "textLength": 798,
         "controlCount": 2,
         "controlLabels": [
           "تحرير",
@@ -10442,7 +10430,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -10453,8 +10442,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 322,
-        "latinChars": 213
+        "arabicChars": 315,
+        "latinChars": 298
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10469,7 +10458,7 @@
       "rendererType": "view",
       "rendererSource": "views/subscriptions.html",
       "requiredPermission": "subscriptions",
-      "durationMs": 1601,
+      "durationMs": 5367,
       "error": null,
       "activated": true,
       "observation": {
@@ -10480,7 +10469,7 @@
           "الاشتراكات"
         ],
         "title": "الاشتراكات",
-        "textLength": 1234,
+        "textLength": 1242,
         "controlCount": 26,
         "controlLabels": [
           "تحديث",
@@ -10509,8 +10498,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 168,
-        "latinChars": 751
+        "arabicChars": 235,
+        "latinChars": 693
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10525,7 +10514,7 @@
       "rendererType": "view",
       "rendererSource": "views/supplier_portal.html",
       "requiredPermission": "supplier_portal",
-      "durationMs": 2631,
+      "durationMs": 4655,
       "error": null,
       "activated": true,
       "observation": {
@@ -10535,14 +10524,19 @@
         "headings": [
           "بوابة الموردين",
           "بوابة الموردين",
-          "📦 قائمة المواد منخفضة المخزون (0 بند)",
-          "🕐 أوامر الشراء المفتوحة"
+          "📦 قائمة المواد منخفضة المخزون (1 بند)",
+          "🕐 أوامر الشراء المفتوحة",
+          "📊 مقارنة عروض الأسعار"
         ],
         "title": "بوابة الموردين",
-        "textLength": 652,
-        "controlCount": 1,
+        "textLength": 1062,
+        "controlCount": 5,
         "controlLabels": [
-          "📨 إرسال طلبات جماعية"
+          "📨 إرسال طلبات جماعية",
+          "📤 إرسال طلب عرض سعر",
+          "📋 إنشاء أمر شراء",
+          "فتح سجل الموردين",
+          "فتح المشتريات"
         ],
         "inputCount": 0,
         "selectCount": 0,
@@ -10552,18 +10546,22 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": true,
+          "empty": false,
           "error": false,
           "denied": false
         },
-        "linkTargets": [],
+        "linkTargets": [
+          "parties",
+          "procurement"
+        ],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 469,
-        "latinChars": 33
+        "arabicChars": 758,
+        "latinChars": 38
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10578,7 +10576,7 @@
       "rendererType": "view",
       "rendererSource": "views/supply_demand_balance.html",
       "requiredPermission": "supply_demand_balance",
-      "durationMs": 2465,
+      "durationMs": 5807,
       "error": null,
       "activated": true,
       "observation": {
@@ -10604,6 +10602,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -10630,7 +10629,7 @@
       "rendererType": "view",
       "rendererSource": "views/surveys.html",
       "requiredPermission": "surveys",
-      "durationMs": 2219,
+      "durationMs": 7214,
       "error": null,
       "activated": true,
       "observation": {
@@ -10664,6 +10663,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10690,7 +10690,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/fleet.js",
       "requiredPermission": "suspected_fuel_loss_queue",
-      "durationMs": 2447,
+      "durationMs": 6696,
       "error": null,
       "activated": true,
       "observation": {
@@ -10701,25 +10701,24 @@
           "طابور الاشتباه في هدر الوقود"
         ],
         "title": "طابور الاشتباه في هدر الوقود",
-        "textLength": 263,
-        "controlCount": 6,
+        "textLength": 173,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -10727,8 +10726,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 104,
-        "latinChars": 103
+        "arabicChars": 135,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10743,7 +10742,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "sync_conflicts",
-      "durationMs": 2280,
+      "durationMs": 5375,
       "error": null,
       "activated": true,
       "observation": {
@@ -10754,25 +10753,24 @@
           "تعارضات المزامنة"
         ],
         "title": "تعارضات المزامنة",
-        "textLength": 217,
-        "controlCount": 6,
+        "textLength": 160,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -10780,8 +10778,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 95,
-        "latinChars": 70
+        "arabicChars": 126,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10796,7 +10794,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/offline.js",
       "requiredPermission": "sync_sessions",
-      "durationMs": 2181,
+      "durationMs": 7271,
       "error": null,
       "activated": true,
       "observation": {
@@ -10807,25 +10805,24 @@
           "جلسات المزامنة الميدانية"
         ],
         "title": "جلسات المزامنة الميدانية",
-        "textLength": 234,
-        "controlCount": 6,
+        "textLength": 168,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -10833,8 +10830,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 102,
-        "latinChars": 83
+        "arabicChars": 133,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10849,7 +10846,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-check.js",
       "requiredPermission": "system_check",
-      "durationMs": 2292,
+      "durationMs": 6654,
       "error": null,
       "activated": true,
       "observation": {
@@ -10883,6 +10880,7 @@
         "tableRows": 9,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10909,7 +10907,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/system-settings.js",
       "requiredPermission": "default-client-gate",
-      "durationMs": 2172,
+      "durationMs": 5430,
       "error": null,
       "activated": true,
       "observation": {
@@ -10936,6 +10934,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -10962,7 +10961,7 @@
       "rendererType": "view",
       "rendererSource": "views/task_manager.html",
       "requiredPermission": "task_manager",
-      "durationMs": 2445,
+      "durationMs": 5322,
       "error": null,
       "activated": true,
       "observation": {
@@ -10983,7 +10982,7 @@
           "إنشاء مهمة قانونية"
         ],
         "title": "إدارة العمل القانونية",
-        "textLength": 2858,
+        "textLength": 2857,
         "controlCount": 11,
         "controlLabels": [
           "تحديث",
@@ -11006,6 +11005,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11016,7 +11016,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 578,
+        "arabicChars": 577,
         "latinChars": 1653
       },
       "consoleErrors": [],
@@ -11032,7 +11032,7 @@
       "rendererType": "view",
       "rendererSource": "views/tax_compliance.html",
       "requiredPermission": "tax_compliance",
-      "durationMs": 3667,
+      "durationMs": 6534,
       "error": null,
       "activated": true,
       "observation": {
@@ -11059,6 +11059,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -11085,7 +11086,7 @@
       "rendererType": "view",
       "rendererSource": "views/telegram.html",
       "requiredPermission": "telegram",
-      "durationMs": 2566,
+      "durationMs": 7539,
       "error": null,
       "activated": true,
       "observation": {
@@ -11103,7 +11104,7 @@
           "حالات الأتمتة والتنبيهات"
         ],
         "title": "Telegram Connector",
-        "textLength": 2889,
+        "textLength": 2887,
         "controlCount": 15,
         "controlLabels": [
           "مركز القيادة",
@@ -11122,6 +11123,7 @@
         "tableRows": 5,
         "tableColumns": 7,
         "listItems": 16,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11134,7 +11136,7 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 1900,
+        "arabicChars": 1899,
         "latinChars": 393
       },
       "consoleErrors": [],
@@ -11150,7 +11152,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/telemetry.js",
       "requiredPermission": "telemetry_explorer",
-      "durationMs": 2811,
+      "durationMs": 6574,
       "error": null,
       "activated": true,
       "observation": {
@@ -11161,25 +11163,24 @@
           "مستكشف بيانات القياس"
         ],
         "title": "مستكشف بيانات القياس",
-        "textLength": 240,
-        "controlCount": 6,
+        "textLength": 164,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -11187,8 +11188,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 98,
-        "latinChars": 93
+        "arabicChars": 129,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11203,7 +11204,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_detail",
-      "durationMs": 1730,
+      "durationMs": 4646,
       "error": null,
       "activated": true,
       "observation": {
@@ -11268,7 +11269,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "tenant_directory",
-      "durationMs": 1581,
+      "durationMs": 6416,
       "error": null,
       "activated": true,
       "observation": {
@@ -11280,7 +11281,7 @@
           "إنشاء مستأجر"
         ],
         "title": "دليل المستأجرين",
-        "textLength": 798,
+        "textLength": 784,
         "controlCount": 6,
         "controlLabels": [
           "تحديث",
@@ -11307,8 +11308,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 192,
-        "latinChars": 461
+        "arabicChars": 248,
+        "latinChars": 392
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11323,7 +11324,7 @@
       "rendererType": "view",
       "rendererSource": "views/timesheet.html",
       "requiredPermission": "timesheet",
-      "durationMs": 10626,
+      "durationMs": 6037,
       "error": null,
       "activated": true,
       "observation": {
@@ -11382,6 +11383,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -11395,18 +11397,9 @@
         "arabicChars": 2131,
         "latinChars": 183
       },
-      "consoleErrors": [
-        "Failed to load resource: the server responded with a status of 409 (Conflict)"
-      ],
+      "consoleErrors": [],
       "pageErrors": [],
-      "failedRequests": [
-        {
-          "status": 409,
-          "path": "/api/db",
-          "method": "POST",
-          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "id": "training_lms",
@@ -11417,7 +11410,7 @@
       "rendererType": "view",
       "rendererSource": "views/training_lms.html",
       "requiredPermission": "training_lms",
-      "durationMs": 2655,
+      "durationMs": 6538,
       "error": null,
       "activated": true,
       "observation": {
@@ -11447,6 +11440,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11475,7 +11469,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_alerts.html",
       "requiredPermission": "treasury_alerts",
-      "durationMs": 2615,
+      "durationMs": 7091,
       "error": null,
       "activated": true,
       "observation": {
@@ -11501,6 +11495,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -11527,7 +11522,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_cash_position.html",
       "requiredPermission": "treasury_cash_position",
-      "durationMs": 2492,
+      "durationMs": 6184,
       "error": null,
       "activated": true,
       "observation": {
@@ -11553,6 +11548,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": true,
           "empty": true,
@@ -11579,7 +11575,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build11-workspaces.js",
       "requiredPermission": "usage_and_quotas",
-      "durationMs": 1583,
+      "durationMs": 5624,
       "error": null,
       "activated": true,
       "observation": {
@@ -11634,7 +11630,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-count-workspace.js",
       "requiredPermission": "variance_review",
-      "durationMs": 1759,
+      "durationMs": 6368,
       "error": null,
       "activated": true,
       "observation": {
@@ -11684,7 +11680,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10-workspaces.js",
       "requiredPermission": "vehicle_trip_timeline",
-      "durationMs": 959,
+      "durationMs": 6582,
       "error": null,
       "activated": true,
       "observation": {
@@ -11695,25 +11691,24 @@
           "خط زمني لرحلات السيارات"
         ],
         "title": "خط زمني لرحلات السيارات",
-        "textLength": 226,
-        "controlCount": 6,
+        "textLength": 167,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -11721,8 +11716,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 100,
-        "latinChars": 72
+        "arabicChars": 131,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11737,7 +11732,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "vertical_packs",
-      "durationMs": 982,
+      "durationMs": 5029,
       "error": null,
       "activated": true,
       "observation": {
@@ -11748,12 +11743,12 @@
           "الحزم الرأسية"
         ],
         "title": "الحزم الرأسية",
-        "textLength": 424,
+        "textLength": 415,
         "controlCount": 3,
         "controlLabels": [
           "تحديث",
-          "Validate",
-          "Approve"
+          "تحقّق",
+          "اعتماد"
         ],
         "inputCount": 0,
         "selectCount": 0,
@@ -11763,6 +11758,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11773,8 +11769,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 207,
-        "latinChars": 128
+        "arabicChars": 251,
+        "latinChars": 77
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11789,7 +11785,7 @@
       "rendererType": "view",
       "rendererSource": "views/visitors.html",
       "requiredPermission": "visitors",
-      "durationMs": 814,
+      "durationMs": 6403,
       "error": null,
       "activated": true,
       "observation": {
@@ -11822,6 +11818,7 @@
         "tableRows": 2,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -11848,7 +11845,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/kiosks.js",
       "requiredPermission": "warehouse_kiosk",
-      "durationMs": 838,
+      "durationMs": 6916,
       "error": null,
       "activated": true,
       "observation": {
@@ -11859,25 +11856,24 @@
           "كشك العمليات المخزنية"
         ],
         "title": "كشك العمليات المخزنية",
-        "textLength": 235,
-        "controlCount": 6,
+        "textLength": 165,
+        "controlCount": 2,
         "controlLabels": [
-          "+ إضافة جديد",
-          "تصدير CSV",
-          "عرض",
-          "تعديل"
+          "تحديث السجلات",
+          "تصدير CSV"
         ],
-        "inputCount": 1,
+        "inputCount": 0,
         "selectCount": 0,
-        "searchInputCount": 1,
+        "searchInputCount": 0,
         "dateInputCount": 0,
         "tableCount": 1,
-        "tableRows": 2,
-        "tableColumns": 5,
+        "tableRows": 1,
+        "tableColumns": 4,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": false,
           "denied": false
         },
@@ -11885,8 +11881,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 99,
-        "latinChars": 87
+        "arabicChars": 130,
+        "latinChars": 3
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11901,7 +11897,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build10/renderers/boards.js",
       "requiredPermission": "warehouse_large_screen",
-      "durationMs": 1585,
+      "durationMs": 6587,
       "error": null,
       "activated": true,
       "observation": {
@@ -11912,7 +11908,7 @@
           "شاشة المخزن الكبيرة"
         ],
         "title": "شاشة المخزن الكبيرة",
-        "textLength": 522,
+        "textLength": 520,
         "controlCount": 4,
         "controlLabels": [
           "فتح المصدر"
@@ -11941,8 +11937,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 328,
-        "latinChars": 102
+        "arabicChars": 273,
+        "latinChars": 154
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11957,7 +11953,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "warehouse_topology",
-      "durationMs": 1723,
+      "durationMs": 7190,
       "error": null,
       "activated": true,
       "observation": {
@@ -12011,7 +12007,7 @@
       "rendererType": "view",
       "rendererSource": "views/warehouses_and_locations.html",
       "requiredPermission": "warehouses",
-      "durationMs": 785,
+      "durationMs": 6386,
       "error": null,
       "activated": true,
       "observation": {
@@ -12036,6 +12032,7 @@
         "tableRows": 1,
         "tableColumns": 8,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12062,7 +12059,7 @@
       "rendererType": "view",
       "rendererSource": "views/warranty.html",
       "requiredPermission": "warranty",
-      "durationMs": 930,
+      "durationMs": 6070,
       "error": null,
       "activated": true,
       "observation": {
@@ -12090,6 +12087,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12116,7 +12114,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_execution",
-      "durationMs": 817,
+      "durationMs": 6918,
       "error": null,
       "activated": true,
       "observation": {
@@ -12141,7 +12139,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12168,7 +12167,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-wave-workspace.js",
       "requiredPermission": "wave_planning",
-      "durationMs": 805,
+      "durationMs": 6338,
       "error": null,
       "activated": true,
       "observation": {
@@ -12181,7 +12180,7 @@
           "قاعدة التجميع"
         ],
         "title": "تخطيط الموجات",
-        "textLength": 735,
+        "textLength": 861,
         "controlCount": 2,
         "controlLabels": [
           "تحديد الكل",
@@ -12194,7 +12193,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 4,
+        "listItems": 5,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12205,8 +12205,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 457,
-        "latinChars": 124
+        "arabicChars": 450,
+        "latinChars": 223
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12221,7 +12221,7 @@
       "rendererType": "view",
       "rendererSource": "views/wfl_home.html",
       "requiredPermission": "wfl_home",
-      "durationMs": 828,
+      "durationMs": 5699,
       "error": null,
       "activated": true,
       "observation": {
@@ -12257,6 +12257,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12283,7 +12284,7 @@
       "rendererType": "view",
       "rendererSource": "views/whatsapp.html",
       "requiredPermission": "whatsapp",
-      "durationMs": 784,
+      "durationMs": 8075,
       "error": null,
       "activated": true,
       "observation": {
@@ -12318,6 +12319,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -12346,7 +12348,7 @@
       "rendererType": "view",
       "rendererSource": "views/work_orders.html",
       "requiredPermission": "work_orders",
-      "durationMs": 967,
+      "durationMs": 7734,
       "error": null,
       "activated": true,
       "observation": {
@@ -12357,8 +12359,8 @@
           "🛠️\nأوامر العمل"
         ],
         "title": "🛠️\nأوامر العمل",
-        "textLength": 647,
-        "controlCount": 4,
+        "textLength": 339,
+        "controlCount": 1,
         "controlLabels": [
           "📥 طلب جديد / إنشاء أمر عمل"
         ],
@@ -12366,10 +12368,11 @@
         "selectCount": 1,
         "searchInputCount": 2,
         "dateInputCount": 0,
-        "tableCount": 1,
-        "tableRows": 3,
-        "tableColumns": 9,
+        "tableCount": 0,
+        "tableRows": 0,
+        "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12380,8 +12383,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 389,
-        "latinChars": 53
+        "arabicChars": 258,
+        "latinChars": 0
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12396,7 +12399,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-shopfloor-workspace.js",
       "requiredPermission": "workcenter_queue",
-      "durationMs": 812,
+      "durationMs": 7228,
       "error": null,
       "activated": true,
       "observation": {
@@ -12418,7 +12421,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12445,7 +12449,7 @@
       "rendererType": "view",
       "rendererSource": "views/workflow.html",
       "requiredPermission": "workflow",
-      "durationMs": 944,
+      "durationMs": 8364,
       "error": null,
       "activated": true,
       "observation": {
@@ -12496,6 +12500,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12522,7 +12527,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_command_center.html",
       "requiredPermission": "workshop_command_center",
-      "durationMs": 888,
+      "durationMs": 8819,
       "error": null,
       "activated": true,
       "observation": {
@@ -12559,6 +12564,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12585,7 +12591,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_ledger.html",
       "requiredPermission": "workshop_ledger",
-      "durationMs": 798,
+      "durationMs": 7788,
       "error": null,
       "activated": true,
       "observation": {
@@ -12620,6 +12626,7 @@
         "tableRows": 1,
         "tableColumns": 6,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": true,
@@ -12646,7 +12653,7 @@
       "rendererType": "shell",
       "rendererSource": "app.js switchPage",
       "requiredPermission": "workshop_pack_setup",
-      "durationMs": 950,
+      "durationMs": 9517,
       "error": null,
       "activated": true,
       "observation": {
@@ -12657,14 +12664,14 @@
           "إعداد حزمة الورشة"
         ],
         "title": "إعداد حزمة الورشة",
-        "textLength": 414,
+        "textLength": 402,
         "controlCount": 5,
         "controlLabels": [
           "تحديث",
           "تجهيز حزمة الورشة",
-          "Enable",
-          "Disable",
-          "Rollback"
+          "تفعيل",
+          "تعطيل",
+          "تراجع"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -12674,6 +12681,7 @@
         "tableRows": 1,
         "tableColumns": 5,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12684,8 +12692,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 212,
-        "latinChars": 123
+        "arabicChars": 264,
+        "latinChars": 58
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -12700,7 +12708,7 @@
       "rendererType": "view",
       "rendererSource": "views/workshop_readiness.html",
       "requiredPermission": "workshop_readiness",
-      "durationMs": 932,
+      "durationMs": 11211,
       "error": null,
       "activated": true,
       "observation": {
@@ -12736,6 +12744,7 @@
         "tableRows": 0,
         "tableColumns": 0,
         "listItems": 0,
+        "governedRecordItems": 0,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -12762,7 +12771,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-topology-workspace.js",
       "requiredPermission": "zone_bin_management",
-      "durationMs": 1649,
+      "durationMs": 8164,
       "error": null,
       "activated": true,
       "observation": {

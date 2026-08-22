@@ -865,19 +865,39 @@
       + '</div>'
       // agent catalog
       + '<div class="aigov-card aigov-wide"><div class="aigov-title">Agent Catalog Foundation</div>'
-      + '<div class="aigov-hint">Governed business agents are registered with explicit allowed tools, blocked tools, dry-run preview, human review checkpoints, audit requirements, and no direct high-risk execution.</div>'
-      + '<div class="aigov-table-wrap"><table class="aigov-table aigov-agent-table"><thead><tr><th>Agent</th><th>Domain</th><th>Risk</th><th>Mode</th><th>Allowed tools</th><th>Blocked tools</th></tr></thead><tbody>'
+      + '<div class="aigov-hint">الوكلاء المحكومون مسجَّلون بأدوات مسموحة ومحظورة صراحةً، ومعاينة تجريبية، ونقاط مراجعة بشرية، ومتطلبات تدقيق، ودون أي تنفيذ مباشر عالي المخاطر.</div>'
+      + '<div class="aigov-table-wrap"><table class="aigov-table aigov-agent-table"><thead><tr><th>الوكيل</th><th>المجال</th><th>المخاطر</th><th>الوضع</th><th>الأدوات المسموحة</th><th>الأدوات المحظورة</th></tr></thead><tbody>'
       + agentRows
       + '</tbody></table></div>'
-      + '<div class="aigov-hint">Policy store: <code>omni.aiAgents.catalog</code>, simulations: <code>omni.aiAgents.simulations</code>, approvals mirror: <code>omni.aiAgents.approvals</code>. High-risk proposals route to the approval queue.</div>'
+      + '<div class="aigov-hint">مخزن السياسات: <code>omni.aiAgents.catalog</code>، المحاكاة: <code>omni.aiAgents.simulations</code>، مرآة الموافقات: <code>omni.aiAgents.approvals</code>. المقترحات عالية المخاطر تُحوَّل إلى طابور الموافقة.</div>'
       + '</div>'
       // recent audit log
       + '<div class="aigov-card"><div class="aigov-title">📜 آخر أحداث الذكاء الصناعي</div>'
       + (log.length ? '<div class="aigov-table-wrap"><table class="aigov-table"><thead><tr><th>الوقت</th><th>الحدث</th><th>المستخدم</th><th>تفاصيل</th></tr></thead><tbody>'
-        + log.map(e => '<tr><td class="aigov-muted">' + esc(String(e.at || '').slice(5, 19).replace('T', ' ')) + '</td><td><code>' + esc(e.event) + '</code></td><td class="aigov-muted">' + esc(e.by || '') + '</td><td class="aigov-muted">' + esc(JSON.stringify(e.data || {}).slice(0, 90)) + '</td></tr>').join('')
+        + log.map(e => '<tr><td class="aigov-muted">' + esc(String(e.at || '').slice(5, 19).replace('T', ' ')) + '</td><td><code>' + esc(e.event) + '</code></td><td class="aigov-muted">' + esc(e.by || '') + '</td><td class="aigov-muted">' + esc(auditDetail(e.data)) + '</td></tr>').join('')
         + '</tbody></table></div>' : '<div class="aigov-hint">لا أحداث بعد — ستظهر هنا نداءات المزوّد والخطط والأدوات والموافقات.</div>')
       + '</div>';
   }
+  // The audit "details" cell used to dump JSON.stringify(e.data) truncated at 90
+  // characters, so a normal user saw a raw implementation payload cut off mid
+  // token. Present the same facts as labelled values instead — the readable form
+  // BUILD-12 already adopted for its governed policy metadata.
+  function auditDetail(data) {
+    if (data == null) return '—';
+    if (typeof data !== 'object') return String(data);
+    const parts = [];
+    for (const [key, value] of Object.entries(data)) {
+      if (value == null || value === '') continue;
+      const label = key.replace(/[_.]/g, ' ');
+      const shown = (value && typeof value === 'object')
+        ? (Array.isArray(value) ? value.length + ' عنصر' : Object.keys(value).length + ' حقل')
+        : String(value);
+      parts.push(label + ': ' + (shown.length > 40 ? shown.slice(0, 40) + '…' : shown));
+      if (parts.length >= 4) break;
+    }
+    return parts.length ? parts.join(' · ') : '—';
+  }
+
   function renderAiSystemStatus() {
     const el = document.getElementById('aiStatusBody');
     if (el) el.innerHTML = statusHtml();

@@ -56,6 +56,22 @@ const MODULE_TO_AUTHORITY = {
   assets_management: 'ASSET',
   operations_maintenance: 'MAINTENANCE',
   fleet_telematics: 'FLEET',
+  // BUILD-10 and BUILD-11 shipped business modules without this test being
+  // taught about them, which is precisely the case the assertion below is
+  // written to catch. Domains assigned from what each module's entities
+  // actually own, not from its name.
+  //
+  // migration 086: actions, permissions and entity aliases for the same
+  // telematics family `fleet_telematics` owns — device mapping, location
+  // points, trips, geofences, speed and fuel telemetry.
+  build10_governed_actions: 'FLEET',
+  // Fleet telematics expansion: a direct extension of `fleet_telematics`.
+  fleet_telematics_exp: 'FLEET',
+  // The device registry the telematics actions bind vehicles through.
+  iot_devices: 'FLEET',
+  // BUILD-11 is the commercial/SaaS platform: tenants, plans, subscriptions,
+  // entitlements, seats, usage and packages.
+  build11_commercial: 'COMMERCIAL',
 };
 
 // Modules that legitimately own no legacy business collection.
@@ -64,6 +80,20 @@ const AUTHORITY_EXEMPT_MODULES = new Set([
   'checkpoint_c_test_module',
   // Control-plane module: it governs cutover but owns no business facts.
   'cutover_governance',
+  // Device/session infrastructure, not business facts: an offline client
+  // registry, command queue, sync session and conflict record (owner
+  // `platform`), and a kiosk device registry, session log and board config.
+  // They carry the plumbing other domains' actions travel through.
+  'offline_sync',
+  'kiosk_boards',
+  // OPEN OWNER DECISION — exempted, not resolved. BUILD-12 owns real business
+  // facts (marketing campaigns and content, events, people skills and
+  // competencies, AI runs, proposals and policies), but no existing canonical
+  // domain covers governed intelligence, marketing, events or people
+  // development, and inventing one here would be an architecture decision made
+  // by a test fixture. Tracked in docs/product/FINAL_PAGE_READINESS_REPORT.md;
+  // replace this exemption with a real domain once the owner declares one.
+  'build12_governed_intelligence',
 ]);
 
 // The frozen zone. No canonical authority may claim these paths, because

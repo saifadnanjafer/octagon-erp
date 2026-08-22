@@ -43,7 +43,7 @@
   }
 
   const DICT = {
-    'بيانات تجريبية للعرض — لا يوجد ربط GPS/OBD حقيقي': ['بيانات تجريبية للعرض — لا يوجد ربط GPS/OBD حقيقي', 'Demo Data — No active GPS/OBD integration'],
+    'لا يوجد ربط GPS/OBD حقيقي على هذه الصفحة': ['لا يوجد ربط GPS/OBD حقيقي على هذه الصفحة', 'No live GPS/OBD integration on this page'],
     'إجازة سوق': ['إجازة سوق', 'Driving License'],
     'تأمين': ['تأمين', 'Insurance'],
     'المركبات': ['المركبات', 'Vehicles'],
@@ -111,7 +111,6 @@
     'الإجراء الموصى به': ['الإجراء الموصى به', 'Recommended Action'],
     'فتح تحقيق': ['فتح تحقيق', 'Open Investigation'],
     'آلية عمل التحقيقات': ['آلية عمل التحقيقات', 'Investigation Workflow'],
-    'إعدادات الربط التجريبي': ['إعدادات الربط التجريبي', 'Demo Connection Settings'],
     'التحقيقات المفتوحة': ['التحقيقات المفتوحة', 'Open Investigations'],
     'حالة': ['حالة', 'Cases'],
     'محددات السرعة حسب المنطقة': ['محددات السرعة حسب المنطقة', 'Speed Limits by Zone'],
@@ -194,9 +193,11 @@
   };
   const STATUS_CLASS = { active: 'fl-st-ok', maintenance: 'fl-st-maint', idle: 'fl-st-idle', retired: 'fl-st-idle' };
 
-  const DEMO_NOTE = tx('بيانات تجريبية للعرض — لا يوجد ربط GPS/OBD حقيقي');
-
-  function isDemoMode() { return (F()?.vehicles || []).length === 0; }
+  // States the integration status, which is true regardless of how many vehicles
+  // are registered. It must NOT be phrased as "demo data": the vehicle, fuel and
+  // trip records on this page are real operator entries, and an empty register is
+  // a real empty register.
+  const NO_TELEMETRY_NOTE = tx('لا يوجد ربط GPS/OBD حقيقي على هذه الصفحة');
 
   function ensureData() {
     const o = O(); if (!o) return null;
@@ -326,8 +327,7 @@
   function renderDashboard() {
     const el = document.getElementById('flDashBody'); if (!el) return;
     const p = portfolio();
-    const demoBadge = isDemoMode() ? `<div class="fl-guard-note" style="margin-bottom:14px">${DEMO_NOTE}</div>` : '';
-    el.innerHTML = `${demoBadge}
+    el.innerHTML = `
       <div class="fl-kpi-grid">
         ${kpi(tx('المركبات'), p.count, t(`${p.active} في الخدمة · ${p.maintenance} صيانة`, `${p.active} in service · ${p.maintenance} maint`), 'fl-kpi-accent')}
         ${kpi(tx('تنبيهات الوثائق'), p.alerts.length, t('إجازة/تأمين قريب أو منتهٍ', 'License/Insurance near expiry'), p.alerts.length ? 'fl-kpi-warn' : '')}
@@ -345,8 +345,7 @@
     if (editing) { el.innerHTML = renderForm(); return; }
     let list = getVehicles();
     if (search) { const q = search.toLowerCase(); list = list.filter(v => `${v.plate} ${tObj(v.name)} ${tObj(v.driver)}`.toLowerCase().includes(q)); }
-    const demoBadge = isDemoMode() ? `<div class="fl-guard-note" style="margin-bottom:8px">${DEMO_NOTE}</div>` : '';
-    el.innerHTML = `${demoBadge}
+    el.innerHTML = `
       <div class="fl-toolbar">
         <button class="btn-primary" onclick="flOpenForm('new')">➕ ${t('مركبة', 'Vehicle')}</button>
         <input class="fl-input" placeholder="${t('بحث...', 'Search...')}" value="${esc(search)}" oninput="flSearch(this.value)" style="max-width:200px">
@@ -474,10 +473,10 @@
   function renderSettings() {
     const el = document.getElementById('flSettingsBody'); if (!el) return;
     el.innerHTML = `
-      <div class="fl-panel"><div class="fl-panel-head"><h3>${tx('إعدادات الربط التجريبي')}</h3></div>
+      <div class="fl-panel"><div class="fl-panel-head"><h3>${t('إعدادات الربط', 'Integration Settings')}</h3></div>
         <div style="padding:12px;font-size:14px;line-height:2">
-          <p><strong>${DEMO_NOTE}</strong></p>
-          <p>${t('هذا القسم يوضح خيارات الربط المتاحة في الإصدار الكامل. الوضع التجريبي الحالي يستخدم بيانات مدمجة في الذاكرة.', 'This panel demonstrates API connectors available in the complete production environment. Demo mode utilizes in-memory seed data.')}</p>
+          <p><strong>${NO_TELEMETRY_NOTE}</strong></p>
+          <p>${t('هذه هي بروتوكولات الربط التي يتطلبها التتبع الحقيقي. لا يوجد أي منها مفعّل حالياً على هذه الصفحة.', 'These are the integration protocols real tracking requires. None of them is currently active on this page.')}</p>
           <div style="margin:16px 0;display:grid;gap:12px">
             <div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;background:#f8fafc"><strong>${t('خيارات الربط المتوقعة:', 'Available API Integration Protocols:')}</strong><br>
             • ${t('أجهزة تتبع نظام تحديد المواقع (GPS/GSM Tracker)', 'GPS/GSM Tracker — Concox, Queclink, Teltonika protocols')}<br>
@@ -559,5 +558,5 @@
   });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerJarvis); else setTimeout(registerJarvis, 600);
-  window.OctagonFleet = { render, ensureData, portfolio, isDemoMode };
+  window.OctagonFleet = { render, ensureData, portfolio };
 })();

@@ -26,6 +26,36 @@
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const rtl = () => document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
   const label = (en, ar = en) => rtl() ? ar : en;
+  // Column headers were English literals in every table definition, so the SaaS
+  // workspaces rendered English column names inside the Arabic shell even after
+  // their titles were translated. Translating once at the render point covers
+  // all eleven pages without rewriting each table spec; unlisted labels fall
+  // through to English rather than guessing.
+  const COL_AR = {
+    'Actions': 'الإجراءات', 'Actor': 'المنفّذ', 'Allowance': 'المسموح', 'Assigned': 'مُسند',
+    'Assigned user': 'المستخدم المُسند', 'Attached': 'مرتبط', 'Attempts': 'المحاولات',
+    'Base': 'الأساس', 'Base price': 'السعر الأساسي', 'Billing period': 'فترة الفوترة',
+    'Boundary': 'الحد', 'Cancel at period end': 'إلغاء بنهاية الفترة', 'Capability': 'القدرة',
+    'Command': 'الأمر', 'Commands': 'الأوامر', 'Company': 'الشركة', 'Compatibility': 'التوافق',
+    'Completed': 'مكتمل', 'Consumed': 'المستهلك', 'Disabled': 'معطّل', 'Discount': 'الخصم',
+    'Effective': 'ساري', 'Effective from': 'ساري من', 'Effective until': 'ساري حتى',
+    'Enabled': 'مفعّل', 'Explanation': 'التفسير', 'Findings': 'الملاحظات', 'Grace end': 'نهاية السماح',
+    'Idempotency': 'مفتاح التكرار', 'Installation state': 'حالة التثبيت', 'Installed': 'مثبّت',
+    'Invoice': 'الفاتورة', 'Last activity': 'آخر نشاط', 'Lifecycle': 'دورة الحياة',
+    'Metric': 'المقياس', 'Occurred': 'حدث', 'Open': 'فتح', 'Package': 'الحزمة',
+    'Package/version': 'الحزمة/الإصدار', 'Period end': 'نهاية الفترة', 'Plan': 'الخطة',
+    'Plan/version': 'الخطة/الإصدار', 'Policy': 'السياسة', 'Primary': 'أساسي',
+    'Primary company / tenant': 'الشركة/المستأجر الأساسي', 'Provenance': 'المصدر',
+    'Provisioning': 'التزويد', 'Publication': 'النشر', 'Published': 'منشور', 'Publisher': 'الناشر',
+    'Quantity': 'الكمية', 'Reason': 'السبب', 'Reason code': 'رمز السبب', 'Reconciliation': 'التسوية',
+    'Released': 'مُفرج', 'Remaining': 'المتبقي', 'Reset date': 'تاريخ التصفير', 'Review': 'المراجعة',
+    'Seat type': 'نوع المقعد', 'Seats/add-ons': 'المقاعد/الإضافات', 'Simulation status': 'حالة المحاكاة',
+    'Source': 'المصدر', 'State': 'الحالة', 'Status': 'الحالة', 'Step': 'الخطوة',
+    'Subscription': 'الاشتراك', 'Subscription policy': 'سياسة الاشتراك', 'Tenant': 'المستأجر',
+    'Total': 'الإجمالي', 'Trial end': 'نهاية التجربة', 'Usage overage': 'تجاوز الاستخدام',
+    'Version': 'الإصدار', 'Warning threshold': 'عتبة التحذير'
+  };
+  const colLabel = (en) => (rtl() && COL_AR[en]) ? COL_AR[en] : en;
   const currentTenant = (pageId) => PAGE_STATE.get(pageId)?.selectedTenantId || root.__octagonBootstrap?.actor?.tenantId || 'default';
   const queryString = (query = {}) => { const params = new URLSearchParams(); Object.entries(query).forEach(([key, value]) => { if (value !== undefined && value !== null && value !== '') params.set(key, value); }); const suffix = params.toString(); return suffix ? `?${suffix}` : ''; };
   async function api(path, query = {}) {
@@ -44,11 +74,11 @@
   const rows = (data) => Array.isArray(data) ? data : (data && typeof data === 'object' ? [data] : []);
   const value = (row, key, fallback = '—') => row && row[key] !== undefined && row[key] !== null && row[key] !== '' ? row[key] : fallback;
   const display = (input) => Array.isArray(input) ? input.join(', ') : typeof input === 'object' && input ? Object.entries(input).map(([k, v]) => `${k}: ${v}`).join(' · ') : value({ v: input }, 'v');
-  function table(data, columns, empty = 'No records in this scope.') {
+  function table(data, columns, empty = label('No records in this scope.', 'لا توجد سجلات ضمن هذا النطاق.')) {
     const list = rows(data);
     if (!list.length) return `<div class="b11-empty" data-state="empty">${label(empty, 'لا توجد سجلات في هذا النطاق.')}</div>`;
     const cols = columns || Object.keys(list[0]).slice(0, 8).map((key) => ({ key, label: key.replaceAll('_', ' ') }));
-    return `<div class="b11-table-wrap"><table class="b11-table"><thead><tr>${cols.map((col) => `<th>${escapeHtml(col.label)}</th>`).join('')}</tr></thead><tbody>${list.map((row) => `<tr>${cols.map((col) => `<td>${col.render ? col.render(row) : escapeHtml(display(row[col.key]))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<div class="b11-table-wrap"><table class="b11-table"><thead><tr>${cols.map((col) => `<th>${escapeHtml(colLabel(col.label))}</th>`).join('')}</tr></thead><tbody>${list.map((row) => `<tr>${cols.map((col) => `<td>${col.render ? col.render(row) : escapeHtml(display(row[col.key]))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   function button(actionId, text, attrs = '') { return `<button type="button" class="b11-btn" data-b11-action="${escapeHtml(actionId)}" ${attrs}>${escapeHtml(text)}</button>`; }
   function select(name, options, selected = '', required = false) { return `<select name="${escapeHtml(name)}"${required ? ' required' : ''}>${options.map(([key, text]) => `<option value="${escapeHtml(key)}"${String(key) === String(selected) ? ' selected' : ''}>${escapeHtml(text)}</option>`).join('')}</select>`; }

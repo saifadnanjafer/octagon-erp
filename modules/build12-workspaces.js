@@ -34,6 +34,38 @@
   const isRtl = () => document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
   const t = (en, ar) => isRtl() ? ar : en;
   const list = (v) => Array.isArray(v) ? v : (v && typeof v === 'object' ? [v] : []);
+  // Every BUILD-12 table column and action button was rendered from an English
+  // literal, so all 24 governed workspaces showed English headers and English
+  // action buttons inside the Arabic shell — even though the module already had
+  // a t(en, ar) helper it used for its notices. Translating at the two render
+  // points below covers every page (and the auto-derived column fallback)
+  // without rewriting each renderer. Unlisted labels fall through to English.
+  const LABELS_AR = {
+    'Attendee': 'الحاضر', 'Attendee email': 'بريد الحاضر', 'Audience': 'الجمهور',
+    'Blocked instructions': 'تعليمات محظورة', 'Boundary': 'الحد', 'Campaign': 'الحملة',
+    'Capacity': 'السعة', 'Certification': 'الشهادة', 'Channel': 'القناة',
+    'Checked in': 'تم الحضور', 'Classification': 'التصنيف', 'Code': 'الرمز',
+    'Commands': 'الأوامر', 'Content': 'المحتوى', 'Context cap': 'حد السياق',
+    'Context references': 'مراجع السياق', 'Conversions': 'التحويلات', 'Created': 'أُنشئ',
+    'Employee': 'الموظف', 'Enabled': 'مفعّل', 'Event': 'الفعالية', 'Expires': 'ينتهي',
+    'Findings': 'الملاحظات', 'Governed actions': 'إجراءات محكومة', 'Human review': 'مراجعة بشرية',
+    'Input hash': 'بصمة المدخل', 'Label': 'التسمية', 'Leads': 'العملاء المحتملون',
+    'Level': 'المستوى', 'Lifecycle': 'دورة الحياة', 'Maker': 'المُنشئ', 'Medium': 'الوسيط',
+    'Model': 'النموذج', 'Name': 'الاسم', 'Output hash': 'بصمة المخرج', 'Package': 'الحزمة',
+    'Plan': 'الخطة', 'Policy': 'السياسة', 'Policy decision': 'قرار السياسة',
+    'Proposal': 'المقترح', 'Provider': 'المزوّد', 'Purpose': 'الغرض', 'Redactions': 'الحجب',
+    'Registered': 'مسجَّل', 'Retention days': 'أيام الاحتفاظ', 'Review': 'المراجعة',
+    'Review policy': 'سياسة المراجعة', 'Review state': 'حالة المراجعة', 'Risk': 'المخاطر',
+    'Rows': 'الصفوف', 'Safe installation': 'تثبيت آمن', 'Session': 'الجلسة',
+    'Skill': 'المهارة', 'Source': 'المصدر', 'Speaker': 'المتحدث', 'Starts': 'يبدأ',
+    'State': 'الحالة', 'Status': 'الحالة', 'Summary': 'الملخص', 'Target date': 'التاريخ المستهدف',
+    'Task': 'المهمة', 'Title': 'العنوان', 'Type': 'النوع', 'Updated': 'حُدّث',
+    'Validation': 'التحقق', 'Venue': 'المكان', 'Version': 'الإصدار',
+    'Approve': 'اعتماد', 'Reject': 'رفض', 'Withdraw': 'سحب', 'Validate': 'تحقّق',
+    'Enable': 'تفعيل', 'Disable': 'تعطيل', 'Rollback': 'تراجع',
+    'Submit for review': 'إرسال للمراجعة'
+  };
+  const label12 = (en) => (isRtl() && LABELS_AR[en]) ? LABELS_AR[en] : en;
   // API rows sometimes carry governed policy/audit metadata serialized as JSON
   // strings. Rendering that payload verbatim exposes an implementation shape
   // to normal users; present the same facts as labelled values instead.
@@ -66,7 +98,7 @@
   function table(data, columns) {
     const records = rows(data); if (!records.length) return `<div class="b12-empty" data-state="empty">${esc(t('No records in this governed scope.', 'لا توجد سجلات ضمن هذا النطاق المحكوم.'))}</div>`;
     const cols = columns || Object.keys(records[0]).slice(0, 7).map((key) => ({ key, label: key.replaceAll('_', ' ') }));
-    return `<div class="b12-table-wrap"><table class="b12-table"><thead><tr>${cols.map((c) => `<th>${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${records.map((record) => `<tr>${cols.map((c) => `<td>${c.render ? c.render(record) : text(record[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<div class="b12-table-wrap"><table class="b12-table"><thead><tr>${cols.map((c) => `<th>${esc(label12(c.label))}</th>`).join('')}</tr></thead><tbody>${records.map((record) => `<tr>${cols.map((c) => `<td>${c.render ? c.render(record) : text(record[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   function select(name, options, selected = '') { return `<select name="${esc(name)}">${options.map(([k, v]) => `<option value="${esc(k)}"${String(k) === String(selected) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`; }
   function fields(items) { return items.map(([name, label, type = 'text', extra = '']) => `<label>${esc(label)}<input name="${esc(name)}" type="${type}" ${extra}></label>`).join(''); }
@@ -79,7 +111,7 @@
   function setContent(host, html) { host.querySelector('[data-b12-content]').innerHTML = html; }
   function notice(message, tone = '') { return `<div class="b12-notice ${tone}">${esc(message)}</div>`; }
   function metric(label, value, detail) { return `<article class="b12-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(detail)}</small></article>`; }
-  function actionButtons(record, actions) { return `<div class="b12-actions">${actions.map(([id, label, field]) => `<button type="button" class="b12-button" data-b12-button="${esc(id)}" data-b12-${esc(field || 'id')}="${esc(record[field || 'id'])}">${esc(label)}</button>`).join('')}</div>`; }
+  function actionButtons(record, actions) { return `<div class="b12-actions">${actions.map(([id, label, field]) => `<button type="button" class="b12-button" data-b12-button="${esc(id)}" data-b12-${esc(field || 'id')}="${esc(record[field || 'id'])}">${esc(label12(label))}</button>`).join('')}</div>`; }
   function aiBanner() { return `<div class="b12-ai-banner"><strong>${esc(t('AI label: deterministic simulator / advisory output', 'تصنيف الذكاء: محاكي حتمي / مخرجات استشارية'))}</strong><span>${esc(t('Bounded context · risk class · review policy are recorded. No autonomous execution and no canonical mutation.', 'السياق محدود · فئة المخاطر · سياسة المراجعة مسجلة. لا تنفيذ ذاتي ولا تغيير للسلطة الأساسية.'))}</span></div>`; }
   function overviewCards(data) { const ai = data?.ai || {}; return `<div class="b12-metrics">${metric(t('AI runs', 'تشغيلات الذكاء'), list(ai.recent_runs).length, t('Historical and bounded', 'تاريخية ومحدودة'))}${metric(t('Proposals', 'المقترحات'), list(ai.proposals).length, t('Human review queue', 'طابور مراجعة بشرية'))}${metric(t('Skills', 'المهارات'), list(data?.people?.skills).length, t('Scoped catalogue', 'دليل ضمن النطاق'))}${metric(t('Campaigns', 'الحملات'), list(data?.marketing?.campaigns).length, t('Simulation only', 'محاكاة فقط'))}${metric(t('Events', 'الفعاليات'), list(data?.events).length, t('Capacity governed', 'سعة محكومة'))}</div>`; }
   async function renderAiOverview(host) { const data = await api('overview'); setContent(host, `${aiBanner()}${overviewCards(data)}<h3>${esc(t('Recent governed AI runs', 'تشغيلات الذكاء المحكومة الأخيرة'))}</h3>${table(data.ai?.recent_runs, [{ key: 'task_id', label: 'Task' }, { key: 'risk_class', label: 'Risk' }, { key: 'status', label: 'State' }, { key: 'policy_decision', label: 'Policy decision' }, { key: 'created_at', label: 'Created' }])}`); }

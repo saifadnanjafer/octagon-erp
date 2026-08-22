@@ -237,28 +237,30 @@ ${stateLines}
 - Capability loss: **0**
 - Compatibility routes: retained by \`switchPage\` redirects
 
-## Tests executed for this recovery
+## Tests executed for this closure
 
-- \`npm.cmd run test:build-13\`: PASS (8) — static contracts for authenticated
-  runtime hydration, governed record evidence, metadata presentation, and
-  fail-closed large-screen boards.
-- \`npm.cmd run test:build-10\`: PASS — platform/domain and Chromium acceptance
-  for device, fleet, offline, kiosk, and responsive workspace behavior.
-- Targeted real-Chromium reinspection: PASS — all six large-screen boards
-  expose governed source links with no illustrative live metrics or raw JSON.
-- \`npm.cmd run test:page-consolidation\`: PASS (11)
-- \`node --test tests/functional-pages/functional-pages.test.mjs\`: PASS (7)
-- \`npm.cmd run test:functional-pages\`: PASS — the complete serial aggregate
-  of static and focused Chromium/domain suites completed against the current
-  disposable review server.
-- \`npm.cmd run review:functional-work-orders\`: PASS — the visible Work Orders
-  wizard created a fictional job, observed a successful full-state persistence
-  write, reauthenticated after reload, and found the same job again.
-- \`npm.cmd run test:navigation-regression\`: PASS (2), after starting the disposable review server
-- Full click audit: PASS — **221/221** current primary destinations passed in
-  nine authenticated visible-click slices (25-page bounded slices, final slice
-  21 pages). The abandoned monolithic run is not counted.
-- Visual audit: PASS — **35/35** responsive viewport/domain geometry cases.
+Counts are the suites' own reported totals, not narrative claims.
+
+| Suite | Result |
+|---|---|
+| \`test:unit\` | PASS |
+| \`test:migration\` | PASS |
+| \`test:permissions\` | PASS 40/40 |
+| \`test:autopilot\` | PASS 3/3 |
+| \`test:workshop\` | PASS 80/80 |
+| \`test:page-consolidation\` | PASS 11/11 |
+| \`test:build-08\` | PASS 17/17 |
+| \`test:build-09\` | PASS 65/65 |
+| \`test:build-10\` | PASS 38/38 |
+| \`test:build-11\` | PASS 19/19 |
+| \`test:build-12\` | PASS 17/17 |
+| \`test:build-13\` | PASS 13/13 |
+| \`test:checkpoint-c\` | PASS 100/100 |
+| \`test:checkpoint-d-e\` | PASS 56/56 |
+| \`test:checkpoint-f\` | PASS 27/27 (was 26/27 at the start of this pass — a pre-existing failure, fixed here) |
+| \`test:checkpoint-g\` | PASS 85/85 |
+| \`review:functional-work-orders\` | PASS — a fictional workshop job was created through the visible wizard, persisted, and found again after reload |
+| Runtime inspection | 221/221 pages, **0 console errors, 0 failed requests** |
 
 ## Final verdict
 

@@ -1,10 +1,8 @@
 {
-  "generatedAt": "2026-08-22T00:06:41.719Z",
+  "generatedAt": "2026-08-22T01:30:08.746Z",
   "generator": "scripts/product/build-runtime-error-ledger.mjs",
-  "totalSignatures": 1,
+  "totalSignatures": 0,
   "needsFixCount": 0,
-  "categoryCounts": {
-    "EXPECTED_CANONICAL_GUARD": 1
-  },
+  "categoryCounts": {},
   "needsFix": []
 }

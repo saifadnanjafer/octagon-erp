@@ -13949,10 +13949,21 @@ let _lastFileSaveOk = true;
 // mutation. Keep the exact server projection for the compatibility payload;
 // real finance changes use their canonical actions instead.
 function rememberCanonicalFinanceAccounts(data) {
-  const accounts = data?.finance?.accounts;
-  window.__legacyFullSyncCanonicalFinanceAccounts = Array.isArray(accounts)
-    ? JSON.parse(JSON.stringify(accounts))
-    : null;
+  // The server accepts the legacy full-sync only when every governed path is
+  // echoed byte-for-byte. The canonical guard governs the whole `finance.*`
+  // family (accounts, transactions, journals, documents, periods, payments, …)
+  // with a single documented exception, `finance.customers`. Finance was cut
+  // over in Phase 03, so the legacy blob usually carries no `finance` key at
+  // all, while `ensureFinance()` still synthesises a fully populated finance
+  // object for rendering. Posting that synthesised object made every save —
+  // including ones triggered by merely opening a read-only page — fail with
+  // 409 FINANCE_CANONICAL_AUTHORITY_REQUIRED. Capture the exact projection so
+  // the compatibility payload can echo it instead of re-deriving it.
+  const hasFinance = !!data && Object.prototype.hasOwnProperty.call(data, 'finance');
+  window.__legacyFullSyncFinanceProjection = hasFinance
+    ? JSON.parse(JSON.stringify(data.finance ?? null))
+    : undefined;
+  window.__legacyFullSyncFinanceProjectionCaptured = true;
 }
 
 function saveData(skipAutomation = false) {
@@ -13976,9 +13987,23 @@ function saveData(skipAutomation = false) {
       selectedEmpIdx,
       reportEmpIdx
     };
-    const canonicalFinanceAccounts = window.__legacyFullSyncCanonicalFinanceAccounts;
-    if (Array.isArray(canonicalFinanceAccounts) && data.finance) {
-      data.finance.accounts = canonicalFinanceAccounts;
+    // Echo the governed finance projection exactly as the server sent it, so an
+    // unrelated full-state save is never mistaken for a legacy finance mutation.
+    // `finance.customers` is the one path the canonical map deliberately leaves
+    // ungoverned, so local edits there are still allowed to persist.
+    if (window.__legacyFullSyncFinanceProjectionCaptured) {
+      const projection = window.__legacyFullSyncFinanceProjection;
+      const localCustomers = data.finance ? data.finance.customers : undefined;
+      if (projection === undefined) {
+        if (localCustomers === undefined) delete data.finance;
+        else data.finance = { customers: localCustomers };
+      } else if (projection === null) {
+        data.finance = null;
+      } else {
+        const echoed = JSON.parse(JSON.stringify(projection));
+        if (localCustomers !== undefined) echoed.customers = localCustomers;
+        data.finance = echoed;
+      }
     }
     // T1.2 (schema enforcement, choke-point 2): employees is the ONE
     // protect:true collection in OctagonSchema — an empty-array write is
@@ -14139,7 +14164,14 @@ async function loadData() {
       if (data && Array.isArray(data.employees)) {
         rememberCanonicalFinanceAccounts(data);
         employees = data.employees;
-        finance = data.finance || defaultFinanceState();
+        finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
         omni = data.omni || defaultOmniState();
         ensureFinance();
         ensureOmni();
@@ -14217,7 +14249,14 @@ async function loadData() {
     if (data.employees && data.employees.length) {
       employees = data.employees;
     }
-    finance = data.finance || defaultFinanceState();
+    finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
     omni = data.omni || defaultOmniState();
     ensureFinance();
     ensureOmni();
@@ -17268,7 +17307,14 @@ function importData(event) {
       if (data.employees) {
         if (confirm('هل تريد استبدال البيانات الحالية بالنسخة المستوردة؟')) {
           employees = data.employees;
-          finance = data.finance || defaultFinanceState();
+          finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
           omni = data.omni || defaultOmniState();
           ensureFinance();
           ensureOmni();
@@ -32017,7 +32063,7 @@ function renderAutomationHealthAndPoliciesContent() {
           </div>
           
           <div>
-            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات الحدث المرسلة</label>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات حدث تجريبية للمحاكاة — ليست سجلاً حقيقياً</label>
             <pre style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px; font-size:11px; color:#a7f3d0; margin:0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
           </div>
           

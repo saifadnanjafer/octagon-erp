@@ -29,6 +29,7 @@ import { seedPeopleDevelopmentFixtures } from './fixtures/people-development.mjs
 import { seedMarketingFixtures } from './fixtures/marketing.mjs';
 import { seedEventsFixtures } from './fixtures/events.mjs';
 import { seedLegacyEmployeeFixtures } from './fixtures/legacy-employees.mjs';
+import { seedLegacyCommercialFixtures } from './fixtures/legacy-commercial.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(here, '..', '..');
@@ -93,6 +94,8 @@ async function main() {
       ['people development', seedPeopleDevelopmentFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['marketing', seedMarketingFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       ['events', seedEventsFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
+      // Legacy omni.* collections behind Supplier Portal and Sales Price Lists.
+      ['legacy commercial (omni materials/suppliers/POs)', seedLegacyCommercialFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
     ];
 
     const summaries = { 'legacy employee compatibility': legacyEmployees };

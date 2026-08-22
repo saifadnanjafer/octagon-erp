@@ -3182,40 +3182,35 @@
       `;
     }).join('') : `<div class="ent-empty">✅ لا توجد مواد تحت الحد الأدنى حالياً</div>`;
 
-    // Supplier comparison matrix with mock quotes
-    const mockSuppliers = suppliers.length ? suppliers.slice(0, 4) : [
-      { name: 'الشركة العامة للحديد والصلب', id: 's1' },
-      { name: 'مستودع الرافدين للمواد', id: 's2' },
-      { name: 'تجهيزات باب بابل', id: 's3' }
-    ];
-
+    // Quote comparison. This panel used to invent three supplier company names
+    // whenever the register was empty and fill the matrix with Math.random()
+    // prices, then stamp one of them "✓ أفضل". No quote record exists anywhere
+    // in the system — entRfqSendRequest only writes an audit entry — so that
+    // table recommended a supplier that had never quoted, at a price nobody had
+    // offered, and the "best" vendor changed on every repaint. It now fails
+    // closed: real registered suppliers are listed as the vendors a request can
+    // go to, and no comparison is drawn until real quotes are recorded.
     const compareItems = lowStockItems.slice(0, 3);
     let tableHtml = '';
     if (compareItems.length) {
-      const headerCols = mockSuppliers.map(s => `<th>${esc(s.name || s.companyName || 'مورد')}</th>`).join('');
-      const rows = compareItems.map((m, mi) => {
-        const needed = Math.max(1, money(m.minStock || m.minimumStock || 10) - money(m.stock || 0));
-        const prices = mockSuppliers.map((_, si) => {
-          const base = 1500 + (mi * 400) + (si * 200);
-          return Math.round(base * (0.85 + Math.random() * 0.3));
-        });
-        const bestIdx = prices.indexOf(Math.min(...prices));
-        const cells = prices.map((p, si) =>
-          `<td>${p.toLocaleString()} ${activeProfile().currencySymbol || 'IQD'} ${si === bestIdx ? '<span class="rfq-best-badge">✓ أفضل</span>' : ''}</td>`
-        ).join('');
-        return `<tr><td><strong>${esc(m.name || 'بند')}</strong><br><span style="color:#64748b;font-size:10px">الكمية: ${needed.toLocaleString()}</span></td>${cells}</tr>`;
-      });
+      const supplierList = suppliers.length
+        ? `<div class="rfq-panel-body"><p style="font-size:12px;color:#94a3b8;margin-bottom:8px">الموردون المسجلون الذين يمكن إرسال طلب عرض سعر إليهم:</p>`
+          + suppliers.slice(0, 8).map(s => `<div style="padding:6px 10px;background:rgba(30,41,59,0.3);border-radius:6px;font-size:11px;margin-bottom:6px">${esc(s.name || s.companyName || 'مورد')}</div>`).join('')
+          + '</div>'
+        : `<div class="ent-empty">لا يوجد موردون مسجلون بعد.</div>`;
 
       tableHtml = `
         <div class="rfq-panel" style="overflow:auto">
           <div class="rfq-panel-head">
-            <h3>📊 مقارنة عروض الأسعار (محاكاة)</h3>
+            <h3>📊 مقارنة عروض الأسعار</h3>
           </div>
-          <div style="overflow-x:auto; padding:14px;">
-            <table class="rfq-compare-table">
-              <thead><tr><th>المادة</th>${headerCols}</tr></thead>
-              <tbody>${rows.join('')}</tbody>
-            </table>
+          <div style="padding:14px">
+            <div class="ent-empty" style="margin-bottom:12px">لم تُسجَّل أي عروض أسعار بعد، فلا يمكن إجراء مقارنة أو ترشيح أفضل سعر. أرسل طلبات عروض الأسعار أعلاه، ثم سجّل العروض الواردة.</div>
+            ${supplierList}
+            <div class="ent-actions" style="margin-top:12px">
+              <button class="ent-btn" onclick="switchPage('parties')">فتح سجل الموردين</button>
+              <button class="ent-btn" onclick="switchPage('procurement')">فتح المشتريات</button>
+            </div>
           </div>
         </div>
       `;

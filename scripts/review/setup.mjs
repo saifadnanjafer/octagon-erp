@@ -30,6 +30,7 @@ import { seedMarketingFixtures } from './fixtures/marketing.mjs';
 import { seedEventsFixtures } from './fixtures/events.mjs';
 import { seedLegacyEmployeeFixtures } from './fixtures/legacy-employees.mjs';
 import { seedLegacyCommercialFixtures } from './fixtures/legacy-commercial.mjs';
+import { seedBuild10DeviceFleetFixtures } from './fixtures/build10-devices-fleet.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(here, '..', '..');
@@ -96,6 +97,9 @@ async function main() {
       ['events', seedEventsFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
       // Legacy omni.* collections behind Supplier Portal and Sales Price Lists.
       ['legacy commercial (omni materials/suppliers/POs)', seedLegacyCommercialFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
+      // BUILD-10 device/fleet/edge tables: no fixture ever seeded these, so ~30
+      // governed workspaces had nothing to render.
+      ['BUILD-10 devices, fleet and edge', seedBuild10DeviceFleetFixtures, REVIEW_TENANT, REVIEW_COMPANY, REVIEW_BRANCH],
     ];
 
     const summaries = { 'legacy employee compatibility': legacyEmployees };

@@ -22,7 +22,19 @@
     extension_marketplace: { title: 'Extension Marketplace', titleAr: 'سوق الإضافات', subtitle: 'Guided safe manifest validation and review lifecycle.', subtitleAr: 'تحقّق موجّه وآمن من بيان الإضافة ودورة حياة المراجعة.', permission: 'platform:saas:packages:review' },
     extension_installations: { title: 'Extension Installations', titleAr: 'تثبيت الإضافات', subtitle: 'Tenant-scoped staged packages and governed enablement.', subtitleAr: 'حزم مُجهّزة ضمن نطاق المستأجر وتفعيل مُدار.', permission: 'platform:saas:packages:manage' },
   };
-  const PAGE_STATE = new Map(PAGE_IDS.map((id) => [id, { selectedTenantId: root.__octagonBootstrap?.actor?.tenantId || 'default', activeTab: 'overview', filters: {} }]));
+  // The bootstrap payload carries the verified scope under `context`; an older
+  // revision exposed it as `actor`. Reading only `actor` returned undefined and
+  // fell through to the literal 'default', which for platform-scoped callers is
+  // a real tenant id — so the server filtered WHERE tenant_id='default' and
+  // four pages (seats, usage, billing simulator, extension installations)
+  // rendered empty while their rows existed. Falling back to '' instead omits
+  // the parameter, which makes the server scope the read from the verified
+  // session rather than a guessed literal.
+  const bootstrapTenantId = () => {
+    const bootstrap = root.__octagonBootstrap || {};
+    return bootstrap.context?.tenantId || bootstrap.actor?.tenantId || '';
+  };
+  const PAGE_STATE = new Map(PAGE_IDS.map((id) => [id, { selectedTenantId: bootstrapTenantId(), activeTab: 'overview', filters: {} }]));
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const rtl = () => document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
   const label = (en, ar = en) => rtl() ? ar : en;
@@ -70,7 +82,7 @@
   };
   const tabLabel = (key) => (rtl() && TAB_AR[key]) ? TAB_AR[key] : key;
   const stateLabel = (key) => (rtl() && STATE_AR[key]) ? STATE_AR[key] : key;
-  const currentTenant = (pageId) => PAGE_STATE.get(pageId)?.selectedTenantId || root.__octagonBootstrap?.actor?.tenantId || 'default';
+  const currentTenant = (pageId) => PAGE_STATE.get(pageId)?.selectedTenantId || bootstrapTenantId();
   const queryString = (query = {}) => { const params = new URLSearchParams(); Object.entries(query).forEach(([key, value]) => { if (value !== undefined && value !== null && value !== '') params.set(key, value); }); const suffix = params.toString(); return suffix ? `?${suffix}` : ''; };
   async function api(path, query = {}) {
     const response = await fetch(`/api/v1/saas/${path}${queryString(query)}`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
@@ -94,7 +106,7 @@
     const cols = columns || Object.keys(list[0]).slice(0, 8).map((key) => ({ key, label: key.replaceAll('_', ' ') }));
     return `<div class="b11-table-wrap"><table class="b11-table"><thead><tr>${cols.map((col) => `<th>${escapeHtml(colLabel(col.label))}</th>`).join('')}</tr></thead><tbody>${list.map((row) => `<tr>${cols.map((col) => `<td>${col.render ? col.render(row) : escapeHtml(display(row[col.key]))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
-  function button(actionId, text, attrs = '') { return `<button type="button" class="b11-btn" data-b11-action="${escapeHtml(actionId)}" ${attrs}>${escapeHtml(text)}</button>`; }
+  function button(actionId, text, attrs = '') { return `<button type="button" class="b11-btn" data-b11-action="${escapeHtml(actionId)}" ${attrs}>${escapeHtml(formLabel(text))}</button>`; }
   function select(name, options, selected = '', required = false) { return `<select name="${escapeHtml(name)}"${required ? ' required' : ''}>${options.map(([key, text]) => `<option value="${escapeHtml(key)}"${String(key) === String(selected) ? ' selected' : ''}>${escapeHtml(text)}</option>`).join('')}</select>`; }
   // form() submit text and actionFields() field labels were still English
   // literals, so the commercial forms read as Arabic chrome around English
@@ -118,6 +130,11 @@
     'Tenant reference': 'مرجع المستأجر', 'Trial days': 'أيام التجربة', 'Unit': 'الوحدة',
     'Usage overage': 'تجاوز الاستهلاك', 'Version': 'الإصدار',
     'Version number': 'رقم الإصدار', 'Warning threshold': 'حد التحذير',
+    'Enable': 'تفعيل', 'Disable': 'تعطيل', 'Rollback': 'التراجع',
+    'Issue simulation': 'إصدار محاكاة', 'Succeed': 'نجاح', 'Fail': 'فشل',
+    'Reverse': 'عكس العملية', 'Invoice': 'الفاتورة', 'Simulation status': 'حالة المحاكاة',
+    'Base': 'الأساس', 'Seats/add-ons': 'المقاعد والإضافات', 'Boundary': 'الحد',
+    'Actions': 'الإجراءات', 'Total': 'الإجمالي',
     'Apply filters': 'تطبيق المرشحات', 'Create tenant': 'إنشاء مستأجر',
     'Generate simulated invoice': 'توليد فاتورة محاكاة',
     'Publish immutable version': 'نشر إصدار غير قابل للتغيير',

@@ -43,7 +43,7 @@ decision, or a product-identity question only the owner can answer.
 | `command_center` / `workshop_command_center` | same kind, different scope | same | KEEP_SEPARATE | Whole-business vs workshop-scoped; both P0 and both in daily use. |
 | `wave_planning` / `wave_execution` | same object, different lifecycle stage | same | KEEP_SEPARATE | Catalog C-004 requires the creator/reviewer and release boundaries stay separate. |
 | `pick_task_queue` / `putaway_task_queue` | different physical operations | same | KEEP_SEPARATE | Inbound putaway and outbound picking share vocabulary, not a task. |
-| `extension_marketplace` / `extension_installations` | same object, different lifecycle stage | same | KEEP_SEPARATE | Browse/validate versus staged/enable. |
+| `extension_marketplace` / `extension_installations` | same object, different lifecycle stage | **different** — `saas_extension_packages` vs `saas_extension_installations` | KEEP_SEPARATE | Browse/validate versus staged/enable. **Now scored class B (0.6), previously C** — not because the pages converged, but because the analyzer weights page state and `extension_installations` stopped being THIN once its tenant scoping was fixed. The decision is unchanged: a package catalogue and a tenant's installed/enabled state are different tables with different actions (enable / disable / rollback exist only on the latter). |
 | `fuel_telemetry` / `suspected_fuel_loss_queue` | measurement vs exception queue | same | KEEP_SEPARATE | A queue of suspected losses is not the telemetry it derives from. |
 | Remaining 137 scored pairs | — | — | KEEP_SEPARATE | Class C: distinct business objects sharing vocabulary. |
 

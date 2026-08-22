@@ -87,6 +87,37 @@ it is called **only from tests**, never from production.
 (`authorizeRoute`, the permission evaluator, and `/api/auth/context` membership checks are
 untouched). What was lost is the client-facing *communication* of those decisions.
 
+**Correction (2026-08-22) — the blast radius was not only communication.** The same commit
+renamed the payload's `actor` block to `context`, and `modules/build11-workspaces.js` still
+read `__octagonBootstrap?.actor?.tenantId`. That resolved to `undefined` and fell through to
+the literal `'default'` — which is a **real tenant id** in `platform_tenants`. For
+platform-scoped callers the server honours `query.tenant_id`, so it filtered
+`WHERE tenant_id='default'` and returned nothing.
+
+Four pages rendered empty while their rows existed for `t_octagon_review`:
+`extension_installations` (1 row), `seats_and_limits` (1), `usage_and_quotas` (2),
+`billing_simulator` (1). `extension_installations` was scored THIN for this reason and had
+been assumed to be a missing-fixture gap like GAP-005B/005C. It was not — the data was
+always there.
+
+Proven directly against the running review server rather than inferred:
+`GET /api/v1/saas/installations?tenant_id=default` → `[]`, and
+`?tenant_id=t_octagon_review` → the row.
+
+**Fixed** in `build11-workspaces.js` by reading `context.tenantId` (falling back to the
+historic `actor.tenantId`, then to `''`). Empty string omits the parameter, which makes the
+server scope the read from the verified session instead of a guessed literal — strictly
+safer than the previous behaviour. The guard was not touched and `assertTenantAccess` still
+rejects a mismatched tenant with `TENANT_SCOPE_VIOLATION`.
+
+This does **not** close GAP-008: `actor.locale`/`direction`, `impersonation`, `fields` and
+`canOpen()`/`switchCompany()` are still missing and the ten tests still fail. It only stops
+one consumer reading a field that no longer exists. **Seven other reads of the dead `actor`
+shape remain** in `build08-workspaces.js`, `build10/api.js`, `build10-workspaces.js`,
+`build11-workspaces.js` and `build12-workspaces.js`; each currently falls through to
+`'default'`, `'—'` or `__octagonServerSession`, so they degrade quietly rather than crash.
+They should be audited when GAP-008 is resolved.
+
 **Blast radius** — three phase02 suites still assert the documented contract and therefore
 fail, across **ten** cases (re-counted from a full run on 2026-08-22; an earlier revision of
 this register said seven and undercounted `browser-live-evidence.test.mjs` by three):

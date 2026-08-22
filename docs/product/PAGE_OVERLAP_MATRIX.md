@@ -18,12 +18,14 @@ similar to every other one and buried real duplicates under lifecycle pairs
 
 | Class | Pairs |
 |---|---|
-| C — RELATED, KEEP SEPARATE | 146 |
+| B — OVERLAPPING, REVIEW | 1 |
+| C — RELATED, KEEP SEPARATE | 145 |
 
 Total scored pairs: **146**
 
 | Class | Page A | Page B | Domain | Same group | Label sim | Purpose sim | Score | A state | B state |
 |---|---|---|---|---|---|---|---|---|---|
+| B | `extension_installations` | `extension_marketplace` | commercial | yes | 0.33 | same category | 0.6 | USABLE/USABLE | USABLE/USABLE |
 | C | `device_command_center` | `device_health_center` | resources | yes | 0.5 | different | 0.55 | USABLE/USABLE | USABLE/USABLE |
 | C | `events_overview` | `marketing_overview` | commercial | yes | 0.5 | different | 0.55 | USABLE/USABLE | USABLE/USABLE |
 | C | `pick_task_queue` | `putaway_task_queue` | ops | no | 0.5 | same category | 0.55 | STRONG/STRONG | USABLE/USABLE |
@@ -36,7 +38,6 @@ Total scored pairs: **146**
 | C | `offline_capability_policies` | `offline_queue` | resources | yes | 0.44 | different | 0.52 | USABLE/USABLE | USABLE/USABLE |
 | C | `sop_review` | `sop_scenarios` | ops | yes | 0.2 | same category | 0.52 | STRONG/STRONG | STRONG/STRONG |
 | C | `command_center` | `workshop_command_center` | ops | yes | 0.43 | different | 0.51 | USABLE/USABLE | USABLE/USABLE |
-| C | `extension_installations` | `extension_marketplace` | commercial | yes | 0.33 | same category | 0.5 | THIN/THIN | USABLE/USABLE |
 | C | `wave_execution` | `wave_planning` | ops | yes | 0.33 | same category | 0.5 | USABLE/USABLE | USABLE/USABLE |
 | C | `ai_status` | `ai_tools` | intelligence | yes | 0.14 | same category | 0.49 | STRONG/STRONG | USABLE/USABLE |
 | C | `demand_planning` | `planning_exceptions` | ops | yes | 0.14 | same category | 0.49 | STRONG/STRONG | USABLE/USABLE |

@@ -12,11 +12,16 @@ guessed.
 | | Count |
 |---|---|
 | Total gaps logged | 12 |
-| Owner decision required | 7 |
-| Verified / fixed | 3 (GAP-005, GAP-006, and the 409 read-path write) |
+| Owner decision required | 5 (GAP-001 – GAP-004; duplicate-authority pairs) |
+| Verified / fixed | 6 (GAP-005, GAP-006, GAP-008, GAP-009, the 409 read-path write, and the silent `listUserMemberships` bug) |
 | Fixture-only, closed | 3 (GAP-005B, GAP-005C, GAP-007) |
 | Open P1 | 0 |
-| Open P2 | 1 (GAP-009) |
+| Open P2 | 0 |
+
+GAP-008 and GAP-009 closed 2026-08-22 — phase02 11/11, phase04 47/47, zero
+regressions. GAP-008 had been filed as an owner decision; that was a misfiling,
+see its entry. The remaining owner decisions are all duplicate-authority pairs,
+where the question is which page should exist — not defects.
 
 ## The headline finding: duplicate-authority pairs, not missing features
 

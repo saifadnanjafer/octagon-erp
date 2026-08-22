@@ -18,9 +18,9 @@ similar to every other one and buried real duplicates under lifecycle pairs
 
 | Class | Pairs |
 |---|---|
-| C — RELATED, KEEP SEPARATE | 151 |
+| C — RELATED, KEEP SEPARATE | 150 |
 
-Total scored pairs: **151**
+Total scored pairs: **150**
 
 | Class | Page A | Page B | Domain | Same group | Label sim | Purpose sim | Score | A state | B state |
 |---|---|---|---|---|---|---|---|---|---|
@@ -134,8 +134,7 @@ Total scored pairs: **151**
 | C | `mobile_receiving` | `replenishment_proposals` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
 | C | `mps` | `supply_demand_balance` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `mrp` | `op_packs` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |
-| C | `operational_performance` | `shopfloor_terminal` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
-| C | `operational_performance` | `workcenter_queue` | ops | yes | 0 | same category | 0.4 | THIN/THIN | USABLE/USABLE |
+| C | `operational_performance` | `production_issue_return` | ops | yes | 0 | same category | 0.4 | STRONG/STRONG | USABLE/USABLE |
 | C | `payment_funding_proposals` | `treasury_alerts` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `payment_funding_proposals` | `treasury_cash_position` | finance | yes | 0 | same category | 0.4 | STRONG/STRONG | STRONG/STRONG |
 | C | `pick_task_queue` | `wave_planning` | ops | yes | 0 | same category | 0.4 | USABLE/USABLE | USABLE/USABLE |

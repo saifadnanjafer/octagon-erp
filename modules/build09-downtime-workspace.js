@@ -179,7 +179,10 @@
       if (state.loading) return `${scopeLine()}<div class="b09r-panel"><p class="b09-status" data-phase="loading">${esc(t('Loading performance metrics…', 'جارِ تحميل مقاييس الأداء…'))}</p></div>`;
       const summary = state.summary;
       if (!summary || !summary.sessions) {
-        return `${scopeLine()}<div class="b09r-panel" data-role="op-empty">${muted('No performance metrics are available yet — they require completed shop-floor sessions with recorded timing and output.', 'لا تتوفر مقاييس أداء بعد — فهي تتطلب جلسات أرض مصنع مكتملة بتوقيت ومخرجات مسجلة.')}</div>`;
+        // Even with nothing measured yet, this must not be a dead end: the reason
+        // there are no metrics is always upstream, so send the operator to the
+        // pages that produce the evidence rather than stranding them here.
+        return `${scopeLine()}${performanceToolbar()}<div class="b09r-panel" data-role="op-empty">${muted('No performance metrics are available yet — they require completed shop-floor sessions with recorded timing and output.', 'لا تتوفر مقاييس أداء بعد — فهي تتطلب جلسات أرض مصنع مكتملة بتوقيت ومخرجات مسجلة.')}</div>`;
       }
       const queue = state.sessions.filter((row) => ['ready', 'assigned', 'awaiting_canonical'].includes(row.status)).length;
       const throughput = (summary.metrics || []).reduce((sum, row) => sum + Number(row.producedQuantity || 0), 0);
@@ -187,6 +190,7 @@
       const downtime = (summary.metrics || []).reduce((sum, row) => sum + Number(row.downtimeMinutes || 0), 0);
 
       return `${scopeLine([`${t('Sessions measured', 'الجلسات المقاسة')}: ${esc(num(summary.sessions, 0))}`])}
+        ${performanceToolbar()}
         ${kpis([
           ['Throughput', 'الإنتاجية', num(throughput), throughput ? 'ok' : ''],
           ['Rejected', 'المرفوض', num(rejected), rejected ? 'danger' : ''],
@@ -197,8 +201,33 @@
         ${sessionMetricsPanel(summary)}`;
     },
 
-    bind() {},
+    bind(container, state, api) {
+      const refresh = container.querySelector('[data-role="op-refresh"]');
+      if (refresh) refresh.addEventListener('click', () => api.guarded(async () => {
+        const [summary, sessions] = await Promise.all([api.query('work-center-performance'), api.query('shopfloor-sessions')]);
+        state.summary = summary;
+        state.sessions = Array.isArray(sessions) ? sessions : [];
+      }));
+      container.querySelectorAll('[data-role="op-goto"]').forEach((button) => button.addEventListener('click', () => {
+        try { root.switchPage(button.dataset.page); } catch (_) {}
+      }));
+    },
   });
+
+  /**
+   * This page only ever reports; every metric on it is produced somewhere else.
+   * Without these it measures problems and then offers no route to the page that
+   * explains or resolves them, which is what made it a dead end.
+   */
+  function performanceToolbar() {
+    const goto = (page, en, ar) => `<button type="button" class="b09-button" data-role="op-goto" data-page="${esc(page)}">${esc(t(en, ar))}</button>`;
+    return `<div class="b09r-panel b09r-actions-row" data-role="op-toolbar">
+      <button type="button" class="b09-button b09-primary" data-role="op-refresh">${esc(t('Recalculate', 'إعادة الحساب'))}</button>
+      ${goto('downtime_board', 'Downtime board', 'لوحة التوقف')}
+      ${goto('workcenter_queue', 'Work-centre queue', 'طابور مركز العمل')}
+      ${goto('shopfloor_terminal', 'Shop-floor terminal', 'محطة أرض المصنع')}
+    </div>`;
+  }
 
   /**
    * A metric the server could not compute is rendered as "not available" with its reason - never

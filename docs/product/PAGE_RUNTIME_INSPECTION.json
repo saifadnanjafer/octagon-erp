@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-21T23:55:41.757Z",
-  "startedAt": "2026-08-21T23:55:33.963Z",
+  "generatedAt": "2026-08-22T00:01:30.207Z",
+  "startedAt": "2026-08-22T00:01:22.511Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -3442,7 +3442,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "downtime_board",
-      "durationMs": 934,
+      "durationMs": 1807,
       "error": null,
       "activated": true,
       "observation": {
@@ -3456,7 +3456,7 @@
           "سجل التوقف"
         ],
         "title": "لوحة التوقف",
-        "textLength": 707,
+        "textLength": 710,
         "controlCount": 2,
         "controlLabels": [
           "إنهاء التوقف",
@@ -3469,7 +3469,8 @@
         "tableCount": 0,
         "tableRows": 0,
         "tableColumns": 0,
-        "listItems": 0,
+        "listItems": 1,
+        "governedRecordItems": 1,
         "stateSignals": {
           "loading": false,
           "empty": false,
@@ -3480,12 +3481,21 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 405,
+        "arabicChars": 407,
         "latinChars": 144
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 409 (Conflict)"
+      ],
       "pageErrors": [],
-      "failedRequests": []
+      "failedRequests": [
+        {
+          "status": 409,
+          "path": "/api/db",
+          "method": "POST",
+          "detail": "{\"ok\":false,\"code\":\"FINANCE_CANONICAL_AUTHORITY_REQUIRED\",\"error\":\"Governed finance facts cannot be mutated via legacy write routes. Use POST /api/v1/action/:actionId\",\"collection\":\"finance.accounts\"}"
+        }
+      ]
     },
     {
       "id": "eliminations",
@@ -7519,7 +7529,7 @@
       "rendererType": "javascript",
       "rendererSource": "modules/build09-downtime-workspace.js",
       "requiredPermission": "operational_performance",
-      "durationMs": 1731,
+      "durationMs": 1851,
       "error": null,
       "activated": true,
       "observation": {
@@ -7532,9 +7542,14 @@
           "مقاييس كل جلسة"
         ],
         "title": "لوحة الأداء التشغيلي",
-        "textLength": 664,
-        "controlCount": 0,
-        "controlLabels": [],
+        "textLength": 726,
+        "controlCount": 4,
+        "controlLabels": [
+          "إعادة الحساب",
+          "لوحة التوقف",
+          "طابور مركز العمل",
+          "محطة أرض المصنع"
+        ],
         "inputCount": 1,
         "selectCount": 1,
         "searchInputCount": 0,
@@ -7550,11 +7565,15 @@
           "error": false,
           "denied": false
         },
-        "linkTargets": [],
+        "linkTargets": [
+          "downtime_board",
+          "workcenter_queue",
+          "shopfloor_terminal"
+        ],
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 420,
+        "arabicChars": 471,
         "latinChars": 103
       },
       "consoleErrors": [],

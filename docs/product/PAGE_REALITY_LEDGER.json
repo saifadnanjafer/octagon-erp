@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-22T05:10:37.946Z",
+  "generatedAt": "2026-08-22T05:26:17.416Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T05:10:37.333Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T05:26:16.846Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -43,7 +43,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 452,
+        "textLength": 466,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -60,7 +60,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 249,
-        "latinChars": 102
+        "latinChars": 115
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -729,19 +729,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "ai_tools, ai_queue, ai_factory",
       "functionalState": "STRONG",
-      "functionalEvidence": "5 controls, 9 rendered records, 3 workflow link(s)",
+      "functionalEvidence": "5 controls, 10 rendered records, 3 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3617,
+        "textLength": 3768,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
         "tables": 2,
-        "tableRows": 9,
+        "tableRows": 10,
         "listItems": 0,
         "links": 3,
         "states": {
@@ -752,8 +752,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1058,
-        "latinChars": 1869
+        "arabicChars": 1072,
+        "latinChars": 1963
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2248,7 +2248,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 494,
+        "textLength": 508,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -2265,7 +2265,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 278,
-        "latinChars": 112
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2311,7 +2311,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 468,
+        "textLength": 482,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -2328,7 +2328,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 255,
-        "latinChars": 112
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2871,19 +2871,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "7 controls, 5 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "7 controls, 4 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2238,
+        "textLength": 2044,
         "controls": 7,
         "inputs": 6,
         "searchInputs": 0,
         "tables": 1,
-        "tableRows": 5,
+        "tableRows": 4,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -2895,7 +2895,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 1067,
-        "latinChars": 701
+        "latinChars": 552
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3004,7 +3004,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4652,
+        "textLength": 4648,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -3020,8 +3020,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1576,
-        "latinChars": 1880
+        "arabicChars": 1570,
+        "latinChars": 1883
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3766,7 +3766,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 707,
+        "textLength": 710,
         "controls": 2,
         "inputs": 8,
         "searchInputs": 0,
@@ -3782,7 +3782,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 405,
+        "arabicChars": 407,
         "latinChars": 144
       },
       "runtimeConsoleErrors": 0,
@@ -3829,7 +3829,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 457,
+        "textLength": 471,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -3846,7 +3846,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 261,
-        "latinChars": 98
+        "latinChars": 111
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4137,19 +4137,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "USABLE",
-      "functionalEvidence": "2 controls, 14 records, 0 link(s)",
+      "functionalEvidence": "2 controls, 3 records, 0 link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "USABLE",
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 2540,
+        "textLength": 805,
         "controls": 2,
         "inputs": 2,
         "searchInputs": 0,
         "tables": 1,
-        "tableRows": 14,
+        "tableRows": 3,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -4161,7 +4161,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 199,
-        "latinChars": 1392
+        "latinChars": 344
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5473,7 +5473,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 468,
+        "textLength": 482,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -5490,7 +5490,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 260,
-        "latinChars": 108
+        "latinChars": 121
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6292,7 +6292,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 474,
+        "textLength": 488,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -6309,7 +6309,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 249,
-        "latinChars": 126
+        "latinChars": 139
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6355,7 +6355,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 510,
+        "textLength": 524,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -6372,7 +6372,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 285,
-        "latinChars": 122
+        "latinChars": 135
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6607,7 +6607,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 34487,
+        "textLength": 34489,
         "controls": 176,
         "inputs": 4,
         "searchInputs": 1,
@@ -6623,7 +6623,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 23850,
+        "arabicChars": 23848,
         "latinChars": 2355
       },
       "runtimeConsoleErrors": 0,
@@ -6733,7 +6733,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 451,
+        "textLength": 465,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -6750,7 +6750,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 243,
-        "latinChars": 108
+        "latinChars": 121
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7237,7 +7237,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 448,
+        "textLength": 462,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -7254,7 +7254,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 248,
-        "latinChars": 100
+        "latinChars": 113
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7426,7 +7426,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 468,
+        "textLength": 482,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -7443,7 +7443,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 243,
-        "latinChars": 122
+        "latinChars": 135
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8056,7 +8056,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 723,
+        "textLength": 726,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 0,
@@ -8072,7 +8072,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 469,
+        "arabicChars": 471,
         "latinChars": 103
       },
       "runtimeConsoleErrors": 0,
@@ -8182,7 +8182,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 496,
+        "textLength": 510,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -8199,7 +8199,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 269,
-        "latinChars": 120
+        "latinChars": 133
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8560,7 +8560,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 441,
+        "textLength": 455,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -8577,7 +8577,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 236,
-        "latinChars": 110
+        "latinChars": 123
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10660,7 +10660,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1725,
+        "textLength": 1773,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
@@ -10676,8 +10676,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 798,
-        "latinChars": 522
+        "arabicChars": 814,
+        "latinChars": 529
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11167,7 +11167,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 477,
+        "textLength": 491,
         "controls": 5,
         "inputs": 1,
         "searchInputs": 1,
@@ -11184,7 +11184,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 281,
-        "latinChars": 92
+        "latinChars": 105
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11230,7 +11230,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 479,
+        "textLength": 493,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -11247,7 +11247,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 278,
-        "latinChars": 98
+        "latinChars": 111
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11545,7 +11545,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 500,
+        "textLength": 514,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -11562,7 +11562,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 280,
-        "latinChars": 112
+        "latinChars": 125
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12112,7 +12112,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2889,
+        "textLength": 2883,
         "controls": 15,
         "inputs": 9,
         "searchInputs": 0,
@@ -12128,7 +12128,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1900,
+        "arabicChars": 1897,
         "latinChars": 393
       },
       "runtimeConsoleErrors": 0,
@@ -12490,7 +12490,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 453,
+        "textLength": 467,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -12507,7 +12507,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 252,
-        "latinChars": 102
+        "latinChars": 115
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12553,7 +12553,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 478,
+        "textLength": 492,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -12570,7 +12570,7 @@
         "rawIds": 0,
         "rawJson": false,
         "arabicChars": 259,
-        "latinChars": 114
+        "latinChars": 127
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

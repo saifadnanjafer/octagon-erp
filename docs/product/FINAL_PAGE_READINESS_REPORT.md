@@ -199,6 +199,66 @@ runtime and re-renders via `switchPage`), so every translation is guarded rather
 than hardcoded. `index.html` ships `lang="ar" dir="rtl"` and nothing else mutates
 it, which makes the guards look dead on a static read — they are not.
 
+## Closure pass — data hidden behind a renamed bootstrap field
+
+`extension_installations` was scored THIN, and the established pattern for a
+THIN governed page in this repo is a missing fixture — GAP-005B and GAP-005C
+were both exactly that. Querying the database before seeding anything showed the
+row already existed. The page was **hiding** data, not lacking it.
+
+`window.__octagonBootstrap.actor` no longer exists; the payload renamed it to
+`context`. Reads of `actor.tenantId` returned `undefined` and fell through to the
+literal `'default'` — which is a **real row** in `platform_tenants`, not an inert
+placeholder. The client asked for a different, existing tenant and received a
+legitimately empty answer, with no error and no warning.
+
+Proven against the running review server rather than inferred from the code —
+necessary, because a first reading of `listSaas()` wrongly concluded that
+`query.tenant_id` was ignored; it is honoured on the `crossTenant` path that
+platform-scoped callers take:
+
+```
+GET /api/v1/saas/installations?tenant_id=default            -> []
+GET /api/v1/saas/installations?tenant_id=t_octagon_review   -> the row
+```
+
+Every remaining reader was then checked individually rather than assumed:
+
+| Site | Effect |
+| --- | --- |
+| `build11-workspaces.js` | **4 pages hid real rows** — `extension_installations`, `seats_and_limits`, `usage_and_quotas`, `billing_simulator` |
+| `build12-workspaces.js` | **3 write buttons 403'd on every click** — `packs:enable/disable/rollback`; the server rejects a `tenant_id` that differs from the session |
+| `build10-workspaces.js` | cosmetic — a `data-company` attribute read `default` |
+| `build10/api.js` | unreachable — already prefers `OctagonRuntimeContext` |
+| `build08-workspaces.js` | usually right by accident — fell through to `__octagonServerSession` |
+
+All now read `context` first, keeping the historic `actor` read as a fallback.
+Where the value is unknown they send **nothing**, so the server scopes from the
+verified session rather than a guessed literal — safer than the previous
+behaviour. The authority guard was not touched, and `assertTenantAccess` still
+rejects a mismatched tenant with `TENANT_SCOPE_VIOLATION`.
+
+This does **not** close GAP-008 and is recorded there as a correction: that gap
+was documented as costing only the client-facing *communication* of authorization
+decisions, which understated it.
+
+## Closure pass — the last two THIN pages are selection-first, not broken
+
+Both remaining THIN pages were verified to work; the score is a measurement
+artifact, because the inspector loads a page but never types into it.
+
+- **`lot_serial_traceability`** — a trace tool answers a question about one lot.
+  With nothing entered there is correctly nothing to show. Verified functional:
+  `GET /api/v1/wms/trace?lot_id=rev_lot_gate_hinges_01` returns the full identity
+  and trace profile. Listing every lot by default would not be a trace.
+- **`employee_ui`** — the 6 review employees do populate the selector; the body
+  fills once one is chosen. Making it default to *someone* is *not* a safe
+  unilateral fix: this is the employee self-service portal, and defaulting to an
+  arbitrary employee would expose that person's salary to whoever opens the page.
+  Whether it should default to the signed-in user's own record is a product and
+  privacy decision, so it is **left for the owner** rather than forced to satisfy
+  a metric.
+
 ## Final verdict
 
 **READY_WITH_OWNER_DECISIONS.** All retained P0/P1 destinations have clear purpose, usable evidence, persistence coverage where operational, and current full navigation/visual acceptance. The remaining THIN/PURPOSE_UNCLEAR rows are lower-priority product decisions and remain explicitly documented rather than being relabelled as complete.

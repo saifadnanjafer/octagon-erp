@@ -11,12 +11,12 @@ guessed.
 
 | | Count |
 |---|---|
-| Total gaps logged | 11 |
+| Total gaps logged | 12 |
 | Owner decision required | 7 |
-| Verified / fixed this pass | 1 (GAP-005) |
-| Fixture-only, closed this pass | 1 (GAP-007) |
-| Open P1 | 1 (GAP-006) |
-| Open P2 | 1 (GAP-005B) |
+| Verified / fixed | 3 (GAP-005, GAP-006, and the 409 read-path write) |
+| Fixture-only, closed | 3 (GAP-005B, GAP-005C, GAP-007) |
+| Open P1 | 0 |
+| Open P2 | 1 (GAP-009) |
 
 ## The headline finding: duplicate-authority pairs, not missing features
 
@@ -54,11 +54,11 @@ on primary nav) has real cost.
 ### GAP-005 — WMS pages 422'd on load, no warehouse-picker UI (VERIFIED — fixed this pass)
 ~20 pages required `warehouse_id` with nothing to supply it. Fixed by defaulting `ctx.warehouseId` from the `warehouses.is_default` flag (already in the schema, never read) in `platform-runtime-bridge.mjs`'s `resolveApiContext()`. Re-inspection confirms: `CLIENT_CONTRACT_BUG` signatures dropped from 29 to 11, and `pick_task_queue`/`wave_planning`/`mobile_picking` moved from erroring to USABLE.
 
-### GAP-005B — 4 WMS sub-resources have no fixture rows (P2, open)
-Surfaced by fixing GAP-005: `crossdock_workspace`, `staging_board`, `downtime_board`, `count_session` now load cleanly (no error, `denied:false`) but show empty because `scripts/review/fixtures/warehouse.mjs` never seeded rows for these specific sub-resources. Same class of fix as GAP-007 (fixture extension, not new code) — not yet done.
+### GAP-005B — 4 WMS sub-resources have no fixture rows (VERIFIED — closed)
+Surfaced by fixing GAP-005: `crossdock_workspace`, `staging_board`, `downtime_board`, `count_session` now load cleanly (no error, `denied:false`) but show empty because `scripts/review/fixtures/warehouse.mjs` never seeded rows for these specific sub-resources. Same class of fix as GAP-007 (fixture extension, not new code). **Closed**: the warehouse fixture deepening in `53bf0f8` seeded all four. Re-verified this pass — `crossdock_workspace`, `staging_board`, `downtime_board` and `count_session` are each USABLE with a governed record and a PASS navigation status.
 
-### GAP-006 — `my_work` 404s on saved-views call (root-caused and fixed, verification pending server restart)
-Root cause found via direct HTTP trace (`curl` against the live review server, authenticated as `review.sysadmin`): **every** `platform`-namespace resource 404s identically (`notifications`, `activities`, `saved-views` all returned `"unknown route"`), not just saved-views. `platform-runtime-bridge.mjs` defines two different API-mounting functions: `authority.mountApi` (unused anywhere) correctly passes `notifications`/`jobs`/`scheduledReports`/`platformSearch`/`chatter`/`configuration`; the standalone exported `mountPlatformApi` — the one `server.js:2938` actually calls — passed none of them. Every `resource === X && Y` check in `platform/api/index.mjs`'s `platform` namespace block silently fell through because `Y` was always `undefined`, landing on the generic 404 fallback instead of a diagnosable error. Fixed by bringing `mountPlatformApi` to parity with `authority.mountApi`. Not yet re-verified live — needs a review-server restart, queued behind the in-progress final full re-inspection so as not to kill that background run.
+### GAP-006 — `my_work` 404s on saved-views call (VERIFIED — closed)
+Root cause found via direct HTTP trace (`curl` against the live review server, authenticated as `review.sysadmin`): **every** `platform`-namespace resource 404s identically (`notifications`, `activities`, `saved-views` all returned `"unknown route"`), not just saved-views. `platform-runtime-bridge.mjs` defines two different API-mounting functions: `authority.mountApi` (unused anywhere) correctly passes `notifications`/`jobs`/`scheduledReports`/`platformSearch`/`chatter`/`configuration`; the standalone exported `mountPlatformApi` — the one `server.js:2938` actually calls — passed none of them. Every `resource === X && Y` check in `platform/api/index.mjs`'s `platform` namespace block silently fell through because `Y` was always `undefined`, landing on the generic 404 fallback instead of a diagnosable error. Fixed by bringing `mountPlatformApi` to parity with `authority.mountApi`. **Verified live this pass** against an authenticated review server: `saved-views` now answers `422 entity is required` and `chatter` `422 entity and record_id are required` — real validation responses rather than the generic `unknown route` 404 — while `notifications`, `activities`, `job-health` and `search` all return 200. (`configuration` still 404s correctly: it is a dependency `saved-views` is built from, not a resource of its own. `jobs` likewise — the route is `job-health`.)
 
 ### GAP-007 — CRM/Sales/Procurement fixture gap (FIXTURE_ONLY — closed this pass)
 `platform/sales/*`, `platform/procurement/*`, and `modules/canonical-sales.js` were real, wired, and fully unpopulated. Closed via `scripts/review/fixtures/commercial-pipeline.mjs`. Verified: `sales` moved from a false-positive "STRONG, 7 records" (tab-button chrome) to genuine USABLE with real rendered data. `sales_price_lists`/`supplier_portal` remain thin, but are now understood to be a **different, legacy-authority issue** (see GAP-004) rather than the same fixture gap.
@@ -137,6 +137,23 @@ single failing case in an otherwise green 47-test phase04 suite.
 migration 001, or the registry should allow an entity-agnostic action. Choosing the anchor
 changes how these actions are authorization-scoped, so it is a platform call rather than a
 test fix — the test was left failing rather than restaged to hide it.
+
+### GAP-005C — no fixture row existed for any BUILD-10 device/fleet/edge table (VERIFIED — closed this pass)
+
+**Evidence**: `iot_devices`, `iot_gateways`, `fleet_vehicles`, `fleet_location_points`,
+`kiosk_device_registries` and `offline_client_registries` all returned `COUNT(*) = 0` on a
+freshly reset review database. Around thirty BUILD-10 primary workspaces therefore rendered
+an empty state — the same class as GAP-005B and GAP-007, and the reason those pages read as
+shallow rather than unimplemented.
+
+**Closed** by `scripts/review/fixtures/build10-devices-fleet.mjs`: one gateway, one device
+with its health record and one open alert, one vehicle with a driver and one location point,
+one kiosk, one offline client — values aligned to each table's CHECK constraints.
+
+**Verified**: the read model returns the rows, the page renders them, and the runtime
+inspection's `empty` signal flips true → false on `device_registry`, `gateway_management`
+and `fleet_live_map_simulator`. Telemetry was deliberately left sparse: no speed, fuel or
+trip history was fabricated.
 
 ## What this register deliberately does not claim
 

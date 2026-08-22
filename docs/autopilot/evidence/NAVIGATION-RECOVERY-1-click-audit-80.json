@@ -1,0 +1,3568 @@
+{
+  "generatedAt": "2026-08-06T22:35:32.294Z",
+  "startedAt": "2026-08-06T22:34:50.000Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 40,
+    "pass": 40,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "globalNotFound": [
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/api/v1/platform/notifications",
+    "/api/v1/platform/activities",
+    "/api/v1/platform/notification-health",
+    "/api/v1/platform/saved-views",
+    "/api/v1/platform/scheduled-reports",
+    "/api/v1/platform/job-health"
+  ],
+  "items": [
+    {
+      "id": "field_service",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageFieldService",
+        "activePageKey": "pageFieldService",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 719,
+      "consoleErrors": [
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
+      "notFound": []
+    },
+    {
+      "id": "finance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageFinance",
+        "activePageKey": "pageFinance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 690,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "finance_installments",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageFinanceInstallments",
+        "activePageKey": "pageFinanceInstallments",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 574,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "financing_facilities",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "financing_facilities",
+        "activePageKey": "financing_facilities",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 673,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "firmware_catalogue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "firmware_catalogue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 732,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "fleet",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageFleet",
+        "activePageKey": "pageFleet",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 549,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "fleet_device_mapping",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "fleet_device_mapping",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 699,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "fleet_live_map_simulator",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "fleet_live_map_simulator",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 546,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "fleet_operations_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "fleet_operations_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 699,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "forecast_accuracy",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "forecast_accuracy",
+        "activePageKey": "forecast_accuracy",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 567,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "forecast_overrides",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "forecast_overrides",
+        "activePageKey": "forecast_overrides",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 525,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "forecast_versions",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "forecast_versions",
+        "activePageKey": "forecast_versions",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 559,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "fuel_telemetry",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "fuel_telemetry",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 565,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "gateway_management",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "gateway_management",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 686,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "geofence_events",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "geofence_events",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 696,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "geofence_management",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "geofence_management",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 548,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "help_manual",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageHelpManual",
+        "activePageKey": "pageHelpManual",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 533,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "helpdesk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageHelpdesk",
+        "activePageKey": "pageHelpdesk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 556,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "home",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageHome",
+        "activePageKey": "pageHome",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 579,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "hotel",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageHotel",
+        "activePageKey": "pageHotel",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 684,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "import",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageImport",
+        "activePageKey": "pageImport",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 548,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "import_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageImportCenter",
+        "activePageKey": "pageImportCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 698,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "income",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageIncome",
+        "activePageKey": "pageIncome",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 535,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "integration_hub",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageIntegrationHub",
+        "activePageKey": "pageIntegrationHub",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 555,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "intelligence",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageIntelligence",
+        "activePageKey": "pageIntelligence",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 539,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "notFound": [
+        "/api/v1/platform/notifications",
+        "/api/v1/platform/activities",
+        "/api/v1/platform/notification-health",
+        "/api/v1/platform/saved-views",
+        "/api/v1/platform/scheduled-reports",
+        "/api/v1/platform/job-health"
+      ]
+    },
+    {
+      "id": "intercompany_reconciliation",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "intercompany_reconciliation",
+        "activePageKey": "intercompany_reconciliation",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 695,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "intercompany_transactions",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "intercompany_transactions",
+        "activePageKey": "intercompany_transactions",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 530,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "inventory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageInventory",
+        "activePageKey": "pageInventory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 540,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageKiosk",
+        "activePageKey": "pageKiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 722,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "kiosk_device_registry",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "kiosk_device_registry",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 584,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "knowledge",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageKnowledge",
+        "activePageKey": "pageKnowledge",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 684,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "knowledge_base",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageKnowledgeBase",
+        "activePageKey": "pageKnowledgeBase",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 585,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "learning_and_certifications",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "learning_and_certifications",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 7696,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "liquidity_forecast",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "liquidity_forecast",
+        "activePageKey": "liquidity_forecast",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3320,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "logistics",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageLogistics",
+        "activePageKey": "pageLogistics",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 3868,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "lot_serial_traceability",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "lot_serial_traceability",
+        "activePageKey": "lot_serial_traceability",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 734,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "loyalty",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageLoyalty",
+        "activePageKey": "pageLoyalty",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 686,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "machines",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageMachines",
+        "activePageKey": "pageMachines",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 713,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "maintenance_triggers",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "maintenance_triggers",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "maintenance_triggers",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "maintenance_triggers",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 753,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "marketing",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageMarketing",
+        "activePageKey": "pageMarketing",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "firmware_catalogue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_device_mapping",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_live_map_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fleet_operations_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "fuel_telemetry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "gateway_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_events",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "geofence_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "kiosk_device_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "maintenance_triggers",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "maintenance_triggers",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "learning_and_certifications",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 686,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

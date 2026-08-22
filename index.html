@@ -125,7 +125,11 @@
   <!-- T5.1 -->
   <link rel="stylesheet" href="modules/system-check.css?v=20260714-t5.1-v1">
   <link rel="stylesheet" href="modules/build08-workspaces.css?v=20260802-build08-v1">
-  <link rel="stylesheet" href="modules/build09-workspaces.css?v=20260803-build09r-v2">
+  <link rel="stylesheet" href="modules/build09-workspaces.css?v=20260805-build09r2-v2">
+  <link rel="stylesheet" href="modules/build10-workspaces.css?v=20260803-build10-v1">
+  <link rel="stylesheet" href="modules/build11-workspaces.css?v=20260805-build11-v1">
+  <link rel="stylesheet" href="modules/build12-workspaces.css?v=20260805-build12-v1">
+<link rel="stylesheet" href="modules/workshop-operations.css?v=20260805-workshop-wave-v1">
   <style>
     /* OMNISYSTEM V3.3 LAYOUT RECOVERY & FINISH */
     :root {
@@ -171,6 +175,45 @@
       display: block !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
+    }
+
+    /* This block is inline and therefore loads after the drawer stylesheet.
+       Keep the narrow shell an overlay with a full-width content lane. */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: flex !important;
+        position: fixed !important;
+        inset-block: 0 !important;
+        inset-inline-start: 0 !important;
+        width: min(82vw, 300px) !important;
+        min-width: 0 !important;
+        max-width: min(82vw, 300px) !important;
+        z-index: 1200 !important;
+        overflow-y: auto !important;
+        transform: translateX(0);
+      }
+
+      .main-content,
+      body.sidebar-collapsed .main-content {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+      }
+
+      body.sidebar-collapsed .sidebar {
+        width: min(82vw, 300px) !important;
+        min-width: 0 !important;
+        max-width: min(82vw, 300px) !important;
+        transform: translateX(-105%);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      html[dir="rtl"] body.sidebar-collapsed .sidebar {
+        transform: translateX(105%);
+      }
     }
 
     body.sidebar-collapsed .sidebar {
@@ -1180,6 +1223,9 @@
           <span class="nav-label">الرئيسية</span>
           <span class="nav-indicator"></span>
         </button>
+        <button class="nav-btn" data-page="my_work" id="navMyWork" onclick="switchPage('my_work')">
+          <span class="nav-icon">✓</span><span class="nav-label" data-i18n-ar="عملي" data-i18n-en="My Work">عملي</span><span class="nav-indicator"></span>
+        </button>
         <button class="nav-btn" data-page="calculator" id="navCalculator" onclick="switchPage('calculator')">
           <span class="nav-icon">🧮</span>
           <span class="nav-label">الحاسبة الذكية</span>
@@ -1261,6 +1307,14 @@
               <span class="nav-icon">🎯</span>
               <span class="nav-label">مركز القيادة</span>
               <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="workshop_command_center" id="navWorkshopCommandCenter" onclick="switchPage('workshop_command_center')">
+              <span class="nav-icon">⌁</span>
+              <span class="nav-label" data-i18n-ar="مركز قيادة الورشة" data-i18n-en="Workshop Command Center">مركز قيادة الورشة</span>
+              <span class="nav-indicator"></span>
+            </button>
+            <button class="nav-btn" data-page="workshop_readiness" id="navWorkshopReadiness" onclick="switchPage('workshop_readiness')">
+              <span class="nav-icon">◈</span><span class="nav-label" data-i18n-ar="جاهزية الورشة" data-i18n-en="Workshop Readiness">جاهزية الورشة</span><span class="nav-indicator"></span>
             </button>
             <button class="nav-btn" data-page="kanban" id="navKanban" onclick="switchPage('kanban')">
               <span class="nav-icon">📋</span>
@@ -1547,7 +1601,7 @@
               <span class="nav-label">التوقيع الإلكتروني</span>
               <span class="nav-indicator"></span>
             </button>
-            <button class="nav-btn" data-page="knowledge" id="navKnowledge" onclick="switchPage('knowledge')">
+            <button class="nav-btn" data-page="knowledge" id="navKnowledge" hidden onclick="switchPage('knowledge')">
               <span class="nav-icon">📖</span>
               <span class="nav-label">قاعدة المعرفة</span>
               <span class="nav-indicator"></span>
@@ -1733,6 +1787,38 @@
             </button>
           </div>
         </div>
+      <!-- BUILD-12: governed intelligence, people, marketing, events, and Al-Warsha workspaces -->
+      <div class="nav-group" data-nav-group="build12_intelligence">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build12_intelligence')" aria-controls="navGroup_build12_intelligence" aria-expanded="false">
+          <span class="nav-icon">AI</span><span>BUILD-12 Governed Intelligence</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build12_intelligence">
+          <button class="nav-btn" data-page="ai_overview" onclick="switchPage('ai_overview')"><span class="nav-icon">◆</span><span>AI Overview</span></button>
+          <button class="nav-btn" data-page="ai_assistant" onclick="switchPage('ai_assistant')"><span class="nav-icon">◆</span><span>AI Assistant</span></button>
+          <button class="nav-btn" data-page="ai_proposal_inbox" onclick="switchPage('ai_proposal_inbox')"><span class="nav-icon">◆</span><span>AI Proposal Inbox</span></button>
+          <button class="nav-btn" data-page="ai_run_history" onclick="switchPage('ai_run_history')"><span class="nav-icon">◆</span><span>AI Run History</span></button>
+          <button class="nav-btn" data-page="ai_policy_registry" onclick="switchPage('ai_policy_registry')"><span class="nav-icon">◆</span><span>AI Policy Registry</span></button>
+          <button class="nav-btn" data-page="ai_prompt_templates" onclick="switchPage('ai_prompt_templates')"><span class="nav-icon">◆</span><span>AI Prompt Templates</span></button>
+          <button class="nav-btn" data-page="ai_context_sources" onclick="switchPage('ai_context_sources')"><span class="nav-icon">◆</span><span>AI Context Sources</span></button>
+          <button class="nav-btn" data-page="people_development_overview" onclick="switchPage('people_development_overview')"><span class="nav-icon">◆</span><span>People Development</span></button>
+          <button class="nav-btn" data-page="skills_catalog" onclick="switchPage('skills_catalog')"><span class="nav-icon">◆</span><span>Skills Catalog</span></button>
+          <button class="nav-btn" data-page="competency_profiles" onclick="switchPage('competency_profiles')"><span class="nav-icon">◆</span><span>Competency Profiles</span></button>
+          <button class="nav-btn" data-page="person_skill_evidence" onclick="switchPage('person_skill_evidence')"><span class="nav-icon">◆</span><span>Skill Evidence</span></button>
+          <button class="nav-btn" data-page="development_plans" onclick="switchPage('development_plans')"><span class="nav-icon">◆</span><span>Development Plans</span></button>
+          <button class="nav-btn" data-page="learning_and_certifications" onclick="switchPage('learning_and_certifications')"><span class="nav-icon">◆</span><span>Learning &amp; Certifications</span></button>
+          <button class="nav-btn" data-page="marketing_overview" onclick="switchPage('marketing_overview')"><span class="nav-icon">◆</span><span>Marketing Overview</span></button>
+          <button class="nav-btn" data-page="campaigns" onclick="switchPage('campaigns')"><span class="nav-icon">◆</span><span>Campaigns</span></button>
+          <button class="nav-btn" data-page="content_calendar" onclick="switchPage('content_calendar')"><span class="nav-icon">◆</span><span>Content Calendar</span></button>
+          <button class="nav-btn" data-page="content_approvals" onclick="switchPage('content_approvals')"><span class="nav-icon">◆</span><span>Content Approvals</span></button>
+          <button class="nav-btn" data-page="attribution_insights" onclick="switchPage('attribution_insights')"><span class="nav-icon">◆</span><span>Attribution Insights</span></button>
+          <button class="nav-btn" data-page="events_overview" onclick="switchPage('events_overview')"><span class="nav-icon">◆</span><span>Events Overview</span></button>
+          <button class="nav-btn" data-page="event_planner" onclick="switchPage('event_planner')"><span class="nav-icon">◆</span><span>Event Planner</span></button>
+          <button class="nav-btn" data-page="event_registrations" onclick="switchPage('event_registrations')"><span class="nav-icon">◆</span><span>Event Registrations</span></button>
+          <button class="nav-btn" data-page="event_checkin" onclick="switchPage('event_checkin')"><span class="nav-icon">◆</span><span>Event Check-in</span></button>
+          <button class="nav-btn" data-page="vertical_packs" onclick="switchPage('vertical_packs')"><span class="nav-icon">◆</span><span>Vertical Packs</span></button>
+          <button class="nav-btn" data-page="workshop_pack_setup" onclick="switchPage('workshop_pack_setup')"><span class="nav-icon">◆</span><span>Workshop Pack Setup</span></button>
+        </div>
+      </div>
       <!-- BUILD-08: governed planning and group-finance workspaces -->
       <div class="nav-group" data-nav-group="build08_planning">
         <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build08_planning')" aria-controls="navGroup_build08_planning" aria-expanded="false">
@@ -1740,12 +1826,12 @@
         </button>
         <div class="nav-group-body" id="navGroup_build08_planning">
           <button class="nav-btn" id="nav_demand_planning" data-page="demand_planning" onclick="switchPage('demand_planning')"><span class="nav-icon">·</span><span>تخطيط الطلب</span></button>
-          <button class="nav-btn" id="nav_forecast_versions" data-page="forecast_versions" onclick="switchPage('forecast_versions')"><span class="nav-icon">·</span><span>إصدارات التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_versions" data-page="forecast_versions" hidden onclick="switchPage('forecast_versions')"><span class="nav-icon">·</span><span>إصدارات التنبؤ</span></button>
           <button class="nav-btn" id="nav_forecast_overrides" data-page="forecast_overrides" onclick="switchPage('forecast_overrides')"><span class="nav-icon">·</span><span>تعديلات التنبؤ</span></button>
-          <button class="nav-btn" id="nav_forecast_accuracy" data-page="forecast_accuracy" onclick="switchPage('forecast_accuracy')"><span class="nav-icon">·</span><span>دقة التنبؤ</span></button>
+          <button class="nav-btn" id="nav_forecast_accuracy" data-page="forecast_accuracy" hidden onclick="switchPage('forecast_accuracy')"><span class="nav-icon">·</span><span>دقة التنبؤ</span></button>
           <button class="nav-btn" id="nav_planning_exceptions" data-page="planning_exceptions" onclick="switchPage('planning_exceptions')"><span class="nav-icon">·</span><span>استثناءات التخطيط</span></button>
           <button class="nav-btn" id="nav_mps" data-page="mps" onclick="switchPage('mps')"><span class="nav-icon">·</span><span>جدول الإنتاج الرئيسي</span></button>
-          <button class="nav-btn" id="nav_mps_proposals" data-page="mps_proposals" onclick="switchPage('mps_proposals')"><span class="nav-icon">·</span><span>مقترحات الإنتاج</span></button>
+          <button class="nav-btn" id="nav_mps_proposals" data-page="mps_proposals" hidden onclick="switchPage('mps_proposals')"><span class="nav-icon">·</span><span>مقترحات الإنتاج</span></button>
           <button class="nav-btn" id="nav_supply_demand_balance" data-page="supply_demand_balance" onclick="switchPage('supply_demand_balance')"><span class="nav-icon">·</span><span>توازن العرض والطلب</span></button>
           <button class="nav-btn" id="nav_sop_scenarios" data-page="sop_scenarios" onclick="switchPage('sop_scenarios')"><span class="nav-icon">·</span><span>سيناريوهات S&OP</span></button>
           <button class="nav-btn" id="nav_sop_review" data-page="sop_review" onclick="switchPage('sop_review')"><span class="nav-icon">·</span><span>مراجعة S&OP</span></button>
@@ -1780,13 +1866,12 @@
         <div class="nav-group-body" id="navGroup_build08_consolidation">
           <button class="nav-btn" id="nav_consolidation_groups" data-page="consolidation_groups" onclick="switchPage('consolidation_groups')"><span class="nav-icon">·</span><span>مجموعات التوحيد</span></button>
           <button class="nav-btn" id="nav_account_mapping" data-page="account_mapping" onclick="switchPage('account_mapping')"><span class="nav-icon">·</span><span>ربط الحسابات</span></button>
-          <button class="nav-btn" id="nav_consolidation_runs" data-page="consolidation_runs" onclick="switchPage('consolidation_runs')"><span class="nav-icon">·</span><span>عمليات التوحيد</span></button>
+          <button class="nav-btn" id="nav_consolidation_runs" data-page="consolidation_runs" hidden onclick="switchPage('consolidation_runs')"><span class="nav-icon">·</span><span>عمليات التوحيد</span></button>
           <button class="nav-btn" id="nav_eliminations" data-page="eliminations" onclick="switchPage('eliminations')"><span class="nav-icon">·</span><span>قيود الاستبعاد</span></button>
           <button class="nav-btn" id="nav_consolidated_reports" data-page="consolidated_reports" onclick="switchPage('consolidated_reports')"><span class="nav-icon">·</span><span>التقارير الموحدة</span></button>
-          <button class="nav-btn" id="nav_consolidation_lineage" data-page="consolidation_lineage" onclick="switchPage('consolidation_lineage')"><span class="nav-icon">·</span><span>تتبع التوحيد</span></button>
+          <button class="nav-btn" id="nav_consolidation_lineage" data-page="consolidation_lineage" hidden onclick="switchPage('consolidation_lineage')"><span class="nav-icon">·</span><span>تتبع التوحيد</span></button>
         </div>
       </div>
-      </nav>
       <!-- BUILD-09: advanced WMS and operational automation workspaces -->
       <div class="nav-group" data-nav-group="build09_wms">
         <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build09_wms')" aria-controls="navGroup_build09_wms" aria-expanded="false">
@@ -1797,10 +1882,10 @@
           <button class="nav-btn" data-page="zone_bin_management" onclick="switchPage('zone_bin_management')"><span>Zone and Bin Management</span></button>
           <button class="nav-btn" data-page="putaway_rules" onclick="switchPage('putaway_rules')"><span>Putaway Rules</span></button>
           <button class="nav-btn" data-page="putaway_task_queue" onclick="switchPage('putaway_task_queue')"><span>Putaway Task Queue</span></button>
-          <button class="nav-btn" data-page="replenishment_rules" onclick="switchPage('replenishment_rules')"><span>Replenishment Rules</span></button>
+          <button class="nav-btn" data-page="replenishment_rules" hidden onclick="switchPage('replenishment_rules')"><span>Replenishment Rules</span></button>
           <button class="nav-btn" data-page="replenishment_proposals" onclick="switchPage('replenishment_proposals')"><span>Replenishment Proposals</span></button>
           <button class="nav-btn" data-page="mobile_receiving" onclick="switchPage('mobile_receiving')"><span>Mobile Receiving</span></button>
-          <button class="nav-btn" data-page="receiving_discrepancies" onclick="switchPage('receiving_discrepancies')"><span>Receiving Discrepancies</span></button>
+          <button class="nav-btn" data-page="receiving_discrepancies" hidden onclick="switchPage('receiving_discrepancies')"><span>Receiving Discrepancies</span></button>
           <button class="nav-btn" data-page="mobile_picking" onclick="switchPage('mobile_picking')"><span>Mobile Picking</span></button>
           <button class="nav-btn" data-page="pick_task_queue" onclick="switchPage('pick_task_queue')"><span>Pick Task Queue</span></button>
           <button class="nav-btn" data-page="wave_planning" onclick="switchPage('wave_planning')"><span>Wave Planning</span></button>
@@ -1834,6 +1919,105 @@
           <button class="nav-btn" data-page="operational_performance" onclick="switchPage('operational_performance')"><span>Operational Performance</span></button>
         </div>
       </div>
+
+      <!-- BUILD-10 Navigation Groups -->
+      <div class="nav-group" data-nav-group="build11_commercial">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build11_commercial')" aria-controls="navGroup_build11_commercial" aria-expanded="false">
+          <span class="nav-icon">$</span><span>Commercial and SaaS</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build11_commercial">
+          <button class="nav-btn" data-page="saas_overview" onclick="switchPage('saas_overview')"><span>SaaS Overview</span></button>
+          <button class="nav-btn" data-page="tenant_directory" onclick="switchPage('tenant_directory')"><span>Tenant Directory</span></button>
+          <button class="nav-btn" data-page="tenant_detail" onclick="switchPage('tenant_detail')"><span>Tenant Detail</span></button>
+          <button class="nav-btn" data-page="commercial_plans" onclick="switchPage('commercial_plans')"><span>Commercial Plans</span></button>
+          <button class="nav-btn" data-page="entitlements" onclick="switchPage('entitlements')"><span>Entitlements</span></button>
+          <button class="nav-btn" data-page="seats_and_limits" onclick="switchPage('seats_and_limits')"><span>Seats and Limits</span></button>
+          <button class="nav-btn" data-page="usage_and_quotas" onclick="switchPage('usage_and_quotas')"><span>Usage and Quotas</span></button>
+          <button class="nav-btn" data-page="billing_simulator" onclick="switchPage('billing_simulator')"><span>Billing Simulator</span></button>
+          <button class="nav-btn" data-page="extension_marketplace" onclick="switchPage('extension_marketplace')"><span>Extension Marketplace</span></button>
+          <button class="nav-btn" data-page="extension_installations" onclick="switchPage('extension_installations')"><span>Extension Installations</span></button>
+        </div>
+      </div>
+      <!-- BUILD-10 Navigation Groups -->
+      <div class="nav-group" data-nav-group="build10_devices">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_devices')" aria-controls="navGroup_build10_devices" aria-expanded="false">
+          <span class="nav-icon">⚡</span><span>IoT & Devices</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_devices">
+          <button class="nav-btn" data-page="device_registry" onclick="switchPage('device_registry')"><span>Device Registry</span></button>
+          <button class="nav-btn" data-page="device_detail" onclick="switchPage('device_detail')"><span>Device Detail</span></button>
+          <button class="nav-btn" data-page="device_enrollment" onclick="switchPage('device_enrollment')"><span>Device Enrollment</span></button>
+          <button class="nav-btn" data-page="gateway_management" onclick="switchPage('gateway_management')"><span>Gateway Management</span></button>
+          <button class="nav-btn" data-page="sensor_management" onclick="switchPage('sensor_management')"><span>Sensor Management</span></button>
+          <button class="nav-btn" data-page="telemetry_explorer" onclick="switchPage('telemetry_explorer')"><span>Telemetry Explorer</span></button>
+          <button class="nav-btn" data-page="device_health_center" onclick="switchPage('device_health_center')"><span>Device Health Center</span></button>
+          <button class="nav-btn" data-page="device_alerts" onclick="switchPage('device_alerts')"><span>Device Alerts</span></button>
+          <button class="nav-btn" data-page="firmware_catalogue" onclick="switchPage('firmware_catalogue')"><span>Firmware Catalogue</span></button>
+          <button class="nav-btn" data-page="rollout_simulator" onclick="switchPage('rollout_simulator')"><span>Rollout Simulator</span></button>
+          <button class="nav-btn" data-page="configuration_profiles" onclick="switchPage('configuration_profiles')"><span>Configuration Profiles</span></button>
+          <button class="nav-btn" data-page="device_command_center" onclick="switchPage('device_command_center')"><span>Device Command Center</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_fleet">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_fleet')" aria-controls="navGroup_build10_fleet" aria-expanded="false">
+          <span class="nav-icon">🚚</span><span>Fleet Telematics</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_fleet">
+          <button class="nav-btn" data-page="fleet_device_mapping" onclick="switchPage('fleet_device_mapping')"><span>Fleet Device Mapping</span></button>
+          <button class="nav-btn" data-page="fleet_live_map_simulator" onclick="switchPage('fleet_live_map_simulator')"><span>Fleet Live Map Simulator</span></button>
+          <button class="nav-btn" data-page="vehicle_trip_timeline" onclick="switchPage('vehicle_trip_timeline')"><span>Vehicle Trip Timeline</span></button>
+          <button class="nav-btn" data-page="geofence_management" onclick="switchPage('geofence_management')"><span>Geofence Management</span></button>
+          <button class="nav-btn" data-page="geofence_events" onclick="switchPage('geofence_events')"><span>Geofence Events</span></button>
+          <button class="nav-btn" data-page="speed_and_driver_events" onclick="switchPage('speed_and_driver_events')"><span>Speed and Driver Events</span></button>
+          <button class="nav-btn" data-page="fuel_telemetry" onclick="switchPage('fuel_telemetry')"><span>Fuel Telemetry</span></button>
+          <button class="nav-btn" data-page="suspected_fuel_loss_queue" onclick="switchPage('suspected_fuel_loss_queue')"><span>Suspected Fuel Loss Queue</span></button>
+          <button class="nav-btn" data-page="maintenance_triggers" onclick="switchPage('maintenance_triggers')"><span>Maintenance Triggers</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_offline">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_offline')" aria-controls="navGroup_build10_offline" aria-expanded="false">
+          <span class="nav-icon">📲</span><span>Offline Operations</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_offline">
+          <button class="nav-btn" data-page="offline_client_registry" onclick="switchPage('offline_client_registry')"><span>Offline Client Registry</span></button>
+          <button class="nav-btn" data-page="offline_queue" onclick="switchPage('offline_queue')"><span>Offline Queue</span></button>
+          <button class="nav-btn" data-page="sync_sessions" onclick="switchPage('sync_sessions')"><span>Sync Sessions</span></button>
+          <button class="nav-btn" data-page="sync_conflicts" onclick="switchPage('sync_conflicts')"><span>Sync Conflicts</span></button>
+          <button class="nav-btn" data-page="conflict_resolution" onclick="switchPage('conflict_resolution')"><span>Conflict Resolution</span></button>
+          <button class="nav-btn" data-page="offline_capability_policies" onclick="switchPage('offline_capability_policies')"><span>Offline Capability Policies</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_kiosk">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_kiosk')" aria-controls="navGroup_build10_kiosk" aria-expanded="false">
+          <span class="nav-icon">🖥️</span><span>Kiosk Terminals</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_kiosk">
+          <button class="nav-btn" data-page="kiosk_device_registry" onclick="switchPage('kiosk_device_registry')"><span>Kiosk Device Registry</span></button>
+          <button class="nav-btn" data-page="employee_kiosk" onclick="switchPage('employee_kiosk')"><span>Employee Kiosk</span></button>
+          <button class="nav-btn" data-page="warehouse_kiosk" onclick="switchPage('warehouse_kiosk')"><span>Warehouse Kiosk</span></button>
+          <button class="nav-btn" data-page="shop_floor_kiosk" onclick="switchPage('shop_floor_kiosk')"><span>Shop Floor Kiosk</span></button>
+          <button class="nav-btn" data-page="service_kiosk" onclick="switchPage('service_kiosk')"><span>Service Kiosk</span></button>
+        </div>
+      </div>
+
+      <div class="nav-group" data-nav-group="build10_boards">
+        <button class="nav-group-toggle" type="button" onclick="toggleNavGroup('build10_boards')" aria-controls="navGroup_build10_boards" aria-expanded="false">
+          <span class="nav-icon">📊</span><span>Operational Boards</span><span class="nav-group-chevron">⌄</span>
+        </button>
+        <div class="nav-group-body" id="navGroup_build10_boards">
+          <button class="nav-btn" data-page="fleet_operations_board" onclick="switchPage('fleet_operations_board')"><span>Fleet Operations Board</span></button>
+          <button class="nav-btn" data-page="device_health_board" onclick="switchPage('device_health_board')"><span>Device Health Board</span></button>
+          <button class="nav-btn" data-page="warehouse_large_screen" onclick="switchPage('warehouse_large_screen')"><span>Warehouse Large Screen</span></button>
+          <button class="nav-btn" data-page="production_large_screen" onclick="switchPage('production_large_screen')"><span>Production Large Screen</span></button>
+          <button class="nav-btn" data-page="service_queue_board" onclick="switchPage('service_queue_board')"><span>Service Queue Board</span></button>
+          <button class="nav-btn" data-page="alert_board" onclick="switchPage('alert_board')"><span>Alert Board</span></button>
+        </div>
+      </div>
+
+      </nav>
 
       <div class="sidebar-footer">
         <div class="sidebar-actions" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
@@ -1944,6 +2128,9 @@
 
   <!-- ═══════════ COMMAND CENTER ═══════════ -->
   <!-- view:command_center -->
+  <!-- view:workshop_command_center -->
+  <!-- view:my_work -->
+  <!-- view:workshop_readiness -->
 
   <!-- ═══════════ OPERATION PACKS ═══════════ -->
   <!-- view:op_packs -->
@@ -2109,7 +2296,7 @@
   <!-- GO 16 de-monolith: static data providers MUST load before app.js (defines getDefaultAdminSettings, getOctagonPageTruthRegistry, etc.) -->
   <script src="modules/data-providers.js?v=20260707-opcost-premium-v10"></script>
   <!-- T4.4: Equipment Management cluster; loads before app.js because ensureOmni() calls normalizeEquipment(). -->
-  <script src="modules/equipment-management.js?v=20260714-t4.4-v1"></script>
+  <script src="modules/equipment-management.js?v=20260714-t4.4-v1-attr1"></script>
   <!-- T1.1: schema registry (warn-first collection validation boundary) MUST load before app.js -->
   <script src="modules/schema-registry.js?v=20260712-t1.1-v1"></script>
   <!-- T1.4: unified document numbering (OctagonSeq.next('inv') -> INV-2026-00042) -->
@@ -2126,10 +2313,15 @@
   <script src="modules/state-registry.js?v=20260712-t3.4-v1"></script>
   <!-- T6.2: repository facade for NEW code (Repo.get/list/save/remove) -->
   <script src="modules/repo.js?v=20260713-t6.2-v1"></script>
-  <script src="app.js?v=20260728-checkpoint-d2-engineering-v30"></script>
+  <script src="app.js?v=20260822-selfservice-v34"></script>
   <!-- T4.2 (Phase 4): Command Center cluster, moved verbatim out of app.js.
        Loads immediately AFTER app.js and BEFORE modules that wrap renderCommandCenter. -->
   <script src="modules/command-center.js?v=20260714-t4.2-v2"></script>
+    <script src="modules/workshop-shell.js?v=20260805-workshop-wave-v1"></script>
+    <script src="modules/workshop-drilldown.js?v=20260805-workshop-wave-v1"></script>
+    <script src="modules/workshop-command-center.js?v=20260805-workshop-wave-v1"></script>
+  <script src="modules/workshop-my-work.js?v=20260805-workshop-wave-v1"></script>
+  <script src="modules/workshop-readiness.js?v=20260805-workshop-wave-v1"></script>
   <!-- T4.3 (Phase 4): Analytics Intelligence Brain cluster, moved verbatim out of app.js. -->
   <script src="modules/analytics-dashboard.js?v=20260714-t4.3-v1"></script>
   <script>
@@ -2255,7 +2447,7 @@
   <script src="modules/page-qc.js?v=20260625-wire-fix-v1"></script>
   <script src="modules/ai-providers.js?v=20260703-omni-v6"></script>
   <script src="modules/pilot-review-registry.js?v=20260702-pilot-review-v1"></script>
-  <script src="modules/pilot-review-session.js?v=20260703-pilot-review-v7"></script>
+  <script src="modules/pilot-review-session.js?v=20260703-pilot-review-v7-attr1"></script>
   <script src="jarvis-voice-runtime.js?v=20260703-omni-v6"></script>
   <script src="modules/jarvis-system-map.js?v=20260617-v2"></script>
   <script src="modules/jarvis-action-agent.js?v=20260703-omni-v1"></script>
@@ -2268,7 +2460,7 @@
   <script src="modules/nl-reporting.js?v=20260626-phase7d-v1"></script>
   <script src="modules/mrp.js?v=20260608-modules-wire-v1"></script>
   <script src="modules/multi-entity.js?v=20260614-tenant-service-v1"></script>
-  <script src="modules/tax-compliance.js?v=20260608-modules-wire-v1"></script>
+  <script src="modules/tax-compliance.js?v=20260608-modules-wire-v1-attr1"></script>
   <script src="modules/pos.js?v=20260614-route-hydrate-v1"></script>
   <!-- Phase 5 industry verticals: load AFTER pos.js (they wrap switchPage/posZReport) -->
   <script src="modules/vertical-pharmacy.js?v=20260610-pharmacy-v1"></script>
@@ -2299,7 +2491,7 @@
   <script src="modules/subscriptions.js?v=20260612-subs-v1"></script>
   <!-- People Operations: Recruitment (ATS) + Leave/Time-off. Self-contained omni.peopleOps;
        never touches payroll/timesheet. Add-only HR pillar. -->
-  <script src="modules/people-ops.js?v=20260626-hrms-v2"></script>
+  <script src="modules/people-ops.js?v=20260626-hrms-v2-ar1"></script>
   <!-- Helpdesk / Support Tickets, Fleet Management, Document Management — three standalone ERP
        pillars. Add-only; self-contained in omni.helpdesk / omni.fleet / omni.documents. -->
   <script src="modules/helpdesk.js?v=20260613-hd-v2"></script>
@@ -2328,6 +2520,7 @@
   <script src="modules/sales-commission.js?v=20260626-sc-v1"></script>
   <script src="modules/sales-contracts.js?v=20260626-sct-v1"></script>
   <script src="modules/sales-price-lists.js?v=20260626-spl-v1"></script>
+  <script src="modules/ui-arabic-chrome.js?v=20260822-arabic-chrome-v2"></script>
   <script src="modules/sales-commercial-pack.js?v=20260626-sc7j-v1"></script>
   <!-- Checkpoint C1: final Sales renderer loads after the legacy commercial
        overlays so every visible mutation goes through CanonicalClient. -->
@@ -2337,17 +2530,17 @@
   <script src="modules/pos-deepening.js?v=20260626-posd-v1"></script>
   <script src="modules/omni-communications.js?v=20260626-comm-v1"></script>
   <script src="modules/implementation-methodology.js?v=20260626-im7k-v1"></script>
-  <script src="modules/platform-marketplace.js?v=20260801-pmk-v3"></script>
+  <script src="modules/platform-marketplace.js?v=20260822-pmk-real-v3"></script>
   <script src="modules/ecommerce-connectors.js?v=20260801-ecom-v2"></script>
-  <script src="modules/platform-services.js?v=20260801-build05-v1"></script>
+  <script src="modules/platform-services.js?v=20260801-build05-v1-attr1"></script>
   <script src="modules/esign.js?v=20260623-esign-v1"></script>
   <script src="modules/events.js?v=20260623-events-v1"></script>
   <script src="modules/knowledge.js?v=20260623-kb-v1"></script>
   <script src="modules/knowledge-base-seed.js?v=20260703-seed-v1"></script>
-  <script src="modules/knowledge-base.js?v=20260703-kb-v4"></script>
+  <script src="modules/knowledge-base.js?v=20260703-kb-v4-attr1"></script>
   <script src="modules/surveys.js?v=20260623-svy-v1"></script>
   <script src="modules/visitors.js?v=20260623-vis-v1"></script>
-  <script src="modules/risk-compliance.js?v=20260624-arabic-v3"></script>
+  <script src="modules/risk-compliance.js?v=20260624-arabic-v3-ar1"></script>
   <script src="modules/phase6a-core.js?v=20260624-arabic-v2"></script>
   <script src="modules/phase6c-security-matrix.js?v=20260623-phase6d-v1"></script>
   <script src="modules/phase7a-stabilization.js?v=20260626-phase7a-v1"></script>
@@ -2357,6 +2550,7 @@
   <script src="modules/system-settings.js?v=20260713-t6.1-v1"></script>
   <!-- T4.1 (Phase 4): WhatsApp integration cluster, moved verbatim out of app.js.
        Loads AFTER app.js so its runtime references to app.js helpers resolve. -->
+  <script src="modules/whatsapp-integration.js?v=20260807-navigation-recovery-v1"></script>
   <script src="modules/canonical-console.js?v=20260728-cc-v1"></script>
   <script src="modules/canonical-inventory.js?v=20260728-ci-v1"></script>
   <script src="modules/products-and-materials.js?v=20260728-pm-v1"></script>
@@ -2384,8 +2578,40 @@
   <script src="modules/octagon-governed-lookups.js?v=20260803-build09r-v2"></script>
   <script src="modules/octagon-scope-selector.js?v=20260803-build09r-v1"></script>
   <script src="modules/build09-action-forms.js?v=20260803-build09r-v2"></script>
-  <script src="modules/build09-workspaces.js?v=20260803-build09r-v3"></script>
-  <script src="modules/build08-workspaces.js?v=20260802-build08-v1"></script>
+  <script src="modules/build09-workspaces.js?v=20260803-build09r2-v1-attr1"></script>
+  <script src="modules/build09-mobile-receiving.js?v=20260803-build09r2-v1"></script>
+  <script src="modules/build09-mobile-picking.js?v=20260803-build09r2-v1"></script>
+  <script src="modules/build09r-shared.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-topology-workspace.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build09-receiving-discrepancy-workspace.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build09-pick-task-queue-workspace.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build09-wave-workspace.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-count-workspace.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-trace-workspace.js?v=20260805-build09r2-v2-browse1"></script>
+  <script src="modules/build09-expiration-workspace.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build09-production-material-workspaces.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build09-shopfloor-workspace.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-quality-workspace.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-downtime-workspace.js?v=20260805-build09r2-v2"></script>
+  <script src="modules/build09-dock-workspace.js?v=20260805-build09r2-v3"></script>
+  <script src="modules/build09-putaway-workspace.js?v=20260805-build09r2-v1"></script>
+  <script src="modules/build08-workspaces.js?v=20260802-build08-v1-ctx1-shell1-attr1"></script>
+  <!-- BUILD-10 Modular Workspaces & Kiosks Engine -->
+  <script src="modules/build10/registry.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/state.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/api.js?v=20260803-build10-v1-ctx1"></script>
+  <script src="modules/build10/forms.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/actions.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/components.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/devices.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/telemetry.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/fleet.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/offline.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/kiosks.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10/renderers/boards.js?v=20260803-build10-v1"></script>
+  <script src="modules/build10-workspaces.js?v=20260803-build10-v1-ctx1"></script>
+  <script src="modules/build11-workspaces.js?v=20260805-build11-v1-tenant2-attr1"></script>
+  <script src="modules/build12-workspaces.js?v=20260805-build12-v1-ctx1-attr1"></script>
   <!-- language repair stays LAST so it runs after all modules have rendered/registered -->
   <script src="omni-language-fix.js?v=20260609-octagon-recover-v1"></script>
   <script>

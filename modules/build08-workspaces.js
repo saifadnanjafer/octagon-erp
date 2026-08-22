@@ -2,6 +2,12 @@
 (function build08Workspaces(root) {
   'use strict';
 
+  // Attribute values are invisible to the control-label metric, so these stayed
+  // English after the visible chrome was translated. aria-label in particular is
+  // what a screen reader announces.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   const PAGE_DEFINITIONS = {
     demand_planning: ['Demand Planning', 'تخطيط الطلب', 'planning/horizons', ['name', 'bucket_type', 'start_date', 'end_date', 'status'], ['forecast:version_create']],
     forecast_versions: ['Forecast Versions', 'إصدارات التنبؤ', 'planning/forecasts', ['name', 'method', 'horizon_id', 'status', 'published_at'], ['forecast:calculate', 'forecast:publish']],
@@ -33,6 +39,66 @@
   const states = new Map();
   const escapeHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const humanize = (value) => String(value || '').replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+  // Every column header, cell label, action button and dialog title on these 24
+  // pages was produced by humanize() straight off the snake_case field or action
+  // id, so an Arabic page rendered English chrome: "Facility Create",
+  // "Projected Available", "Shortfall Amount". The page titles were already
+  // bilingual; only the generated labels were not.
+  //
+  // Translated once here and consumed by all four render points rather than
+  // rewriting the definition table, so adding a page still only needs the
+  // snake_case names. Anything unmapped falls back to humanize() unchanged.
+  const AR_FIELDS = {
+    alert_type: 'نوع التنبيه', amount: 'المبلغ', approved_at: 'تاريخ الاعتماد',
+    approved_by: 'اعتمده', as_of_date: 'كما في تاريخ', available_amount: 'المبلغ المتاح',
+    available_cash: 'النقد المتاح', balance_id: 'مرجع الرصيد', bank_balance: 'رصيد البنك',
+    bucket_start: 'بداية الفترة', bucket_type: 'نوع الفترة', calculated_at: 'تاريخ الاحتساب',
+    company_id: 'الشركة', consolidated_balance: 'الرصيد الموحد',
+    contribution_amount: 'مبلغ المساهمة', created_at: 'تاريخ الإنشاء',
+    credit_account: 'الحساب الدائن', currency: 'العملة', cycle_id: 'الدورة',
+    debit_account: 'الحساب المدين', demand_total: 'إجمالي الطلب',
+    difference_amount: 'مبلغ الفرق', elimination_type: 'نوع الاستبعاد',
+    end_date: 'تاريخ الانتهاء', exception_type: 'نوع الاستثناء',
+    facility_type: 'نوع التسهيل', finalized_at: 'تاريخ الإقفال',
+    financial_total: 'الإجمالي المالي', forecast_version_id: 'إصدار التنبؤ',
+    gross_requirement: 'الاحتياج الإجمالي', horizon_end: 'نهاية الأفق',
+    horizon_id: 'أفق التخطيط', limit_amount: 'سقف التسهيل', lineage_type: 'نوع التتبع',
+    mapping_type: 'نوع الربط', message: 'الرسالة', method: 'الطريقة',
+    mismatch_type: 'نوع عدم التطابق', name: 'الاسم', operation_id: 'العملية',
+    parent_company_id: 'الشركة الأم', period_end: 'نهاية الفترة', period_id: 'الفترة',
+    period_start: 'بداية الفترة', presentation_currency: 'عملة العرض',
+    product_id: 'الصنف', projected_available: 'المتاح المتوقع', proposal_type: 'نوع المقترح',
+    published_at: 'تاريخ النشر', quantity: 'الكمية', reference: 'المرجع',
+    required_date: 'التاريخ المطلوب', requested_quantity: 'الكمية المطلوبة',
+    resolution_type: 'نوع التسوية', restricted_cash: 'النقد المقيّد',
+    scheduled_receipts: 'الاستلامات المجدولة', selected_scenario_id: 'السيناريو المعتمد',
+    severity: 'الخطورة', shortfall_amount: 'مبلغ العجز', snapshot_id: 'اللقطة',
+    source_account_code: 'رمز الحساب المصدر', source_amount: 'مبلغ المصدر',
+    source_company_id: 'الشركة المصدر', source_line_id: 'سطر المصدر',
+    start_date: 'تاريخ البدء', statement_type: 'نوع القائمة', status: 'الحالة',
+    supply_total: 'إجمالي العرض', target_account_code: 'رمز الحساب الهدف',
+    target_account_name: 'اسم الحساب الهدف', target_company_id: 'الشركة الهدف',
+    transaction_type: 'نوع المعاملة', translated_credit: 'الدائن المحوَّل',
+    translated_debit: 'المدين المحوَّل', version_id: 'الإصدار', warning_code: 'رمز التحذير',
+  };
+  const AR_ACTIONS = {
+    alert_acknowledge: 'إقرار التنبيه', calculate: 'احتساب', cycle_create: 'إنشاء دورة',
+    elimination_approve: 'اعتماد الاستبعاد', facility_create: 'إنشاء تسهيل',
+    facility_utilize: 'سحب من التسهيل', finalize: 'إقفال نهائي',
+    group_create: 'إنشاء مجموعة', liquidity_generate: 'توليد تنبؤ السيولة',
+    mapping_upsert: 'حفظ الربط', member_add: 'إضافة عضو',
+    mismatch_detect: 'كشف عدم التطابق', operation_approve: 'اعتماد العملية',
+    operation_create: 'إنشاء عملية', override_approve: 'اعتماد التعديل',
+    override_submit: 'تقديم تعديل', period_create: 'إنشاء فترة',
+    position_capture: 'التقاط مركز النقد', proposal_approve: 'اعتماد المقترح',
+    proposal_create: 'إنشاء مقترح', proposal_release_request: 'طلب إطلاق المقترح',
+    publish: 'نشر', reconcile: 'تسوية', review_approve: 'اعتماد المراجعة',
+    run: 'تشغيل', run_calculate: 'تشغيل الاحتساب', scenario_create: 'إنشاء سيناريو',
+    settlement_propose: 'اقتراح تسوية', snapshot_capture: 'التقاط لقطة',
+    version_create: 'إنشاء إصدار',
+  };
+  const fieldLabel = (key) => (isArabic() && AR_FIELDS[key]) ? AR_FIELDS[key] : humanize(key);
+  const actionLabel = (key) => (isArabic() && AR_ACTIONS[key]) ? AR_ACTIONS[key] : humanize(key);
   const isArabic = () => (document.documentElement.dir || '').toLowerCase() === 'rtl' || (document.documentElement.lang || '').toLowerCase().startsWith('ar');
   const definition = (pageId) => {
     const raw = PAGE_DEFINITIONS[pageId];
@@ -40,7 +106,7 @@
   };
   const company = () => {
     const bootstrap = root.__octagonBootstrap || {};
-    return bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || root.__octagonServerSession?.activeCompanyId || '—';
+    return bootstrap.context?.companyId || bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || root.__octagonServerSession?.activeCompanyId || '—';
   };
   const canWrite = () => {
     if (root.__BUILD08_FORCE_READ_ONLY__ === true) return false;
@@ -55,6 +121,26 @@
     if (!states.has(pageId)) states.set(pageId, { phase: 'idle', rows: [], error: '', filter: '', updatedAt: null });
     return states.get(pageId);
   };
+
+  // The 24 BUILD-08 view shells are static HTML and were authored in English.
+  // Title, subtitle, company and headers are already replaced at render; the
+  // eyebrow, search affordances, landmark labels and footnotes were not, so
+  // they stayed English on an Arabic page — and the two aria-labels meant a
+  // screen reader announced the workspace in English. Filled from the same
+  // config as the title so all 24 pages are covered in one place.
+  function localizeShell(host, title) {
+    if (!isArabic()) return;
+    const set = (selector, apply) => { const node = host.querySelector(selector); if (node) apply(node); };
+    set('.b08-eyebrow', (node) => { node.textContent = `BUILD-08 · ${title}`; });
+    set('.b08-toolbar', (node) => node.setAttribute('aria-label', `أدوات ${title}`));
+    set('.b08-card', (node) => node.setAttribute('aria-label', `سجلات ${title}`));
+    set('.b08-search .sr-only', (node) => { node.textContent = `تصفية ${title}`; });
+    set('[data-role="filter"]', (node) => node.setAttribute('placeholder', 'تصفية السجلات المعروضة…'));
+    set('.b08-empty', (node) => { node.textContent = 'جارٍ تحميل مساحة العمل…'; });
+    const footnotes = host.querySelectorAll('.b08-footnote span');
+    if (footnotes[0]) footnotes[0].textContent = 'نموذج قراءة معتمد · ضمن نطاق الشركة';
+    if (footnotes[1]) footnotes[1].textContent = 'حالات التحميل والفراغ والخطأ والمنع';
+  }
 
   function setStatus(pageId, phase, message) {
     const status = document.querySelector(`[data-build08-page="${pageId}"] [data-role="status"]`);
@@ -81,7 +167,7 @@
       body.innerHTML = `<tr><td colspan="${escapeHtml(config.columns.length)}" class="b08-empty"><strong>${escapeHtml(isArabic() ? 'لا توجد سجلات' : 'No records yet')}</strong><span>${escapeHtml(isArabic() ? 'غيّر المرشح أو نفّذ إجراءً ثم حدّث الصفحة.' : 'Change the filter or run an action, then refresh.')}</span></td></tr>`;
       return;
     }
-    body.innerHTML = rows.map((row) => `<tr data-record-id="${escapeHtml(row.id || '')}">${config.columns.map((column) => `<td data-label="${escapeHtml(humanize(column))}">${escapeHtml(formatValue(row[column]))}</td>`).join('')}</tr>`).join('');
+    body.innerHTML = rows.map((row) => `<tr data-record-id="${escapeHtml(row.id || '')}">${config.columns.map((column) => `<td data-label="${escapeHtml(fieldLabel(column))}">${escapeHtml(formatValue(row[column]))}</td>`).join('')}</tr>`).join('');
   }
 
   function renderPage(pageId) {
@@ -94,14 +180,15 @@
       ? 'مساحة عمل محكومة بنطاق الشركة مع مصدر بيانات وخط تدقيق موحّد.'
       : 'Company-scoped workspace with a governed data source and audit trail.';
     host.querySelector('[data-role="company"]').textContent = `${isArabic() ? 'الشركة' : 'Company'}: ${company()}`;
+    localizeShell(host, title);
     const head = host.querySelector('[data-role="head"]');
-    head.innerHTML = `<tr>${config.columns.map((column) => `<th scope="col">${escapeHtml(humanize(column))}</th>`).join('')}</tr>`;
+    head.innerHTML = `<tr>${config.columns.map((column) => `<th scope="col">${escapeHtml(fieldLabel(column))}</th>`).join('')}</tr>`;
     const actionBar = host.querySelector('[data-role="actions"]');
     const writeAllowed = canWrite();
     actionBar.innerHTML = [
       `<button class="b08-button b08-primary" type="button" data-command="refresh">↻ ${isArabic() ? 'تحديث' : 'Refresh'}</button>`,
       `<button class="b08-button" type="button" data-command="export">⇩ ${isArabic() ? 'تصدير CSV' : 'Export CSV'}</button>`,
-      ...config.actions.map((action) => `<button class="b08-button" type="button" data-action-id="${escapeHtml(action)}" ${writeAllowed ? '' : 'disabled aria-disabled="true"'}>${escapeHtml(humanize(action.split(':')[1]))}</button>`)
+      ...config.actions.map((action) => `<button class="b08-button" type="button" data-action-id="${escapeHtml(action)}" ${writeAllowed ? '' : 'disabled aria-disabled="true"'}>${escapeHtml(actionLabel(action.split(':')[1]))}</button>`)
     ].join('');
     const permission = host.querySelector('[data-role="permission"]');
     permission.hidden = writeAllowed || !config.actions.length;
@@ -147,7 +234,7 @@
     if (!dialog) return;
     dialog.dataset.pageId = pageId;
     dialog.dataset.actionId = actionId;
-    dialog.querySelector('[data-role="dialog-title"]').textContent = humanize(actionId.replace(':', ' '));
+    dialog.querySelector('[data-role="dialog-title"]').textContent = actionLabel(String(actionId).split(':')[1]);
     dialog.querySelector('[data-role="action-id"]').textContent = actionId;
     dialog.querySelector('textarea').value = JSON.stringify({ idempotency_key: `${actionId}-${Date.now()}` }, null, 2);
     dialog.querySelector('[data-role="dialog-error"]').textContent = '';
@@ -211,7 +298,7 @@
     if (document.getElementById('build08ActionDialog')) return;
     document.body.insertAdjacentHTML('beforeend', `<dialog id="build08ActionDialog" class="b08-dialog" aria-labelledby="build08DialogTitle">
       <form method="dialog" class="b08-dialog-card">
-        <header><div><small data-role="action-id"></small><h2 id="build08DialogTitle" data-role="dialog-title"></h2></div><button value="cancel" aria-label="Close">×</button></header>
+        <header><div><small data-role="action-id"></small><h2 id="build08DialogTitle" data-role="dialog-title"></h2></div><button value="cancel" aria-label="${arAttr('Close', 'إغلاق')}">×</button></header>
         <p>${isArabic() ? 'أدخل حمولة الإجراء. يتحقق الخادم من الشركة والصلاحية وسير العمل.' : 'Enter the action payload. The server validates company, permission, and workflow.'}</p>
         <label>${isArabic() ? 'حمولة JSON' : 'JSON payload'}<textarea rows="12" spellcheck="false"></textarea></label>
         <p class="b08-dialog-error" data-role="dialog-error" aria-live="polite"></p>

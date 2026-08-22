@@ -1,0 +1,864 @@
+{
+  "generatedAt": "2026-08-22T01:49:29.029Z",
+  "startedAt": "2026-08-22T01:49:07.539Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 25,
+    "pass": 25,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "globalNotFound": [
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json"
+  ],
+  "items": [
+    {
+      "id": "omni_communications",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageOmniCommunications",
+        "activePageKey": "pageOmniCommunications",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 692,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "op_packs",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageOpPacks",
+        "activePageKey": "pageOpPacks",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 595,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "operational_performance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "operational_performance",
+        "activePageKey": "operational_performance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 724,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "parties",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomersAndSuppliers",
+        "activePageKey": "pageCustomersAndSuppliers",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 605,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "payment_funding_proposals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "payment_funding_proposals",
+        "activePageKey": "payment_funding_proposals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 522,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "people_development_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "people_development_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 709,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "people_ops",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePeopleOps",
+        "activePageKey": "pagePeopleOps",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 501,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "person_skill_evidence",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "person_skill_evidence",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 482,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pharmacy",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePharmacy",
+        "activePageKey": "pagePharmacy",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 515,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pick_task_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pick_task_queue",
+        "activePageKey": "pick_task_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 652,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "planning_exceptions",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "planning_exceptions",
+        "activePageKey": "planning_exceptions",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 617,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pos",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePOS",
+        "activePageKey": "pagePOS",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 567,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "procurement",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProcurement",
+        "activePageKey": "pageProcurement",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 681,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_issue_return",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_issue_return",
+        "activePageKey": "production_issue_return",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 634,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_large_screen",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "production_large_screen",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 650,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_material_requests",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_material_requests",
+        "activePageKey": "production_material_requests",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 667,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_receipt",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_receipt",
+        "activePageKey": "production_receipt",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 532,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "products",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProductsAndMaterials",
+        "activePageKey": "pageProductsAndMaterials",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 668,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "projects",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProjects",
+        "activePageKey": "pageProjects",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 593,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "putaway_rules",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "putaway_rules",
+        "activePageKey": "putaway_rules",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 521,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "putaway_task_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "putaway_task_queue",
+        "activePageKey": "putaway_task_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 534,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "qc_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageQcCenter",
+        "activePageKey": "pageQcCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 512,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "quality_hold_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "quality_hold_queue",
+        "activePageKey": "quality_hold_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 706,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "real-estate",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRealEstate",
+        "activePageKey": "pageRealEstate",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 511,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "recall_analysis",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "recall_analysis",
+        "activePageKey": "recall_analysis",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 665,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

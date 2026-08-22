@@ -1,6 +1,15 @@
 (function () {
   'use strict';
 
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   const VERSION = 'phase7k-platform-marketplace-v1';
 
   function O() {
@@ -69,13 +78,6 @@
     }
   };
 
-  const SEED_PLUGINS = [
-    { id: 'whatsapp_business', name: 'WhatsApp Business Connector', vendor: 'Octagon', version: '0.8.0', status: 'review', scopes: ['messages:read', 'messages:draft'], risk: 'high', tenantScoped: true },
-    { id: 'backup_monitor', name: 'Backup Monitor', vendor: 'Octagon', version: '1.0.0', status: 'active', scopes: ['backup:read', 'audit:read'], risk: 'medium', tenantScoped: true },
-    { id: 'report_designer', name: 'Report Designer Pack', vendor: 'Octagon Labs', version: '0.3.0', status: 'staged', scopes: ['reports:read', 'reports:write'], risk: 'medium', tenantScoped: true },
-    { id: 'hardware_gateway', name: 'Hardware Gateway Placeholder', vendor: 'Local IT', version: '0.1.0', status: 'blocked', scopes: ['devices:read'], risk: 'critical', tenantScoped: true }
-  ];
-
   const SEED_MODULES = [
     { id: 'core_admin', name: 'Admin Control Layer', category: 'Core', requiredTier: 'demo', status: 'installed', owner: 'System Admin' },
     { id: 'integration_hub', name: 'Integration Hub', category: 'Platform', requiredTier: 'demo', status: 'installed', owner: 'IT / Integrations' },
@@ -122,34 +124,60 @@
     root.modules.catalog = Array.isArray(root.modules.catalog) ? root.modules.catalog : [];
     root.billing.enforcement = root.billing.enforcement || { mode: 'local-tier-gate', lastCheckedAt: nowIso() };
 
-    SEED_PLUGINS.forEach(seed => {
-      if (!root.plugins.registry.some(plugin => plugin.id === seed.id)) {
-        root.plugins.registry.push({ ...seed, installedAt: nowIso(), enabled: seed.status === 'active' });
-      }
-    });
-
+    // The plugin registry used to seed itself with invented third-party
+    // integrations ("WhatsApp Business Connector v0.8.0 · active"), presented
+    // with status pills and Enable/Disable buttons — so it claimed extensions
+    // were installed that never existed. The governed equivalents are real:
+    // saas_extension_packages and saas_extension_installations, surfaced by
+    // extension_marketplace and extension_installations. This panel now fails
+    // closed and links there instead of inventing state.
+    //
+    // SEED_MODULES below is deliberately kept: it is a catalogue of Octagon's
+    // own modules whose availability is computed live by syncModuleLocks() from
+    // the active plan tier, not fabricated operational data.
     SEED_MODULES.forEach(seed => {
       if (!root.modules.catalog.some(module => module.id === seed.id)) {
         root.modules.catalog.push({ ...seed, createdAt: nowIso() });
       }
     });
 
-    if (!root.webhooks.registry.length) {
-      root.webhooks.registry.push({
-        id: 'whatsapp_inbound_events',
-        name: 'WhatsApp inbound events',
-        event: 'message.received',
-        endpoint: '/api/whatsapp/webhook',
-        scopes: ['messages:read'],
-        status: 'review',
-        retries: 3,
-        tenantScoped: true,
-        secretPreview: 'whsec_...local'
-      });
-    }
+    // Likewise, a webhook registration for '/api/whatsapp/webhook' was invented
+    // here whenever the registry was empty, so the page reported a live inbound
+    // subscription that had never been configured.
+    purgeFabricatedRecords(root);
 
     syncModuleLocks();
     return root;
+  }
+
+  // Deleting the seeder stops new fabrication but does not undo it: these
+  // records were persisted into omni.platformMarketplace (metadata table), so
+  // every existing install still shows the invented plugins and webhook. This
+  // removes exactly those, matched on id AND a second field so a genuine record
+  // that happened to reuse an id is never touched. There is no UI that adds to
+  // plugins.registry, so nothing here was ever user-created. Runs once.
+  const FABRICATED_PLUGINS = [
+    ['whatsapp_business', 'Octagon'],
+    ['backup_monitor', 'Octagon'],
+    ['report_designer', 'Octagon Labs'],
+    ['hardware_gateway', 'Local IT']
+  ];
+
+  function purgeFabricatedRecords(root) {
+    if (root.fabricatedSeedPurgedAt) return;
+    const beforePlugins = root.plugins.registry.length;
+    root.plugins.registry = root.plugins.registry.filter(function (plugin) {
+      return !FABRICATED_PLUGINS.some(function (entry) {
+        return plugin && plugin.id === entry[0] && plugin.vendor === entry[1];
+      });
+    });
+    const beforeHooks = root.webhooks.registry.length;
+    root.webhooks.registry = root.webhooks.registry.filter(function (hook) {
+      return !(hook && hook.id === 'whatsapp_inbound_events' && hook.endpoint === '/api/whatsapp/webhook');
+    });
+    root.fabricatedSeedPurgedAt = nowIso();
+    const removed = (beforePlugins - root.plugins.registry.length) + (beforeHooks - root.webhooks.registry.length);
+    if (removed > 0 && typeof window.saveData === 'function') window.saveData();
   }
 
   function tierAllowsModule(moduleId) {
@@ -285,7 +313,25 @@
     ].map(item => '<div class="pmk-stat"><b>' + esc(item[1]) + '</b><span>' + esc(item[0]) + ' - ' + esc(item[2]) + '</span></div>').join('');
   }
 
+  // Shown where invented records used to be. It says plainly that nothing is
+  // registered and points at the governed pages that hold the real thing,
+  // rather than filling the space with something that looks like data.
+  function governedEmptyState(messageAr, pages) {
+    const links = pages.map(function (entry) {
+      return '<button type="button" class="pmk-btn" onclick="switchPage(\'' + esc(entry[0]) + '\')">' + esc(entry[1]) + '</button>';
+    }).join(' ');
+    return '<div class="pmk-row"><div><div class="pmk-row-title">' + esc(messageAr) + '</div>'
+      + '<div class="pmk-row-sub">لا تُعرض هنا بيانات تجريبية. المصدر المعتمد في الصفحات التالية.</div></div>'
+      + '<div class="pmk-actions">' + links + '</div></div>';
+  }
+
   function renderPlugins(root) {
+    if (!root.plugins.registry.length) {
+      return governedEmptyState('لا توجد إضافات مسجَّلة في هذا السجل المحلي', [
+        ['extension_marketplace', 'سوق الإضافات المحكوم'],
+        ['extension_installations', 'الإضافات المثبَّتة للمستأجر']
+      ]);
+    }
     return root.plugins.registry.map(plugin => {
       const scopes = (plugin.scopes || []).map(scope => '<span class="pmk-tag">' + esc(scope) + '</span>').join('');
       return '<div class="pmk-row">'
@@ -311,6 +357,11 @@
   }
 
   function renderWebhooks(root) {
+    if (!root.webhooks.registry.length && !root.webhooks.deliveries.length) {
+      return governedEmptyState('لا توجد خطافات ويب مسجَّلة', [
+        ['extension_installations', 'الإضافات المثبَّتة للمستأجر']
+      ]);
+    }
     const hooks = root.webhooks.registry.map(hook => '<div class="pmk-row">'
       + '<div><div class="pmk-row-title">' + esc(hook.name) + '</div>'
       + '<div class="pmk-row-sub">' + esc(hook.event) + ' -> ' + esc(hook.endpoint) + ' - retries: ' + esc(hook.retries) + '</div>'
@@ -357,6 +408,7 @@
       + '<div class="pmk-panel"><h3>Webhook Registry</h3>' + renderWebhooks(root) + '</div>'
       + renderModuleCatalog(root, false) + '</div>';
     host.appendChild(shell);
+    arabicChrome(shell);
   }
 
   function renderAdminCatalog() {
@@ -367,19 +419,36 @@
     const wrap = document.createElement('div');
     wrap.id = 'platformMarketplaceAdminCatalog';
     wrap.innerHTML = renderModuleCatalog(ensureRoot(), false);
-    body.appendChild(wrap.firstElementChild);
+    const catalog = wrap.firstElementChild;
+    body.appendChild(catalog);
+    arabicChrome(catalog);
   }
 
   // Debounced single render — rebuilding the heavy integration_hub DOM four times
   // per navigation (compounded with the ecommerce-connectors module) made the page
   // janky/unresponsive. One delayed pass is enough once the template is mounted.
-  let _renderTimer = null;
+  // A plain shared debounce never fired, so this whole panel never appeared on
+  // integration_hub. Two faults: one timer served both targets, and the page
+  // mutates continuously — measured at 364 mutations in 6s with every gap under
+  // 350ms — so the observer re-armed the timer faster than it could elapse.
+  // Now one timer per target, plus a deadline capping how long re-arming can
+  // postpone a render that is already due.
+  const _renderTimers = { hub: null, admin: null };
+  const _renderDeadlines = { hub: 0, admin: 0 };
+  const RENDER_DELAY_MS = 350;
+  const RENDER_MAX_WAIT_MS = 700;
   function scheduleRender(target) {
-    clearTimeout(_renderTimer);
-    _renderTimer = setTimeout(function () {
+    if (!(target in _renderTimers)) return;
+    const now = Date.now();
+    if (!_renderDeadlines[target]) _renderDeadlines[target] = now + RENDER_MAX_WAIT_MS;
+    const wait = Math.max(0, Math.min(now + RENDER_DELAY_MS, _renderDeadlines[target]) - now);
+    clearTimeout(_renderTimers[target]);
+    _renderTimers[target] = setTimeout(function () {
+      _renderTimers[target] = null;
+      _renderDeadlines[target] = 0;
       if (target === 'hub') renderHub();
       if (target === 'admin') renderAdminCatalog();
-    }, 350);
+    }, wait);
   }
 
   function isHubActive() {

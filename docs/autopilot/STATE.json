@@ -2,14 +2,14 @@
   "schema_version": 1,
   "mode": "SUPERVISED",
   "chapter_status": "EXPANSION_BUILD_RUNNING",
-  "active_task": "BUILD-09R",
+  "active_task": "BUILD-13",
   "required_human_decision": false,
   "last_reconciled": {
     "branch": "codex/octagon-feature-page-expansion-marathon",
-    "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+    "commit": "c95a1d63d62017c5d3203af13142ff36716fee45",
     "remote": "origin",
-    "remote_commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
-    "observed_at": "2026-08-03"
+    "remote_commit": "c95a1d63d62017c5d3203af13142ff36716fee45",
+    "observed_at": "2026-08-05"
   },
-  "stop_reason": "BUILD-09R (BUILD-09 usability remediation) substantially in progress: 5 commits pushed and SHA-verified, fixing the verified root cause of the 32-page 'opens empty / same warehouse error' defect plus the raw-form/permission/lookup-routing defects described in the BUILD-09R brief. Genuine gaps remain (see docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md) - not marked COMPLETE. Do not begin BUILD-10: note that 8 commits of real BUILD-10 work already exist in this branch's history between BUILD-09's completion and BUILD-09R's start, even though QUEUE.json still shows BUILD-10 PENDING - that reconciliation gap predates this session and was left untouched as out of scope."
+  "stop_reason": "BUILD-12 is COMPLETE at the published final tip: 24 purpose-built workspaces, governed AI/People/Marketing/Events/Al-Warsha authorities, 17/17 focused tests, five real-shell Chromium flows, BUILD-09 65/65, BUILD-08 17/17, BUILD-10 37/37, BUILD-11 19/19, Workshop 80/80, permissions 40/40, autopilot 3/3, unit 12/12, and migration 5/5. The queue now routes to BUILD-13 as the next pending item, but no BUILD-13 implementation was started or authorized."
 }

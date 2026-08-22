@@ -72,6 +72,39 @@ export function rolloutFirmwareSimulated(db, input, ctx) {
   return { rolloutId, firmwareId, status: 'completed', simulator: true, successCount: 5, failureCount: 0 };
 }
 
+export function evaluateConfigDrift(db, input, ctx) {
+  const companyId = ctx.company_id || ctx.companyId;
+  const profileId = input.profile_id || input.profileId;
+  const deviceId = input.device_id || input.deviceId;
+  const currentParameters = input.current_parameters || input.currentParameters || {};
+
+  if (!companyId) {
+    const error = new Error('Company scope required for config drift evaluation');
+    error.code = 'COMPANY_SCOPE_REQUIRED';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const profile = db.prepare('SELECT * FROM iot_config_profiles WHERE id = ? AND company_id = ?').get(profileId, companyId);
+  if (!profile) {
+    const error = new Error('Configuration profile not found or scope denied');
+    error.code = 'CONFIG_PROFILE_NOT_FOUND';
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const desired = JSON.parse(profile.desired_config_json || '{}');
+  const driftDetails = [];
+  for (const key of Object.keys(desired)) {
+    const currentValue = currentParameters[key];
+    if (JSON.stringify(desired[key]) !== JSON.stringify(currentValue)) {
+      driftDetails.push({ key, desired: desired[key], current: currentValue !== undefined ? currentValue : null });
+    }
+  }
+
+  return { deviceId, profileId, hasDrift: driftDetails.length > 0, driftDetails };
+}
+
 export function upsertConfigProfile(db, input, ctx) {
   const companyId = ctx.company_id || ctx.companyId;
   const name = input.name;

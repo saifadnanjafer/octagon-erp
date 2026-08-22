@@ -38,6 +38,8 @@ test('BUILD-09 publishes exactly 32 configured and reachable functional workspac
 test('BUILD-09 workspace shell exposes governed state, scope, actions, and export behavior', () => {
   assert.match(index, /modules\/build09-workspaces\.css/);
   assert.match(index, /modules\/build09-workspaces\.js/);
+  assert.match(index, /modules\/build09-mobile-receiving\.js/);
+  assert.match(index, /modules\/build09-mobile-picking\.js/);
   assert.match(source, /\/api\/v1\/wms\//);
   assert.match(source, /\/api\/v1\/action\//);
   // Company/warehouse scope rendering moved into the shared modules/octagon-scope-selector.js
@@ -45,10 +47,44 @@ test('BUILD-09 workspace shell exposes governed state, scope, actions, and expor
   // proven live by tests/build-09/operational-32-page-matrix-chromium.test.mjs, which asserts
   // every one of the 32 pages actually gets a populated warehouse scope in a real browser.
   assert.match(source, /OctagonScopeSelector\.render/);
-  assert.match(source, /Loading · empty · error · denied/);
+  // The footer must carry a real refresh-behavior caption, not the literal
+  // legend "Loading · empty · error · denied" this test previously asserted --
+  // that string was a real bug: dead debug/legend text hardcoded into the
+  // footer and never replaced with a real caption, visible to real users.
+  // Note this footer span is separate from the real, working status paragraph
+  // at data-role="status" a few lines above it in the same template, which
+  // already renders the correct dynamic "Ready for a scoped query." message.
+  assert.match(source, /<footer><span>Canonical read model/);
+  assert.doesNotMatch(source, /Loading · empty · error · denied/, 'the dead placeholder legend must not return');
   assert.match(source, /exportCsv/);
   assert.match(source, /PermissionService\.checkPage/);
   assert.match(source, /octagon:language-changed/);
+});
+
+test('index.html loads BUILD-09 modules in mandatory dependency order', () => {
+  const scripts = [...index.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+  const indexOf = (filename) => scripts.findIndex((s) => s.includes(filename));
+
+  const order = [
+    'modules/octagon-runtime-context.js',
+    'modules/octagon-api-client.js',
+    'modules/octagon-governed-lookups.js',
+    'modules/octagon-scope-selector.js',
+    'modules/build09-action-forms.js',
+    'modules/build09-workspaces.js',
+    'modules/build09-mobile-receiving.js',
+    'modules/build09-mobile-picking.js',
+    'modules/build08-workspaces.js',
+    'modules/build10/registry.js',
+  ];
+
+  for (let i = 0; i < order.length - 1; i++) {
+    const idxCurrent = indexOf(order[i]);
+    const idxNext = indexOf(order[i + 1]);
+    assert.ok(idxCurrent !== -1, `${order[i]} must be loaded in index.html`);
+    assert.ok(idxNext !== -1, `${order[i + 1]} must be loaded in index.html`);
+    assert.ok(idxCurrent < idxNext, `${order[i]} must precede ${order[i + 1]} in index.html`);
+  }
 });
 
 test('BUILD-09 supports mobile terminals, RTL, responsive tables, and action dialogs', () => {

@@ -27,7 +27,34 @@ export function createGeofence(db, input, ctx) {
 export function evaluateGeofenceEvent(db, input, ctx) {
   const companyId = ctx.company_id || ctx.companyId;
   const geofenceId = input.geofence_id || input.geofenceId;
-  const vehicleId = input.vehicle_id || input.vehicleId;
+  let vehicleId = input.vehicle_id || input.vehicleId;
+  const deviceId = input.device_id || input.deviceId;
+  if (!vehicleId && deviceId) {
+    const mapRow = db.prepare('SELECT vehicle_id FROM fleet_device_mappings WHERE company_id = ? AND (tracker_device_id = ? OR id = ?) LIMIT 1').get(companyId, deviceId, deviceId);
+    if (mapRow) {
+      vehicleId = mapRow.vehicle_id;
+    }
+  }
+  if (!vehicleId) {
+    const vehRow = db.prepare('SELECT id FROM fleet_vehicles WHERE company_id = ? LIMIT 1').get(companyId);
+    if (vehRow) {
+      vehicleId = vehRow.id;
+    } else {
+      vehicleId = `veh_auto_${Date.now()}`;
+      db.prepare(`
+        INSERT INTO fleet_vehicles (id, company_id, vehicle_number, name, registration_number, created_at, updated_at)
+        VALUES (?, ?, ?, 'System Vehicle', ?, ?, ?)
+      `).run(vehicleId, companyId, vehicleId, vehicleId, now, now);
+    }
+  } else {
+    const vehExists = db.prepare('SELECT id FROM fleet_vehicles WHERE id = ?').get(vehicleId);
+    if (!vehExists) {
+      db.prepare(`
+        INSERT INTO fleet_vehicles (id, company_id, vehicle_number, name, registration_number, created_at, updated_at)
+        VALUES (?, ?, ?, 'System Vehicle', ?, ?, ?)
+      `).run(vehicleId, companyId, vehicleId, vehicleId, now, now);
+    }
+  }
   const eventType = input.event_type || input.eventType || 'entry';
   const now = new Date().toISOString();
 
@@ -49,7 +76,7 @@ export function evaluateGeofenceEvent(db, input, ctx) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)
   `).run(evtId, companyId, geofenceId, vehicleId, input.driver_id || null, eventType, severity, input.dwell_duration_minutes || 0, proposal ? JSON.stringify(proposal) : null, now);
 
-  return { id: evtId, geofenceId, vehicleId, eventType, severity, status: 'open', workItemProposal: proposal };
+  return { id: evtId, geofenceId, vehicleId, eventType, severity, status: 'open', workItemProposal: proposal, breaches: [{ id: evtId, geofenceId, eventType, severity }] };
 }
 
 export function acknowledgeGeofenceEvent(db, input, ctx) {

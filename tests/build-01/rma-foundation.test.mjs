@@ -17,10 +17,20 @@ test('BUILD-01 migration registers RMA case authority on a disposable database',
     try {
       assert.ok(db.prepare("SELECT 1 FROM schema_migrations WHERE migration_id = '064_commercial_rma_foundation'").get());
       assert.ok(db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='commercial_rma_cases'").get());
-      assert.deepEqual(
-        db.prepare("SELECT id FROM platform_actions WHERE id LIKE 'sales:rma:%' ORDER BY id").all().map((row) => row.id),
-        ['sales:rma:approve', 'sales:rma:create', 'sales:rma:post_return', 'sales:rma:submit'],
-      );
+      // 064 registers the RMA foundation; migration 068
+      // (platform services & commercial expansion) later extended the same
+      // lifecycle with receive/inspect/resolve/close. `freshInstall` runs both,
+      // so asserting 064's four as the *only* sales:rma actions describes a
+      // database that no longer exists. Both sets are still asserted exactly, so
+      // an unexpected future addition still fails here rather than passing
+      // silently under a loosened check.
+      const FOUNDATION_064 = ['sales:rma:approve', 'sales:rma:create', 'sales:rma:post_return', 'sales:rma:submit'];
+      const EXTENSION_068 = ['sales:rma:close', 'sales:rma:inspect', 'sales:rma:receive', 'sales:rma:resolve'];
+      const registered = db.prepare("SELECT id FROM platform_actions WHERE id LIKE 'sales:rma:%' ORDER BY id").all().map((row) => row.id);
+      for (const action of FOUNDATION_064) {
+        assert.ok(registered.includes(action), `064 must register ${action}`);
+      }
+      assert.deepEqual(registered, [...FOUNDATION_064, ...EXTENSION_068].sort());
     } finally { db.close(); }
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

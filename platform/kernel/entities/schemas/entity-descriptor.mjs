@@ -19,6 +19,7 @@ export const FIELD_NAME_RE = /^[a-z_][a-z0-9_]{0,63}$/;
 
 export const ENTITY_SCOPES = ['tenant', 'company', 'branch', 'none'];
 export const ENTITY_LIFECYCLE_POLICIES = ['generic', 'state_machine', 'workflow', 'immutable', 'append_only'];
+const LEGACY_LIFECYCLE_POLICY_ALIASES = { governed: 'workflow', explicit: 'state_machine' };
 export const ENTITY_QUERY_POLICIES = ['open', 'scoped', 'tenant_scoped'];
 export const ENTITY_ACTION_POLICIES = ['registered', 'generic', 'none'];
 export const ENTITY_CUSTOMIZATION_POLICIES = ['metadata', 'code', 'none'];
@@ -112,9 +113,10 @@ export function normalizeDescriptor(input) {
   if (!ENTITY_SCOPES.includes(scope)) {
     throw new EntityDescriptorError(`scope must be one of ${ENTITY_SCOPES.join(', ')}`, 'DESCRIPTOR_INVALID_SCOPE', { scope });
   }
-  const lifecyclePolicy = input.lifecycle_policy || 'generic';
+  const requestedLifecyclePolicy = input.lifecycle_policy || 'generic';
+  const lifecyclePolicy = LEGACY_LIFECYCLE_POLICY_ALIASES[requestedLifecyclePolicy] || requestedLifecyclePolicy;
   if (!ENTITY_LIFECYCLE_POLICIES.includes(lifecyclePolicy)) {
-    throw new EntityDescriptorError(`lifecycle_policy must be one of ${ENTITY_LIFECYCLE_POLICIES.join(', ')}`, 'DESCRIPTOR_INVALID_LIFECYCLE', { lifecycle_policy: lifecyclePolicy });
+    throw new EntityDescriptorError(`lifecycle_policy must be one of ${ENTITY_LIFECYCLE_POLICIES.join(', ')}`, 'DESCRIPTOR_INVALID_LIFECYCLE', { lifecycle_policy: requestedLifecyclePolicy });
   }
   const queryPolicy = input.query_policy || 'scoped';
   if (!ENTITY_QUERY_POLICIES.includes(queryPolicy)) {

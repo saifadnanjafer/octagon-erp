@@ -76,14 +76,19 @@ const sidebarPages = uniqueSidebarPages();
 const mappedSidebarPages = [...sidebarPages].filter(page => Object.prototype.hasOwnProperty.call(PS.pagePermissions, page));
 
 const CASES = [
-  // Baseline moved 126 -> 158 when BUILD-09 added its 32 functional pages.
+  // Baseline moved 126 -> 158 when BUILD-09 added its 32 functional pages, then
+  // 158 -> 196 when BUILD-10 added its 38 devices/fleet/offline/kiosk pages,
+  // then 196 -> 199 for Workshop Command Center, My Work, and Readiness,
+  // then 199 -> 209 for BUILD-11 commercial and managed-SaaS workspaces;
+  // then 209 -> 233 for BUILD-12 governed intelligence and vertical workspaces;
+  // subscriptions reuses the existing commercial sidebar route.
   // Both numbers move together on
   // purpose: the second case is the real invariant (every sidebar page is
   // explicitly mapped), and it fails on either an unmapped page or count drift.
-  ['sidebar baseline reflects BUILD-09 WMS, production, quality, and performance pages',
-    () => sidebarPages.size, 158],
+  ['sidebar baseline reflects BUILD-09 WMS/production/quality/performance and BUILD-10 devices/fleet/offline/kiosk pages',
+    () => sidebarPages.size, 233],
   ['mapped sidebar pages stay fully mapped (100% coverage)',
-    () => mappedSidebarPages.length, 158],
+    () => mappedSidebarPages.length, 233],
   ['action permission inventory remains populated',
     () => Object.keys(PS.actionPermissions).length >= 24, true],
   ['action metadata inventory remains populated',
@@ -97,6 +102,8 @@ const CASES = [
     () => groupsFor(SEEDED_USERS.workshop_manager), 'workshop.manager,workshop.user'],
   ['operator_user resolves workshop.user',
     () => groupsFor(SEEDED_USERS.operator_user), 'workshop.user'],
+  ['operator_user can access the Workshop Command Center',
+    () => PS.checkPage('workshop_command_center', SEEDED_USERS.operator_user), true],
   ['viewer_user resolves no privileged groups',
     () => groupsFor(SEEDED_USERS.viewer_user), ''],
 

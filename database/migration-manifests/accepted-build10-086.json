@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build10-085.json",
+  "acceptedSourceCommit": "30888971315bbe1bedfcc77442fe92931fa823b6",
+  "acceptanceTimestamp": "2026-08-03T06:30:00.000Z",
+  "acceptanceReason": "BUILD-10 Follow-up acceptance: additive migration 086 registers all BUILD-10 fleet telematics, geofence breaches, offline engine sync/conflict, and kiosk board governed actions and permissions while preserving immutable 083-085.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "086_build10_actions_and_permissions_followup",
+      "relativePath": "database/migrations/086_build10_actions_and_permissions_followup.mjs",
+      "algorithm": "sha256",
+      "checksum": "dc73df467f24cbaacfd2c5faa48de4f684fdd06290efdcdc72d7ee1ab04f68cc"
+    }
+  ]
+}

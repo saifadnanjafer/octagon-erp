@@ -278,7 +278,7 @@ function syncIdentityUsers(dialect, db, ctx) {
   const upsertMembership = dialect.prepare(`
     INSERT INTO organization_memberships (id, user_id, tenant_id, company_id, branch_id, is_default, status, created_at, created_by)
     VALUES (?, ?, 'default', ?, ?, 1, 'active', ?, ?)
-    ON CONFLICT(id) DO UPDATE SET company_id = excluded.company_id, branch_id = excluded.branch_id
+    ON CONFLICT DO UPDATE SET company_id = excluded.company_id, branch_id = excluded.branch_id
   `);
   const insertCredential = dialect.prepare(`
     INSERT INTO identity_credentials (user_id, algorithm, salt, hash, must_change, changed_at, changed_by)

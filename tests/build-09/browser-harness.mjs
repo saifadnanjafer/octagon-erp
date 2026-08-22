@@ -12,11 +12,19 @@ import * as topology from '../../platform/wms/topology.mjs';
 import { products } from '../../platform/commercial/index.mjs';
 import { setApprovalAuthorityLimit } from '../../platform/finance/engine.mjs';
 import * as putaway from '../../platform/wms/putaway.mjs';
+import { createUserDirectory } from '../../platform/identity/users/index.mjs';
+import { createMembershipDirectory } from '../../platform/organizations/memberships/index.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 
 function seedOperationalFacts(dialect, name) {
   const companyId = 'default';
+  const users = createUserDirectory(dialect);
+  const memberships = createMembershipDirectory(dialect);
+  for (const [id, login, display] of [['browser-manager', 'browser-manager', 'Browser Manager'], ['browser-picker', 'browser-picker', 'Browser Picker'], ['viewer-user', 'viewer-user', 'Viewer User']]) {
+    if (!dialect.prepare('SELECT 1 FROM identity_users WHERE id=?').get(id)) users.create({ id, tenantId: 'default', login, name: display, email: `${login}@example.test` });
+    if (dialect.prepare('SELECT 1 FROM platform_companies WHERE id=?').get(companyId)) memberships.grant({ userId: id, companyId, isDefault: true });
+  }
   const warehouse = createWarehouse(dialect, { company_id: companyId, name: `Browser DC ${name}`, code: `B${name.slice(0, 4).toUpperCase()}` });
   const stamp = new Date().toISOString();
   dialect.prepare('INSERT INTO warehouse_branch_scopes(warehouse_id,company_id,branch_id,created_at) VALUES(?,?,?,?)').run(warehouse.id, companyId, 'branch-a', stamp);
@@ -36,7 +44,11 @@ function seedOperationalFacts(dialect, name) {
   return { companyId, warehouse, source, destination, staging, supplier, productId: 'product-browser-b09', rule };
 }
 
-export async function openBuild09Browser(t, { name, initialPage }) {
+// BUILD-09R-2 group workspaces ship as their own modules; a test opts in by naming them in
+// `extraModules` so the harness only loads what the page under test actually needs.
+const BASE_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-mobile-receiving.js', 'build09-mobile-picking.js'];
+
+export async function openBuild09Browser(t, { name, initialPage, extraModules = [], user = 'browser-manager' }) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), `octagon-b09-browser-${name}-`));
   const dbPath = path.join(dir, 'browser.db');
   await freshInstall({ dbPath, backupDir: path.join(dir, 'backups'), actor: `build09-browser-${name}` });
@@ -44,18 +56,22 @@ export async function openBuild09Browser(t, { name, initialPage }) {
   const seed = seedOperationalFacts(dialect, name);
   const authority = createPlatformAuthority(dialect);
   const permissionEvaluator = createPermissionEvaluator(dialect);
+  let activeUser = user;
   const contextFor = (req) => ({
     companyId: String(req.headers['x-company'] || seed.companyId), activeCompanyId: String(req.headers['x-company'] || seed.companyId),
     warehouseId: String(req.headers['x-warehouse'] || seed.warehouse.id), tenantId: 'default', branchId: 'branch-a',
-    userId: String(req.headers['x-user'] || 'browser-manager'), actorId: String(req.headers['x-user'] || 'browser-manager'),
+    userId: String(req.headers['x-user'] || activeUser), actorId: String(req.headers['x-user'] || activeUser),
     actorType: 'user', correlationId: `build09-${name}-${Date.now()}`,
   });
   const api = createApiHandler({
     dialect, prefix: '/api/v1', actionExecutor: authority.actionExecutor, resolveContext: contextFor, permissionEvaluator,
-    authorize: ({ ctx }) => ctx.userId === 'viewer-user' ? { allowed: false, statusCode: 403, message: 'Permission denied' } : { allowed: true },
+    authorize: ({ permission, ctx }) => ctx.userId === 'viewer-user'
+      ? (permission === 'wms:picking:view' ? { allowed: true } : { allowed: false, statusCode: 403, message: 'Permission denied' })
+      : { allowed: true },
   });
 
-  const STATIC_MODULES = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js', 'build09-workspaces.css'];
+  const pageScripts = [...BASE_MODULES, ...extraModules];
+  const STATIC_MODULES = [...pageScripts, 'build09-workspaces.css'];
   const server = http.createServer((req, res) => {
     const requestUrl = new URL(req.url, 'http://127.0.0.1');
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
@@ -71,9 +87,9 @@ export async function openBuild09Browser(t, { name, initialPage }) {
       res.end(fs.readFileSync(path.join(ROOT, 'modules', staticName))); return;
     }
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
-      const scripts = ['octagon-api-client.js', 'octagon-runtime-context.js', 'octagon-governed-lookups.js', 'octagon-scope-selector.js', 'build09-action-forms.js', 'build09-workspaces.js'].map((file) => `<script src="/modules/${file}"></script>`).join('');
+      const scripts = pageScripts.map((file) => `<script src="/modules/${file}"></script>`).join('');
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.switchPage=function(){};</script>${scripts}<script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
+      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build09-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__BUILD09_FORCE_READ_ONLY__=${activeUser === 'viewer-user'};window.switchPage=function(){};</script>${scripts}<script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;
     }
     res.writeHead(404); res.end('not found');
@@ -88,7 +104,49 @@ export async function openBuild09Browser(t, { name, initialPage }) {
   await page.goto(`http://127.0.0.1:${server.address().port}/harness`, { waitUntil: 'networkidle0', timeout: 30000 });
   await page.waitForFunction((pageId) => document.querySelector(`[data-build09-page="${pageId}"]`)?.classList.contains('page-active'), {}, initialPage);
   t.after(async () => { await browser.close(); await new Promise((resolve) => server.close(resolve)); dialect.close(); fs.rmSync(dir, { recursive: true, force: true }); });
-  return { authority, browser, consoleErrors, dialect, page, seed };
+  const switchAuthenticatedUser = async (userId) => {
+    activeUser = userId;
+    await page.reload({ waitUntil: 'networkidle0', timeout: 30000 });
+    await page.waitForFunction((expected) => window.OctagonRuntimeContext?.ready && window.OctagonRuntimeContext.actorId === expected && window.OctagonRuntimeContext.userId === expected, { timeout: 10000 }, userId);
+  };
+  return { authority, browser, consoleErrors, dialect, page, seed, setAuthenticatedUser: (userId) => { activeUser = userId; }, switchAuthenticatedUser };
+}
+
+/**
+ * The harness page renders lang="ar" dir="rtl", so Intl formats every quantity with Arabic-Indic
+ * digits (٢٠, not 20). Assertions on rendered numbers must fold them back to ASCII first -
+ * otherwise a "this quantity must be hidden" check passes for the wrong reason.
+ */
+export const latinDigits = (text) => String(text ?? '')
+  .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+  .replace(/[؜‎‏]/g, '')
+  .trim();
+
+/** The same fold, as source, for injection into page.evaluate/waitForFunction callbacks. */
+export const LATIN_DIGITS_IN_PAGE = `((text) => String(text ?? '').replace(/[\\u0660-\\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[\\u061C\\u200E\\u200F]/g, '').trim())`;
+
+/**
+ * Real mouse click that tolerates a re-render landing between selector resolution and the click.
+ *
+ * The BUILD-09R-2 workspaces repaint their whole body when a guarded action settles, so a handle
+ * resolved by waitForSelector can be detached microseconds later - puppeteer then throws
+ * "Node is either not clickable or not an HTMLElement" from clickablePoint. That is a test-harness
+ * race, not a product defect, so retry on a fresh handle instead of weakening the assertion into
+ * an evaluate() click (which would stop proving the control is genuinely clickable).
+ */
+export async function clickStable(page, selector, { timeout = 10000, attempts = 4 } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      await page.waitForSelector(selector, { timeout, visible: true });
+      await page.click(selector);
+      return;
+    } catch (error) {
+      lastError = error;
+      if (!/not clickable|not an HTMLElement|detached|No node found/i.test(String(error.message))) throw error;
+    }
+  }
+  throw lastError;
 }
 
 export async function browserAction(page, actionId, input, { user = 'browser-manager', company = 'default', warehouse } = {}) {

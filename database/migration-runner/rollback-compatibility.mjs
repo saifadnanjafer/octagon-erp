@@ -77,11 +77,43 @@ function clearModuleSettings(dialect, moduleId) {
 }
 
 /**
+ * Roll back BUILD-10's follow-up registrations without deleting entity
+ * definitions owned by migrations 081-085. Migration 086's historical down()
+ * uses a static entity list that overlaps those earlier owners; removing the
+ * shared entities violates platform_actions foreign keys. The runner owns this
+ * compatibility path so accepted migration sources remain immutable.
+ */
+function rollbackBuild10Followup(dialect) {
+  const moduleId = 'build10_governed_actions';
+  const actions = tableExists(dialect, 'platform_actions')
+    ? dialect.prepare('DELETE FROM platform_actions WHERE module_id = ?').run(moduleId).changes
+    : 0;
+  const permissions = tableExists(dialect, 'authorization_permissions')
+    ? dialect.prepare('DELETE FROM authorization_permissions WHERE module_id = ?').run(moduleId).changes
+    : 0;
+  const entities = tableExists(dialect, 'platform_entities')
+    ? dialect.prepare('DELETE FROM platform_entities WHERE module_id = ?').run(moduleId).changes
+    : 0;
+  const modules = tableExists(dialect, 'platform_modules')
+    ? dialect.prepare('DELETE FROM platform_modules WHERE id = ?').run(moduleId).changes
+    : 0;
+  return { actions, permissions, entities, modules, skipMigrationDown: true };
+}
+
+/**
  * Registry of pre-down compatibility steps, keyed by migration id.
  *
  * Add an entry only with a reproduced failure and a note describing it.
  */
 export const PRE_DOWN_STEPS = Object.freeze({
+  '086_build10_actions_and_permissions_followup': {
+    reason:
+      'migration 086 down() lists entity ids already owned by BUILD-10 migrations 081-085; ' +
+      'remove only rows owned by the follow-up module and leave shared entity definitions intact.',
+    apply(dialect) {
+      return rollbackBuild10Followup(dialect);
+    },
+  },
   '014_finance_canonical_schema_and_coa': {
     reason:
       'down() drops finance_accounts, whose parent_id self-references, and deletes its ' +
@@ -110,7 +142,8 @@ export function applyPreDownCompatibility(dialect, migrationId, dialectName = 's
   if (dialectName !== 'sqlite') {
     return { migrationId, skipped: `no compatibility step implemented for dialect "${dialectName}"` };
   }
-  return { migrationId, reason: step.reason, detail: step.apply(dialect) };
+  const detail = step.apply(dialect);
+  return { migrationId, reason: step.reason, detail, skipMigrationDown: detail?.skipMigrationDown === true };
 }
 
 export function hasPreDownCompatibility(migrationId) {

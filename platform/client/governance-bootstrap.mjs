@@ -16,8 +16,22 @@
 //     never carries a raw secret
 //   - hiding is presentation; the server denies the same call independently
 //   - Arabic/RTL identity is preserved: `locale`/`direction` come from the user
+//
+// REGRESSION — see docs/product/BUILD13_FEATURE_GAP_REGISTER.md (GAP-008).
+// The invariant above, and four other client-facing guarantees, are currently
+// NOT met. Commit 7aff6fc ("master data governance & data quality full engine")
+// removed `actor.locale`/`actor.direction`, `impersonation` (the visible
+// banner), `fields` (per-field hidden/masked/readOnly for forms), `canOpen()`
+// (deep-link protection) and `switchCompany()` (membership-validated company
+// switch) from this payload while leaving these invariants documented as true.
+// `RouteCoverageRegistry.clientMetadata()` still implements the old contract but
+// is called only from tests. The phase02 §56 suite still asserts the documented
+// contract and therefore fails; that failure is the evidence, so do not "fix" it
+// by deleting the assertions. Server-side denial is unaffected.
 
 'use strict';
+
+export const BOOTSTRAP_VERSION = '2';
 
 export class BootstrapError extends Error {
   constructor(message, code) {
@@ -83,6 +97,51 @@ export class GovernanceBootstrap {
    * `pages`/`actions` default to the Octagon catalogue but a caller may pass a
    * module-specific set.
    */
+  /**
+   * Deep-link protection. The nav only lists what the actor holds, but a URL can
+   * be typed, so the shell asks this before opening a page. An unknown page is
+   * reported as PAGE_UNKNOWN rather than silently denied, so a broken link is
+   * distinguishable from a permission problem.
+   */
+  canOpen(ctx, pageId, pages = DEFAULT_PAGE_CATALOGUE) {
+    if (!ctx?.actorId) throw new BootstrapError('a verified context is required', 'NO_CONTEXT');
+    const page = pages.find((p) => p.id === pageId);
+    if (!page) return { allowed: false, reasonCode: 'PAGE_UNKNOWN', pageId };
+    const decision = this.evaluator.evaluate({ permission: page.permission, ctx });
+    return {
+      allowed: !!decision.allowed,
+      reasonCode: decision.allowed ? null : decision.reasonCode || 'DENIED',
+      pageId,
+    };
+  }
+
+  /**
+   * Switching company is membership-derived, never client-asserted: the target
+   * must already be an active membership of that user, otherwise this throws
+   * rather than returning a context for a company they do not belong to.
+   */
+  switchCompany(userId, companyId, { buildContext } = {}) {
+    if (!userId || !companyId) throw new BootstrapError('userId and companyId are required', 'BAD_REQUEST');
+    if (typeof buildContext !== 'function') throw new BootstrapError('buildContext is required', 'BAD_REQUEST');
+    let memberOf = [];
+    if (this.memberships) {
+      try {
+        // MembershipDirectory.companies() already returns only active, in-window
+        // memberships — there is no listUserMemberships(), and calling it threw
+        // into the catch below, which silently turned every membership check
+        // into "no memberships".
+        memberOf = this.memberships.companies(userId);
+      } catch {
+        memberOf = [];
+      }
+    }
+    if (!memberOf.includes(companyId)) {
+      throw new BootstrapError('the requested company is not a membership of this user', 'COMPANY_NOT_A_MEMBERSHIP');
+    }
+    const ctx = buildContext({ requestedCompanyId: companyId });
+    return this.build(ctx);
+  }
+
   build(ctx, { pages = DEFAULT_PAGE_CATALOGUE, actions = [], settingsModule = null } = {}) {
     if (!ctx?.actorId) throw new BootstrapError('a verified context is required', 'NO_CONTEXT');
 
@@ -97,13 +156,59 @@ export class GovernanceBootstrap {
       }
     }
 
+    // Actions report every entry with an `enabled` flag rather than silently
+    // dropping the denied ones: a form that disables a button explains itself,
+    // a form that hides it leaves the user guessing why the thing they were
+    // told to do is missing. Accepts a plain permission string or a descriptor
+    // { id, permission, entity }.
+    const actionReport = [];
     const grantedActions = [];
-    for (const actionId of actions) {
-      const decision = this.evaluator.evaluate({ permission: actionId, ctx });
-      if (decision.allowed) {
-        grantedActions.push(actionId);
+    const fieldEntities = new Set();
+    for (const entry of actions) {
+      const descriptor = typeof entry === 'string' ? { id: entry, permission: entry } : (entry || {});
+      const permission = descriptor.permission || descriptor.id;
+      if (!permission) continue;
+      const decision = this.evaluator.evaluate({ permission, ctx });
+      actionReport.push({
+        id: descriptor.id || permission,
+        permission,
+        entity: descriptor.entity || null,
+        enabled: !!decision.allowed,
+        reasonCode: decision.allowed ? null : decision.reasonCode || null,
+      });
+      if (decision.allowed) grantedActions.push(descriptor.id || permission);
+      if (descriptor.entity) fieldEntities.add(descriptor.entity);
+    }
+
+    // Field-level visibility for every entity the shell was asked about, read
+    // from the real role rules through the evaluator — never invented here.
+    // 'none' hides, 'masked' masks, 'read' disables the input for writing.
+    const fields = {};
+    if (typeof this.evaluator.fieldPartition === 'function') {
+      for (const entity of fieldEntities) {
+        try {
+          const partition = this.evaluator.fieldPartition(entity, ctx.roles || []);
+          fields[entity] = {
+            hidden: partition.hidden || [],
+            masked: partition.masked || [],
+            readOnly: partition.denyWrite || [],
+          };
+        } catch {
+          fields[entity] = { hidden: [], masked: [], readOnly: [] };
+        }
       }
     }
+
+    // An impersonated session must be visibly marked. The shell is handed the
+    // banner text rather than composing it, so it cannot be quietly omitted.
+    const impersonating = ctx.actorType === 'impersonated' && !!ctx.impersonatorId;
+    const impersonation = {
+      active: impersonating,
+      by: ctx.impersonatorId || null,
+      bannerAr: impersonating
+        ? `تعمل الآن بالنيابة عن مستخدم آخر (${ctx.actorId}). كل إجراء يُسجَّل باسم المنتحِل.`
+        : '',
+    };
 
     let unreadCount = 0;
     if (this.notifications) {
@@ -127,10 +232,16 @@ export class GovernanceBootstrap {
     let availableCompanies = [];
     if (this.memberships) {
       try {
-        const userMems = this.memberships.listUserMemberships(ctx.userId);
+        // Same bug as switchCompany: listUserMemberships() does not exist, so this
+        // always threw and availableCompanies was permanently empty — the company
+        // switcher had nothing to switch to. list() is the real API and is
+        // already filtered to active memberships.
+        const userMems = this.memberships.list(ctx.userId);
+        const activeCompanyId = ctx.activeCompanyId || ctx.companyId || null;
+        const seen = new Set();
         availableCompanies = userMems
-          .filter(m => m.status === 'active')
-          .map(m => ({ companyId: m.companyId, isDefault: m.companyId === ctx.companyId }));
+          .filter((m) => (seen.has(m.companyId) ? false : seen.add(m.companyId)))
+          .map((m) => ({ companyId: m.companyId, isDefault: m.companyId === activeCompanyId }));
         activeCompany = ctx.companyId;
       } catch {
         activeCompany = ctx.companyId;
@@ -148,6 +259,32 @@ export class GovernanceBootstrap {
 
     return {
       success: true,
+      version: BOOTSTRAP_VERSION,
+      generatedAt: new Date().toISOString(),
+      // `actor` is the documented name for the caller's identity and carries the
+      // locale/direction the Arabic-first shell needs. `context` stays as an
+      // alias so consumers written against the later shape keep working.
+      actor: {
+        id: ctx.actorId,
+        actorId: ctx.actorId,
+        actorType: ctx.actorType,
+        userId: ctx.userId,
+        tenantId: ctx.tenantId,
+        activeCompanyId: ctx.activeCompanyId || ctx.companyId || null,
+        isOwner: ctx.isOwner === true,
+        locale: ctx.locale || 'ar',
+        direction: (ctx.locale || 'ar') === 'ar' ? 'rtl' : 'ltr',
+      },
+      scope: {
+        activeCompanyId: ctx.activeCompanyId || ctx.companyId || null,
+        activeBranchId: ctx.activeBranchId || ctx.branchId || null,
+        companyMemberships: (ctx.companyMemberships || []).map((m) => (
+          typeof m === 'string' ? { id: m } : { id: m.companyId || m.id, ...m }
+        )),
+      },
+      impersonation,
+      fields,
+      actions: actionReport,
       context: {
         actorId: ctx.actorId,
         actorType: ctx.actorType,
@@ -163,7 +300,9 @@ export class GovernanceBootstrap {
         availableCompanies,
       },
       navigation: {
+        pages: grantedPages,
         grantedPages,
+        hiddenPageCount: deniedPages.length,
         deniedPagesCount: deniedPages.length,
       },
       permissions: {

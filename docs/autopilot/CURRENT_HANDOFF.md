@@ -1,5 +1,171 @@
 # Current Autopilot Handoff
 
+## Navigation Recovery 1 complete — owner consolidation decision pending (2026-08-07)
+
+This supervised recovery is separate from BUILD-13/BUILD-14; both remain
+pending and unauthorized. The navigation registry now has 231 verified primary
+workspaces across seven domains, four embedded TAB controls, and one POS
+compatibility alias. Chromium clicked every primary entry through the visible
+UI (231/231 pass) against the disposable review environment. The forensic
+registry, consolidation candidates, owner-decision checklist, and evidence are
+under `docs/navigation/` and `docs/autopilot/evidence/`.
+
+Human confirmation is required before any orphan view, duplicate candidate, or
+compatibility surface is retired or merged. No operational data or product
+authority was changed.
+
+## BUILD-12 COMPLETE — GOVERNED INTELLIGENCE AND VERTICAL PACKS (2026-08-05)
+
+BUILD-12 now has its additive authority, migration 089, provider-neutral
+deterministic AI simulator, bounded/redacted context, quota integration,
+maker-checker proposals, People Development, consent-aware Marketing
+simulation, Events capacity/check-in, and safe Al-Warsha installation metadata.
+The shell now exposes 24 distinct purpose-built BUILD-12 workspaces with
+guided fields, visible risk/context/review/no-auto-execution labels, responsive
+Arabic/English styling, empty/error/denied states, and focus-visible controls.
+
+The implementation checkpoint `58249a238acfc3e33b1a0ee8ef92f3d85c0d062e`
+was followed by final closure evidence at
+`c95a1d63d62017c5d3203af13142ff36716fee45`, pushed with local, upstream, and
+remote equality. BUILD-13 remains pending and unauthorized.
+
+Closure evidence: BUILD-12 17/17; BUILD-09 65/65; BUILD-08 17/17;
+BUILD-10 37/37; BUILD-11 19/19; Workshop 80/80; permissions 40/40;
+autopilot 3/3; unit 12/12; migration 5/5. Browser-heavy suites were run
+serially. Local, upstream, and remote SHA equality and a clean worktree are
+required after the final evidence commit.
+
+## BUILD-11R COMPLETE (2026-08-05)
+
+BUILD-11R is complete: the commercial administration UX, five real-shell
+Chromium acceptance flows, and complete serial BUILD-09 regression are green.
+BUILD-12 is the current supervised task and is recorded above.
+
+The BUILD-11R remediation preserved the existing tenant, subscription,
+entitlement, usage, billing-simulator, and extension authorities while replacing
+the generic commercial workspace renderer with eleven purpose-built workspaces.
+Implementation checkpoint: `946b0c7cd99797f146847180c98f8644bb3b3995`.
+
+## BUILD-11 COMPLETE (historical implementation checkpoint, 2026-08-05)
+
+BUILD-11 Commercial Platform and Managed SaaS Tenant Lifecycle is complete on
+`codex/octagon-feature-page-expansion-marathon`. The implementation tip is
+`e02673616781cb71fe028baa36318e6cf534d080`, normally pushed with local,
+upstream, and remote SHA equality. Evidence is recorded at
+`docs/autopilot/evidence/BUILD-11-commercial-platform-completion.md`.
+
+The delivery adds additive tenant/lifecycle/provisioning authority, commercial
+editions/plans/immutable versions, explainable entitlements, subscriptions,
+seats/limits, usage idempotency and hard quotas, reconciliation,
+simulation-only billing, safe extension validation/staging, and ten responsive
+commercial/SaaS workspaces inside the existing shell. The focused BUILD-11
+suite passed 11/11 with two real Chromium flows. Unit 12/12, migration 5/5,
+permissions 40/40, autopilot 3/3, BUILD-08 17/17, BUILD-10 37/37, and
+workshop 80/80 also passed. The broad BUILD-09 runner was attempted with a
+180-second bound and timed out with exit 124; focused BUILD-09 runtime,
+forms/lookups, bespoke workspace, and Chromium proof passed 13/13.
+
+No operational data, external billing provider, Finance GL, inventory
+authority, VNext, Telegram, payroll, attendance, or timesheet path was
+changed. BUILD-12 is next eligible. The older dated sections below are
+historical checkpoints retained for lineage.
+
+## BUILD-09R-2 high-value page pack (2026-08-05)
+
+Six purpose-built workspace groups shipped on `codex/octagon-feature-page-expansion-marathon`,
+taking BUILD-09 from 2 to **16 of 32** purpose-built pages: waves (planning/execution), cycle
+counting (plans/session/variance review), traceability + recall, shop-floor terminal +
+work-centre queue, quality hold/rework/scrap, and downtime + operational performance. A shared
+kernel (`modules/build09r-shared.js`) carries the reusable half so the six groups read as one
+product. 6 commits, each tested and pushed before the next began.
+
+**The dispatching prompt's premise was stale and was not taken at face value.** It named
+`d74c3bfc` as HEAD and described BUILD-10's frontend as an unbuilt 138-line stub with 6 red
+tests. The remote was 6 commits ahead and those commits had built it; `test:build-10` verifies
+**37/37 including all 3 Chromium lifecycle tests**. BUILD-10 was already COMPLETE, so this
+session left it alone and went to the prompt's own next priority (§31), Phase G. BUILD-11 was
+not started.
+
+Three real defects were found and fixed while building, two of which had been invisible because
+nothing had ever driven these paths through a real click:
+1. `listCountSessions` leaked the blind-count snapshot — a counter could list sessions and read
+   the quantity a blind count exists to withhold (fixed in `platform/wms/cycle-counting.mjs`,
+   with a domain regression test).
+2. The `lots` / `serials` governed pickers pointed at `/api/v1/wms/lots`, which does not exist;
+   they 404d and rendered permanently empty (fixed in `modules/octagon-governed-lookups.js`).
+3. A `clickablePoint` flake where a `guarded()` repaint detaches an element mid-click (fixed
+   with `clickStable()` in the harness, keeping real mouse clicks).
+
+Verification: `test:build-08` 17/17, `test:build-09` **51/51** (35 baseline preserved + 16 new),
+`test:build-10` 37/37, `test:permissions` 39/39, `test:migration` 5/5. Migrations 081–085
+untouched; no payroll/attendance/timesheet path touched.
+
+**BUILD-09R stays IN_PROGRESS.** 16 pages remain on the generic shell and are pinned by name in
+`tests/build-09/build09r2-bespoke-contract.test.mjs`. Full detail:
+`docs/autopilot/evidence/BUILD-09R-2-high-value-page-pack.md`.
+
+**Next eligible:** either continue BUILD-09R-2 (next natural group: dock scheduling + check-in +
+staging/cross-dock, which share one physical flow) or start BUILD-11, which remains PENDING and
+untouched.
+
+## BUILD-10 COMPLETE (2026-08-03)
+
+BUILD-10 (Devices, telematics, offline, and kiosk) is honestly complete. This session's backend
+reconciliation (below) was followed by a real frontend build on the same branch: 38 pages wired
+into `index.html` nav, `modules/build10-workspaces.js`/`.css` genuinely implemented (not a stub),
+10 new `modules/build10/*` support files, and 2 more backend bugs fixed along the way (device-to-
+vehicle resolution in geofence/location functions; migrations 083-085 briefly gained extra rows
+that were correctly reverted and moved into a new additive migration 086 instead). Final
+verification: `test:build-10` 37/37 (all 3 Chromium lifecycle tests pass), `test:build-08` 17/17,
+`test:build-09` 34/34, `test:permissions` 39/39 (after a legitimate sidebar-baseline bump
+158->196), `test:migration` 5/5. Full detail in
+`docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md`. **BUILD-11 is next eligible.**
+
+## BUILD-10 backend/domain-layer reconciliation (2026-08-03, second session)
+
+A second session was dispatched with the same mega-prompt as the checkpoint below. The owner
+was shown the prior session's `required_human_decision` flag and explicitly chose to keep making
+progress on undone work rather than re-answer the same scope question every time ("do what's
+undone only"). This session prioritized BUILD-10's backend reconciliation gap: BUILD-10's own
+test fixtures (`cross-domain-scenarios.test.mjs`, `browser-harness.mjs`) were calling function
+names/argument shapes that never matched the real `platform/iot`/`platform/offline`/`platform/kiosk`
+exports - not just the single `mapDeviceToVehicle` failure the dispatching prompt named. All 6
+cross-domain scenarios now pass (were 0/6); Slice-3 fleet-telematics actions are registered with
+the action executor for the first time; a real ctx-passing bug in the shared
+`platform/kernel/actions/domain-handler.mjs` (used by every BUILD-01..14 domain) was fixed and
+verified safe via full BUILD-08/09/permission regressions; a new export/action-id contract test
+was added. Full detail in `docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md`.
+
+**BUILD-10 is still not COMPLETE.** `modules/build10-workspaces.js` is a static stub (one
+hardcoded row for all 38 pages, no real API/board/kiosk rendering); none of the 38 page ids are
+wired into `index.html` navigation. The 3 `build10-workspaces-contract.test.mjs` tests and the 3
+Chromium lifecycle tests remain red and need a real frontend build - a separate, substantial task
+from this session's backend repair. BUILD-11 was not started this session.
+
+## BUILD-09R-2 mobile workspaces checkpoint (2026-08-03)
+
+A single mega-prompt asked for BUILD-09R-2 completion + BUILD-10 closure + a substantial
+BUILD-11 SaaS/commercial-platform core in one unsupervised run, with no stop for human
+review. That conflicts with this repo's own supervised-controller contract (see
+AUTOPILOT_PROTOCOL.md and STATE.json's `required_human_decision`/`human_gate` fields), so
+the operator was shown the conflict and explicitly chose to override the stop-gate for this
+one session rather than have it silently ignored or silently obeyed.
+
+What actually shipped, honestly: real purpose-built scanning workspaces for
+`mobile_receiving` and `mobile_picking` (2 of the ~19 BUILD-09R-2 pages), proven via real
+Chromium clicks, plus two previously-undetected id-mapping bugs in the shared
+`octagon-governed-lookups.js` module (found only because this was the first time anyone
+drove a `products`/`locations` lookup through a real click rather than calling the action
+directly) fixed in the same session since they silently broke the pre-existing generic
+dialogs too. 2 commits, pushed, SHA-verified. Full detail in
+`docs/autopilot/evidence/BUILD-09R-2-mobile-workspaces.md`.
+
+BUILD-10 and BUILD-11 were **not** started this session - that is a genuine multi-day scope,
+and forcing it in one sitting would mean either padding line counts or fabricating
+completion, both of which this session declined to do. See STATE.json for the explicit next
+step recommended (continue BUILD-09R-2 one page at a time) versus what the original
+mega-prompt asked for (all three phases at once) - that choice needs an owner call.
+
 ## Marathon expansion handoff
 
 ### BUILD-05 progress checkpoint (2026-08-01)

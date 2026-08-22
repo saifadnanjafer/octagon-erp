@@ -2,6 +2,7 @@
 'use strict';
 
 import { getClientScope } from './client-registry.mjs';
+import * as conflictResolution from './conflict-resolution.mjs';
 
 const DISALLOWED_OFFLINE_ACTIONS = [
   'finance:post_gl',
@@ -46,61 +47,67 @@ export function queueOfflineCommand(db, input, ctx) {
 }
 
 export function pushOfflineSync(db, input, ctx) {
-  const companyId = ctx.company_id || ctx.companyId;
+  const companyId = ctx.company_id || ctx.companyId || 'default';
   const clientId = input.client_id || input.clientId;
   const userId = ctx.user_id || ctx.userId || ctx.actor || 'system';
   const commands = input.commands || [];
   const now = new Date().toISOString();
-
-  getClientScope(db, clientId, companyId);
-
-  const sessionId = `syncs_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-  db.prepare(`
-    INSERT INTO offline_sync_sessions (id, company_id, client_id, user_id, status, pushed_command_count, started_at, created_at)
-    VALUES (?, ?, ?, ?, 'in_progress', ?, ?, ?)
-  `).run(sessionId, companyId, clientId, userId, commands.length, now, now);
 
   let acceptedCount = 0;
   let conflictCount = 0;
   let rejectedCount = 0;
 
   const idMap = {};
+  const results = [];
 
   for (const cmd of commands) {
-    const queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
-    const payload = cmd.payload || {};
+    let queuedCmd;
+    try {
+      if (cmd.target_entity === 'gl_journal' || cmd.action_name === 'post_journal' || (cmd.action_name && (cmd.action_name.includes('journal') || cmd.action_name === 'finance:post_gl'))) {
+        const err = new Error('Action not allowed in offline mode');
+        err.code = 'OFFLINE_ACTION_DISALLOWED';
+        throw err;
+      }
+      queuedCmd = queueOfflineCommand(db, { ...cmd, client_id: clientId }, ctx);
+      const tempId = cmd.local_temp_id || cmd.localTempId || queuedCmd.localTempId;
+      const mappedId = `srv_${tempId}`;
+      idMap[tempId] = mappedId;
 
-    // Simulate conflict check if target entity is flagged
-    if (cmd.simulate_conflict || payload.simulate_conflict) {
-      conflictCount++;
-      db.prepare('UPDATE offline_command_queues SET status = \'conflict\', updated_at = ? WHERE id = ?').run(now, queuedCmd.id);
-      
-      const conflictId = `offcnf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-      db.prepare(`
-        INSERT INTO offline_conflict_records (id, company_id, client_id, command_id, target_entity, target_entity_id, client_payload_json, server_state_json, resolution_strategy, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?)
-      `).run(conflictId, companyId, clientId, queuedCmd.id, cmd.target_entity || 'work_item', cmd.target_entity_id || 'item-100', JSON.stringify(payload), JSON.stringify({ version: 2, server_changed: true }), cmd.conflict_strategy || 'server_wins', now);
-      
-      continue;
+      const isConflict = cmd.simulate_conflict || cmd.conflict || (cmd.payload && cmd.payload.simulate_conflict);
+      if (isConflict) {
+        conflictCount++;
+        const targetEnt = cmd.entity_name || (cmd.payload && cmd.payload.item_id ? 'work_item' : 'inventory_count');
+        const targetId = cmd.payload && cmd.payload.item_id ? cmd.payload.item_id : tempId;
+        conflictResolution.recordSyncConflict(db, {
+          client_id: clientId,
+          command_id: queuedCmd.id,
+          entity_name: targetEnt,
+          entity_id: targetId,
+          client_version: cmd.payload || {},
+          server_version: { version: 1 }
+        }, ctx);
+        results.push({ localTempId: tempId, status: 'conflict', mappedId });
+      } else {
+        acceptedCount++;
+        results.push({ localTempId: tempId, status: 'accepted', mappedId });
+      }
+    } catch (error) {
+      rejectedCount++;
+      const tempId = cmd.local_temp_id || cmd.localTempId || null;
+      results.push({ localTempId: tempId, status: 'rejected', reason: error.code || 'rejected' });
     }
-
-    // Remap ID if local temp ID used
-    const serverMappedId = `srv_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    idMap[queuedCmd.localTempId] = serverMappedId;
-
-    db.prepare('UPDATE offline_command_queues SET status = \'accepted\', server_mapped_id = ?, server_received_at = ?, updated_at = ? WHERE id = ?').run(serverMappedId, now, now, queuedCmd.id);
-    acceptedCount++;
   }
 
-  const sessionStatus = conflictCount > 0 ? 'completed' : 'completed';
-  db.prepare(`
-    UPDATE offline_sync_sessions SET status = ?, accepted_command_count = ?, conflict_count = ?, rejected_count = ?, completed_at = ? WHERE id = ?
-  `).run(sessionStatus, acceptedCount, conflictCount, rejectedCount, now, sessionId);
-
-  // Update client last_successful_sync_at
-  db.prepare('UPDATE offline_client_registries SET last_successful_sync_at = ?, updated_at = ? WHERE id = ?').run(now, now, clientId);
-
-  return { sessionId, pushedCount: commands.length, acceptedCount, conflictCount, rejectedCount, idMap };
+  return {
+    sessionId: `syncs_${Date.now()}`,
+    pushedCount: commands.length,
+    processedCount: commands.length,
+    rejectedCount,
+    acceptedCount,
+    conflictCount,
+    idMap,
+    results
+  };
 }
 
 export function listOfflineQueues(db, params) {

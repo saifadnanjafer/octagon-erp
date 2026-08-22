@@ -7,6 +7,12 @@
 (function (root) {
   'use strict';
 
+  // Attribute values are invisible to the control-label metric, so these stayed
+  // English after the visible chrome was translated. aria-label in particular is
+  // what a screen reader announces.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   const STORAGE_KEY = 'octagonPilotReviewSessions';
   const ACTIVE_KEY = 'octagonPilotReviewActiveSessionId';
   const SAVE_DEBOUNCE_MS = 450;
@@ -549,7 +555,7 @@
 
   function renderDebugMode() {
     if (!activeSession) {
-      return '<div class="pilot-debug-mode"><div class="pilot-debug-question"><small>Manual Debug</small><h3>ابدأ جلسة مراجعة حتى تظهر الخطوات هنا.</h3></div></div>';
+      return '<div class="pilot-debug-mode"><div class="pilot-debug-question"><small>' + arAttr('Manual Debug', 'تصحيح يدوي') + '</small><h3>ابدأ جلسة مراجعة حتى تظهر الخطوات هنا.</h3></div></div>';
     }
     const elements = activeSession.scan?.elements || [];
     const count = totals(activeSession);
@@ -578,7 +584,7 @@
       <div class="pilot-debug-mode" dir="auto">
         <div class="pilot-debug-top">
           <div>
-            <small>Manual Debug Mode</small>
+            <small>${arAttr('Manual Debug Mode', 'وضع التصحيح اليدوي')}</small>
             <b>${esc(activeSession.pageLabel || activeSession.page)}</b>
           </div>
           <div class="pilot-debug-progress">
@@ -602,7 +608,7 @@
         </div>
 
         <div class="pilot-debug-answer">
-          <div class="pilot-debug-options" aria-label="Debug step options">
+          <div class="pilot-debug-options" aria-label="${arAttr('Debug step options', 'خيارات خطوة التصحيح')}">
             <button type="button" class="pilot-review-btn pass" data-pilot-status="pass"><i class="fa-solid fa-check"></i> تمام</button>
             <button type="button" class="pilot-review-btn fail" data-pilot-status="fail"><i class="fa-solid fa-triangle-exclamation"></i> مشكلة</button>
             <button type="button" class="pilot-review-btn skip" data-pilot-status="skip"><i class="fa-solid fa-forward"></i> تخطي</button>
@@ -672,7 +678,7 @@
     return `
       <div class="pilot-debug-mode">
         <div class="pilot-debug-question">
-          <small>Manual Debug Mode</small>
+          <small>${arAttr('Manual Debug Mode', 'وضع التصحيح اليدوي')}</small>
           <h3>ماكو عناصر واضحة للمراجعة بهذه الصفحة.</h3>
           <p>افتح تبويب أو جزء داخل الصفحة، ثم اضغط Rescan حتى يبني النظام خطوات المراجعة.</p>
         </div>
@@ -738,20 +744,20 @@
     const launcher = document.createElement('button');
     launcher.type = 'button';
     launcher.id = 'pilotReviewLauncher';
-    launcher.innerHTML = '<i class="fa-solid fa-clipboard-check"></i><span>Review</span>';
-    launcher.title = 'Open Pilot Review';
+    launcher.innerHTML = '<i class="fa-solid fa-clipboard-check"></i><span>' + arAttr('Review', 'مراجعة') + '</span>';
+    launcher.title = arAttr('Open Pilot Review', 'فتح مراجعة التشغيل التجريبي');
     document.body.appendChild(launcher);
 
     const dock = document.createElement('section');
     dock.id = 'pilotReviewDock';
-    dock.setAttribute('aria-label', 'Pilot Review');
+    dock.setAttribute('aria-label', arAttr('Pilot Review', 'مراجعة التشغيل التجريبي'));
     dock.innerHTML = `
       <div class="pilot-review-dock-head">
         <div>
           <small>Pilot Review</small>
           <b>مراجعة البايلوت اليدوية</b>
         </div>
-        <button type="button" id="pilotReviewDockClose" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" id="pilotReviewDockClose" title="${arAttr('Close', 'إغلاق')}"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="pilotReviewDockBody"></div>`;
     document.body.appendChild(dock);

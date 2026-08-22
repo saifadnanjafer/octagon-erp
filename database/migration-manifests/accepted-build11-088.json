@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "supersedes": null,
+  "extendsManifest": "accepted-build11-087.json",
+  "acceptedSourceCommit": "ce40debb87fb08d48505f3a23baae71326c2115b",
+  "acceptanceTimestamp": "2026-08-05T00:00:00.000Z",
+  "acceptanceReason": "BUILD-11 adds the governed invoice simulation action without changing the accepted 087 schema migration.",
+  "migrationCount": 1,
+  "migrations": [
+    {
+      "migrationId": "088_build11_billing_action",
+      "relativePath": "database/migrations/088_build11_billing_action.mjs",
+      "algorithm": "sha256",
+      "checksum": "7838d59d0c7211fe9c0eeff45e9e66e3d91917067256943c5ee2f8e4bba60ac0"
+    }
+  ]
+}

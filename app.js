@@ -3074,46 +3074,235 @@ function getEmployeeDailyFinancialSummary(emp, rec, cfg) {
 }
 
 // ─── Page Navigation ───
+// Canonical bilingual labels for pages introduced after the original Arabic
+// sidebar.  Keeping this registry beside the navigation topology makes a
+// page's identity independent of whatever markup created its first button.
+const navLabelOverrides = Object.freeze({
+  ai_assistant: { ar: 'مساعد الذكاء الاصطناعي', en: 'AI Assistant' },
+  ai_context_sources: { ar: 'مصادر سياق الذكاء الاصطناعي', en: 'AI Context Sources' },
+  ai_overview: { ar: 'نظرة عامة على الذكاء الاصطناعي', en: 'AI Overview' },
+  ai_policy_registry: { ar: 'سجل سياسات الذكاء الاصطناعي', en: 'AI Policy Registry' },
+  ai_prompt_templates: { ar: 'قوالب أوامر الذكاء الاصطناعي', en: 'AI Prompt Templates' },
+  ai_proposal_inbox: { ar: 'صندوق مقترحات الذكاء الاصطناعي', en: 'AI Proposal Inbox' },
+  ai_run_history: { ar: 'سجل تشغيل الذكاء الاصطناعي', en: 'AI Run History' },
+  alert_board: { ar: 'لوحة التنبيهات', en: 'Alert Board' },
+  attribution_insights: { ar: 'تحليلات الإسناد', en: 'Attribution Insights' },
+  billing_simulator: { ar: 'محاكي الفوترة', en: 'Billing Simulator' },
+  campaigns: { ar: 'الحملات', en: 'Campaigns' },
+  commercial_plans: { ar: 'الخطط التجارية', en: 'Commercial Plans' },
+  competency_profiles: { ar: 'ملفات الكفاءات', en: 'Competency Profiles' },
+  configuration_profiles: { ar: 'ملفات الإعداد', en: 'Configuration Profiles' },
+  conflict_resolution: { ar: 'حل التعارضات', en: 'Conflict Resolution' },
+  content_approvals: { ar: 'اعتمادات المحتوى', en: 'Content Approvals' },
+  content_calendar: { ar: 'تقويم المحتوى', en: 'Content Calendar' },
+  count_session: { ar: 'جلسة الجرد', en: 'Count Session' },
+  crossdock_workspace: { ar: 'مساحة العبور المباشر', en: 'Cross-Dock Workspace' },
+  cycle_count_plans: { ar: 'خطط الجرد الدوري', en: 'Cycle Count Plans' },
+  development_plans: { ar: 'خطط التطوير', en: 'Development Plans' },
+  device_alerts: { ar: 'تنبيهات الأجهزة', en: 'Device Alerts' },
+  device_command_center: { ar: 'مركز أوامر الأجهزة', en: 'Device Command Center' },
+  device_detail: { ar: 'تفاصيل الجهاز', en: 'Device Detail' },
+  device_enrollment: { ar: 'تسجيل الأجهزة', en: 'Device Enrollment' },
+  device_health_board: { ar: 'لوحة صحة الأجهزة', en: 'Device Health Board' },
+  device_health_center: { ar: 'مركز صحة الأجهزة', en: 'Device Health Center' },
+  device_registry: { ar: 'سجل الأجهزة', en: 'Device Registry' },
+  dock_checkin: { ar: 'تسجيل وصول الرصيف', en: 'Dock Check-In' },
+  dock_schedule: { ar: 'جدول الأرصفة', en: 'Dock Schedule' },
+  downtime_board: { ar: 'لوحة التوقفات', en: 'Downtime Board' },
+  employee_kiosk: { ar: 'كشك الموظف', en: 'Employee Kiosk' },
+  entitlements: { ar: 'الاستحقاقات', en: 'Entitlements' },
+  event_checkin: { ar: 'تسجيل حضور الفعالية', en: 'Event Check-in' },
+  event_planner: { ar: 'مخطط الفعاليات', en: 'Event Planner' },
+  event_registrations: { ar: 'تسجيلات الفعاليات', en: 'Event Registrations' },
+  events_overview: { ar: 'نظرة عامة على الفعاليات', en: 'Events Overview' },
+  expiration_queue: { ar: 'طابور تواريخ الانتهاء', en: 'Expiration Queue' },
+  extension_installations: { ar: 'تثبيت الإضافات', en: 'Extension Installations' },
+  extension_marketplace: { ar: 'سوق الإضافات', en: 'Extension Marketplace' },
+  firmware_catalogue: { ar: 'دليل البرامج الثابتة', en: 'Firmware Catalogue' },
+  fleet_device_mapping: { ar: 'ربط الأسطول بالأجهزة', en: 'Fleet Device Mapping' },
+  fleet_live_map_simulator: { ar: 'محاكي الخريطة الحية للأسطول', en: 'Fleet Live Map Simulator' },
+  fleet_operations_board: { ar: 'لوحة عمليات الأسطول', en: 'Fleet Operations Board' },
+  fuel_telemetry: { ar: 'بيانات الوقود', en: 'Fuel Telemetry' },
+  gateway_management: { ar: 'إدارة البوابات', en: 'Gateway Management' },
+  geofence_events: { ar: 'أحداث السياج الجغرافي', en: 'Geofence Events' },
+  geofence_management: { ar: 'إدارة السياج الجغرافي', en: 'Geofence Management' },
+  kiosk_device_registry: { ar: 'سجل أجهزة الأكشاك', en: 'Kiosk Device Registry' },
+  learning_and_certifications: { ar: 'التعلم والشهادات', en: 'Learning & Certifications' },
+  lot_serial_traceability: { ar: 'تتبع الدفعات والأرقام التسلسلية', en: 'Lot / Serial Traceability' },
+  maintenance_triggers: { ar: 'محفزات الصيانة', en: 'Maintenance Triggers' },
+  marketing_overview: { ar: 'نظرة عامة على التسويق', en: 'Marketing Overview' },
+  mobile_picking: { ar: 'الالتقاط المتنقل', en: 'Mobile Picking' },
+  mobile_receiving: { ar: 'الاستلام المتنقل', en: 'Mobile Receiving' },
+  offline_capability_policies: { ar: 'سياسات العمل دون اتصال', en: 'Offline Capability Policies' },
+  offline_client_registry: { ar: 'سجل عملاء دون اتصال', en: 'Offline Client Registry' },
+  offline_queue: { ar: 'طابور العمل دون اتصال', en: 'Offline Queue' },
+  operational_performance: { ar: 'الأداء التشغيلي', en: 'Operational Performance' },
+  people_development_overview: { ar: 'نظرة عامة على تطوير الأفراد', en: 'People Development' },
+  person_skill_evidence: { ar: 'أدلة المهارات', en: 'Skill Evidence' },
+  pick_task_queue: { ar: 'طابور مهام الالتقاط', en: 'Pick Task Queue' },
+  production_issue_return: { ar: 'صرف وإرجاع الإنتاج', en: 'Production Issue / Return' },
+  production_large_screen: { ar: 'شاشة الإنتاج الكبيرة', en: 'Production Large Screen' },
+  production_material_requests: { ar: 'طلبات مواد الإنتاج', en: 'Production Material Requests' },
+  production_receipt: { ar: 'استلام الإنتاج', en: 'Production Receipt' },
+  putaway_rules: { ar: 'قواعد التخزين', en: 'Putaway Rules' },
+  putaway_task_queue: { ar: 'طابور مهام التخزين', en: 'Putaway Task Queue' },
+  quality_hold_queue: { ar: 'طابور تعليق الجودة', en: 'Quality Hold Queue' },
+  recall_analysis: { ar: 'تحليل الاستدعاءات', en: 'Recall Analysis' },
+  receiving_discrepancies: { ar: 'فروقات الاستلام', en: 'Receiving Discrepancies' },
+  replenishment_proposals: { ar: 'مقترحات التجديد', en: 'Replenishment Proposals' },
+  replenishment_rules: { ar: 'قواعد التجديد', en: 'Replenishment Rules' },
+  rework_workspace: { ar: 'مساحة إعادة العمل', en: 'Rework Workspace' },
+  rollout_simulator: { ar: 'محاكي النشر', en: 'Rollout Simulator' },
+  saas_overview: { ar: 'نظرة عامة على البرمجيات كخدمة', en: 'SaaS Overview' },
+  scrap_approval: { ar: 'اعتماد الهدر', en: 'Scrap Approval' },
+  seats_and_limits: { ar: 'المقاعد والحدود', en: 'Seats and Limits' },
+  sensor_management: { ar: 'إدارة المستشعرات', en: 'Sensor Management' },
+  service_kiosk: { ar: 'كشك الخدمة', en: 'Service Kiosk' },
+  service_queue_board: { ar: 'لوحة طابور الخدمة', en: 'Service Queue Board' },
+  shop_floor_kiosk: { ar: 'كشك أرضية الإنتاج', en: 'Shop Floor Kiosk' },
+  shopfloor_terminal: { ar: 'محطة أرضية الإنتاج', en: 'Shop-Floor Terminal' },
+  skills_catalog: { ar: 'دليل المهارات', en: 'Skills Catalog' },
+  speed_and_driver_events: { ar: 'أحداث السرعة والسائق', en: 'Speed and Driver Events' },
+  staging_board: { ar: 'لوحة التجهيز', en: 'Staging Board' },
+  suspected_fuel_loss_queue: { ar: 'طابور فاقد الوقود المشتبه', en: 'Suspected Fuel Loss Queue' },
+  sync_conflicts: { ar: 'تعارضات المزامنة', en: 'Sync Conflicts' },
+  sync_sessions: { ar: 'جلسات المزامنة', en: 'Sync Sessions' },
+  system_check: { ar: 'فحص النظام', en: 'System Check' },
+  system_settings: { ar: 'إعدادات النظام', en: 'System Settings' },
+  import_center: { ar: 'استيراد البيانات', en: 'Data Import' },
+  telemetry_explorer: { ar: 'مستكشف القياسات', en: 'Telemetry Explorer' },
+  tenant_detail: { ar: 'تفاصيل المستأجر', en: 'Tenant Detail' },
+  tenant_directory: { ar: 'دليل المستأجرين', en: 'Tenant Directory' },
+  usage_and_quotas: { ar: 'الاستخدام والحصص', en: 'Usage and Quotas' },
+  variance_review: { ar: 'مراجعة الفروقات', en: 'Variance Review' },
+  vehicle_trip_timeline: { ar: 'الخط الزمني لرحلات المركبة', en: 'Vehicle Trip Timeline' },
+  vertical_packs: { ar: 'حزم القطاعات', en: 'Vertical Packs' },
+  warehouse_kiosk: { ar: 'كشك المستودع', en: 'Warehouse Kiosk' },
+  warehouse_large_screen: { ar: 'شاشة المستودع الكبيرة', en: 'Warehouse Large Screen' },
+  warehouse_topology: { ar: 'هيكل المستودع', en: 'Warehouse Topology' },
+  wave_execution: { ar: 'تنفيذ الموجات', en: 'Wave Execution' },
+  wave_planning: { ar: 'تخطيط الموجات', en: 'Wave Planning' },
+  workcenter_queue: { ar: 'طابور مركز العمل', en: 'Work-Center Queue' },
+  workshop_pack_setup: { ar: 'إعداد حزمة الورشة', en: 'Workshop Pack Setup' },
+  zone_bin_management: { ar: 'إدارة المناطق والخانات', en: 'Zone and Bin Management' }
+});
+
+// ─── Page Navigation ───
 const navDomains = [
-  { key: 'core', label: 'النظام الأساسي', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
-  { key: 'ops', label: 'التشغيل والورشة', icon: 'fa-industry', groups: ['ops_control', 'ops_production', 'ops_frontline'] },
-  { key: 'finance', label: 'المالية', icon: 'fa-building-columns', groups: ['finance_accounts'] },
-  { key: 'commercial', label: 'العملاء والقطاعات', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_verticals'] },
-  { key: 'resources', label: 'الموارد والإمداد', icon: 'fa-people-carry-box', groups: ['resources_org', 'resources_supply'] },
-  { key: 'intelligence', label: 'الذكاء والتحكم', icon: 'fa-brain', groups: ['intelligence_core', 'intelligence_ai'] },
-  { key: 'admin', label: 'الإدارة والنظام', icon: 'fa-screwdriver-wrench', groups: ['admin_org'] }
+  { key: 'core', label: 'النظام الأساسي', labelEn: 'Core System', icon: 'fa-gauge-high', groups: ['core_daily', 'core_records'] },
+  { key: 'ops', label: 'التشغيل والورشة', labelEn: 'Operations and Workshop', icon: 'fa-industry', groups: ['ops_control', 'ops_planning', 'ops_production', 'ops_inventory', 'ops_warehouse_inbound', 'ops_warehouse_fulfillment', 'ops_warehouse_traceability', 'ops_kiosks', 'ops_boards'] },
+  { key: 'finance', label: 'المالية', labelEn: 'Finance', icon: 'fa-building-columns', groups: ['finance_accounts', 'finance_treasury', 'finance_intercompany', 'finance_consolidation'] },
+  { key: 'commercial', label: 'العملاء والقطاعات', labelEn: 'Customers and Verticals', icon: 'fa-handshake', groups: ['commercial_sales', 'commercial_relationships', 'commercial_marketing', 'commercial_saas', 'commercial_verticals'] },
+  { key: 'resources', label: 'الموارد والإمداد', labelEn: 'Resources and Supply', icon: 'fa-people-carry-box', groups: ['resources_people', 'resources_knowledge', 'resources_assets', 'resources_devices', 'resources_fleet', 'resources_offline', 'resources_supply'] },
+  { key: 'intelligence', label: 'الذكاء والتحكم', labelEn: 'Intelligence and Control', icon: 'fa-brain', groups: ['intelligence_core', 'intelligence_ai', 'intelligence_governance'] },
+  { key: 'admin', label: 'الإدارة والنظام', labelEn: 'Administration and System', icon: 'fa-screwdriver-wrench', groups: ['admin_org'] }
 ];
 
 const navGroupMeta = {
   core_daily: { label: 'اليومي والموظفون', domain: 'core', icon: 'fa-calendar-check' },
   core_records: { label: 'المدخلات والمخرجات', domain: 'core', icon: 'fa-folder-open' },
   ops_control: { label: 'القيادة وسير العمل', domain: 'ops', icon: 'fa-diagram-project' },
-  ops_production: { label: 'الإنتاج والمواد والجودة', domain: 'ops', icon: 'fa-gears' },
-  ops_frontline: { label: 'واجهات التشغيل', domain: 'ops', icon: 'fa-display' },
-  finance_accounts: { label: 'الحسابات والخزينة', domain: 'finance', icon: 'fa-file-invoice-dollar' },
-  commercial_sales: { label: 'المبيعات وخدمة العملاء', domain: 'commercial', icon: 'fa-cart-shopping' },
+  ops_planning: { label: 'التخطيط والطلب', domain: 'ops', icon: 'fa-chart-gantt' },
+  ops_production: { label: 'الإنتاج والجودة', domain: 'ops', icon: 'fa-gears' },
+  ops_inventory: { label: 'المخزون والبيانات الأساسية', domain: 'ops', icon: 'fa-boxes-stacked' },
+  ops_warehouse_inbound: { label: 'استلام وترتيب المخزون', domain: 'ops', icon: 'fa-dolly' },
+  ops_warehouse_fulfillment: { label: 'الالتقاط والجرد', domain: 'ops', icon: 'fa-clipboard-check' },
+  ops_warehouse_traceability: { label: 'الأرصفة والتتبع', domain: 'ops', icon: 'fa-route' },
+  ops_kiosks: { label: 'أكشاك التشغيل', domain: 'ops', icon: 'fa-tablet-screen-button' },
+  ops_boards: { label: 'شاشات المتابعة', domain: 'ops', icon: 'fa-table-columns' },
+  finance_accounts: { label: 'الحسابات والذمم', domain: 'finance', icon: 'fa-file-invoice-dollar' },
+  finance_treasury: { label: 'الخزينة والسيولة', domain: 'finance', icon: 'fa-money-bill-transfer' },
+  finance_intercompany: { label: 'الشركات الشقيقة', domain: 'finance', icon: 'fa-building-circle-arrow-right' },
+  finance_consolidation: { label: 'التوحيد المالي', domain: 'finance', icon: 'fa-chart-pie' },
+  commercial_sales: { label: 'المبيعات ونقاط البيع', domain: 'commercial', icon: 'fa-cart-shopping' },
+  commercial_relationships: { label: 'العقود وخدمة العملاء', domain: 'commercial', icon: 'fa-handshake-angle' },
+  commercial_marketing: { label: 'التسويق والفعاليات', domain: 'commercial', icon: 'fa-bullhorn' },
+  commercial_saas: { label: 'التجاري والاشتراكات', domain: 'commercial', icon: 'fa-cloud-arrow-up' },
   commercial_verticals: { label: 'قطاعات الأعمال', domain: 'commercial', icon: 'fa-store' },
-  resources_org: { label: 'الموارد والوثائق', domain: 'resources', icon: 'fa-users-gear' },
+  resources_people: { label: 'الموارد البشرية والتطوير', domain: 'resources', icon: 'fa-users-gear' },
+  resources_knowledge: { label: 'المعرفة والوثائق', domain: 'resources', icon: 'fa-book-open-reader' },
+  resources_assets: { label: 'الأصول والأسطول', domain: 'resources', icon: 'fa-truck' },
+  resources_devices: { label: 'إنترنت الأشياء والأجهزة', domain: 'resources', icon: 'fa-microchip' },
+  resources_fleet: { label: 'تتبع الأسطول', domain: 'resources', icon: 'fa-location-dot' },
+  resources_offline: { label: 'العمل دون اتصال', domain: 'resources', icon: 'fa-cloud-arrow-down' },
   resources_supply: { label: 'الإمداد والمشاريع', domain: 'resources', icon: 'fa-truck-fast' },
   intelligence_core: { label: 'التحليلات والأتمتة', domain: 'intelligence', icon: 'fa-chart-line' },
-  intelligence_ai: { label: 'مصنع الذكاء', domain: 'intelligence', icon: 'fa-robot' },
+  intelligence_ai: { label: 'مساعد الذكاء', domain: 'intelligence', icon: 'fa-robot' },
+  intelligence_governance: { label: 'حوكمة الذكاء', domain: 'intelligence', icon: 'fa-shield-halved' },
   admin_org: { label: 'الحوكمة والإعدادات', domain: 'admin', icon: 'fa-shield-halved' }
 };
 
+const navGroupLabelsEn = Object.freeze({
+  core_daily: 'Daily and People',
+  core_records: 'Inputs and Outputs',
+  ops_control: 'Leadership and Workflow',
+  ops_planning: 'Planning and Demand',
+  ops_production: 'Production and Quality',
+  ops_inventory: 'Inventory and Master Data',
+  ops_warehouse_inbound: 'Receiving and Putaway',
+  ops_warehouse_fulfillment: 'Picking and Counting',
+  ops_warehouse_traceability: 'Docks and Traceability',
+  ops_kiosks: 'Operations Kiosks',
+  ops_boards: 'Operations Boards',
+  finance_accounts: 'Accounts and Receivables',
+  finance_treasury: 'Treasury and Liquidity',
+  finance_intercompany: 'Intercompany',
+  finance_consolidation: 'Financial Consolidation',
+  commercial_sales: 'Sales and Point of Sale',
+  commercial_relationships: 'Contracts and Customer Service',
+  commercial_marketing: 'Marketing and Events',
+  commercial_saas: 'Commercial and Subscriptions',
+  commercial_verticals: 'Business Verticals',
+  resources_people: 'People and Development',
+  resources_knowledge: 'Knowledge and Documents',
+  resources_assets: 'Assets and Fleet',
+  resources_devices: 'IoT and Devices',
+  resources_fleet: 'Fleet Telematics',
+  resources_offline: 'Offline Operations',
+  resources_supply: 'Supply and Projects',
+  intelligence_core: 'Analytics and Automation',
+  intelligence_ai: 'AI Assistant',
+  intelligence_governance: 'AI Governance',
+  admin_org: 'Governance and Settings'
+});
+
+function navGroupLabels(groupKey) {
+  const meta = navGroupMeta[groupKey] || { label: groupKey, icon: 'fa-layer-group' };
+  return { ar: meta.label, en: navGroupLabelsEn[groupKey] || titleCasePageId(groupKey) };
+}
+
 const navGroupPages = {
-  core_daily: ['calculator', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
+  core_daily: ['home', 'my_work', 'timesheet', 'calendar', 'employees', 'wfl_home', 'employee_mobile'],
   core_records: ['import', 'receipt', 'report', 'help_manual'],
-  ops_control: ['command_center', 'kanban', 'task_manager', 'workflow', 'sop'],
-  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'inventory', 'equipment', 'qc_center'],
-  ops_frontline: ['workshop_tv', 'kiosk'],
-  finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance'],
-  commercial_sales: ['sales', 'pos', 'customer_portal', 'subscriptions', 'appointments', 'loyalty', 'events', 'marketing', 'helpdesk', 'warranty'],
-  commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service'],
-  resources_org: ['people_ops', 'fleet', 'assets', 'documents', 'esign', 'knowledge', 'surveys', 'visitors'],
+  ops_control: ['workshop_command_center', 'workshop_readiness', 'command_center', 'task_manager', 'workflow', 'sop'],
+  ops_planning: ['demand_planning', 'forecast_versions', 'forecast_overrides', 'forecast_accuracy', 'planning_exceptions', 'mps', 'mps_proposals', 'supply_demand_balance', 'sop_scenarios', 'sop_review'],
+  ops_production: ['op_packs', 'mrp', 'work_orders', 'machines', 'shopfloor_terminal', 'workcenter_queue', 'production_material_requests', 'production_issue_return', 'production_receipt', 'quality_hold_queue', 'rework_workspace', 'scrap_approval', 'downtime_board', 'operational_performance'],
+  ops_inventory: ['canonical_console', 'canonical_inventory', 'products', 'parties', 'warehouses', 'inventory', 'equipment', 'qc_center', 'warehouse_topology', 'zone_bin_management'],
+  ops_warehouse_inbound: ['putaway_rules', 'putaway_task_queue', 'replenishment_rules', 'replenishment_proposals', 'mobile_receiving', 'receiving_discrepancies'],
+  ops_warehouse_fulfillment: ['mobile_picking', 'pick_task_queue', 'wave_planning', 'wave_execution', 'cycle_count_plans', 'count_session', 'variance_review'],
+  ops_warehouse_traceability: ['dock_schedule', 'dock_checkin', 'staging_board', 'crossdock_workspace', 'lot_serial_traceability', 'expiration_queue', 'recall_analysis'],
+  ops_kiosks: ['kiosk', 'kiosk_device_registry', 'employee_kiosk', 'warehouse_kiosk', 'shop_floor_kiosk', 'service_kiosk'],
+  ops_boards: ['fleet_operations_board', 'device_health_board', 'warehouse_large_screen', 'production_large_screen', 'service_queue_board', 'alert_board'],
+  finance_accounts: ['finance', 'cashbox', 'workshop_ledger', 'expenses', 'income', 'customers', 'banking', 'ar_ap', 'budgeting', 'tax_compliance', 'finance_installments'],
+  finance_treasury: ['treasury_cash_position', 'liquidity_forecast', 'treasury_alerts', 'payment_funding_proposals', 'financing_facilities'],
+  finance_intercompany: ['intercompany_transactions', 'mismatch_queue', 'intercompany_reconciliation'],
+  finance_consolidation: ['consolidation_groups', 'account_mapping', 'consolidation_runs', 'eliminations', 'consolidated_reports', 'consolidation_lineage'],
+  commercial_sales: ['sales', 'pos', 'sales_price_lists', 'sales_commission', 'loyalty'],
+  commercial_relationships: ['customer_portal', 'subscriptions', 'appointments', 'helpdesk', 'warranty', 'sales_contracts', 'omni_communications'],
+  commercial_marketing: ['marketing', 'events', 'marketing_overview', 'campaigns', 'content_calendar', 'content_approvals', 'attribution_insights', 'events_overview', 'event_planner', 'event_registrations', 'event_checkin'],
+  commercial_saas: ['saas_overview', 'tenant_directory', 'tenant_detail', 'commercial_plans', 'entitlements', 'seats_and_limits', 'usage_and_quotas', 'billing_simulator', 'extension_marketplace', 'extension_installations'],
+  commercial_verticals: ['retail', 'pharmacy', 'clinic', 'restaurant', 'real-estate', 'hotel', 'rental', 'field_service', 'vertical_packs', 'workshop_pack_setup'],
+  resources_people: ['people_ops', 'people_development_overview', 'skills_catalog', 'competency_profiles', 'person_skill_evidence', 'development_plans', 'learning_and_certifications'],
+  resources_knowledge: ['documents', 'esign', 'knowledge', 'knowledge_base', 'surveys', 'visitors'],
+  resources_assets: ['fleet', 'assets'],
+  resources_devices: ['device_registry', 'device_detail', 'device_enrollment', 'gateway_management', 'sensor_management', 'telemetry_explorer', 'device_health_center', 'device_alerts', 'firmware_catalogue', 'rollout_simulator', 'configuration_profiles', 'device_command_center'],
+  resources_fleet: ['fleet_device_mapping', 'fleet_live_map_simulator', 'vehicle_trip_timeline', 'geofence_management', 'geofence_events', 'speed_and_driver_events', 'fuel_telemetry', 'suspected_fuel_loss_queue', 'maintenance_triggers'],
+  resources_offline: ['offline_client_registry', 'offline_queue', 'sync_sessions', 'sync_conflicts', 'conflict_resolution', 'offline_capability_policies'],
   resources_supply: ['procurement', 'projects', 'approvals', 'contracts', 'logistics', 'supplier_portal'],
-  intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'route_health'],
-  intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status'],
-  admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready']
+  intelligence_core: ['analytics', 'nl_reports', 'intelligence', 'automation', 'whatsapp', 'telegram', 'route_health'],
+  intelligence_ai: ['scenario_planner', 'ai_queue', 'ai_factory', 'ai_tools', 'ai_status', 'ai_overview', 'ai_assistant'],
+  intelligence_governance: ['ai_proposal_inbox', 'ai_run_history', 'ai_policy_registry', 'ai_prompt_templates', 'ai_context_sources'],
+  admin_org: ['multi_entity', 'employee_ui', 'admin_panel', 'integration_hub', 'security_center', 'risk_compliance', 'data_quality', 'training_lms', 'device_center', 'deploy_ready', 'system_check', 'import_center', 'system_settings']
 };
 
 function getNavGroupForPage(page) {
@@ -3129,6 +3318,11 @@ function getNavDomainForPage(page) {
   return group ? getNavDomainForGroup(group) : null;
 }
 
+function currentNavigationLanguage() {
+  const lang = String(document.documentElement.lang || localStorage.getItem('octagon_language') || 'ar').toLowerCase();
+  return lang.startsWith('en') ? 'en' : 'ar';
+}
+
 function getStoredNavDomain() {
   let stored = null;
   try { stored = localStorage.getItem('omniNavDomain'); } catch (err) {}
@@ -3142,10 +3336,16 @@ function renderNavDomainTabs() {
     const count = domain.groups.reduce((sum, group) => sum + (navGroupPages[group]?.length || 0), 0);
     return `<button class="module-domain-tab" type="button" data-nav-domain="${domain.key}" onclick="setNavDomain('${domain.key}')">
       <i class="fa-solid ${domain.icon}"></i>
-      <span>${domain.label}</span>
+      <span data-i18n-ar="${domain.label}" data-i18n-en="${domain.labelEn}">${domain.label}</span>
       <em>${count}</em>
     </button>`;
   }).join('');
+  const language = currentNavigationLanguage();
+  host.querySelectorAll('.module-domain-tab[data-nav-domain]').forEach(button => {
+    const domain = navDomains.find(item => item.key === button.dataset.navDomain);
+    const label = button.querySelector('span');
+    if (domain && label) label.textContent = language === 'en' ? domain.labelEn : domain.label;
+  });
 }
 
 function syncNavDomainVisibility() {
@@ -3156,7 +3356,10 @@ function syncNavDomainVisibility() {
     btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
   document.querySelectorAll('.sidebar-nav .nav-group[data-nav-group]').forEach(group => {
-    group.hidden = getNavDomainForGroup(group.dataset.navGroup) !== activeDomain;
+    const hidden = getNavDomainForGroup(group.dataset.navGroup) !== activeDomain;
+    group.hidden = hidden;
+    group.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    group.inert = hidden;
   });
 }
 
@@ -3169,9 +3372,92 @@ function setNavDomain(domainKey, persist = true) {
   syncNavDomainVisibility();
 }
 
+function navigationLabel(button) {
+  const label = [...button.querySelectorAll('span')]
+    .filter(span => !span.classList.contains('nav-icon'))
+    .map(span => span.textContent.trim())
+    .find(Boolean);
+  return label || button.dataset.page.replace(/[_-]+/g, ' ');
+}
+
+// Navigation is assembled from modules that were written at different times.
+// Normalise every entry as it enters the shell so no page can appear as an
+// anonymous text row or an unlabelled diamond just because its original HTML
+// predates the grouped navigation.
+function normaliseNavigationButton(button) {
+  const page = button.dataset.page;
+  if (!page) return;
+  const group = getNavGroupForPage(page);
+  const groupIcon = navGroupMeta[group]?.icon || 'fa-file-lines';
+  let icon = button.querySelector('.nav-icon');
+
+  if (!icon) {
+    icon = document.createElement('span');
+    icon.className = 'nav-icon';
+    button.prepend(icon);
+  }
+  if (!icon.querySelector('i') || /^[◆·\s]*$/.test(icon.textContent)) {
+    const iconElement = document.createElement('i');
+    iconElement.className = `fa-solid ${groupIcon}`;
+    iconElement.setAttribute('aria-hidden', 'true');
+    icon.replaceChildren(iconElement);
+  }
+
+  const override = navLabelOverrides[page];
+  const language = currentNavigationLanguage();
+  let labelElement = [...button.querySelectorAll('span')]
+    .find(span => !span.classList.contains('nav-icon') && span.textContent.trim());
+  if (!labelElement) {
+    labelElement = document.createElement('span');
+    button.append(labelElement);
+  }
+  labelElement.classList.add('nav-label');
+  if (override) {
+    labelElement.dataset.i18nAr = override.ar;
+    labelElement.dataset.i18nEn = override.en;
+    labelElement.textContent = language === 'en' ? override.en : override.ar;
+  } else {
+    const labelText = navigationLabel(button);
+    labelElement.dataset.i18nAr ||= /[\u0600-\u06ff]/.test(labelText) ? labelText : titleCasePageId(page);
+    labelElement.dataset.i18nEn ||= /[\u0600-\u06ff]/.test(labelText) ? titleCasePageId(page) : labelText.replace(/^[◆·\s]+/, '');
+    labelElement.textContent = language === 'en' ? labelElement.dataset.i18nEn : labelElement.dataset.i18nAr;
+  }
+  const label = labelElement.textContent.trim();
+  button.dataset.navLabel = label;
+  button.setAttribute('aria-label', label);
+  button.title = label;
+}
+
+function titleCasePageId(page) {
+  return page.split(/[_-]+/).filter(Boolean).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+}
+
+function normaliseNavigationButtons(scope = document) {
+  scope.querySelectorAll('.nav-btn[data-page]').forEach(normaliseNavigationButton);
+}
+
+function refreshGeneratedNavigationLanguage() {
+  const language = currentNavigationLanguage();
+  document.querySelectorAll('.sidebar-nav .nav-group-toggle span[data-i18n-ar]').forEach(span => {
+    const group = span.closest('.nav-group')?.dataset.navGroup;
+    const labels = group ? navGroupLabels(group) : null;
+    if (!labels) return;
+    const icon = span.querySelector('i');
+    span.replaceChildren(icon, document.createTextNode(' ' + (language === 'en' ? labels.en : labels.ar)));
+  });
+  normaliseNavigationButtons(document.querySelector('.sidebar-nav'));
+  renderNavDomainTabs();
+}
+
+document.addEventListener('octagon:language-applied', refreshGeneratedNavigationLanguage);
+
 function rebuildSidebarNavigation() {
   const nav = document.querySelector('.sidebar-nav');
-  if (!nav || nav.dataset.registryBuilt === '1') return;
+  if (!nav) return;
+  if (nav.dataset.registryBuilt === '1') {
+    adoptLateSidebarNavigation();
+    return;
+  }
 
   const buttons = {};
   nav.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
@@ -3188,12 +3474,13 @@ function rebuildSidebarNavigation() {
   navDomains.forEach(domain => {
     domain.groups.forEach(groupKey => {
       const meta = navGroupMeta[groupKey] || { label: groupKey, icon: 'fa-layer-group' };
+      const labels = navGroupLabels(groupKey);
       const group = document.createElement('div');
       group.className = 'nav-group';
       group.dataset.navGroup = groupKey;
       group.dataset.navDomain = domain.key;
       group.innerHTML = `<button class="nav-group-toggle" type="button" onclick="toggleNavGroup('${groupKey}')">
-        <span><i class="fa-solid ${meta.icon}"></i> ${meta.label}</span>
+        <span data-i18n-ar="${labels.ar}" data-i18n-en="${labels.en}"><i class="fa-solid ${meta.icon}"></i> ${labels.ar}</span>
         <i class="fa-solid fa-chevron-down"></i>
       </button><div class="nav-group-body" id="navGroup-${groupKey}"></div>`;
       const body = group.querySelector('.nav-group-body');
@@ -3204,12 +3491,15 @@ function rebuildSidebarNavigation() {
     });
   });
 
+  normaliseNavigationButtons(nav);
+  refreshGeneratedNavigationLanguage();
   nav.dataset.registryBuilt = '1';
   renderNavDomainTabs();
   bindSidebarNavigation();
   applyNavGroupState();
   setNavDomain(getNavDomainForPage(currentPage) || getStoredNavDomain(), false);
   applyPlatformBootstrapVisibility();
+  watchLateSidebarNavigation();
 }
 
 function getNavGroupState() {
@@ -3230,7 +3520,21 @@ function applyNavGroupState() {
     const el = document.querySelector(`[data-nav-group="${group}"]`);
     if (!el) return;
     const isOpen = state[group] !== false;
+    const toggle = el.querySelector('.nav-group-toggle');
+    const body = el.querySelector('.nav-group-body');
     el.classList.toggle('collapsed', !isOpen);
+    el.dataset.navState = isOpen ? 'open' : 'collapsed';
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (body?.id) toggle.setAttribute('aria-controls', body.id);
+    }
+    if (body) {
+      body.hidden = !isOpen;
+      body.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      body.querySelectorAll('.nav-btn[data-page]').forEach(button => {
+        button.tabIndex = isOpen ? 0 : -1;
+      });
+    }
   });
   syncNavDomainVisibility();
 }
@@ -3252,6 +3556,34 @@ function ensureNavGroupForPage(page) {
   if (!group) return;
   setNavDomain(getNavDomainForGroup(group), true);
   setNavGroupOpen(group, true);
+}
+
+function adoptLateSidebarNavigation() {
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav) return;
+  const lateButtons = [...document.querySelectorAll('#sidebar .nav-btn[data-page]')]
+    .filter(button => !button.closest('.nav-group'));
+  if (!lateButtons.length) return;
+
+  lateButtons.forEach(button => {
+    const groupKey = getNavGroupForPage(button.dataset.page) || 'admin_org';
+    const groupBody = document.querySelector(`[data-nav-group="${groupKey}"] .nav-group-body`)
+      || document.querySelector('[data-nav-group="admin_org"] .nav-group-body');
+    if (groupBody) groupBody.appendChild(button);
+  });
+  normaliseNavigationButtons(nav);
+  bindSidebarNavigation();
+  applyNavGroupState();
+}
+
+function watchLateSidebarNavigation() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar || sidebar.dataset.lateNavigationWatcher === '1' || !window.MutationObserver) return;
+  sidebar.dataset.lateNavigationWatcher = '1';
+  const observer = new MutationObserver(() => adoptLateSidebarNavigation());
+  observer.observe(sidebar, { childList: true, subtree: true });
+  window.__lateSidebarNavigationObserver = observer;
+  adoptLateSidebarNavigation();
 }
 
 
@@ -3924,7 +4256,11 @@ function bindSidebarNavigation() {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      switchPage(page);
+      // Modules wrap window.switchPage to hydrate their workspace before the
+      // base shell activates it. Calling the lexical base function here made
+      // sidebar clicks bypass that chain, which is why some late pages looked
+      // selectable but rendered as empty/inactive panels.
+      (window.switchPage || switchPage)(page);
     }, true);
   });
 }
@@ -4139,6 +4475,15 @@ function switchPage(page) {
   if (page === 'calculator' && (!window.PermissionService || window.PermissionService.checkPage('timesheet'))) {
     return window.switchPage('timesheet'); // window.switchPage = template-guard wrapper (hydrates the view first)
   }
+  // Owner-approved consolidated page redirects (zero capability loss: demoted -> canonical parent)
+  if (page === 'knowledge') return switchPage('knowledge_base');
+  if (page === 'geofence_events') return switchPage('geofence_management');
+  if (page === 'consolidation_lineage' || page === 'consolidation_runs') return switchPage('consolidation_groups');
+  if (page === 'forecast_accuracy' || page === 'forecast_versions') return switchPage('forecast_overrides');
+  if (page === 'device_enrollment') return switchPage('device_registry');
+  if (page === 'replenishment_rules') return switchPage('putaway_rules');
+  if (page === 'receiving_discrepancies') return switchPage('mobile_receiving');
+  if (page === 'mps_proposals') return switchPage('mps');
   const stored = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id');
   if (!stored) {
     const isDevMode = window.devModeAuthSwitcher || (omni && omni.adminSettings && omni.adminSettings.devModeAuthSwitcher) || false;
@@ -4168,7 +4513,20 @@ function switchPage(page) {
   }
   currentPage = page;
   enforceUIPermissions();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+  // Universal page-deactivation contract: EVERY navigation — regardless of which
+  // module owns the destination — must fully deactivate every previously active
+  // page host before activating the new one. Removing the page-active class is
+  // not enough: Build10/11/12 self-rendered hosts additionally set an inline
+  // style.display to toggle visibility among their own sibling pages, and an
+  // inline style always wins over the .page{display:none} CSS rule regardless
+  // of class state. Clearing that inline style here — for every .page element,
+  // not just the ones the destination module happens to own — is what lets a
+  // legacy/foreign destination correctly hide a previously active Build10/11/12
+  // workspace instead of leaving it visibly stuck on screen.
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('page-active');
+    if (p.style.display) p.style.display = '';
+  });
   document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   const mainContent = document.getElementById('mainContent');
   if (mainContent) {
@@ -4196,6 +4554,9 @@ function switchPage(page) {
     task_manager: 'pageTaskManager',
     sop: 'pageSop',
     command_center: 'pageCommandCenter',
+    workshop_command_center: 'pageWorkshopCommandCenter',
+    my_work: 'pageMyWork',
+    workshop_readiness: 'pageWorkshopReadiness',
     op_packs: 'pageOpPacks',
     machines: 'pageMachines',
     inventory: 'pageInventory',
@@ -4217,6 +4578,12 @@ function switchPage(page) {
     canonical_console: 'pageCanonicalConsole',
     canonical_inventory: 'pageCanonicalInventory'
   };
+  // Publish the canonical page → section-id routing table read-only. Diagnostics
+  // (route_health) previously had to guess this mapping from id string matching,
+  // which mis-reported every page whose section id does not contain its page key
+  // (e.g. parties → pageCustomersAndSuppliers). Read-only: nothing may route
+  // through this copy, it is for inspection only.
+  try { window.__octagonPageMap = Object.freeze(Object.assign({}, pageMap)); } catch (_) {}
   const navMap = {
     home: 'navHome',
     calculator: 'navCalculator',
@@ -4237,6 +4604,9 @@ function switchPage(page) {
     task_manager: 'navTaskManager',
     sop: 'navSop',
     command_center: 'navCommandCenter',
+    workshop_command_center: 'navWorkshopCommandCenter',
+    my_work: 'navMyWork',
+    workshop_readiness: 'navWorkshopReadiness',
     op_packs: 'navOpPacks',
     machines: 'navMachines',
     inventory: 'navInventory',
@@ -4296,6 +4666,9 @@ function switchPage(page) {
   if (page === 'task_manager') renderTaskManager();
   if (page === 'sop') renderSopHub();
   if (page === 'command_center') renderCommandCenter();
+  if (page === 'workshop_command_center' && typeof window.renderWorkshopCommandCenter === 'function') window.renderWorkshopCommandCenter();
+  if (page === 'my_work' && typeof window.renderMyWork === 'function') window.renderMyWork();
+  if (page === 'workshop_readiness' && typeof window.renderWorkshopReadiness === 'function') window.renderWorkshopReadiness();
   if (page === 'op_packs') renderOpPacks();
   if (page === 'machines') renderMachinesPage();
   if (page === 'inventory') renderInventoryPage();
@@ -4328,6 +4701,16 @@ function switchPage(page) {
         <div style="margin-top:18px;"><button class="btn-primary" onclick="switchPage('home')" style="padding:9px 20px;">العودة للرئيسية</button></div>
       </div>`;
   }
+  // Several legacy panels emit English table headers and empty states from
+  // concatenated HTML strings that cannot be translated at their source. This
+  // walks the rendered page's text nodes and swaps exact dictionary matches.
+  // It never touches elements or attributes, so handlers bound during render
+  // survive — and it runs once per navigation, not on a DOM observer.
+  try {
+    const renderedPageId = pageMap[page];
+    const renderedPage = renderedPageId && document.getElementById(renderedPageId);
+    if (renderedPage && window.OctagonArabicChrome) window.OctagonArabicChrome.localizeElement(renderedPage);
+  } catch (_) {}
   renderOmniNotificationBell();
 }
 
@@ -4660,6 +5043,16 @@ function validateDays() {
 }
 
 // ─── Calculator Page ───
+// views/calculator.html wires the "الرصيد السابق (سلف سابقة)" field to this,
+// but it was never defined anywhere — so editing that field silently did
+// nothing while its sibling (سلف الشهر الحالي) recalculated normally. The value
+// is already read by recalculate() below, so the only thing missing was the
+// trigger. Read-only: this recomputes the displayed figures and never writes
+// payroll, attendance or advance records.
+function onCalcPrevAdvanceChange() {
+  recalculate();
+}
+
 function recalculate() {
   const cfg = getConfig();
 
@@ -5658,28 +6051,6 @@ function renderCustomersPage() {
       </tr>
     `;
   }).join('') : '<tr><td colspan="8" class="empty-cell">لا توجد أرصدة عملاء بعد</td></tr>';
-}
-
-function addFinanceDemoData(scope = 'all') {
-  ensureFinance();
-  if (!confirm('إضافة أمثلة تجريبية واضحة؟ لن يتم حذف أو استبدال أي بيانات حالية.')) return;
-  const demoTag = `demo_${scope}_${Date.now()}`;
-  let customer = finance.customers.find(c => c.name === 'عميل تجريبي');
-  if (!customer) {
-    customer = { id: makeId('cust'), name: 'عميل تجريبي', phone: '000', openingBalance: 0, notes: 'Demo record' };
-    finance.customers.push(customer);
-  }
-  const txs = [
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 250000, categoryId: 'cat_sales', departmentId: 'dept_sales', description: 'DEMO - قبض بيع نقدي', partyName: customer.name, customerId: customer.id },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 75000, categoryId: 'cat_materials', departmentId: 'dept_workshop', description: 'DEMO - شراء مواد', partyName: 'مورد تجريبي' },
-    { type: 'expense', direction: 'out', sourceType: 'cashbox', amount: 40000, categoryId: 'cat_maintenance', departmentId: 'dept_workshop', description: 'DEMO - صيانة معدات', partyName: 'فني تجريبي' },
-    { type: 'customer_charge', direction: 'neutral', sourceType: 'ledger', amount: 180000, departmentId: 'dept_projects', description: 'DEMO - مطالبة مبيعات آجلة', partyName: customer.name, customerId: customer.id },
-    { type: 'income', direction: 'in', sourceType: 'cashbox', amount: 90000, categoryId: 'cat_customer_payment', departmentId: 'dept_sales', description: 'DEMO - تسديد عميل', partyName: customer.name, customerId: customer.id }
-  ];
-  txs.forEach((tx, idx) => addFinanceTransaction({ ...tx, date: todayISO(), sourceId: `${demoTag}_${idx}`, receiptNo: `DEMO-${idx + 1}`, paymentMethod: tx.sourceType === 'cashbox' ? 'cash' : 'ledger' }, { skipSave: true }));
-  saveData();
-  financeRefreshAll();
-  showToast('تمت إضافة البيانات التجريبية وربطها بالداشبورد والقاصة والعملاء', 'success');
 }
 
 function financeRefreshAll() {
@@ -13592,6 +13963,29 @@ function runOmniAutomationTick() {
 let _serverDownWarned = false;
 let _lastFileSaveOk = true;
 
+// Finance accounts are canonical-server facts. `ensureFinance()` enriches the
+// legacy rendering shape with labels/defaults, but those presentation-only
+// additions must not turn an unrelated full-state save into a legacy finance
+// mutation. Keep the exact server projection for the compatibility payload;
+// real finance changes use their canonical actions instead.
+function rememberCanonicalFinanceAccounts(data) {
+  // The server accepts the legacy full-sync only when every governed path is
+  // echoed byte-for-byte. The canonical guard governs the whole `finance.*`
+  // family (accounts, transactions, journals, documents, periods, payments, …)
+  // with a single documented exception, `finance.customers`. Finance was cut
+  // over in Phase 03, so the legacy blob usually carries no `finance` key at
+  // all, while `ensureFinance()` still synthesises a fully populated finance
+  // object for rendering. Posting that synthesised object made every save —
+  // including ones triggered by merely opening a read-only page — fail with
+  // 409 FINANCE_CANONICAL_AUTHORITY_REQUIRED. Capture the exact projection so
+  // the compatibility payload can echo it instead of re-deriving it.
+  const hasFinance = !!data && Object.prototype.hasOwnProperty.call(data, 'finance');
+  window.__legacyFullSyncFinanceProjection = hasFinance
+    ? JSON.parse(JSON.stringify(data.finance ?? null))
+    : undefined;
+  window.__legacyFullSyncFinanceProjectionCaptured = true;
+}
+
 function saveData(skipAutomation = false) {
   // Guard: never persist before the initial loadData() has completed at least once.
   // A race where any save fires DURING the loadData() await posts the default/empty
@@ -13613,6 +14007,24 @@ function saveData(skipAutomation = false) {
       selectedEmpIdx,
       reportEmpIdx
     };
+    // Echo the governed finance projection exactly as the server sent it, so an
+    // unrelated full-state save is never mistaken for a legacy finance mutation.
+    // `finance.customers` is the one path the canonical map deliberately leaves
+    // ungoverned, so local edits there are still allowed to persist.
+    if (window.__legacyFullSyncFinanceProjectionCaptured) {
+      const projection = window.__legacyFullSyncFinanceProjection;
+      const localCustomers = data.finance ? data.finance.customers : undefined;
+      if (projection === undefined) {
+        if (localCustomers === undefined) delete data.finance;
+        else data.finance = { customers: localCustomers };
+      } else if (projection === null) {
+        data.finance = null;
+      } else {
+        const echoed = JSON.parse(JSON.stringify(projection));
+        if (localCustomers !== undefined) echoed.customers = localCustomers;
+        data.finance = echoed;
+      }
+    }
     // T1.2 (schema enforcement, choke-point 2): employees is the ONE
     // protect:true collection in OctagonSchema — an empty-array write is
     // ALWAYS rejected here, regardless of ENFORCE, formalizing the existing
@@ -13770,8 +14182,16 @@ async function loadData() {
       const data = await res.json();
       console.debug('📡 Data received from server:', data);
       if (data && Array.isArray(data.employees)) {
+        rememberCanonicalFinanceAccounts(data);
         employees = data.employees;
-        finance = data.finance || defaultFinanceState();
+        finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
         omni = data.omni || defaultOmniState();
         ensureFinance();
         ensureOmni();
@@ -13845,10 +14265,18 @@ async function loadData() {
     }
     const data = JSON.parse(raw);
     sanitizePersistedArabicText(data);
+    rememberCanonicalFinanceAccounts(data);
     if (data.employees && data.employees.length) {
       employees = data.employees;
     }
-    finance = data.finance || defaultFinanceState();
+    finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
     omni = data.omni || defaultOmniState();
     ensureFinance();
     ensureOmni();
@@ -16899,7 +17327,14 @@ function importData(event) {
       if (data.employees) {
         if (confirm('هل تريد استبدال البيانات الحالية بالنسخة المستوردة؟')) {
           employees = data.employees;
-          finance = data.finance || defaultFinanceState();
+          finance = data.finance ? JSON.parse(JSON.stringify(data.finance)) : defaultFinanceState();
+        // Clone rather than alias. `ensureFinance()` below enriches the legacy
+        // rendering shape with synthesised accounts/labels; when `finance` aliased
+        // `data.finance`, those presentation-only additions were written straight
+        // into the cached server projection that PentagonDB/auditService later
+        // full-syncs back, so an unrelated save was rejected as a legacy finance
+        // mutation (409 FINANCE_CANONICAL_AUTHORITY_REQUIRED). The cache must keep
+        // the projection exactly as the server sent it.
           omni = data.omni || defaultOmniState();
           ensureFinance();
           ensureOmni();
@@ -19973,9 +20408,9 @@ function renderTaskManager_deprecated_dup1() {
           <div class="task-type"><div class="task-level-head"><b><span onclick="renameTaskManagerLevel('${type.id}')" style="cursor:pointer" title="تعديل الاسم">${escapeHtml(type.name)} <i class="fa-solid fa-pen" style="font-size:10px;color:#aaa"></i></span></b><button class="btn-primary" onclick="addClickupTask('${space.id}','${dep.id}','${sec.id}','${type.id}')">إضافة Task</button></div>
           <div class="task-list">${type.tasks.map(task => {
             const taskIndicators = [];
-            if ((task.sopIds||[]).length) taskIndicators.push('<span class="task-ind" title="SOP" style="color:#818cf8"><i class="fa-solid fa-book"></i></span>');
-            if ((task.machineIds||[]).length) taskIndicators.push('<span class="task-ind" title="Machine" style="color:#22d3ee"><i class="fa-solid fa-gear"></i></span>');
-            if ((task.materialRequirements||[]).length) taskIndicators.push('<span class="task-ind" title="Material" style="color:#fb923c"><i class="fa-solid fa-cube"></i></span>');
+            if ((task.sopIds||[]).length) taskIndicators.push('<span class="task-ind" title="إجراء تشغيل قياسي" style="color:#818cf8"><i class="fa-solid fa-book"></i></span>');
+            if ((task.machineIds||[]).length) taskIndicators.push('<span class="task-ind" title="ماكينة" style="color:#22d3ee"><i class="fa-solid fa-gear"></i></span>');
+            if ((task.materialRequirements||[]).length) taskIndicators.push('<span class="task-ind" title="مادة" style="color:#fb923c"><i class="fa-solid fa-cube"></i></span>');
             if ((task.qcRecordIds||[]).length) taskIndicators.push('<span class="task-ind" title="QC" style="color:#fbbf24"><i class="fa-solid fa-microscope"></i></span>');
             const dueR = task.dueDate ? calculateDueRisk(task) : 'none';
             const dueStyle = dueR === 'overdue' ? 'color:#f87171;font-weight:bold' : dueR === 'due_today' ? 'color:#fbbf24' : '';
@@ -28409,6 +28844,35 @@ async function submitAttendanceCorrectionRequest(empIdx) {
   createEmployeeRequest('attendance_correction', { employeeIdx: empIdx, title: `طلب تصحيح بصمة ${r.date}`, date: r.date, correctedInTime: r.correctedInTime, correctedOutTime: r.correctedOutTime, reason: r.reason, notes: r.notes });
 }
 
+// Which employee record belongs to the person currently signed in. Employee
+// records carry the same id as the platform user (and an email), so the
+// self-service portal can open on the viewer's own record instead of asking
+// them to find themselves in a list of everyone.
+function currentUserEmployeeIndex() {
+  let user = null;
+  try { user = window.PentagonAuth?.getCurrentUser?.() || window.OctagonAuth?.getCurrentUser?.() || null; } catch (_) {}
+  let storedId = '';
+  try { storedId = localStorage.getItem('octagon_user_id') || localStorage.getItem('pentagon_user_id') || ''; } catch (_) {}
+  // Employee records are keyed by the PLATFORM user id. The legacy client auth
+  // and localStorage hold a different one ('system_admin'), so matching on those
+  // never hits. The verified session identity is the one that lines up.
+  let sessionId = '';
+  try {
+    sessionId = window.__octagonBootstrap?.context?.userId
+      || window.__octagonServerSession?.userId
+      || '';
+  } catch (_) {}
+  const userId = String(sessionId || user?.id || storedId || '').trim();
+  const email = String(user?.email || '').trim().toLowerCase();
+  if (!userId && !email) return -1;
+  if (!Array.isArray(employees)) return -1;
+  return employees.findIndex(emp => {
+    const empId = String(emp?.id || '').trim();
+    const empEmail = String(emp?.email || '').trim().toLowerCase();
+    return (userId && empId && empId === userId) || (email && empEmail && empEmail === email);
+  });
+}
+
 function renderEmployeePortal() {
   ensureOmni();
   normalizeEmployeePortalData();
@@ -28427,9 +28891,32 @@ function renderEmployeePortal() {
   });
   if (curVal !== '') sel.value = curVal;
 
+  // Open on the viewer's own record the first time only. Defaulting to an
+  // arbitrary employee would show that person's salary to whoever opened the
+  // page; defaulting to your own is the whole point of a self-service portal.
+  // Guarded so it never overrides a selection the operator made themselves.
+  if (sel.value === '' && sel.dataset.selfSelected !== '1') {
+    sel.dataset.selfSelected = '1';
+    const ownIdx = currentUserEmployeeIndex();
+    if (ownIdx >= 0) sel.value = String(ownIdx);
+  }
+
   const empIdx = getPortalEmployeeId();
   if (empIdx < 0 || !employees[empIdx]) {
-    body.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:16px;"><i class="fa-solid fa-user-lock" style="font-size:40px;display:block;margin-bottom:15px;"></i>اختر موظفاً من القائمة أعلاه لعرض لوحته الشخصية</p>';
+    // Read-only empty state. Payroll, attendance and timesheet data are frozen,
+    // so this branch never creates or edits an employee — it only says which of
+    // the two situations the operator is actually in (no employees on file at
+    // all, versus none picked yet) and points at the page that owns that data,
+    // instead of being a dead end that just says "choose someone".
+    const hasEmployees = Array.isArray(employees) && employees.length > 0;
+    const message = hasEmployees
+      ? 'اختر موظفاً من القائمة أعلاه لعرض لوحته الشخصية'
+      : 'لا يوجد موظفون مسجلون بعد، فلا توجد لوحة يمكن عرضها.';
+    body.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:16px;">'
+      + '<i class="fa-solid fa-user-lock" style="font-size:40px;display:block;margin-bottom:15px;"></i>'
+      + '<p style="margin-bottom:18px;">' + message + '</p>'
+      + '<button class="btn-secondary" onclick="switchPage(\'employees\')">فتح سجل الموظفين</button>'
+      + '</div>';
     return;
   }
 
@@ -31567,6 +32054,34 @@ function renderAutomationHealthAndPoliciesContent() {
   };
 
   const selectedPresetJson = JSON.stringify(presetPreviews[omniSelectedSimPreset], null, 2);
+
+  // The preset payload used to be dumped straight into a <pre> as raw JSON,
+  // which is the shape the automation engine consumes but not something a
+  // workshop user can read. It is rendered as Arabic label/value rows instead,
+  // with the exact payload kept one click away for whoever is authoring rules.
+  const SIM_FIELD_AR = {
+    card: 'البطاقة', material: 'المادة', machine: 'الماكينة', qc: 'فحص الجودة',
+    request: 'الطلب', whatsappSuggestion: 'اقتراح المحادثة',
+    id: 'المعرّف', title: 'العنوان', priority: 'الأولوية', dueDate: 'تاريخ الاستحقاق',
+    name: 'الاسم', stock: 'الرصيد الحالي', minimum: 'الحد الأدنى', type: 'النوع',
+    status: 'الحالة', label: 'الوصف', text: 'النص',
+    diffHours: 'عدد الساعات', totalMinutes: 'إجمالي الدقائق'
+  };
+  const simLabel = (key) => SIM_FIELD_AR[key] || key;
+  const simRow = (key, value) => `
+    <div style="display:flex; gap:8px; justify-content:space-between; padding:3px 0; font-size:12px;">
+      <span style="color:var(--text-muted);">${escapeHtml(simLabel(key))}</span>
+      <span style="color:#e2e8f0; text-align:left; direction:ltr;">${escapeHtml(String(value))}</span>
+    </div>`;
+  const presetRowsHtml = Object.entries(presetPreviews[omniSelectedSimPreset] || {}).map(([key, value]) => {
+    if (value && typeof value === 'object') {
+      return `<div style="margin-bottom:6px;">
+        <div style="font-size:11px; color:#7dd3fc; margin-bottom:2px;">${escapeHtml(simLabel(key))}</div>
+        ${Object.entries(value).map(([k, v]) => simRow(k, v)).join('')}
+      </div>`;
+    }
+    return simRow(key, value);
+  }).join('') || '<div style="font-size:12px; color:var(--text-muted);">لا توجد بيانات لهذه الحالة.</div>';
   const consoleOutputHtml = omniSimulationConsoleLogs.length > 0 
     ? omniSimulationConsoleLogs.map(l => {
         let cls = 'sim-log-info';
@@ -31635,8 +32150,14 @@ function renderAutomationHealthAndPoliciesContent() {
           </div>
           
           <div>
-            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات الحدث المرسلة</label>
-            <pre style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px; font-size:11px; color:#a7f3d0; margin:0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">بيانات حدث تجريبية للمحاكاة — ليست سجلاً حقيقياً</label>
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius:6px; padding:10px;">
+              ${presetRowsHtml}
+              <details style="margin-top:8px;">
+                <summary style="font-size:11px; color:var(--text-muted); cursor:pointer;">عرض الحمولة التقنية (JSON)</summary>
+                <pre style="font-size:11px; color:#a7f3d0; margin:6px 0 0; direction:ltr; text-align:left; overflow-x:auto;">${escapeHtml(selectedPresetJson)}</pre>
+              </details>
+            </div>
           </div>
           
           <button class="btn-primary" style="width:100%; padding:10px;" onclick="triggerRuleSimulation()"><i class="fa-solid fa-play"></i> تشغيل المحاكاة</button>
@@ -37453,8 +37974,13 @@ window.ensurePageTemplateLoaded = async function (page) {
   // 404s on /views/<page>.html every time (the module renders correctly anyway,
   // but the console fills with false errors). Skip the fetch for them outright;
   // the owning module is responsible for building its own section.
-  const JS_RENDERED_PAGES = new Set(['import_center', 'system_settings']);
-  if (JS_RENDERED_PAGES.has(page)) return;
+  const JS_RENDERED_PAGES = new Set(['import_center', 'system_settings', 'system_check']);
+  const moduleOwnsPage = Boolean(
+    window.Build10Engine?.PAGES?.[page]
+    || window.Build11Engine?.PAGES?.[page]
+    || window.Build12Engine?.PAGES?.[page]
+  );
+  if (JS_RENDERED_PAGES.has(page) || moduleOwnsPage) return;
 
   const id = pageMap[page] || page;
   if (document.getElementById(id)) return;

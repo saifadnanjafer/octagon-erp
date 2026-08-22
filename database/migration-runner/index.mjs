@@ -370,7 +370,7 @@ export async function runMigrations({
             // the runner-owned compatibility layer, not in the migration file.
             const compat = applyPreDownCompatibility(dialect, migration.id, effectiveDialectName);
             if (compat) compatibilityApplied.push(compat);
-            migration.down(dialect, ctx);
+            if (!compat?.skipMigrationDown) migration.down(dialect, ctx);
             dialect.prepare('DELETE FROM schema_migrations WHERE migration_id = ?').run(migration.id);
           }
           if (runInsideTransaction) dialect.exec('COMMIT;');

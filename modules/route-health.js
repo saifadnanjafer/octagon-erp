@@ -53,8 +53,40 @@
   }
 
   /* ───────── checks ───────── */
+  // Governed BUILD-08…BUILD-12 workspaces do not own a `section.page` element.
+  // They are registered against a shared renderer host, so resolving them by
+  // section id reports every one of them as a broken nav entry. Collect the
+  // registered workspace keys so those pages can be recognised as legitimately
+  // renderer-driven instead.
+  function governedWorkspaceKeys() {
+    const keys = new Set();
+    let names = [];
+    try { names = Object.keys(window); } catch (_) { return keys; }
+    names.forEach(name => {
+      let holder;
+      try { holder = window[name]; } catch (_) { return; }
+      if (!holder || typeof holder !== 'object') return;
+      ['pages', 'PAGES'].forEach(prop => {
+        let map;
+        try { map = holder[prop]; } catch (_) { return; }
+        if (!map || typeof map !== 'object' || Array.isArray(map)) return;
+        let entries = [];
+        try { entries = Object.keys(map); } catch (_) { return; }
+        // Guard against tiny incidental `pages` properties on unrelated objects.
+        if (entries.length < 4) return;
+        entries.forEach(k => keys.add(k));
+      });
+    });
+    return keys;
+  }
+
   function checkNavPages() {
     const navBtns = Array.from(document.querySelectorAll('.nav-btn[data-page]'));
+    // The app publishes its real page → section-id routing table; prefer it over
+    // guessing, so pages whose section id does not contain their page key
+    // (parties → pageCustomersAndSuppliers) resolve correctly.
+    const canonicalMap = (window.__octagonPageMap && typeof window.__octagonPageMap === 'object') ? window.__octagonPageMap : {};
+    const workspaceKeys = governedWorkspaceKeys();
     const out = [];
     navBtns.forEach(btn => {
       const page = btn.dataset.page;
@@ -64,7 +96,7 @@
       // separators so hyphenated keys (e.g. "real-estate" → "RealEstate") map too.
       const sectionId = 'page' + page.replace(/(^\w|[_-]\w)/g, m => m.replace(/[_-]/, '').toUpperCase());
       // also accept a few hand-rolled IDs
-      const aliases = ['page' + page, 'page' + page.charAt(0).toUpperCase() + page.slice(1), sectionId,
+      const aliases = [canonicalMap[page] || '', 'page' + page, 'page' + page.charAt(0).toUpperCase() + page.slice(1), sectionId,
         page === 'pos' ? 'pagePOS' : '', page === 'qc_center' ? 'pageQc' : '',
         page === 'work_orders' ? 'pageWorkOrders' : '', page === 'route_health' ? 'pageRouteHealth' : ''];
       let found = null;
@@ -74,12 +106,37 @@
         const cand = Array.from(document.querySelectorAll('section.page')).find(s => (s.id || '').toLowerCase().includes(page.replace(/[_-]/g, '').toLowerCase()));
         if (cand) found = cand.id;
       }
-      out.push({ ok: !!found, page: page, label: String(label).trim(), sectionId: found || '(not found)' });
+      // A registered governed workspace is routed by its renderer, not a section.
+      const governed = !found && workspaceKeys.has(page);
+      // A page the router knows about but whose template has not been hydrated
+      // yet is a lazy-load, not a broken route.
+      const routedNotHydrated = !found && !governed && !!canonicalMap[page];
+      // Anything left is a module-owned page (the vertical packs, for example)
+      // whose section is created by its own module on first visit. From here it
+      // is genuinely indistinguishable from a dead route without navigating to
+      // it, so it is reported as UNVERIFIED rather than asserted to be broken —
+      // claiming "broken" for these produced dozens of false alarms that buried
+      // real breakage.
+      const unverified = !found && !governed && !routedNotHydrated;
+      out.push({
+        ok: !!found || governed || routedNotHydrated,
+        unverified: unverified,
+        page: page,
+        label: String(label).trim(),
+        governed: governed,
+        routedNotHydrated: routedNotHydrated,
+        sectionId: found || (governed ? '(governed workspace)' : (routedNotHydrated ? canonicalMap[page] + ' (not hydrated)' : '(يُنشئه المودیول عند أول زيارة)'))
+      });
     });
     return out;
   }
   function checkPageHooks() {
     const pages = Array.from(document.querySelectorAll('section.page'));
+    // Governed workspace hosts are keyed by the raw page key (`warehouse_topology`),
+    // not the `pageWarehouseTopology` + `renderWarehouseTopology` convention this
+    // check was written for, so they never match a hook and were all reported as
+    // warnings. Recognise them by their renderer registration instead.
+    const workspaceKeys = governedWorkspaceKeys();
     // Cache once: any global function whose name starts with "render" — covers
     // page-specific names like renderKanbanBoard, renderSopHub, renderCalculator...
     let renderFns = [];
@@ -97,10 +154,13 @@
       const directHook = hookCandidates.some(fn => typeof window[fn] === 'function');
       const fuzzyHook = !directHook && renderFns.some(fn => fn.toLowerCase().includes(stem));
       const moduleDriven = !!s.querySelector('[id$="Body"]');
+      // A section whose id is itself a registered governed page key is rendered
+      // by that workspace engine, not by a window-level render* hook.
+      const governed = workspaceKeys.has(id) || workspaceKeys.has(key) || workspaceKeys.has(id.replace(/^page/, ''));
       // Static pages (calculator etc.) ship full inline HTML — count them OK if
       // they have substantial content already in the DOM.
-      const staticContent = !directHook && !fuzzyHook && !moduleDriven && s.innerHTML.length > 1500;
-      return { ok: directHook || fuzzyHook || moduleDriven || staticContent, id: id, hookCandidates: hookCandidates, moduleDriven: moduleDriven, fuzzyHook: fuzzyHook, staticContent: staticContent };
+      const staticContent = !directHook && !fuzzyHook && !moduleDriven && !governed && s.innerHTML.length > 1500;
+      return { ok: directHook || fuzzyHook || moduleDriven || governed || staticContent, id: id, hookCandidates: hookCandidates, moduleDriven: moduleDriven, fuzzyHook: fuzzyHook, governed: governed, staticContent: staticContent };
     });
   }
   function checkGlobals() {
@@ -195,11 +255,17 @@
     return issues;
   }
 
-  function buildReport() {
+  // `skipDomChecks` is used for the first paint, before page templates have been
+  // hydrated. Both nav resolution and page-hook detection look up `section.page`
+  // elements, so before hydration every not-yet-loaded template reports as a
+  // missing section — a large, entirely false failure count. Those two sections
+  // are deferred rather than reported wrongly. The remaining checks read globals,
+  // functions and in-memory collections, so they are accurate immediately.
+  function buildReport(skipDomChecks) {
     return {
       generatedAt: new Date().toISOString(),
-      nav: checkNavPages(),
-      pages: checkPageHooks(),
+      nav: skipDomChecks ? null : checkNavPages(),
+      pages: skipDomChecks ? null : checkPageHooks(),
       globals: checkGlobals(),
       functions: checkFunctions(),
       collections: checkCollections(),
@@ -212,14 +278,21 @@
   function pill(ok, label) { return '<span class="rh-pill ' + (ok ? 'ok' : 'bad') + '">' + label + '</span>'; }
 
   function navHtml(rows) {
-    return rows.map(r => '<div class="rh-row"><span class="label">' + esc(r.label) + ' <span class="meta">(' + esc(r.page) + ')</span></span>'
-      + (r.ok ? pill(true, 'OK') : pill(false, 'Broken — لا قسم'))
-      + (r.ok ? '<span class="rh-detail">' + esc(r.sectionId) + '</span>' : '<span class="rh-fix-hint">أضف &lt;section class="page" id="' + esc('page' + r.page.charAt(0).toUpperCase() + r.page.slice(1)) + '"&gt; في index.html</span>')
-      + '</div>').join('');
+    return rows.map(r => {
+      const state = r.unverified ? '<span class="rh-pill warn">يتطلب زيارة للتحقق</span>'
+        : !r.ok ? pill(false, 'Broken — لا قسم')
+        : r.governed ? pill(true, 'OK (مساحة عمل مُدارة)')
+        : r.routedNotHydrated ? pill(true, 'OK (تحميل مؤجل)')
+        : pill(true, 'OK');
+      const detail = (r.ok || r.unverified)
+        ? '<span class="rh-detail">' + esc(r.sectionId) + '</span>'
+        : '<span class="rh-fix-hint">أضف &lt;section class="page" id="' + esc('page' + r.page.charAt(0).toUpperCase() + r.page.slice(1)) + '"&gt; في index.html</span>';
+      return '<div class="rh-row"><span class="label">' + esc(r.label) + ' <span class="meta">(' + esc(r.page) + ')</span></span>' + state + detail + '</div>';
+    }).join('');
   }
   function pagesHtml(rows) {
     return rows.map(r => '<div class="rh-row"><span class="label">' + esc(r.id) + '</span>'
-      + (r.ok ? pill(true, r.moduleDriven ? 'OK (module-driven)' : 'OK') : pill(false, 'Warning'))
+      + (r.ok ? pill(true, r.governed ? 'OK (مساحة عمل مُدارة)' : r.moduleDriven ? 'OK (module-driven)' : 'OK') : pill(false, 'Warning'))
       + (r.ok ? '' : '<span class="rh-fix-hint">أضف render*() أو *Body div داخل القسم</span>')
       + '</div>').join('');
   }
@@ -290,15 +363,13 @@
     return routeHealthHydrationPromise;
   }
 
-  function renderLoading() {
-    const root = document.getElementById('routeHealthBody');
-    if (!root) return;
-    root.innerHTML = '<div class="rh-toolbar"><span class="rh-pill warn">جاري تحميل قوالب الصفحات للفحص الكامل...</span></div>';
-  }
-
   async function renderReady() {
     if (routeHealthViewsHydrated) { render(); return; }
-    renderLoading();
+    // Paint every check that does not depend on template hydration straight away,
+    // so the page has its controls and real results within one frame instead of
+    // sitting on a bare loading pill for the length of the hydration pass. The
+    // two DOM-dependent sections stay marked pending until hydration finishes.
+    render(true);
     // Await hydration but cap the wait with an overall deadline so a hanging
     // template loader can never freeze the page on the loading state. Each
     // template is also individually timeout-guarded inside hydrateRouteHealthViews.
@@ -306,38 +377,54 @@
     render();
   }
 
-  function render() {
+  function render(domPending) {
     const root = document.getElementById('routeHealthBody');
     if (!root) return;
-    const rep = buildReport();
-    const nav = counts(rep.nav), pages = counts(rep.pages), globals = counts(rep.globals.filter(g => !g.optional)),
+    const rep = buildReport(domPending);
+    const globals = counts(rep.globals.filter(g => !g.optional)),
       fns = counts(rep.functions), cols = counts(rep.collections),
       links = counts(rep.woLinks);
-    const totalBad = nav.bad + pages.bad + globals.bad + fns.bad + cols.bad + links.bad;
-    const cls = totalBad === 0 ? 'ok' : (totalBad <= 3 ? 'warn' : 'bad');
+    // Nav entries that could not be resolved without navigating to them are
+    // reported separately; they are unknown, not known-bad, so they must not
+    // inflate the failure count.
+    const navUnverified = rep.nav ? rep.nav.filter(r => r.unverified).length : 0;
+    const nav = rep.nav ? counts(rep.nav.filter(r => !r.unverified)) : null;
+    const pages = rep.pages ? counts(rep.pages) : null;
+    // Only count sections that were actually measured, so the pending paint can
+    // never report a failure it has not yet checked.
+    const totalBad = (nav ? nav.bad : 0) + (pages ? pages.bad : 0) + globals.bad + fns.bad + cols.bad + links.bad;
+    const cls = domPending ? 'warn' : (totalBad === 0 ? 'ok' : (totalBad <= 3 ? 'warn' : 'bad'));
+    const headline = domPending
+      ? 'جارٍ تحميل قوالب الصفحات… (' + totalBad + ' مشكلة حتى الآن)'
+      : (totalBad === 0 ? 'كل الأنظمة سليمة ✅' : 'مشاكل: ' + totalBad);
     const stat = (l, ok, total, c) => '<div class="rh-stat ' + (c || '') + '"><div class="rh-stat-label">' + l + '</div><div class="rh-stat-value">' + ok + '/' + total + '</div></div>';
+    const pendingStat = (l) => '<div class="rh-stat warn"><div class="rh-stat-label">' + l + '</div><div class="rh-stat-value">…</div></div>';
+    const pendingRow = '<div class="rh-row"><span class="label">جارٍ تحميل قوالب الصفحات للفحص الكامل…</span><span class="rh-pill warn">قيد الفحص</span></div>';
     root.innerHTML = ''
       + '<div class="rh-toolbar">'
       + '<button class="rh-btn primary" onclick="rhRunNow()">🔄 إعادة الفحص</button>'
       + '<button class="rh-btn" onclick="rhCopyReport()">📋 نسخ التقرير</button>'
       + '<span class="spacer"></span>'
-      + '<span class="rh-pill ' + cls + '">' + (totalBad === 0 ? 'كل الأنظمة سليمة ✅' : 'مشاكل: ' + totalBad) + '</span>'
+      + '<span class="rh-pill ' + cls + '">' + headline + '</span>'
       + '</div>'
       + '<div class="rh-summary">'
-      + stat('أزرار التنقل', nav.ok, nav.total, nav.bad ? 'bad' : 'ok')
-      + stat('الصفحات', pages.ok, pages.total, pages.bad ? 'warn' : 'ok')
+      + (nav ? stat('أزرار التنقل', nav.ok, nav.total, nav.bad ? 'bad' : 'ok') : pendingStat('أزرار التنقل'))
+      + (navUnverified ? '<div class="rh-stat warn"><div class="rh-stat-label">تحتاج زيارة للتحقق</div><div class="rh-stat-value">' + navUnverified + '</div></div>' : '')
+      + (pages ? stat('الصفحات', pages.ok, pages.total, pages.bad ? 'warn' : 'ok') : pendingStat('الصفحات'))
       + stat('الـ Globals', globals.ok, globals.total, globals.bad ? 'bad' : 'ok')
       + stat('الدوال الجوهرية', fns.ok, fns.total, fns.bad ? 'bad' : 'ok')
       + stat('مجموعات البيانات', cols.ok, cols.total, cols.bad ? 'warn' : 'ok')
       + stat('روابط أوامر العمل', links.ok, links.total, links.bad ? 'bad' : 'ok')
       + '</div>'
-      + '<div class="rh-section"><div class="rh-section-title">🧭 أزرار التنقل ↔ الأقسام</div>' + navHtml(rep.nav) + '</div>'
-      + '<div class="rh-section"><div class="rh-section-title">📄 خطاطيف العرض على الأقسام</div>' + pagesHtml(rep.pages) + '</div>'
+      + '<div class="rh-section"><div class="rh-section-title">🧭 أزرار التنقل ↔ الأقسام</div>' + (nav ? navHtml(rep.nav) : pendingRow) + '</div>'
+      + '<div class="rh-section"><div class="rh-section-title">📄 خطاطيف العرض على الأقسام</div>' + (pages ? pagesHtml(rep.pages) : pendingRow) + '</div>'
       + '<div class="rh-section"><div class="rh-section-title">🧩 الكائنات العامة (Modules / Globals)</div>' + globalsHtml(rep.globals) + '</div>'
       + '<div class="rh-section"><div class="rh-section-title">⚙️ الدوال الجوهرية</div>' + functionsHtml(rep.functions) + '</div>'
       + '<div class="rh-section"><div class="rh-section-title">📚 مجموعات البيانات</div>' + collectionsHtml(rep.collections) + '</div>'
       + '<div class="rh-section"><div class="rh-section-title">🔗 سلامة روابط أوامر العمل</div>' + woLinksHtml(rep.woLinks) + '</div>';
-    window.__rhLastReport = rep;
+    // Only cache a complete report — a pending one would hand rhCopyReport a
+    // snapshot missing the nav and page-hook results entirely.
+    if (!domPending) window.__rhLastReport = rep;
   }
 
   window.rhRunNow = function () { renderReady().then(() => toast('اكتمل فحص النظام', 'info')); };

@@ -2186,9 +2186,36 @@
 .scenario-action-item i.warn { color: #f59e0b; }
 .scenario-action-item i.bad { color: #ef4444; }
 
+.scenario-assumption-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 4px 0 12px;
+}
+
+.scenario-assumption {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label label" "input suffix";
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.scenario-assumption > span { grid-area: label; font-size: 13px; font-weight: 600; }
+.scenario-assumption > input { grid-area: input; width: 100%; }
+.scenario-assumption > em { grid-area: suffix; font-style: normal; opacity: .7; font-size: 13px; }
+
+.scenario-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+}
+
 @media (max-width: 700px) {
   .scenario-metrics-bar { grid-template-columns: repeat(2, 1fr); }
   .scenario-action-grid { grid-template-columns: 1fr; }
+  .scenario-assumption-grid { grid-template-columns: 1fr; }
 }
 
 

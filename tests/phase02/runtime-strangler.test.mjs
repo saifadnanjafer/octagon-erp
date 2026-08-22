@@ -487,7 +487,12 @@ async function testMigration013FreshUpgradeRollback() {
   } finally {
     mid.close();
   }
-  await runMigrations({ dbPath, direction: 'down' });
+  // The runner refuses an unqualified full-chain rollback on a populated
+  // database (a safety guard added after this test was written). Only 013 is
+  // left applied above, so `steps: 1` states the narrow intent this test always
+  // had — roll back exactly that one migration — rather than confirming a total
+  // teardown the test does not want.
+  await runMigrations({ dbPath, direction: 'down', steps: 1 });
   const afterDown = openMigrationDatabase(dbPath);
   try {
     assert.ok(countRows(afterDown, `SELECT COUNT(*) AS n FROM collections WHERE collection IN (${placeholders})`, ...GOVERNED_PATHS) > 0, '013 down should re-export governed rows to legacy collections');

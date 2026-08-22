@@ -84,6 +84,32 @@ export function startKioskSession(db, input, ctx) {
   return { sessionId: sessId, kioskId, kioskType: kiosk.kiosk_type, status: 'active', startedAt: now };
 }
 
+export function evaluateKioskActionPermission(db, input, ctx) {
+  const companyId = ctx.company_id || ctx.companyId;
+  const kioskId = input.kiosk_id || input.kioskId;
+  const actionName = input.action_name || input.actionName;
+
+  if (!companyId) {
+    const error = new Error('Company scope required for kiosk action evaluation');
+    error.code = 'COMPANY_SCOPE_REQUIRED';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const kiosk = db.prepare('SELECT * FROM kiosk_device_registries WHERE id = ? AND company_id = ?').get(kioskId, companyId);
+  if (!kiosk) {
+    const error = new Error('Kiosk not found or scope denied');
+    error.code = 'KIOSK_NOT_FOUND';
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const allowedActions = JSON.parse(kiosk.allowed_actions_json || '[]');
+  const allowed = kiosk.status === 'active' && allowedActions.includes(actionName);
+
+  return { kioskId, actionName, allowed, reason: allowed ? null : 'restricted_kiosk_role' };
+}
+
 export function listKiosks(db, params) {
   const companyId = params.company_id || params.companyId;
   if (!companyId) {

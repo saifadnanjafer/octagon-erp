@@ -1,0 +1,2319 @@
+{
+  "generatedAt": "2026-08-06T22:37:12.315Z",
+  "startedAt": "2026-08-06T22:36:43.191Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 40,
+    "pass": 40,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[unhandled promise rejection] TypeError: Cannot read properties of undefined (reading 'map')",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "globalNotFound": [
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/api/v1/platform/saved-views"
+  ],
+  "items": [
+    {
+      "id": "marketing_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "marketing_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 702,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true)."
+      ],
+      "notFound": []
+    },
+    {
+      "id": "mismatch_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "mismatch_queue",
+        "activePageKey": "mismatch_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 548,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "mobile_picking",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "mobile_picking",
+        "activePageKey": "mobile_picking",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 701,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "mobile_receiving",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "mobile_receiving",
+        "activePageKey": "mobile_receiving",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 517,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "mps",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "mps",
+        "activePageKey": "mps",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 565,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "mps_proposals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "mps_proposals",
+        "activePageKey": "mps_proposals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 582,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "mrp",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageMrp",
+        "activePageKey": "pageMrp",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 657,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "multi_entity",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageMultiEntity",
+        "activePageKey": "pageMultiEntity",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 696,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "my_work",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageMyWork",
+        "activePageKey": "pageMyWork",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 572,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "notFound": [
+        "/api/v1/platform/saved-views"
+      ]
+    },
+    {
+      "id": "nl_reports",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageNlReports",
+        "activePageKey": "pageNlReports",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 550,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "offline_capability_policies",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "offline_capability_policies",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 725,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "offline_client_registry",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "offline_client_registry",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 538,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "offline_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "offline_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 567,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "omni_communications",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageOmniCommunications",
+        "activePageKey": "pageOmniCommunications",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 694,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "op_packs",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageOpPacks",
+        "activePageKey": "pageOpPacks",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 568,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "operational_performance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "operational_performance",
+        "activePageKey": "operational_performance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 685,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "parties",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomersAndSuppliers",
+        "activePageKey": "pageCustomersAndSuppliers",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 530,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "payment_funding_proposals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "payment_funding_proposals",
+        "activePageKey": "payment_funding_proposals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 547,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "people_development_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "people_development_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 683,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "people_ops",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePeopleOps",
+        "activePageKey": "pagePeopleOps",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 533,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "person_skill_evidence",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "person_skill_evidence",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 523,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pharmacy",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePharmacy",
+        "activePageKey": "pagePharmacy",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 675,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pick_task_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pick_task_queue",
+        "activePageKey": "pick_task_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 559,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "[unhandled promise rejection] TypeError: Cannot read properties of undefined (reading 'map')"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "planning_exceptions",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "planning_exceptions",
+        "activePageKey": "planning_exceptions",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 668,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "pos",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pagePOS",
+        "activePageKey": "pagePOS",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 678,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "procurement",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProcurement",
+        "activePageKey": "pageProcurement",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 684,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_issue_return",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_issue_return",
+        "activePageKey": "production_issue_return",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 711,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "production_large_screen",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "production_large_screen",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 709,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "production_material_requests",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_material_requests",
+        "activePageKey": "production_material_requests",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 561,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "production_receipt",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "production_receipt",
+        "activePageKey": "production_receipt",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 546,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "products",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProductsAndMaterials",
+        "activePageKey": "pageProductsAndMaterials",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 666,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "projects",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageProjects",
+        "activePageKey": "pageProjects",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 550,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "putaway_rules",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "putaway_rules",
+        "activePageKey": "putaway_rules",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 587,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "putaway_task_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "putaway_task_queue",
+        "activePageKey": "putaway_task_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 546,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+        "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "qc_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageQcCenter",
+        "activePageKey": "pageQcCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 686,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "quality_hold_queue",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "quality_hold_queue",
+        "activePageKey": "quality_hold_queue",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 579,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "real-estate",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRealEstate",
+        "activePageKey": "pageRealEstate",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 682,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "recall_analysis",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "recall_analysis",
+        "activePageKey": "recall_analysis",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 685,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    },
+    {
+      "id": "receipt",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageReceipt",
+        "activePageKey": "pageReceipt",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 533,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "receiving_discrepancies",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "receiving_discrepancies",
+        "activePageKey": "receiving_discrepancies",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_capability_policies",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_client_registry",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "offline_queue",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "production_large_screen",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "marketing_overview",
+            "display": "none"
+          },
+          {
+            "page": "people_development_overview",
+            "display": "none"
+          },
+          {
+            "page": "person_skill_evidence",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 715,
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+      ],
+      "notFound": []
+    }
+  ]
+}

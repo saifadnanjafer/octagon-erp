@@ -190,16 +190,18 @@
             }
           }
           
-          const res = await fetch('/api/collection', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ collection: changedCollection, data: afterCol }),
-          });
-          if (res.ok) {
-            console.log(`Delta Write [collection]: saved ${changedCollection}`);
-            this.cacheStr = JSON.stringify(db);
-            this.cache = db;
-            return db;
+          if (Array.isArray(afterCol)) {
+            const res = await fetch('/api/collection', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ collection: changedCollection, data: afterCol }),
+            });
+            if (res.ok) {
+              console.log(`Delta Write [collection]: saved ${changedCollection}`);
+              this.cacheStr = JSON.stringify(db);
+              this.cache = db;
+              return db;
+            }
           }
         } catch (deltaErr) {
           console.warn('Delta write failed, falling back to full save:', deltaErr.message);

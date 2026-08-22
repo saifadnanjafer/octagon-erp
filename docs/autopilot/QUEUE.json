@@ -251,19 +251,50 @@
     {
       "id": "BUILD-09R",
       "title": "BUILD-09 usability remediation (runtime context, real forms, governed lookups)",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "depends_on": ["BUILD-09"],
-      "human_gate": "Not marked COMPLETE - genuine gaps remain, documented in evidence. A continuation session should read the evidence file before doing more work.",
+      "prompt_path": "docs/autopilot/prompts/BUILD-09R-usability-remediation.md",
+      "progress": {
+        "purpose_built_pages": 32,
+        "total_pages": 32,
+        "evidence_path": "docs/autopilot/evidence/BUILD-09R-final-32-page-closure.md",
+        "remaining_generic_pages": [],
+        "note": "Pinned by the executable 32-page contract and consolidated Chromium acceptance tests."
+      },
       "completion": {
-        "commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
+        "commit": "e0595a80ddfc74f7347c280423dad2205b217f0b",
         "branch": "codex/octagon-feature-page-expansion-marathon",
-        "remote_commit": "649ad551a569b4ad1ac157fa36628d57fa9bb2d1",
-        "evidence_path": "docs/autopilot/evidence/BUILD-09R-runtime-and-forms-remediation.md"
+        "remote_commit": "e0595a80ddfc74f7347c280423dad2205b217f0b",
+        "evidence_path": "docs/autopilot/evidence/BUILD-09R-final-32-page-closure.md"
       }
     },
-    { "id": "BUILD-10", "title": "Devices, telematics, offline, and kiosk", "status": "PENDING", "depends_on": ["BUILD-09R"], "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md" },
-    { "id": "BUILD-11", "title": "Commercial platform and SaaS", "status": "PENDING", "depends_on": ["BUILD-10"], "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md" },
-    { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "PENDING", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md" },
+    {
+      "id": "BUILD-10",
+      "title": "Devices, telematics, offline, and kiosk",
+      "status": "COMPLETE",
+      "depends_on": ["BUILD-09R"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-10-devices-offline-kiosk.md",
+      "completion": {
+        "commit": "675de79111cbb79d7c1b85926c3ab5d8f6c4db45",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "remote_commit": "675de79111cbb79d7c1b85926c3ab5d8f6c4db45",
+        "evidence_path": "docs/autopilot/evidence/BUILD-10-runtime-fixture-repair.md"
+      }
+    },
+    {
+      "id": "BUILD-11",
+      "title": "Commercial platform and SaaS",
+      "status": "COMPLETE",
+      "depends_on": ["BUILD-10"],
+      "prompt_path": "docs/autopilot/prompts/BUILD-11-commercial-platform.md",
+      "completion": {
+        "commit": "946b0c7cd99797f146847180c98f8644bb3b3995",
+        "branch": "codex/octagon-feature-page-expansion-marathon",
+        "remote_commit": "946b0c7cd99797f146847180c98f8644bb3b3995",
+        "evidence_path": "docs/autopilot/evidence/BUILD-11-commercial-platform-completion.md"
+      }
+    },
+    { "id": "BUILD-12", "title": "AI, people, marketing, events, and packs", "status": "COMPLETE", "depends_on": ["BUILD-11"], "prompt_path": "docs/autopilot/prompts/BUILD-12-ai-people-marketing-packs.md", "checkpoint": "58249a238acfc3e33b1a0ee8ef92f3d85c0d062e", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md", "completion": { "commit": "c95a1d63d62017c5d3203af13142ff36716fee45", "branch": "codex/octagon-feature-page-expansion-marathon", "remote_commit": "c95a1d63d62017c5d3203af13142ff36716fee45", "evidence_path": "docs/autopilot/evidence/BUILD-12-ai-people-marketing-packs.md" } },
     { "id": "BUILD-13", "title": "Final functional page expansion", "status": "PENDING", "depends_on": ["BUILD-12"], "prompt_path": "docs/autopilot/prompts/BUILD-13-functional-pages.md" },
     { "id": "BUILD-14", "title": "Capability closure and residual build", "status": "PENDING", "depends_on": ["BUILD-13"], "prompt_path": "docs/autopilot/prompts/BUILD-14-capability-closure.md" }
   ]

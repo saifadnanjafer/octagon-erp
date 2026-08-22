@@ -863,7 +863,7 @@
       }
       return '<label class="' + (name === 'note' ? 'ent-form-full' : '') + '">' + esc(label) + '<input id="' + esc(id) + '" class="ent-input" type="' + esc(type) + '" value="' + (type === 'date' ? todayISO() : '') + '"></label>';
     }).join('') + '</div>'
-      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">حفظ السطر</button><button class="ent-btn" onclick="entLoadDemo(\'' + esc(page) + '\')">تحميل بيانات تجريبية</button>' + (cfg.extraActions || '') + '</div>';
+      + '<div class="ent-actions" style="margin-top:12px;"><button class="ent-btn primary" onclick="entSaveRecord(\'' + esc(page) + '\')">حفظ السطر</button>' + (cfg.extraActions || '') + '</div>';
   }
   function renderPage(page) {
     ensureData();
@@ -1037,144 +1037,6 @@
     rec.archivedAt = new Date().toISOString();
     rec.archivedBy = currentUserName();
     audit(page, 'record_archive', rec.name || id, rec);
-    save();
-    renderPage(page);
-  };
-  window.entLoadDemo = function (page) {
-    const cfg = PAGES[page];
-    if (!cfg || !Array.isArray(cfg.demo) || !cfg.demo.length) {
-      toast('No demo pack for this tab', 'info');
-      return;
-    }
-    if (records(page, true).length) {
-      toast('This tab already has records', 'info');
-      return;
-    }
-    
-    if (page === 'contracts') {
-      ensureData();
-      if (!O().documents) O().documents = { docs: [] };
-      
-      const doc1Id = uid('doc');
-      const doc4Id = uid('doc');
-      const doc3Id = uid('doc');
-      
-      const demoDocs = [
-        {
-          id: doc1Id,
-          title: 'عقد صيانة المخرطة CNC - الرافدين',
-          category: 'contract',
-          refNumber: 'CON-DMS-7712',
-          owner: 'ورشة أوكتاجون',
-          issuer: 'شركة الرافدين للتكنولوجيا',
-          issueDate: plusDays(-300),
-          expiryDate: plusDays(90),
-          reminderDays: 30,
-          tags: 'عقد, صيانة, DMS',
-          fileNote: 'mock_contracts/CNC_maintenance.pdf',
-          notes: 'مستند DMS مرتبط بعقد الصيانة الفعلي',
-          value: 2500000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        },
-        {
-          id: doc4Id,
-          title: 'رخصة السلامة المهنية ومكافحة الحرائق - الدفاع المدني',
-          category: 'contract',
-          refNumber: 'CON-DMS-8812',
-          owner: 'إدارة الإنتاج',
-          issuer: 'وزارة الداخلية/الدفاع المدني',
-          issueDate: plusDays(-350),
-          expiryDate: plusDays(10),
-          reminderDays: 30,
-          tags: 'رخصة, سلامة, DMS',
-          fileNote: 'mock_contracts/Safety_license.pdf',
-          notes: 'رخصة سلامة الدفاع المدني السنوية',
-          value: 500000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        },
-        {
-          id: doc3Id,
-          title: 'عقد إيجار مستودع المواد الأولية - بابل',
-          category: 'contract',
-          refNumber: 'CON-DMS-9922',
-          owner: 'الإدارة المالية',
-          issuer: 'مالك العقار',
-          issueDate: plusDays(-120),
-          expiryDate: plusDays(-15),
-          reminderDays: 30,
-          tags: 'عقد, إيجار, DMS',
-          fileNote: 'mock_contracts/Warehouse_lease.pdf',
-          notes: 'عقد الإيجار السنوي لمخزن الخامات الرئيسي',
-          value: 12000000,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: 'تجريبي'
-        }
-      ];
-      
-      demoDocs.forEach(d => O().documents.docs.push(d));
-      
-      const demoContracts = [
-        {
-          name: 'عقد صيانة المخرطة CNC',
-          party: 'شركة الرافدين للتكنولوجيا',
-          amount: 2500000,
-          date: plusDays(90),
-          status: 'open',
-          note: 'عقد صيانة سنوي شامل قطع الغيار والدعم الطارئ للمخرطة CNC',
-          linkedDocId: doc1Id
-        },
-        {
-          name: 'رخصة السلامة المهنية ومكافحة الحرائق',
-          party: 'وزارة الداخلية/الدفاع المدني',
-          amount: 500000,
-          date: plusDays(10),
-          status: 'review',
-          note: 'متابعة شروط السلامة مع الدفاع المدني وتجهيز طفايات الحريق للتفتيش',
-          linkedDocId: doc4Id
-        },
-        {
-          name: 'عقد توريد حديد صلب ومقاطع معدنية',
-          party: 'الشركة العامة للحديد والصلب',
-          amount: 8500000,
-          date: plusDays(-5),
-          status: 'review',
-          note: 'عقد توريد دفعات الحديد للمصنع - غير مرتبط بوثيقة DMS الرقمية حالياً',
-          linkedDocId: null
-        }
-      ];
-      
-      demoContracts.forEach(row => {
-        hub('contracts').records.push(stamp({
-          id: uid('ent'),
-          ...row,
-          is_active: true,
-          createdAt: new Date().toISOString(),
-          createdBy: currentUserName()
-        }));
-      });
-      
-      audit('contracts', 'demo_load', 'Contracts and DMS demo data loaded', { count: demoContracts.length });
-      save();
-      renderPage('contracts');
-      toast('تم تحميل بيانات تجريبية للعقود ومستندات DMS بنجاح', 'success');
-      return;
-    }
-    
-    cfg.demo.forEach(row => {
-      hub(page).records.push(stamp({
-        id: uid('ent'),
-        ...row,
-        is_active: true,
-        createdAt: new Date().toISOString(),
-        createdBy: currentUserName()
-      }));
-    });
-    audit(page, 'demo_load', cfg.title + ' demo data loaded', { count: cfg.demo.length });
     save();
     renderPage(page);
   };
@@ -1422,97 +1284,6 @@
       }
     });
   }
-
-  window.entLoadMockBankStatement = function () {
-    const list = getUnmatchedTransactions();
-    const mock = [];
-
-    list.slice(0, 5).forEach((t, index) => {
-      if (index === 0) {
-        mock.push({
-          id: 'mock_' + t.id,
-          date: t.date,
-          description: t.description || ('حوالة واردة من ' + (t.partyName || 'عميل')),
-          amount: t.amount,
-          direction: t.direction || 'in',
-          matchedTxId: null
-        });
-      } else if (index === 1) {
-        const d = new Date(t.date);
-        d.setDate(d.getDate() + 2);
-        mock.push({
-          id: 'mock_' + t.id,
-          date: d.toISOString().slice(0, 10),
-          description: 'تحويل بنكي - ' + (t.partyName || t.description || 'مورد'),
-          amount: t.amount,
-          direction: t.direction || 'out',
-          matchedTxId: null
-        });
-      } else if (index === 2) {
-        const d = new Date(t.date);
-        d.setDate(d.getDate() - 1);
-        mock.push({
-          id: 'mock_' + t.id,
-          date: d.toISOString().slice(0, 10),
-          description: 'عملية دفع بطاقة: ' + (t.partyName || 'مصاريف'),
-          amount: t.amount,
-          direction: t.direction || 'out',
-          matchedTxId: null
-        });
-      } else {
-        mock.push({
-          id: 'mock_' + t.id,
-          date: t.date,
-          description: 'تسوية حساب - ' + (t.partyName || 'الجهة المستلمة'),
-          amount: t.amount,
-          direction: t.direction || 'in',
-          matchedTxId: null
-        });
-      }
-    });
-
-    mock.push({
-      id: 'mock_fee_1',
-      date: todayISO(),
-      description: 'رسوم خدمات بنكية شهرية - الرافدين',
-      amount: 15000,
-      direction: 'out',
-      matchedTxId: null
-    });
-
-    mock.push({
-      id: 'mock_interest_1',
-      date: todayISO(),
-      description: 'فوائد دائنة - حساب جاري',
-      amount: 45000,
-      direction: 'in',
-      matchedTxId: null
-    });
-
-    if (mock.length <= 2) {
-      mock.push({
-        id: 'mock_fb_1',
-        date: todayISO(),
-        description: 'دفعة نقدية مسجلة بالخطأ بالبنك',
-        amount: 250000,
-        direction: 'in',
-        matchedTxId: null
-      });
-      mock.push({
-        id: 'mock_fb_2',
-        date: todayISO(),
-        description: 'شراء قرطاسية مكتبية - دفع فيزا',
-        amount: 32000,
-        direction: 'out',
-        matchedTxId: null
-      });
-    }
-
-    bankStatementLines = mock;
-    toast('تم إنشاء كشف حساب بنكي تجريبي بنجاح', 'success');
-    entAutoMatch();
-    renderPage('banking');
-  };
 
   window.entMatchLine = function (lineId, txId) {
     const line = bankStatementLines.find(l => l.id === lineId);
@@ -1763,6 +1534,15 @@
     }
 
     return `
+      <div class="recon-uploader" style="margin-bottom:16px; direction:rtl;">
+        <i class="fa-solid fa-file-csv" style="color:#22c55e;"></i>
+        <p>استيراد كشف حساب بنكي فعلي بصيغة CSV</p>
+        <label class="ent-btn primary" style="display:inline-flex; width:auto; cursor:pointer;">
+          اختيار ملف CSV
+          <input type="file" accept=".csv,text/csv" onchange="entHandleReconCsvUpload(event)" style="display:none;">
+        </label>
+        <span style="display:block; margin-top:8px; font-size:11px; color:#94a3b8;">الأعمدة المدعومة: التاريخ، البيان، المبلغ، ونوع الحركة. لا تُنشأ أي سطور افتراضية.</span>
+      </div>
       <div class="recon-workspace">
         <div class="recon-pane">
           <div class="recon-pane-title">
@@ -1883,8 +1663,11 @@
            ondrop="entHandleDmsContractDrop(event)">
         <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i>
         <p>قم بسحب وإفلات ملف العقد (PDF) هنا</p>
-        <span style="font-size:11px; color:#94a3b8;">أو انقر لاختيار ملف تجريبي</span>
-        <button class="ent-btn primary" onclick="entUploadMockContract()">تحميل عقد تجريبي سريع</button>
+        <label class="ent-btn primary" style="display:inline-flex; width:auto; cursor:pointer;">
+          اختيار ملف العقد
+          <input type="file" accept=".pdf,application/pdf" onchange="entHandleDmsContractFile(event)" style="display:none;">
+        </label>
+        <span style="display:block; margin-top:8px; font-size:11px; color:#94a3b8;">تُسجَّل بيانات العقد التي يدخلها المشغّل فقط؛ لا تُنشأ بيانات تجريبية.</span>
       </div>
     `;
     
@@ -2148,54 +1931,80 @@
     overlay.style.display = 'flex';
   };
   
-  window.entUploadMockContract = function () {
-    ensureData();
-    const docTitles = [
-      'عقد صيانة أجهزة المخرطة CNC - الرافدين',
-      'عقد إيجار مستودع المواد الأولية - بابل',
-      'رخصة السلامة المهنية ومكافحة الحرائق - الدفاع المدني',
-      'عقد توريد حديد صلب ومقاطع معدنية - حديد العراق',
-      'عقد رعاية وتدريب وتأهيل الكوادر الفنية - معهد التدريب'
-    ];
-    const owners = ['ورشة أوكتاجون', 'الإدارة المالية', 'إدارة الإنتاج', 'قسم الخدمات والFleet'];
-    const issuers = ['شركة الرافدين للتكنولوجيا', 'مالك العقار', 'وزارة الداخلية/الدفاع المدني', 'الشركة العامة للحديد والصلب', 'مركز التدريب المهني'];
-    const values = [2500000, 12000000, 500000, 8500000, 1800000];
-    
-    const rIdx = Math.floor(Math.random() * docTitles.length);
-    
-    const offsets = [-15, 10, 25, 45, 90];
-    const offset = offsets[Math.floor(Math.random() * offsets.length)];
-    const expiry = plusDays(offset);
-    const issue = plusDays(offset - 365);
-    
-    if (!O().documents) O().documents = { docs: [] };
-    
-    const newDoc = {
-      id: uid('doc'),
-      title: docTitles[rIdx],
-      category: 'contract',
-      refNumber: 'CON-DMS-' + Math.floor(Math.random() * 9000 + 1000),
-      owner: owners[Math.floor(Math.random() * owners.length)],
-      issuer: issuers[rIdx],
-      issueDate: issue,
-      expiryDate: expiry,
-      reminderDays: 30,
-      tags: 'عقد, DMS',
-      fileNote: 'mock_contracts/' + docTitles[rIdx].replace(/ /g, '_') + '.pdf',
-      notes: 'تم توليده تجريبياً لتجربة الربط والمطابقة',
-      value: values[rIdx],
-      is_active: true,
-      createdAt: new Date().toISOString(),
-      createdBy: currentUserName()
+  function entOpenDmsContractImport(file) {
+    const overlay = document.getElementById('omniModalOverlay');
+    const title = document.getElementById('omniModalTitle');
+    const body = document.getElementById('omniModalBody');
+    const btnCancel = document.getElementById('omniModalCancel');
+    const btnConfirm = document.getElementById('omniModalConfirm');
+    if (!overlay || !title || !body || !btnCancel || !btnConfirm) return;
+
+    const fileName = String(file?.name || '').trim();
+    if (!fileName) {
+      toast('تعذر قراءة اسم ملف العقد', 'error');
+      return;
+    }
+
+    title.textContent = 'تسجيل مستند عقد فعلي';
+    body.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px; direction:rtl;">
+        <div style="font-size:12px; color:#94a3b8;">الملف المحدد: <strong>${esc(fileName)}</strong></div>
+        <label>اسم العقد أو المستند *<input id="ent_dms_title" class="ent-input" value="${esc(fileName.replace(/\.[^/.]+$/, '').replace(/_/g, ' '))}"></label>
+        <label>الرقم المرجعي<input id="ent_dms_reference" class="ent-input" value=""></label>
+        <label>المالك / القسم<input id="ent_dms_owner" class="ent-input" value=""></label>
+        <label>الجهة المصدرة<input id="ent_dms_issuer" class="ent-input" value=""></label>
+        <label>تاريخ الإصدار<input id="ent_dms_issue_date" class="ent-input" type="date" value=""></label>
+        <label>تاريخ الانتهاء<input id="ent_dms_expiry_date" class="ent-input" type="date" value=""></label>
+        <label>القيمة التعاقدية<input id="ent_dms_value" class="ent-input" type="number" min="0" step="0.01" value=""></label>
+      </div>
+    `;
+    btnCancel.textContent = 'إلغاء';
+    btnCancel.onclick = function () { overlay.style.display = 'none'; };
+    btnConfirm.style.display = 'inline-block';
+    btnConfirm.textContent = 'حفظ المستند';
+    btnConfirm.onclick = function () {
+      const docTitle = document.getElementById('ent_dms_title')?.value?.trim();
+      if (!docTitle) {
+        toast('اسم العقد أو المستند مطلوب', 'warning');
+        return;
+      }
+      const value = Number(document.getElementById('ent_dms_value')?.value || 0);
+      ensureData();
+      if (!O().documents) O().documents = { docs: [] };
+      const newDoc = {
+        id: uid('doc'),
+        title: docTitle,
+        category: 'contract',
+        refNumber: document.getElementById('ent_dms_reference')?.value?.trim() || '',
+        owner: document.getElementById('ent_dms_owner')?.value?.trim() || '',
+        issuer: document.getElementById('ent_dms_issuer')?.value?.trim() || '',
+        issueDate: document.getElementById('ent_dms_issue_date')?.value || '',
+        expiryDate: document.getElementById('ent_dms_expiry_date')?.value || '',
+        reminderDays: 30,
+        tags: 'عقد مرفوع, DMS',
+        fileNote: 'dms_uploads/' + fileName,
+        notes: 'تم تسجيله من ملف اختاره المشغّل',
+        value: Number.isFinite(value) && value >= 0 ? value : 0,
+        is_active: true,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUserName()
+      };
+      O().documents.docs.push(newDoc);
+      audit('documents', 'doc_create_upload', 'Contract file registered: ' + newDoc.title, { id: newDoc.id, fileName });
+      save();
+      overlay.style.display = 'none';
+      toast('تم تسجيل مستند العقد بنجاح', 'success');
+      renderPage('contracts');
     };
-    
-    O().documents.docs.push(newDoc);
-    audit('documents', 'doc_create_mock', 'Mock contract uploaded: ' + newDoc.title, newDoc);
-    save();
-    toast('تم تحميل عقد تجريبي بنظام DMS بنجاح', 'success');
-    renderPage('contracts');
+    overlay.style.display = 'flex';
+  }
+
+  window.entHandleDmsContractFile = function (event) {
+    const file = event?.target?.files?.[0];
+    if (file) entOpenDmsContractImport(file);
+    if (event?.target) event.target.value = '';
   };
-  
+
   window.entHandleDmsContractDrop = function (event) {
     event.preventDefault();
     const uploader = document.getElementById('dms_contract_uploader');
@@ -2204,39 +2013,8 @@
       uploader.style.background = '';
     }
     
-    let filename = 'عقد_مرفوع.pdf';
-    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-      filename = event.dataTransfer.files[0].name;
-    }
-    
-    ensureData();
-    if (!O().documents) O().documents = { docs: [] };
-    
-    const expiry = plusDays(25);
-    const newDoc = {
-      id: uid('doc'),
-      title: filename.replace(/\.[^/.]+$/, "").replace(/_/g, ' '),
-      category: 'contract',
-      refNumber: 'CON-DROP-' + Math.floor(Math.random() * 9000 + 1000),
-      owner: 'الورشة الرئيسية',
-      issuer: 'مورد خارجي',
-      issueDate: plusDays(-340),
-      expiryDate: expiry,
-      reminderDays: 30,
-      tags: 'عقد مرفوع, DMS',
-      fileNote: 'dms_uploads/' + filename,
-      notes: 'عقد تم رفعه عبر السحب والإفلات',
-      value: 3500000,
-      is_active: true,
-      createdAt: new Date().toISOString(),
-      createdBy: currentUserName()
-    };
-    
-    O().documents.docs.push(newDoc);
-    audit('documents', 'doc_create_drop', 'Contract dropped: ' + newDoc.title, newDoc);
-    save();
-    toast('تم رفع المستند وإنشاؤه بنظام DMS بنجاح', 'success');
-    renderPage('contracts');
+    const file = event.dataTransfer?.files?.[0];
+    if (file) entOpenDmsContractImport(file);
   };
 
   window.entTriggerRenewalTask = function (contractId) {
@@ -3404,40 +3182,35 @@
       `;
     }).join('') : `<div class="ent-empty">✅ لا توجد مواد تحت الحد الأدنى حالياً</div>`;
 
-    // Supplier comparison matrix with mock quotes
-    const mockSuppliers = suppliers.length ? suppliers.slice(0, 4) : [
-      { name: 'الشركة العامة للحديد والصلب', id: 's1' },
-      { name: 'مستودع الرافدين للمواد', id: 's2' },
-      { name: 'تجهيزات باب بابل', id: 's3' }
-    ];
-
+    // Quote comparison. This panel used to invent three supplier company names
+    // whenever the register was empty and fill the matrix with Math.random()
+    // prices, then stamp one of them "✓ أفضل". No quote record exists anywhere
+    // in the system — entRfqSendRequest only writes an audit entry — so that
+    // table recommended a supplier that had never quoted, at a price nobody had
+    // offered, and the "best" vendor changed on every repaint. It now fails
+    // closed: real registered suppliers are listed as the vendors a request can
+    // go to, and no comparison is drawn until real quotes are recorded.
     const compareItems = lowStockItems.slice(0, 3);
     let tableHtml = '';
     if (compareItems.length) {
-      const headerCols = mockSuppliers.map(s => `<th>${esc(s.name || s.companyName || 'مورد')}</th>`).join('');
-      const rows = compareItems.map((m, mi) => {
-        const needed = Math.max(1, money(m.minStock || m.minimumStock || 10) - money(m.stock || 0));
-        const prices = mockSuppliers.map((_, si) => {
-          const base = 1500 + (mi * 400) + (si * 200);
-          return Math.round(base * (0.85 + Math.random() * 0.3));
-        });
-        const bestIdx = prices.indexOf(Math.min(...prices));
-        const cells = prices.map((p, si) =>
-          `<td>${p.toLocaleString()} ${activeProfile().currencySymbol || 'IQD'} ${si === bestIdx ? '<span class="rfq-best-badge">✓ أفضل</span>' : ''}</td>`
-        ).join('');
-        return `<tr><td><strong>${esc(m.name || 'بند')}</strong><br><span style="color:#64748b;font-size:10px">الكمية: ${needed.toLocaleString()}</span></td>${cells}</tr>`;
-      });
+      const supplierList = suppliers.length
+        ? `<div class="rfq-panel-body"><p style="font-size:12px;color:#94a3b8;margin-bottom:8px">الموردون المسجلون الذين يمكن إرسال طلب عرض سعر إليهم:</p>`
+          + suppliers.slice(0, 8).map(s => `<div style="padding:6px 10px;background:rgba(30,41,59,0.3);border-radius:6px;font-size:11px;margin-bottom:6px">${esc(s.name || s.companyName || 'مورد')}</div>`).join('')
+          + '</div>'
+        : `<div class="ent-empty">لا يوجد موردون مسجلون بعد.</div>`;
 
       tableHtml = `
         <div class="rfq-panel" style="overflow:auto">
           <div class="rfq-panel-head">
-            <h3>📊 مقارنة عروض الأسعار (محاكاة)</h3>
+            <h3>📊 مقارنة عروض الأسعار</h3>
           </div>
-          <div style="overflow-x:auto; padding:14px;">
-            <table class="rfq-compare-table">
-              <thead><tr><th>المادة</th>${headerCols}</tr></thead>
-              <tbody>${rows.join('')}</tbody>
-            </table>
+          <div style="padding:14px">
+            <div class="ent-empty" style="margin-bottom:12px">لم تُسجَّل أي عروض أسعار بعد، فلا يمكن إجراء مقارنة أو ترشيح أفضل سعر. أرسل طلبات عروض الأسعار أعلاه، ثم سجّل العروض الواردة.</div>
+            ${supplierList}
+            <div class="ent-actions" style="margin-top:12px">
+              <button class="ent-btn" onclick="switchPage('parties')">فتح سجل الموردين</button>
+              <button class="ent-btn" onclick="switchPage('procurement')">فتح المشتريات</button>
+            </div>
           </div>
         </div>
       `;
@@ -3962,14 +3735,36 @@
   };
 
   // ─── Phase 7: Scenario Planner — AI-Driven Cash & Ops Scenarios ───
+  // A planner has to let the operator vary something, otherwise it is a report.
+  // These are the assumptions applied to the real recorded figures below.
+  const SCENARIO_DEFAULTS = Object.freeze({ collectionRate: 60, expenseChange: 0, horizonDays: 30 });
+  const SCENARIO_BOUNDS = Object.freeze({
+    collectionRate: { min: 0, max: 100 },
+    expenseChange: { min: -50, max: 100 },
+    horizonDays: { min: 7, max: 180 }
+  });
+  let scenarioAssumptions = { ...SCENARIO_DEFAULTS };
+
   function renderScenarioWorkspace() {
     const openJobs = activeJobOrders().filter(w => !['closed', 'delivered', 'cancelled'].includes(String(w.state || w.status || '').toLowerCase()));
     const netCash = txs().reduce((s, t) => s + (t.direction === 'in' ? money(t.amount) : t.direction === 'out' ? -money(t.amount) : 0), 0);
     const totalIn = txs().filter(t => t.direction === 'in').reduce((s, t) => s + money(t.amount), 0);
     const totalOut = txs().filter(t => t.direction === 'out').reduce((s, t) => s + money(t.amount), 0);
     const lowStockCount = lowStock().length;
-    const customersWithBalance = customers().filter(c => customerBalance(c) > 0).length;
+    const withBalance = customers().filter(c => customerBalance(c) > 0);
+    const customersWithBalance = withBalance.length;
+    const receivable = withBalance.reduce((s, c) => s + money(customerBalance(c)), 0);
     const currency = activeProfile().currencySymbol || 'IQD';
+
+    // Projection over the operator's own assumptions. Every input to this is a
+    // real recorded figure — recorded income, recorded expenses and the actual
+    // outstanding customer balances — and only the assumptions are theirs, so
+    // nothing here invents an amount the books do not already contain.
+    const a = scenarioAssumptions;
+    const days = Math.max(1, money(a.horizonDays));
+    const collected = Math.round(receivable * (Math.min(100, Math.max(0, money(a.collectionRate))) / 100));
+    const projectedOut = Math.round(totalOut * (1 + money(a.expenseChange) / 100));
+    const projectedNet = netCash + collected - (projectedOut - totalOut);
 
     const scenarios = [
       {
@@ -3980,14 +3775,18 @@
         metrics: [
           { value: fmt(totalIn), label: 'إجمالي الدخل' },
           { value: fmt(totalOut), label: 'إجمالي المصروف' },
-          { value: fmt(netCash), label: 'الصافي' },
-          { value: customersWithBalance, label: 'عملاء غير محصّلين' }
+          { value: fmt(netCash), label: 'الصافي الحالي' },
+          { value: fmt(projectedNet), label: 'الصافي المتوقع (' + days + ' يوم)' }
         ],
         actions: [
           { icon: netCash >= 0 ? 'fa-check-circle ok' : 'fa-exclamation-triangle bad', text: netCash >= 0 ? 'التدفق النقدي مستقر' : 'يُنصح بمراجعة المدفوعات المعلقة' },
-          { icon: customersWithBalance ? 'fa-exclamation-circle warn' : 'fa-check-circle ok', text: customersWithBalance ? customersWithBalance + ' عميل لديهم مبالغ غير محصّلة — تعجيل التحصيل' : 'جميع رصيد العملاء مسدّد' },
-          { icon: 'fa-arrow-trend-up ok', text: 'استهدف نمو 10% في المبيعات للمرونة في السيولة' },
+          { icon: customersWithBalance ? 'fa-exclamation-circle warn' : 'fa-check-circle ok', text: customersWithBalance ? customersWithBalance + ' عميل لديهم ' + fmt(receivable) + ' ' + currency + ' غير محصّلة — بافتراض التحصيل الحالي يدخل ' + fmt(collected) + ' ' + currency : 'جميع رصيد العملاء مسدّد' },
+          { icon: projectedNet >= netCash ? 'fa-arrow-trend-up ok' : 'fa-arrow-trend-down bad', text: 'أثر الافتراضات على الصافي: ' + (projectedNet - netCash >= 0 ? '+' : '') + fmt(projectedNet - netCash) + ' ' + currency },
           { icon: 'fa-calendar warn', text: 'مطابقة الكشف البنكي شهرياً قبل الرواتب' }
+        ],
+        links: [
+          ['customers', 'فتح كشف العملاء'],
+          ['finance', 'فتح المالية']
         ]
       },
       {
@@ -4006,6 +3805,10 @@
           { icon: openJobs.length > 5 ? 'fa-fire bad' : 'fa-circle-check ok', text: openJobs.length > 5 ? openJobs.length + ' طلب عمل مفتوح — ضغط على الطاقة الإنتاجية' : 'حجم الطلبات ضمن الطاقة التشغيلية' },
           { icon: 'fa-truck warn', text: 'تنسيق مع الموردين المفضلين لضمان الإمداد السريع' },
           { icon: 'fa-list-check ok', text: 'استخدم بوابة الموردين لمقارنة العروض وتحديد أفضل مورد بديل' }
+        ],
+        links: [
+          ['supplier_portal', 'فتح بوابة الموردين'],
+          ['inventory', 'فتح المخزون']
         ]
       },
       {
@@ -4024,6 +3827,10 @@
           { icon: 'fa-truck-fast ok', text: 'الطلبات الجاهزة للتوصيل: ' + openJobs.filter(w => ['ready_for_delivery', 'delivery_ready'].includes(String(w.state || ''))).length + ' وحدة' },
           { icon: 'fa-gear warn', text: 'نسّق قدرة الآلات مع الطلبات المستلمة لتجنب تأخير الإنجاز' },
           { icon: 'fa-star ok', text: 'تأكد من جاهزية فريق التوصيل للطلبات العاجلة (COD)' }
+        ],
+        links: [
+          ['my_work', 'فتح طلبات العمل'],
+          ['machines', 'فتح الآلات']
         ]
       }
     ];
@@ -4037,6 +3844,13 @@
         `<div class="scenario-action-item"><i class="fa-solid ${esc(a.icon)}"></i>${esc(a.text)}</div>`
       ).join('');
 
+      // Each scenario names a concrete next step; without a way to reach the
+      // page that step happens on, the planner is a dead end that tells the
+      // operator to go somewhere and then strands them.
+      const linksHtml = (s.links || []).map(([page, label]) =>
+        `<button type="button" class="ent-btn" onclick="switchPage('${esc(page)}')">${esc(label)}</button>`
+      ).join('');
+
       return `
         <div class="scenario-card">
           <div class="scenario-header">
@@ -4048,14 +3862,55 @@
           </div>
           <div class="scenario-metrics-bar">${metricsHtml}</div>
           <div class="scenario-action-grid">${actionsHtml}</div>
+          ${linksHtml ? `<div class="ent-actions scenario-card-actions">${linksHtml}</div>` : ''}
         </div>
       `;
     }).join('');
 
-    return `<div class="scenario-workspace">${scenariosHtml}</div>`;
+    const assumption = (key, label, suffix, step) => {
+      const b = SCENARIO_BOUNDS[key];
+      return `<label class="scenario-assumption">
+        <span>${esc(label)}</span>
+        <input type="number" class="ent-input" value="${esc(String(a[key]))}" min="${b.min}" max="${b.max}" step="${step}"
+          onchange="entSetScenarioAssumption('${esc(key)}', this.value)">
+        <em>${esc(suffix)}</em>
+      </label>`;
+    };
+
+    const assumptionsHtml = `<section class="ent-panel scenario-assumptions">
+      <div class="ent-panel-head">
+        <div><h3>افتراضات التخطيط</h3><p>تُطبَّق على الأرقام المسجّلة فعلياً — لا تُنشئ أي مبلغ جديد ولا تُعدّل أي سجل.</p></div>
+        <div class="ent-actions"><button type="button" class="ent-btn" onclick="entResetScenarioAssumptions()">إعادة الافتراضات</button></div>
+      </div>
+      <div class="scenario-assumption-grid">
+        ${assumption('collectionRate', 'نسبة تحصيل الذمم المتوقعة', '%', 5)}
+        ${assumption('expenseChange', 'تغيّر المصروفات المتوقع', '%', 5)}
+        ${assumption('horizonDays', 'أفق التخطيط', 'يوم', 1)}
+      </div>
+      <div class="ent-signal-strip">
+        <span class="ent-chip">ذمم قائمة: ${esc(fmt(receivable))} ${esc(currency)}</span>
+        <span class="ent-chip">متوقع تحصيله: ${esc(fmt(collected))} ${esc(currency)}</span>
+        <span class="ent-chip ${projectedNet >= 0 ? 'ok' : 'bad'}">الصافي المتوقع: ${esc(fmt(projectedNet))} ${esc(currency)}</span>
+      </div>
+    </section>`;
+
+    return `<div class="scenario-workspace">${assumptionsHtml}${scenariosHtml}</div>`;
   }
 
   window.entSetScenarioTab = function (tab) {
+    renderPage('scenario_planner');
+  };
+
+  window.entSetScenarioAssumption = function (key, value) {
+    if (!Object.prototype.hasOwnProperty.call(scenarioAssumptions, key)) return;
+    const bounds = SCENARIO_BOUNDS[key];
+    const next = Math.min(bounds.max, Math.max(bounds.min, money(value)));
+    scenarioAssumptions[key] = next;
+    renderPage('scenario_planner');
+  };
+
+  window.entResetScenarioAssumptions = function () {
+    scenarioAssumptions = { ...SCENARIO_DEFAULTS };
     renderPage('scenario_planner');
   };
 

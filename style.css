@@ -257,6 +257,7 @@ body {
 /* ─── Sidebar ─── */
 .sidebar {
   width: 260px;
+  height: 100vh;
   min-height: 100vh;
   background: var(--gradient-dark);
   border-left: 1px solid var(--border-glass);
@@ -325,7 +326,28 @@ body {
 .sidebar-nav {
   padding: 16px 0;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* The registry is the sole owner of visible sidebar navigation.  Keep
+   inactive domains and collapsed bodies out of layout even if a late module
+   or a stale inline style tries to re-display them. */
+.sidebar-nav > .nav-group {
+  flex: 0 0 auto;
+}
+
+.sidebar-nav > .nav-group[hidden],
+.sidebar-nav .nav-group-body[hidden],
+.sidebar-nav .nav-group.collapsed > .nav-group-body {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .module-domain-tabs {
@@ -524,6 +546,10 @@ body {
 .nav-btn.active .nav-icon {
   transform: scale(1.08);
   filter: saturate(1.45);
+}
+
+.nav-btn .nav-icon i {
+  font-size: 0.88em;
 }
 
 .sidebar-footer {

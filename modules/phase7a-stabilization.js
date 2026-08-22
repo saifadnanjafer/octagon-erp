@@ -8,6 +8,15 @@
 (function () {
   'use strict';
 
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   const root = window;
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   const nowIso = () => new Date().toISOString();
@@ -523,6 +532,7 @@
       el.appendChild(wrap);
     }
     wrap.innerHTML = html;
+    arabicChrome(wrap);
   }
 
   function injectAll() {
@@ -535,10 +545,11 @@
       const host = document.createElement('div');
       host.id = 'phase7aFinanceLockHost';
       host.innerHTML = periodLockPanel();
+      arabicChrome(host);
       financePage.appendChild(host);
     } else {
       const host = document.getElementById('phase7aFinanceLockHost');
-      if (host) host.innerHTML = periodLockPanel();
+      if (host) { host.innerHTML = periodLockPanel(); arabicChrome(host); }
     }
   }
 

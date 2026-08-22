@@ -1,0 +1,1233 @@
+{
+  "generatedAt": "2026-08-22T01:47:31.399Z",
+  "startedAt": "2026-08-22T01:46:49.873Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 25,
+    "pass": 25,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "globalNotFound": [
+    "/claude-status.json",
+    "/claude-review-pointer.json",
+    "/claude-review-pointer.json",
+    "/claude-status.json"
+  ],
+  "items": [
+    {
+      "id": "campaigns",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "campaigns",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 583,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_console",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalConsole",
+        "activePageKey": "pageCanonicalConsole",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 655,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "canonical_inventory",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCanonicalInventory",
+        "activePageKey": "pageCanonicalInventory",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1155,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "cashbox",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCashbox",
+        "activePageKey": "pageCashbox",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1853,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "clinic",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageClinic",
+        "activePageKey": "pageClinic",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1614,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "command_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCommandCenter",
+        "activePageKey": "pageCommandCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1709,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "commercial_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "commercial_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1553,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "competency_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "competency_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1485,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "configuration_profiles",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "configuration_profiles",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1314,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "conflict_resolution",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "conflict_resolution",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1515,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidated_reports",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidated_reports",
+        "activePageKey": "consolidated_reports",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1398,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "consolidation_groups",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "consolidation_groups",
+        "activePageKey": "consolidation_groups",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1437,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "content_approvals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "content_approvals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1381,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "content_calendar",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "content_calendar",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1348,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "contracts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageContracts",
+        "activePageKey": "pageContracts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1416,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "count_session",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "count_session",
+        "activePageKey": "count_session",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1631,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "crossdock_workspace",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "crossdock_workspace",
+        "activePageKey": "crossdock_workspace",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1488,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "customer_portal",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomerPortal",
+        "activePageKey": "pageCustomerPortal",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1599,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "customers",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageCustomers",
+        "activePageKey": "pageCustomers",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1310,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "cycle_count_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "cycle_count_plans",
+        "activePageKey": "cycle_count_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1637,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "data_quality",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDataQuality",
+        "activePageKey": "pageDataQuality",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1452,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "demand_planning",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "demand_planning",
+        "activePageKey": "demand_planning",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1411,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "deploy_ready",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageDeployReady",
+        "activePageKey": "pageDeployReady",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1639,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "development_plans",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "development_plans",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          },
+          {
+            "page": "development_plans",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 1390,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "device_alerts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "device_alerts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "configuration_profiles",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "conflict_resolution",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "device_alerts",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "device_alerts",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "campaigns",
+            "display": "none"
+          },
+          {
+            "page": "competency_profiles",
+            "display": "none"
+          },
+          {
+            "page": "content_approvals",
+            "display": "none"
+          },
+          {
+            "page": "content_calendar",
+            "display": "none"
+          },
+          {
+            "page": "development_plans",
+            "display": "none"
+          }
+        ]
+      },
+      "durationMs": 1248,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

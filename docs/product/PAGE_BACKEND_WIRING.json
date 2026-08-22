@@ -1,0 +1,143 @@
+{
+  "generatedAt": "2026-08-22T12:20:16.255Z",
+  "summary": {
+    "total": 14,
+    "calledServer": 0,
+    "governed": 0,
+    "noCall": 14,
+    "byPriorityNoCall": {
+      "P3": 2,
+      "P1": 2,
+      "P2": 7,
+      "P0": 3
+    }
+  },
+  "rows": [
+    {
+      "id": "ai_factory",
+      "pri": "P3",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "ai_queue",
+      "pri": "P1",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "ai_status",
+      "pri": "P1",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "ai_tools",
+      "pri": "P3",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "alert_board",
+      "pri": "P2",
+      "domain": "ops",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "analytics",
+      "pri": "P2",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "appointments",
+      "pri": "P2",
+      "domain": "commercial",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "approvals",
+      "pri": "P2",
+      "domain": "resources",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "ar_ap",
+      "pri": "P0",
+      "domain": "finance",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "assets",
+      "pri": "P2",
+      "domain": "resources",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "automation",
+      "pri": "P2",
+      "domain": "intelligence",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "banking",
+      "pri": "P0",
+      "domain": "finance",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "budgeting",
+      "pri": "P0",
+      "domain": "finance",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    },
+    {
+      "id": "calendar",
+      "pri": "P2",
+      "domain": "core",
+      "apiCalls": 0,
+      "endpoints": [],
+      "governed": false,
+      "legacyDbWrite": false
+    }
+  ]
+}

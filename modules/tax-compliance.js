@@ -12,6 +12,12 @@
 (function () {
   'use strict';
 
+  // Attribute values are invisible to the control-label metric, so these stayed
+  // English after the visible chrome was translated. aria-label in particular is
+  // what a screen reader announces.
+  const arAttr = (en, ar) => ((document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar') ? ar : en);
+
   const state = { tab: 'dashboard', range: 'month', selectedMoveId: '' };
 
   function O() {
@@ -312,7 +318,7 @@
       <div class="taxc-form">
         <label>الاختصاص<select id="taxcJurisdiction"><option value="IQ" ${s.jurisdiction === 'IQ' ? 'selected' : ''}>العراق IQ</option><option value="GCC" ${s.jurisdiction === 'GCC' ? 'selected' : ''}>Gulf / GCC</option><option value="CUSTOM" ${s.jurisdiction === 'CUSTOM' ? 'selected' : ''}>مخصص</option></select></label>
         <label>معدل VAT %<input id="taxcVatRate" type="number" min="0" max="100" step="0.01" value="${attr(s.vatRate)}"></label>
-        <label>الرقم الضريبي<input id="taxcTaxId" value="${attr(s.taxId || '')}" placeholder="Tax ID / TRN"></label>
+        <label>الرقم الضريبي<input id="taxcTaxId" value="${attr(s.taxId || '')}" placeholder="${arAttr('Tax ID / TRN', 'الرقم الضريبي / TRN')}"></label>
         <label>فرع/موقع<input id="taxcBranchCode" value="${attr(s.branchCode || 'MAIN')}"></label>
         <label>صيغة التصدير<input id="taxcProfile" value="${attr(s.eInvoiceProfile || 'OCTAGON-LOCAL-UBL')}"></label>
       </div>

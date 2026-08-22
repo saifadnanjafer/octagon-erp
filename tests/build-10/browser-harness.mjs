@@ -26,13 +26,14 @@ function seedOperationalFacts(dialect, name) {
   // Seed IoT device
   const device = deviceRegistry.enrollDevice(dialect, { ...ctx, device_code: 'DEV-BROWSER-1', name: 'Browser GPS Tracker 1', device_type: 'tracker' });
   deviceRegistry.updateDeviceStatus(dialect, { ...ctx, device_id: device.id, status: 'active', actor: 'browser-admin' });
-  fleetMapping.mapDeviceToVehicle(dialect, { ...ctx, vehicle_id: 'veh-browser-b10', tracker_device_id: device.id, initial_odometer_km: 12000 });
+  const mapInput = { ...ctx, vehicle_id: 'veh-browser-b10', tracker_device_id: device.id, odometer_offset_km: 12000 };
+  fleetMapping.mapFleetDevice(dialect, mapInput, mapInput);
 
   // Seed Offline Client
-  const client = clientRegistry.registerClientDevice(dialect, { ...ctx, client_device_uuid: 'PWA-BROWSER-99', device_name: 'Browser PWA Scanner', app_version: 'v19.0-b10' });
+  const client = clientRegistry.registerOfflineClient(dialect, { client_uuid: 'PWA-BROWSER-99', device_name: 'Browser PWA Scanner' }, ctx);
 
   // Seed Kiosk Device
-  const kiosk = kioskRegistry.registerKioskDevice(dialect, { ...ctx, kiosk_code: 'KIOSK-BROWSER-1', kiosk_type: 'fleet', name: 'Browser Fleet Board Kiosk' });
+  const kiosk = kioskRegistry.registerKiosk(dialect, { code: 'KIOSK-BROWSER-1', kiosk_type: 'warehouse', name: 'Browser Fleet Board Kiosk' }, ctx);
 
   return { companyId, vehicleId: 'veh-browser-b10', deviceId: device.id, clientId: client.id, kioskId: kiosk.id };
 }
@@ -70,8 +71,8 @@ export async function openBuild10Browser(t, { name, initialPage }) {
     if (requestUrl.pathname === '/favicon.ico') { res.writeHead(204); res.end(); return; }
     if (api(req, res, requestUrl)) return;
 
-    if (requestUrl.pathname === '/modules/build10-workspaces.js' || requestUrl.pathname === '/modules/build10-workspaces.css') {
-      const file = requestUrl.pathname.endsWith('.js') ? 'build10-workspaces.js' : 'build10-workspaces.css';
+    if (requestUrl.pathname === '/modules/build10-workspaces.js' || requestUrl.pathname === '/modules/build10-workspaces.css' || requestUrl.pathname === '/modules/build10/renderers/boards.js') {
+      const file = requestUrl.pathname === '/modules/build10/renderers/boards.js' ? path.join('build10', 'renderers', 'boards.js') : (requestUrl.pathname.endsWith('.js') ? 'build10-workspaces.js' : 'build10-workspaces.css');
       res.writeHead(200, { 'content-type': file.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8' });
       res.end(fs.readFileSync(path.join(ROOT, 'modules', file)));
       return;
@@ -79,7 +80,7 @@ export async function openBuild10Browser(t, { name, initialPage }) {
 
     if (requestUrl.pathname === '/' || requestUrl.pathname === '/harness') {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build10-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__octagonBootstrap={actor:{activeCompanyId:${JSON.stringify(seed.companyId)}},warehouseId:'wh-main',actions:[{id:'db_write',enabled:true}]};localStorage.setItem('octagon_active_warehouse_id','wh-main');window.switchPage=function(){};</script><script src="/modules/build10-workspaces.js"></script><script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
+      res.end(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="/modules/build10-workspaces.css"><style>body{margin:0;padding:24px;background:#020617;font-family:Arial,sans-serif}.page{display:none}.page-active{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden}</style></head><body><nav><button class="nav-btn" data-page="${initialPage}"></button></nav><main id="mainContent"></main><script>window.__octagonBootstrap={actor:{activeCompanyId:${JSON.stringify(seed.companyId)}},warehouseId:'wh-main',actions:[{id:'db_write',enabled:true}]};window.Build10Registry={getPage:(pageKey)=>({titleAr:pageKey,titleEn:pageKey,icon:'fa-table'})};localStorage.setItem('octagon_active_warehouse_id','wh-main');window.switchPage=function(){};</script><script src="/modules/build10/renderers/boards.js"></script><script src="/modules/build10-workspaces.js"></script><script>document.addEventListener('DOMContentLoaded',()=>window.switchPage(${JSON.stringify(initialPage)}));</script></body></html>`);
       return;
     }
 

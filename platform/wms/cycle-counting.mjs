@@ -254,10 +254,17 @@ export function listCountPlans(db, input) {
   return db.prepare('SELECT * FROM wms_count_plans_v2 WHERE company_id=? AND warehouse_id=? ORDER BY next_count_date,name').all(current.companyId, current.warehouseId).map(mapPlan);
 }
 
+// A blind count is only blind if EVERY read hides the snapshot, not just the one that starts the
+// session - otherwise a counter can simply list the sessions and read the quantity they are
+// supposed to be discovering. Once counting is over the snapshot is required to review variances,
+// so it is revealed from submission onwards.
+const COUNTING_STATES = ['assigned', 'counting', 'recount'];
+const revealsSnapshot = (row) => !Number(row.blind_count) || !COUNTING_STATES.includes(row.status);
+
 export function listCountSessions(db, input) {
   const current = scope(input); assertWarehouse(db, current);
   let sql = 'SELECT * FROM wms_count_sessions_v2 WHERE company_id=? AND warehouse_id=?'; const params = [current.companyId, current.warehouseId];
   if (input.status) { sql += ' AND status=?'; params.push(input.status); }
   sql += ' ORDER BY created_at DESC';
-  return db.prepare(sql).all(...params).map((row) => mapSession(db, row, true));
+  return db.prepare(sql).all(...params).map((row) => mapSession(db, row, revealsSnapshot(row)));
 }

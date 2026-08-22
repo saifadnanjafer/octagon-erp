@@ -6,6 +6,15 @@
 (function () {
   'use strict';
 
+  // Panel chrome is emitted as concatenated HTML, so English literals cannot be
+  // wrapped at their source; the rendered container is translated by text node
+  // instead. Needed here because this panel renders after switchPage's own
+  // localize pass. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   let activeTab = 'risks';
   let riskFilter = 'all';
 
@@ -134,6 +143,7 @@
     if (!body) return;
     const content = activeTab === 'controls' ? controlsView() : activeTab === 'signals' ? signalsView() : risksView();
     body.innerHTML = '<div class="risk-shell"><section class="risk-hero"><div><h2><i class="fa-solid fa-shield-halved"></i> مركز المخاطر والامتثال</h2><p>صفحة تنفيذية لتسجيل المخاطر، متابعة الضوابط، وربط إشارات النظام الحية بإجراءات مراجعة واضحة. لا تنفذ عمليات حساسة مباشرة.</p></div><div class="risk-hero-actions"><button class="risk-btn" onclick="switchPage(\'route_health\')"><i class="fa-solid fa-stethoscope"></i> Route Health</button><button class="risk-btn" onclick="switchPage(\'ai_queue\')"><i class="fa-solid fa-user-shield"></i> طابور الموافقات</button></div></section>' + kpiStrip() + tabs() + content + '</div>';
+    arabicChrome(body);
   }
   function val(id) { const el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
   window.riskSetTab = tab => { activeTab = tab; render(); };

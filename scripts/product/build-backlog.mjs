@@ -1,0 +1,276 @@
+#!/usr/bin/env node
+/*
+ * BUILD-13 evidence backlog + runtime error ledger.
+ *
+ * Derives a prioritized backlog from measured evidence only. Every item points
+ * at the observation that justifies it, so nothing here is a roadmap wish:
+ * an item exists because a page was seen to be broken, thin, dead-ended, or
+ * because a request was seen to fail — not because a prompt mentioned a feature.
+ *
+ * Inputs : docs/product/PAGE_FUNCTIONAL_LEDGER.json
+ *          docs/product/PAGE_RUNTIME_INSPECTION.json
+ * Outputs: docs/product/BUILD13_EVIDENCE_BACKLOG.md
+ *          docs/product/BUILD13_RUNTIME_ERROR_LEDGER.md
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(here, '..', '..');
+const P = (...parts) => path.join(root, ...parts);
+const readJson = (file, fallback = null) => {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; }
+};
+
+const ledger = readJson(P('docs', 'product', 'PAGE_FUNCTIONAL_LEDGER.json'));
+const runtime = readJson(P('docs', 'product', 'PAGE_RUNTIME_INSPECTION.json'));
+if (!ledger) throw new Error('PAGE_FUNCTIONAL_LEDGER.json missing — run scripts/product/build-ledger.mjs first');
+if (!runtime) throw new Error('PAGE_RUNTIME_INSPECTION.json missing — run scripts/product/inspect-pages.mjs first');
+
+const isOperational = (row) => ['P0', 'P1'].includes(row.reviewPriority);
+
+/* ---------------------------------------------------------------------------
+ * Runtime error ledger (spec section 9).
+ *
+ * Classification is by OBSERVED SHAPE, never by suppressing noise. The review
+ * fixture is a small permission-scoped dataset, so a 401/403/404 on an optional
+ * background resource is genuinely expected and must be separated from a
+ * required endpoint that is actually broken — otherwise the real defects stay
+ * buried under hundreds of benign lines.
+ * ------------------------------------------------------------------------- */
+function classifyRequest(request) {
+  const { status, path: requestPath } = request;
+  if (status >= 500) return 'SERVER_ERROR';
+  if (status === 401) return 'EXPECTED_AUTHORIZATION';
+  if (status === 403) return 'EXPECTED_AUTHORIZATION';
+  if (status === 400 || status === 422) return 'EXPECTED_VALIDATION';
+  if (status === 409) return 'EXPECTED_VALIDATION';
+  if (status === 404) {
+    // A 404 on a static asset the shell optionally probes is cosmetic; a 404 on
+    // an /api/ route that a page needs in order to render its own data is a
+    // broken required endpoint and is a real defect.
+    if (/^\/api\//.test(requestPath)) return 'BROKEN_REQUIRED_ENDPOINT';
+    return 'EXPECTED_OPTIONAL_RESOURCE';
+  }
+  return 'UNKNOWN';
+}
+
+const requestIndex = new Map();
+const consoleIndex = new Map();
+let uncaught = [];
+for (const page of runtime.pages) {
+  for (const request of page.failedRequests || []) {
+    const key = `${request.status} ${request.method} ${request.path}`;
+    if (!requestIndex.has(key)) {
+      requestIndex.set(key, { ...request, key, classification: classifyRequest(request), pages: new Set(), count: 0 });
+    }
+    const entry = requestIndex.get(key);
+    entry.pages.add(page.id);
+    entry.count += 1;
+  }
+  for (const message of page.consoleErrors || []) {
+    // Collapse per-instance detail (ids, timestamps) so one recurring defect is
+    // one ledger row rather than 200.
+    const key = message.replace(/\b[0-9a-f]{8,}\b/g, '<id>').replace(/\d{4}-\d{2}-\d{2}\S*/g, '<ts>').slice(0, 180);
+    if (!consoleIndex.has(key)) consoleIndex.set(key, { key, pages: new Set(), count: 0, sample: message });
+    const entry = consoleIndex.get(key);
+    entry.pages.add(page.id);
+    entry.count += 1;
+  }
+  for (const error of page.pageErrors || []) uncaught.push({ page: page.id, error });
+}
+
+function classifyConsole(entry) {
+  const text = entry.sample;
+  if (/TypeError|ReferenceError|is not a function|undefined is not/.test(text)) return 'UNHANDLED_EXCEPTION';
+  if (/unhandled promise rejection/i.test(text)) return 'UNHANDLED_EXCEPTION';
+  if (/status of 5\d\d/.test(text)) return 'SERVER_ERROR';
+  if (/status of 40[13]/.test(text)) return 'EXPECTED_AUTHORIZATION';
+  if (/status of 400|status of 422/.test(text)) return 'EXPECTED_VALIDATION';
+  if (/status of 404/.test(text)) return 'EXPECTED_OPTIONAL_RESOURCE';
+  if (/employees|persistence|guard/i.test(text)) return 'GUARDED_WARNING';
+  return 'UNKNOWN';
+}
+
+const requests = [...requestIndex.values()].sort((a, b) => b.count - a.count);
+const consoles = [...consoleIndex.values()].map((entry) => ({ ...entry, classification: classifyConsole(entry) })).sort((a, b) => b.count - a.count);
+
+const ACTIONABLE = new Set(['SERVER_ERROR', 'BROKEN_REQUIRED_ENDPOINT', 'UNHANDLED_EXCEPTION', 'UNKNOWN']);
+
+const rel = [];
+rel.push('# BUILD-13 Runtime Error Ledger');
+rel.push('');
+rel.push(`Generated by \`scripts/product/build-backlog.mjs\` from \`docs/product/PAGE_RUNTIME_INSPECTION.json\` (${runtime.generatedAt}).`);
+rel.push('');
+rel.push('Errors are classified by observed shape, never suppressed. The review fixture is a');
+rel.push('small permission-scoped dataset, so a 401/403 on a background resource is genuinely');
+rel.push('expected — separating those is what makes the real defects visible instead of buried.');
+rel.push('');
+rel.push('**Actionable classes** (must be fixed to close BUILD-13): `SERVER_ERROR`,');
+rel.push('`BROKEN_REQUIRED_ENDPOINT`, `UNHANDLED_EXCEPTION`, `UNKNOWN`.');
+rel.push('**Non-actionable by design**: `EXPECTED_AUTHORIZATION` — fixing these by weakening');
+rel.push('authorization is explicitly forbidden.');
+rel.push('');
+const reqCounts = requests.reduce((acc, r) => { acc[r.classification] = (acc[r.classification] || 0) + 1; return acc; }, {});
+rel.push('## Failed requests by classification (unique endpoint+status)');
+rel.push('');
+rel.push('| Classification | Unique | Actionable |');
+rel.push('|---|---|---|');
+Object.entries(reqCounts).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => rel.push(`| ${k} | ${v} | ${ACTIONABLE.has(k) ? '**YES**' : 'no' } |`));
+rel.push('');
+rel.push('## Unique failed requests');
+rel.push('');
+rel.push('| Status | Method | Path | Occurrences | Pages | Classification |');
+rel.push('|---|---|---|---|---|---|');
+requests.forEach((r) => rel.push(`| ${r.status} | ${r.method} | \`${r.path}\` | ${r.count} | ${r.pages.size} | ${r.classification} |`));
+rel.push('');
+rel.push('## Unique console errors');
+rel.push('');
+const conCounts = consoles.reduce((acc, c) => { acc[c.classification] = (acc[c.classification] || 0) + 1; return acc; }, {});
+rel.push('| Classification | Unique |');
+rel.push('|---|---|');
+Object.entries(conCounts).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => rel.push(`| ${k} | ${v} |`));
+rel.push('');
+rel.push('| Occurrences | Pages | Classification | Message (normalized) |');
+rel.push('|---|---|---|---|');
+consoles.slice(0, 120).forEach((c) => rel.push(`| ${c.count} | ${c.pages.size} | ${c.classification} | ${c.key.replace(/\|/g, '\\|')} |`));
+rel.push('');
+rel.push('## Uncaught page exceptions');
+rel.push('');
+if (!uncaught.length) rel.push('None observed across the inspected pages.');
+else {
+  rel.push('| Page | Error |');
+  rel.push('|---|---|');
+  uncaught.forEach((u) => rel.push(`| \`${u.page}\` | ${String(u.error).replace(/\|/g, '\\|').slice(0, 160)} |`));
+}
+rel.push('');
+fs.writeFileSync(P('docs', 'product', 'BUILD13_RUNTIME_ERROR_LEDGER.md'), `${rel.join('\n')}\n`, 'utf8');
+
+/* ---------------------------------------------------------------------------
+ * Evidence backlog (spec section 7): one item per proven gap.
+ * ------------------------------------------------------------------------- */
+const items = [];
+let sequence = 0;
+const add = (item) => { sequence += 1; items.push({ id: `B13-${String(sequence).padStart(3, '0')}`, ...item }); };
+
+// P0 — pages that do not work at all.
+ledger.rows.filter((row) => row.functionalState === 'BROKEN').forEach((row) => {
+  add({
+    priority: isOperational(row) ? 'P0' : 'P1',
+    domain: row.domain,
+    page: row.pageId,
+    title: `${row.labelEn || row.pageId} does not render a working workspace`,
+    businessProblem: `A user navigating to this ${row.reviewPriority} workspace cannot do the work it exists for.`,
+    evidence: row.functionalEvidence,
+    authority: row.owningDomain,
+    wave: 'WAVE 0 — runtime/integrity',
+  });
+});
+
+// P0 — server errors and broken required endpoints.
+requests.filter((r) => ACTIONABLE.has(r.classification) && r.classification !== 'UNKNOWN').forEach((r) => {
+  add({
+    priority: r.classification === 'SERVER_ERROR' ? 'P0' : 'P1',
+    domain: '(cross-cutting)',
+    page: [...r.pages].slice(0, 4).join(', '),
+    title: `${r.classification}: ${r.status} on ${r.path}`,
+    businessProblem: `${r.count} occurrence(s) across ${r.pages.size} page(s) during normal authorized browsing.`,
+    evidence: `${r.status} ${r.method} ${r.path}`,
+    authority: 'server route owner',
+    wave: 'WAVE 0 — runtime/integrity',
+  });
+});
+
+// P0 — uncaught exceptions.
+consoles.filter((c) => c.classification === 'UNHANDLED_EXCEPTION').forEach((c) => {
+  add({
+    priority: 'P0',
+    domain: '(cross-cutting)',
+    page: [...c.pages].slice(0, 4).join(', '),
+    title: 'Unhandled client exception during normal navigation',
+    businessProblem: `${c.count} occurrence(s) across ${c.pages.size} page(s).`,
+    evidence: c.key,
+    authority: 'client module owner',
+    wave: 'WAVE 0 — runtime/integrity',
+  });
+});
+
+// Dead ends on operational pages.
+ledger.rows.filter((row) => row.deadEnd && isOperational(row)).forEach((row) => {
+  add({
+    priority: 'P1',
+    domain: row.domain,
+    page: row.pageId,
+    title: `${row.labelEn || row.pageId} is a dead end`,
+    businessProblem: 'The page shows content but offers no action and no onward workflow link, so the user cannot determine the next valid step.',
+    evidence: row.usabilityEvidence || 'content present; 0 controls; 0 workflow links',
+    authority: row.owningDomain,
+    wave: 'WAVE 6 — page quality',
+  });
+});
+
+// Thin operational pages.
+ledger.rows.filter((row) => row.functionalState === 'THIN' && isOperational(row)).forEach((row) => {
+  add({
+    priority: 'P1',
+    domain: row.domain,
+    page: row.pageId,
+    title: `${row.labelEn || row.pageId} is functionally thin for a ${row.reviewPriority} workspace`,
+    businessProblem: 'A daily-operations workspace that exposes almost nothing to act on.',
+    evidence: row.functionalEvidence,
+    authority: row.owningDomain,
+    wave: 'WAVE 6 — page quality',
+  });
+});
+
+// Confusing operational pages (raw ids / raw JSON / unnamed).
+ledger.rows.filter((row) => row.usabilityState === 'CONFUSING' && isOperational(row)).forEach((row) => {
+  add({
+    priority: 'P1',
+    domain: row.domain,
+    page: row.pageId,
+    title: `${row.labelEn || row.pageId} violates the P0/P1 presentation contract`,
+    businessProblem: 'Normal users see raw internal data or cannot tell what the page is.',
+    evidence: row.usabilityEvidence,
+    authority: row.owningDomain,
+    wave: 'WAVE 6 — page quality',
+  });
+});
+
+const byPriority = (priority) => items.filter((item) => item.priority === priority);
+
+const bl = [];
+bl.push('# BUILD-13 Evidence Backlog');
+bl.push('');
+bl.push('Generated by `scripts/product/build-backlog.mjs`. **Every item is backed by a measured');
+bl.push('observation** from the real application in real Chromium — no item exists because a');
+bl.push('roadmap or prompt mentioned a feature.');
+bl.push('');
+bl.push(`- Source ledger: \`docs/product/PAGE_FUNCTIONAL_LEDGER.json\` (${ledger.generatedAt})`);
+bl.push(`- Source runtime: \`docs/product/PAGE_RUNTIME_INSPECTION.json\` (${runtime.generatedAt})`);
+bl.push(`- Runtime error ledger: \`docs/product/BUILD13_RUNTIME_ERROR_LEDGER.md\``);
+bl.push('');
+bl.push('| Priority | Items |');
+bl.push('|---|---|');
+['P0', 'P1'].forEach((priority) => bl.push(`| ${priority} | ${byPriority(priority).length} |`));
+bl.push(`| **Total** | **${items.length}** |`);
+bl.push('');
+for (const priority of ['P0', 'P1']) {
+  const group = byPriority(priority);
+  if (!group.length) continue;
+  bl.push(`## ${priority} (${group.length})`);
+  bl.push('');
+  bl.push('| ID | Wave | Domain | Page(s) | Problem | Evidence | Authority |');
+  bl.push('|---|---|---|---|---|---|---|');
+  group.forEach((item) => {
+    const clip = (value, max) => String(value ?? '—').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ').slice(0, max);
+    bl.push(`| ${item.id} | ${item.wave} | ${item.domain} | \`${clip(item.page, 60)}\` | ${clip(item.title, 90)} — ${clip(item.businessProblem, 110)} | ${clip(item.evidence, 120)} | ${clip(item.authority, 30)} |`);
+  });
+  bl.push('');
+}
+fs.writeFileSync(P('docs', 'product', 'BUILD13_EVIDENCE_BACKLOG.md'), `${bl.join('\n')}\n`, 'utf8');
+
+console.log(`Runtime error ledger: ${requests.length} unique failed requests, ${consoles.length} unique console errors, ${uncaught.length} uncaught exceptions`);
+console.log(`  actionable requests: ${requests.filter((r) => ACTIONABLE.has(r.classification)).length}`);
+console.log(`Evidence backlog: ${items.length} items (P0 ${byPriority('P0').length}, P1 ${byPriority('P1').length})`);

@@ -497,14 +497,16 @@ async function testClerkDeniedPrivilegedActions() {
     assert.strictEqual(backup.res.status, 403, `clerk POST /api/backup should be 403, got ${backup.res.status}`);
     const bootstrap = await withCookie(base, cookies, 'GET', '/api/auth/bootstrap');
     assert.strictEqual(bootstrap.res.status, 200, 'clerk bootstrap should work');
-    assert.ok(Array.isArray(bootstrap.payload.navigation?.pages), 'bootstrap pages missing');
-    const pageIds = bootstrap.payload.navigation.pages.map(p => p.id);
+    // The governance bootstrap names these `grantedPages` / `deniedPagesCount`;
+    // the permission-isolation assertions below are unchanged.
+    assert.ok(Array.isArray(bootstrap.payload.navigation?.grantedPages), 'bootstrap pages missing');
+    const pageIds = bootstrap.payload.navigation.grantedPages.map(p => p.id);
     assert.ok(pageIds.includes('home'), 'clerk should see home page');
     const hiddenPages = ['security', 'backup', 'settings'];
     for (const hidden of hiddenPages) {
       assert.ok(!pageIds.includes(hidden), `clerk should not see hidden page ${hidden}`);
     }
-    assert.ok(bootstrap.payload.navigation.hiddenPageCount > 0, 'clerk should have hidden pages');
+    assert.ok(bootstrap.payload.navigation.deniedPagesCount > 0, 'clerk should have hidden pages');
   } finally {
     await server.stop();
     for (const f of [jsonPath, jsonPath + '.prev']) { try { fs.unlinkSync(f); } catch {} }

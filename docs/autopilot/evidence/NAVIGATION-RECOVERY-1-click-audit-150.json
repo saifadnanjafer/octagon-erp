@@ -1,0 +1,943 @@
+{
+  "generatedAt": "2026-08-22T01:50:15.029Z",
+  "startedAt": "2026-08-22T01:49:31.055Z",
+  "baseUrl": "http://127.0.0.1:8091",
+  "method": "authenticated Chromium visible clicks only; no direct switchPage calls",
+  "totals": {
+    "total": 25,
+    "pass": 25,
+    "fail": 0
+  },
+  "globalConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "❌ Server error: 401",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "[saveData] BLOCKED — refusing to persist an empty employees array (protect:true).",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "globalNotFound": [
+    "/claude-review-pointer.json",
+    "/claude-status.json",
+    "/claude-status.json",
+    "/claude-review-pointer.json"
+  ],
+  "items": [
+    {
+      "id": "receipt",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageReceipt",
+        "activePageKey": "pageReceipt",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 510,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "rental",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRental",
+        "activePageKey": "pageRental",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 607,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "replenishment_proposals",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "replenishment_proposals",
+        "activePageKey": "replenishment_proposals",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 516,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "report",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageReport",
+        "activePageKey": "pageReport",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 520,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "restaurant",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRestaurant",
+        "activePageKey": "pageRestaurant",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 713,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "retail",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRetail",
+        "activePageKey": "pageRetail",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 538,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "rework_workspace",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "rework_workspace",
+        "activePageKey": "rework_workspace",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 578,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "risk_compliance",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRiskCompliance",
+        "activePageKey": "pageRiskCompliance",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 500,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "rollout_simulator",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "rollout_simulator",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 665,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "route_health",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageRouteHealth",
+        "activePageKey": "pageRouteHealth",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 640,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "saas_overview",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "saas_overview",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1829,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSales",
+        "activePageKey": "pageSales",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2387,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_commission",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesCommission",
+        "activePageKey": "pageSalesCommission",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2092,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_contracts",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesContracts",
+        "activePageKey": "pageSalesContracts",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2029,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sales_price_lists",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSalesPriceLists",
+        "activePageKey": "pageSalesPriceLists",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 1999,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "scenario_planner",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageScenarioPlanner",
+        "activePageKey": "pageScenarioPlanner",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2077,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "scrap_approval",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "scrap_approval",
+        "activePageKey": "scrap_approval",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2092,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "seats_and_limits",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "seats_and_limits",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2082,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "security_center",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "pageSecurityCenter",
+        "activePageKey": "pageSecurityCenter",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2378,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "sensor_management",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "sensor_management",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2165,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "service_kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "service_kiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2112,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "service_queue_board",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "service_queue_board",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2137,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "shop_floor_kiosk",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "shop_floor_kiosk",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": true,
+            "display": "block"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2034,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "shopfloor_terminal",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": "shopfloor_terminal",
+        "activePageKey": "shopfloor_terminal",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": []
+      },
+      "durationMs": 2182,
+      "consoleErrors": [],
+      "notFound": []
+    },
+    {
+      "id": "skills_catalog",
+      "status": "PASS",
+      "terminal": {
+        "activeNav": true,
+        "boundNavigation": "1",
+        "activePageId": null,
+        "activePageKey": "skills_catalog",
+        "activePageHasContent": true,
+        "errorPanel": false,
+        "build10Loaded": true,
+        "build10Hosts": [
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "rollout_simulator",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "sensor_management",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_kiosk",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "service_queue_board",
+            "active": false,
+            "display": "flex"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "none"
+          },
+          {
+            "page": "shop_floor_kiosk",
+            "active": false,
+            "display": "flex"
+          }
+        ],
+        "build12Loaded": true,
+        "build12Hosts": [
+          {
+            "page": "skills_catalog",
+            "display": "block"
+          }
+        ]
+      },
+      "durationMs": 2159,
+      "consoleErrors": [],
+      "notFound": []
+    }
+  ]
+}

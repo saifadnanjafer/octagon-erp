@@ -5,111 +5,216 @@
   if (!root) return;
 
   const PAGES = {
-    device_registry: { titleAr: 'سجل أجهزة IoT', titleEn: 'IoT Device Registry', icon: 'fa-microchip', api: '/api/v1/iot/devices' },
-    device_detail: { titleAr: 'تفاصيل الجهاز', titleEn: 'Device Detail', icon: 'fa-circle-info', api: '/api/v1/iot/device-detail' },
-    device_enrollment: { titleAr: 'تسجيل وتفعيل الأجهزة', titleEn: 'Device Enrollment', icon: 'fa-barcode', api: '/api/v1/iot/enrollment' },
-    gateway_management: { titleAr: 'إدارة البوابات', titleEn: 'Gateway Management', icon: 'fa-network-wired', api: '/api/v1/iot/gateways' },
-    sensor_management: { titleAr: 'إدارة الحساسات', titleEn: 'Sensor Management', icon: 'fa-temperature-high', api: '/api/v1/iot/sensors' },
-    telemetry_explorer: { titleAr: 'مستكشف بيانات القياس', titleEn: 'Telemetry Explorer', icon: 'fa-chart-line', api: '/api/v1/iot/telemetry' },
-    device_health_center: { titleAr: 'مركز صحة الأجهزة', titleEn: 'Device Health Center', icon: 'fa-heart-pulse', api: '/api/v1/iot/health' },
-    device_alerts: { titleAr: 'تنبيهات وأعطال الأجهزة', titleEn: 'Device Alerts', icon: 'fa-triangle-exclamation', api: '/api/v1/iot/alerts' },
-    firmware_catalogue: { titleAr: 'كتالوج البرامج الثابتة', titleEn: 'Firmware Catalogue', icon: 'fa-file-code', api: '/api/v1/iot/firmware' },
-    rollout_simulator: { titleAr: 'محاكي التحديث الميداني', titleEn: 'Rollout Simulator', icon: 'fa-cloud-arrow-up', api: '/api/v1/iot/rollouts' },
-    configuration_profiles: { titleAr: 'ملفات إعدادات الأجهزة', titleEn: 'Configuration Profiles', icon: 'fa-sliders', api: '/api/v1/iot/config-profiles' },
-    device_command_center: { titleAr: 'مركز أوامر الأجهزة', titleEn: 'Device Command Center', icon: 'fa-terminal', api: '/api/v1/iot/commands' },
-    fleet_device_mapping: { titleAr: 'ربط أجهزة أسطول السيارات', titleEn: 'Fleet Device Mapping', icon: 'fa-truck-gear', api: '/api/v1/fleet/mappings' },
-    fleet_live_map_simulator: { titleAr: 'خريطة التتبع المباشر', titleEn: 'Fleet Live Map Simulator', icon: 'fa-map-location-dot', api: '/api/v1/fleet/locations' },
-    vehicle_trip_timeline: { titleAr: 'خط زمني لرحلات السيارات', titleEn: 'Vehicle Trip Timeline', icon: 'fa-route', api: '/api/v1/fleet/trips' },
-    geofence_management: { titleAr: 'إدارة النطاقات الجغرافية', titleEn: 'Geofence Management', icon: 'fa-draw-polygon', api: '/api/v1/fleet/geofences' },
-    geofence_events: { titleAr: 'أحداث دخول وخروج النطاقات', titleEn: 'Geofence Events', icon: 'fa-bell', api: '/api/v1/fleet/geofence-events' },
-    speed_and_driver_events: { titleAr: 'أحداث السرعة والسياقة', titleEn: 'Speed and Driver Events', icon: 'fa-gauge-high', api: '/api/v1/fleet/speed-events' },
-    fuel_telemetry: { titleAr: 'قياسات واستهلاك الوقود', titleEn: 'Fuel Telemetry', icon: 'fa-gas-pump', api: '/api/v1/fleet/fuel' },
-    suspected_fuel_loss_queue: { titleAr: 'طابور الاشتباه في هدر الوقود', titleEn: 'Suspected Fuel Loss Queue', icon: 'fa-shield-cat', api: '/api/v1/fleet/fuel-anomalies' },
-    maintenance_triggers: { titleAr: 'محفزات الصيانة التلقائية', titleEn: 'Maintenance Triggers', icon: 'fa-wrench', api: '/api/v1/fleet/maintenance-triggers' },
-    offline_client_registry: { titleAr: 'سجل التطبيقات الميدانية المستقلة', titleEn: 'Offline Client Registry', icon: 'fa-mobile-screen', api: '/api/v1/offline/clients' },
-    offline_queue: { titleAr: 'طابور الأوامر غير المتصلة', titleEn: 'Offline Queue', icon: 'fa-list-check', api: '/api/v1/offline/queue' },
-    sync_sessions: { titleAr: 'جلسات المزامنة الميدانية', titleEn: 'Sync Sessions', icon: 'fa-rotate', api: '/api/v1/offline/sessions' },
-    sync_conflicts: { titleAr: 'تعارضات المزامنة', titleEn: 'Sync Conflicts', icon: 'fa-code-compare', api: '/api/v1/offline/conflicts' },
-    conflict_resolution: { titleAr: 'معالجة وتصفية التعارضات', titleEn: 'Conflict Resolution', icon: 'fa-check-double', api: '/api/v1/offline/resolutions' },
-    offline_capability_policies: { titleAr: 'سياسات الصلاحيات الميدانية', titleEn: 'Offline Capability Policies', icon: 'fa-shield-halved', api: '/api/v1/offline/policies' },
-    kiosk_device_registry: { titleAr: 'سجل أجهزة الكشك الخدمي', titleEn: 'Kiosk Device Registry', icon: 'fa-desktop', api: '/api/v1/kiosk/registry' },
-    employee_kiosk: { titleAr: 'كشك الموظفين الذاتي', titleEn: 'Employee Kiosk', icon: 'fa-user-gear', api: '/api/v1/kiosk/employee' },
-    warehouse_kiosk: { titleAr: 'كشك العمليات المخزنية', titleEn: 'Warehouse Kiosk', icon: 'fa-boxes-packing', api: '/api/v1/kiosk/warehouse' },
-    shop_floor_kiosk: { titleAr: 'كشك صالة الإنتاج', titleEn: 'Shop Floor Kiosk', icon: 'fa-industry', api: '/api/v1/kiosk/shopfloor' },
-    service_kiosk: { titleAr: 'كشك الخدمة والصيانة', titleEn: 'Service Kiosk', icon: 'fa-headset', api: '/api/v1/kiosk/service' },
-    fleet_operations_board: { titleAr: 'لوحة عمليات الأسطول', titleEn: 'Fleet Operations Board', icon: 'fa-tv', api: '/api/v1/boards/fleet-ops' },
-    device_health_board: { titleAr: 'لوحة صحة وشبكة الأجهزة', titleEn: 'Device Health Board', icon: 'fa-tv', api: '/api/v1/boards/device-health' },
-    warehouse_large_screen: { titleAr: 'شاشة المخزن الكبيرة', titleEn: 'Warehouse Large Screen', icon: 'fa-tv', api: '/api/v1/boards/warehouse-ops' },
-    production_large_screen: { titleAr: 'شاشة خط الإنتاج الكبيرة', titleEn: 'Production Large Screen', icon: 'fa-tv', api: '/api/v1/boards/production-ops' },
-    service_queue_board: { titleAr: 'شاشة طابور الصيانة', titleEn: 'Service Queue Board', icon: 'fa-tv', api: '/api/v1/boards/service-queue' },
-    alert_board: { titleAr: 'شاشة التنبيهات المركزية', titleEn: 'Alert Board', icon: 'fa-tv', api: '/api/v1/boards/alerts' }
+    device_registry: { titleAr: 'سجل أجهزة IoT', titleEn: 'IoT Device Registry', icon: '⚡', category: 'devices' },
+    device_detail: { titleAr: 'تفاصيل الجهاز', titleEn: 'Device Detail', icon: '🔍', category: 'devices' },
+    device_enrollment: { titleAr: 'تسجيل وتفعيل الأجهزة', titleEn: 'Device Enrollment', icon: '🔑', category: 'devices' },
+    gateway_management: { titleAr: 'إدارة البوابات', titleEn: 'Gateway Management', icon: '🌐', category: 'devices' },
+    sensor_management: { titleAr: 'إدارة الحساسات', titleEn: 'Sensor Management', icon: '📡', category: 'devices' },
+    telemetry_explorer: { titleAr: 'مستكشف بيانات القياس', titleEn: 'Telemetry Explorer', icon: '📈', category: 'telemetry' },
+    device_health_center: { titleAr: 'مركز صحة الأجهزة', titleEn: 'Device Health Center', icon: '💚', category: 'telemetry' },
+    device_alerts: { titleAr: 'تنبيهات وأعطال الأجهزة', titleEn: 'Device Alerts', icon: '⚠️', category: 'telemetry' },
+    firmware_catalogue: { titleAr: 'كتالوج البرامج الثابتة', titleEn: 'Firmware Catalogue', icon: '💾', category: 'telemetry' },
+    rollout_simulator: { titleAr: 'محاكي التحديث الميداني', titleEn: 'Rollout Simulator', icon: '🚀', category: 'telemetry' },
+    configuration_profiles: { titleAr: 'ملفات إعدادات الأجهزة', titleEn: 'Configuration Profiles', icon: '⚙️', category: 'telemetry' },
+    device_command_center: { titleAr: 'مركز أوامر الأجهزة', titleEn: 'Device Command Center', icon: '💻', category: 'telemetry' },
+    fleet_device_mapping: { titleAr: 'ربط أجهزة أسطول السيارات', titleEn: 'Fleet Device Mapping', icon: '🚚', category: 'fleet' },
+    fleet_live_map_simulator: { titleAr: 'خريطة التتبع المباشر', titleEn: 'Fleet Live Map Simulator', icon: '🗺️', category: 'fleet' },
+    vehicle_trip_timeline: { titleAr: 'خط زمني لرحلات السيارات', titleEn: 'Vehicle Trip Timeline', icon: '⏱️', category: 'fleet' },
+    geofence_management: { titleAr: 'إدارة النطاقات الجغرافية', titleEn: 'Geofence Management', icon: '📍', category: 'fleet' },
+    geofence_events: { titleAr: 'أحداث دخول وخروج النطاقات', titleEn: 'Geofence Events', icon: '🔔', category: 'fleet' },
+    speed_and_driver_events: { titleAr: 'أحداث السرعة والسياقة', titleEn: 'Speed and Driver Events', icon: '🏎️', category: 'fleet' },
+    fuel_telemetry: { titleAr: 'قياسات واستهلاك الوقود', titleEn: 'Fuel Telemetry', icon: '⛽', category: 'fleet' },
+    suspected_fuel_loss_queue: { titleAr: 'طابور الاشتباه في هدر الوقود', titleEn: 'Suspected Fuel Loss Queue', icon: '🛡️', category: 'fleet' },
+    maintenance_triggers: { titleAr: 'محفزات الصيانة التلقائية', titleEn: 'Maintenance Triggers', icon: '🔧', category: 'fleet' },
+    offline_client_registry: { titleAr: 'سجل التطبيقات الميدانية المستقلة', titleEn: 'Offline Client Registry', icon: '📱', category: 'offline' },
+    offline_queue: { titleAr: 'طابور الأوامر غير المتصلة', titleEn: 'Offline Queue', icon: '📋', category: 'offline' },
+    sync_sessions: { titleAr: 'جلسات المزامنة الميدانية', titleEn: 'Sync Sessions', icon: '🔄', category: 'offline' },
+    sync_conflicts: { titleAr: 'تعارضات المزامنة', titleEn: 'Sync Conflicts', icon: '⚔️', category: 'offline' },
+    conflict_resolution: { titleAr: 'معالجة وتصفية التعارضات', titleEn: 'Conflict Resolution', icon: '✅', category: 'offline' },
+    offline_capability_policies: { titleAr: 'سياسات الصلاحيات الميدانية', titleEn: 'Offline Capability Policies', icon: '🛡️', category: 'offline' },
+    kiosk_device_registry: { titleAr: 'سجل أجهزة الكشك الخدمي', titleEn: 'Kiosk Device Registry', icon: '🖥️', category: 'kiosk' },
+    employee_kiosk: { titleAr: 'كشك الموظفين الذاتي', titleEn: 'Employee Kiosk', icon: '👤', category: 'kiosk' },
+    warehouse_kiosk: { titleAr: 'كشك العمليات المخزنية', titleEn: 'Warehouse Kiosk', icon: '📦', category: 'kiosk' },
+    shop_floor_kiosk: { titleAr: 'كشك صالة الإنتاج', titleEn: 'Shop Floor Kiosk', icon: '🏭', category: 'kiosk' },
+    service_kiosk: { titleAr: 'كشك الخدمة والصيانة', titleEn: 'Service Kiosk', icon: '🎧', category: 'kiosk' },
+    fleet_operations_board: { titleAr: 'لوحة عمليات الأسطول', titleEn: 'Fleet Operations Board', icon: '📊', category: 'boards' },
+    device_health_board: { titleAr: 'لوحة صحة وشبكة الأجهزة', titleEn: 'Device Health Board', icon: '📊', category: 'boards' },
+    warehouse_large_screen: { titleAr: 'شاشة المخزن الكبيرة', titleEn: 'Warehouse Large Screen', icon: '📊', category: 'boards' },
+    production_large_screen: { titleAr: 'شاشة خط الإنتاج الكبيرة', titleEn: 'Production Large Screen', icon: '📊', category: 'boards' },
+    service_queue_board: { titleAr: 'شاشة طابور الصيانة', titleEn: 'Service Queue Board', icon: '📊', category: 'boards' },
+    alert_board: { titleAr: 'شاشة التنبيهات المركزية', titleEn: 'Alert Board', icon: '📊', category: 'boards' }
   };
 
-  function renderPage(pageKey, container) {
-    const meta = PAGES[pageKey];
-    if (!meta || !container) return;
+  function getActiveCompany() {
+    const bootstrap = root.__octagonBootstrap || {};
+    return bootstrap.context?.companyId || bootstrap.actor?.activeCompanyId || bootstrap.activeCompanyId || 'default';
+  }
 
-    const isRtl = document.documentElement.dir === 'rtl';
-    const title = isRtl ? meta.titleAr : meta.titleEn;
+  function getActiveWarehouse() {
+    const bootstrap = root.__octagonBootstrap || {};
+    return root.localStorage?.getItem('octagon_active_warehouse_id') || bootstrap.warehouseId || 'wh-main';
+  }
 
-    container.innerHTML = `
-      <div class="b10-workspace-shell" data-build10-page="${pageKey}">
-        <div class="b10-header-card">
-          <div class="b10-title-area">
-            <h2><i class="fa-solid ${meta.icon}"></i> ${title}</h2>
-            <p>BUILD-10 Governed Workspace · Active Scope: <span class="b10-scope-tag">Company / Branch</span></p>
-          </div>
-          <div>
-            <span class="b10-badge b10-badge-active">Governed Active</span>
-          </div>
+  function getEndpointForPage(pageKey) {
+    return `/api/v1/build10/${encodeURIComponent(pageKey)}`;
+  }
+
+  const recordsByPage = new Map();
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  }
+
+  function rowValue(row, keys, fallback = '—') {
+    for (const key of keys) {
+      if (row[key] !== undefined && row[key] !== null && row[key] !== '') return row[key];
+    }
+    return fallback;
+  }
+
+  function renderRows(records, isRtl) {
+    if (!records.length) {
+      return `<tr data-state="empty"><td colspan="4">${isRtl ? 'لا توجد سجلات مؤكدة ضمن نطاق الشركة الحالي.' : 'No verified records exist in the current company scope.'}</td></tr>`;
+    }
+    return records.map((record) => {
+      const id = rowValue(record, ['trip_code', 'conflict_uuid', 'client_uuid', 'device_code', 'code', 'id']);
+      const name = rowValue(record, ['name', 'device_name', 'vehicle_id', 'client_id', 'entity_name', 'kiosk_type']);
+      const status = rowValue(record, ['status', 'health_state', 'lifecycle_state', 'sync_status', 'event_classification']);
+      const updated = rowValue(record, ['updated_at', 'created_at', 'timestamp', 'start_time', 'received_at']);
+      return `<tr data-record-id="${escapeHtml(rowValue(record, ['id'], id))}"><td><strong>${escapeHtml(id)}</strong></td><td>${escapeHtml(name)}</td><td><span class="b10-badge b10-badge-success">${escapeHtml(status)}</span></td><td>${escapeHtml(updated)}</td></tr>`;
+    }).join('');
+  }
+
+  function setStatus(container, phase, message) {
+    const status = container.querySelector('[data-role="status"]');
+    if (!status) return;
+    status.dataset.phase = phase;
+    status.textContent = message;
+  }
+
+  async function refreshRecords(pageKey, container, isRtl) {
+    setStatus(container, 'loading', isRtl ? 'جارٍ تحميل السجلات المؤكدة…' : 'Loading verified records…');
+    try {
+      const response = await fetch(getEndpointForPage(pageKey), { headers: { accept: 'application/json' } });
+      const payload = await response.json();
+      if (!response.ok || payload?.success === false) throw new Error(payload?.error || `HTTP ${response.status}`);
+      const records = Array.isArray(payload?.data) ? payload.data : [];
+      recordsByPage.set(pageKey, records);
+      const tbody = container.querySelector('tbody');
+      if (tbody) tbody.innerHTML = renderRows(records, isRtl);
+      setStatus(container, records.length ? 'loaded' : 'empty', records.length
+        ? (isRtl ? `جاهز · ${records.length} سجل مؤكد` : `Ready · ${records.length} verified record${records.length === 1 ? '' : 's'}`)
+        : (isRtl ? 'لا توجد سجلات مؤكدة ضمن نطاق الشركة الحالي.' : 'No verified records in the current company scope.'));
+    } catch (error) {
+      recordsByPage.set(pageKey, []);
+      const tbody = container.querySelector('tbody');
+      if (tbody) {
+        const row = document.createElement('tr');
+        row.dataset.state = 'error';
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = isRtl ? 'تعذر تحميل السجلات المؤكدة.' : 'Verified records could not be loaded.';
+        row.appendChild(cell);
+        tbody.replaceChildren(row);
+      }
+      setStatus(container, 'error', isRtl ? 'تعذر تحميل السجلات المؤكدة.' : 'Verified records could not be loaded.');
+      console.warn(`BUILD-10 read model unavailable for ${pageKey}:`, error);
+    }
+  }
+
+  function renderPage(pageKey, targetContainer = null) {
+    const meta = PAGES[pageKey] || { titleAr: pageKey, titleEn: pageKey, icon: '⚡', category: 'devices' };
+
+    if (root.PermissionService && typeof root.PermissionService.checkPage === 'function') {
+      const allowed = root.PermissionService.checkPage(pageKey);
+      if (!allowed) {
+        console.warn(`PermissionService.checkPage denied: ${pageKey}`);
+      }
+    }
+
+    const isRtl = document.documentElement.dir === 'rtl' || String(document.documentElement.lang).startsWith('ar');
+    const readOnly = root.__BUILD10_FORCE_READ_ONLY__ === true;
+
+    let container = targetContainer || document.querySelector(`.page[data-build10-page="${pageKey}"]`);
+    if (!container) {
+      const mainContent = document.getElementById('mainContent') || document.body;
+      container = document.createElement('div');
+      container.setAttribute('data-build10-page', pageKey);
+      container.setAttribute('data-page', pageKey);
+      container.className = 'page b10-page-container';
+      mainContent.appendChild(container);
+    }
+
+    const activeCompany = getActiveCompany();
+    const activeWarehouse = getActiveWarehouse();
+    const isBoard = meta.category === 'boards' || pageKey.includes('board') || pageKey.includes('screen');
+
+    // Board pages have no authoritative aggregate metric endpoint.  Their
+    // dedicated renderer is deliberately fail-closed: it states that no live
+    // metric is verified and offers links to the governed source workspaces.
+    // Do not fall through to the legacy illustrative board cards here.
+    if (isBoard && root.Build10BoardsRenderer && typeof root.Build10BoardsRenderer.render === 'function') {
+      container.innerHTML = root.Build10BoardsRenderer.render(pageKey, null, isRtl, readOnly);
+      return container;
+    }
+
+    let contentHtml = '';
+    if (!isBoard) {
+      contentHtml = `
+        <div class="b10-controls">
+          <button class="b10-btn b10-btn-primary" data-command="refresh">${isRtl ? 'تحديث السجلات' : 'Refresh records'}</button>
+          <button class="b10-btn" data-command="export">${isRtl ? 'تصدير CSV' : 'Export CSV'}</button>
         </div>
-
-        <div class="b10-controls-bar">
-          <input type="text" class="b10-search-input" placeholder="${isRtl ? 'بحث في السجلات...' : 'Search records...'}" />
-          <div style="display:flex;gap:0.5rem;">
-            <button class="b10-btn b10-btn-secondary" onclick="window.Build10Engine.exportCsv('${pageKey}')">
-              <i class="fa-solid fa-file-csv"></i> ${isRtl ? 'تصدير CSV' : 'Export CSV'}
-            </button>
-            <button class="b10-btn b10-btn-primary" onclick="window.Build10Engine.openActionDialog('${pageKey}')">
-              <i class="fa-solid fa-plus"></i> ${isRtl ? 'إجراء جديد' : 'New Action'}
-            </button>
-          </div>
-        </div>
-
-        <div class="b10-status" data-state="loaded" style="color:#94a3b8;font-size:0.875rem;">
-          Loading · empty · error · denied
-        </div>
-
         <div class="b10-table-wrap">
           <table class="b10-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>${isRtl ? 'المعرف' : 'ID / Ref'}</th>
-                <th>${isRtl ? 'الاسم / الوصف' : 'Name / Title'}</th>
+                <th>${isRtl ? 'الرمز' : 'Code/ID'}</th>
+                <th>${isRtl ? 'الاسم' : 'Name/Entity'}</th>
                 <th>${isRtl ? 'الحالة' : 'Status'}</th>
-                <th>${isRtl ? 'تاريخ التحديث' : 'Updated At'}</th>
+                <th>${isRtl ? 'آخر تحديث' : 'Updated'}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td><code>REF-10001</code></td>
-                <td>${title} Sample Operational Record</td>
-                <td><span class="b10-badge b10-badge-active">active</span></td>
-                <td>${new Date().toISOString().slice(0, 10)}</td>
-              </tr>
+              ${renderRows([], isRtl)}
             </tbody>
           </table>
         </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="b10-workspace-shell b10-board" data-build10-page="${pageKey}" data-company="${activeCompany}" data-warehouse="${activeWarehouse}">
+        <header class="b10-workspace-header">
+          <div class="b10-header-title">
+            <span class="b10-header-icon">${meta.icon}</span>
+            <h2>${isRtl ? meta.titleAr : meta.titleEn}</h2>
+          </div>
+          <div class="b10-status" data-role="status" data-phase="loading">${isRtl ? 'جارٍ تحميل السجلات المؤكدة…' : 'Loading verified records…'}</div>
+        </header>
+        <main class="b10-workspace-body">
+          ${contentHtml}
+        </main>
       </div>
     `;
+
+    container.querySelector('[data-command="refresh"]')?.addEventListener('click', () => { void refreshRecords(pageKey, container, isRtl); });
+    container.querySelector('[data-command="export"]')?.addEventListener('click', () => exportCsv(pageKey));
+    void refreshRecords(pageKey, container, isRtl);
+
+    return container;
   }
 
   function exportCsv(pageKey) {
-    const meta = PAGES[pageKey] || {};
-    const content = `ID,Name,Status\nREF-10001,${meta.titleEn || pageKey},active\n`;
-    const blob = new Blob([content], { type: 'text/csv' });
+    const records = recordsByPage.get(pageKey) || [];
+    const quote = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const content = ['ID,Name,Status,Updated', ...records.map((record) => [
+      rowValue(record, ['trip_code', 'conflict_uuid', 'client_uuid', 'device_code', 'code', 'id'], ''),
+      rowValue(record, ['name', 'device_name', 'vehicle_id', 'client_id', 'entity_name', 'kiosk_type'], ''),
+      rowValue(record, ['status', 'health_state', 'lifecycle_state', 'sync_status', 'event_classification'], ''),
+      rowValue(record, ['updated_at', 'created_at', 'timestamp', 'start_time', 'received_at'], '')
+    ].map(quote).join(','))].join('\n') + '\n';
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -118,21 +223,96 @@
     URL.revokeObjectURL(url);
   }
 
-  function openActionDialog(pageKey) {
-    alert(`BUILD-10 Governed Action Dialog opened for: ${pageKey}`);
+  function setupSwitchPageHook() {
+    const origSwitchPage = root.switchPage;
+    // localSeq/mySeq: a self-contained staleness guard. This codebase wraps
+    // window.switchPage through many modules (40+), so by the time this hook
+    // captures origSwitchPage it may already be asynchronous for reasons that
+    // have nothing to do with Build10 — origSwitchPage(pageId) can return a
+    // still-pending promise, and there is no reliable way to observe "has the
+    // real core switchPage body run yet" from the outside. Rather than infer
+    // staleness from a shared, timing-sensitive value, each call captures its
+    // own sequence number synchronously (before any await), and only proceeds
+    // to mutate the DOM if no newer switchPage call has started meanwhile.
+    let localSeq = 0;
+    root.switchPage = async function (pageId) {
+      const mySeq = ++localSeq;
+      let result;
+      if (origSwitchPage && typeof origSwitchPage === 'function') {
+        try { result = await origSwitchPage(pageId); } catch (_) {}
+      }
+
+      // This wrapper sits in the global switchPage chain and may only take
+      // ownership of Build 10 destinations. Deactivating every page host —
+      // including foreign ones — happens once, centrally, in core switchPage
+      // above; it already cleared the page-active class and any inline
+      // display style off every .page element, so a foreign route reaching
+      // this point needs no cleanup here.
+      if (!PAGES[pageId]) return result;
+
+      // Staleness guard: if a later switchPage call started while this call
+      // was suspended at the `await` above, localSeq will have moved past
+      // mySeq. Activating now would re-surface a Build10 page the user has
+      // already navigated away from.
+      if (mySeq !== localSeq) return result;
+
+      document.querySelectorAll('.page[data-build10-page], .page.page-active').forEach(elem => {
+        if (elem.classList.contains('page-active') || elem.hasAttribute('data-build10-page')) {
+          elem.classList.remove('page-active');
+          elem.style.display = 'none';
+        }
+      });
+
+      let pageElem = document.querySelector(`.page[data-build10-page="${pageId}"]`);
+      if (!pageElem) {
+        pageElem = renderPage(pageId);
+      } else {
+        renderPage(pageId, pageElem);
+      }
+      if (pageElem) {
+        pageElem.classList.add('page-active');
+        pageElem.style.display = 'block';
+      }
+      return result;
+    };
   }
 
   root.Build10Engine = {
     PAGES,
     renderPage,
     exportCsv,
-    openActionDialog
+    refreshRecords,
+    getActiveCompany,
+    getActiveWarehouse
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    Object.keys(PAGES).forEach((pageKey) => {
-      const elem = document.querySelector(`[data-page="${pageKey}"]`);
-      if (elem) renderPage(pageKey, elem);
-    });
+  root.OctagonBuild10 = root.Build10Engine;
+
+  root.addEventListener('octagon:language-changed', () => {
+    const isRtl = document.documentElement.dir === 'rtl';
+    console.log(`octagon:language-changed triggered, isRtl: ${isRtl}`);
+    const activeElem = document.querySelector('[data-build10-page].page-active');
+    if (activeElem) {
+      const pageKey = activeElem.getAttribute('data-build10-page');
+      renderPage(pageKey, activeElem);
+    }
   });
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupSwitchPageHook();
+        Object.keys(PAGES).forEach((pageKey) => {
+          const elem = document.querySelector(`.page[data-page="${pageKey}"], .page[data-build10-page="${pageKey}"]`);
+          if (elem) renderPage(pageKey, elem);
+        });
+      });
+    } else {
+      setupSwitchPageHook();
+      Object.keys(PAGES).forEach((pageKey) => {
+        const elem = document.querySelector(`.page[data-page="${pageKey}"], .page[data-build10-page="${pageKey}"]`);
+        if (elem) renderPage(pageKey, elem);
+      });
+    }
+  }
 })();

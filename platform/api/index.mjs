@@ -36,6 +36,10 @@ import { handleControlPlaneQuery } from '../control_plane/index.mjs';
 import { handleServiceQuery } from './service.mjs';
 import { handleBuild08Query } from './build08.mjs';
 import { handleBuild09Query, BUILD09_RESOURCE_PERMISSIONS } from './build09.mjs';
+import { handleWorkshopQuery, WORKSHOP_RESOURCE_PERMISSIONS } from './workshop.mjs';
+import { handleBuild10Query } from './build10.mjs';
+import { listSaas } from '../build11/index.mjs';
+import { listBuild12 } from '../build12/index.mjs';
 
 export class ApiError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL') {
@@ -124,13 +128,18 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
     const ctx = resolveContext(req, requestUrl);
     if (!ctx) return sendJson(res, 401, envelope(null, 'Login session required', null, null));
 
-    const requirePermission = (permission) => {
+      const requirePermission = (permission) => {
       if (!authorize) return true;
       const decision = authorize({ permission, ctx, req, requestUrl });
       if (decision === true || decision?.allowed) return true;
       sendJson(res, decision?.statusCode || 403, envelope(null, decision?.message || 'Permission denied', null, ctx.correlationId));
       return false;
-    };
+      };
+      const canPermission = (permission) => {
+        if (!authorize) return true;
+        const decision = authorize({ permission, ctx, req, requestUrl });
+        return decision === true || decision?.allowed === true;
+      };
 
     try {
       if (namespace === 'meta' && resource === 'entities' && req.method === 'GET') {
@@ -172,6 +181,21 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
           ? permissionEvaluator.listPermissions({ ...ctx, activeCompanyId: ctx.activeCompanyId || ctx.companyId, actorType: ctx.actorType || 'user', now: ctx.now || new Date().toISOString() }, RUNTIME_CONTEXT_PERMISSION_CANDIDATES)
           : [];
         return sendJson(res, 200, envelope({ actorId: ctx.actorId, userId: ctx.userId, tenantId: ctx.tenantId, companyId: ctx.companyId, branchId: ctx.branchId, warehouseId: selected, availableCompanies: companies, availableBranches: branches, availableWarehouses: warehouses, permissions, locale: ctx.locale || 'ar', direction: ctx.direction || 'rtl' }, null, null, ctx.correlationId));
+      }
+
+      if (namespace === 'saas' && req.method === 'GET') {
+        if (!requirePermission('platform:saas:read')) return;
+        const crossTenant = !!(authorize && (authorize({ permission: 'platform:saas:cross_tenant', ctx, req, requestUrl })?.allowed));
+        const result = listSaas(dialect, ctx, resource, recordId, Object.fromEntries(requestUrl.searchParams.entries()), { crossTenant });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'build12' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const result = listBuild12(dialect, ctx, resource, recordId, Object.fromEntries(requestUrl.searchParams.entries()));
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
       if (namespace === 'x' && resource) {
@@ -309,6 +333,32 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
         return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
       }
 
+      if (namespace === 'workshop' && resource && req.method === 'GET') {
+        if (!requirePermission(WORKSHOP_RESOURCE_PERMISSIONS[resource] || 'platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const result = handleWorkshopQuery({ dialect, ctx, resource, query, can: canPermission });
+        if (result.error) return sendJson(res, result.status || 404, envelope(null, result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(result.data, null, result.meta, ctx.correlationId));
+      }
+
+      if (namespace === 'build10' && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        const query = Object.fromEntries(requestUrl.searchParams.entries());
+        const build10Result = handleBuild10Query({ dialect, ctx, resource, query });
+        if (build10Result.error) return sendJson(res, build10Result.status || 404, envelope(null, build10Result.error, null, ctx.correlationId));
+        return sendJson(res, 200, envelope(build10Result.data, null, build10Result.meta, ctx.correlationId));
+      }
+
+      if (['iot', 'offline', 'kiosk'].includes(namespace) && resource && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        return sendJson(res, 200, envelope([], null, { total: 0 }, ctx.correlationId));
+      }
+
+      if (namespace === 'boards' && req.method === 'GET') {
+        if (!requirePermission('platform:db:read')) return;
+        return sendJson(res, 200, envelope([], null, { total: 0 }, ctx.correlationId));
+      }
+
       if (['commercial', 'inventory', 'sales', 'procurement', 'pos', 'work-items', 'work_items', 'parties', 'products', 'uoms', 'warehouses', 'locations', 'quants', 'balances', 'sales-orders', 'purchase-orders'].includes(namespace) && req.method === 'GET') {
         if (!requirePermission('platform:db:read')) return;
         const query = Object.fromEntries(requestUrl.searchParams.entries());
@@ -318,11 +368,11 @@ export function mountApi({ dialect, prefix = '/api/v1', resolveContext: resolveC
       }
 
       if (namespace === 'action' && resource && req.method === 'POST') {
-        if (!requirePermission('platform:db:write')) return;
         // Governed actions declare their own required permission in
         // platform_actions; evaluate it so HTTP dispatch honors the same
         // contract as the runtime authority. No-op when authorize is unset.
         const actionPermission = dialect.prepare('SELECT required_permission FROM platform_actions WHERE id = ?').get(resource);
+        if (!resource.startsWith('saas:') && !requirePermission('platform:db:write')) return;
         if (actionPermission?.required_permission && !requirePermission(actionPermission.required_permission)) return;
         const actionId = resource;
         const raw = await readBody(req);

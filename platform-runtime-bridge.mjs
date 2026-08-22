@@ -60,8 +60,12 @@ import { registerAssetActions } from './platform/assets/index.mjs';
 import { registerMaintenanceActions } from './platform/maintenance/index.mjs';
 import { registerFleetActions } from './platform/fleet/index.mjs';
 import { registerIotActions } from './platform/iot/index.mjs';
+import { registerOfflineActions } from './platform/offline/index.mjs';
+import { registerKioskActions } from './platform/kiosk/index.mjs';
 import { registerControlPlaneActions } from './platform/control_plane/index.mjs';
 import { createLegacyWriterRetirementGuard } from './platform/cutover/legacy-writer-retirement.mjs';
+import { registerBuild11Actions } from './platform/build11/index.mjs';
+import { registerBuild12Actions } from './platform/build12/index.mjs';
 
 const DEFAULT_PAGE_PERMISSIONS = DEFAULT_PAGE_CATALOGUE.map((p) => ({
   id: p.permission,
@@ -196,30 +200,46 @@ export function createPlatformAuthority(dialect) {
     ...ctx, actorId: ctx.userId, activeCompanyId: ctx.companyId, activeBranchId: ctx.branchId,
     now: ctx.now || new Date().toISOString(),
   });
+  // These nine actions are generic collaboration verbs — chatter, follows,
+  // attachments, activities. The real target is passed per call in
+  // `input.entity`; the registry's entity_id is only a catalogue anchor.
+  //
+  // They were anchored to 'sale_contract', which migration 065 creates. The
+  // bridge runs at startup against whatever schema is present, so on any
+  // database below 065 the FK failed and createPlatformAuthority() threw —
+  // taking the whole platform authority down, not just chatter. The Phase 04
+  // suite stages the first 44 migrations deliberately, which is why it caught
+  // this and normal startup did not.
+  //
+  // Re-anchored to a kernel entity seeded by migration 002, so the bridge no
+  // longer depends on a migration twenty-one steps later than the schema it
+  // may be handed. A dedicated collaboration entity would read better, but any
+  // new migration would sit above 044 and reintroduce exactly this failure.
+  const COLLABORATION_ANCHOR_ENTITY = 'helpdesk_ticket';
   const registerCollaborationAction = (id, entity, required, handler) => {
     actionRegistry.register({ id, module_id: 'platform_kernel', entity_id: entity, kind: 'domain',
       required_permission: required, transaction_owner: 'platform.collaboration', idempotency_policy: 'required',
       audit_policy: 'required', outbox_policy: 'required' });
     actionExecutor.registerHandler(id, ({ input, ctx }) => handler(input, collaborationContext(ctx)));
   };
-  registerCollaborationAction('chatter:post', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('chatter:post', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     chatter.post({ entity: input.entity, recordId: input.record_id, body: input.body, visibility: input.visibility,
       mentions: input.mentions || [], attachments: input.attachments || [], ctx }));
-  registerCollaborationAction('chatter:follow', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('chatter:follow', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     chatter.addFollower(input.entity, input.record_id, input.user_id || ctx.actorId, ctx));
-  registerCollaborationAction('activity:create', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('activity:create', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     chatter.createActivity({ entity: input.entity, recordId: input.record_id, kind: input.kind,
       summaryAr: input.summary_ar, assigneeId: input.assignee_id, dueAt: input.due_at, ctx }));
-  registerCollaborationAction('activity:complete', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('activity:complete', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     chatter.completeActivity(input.activity_id, ctx));
-  registerCollaborationAction('notification:mark_read', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('notification:mark_read', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     ({ read: notifications.markRead(input.notification_id, ctx) }));
-  registerCollaborationAction('notification:archive', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('notification:archive', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     ({ archived: notifications.archive(input.notification_id, ctx) }));
-  registerCollaborationAction('saved_view:save', 'sale_contract', 'platform:db:write', (input, ctx) =>
+  registerCollaborationAction('saved_view:save', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) =>
     configuration.saveView({ ...input, ownerId: ctx.userId, companyId: ctx.companyId }, ctx.userId, collaborationContext(ctx)));
-  registerCollaborationAction('scheduled_report:create', 'sale_contract', 'platform:db:write', (input, ctx) => scheduledReports.create(input, ctx));
-  registerCollaborationAction('scheduled_report:pause', 'sale_contract', 'platform:db:write', (input, ctx) => scheduledReports.pause(input.schedule_id, ctx));
+  registerCollaborationAction('scheduled_report:create', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) => scheduledReports.create(input, ctx));
+  registerCollaborationAction('scheduled_report:pause', COLLABORATION_ANCHOR_ENTITY, 'platform:db:write', (input, ctx) => scheduledReports.pause(input.schedule_id, ctx));
   jobs.registerHandler('scheduled_report:deliver', (job) => scheduledReports.deliver(job));
   registerFinanceActions(actionExecutor);
   registerCommercialActions(actionExecutor);
@@ -333,6 +353,11 @@ export function createPlatformAuthority(dialect) {
   registerBuild08Action('intercompany:eliminate', (input, ctx) => intercompanyConsolidationService.eliminateTransaction(input.transaction_id || input.transactionId, ctx));
   registerBuild08Action('consolidation:run', (input, ctx) => intercompanyConsolidationService.runConsolidation(input, ctx));
   registerServiceActions(actionExecutor, { serviceEntitlementService, electronicSignatureService });
+  registerIotActions(actionExecutor);
+  registerOfflineActions(actionExecutor);
+  registerKioskActions(actionExecutor);
+  registerBuild11Actions(actionExecutor, dialect);
+  registerBuild12Actions(actionExecutor, dialect);
 
   const authority = {
     dialect, registry, evaluator, policyEngine, sessions, users, memberships,
@@ -343,6 +368,7 @@ export function createPlatformAuthority(dialect) {
     forecastingService, masterProductionScheduleService, salesOperationsPlanningService,
     treasuryLiquidityService, intercompanyOperationsService, consolidationService,
     serviceEntitlementService, electronicSignatureService,
+    build11: { evaluateEntitlement: (ctx, capability, options = {}) => import('./platform/build11/index.mjs').then(({ evaluateEntitlement }) => evaluateEntitlement(dialect, ctx, capability, options)) },
   };
 
   // Bind HTTP handlers so server.js can call them without knowing the internal
@@ -691,20 +717,56 @@ export async function mountPlatformApi(authority, prefix = '/api/v1') {
     // Same executor as the runtime authority: finance handlers stay reachable
     // over HTTP (Phase 03 closure repair).
     actionExecutor: authority.actionExecutor,
+    // This is the handler server.js actually mounts at /api/v1 (see
+    // server.js:2938) -- authority.mountApi below passes all six of these,
+    // but nothing calls it. Without them, platform/api/index.mjs's `platform`
+    // namespace block (notifications/activities/saved-views/chatter/
+    // scheduled-reports/job-health/search) silently falls through every one
+    // of its `resource === X && Y` checks -- Y is always undefined -- and
+    // returns the generic 404 "unknown route" instead of the intended
+    // response or a diagnosable error.
+    notifications: authority.notifications,
+    jobs: authority.jobs,
+    scheduledReports: authority.scheduledReports,
+    platformSearch: authority.platformSearch,
+    chatter: authority.chatter,
+    configuration: authority.configuration,
     resolveContext: (req, requestUrl) => resolveApiContext(authority, req, requestUrl),
     authorize: ({ permission, ctx }) => authority.evaluator.evaluate({ permission, ctx }),
   });
+}
+
+// platform/wms/... query handlers require an explicit warehouse_id (see
+// platform/api/build09.mjs handleBuild09Query) and fail closed with 422 when
+// it's missing -- correct for a company with several warehouses where
+// "which one" is a real question, but every WMS page found by
+// docs/product/PAGE_REALITY_LEDGER.md to 422 on load never had any UI to
+// select one in the first place. The `warehouses` table already carries an
+// `is_default` column (added post-076) that nothing has ever read. Filling
+// ctx.warehouseId from it here is additive only: companies with no warehouse
+// marked default get exactly today's behavior (undefined -> 422), and any
+// handler that doesn't read ctx.warehouseId is unaffected either way.
+function resolveDefaultWarehouseId(dialect, companyId) {
+  if (!companyId) return null;
+  try {
+    const row = dialect.prepare('SELECT id FROM warehouses WHERE company_id = ? AND is_default = 1 AND is_active = 1 LIMIT 1').get(companyId);
+    return row?.id || null;
+  } catch {
+    return null;
+  }
 }
 
 function resolveApiContext(authority, req, requestUrl) {
   const ctx = resolveContextFromRequest(authority, req, { touch: true });
   if (!ctx) return null;
   const headers = req.headers || {};
+  const companyId = ctx.activeCompanyId || ctx.companyId || null;
   return {
     ...ctx,
     userId: ctx.actorId,
-    companyId: ctx.activeCompanyId || ctx.companyId || null,
+    companyId,
     branchId: ctx.activeBranchId || ctx.branchId || null,
+    warehouseId: ctx.warehouseId || resolveDefaultWarehouseId(authority.dialect, companyId),
     correlationId: headers['x-correlation-id'] || requestUrl.searchParams.get('correlation_id') || `corr_${Math.random().toString(36).slice(2)}`,
     idempotencyKey: headers['x-idempotency-key'] ? String(headers['x-idempotency-key']).slice(0, 120) : null,
     sourceChannel: 'api',

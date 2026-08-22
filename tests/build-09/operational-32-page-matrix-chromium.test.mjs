@@ -20,6 +20,16 @@ const PAGE_IDS = [
 // this disposable database's domains have no seeded records, so 'empty' is the honest,
 // correct, and expected terminal state for them (see section 13 "honest states"); the point
 // is that no page crashes, hangs, or silently shows nothing without explanation.
+//
+// mobile_receiving and mobile_picking (BUILD-09R-2) are purpose-built scanning workspaces
+// that replace the generic table+dialog shell entirely - their host's generic
+// [data-role="status"] paragraph is intentionally left at its frozen default (display:none
+// via .b09r-override-active) since renderPage()/fetchRows() never run for them. Their real
+// terminal state lives in their own body instead; the dedicated Chromium flows in
+// mobile-receiving-picking-browser.test.mjs already prove their full step-by-step behavior,
+// so this matrix only needs to prove they mount without hanging or crashing.
+const PURPOSE_BUILT_PAGES = { mobile_receiving: 'mr-body', mobile_picking: 'pt-body' };
+
 test('real Chromium activates all 32 BUILD-09 pages with a populated scope and no console errors', async (t) => {
   const { consoleErrors, page, seed } = await openBuild09Browser(t, { name: 'matrix', initialPage: PAGE_IDS[0] });
 
@@ -28,19 +38,24 @@ test('real Chromium activates all 32 BUILD-09 pages with a populated scope and n
     const errorsBefore = consoleErrors.length;
     await page.evaluate((id) => window.switchPage(id), pageId);
     await page.waitForFunction((id) => document.querySelector(`[data-build09-page="${id}"]`)?.classList.contains('page-active'), {}, pageId);
-    await page.waitForFunction((id) => {
-      const status = document.querySelector(`[data-build09-page="${id}"] [data-role="status"]`);
-      return status && status.dataset.phase !== 'loading' && status.dataset.phase !== 'idle';
-    }, { timeout: 10000 }, pageId);
-    const state = await page.evaluate((id) => {
+    const bodyRole = PURPOSE_BUILT_PAGES[pageId];
+    if (bodyRole) {
+      await page.waitForFunction((id, role) => document.querySelector(`[data-build09-page="${id}"] [data-role="${role}"]`)?.children.length > 0, { timeout: 10000 }, pageId, bodyRole);
+    } else {
+      await page.waitForFunction((id) => {
+        const status = document.querySelector(`[data-build09-page="${id}"] [data-role="status"]`);
+        return status && status.dataset.phase !== 'loading' && status.dataset.phase !== 'idle';
+      }, { timeout: 10000 }, pageId);
+    }
+    const state = await page.evaluate((id, role) => {
       const host = document.querySelector(`[data-build09-page="${id}"]`);
       return {
         warehouseSelectValue: host.querySelector('[data-role="warehouse"]').value,
         warehouseOptionCount: host.querySelector('[data-role="warehouse"]').options.length,
-        phase: host.querySelector('[data-role="status"]').dataset.phase,
-        statusText: host.querySelector('[data-role="status"]').textContent,
+        phase: role ? (host.querySelector(`[data-role="${role}"] .b09-status`)?.dataset.phase || 'ready') : host.querySelector('[data-role="status"]').dataset.phase,
+        statusText: role ? (host.querySelector(`[data-role="${role}"] .b09-status`)?.textContent || '') : host.querySelector('[data-role="status"]').textContent,
       };
-    }, pageId);
+    }, pageId, bodyRole || '');
     results.push({ pageId, ...state, newConsoleErrors: consoleErrors.slice(errorsBefore) });
   }
 

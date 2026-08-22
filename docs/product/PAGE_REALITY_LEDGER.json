@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-22T03:31:20.030Z",
+  "generatedAt": "2026-08-22T03:36:25.392Z",
   "generator": "scripts/product/build-reality-ledger.mjs",
-  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:31:19.414Z)",
+  "builtOn": "docs/product/PAGE_FUNCTIONAL_LEDGER.json (2026-08-22T03:36:24.812Z)",
   "note": "This is a derivation pass over the existing functional ledger, not a re-inspection. Root-cause fields are heuristic where marked INFERRED; treat those as a starting hypothesis for owner review, not a proven fact.",
   "totalPrimaryPages": 221,
   "emptinessCauseCounts": {
@@ -33,7 +33,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "ربط الحسابات",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Mapping Upsert",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | حفظ الربط",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -45,7 +45,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 469,
+        "textLength": 452,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -61,8 +61,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 198,
-        "latinChars": 169
+        "arabicChars": 249,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -74,7 +74,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Account Mapping: Consolidation account mapping — available here: ↻ تحديث | ⇩ تصدير CSV | Mapping Upsert.",
+      "whatUserAccomplishes": "Account Mapping: Consolidation account mapping — available here: ↻ تحديث | ⇩ تصدير CSV | حفظ الربط.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -2250,7 +2250,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 513,
+        "textLength": 494,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -2266,8 +2266,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 209
+        "arabicChars": 278,
+        "latinChars": 112
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2301,7 +2301,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مجموعات التوحيد",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Group Create | Member Add",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء مجموعة | إضافة عضو",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -2313,7 +2313,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 482,
+        "textLength": 468,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -2329,8 +2329,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 180
+        "arabicChars": 255,
+        "latinChars": 112
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2342,7 +2342,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Consolidation Groups: Consolidation groups — available here: ↻ تحديث | ⇩ تصدير CSV | Group Create | Member Add.",
+      "whatUserAccomplishes": "Consolidation Groups: Consolidation groups — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء مجموعة | إضافة عضو.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -2931,7 +2931,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تخطيط الطلب",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Version Create",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء إصدار",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -2943,7 +2943,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 434,
+        "textLength": 438,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -2959,8 +2959,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 190,
-        "latinChars": 145
+        "arabicChars": 237,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2972,7 +2972,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Demand Planning: Demand planning — available here: ↻ تحديث | ⇩ تصدير CSV | Version Create.",
+      "whatUserAccomplishes": "Demand Planning: Demand planning — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء إصدار.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -3819,7 +3819,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "قيود الاستبعاد",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Elimination Approve",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | اعتماد الاستبعاد",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -3831,7 +3831,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 464,
+        "textLength": 457,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -3847,8 +3847,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 204,
-        "latinChars": 162
+        "arabicChars": 261,
+        "latinChars": 98
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3860,7 +3860,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Eliminations: Consolidation eliminations — available here: ↻ تحديث | ⇩ تصدير CSV | Elimination Approve.",
+      "whatUserAccomplishes": "Eliminations: Consolidation eliminations — available here: ↻ تحديث | ⇩ تصدير CSV | اعتماد الاستبعاد.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -5082,7 +5082,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تسهيلات التمويل",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Facility Create | Facility Utilize",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء تسهيل | سحب من التسهيل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -5094,7 +5094,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 498,
+        "textLength": 493,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -5110,8 +5110,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 206,
-        "latinChars": 190
+        "arabicChars": 278,
+        "latinChars": 112
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5123,7 +5123,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Financing Facilities: Financing facilities — available here: ↻ تحديث | ⇩ تصدير CSV | Facility Create | Facility Utilize.",
+      "whatUserAccomplishes": "Financing Facilities: Financing facilities — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء تسهيل | سحب من التسهيل.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -5463,7 +5463,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تعديلات التنبؤ",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Override Submit | Override Approve",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | تقديم تعديل | اعتماد التعديل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -5475,7 +5475,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 485,
+        "textLength": 468,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -5491,8 +5491,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 183
+        "arabicChars": 260,
+        "latinChars": 108
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5504,7 +5504,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Forecast Overrides: Forecast overrides — available here: ↻ تحديث | ⇩ تصدير CSV | Override Submit | Override Approve.",
+      "whatUserAccomplishes": "Forecast Overrides: Forecast overrides — available here: ↻ تحديث | ⇩ تصدير CSV | تقديم تعديل | اعتماد التعديل.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -6282,7 +6282,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تسوية الشركات الشقيقة",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Reconcile | Settlement Propose",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | تسوية | اقتراح تسوية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -6294,7 +6294,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 495,
+        "textLength": 474,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -6310,8 +6310,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 197,
-        "latinChars": 197
+        "arabicChars": 249,
+        "latinChars": 126
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6323,7 +6323,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Intercompany Reconciliation: Intercompany reconciliation — available here: ↻ تحديث | ⇩ تصدير CSV | Reconcile | Settlement Propose.",
+      "whatUserAccomplishes": "Intercompany Reconciliation: Intercompany reconciliation — available here: ↻ تحديث | ⇩ تصدير CSV | تسوية | اقتراح تسوية.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -6345,7 +6345,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "معاملات الشركات الشقيقة",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Operation Create | Operation Approve",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء عملية | اعتماد العملية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -6357,7 +6357,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 536,
+        "textLength": 510,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -6373,8 +6373,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 212,
-        "latinChars": 219
+        "arabicChars": 285,
+        "latinChars": 122
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6386,7 +6386,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Intercompany Transactions: Intercompany transactions — available here: ↻ تحديث | ⇩ تصدير CSV | Operation Create | Operation Approve.",
+      "whatUserAccomplishes": "Intercompany Transactions: Intercompany transactions — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء عملية | اعتماد العملية.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -6723,7 +6723,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تنبؤ السيولة",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Liquidity Generate",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | توليد تنبؤ السيولة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -6735,7 +6735,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 450,
+        "textLength": 451,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -6751,8 +6751,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 196,
-        "latinChars": 155
+        "arabicChars": 243,
+        "latinChars": 108
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6764,7 +6764,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Liquidity Forecast: Liquidity forecast — available here: ↻ تحديث | ⇩ تصدير CSV | Liquidity Generate.",
+      "whatUserAccomplishes": "Liquidity Forecast: Liquidity forecast — available here: ↻ تحديث | ⇩ تصدير CSV | توليد تنبؤ السيولة.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -7227,7 +7227,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "قائمة عدم التطابق",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Mismatch Detect",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | كشف عدم التطابق",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -7239,7 +7239,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 459,
+        "textLength": 448,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -7255,8 +7255,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 199,
-        "latinChars": 161
+        "arabicChars": 248,
+        "latinChars": 100
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7268,7 +7268,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Mismatch Queue: Intercompany mismatch queue — available here: ↻ تحديث | ⇩ تصدير CSV | Mismatch Detect.",
+      "whatUserAccomplishes": "Mismatch Queue: Intercompany mismatch queue — available here: ↻ تحديث | ⇩ تصدير CSV | كشف عدم التطابق.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -7416,7 +7416,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "جدول الإنتاج الرئيسي",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Run",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | تشغيل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -7444,8 +7444,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 164
+        "arabicChars": 243,
+        "latinChars": 122
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7457,7 +7457,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Mps: Master production schedule — available here: ↻ تحديث | ⇩ تصدير CSV | Run.",
+      "whatUserAccomplishes": "Mps: Master production schedule — available here: ↻ تحديث | ⇩ تصدير CSV | تشغيل.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -8172,7 +8172,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مقترحات الدفع والتمويل",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Proposal Create | Proposal Approve",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء مقترح | اعتماد المقترح",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -8184,7 +8184,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 504,
+        "textLength": 496,
         "controls": 4,
         "inputs": 1,
         "searchInputs": 1,
@@ -8200,8 +8200,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 210,
-        "latinChars": 187
+        "arabicChars": 269,
+        "latinChars": 120
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -8213,7 +8213,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Payment Funding Proposals: Payment funding proposals — available here: ↻ تحديث | ⇩ تصدير CSV | Proposal Create | Proposal Approve.",
+      "whatUserAccomplishes": "Payment Funding Proposals: Payment funding proposals — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء مقترح | اعتماد المقترح.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -8562,7 +8562,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 448,
+        "textLength": 441,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 1,
@@ -8578,8 +8578,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 205,
-        "latinChars": 147
+        "arabicChars": 236,
+        "latinChars": 110
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11157,7 +11157,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مراجعة المبيعات والعمليات",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Cycle Create | Review Approve | Publish",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء دورة | اعتماد المراجعة | نشر",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11169,7 +11169,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 482,
+        "textLength": 477,
         "controls": 5,
         "inputs": 1,
         "searchInputs": 1,
@@ -11185,8 +11185,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 212,
-        "latinChars": 165
+        "arabicChars": 281,
+        "latinChars": 92
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11198,7 +11198,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Sop Review: S and OP review — available here: ↻ تحديث | ⇩ تصدير CSV | Cycle Create | Review Approve | Publish.",
+      "whatUserAccomplishes": "Sop Review: S and OP review — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء دورة | اعتماد المراجعة | نشر.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -11220,7 +11220,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "سيناريوهات المبيعات والعمليات",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Scenario Create",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إنشاء سيناريو",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11232,7 +11232,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 482,
+        "textLength": 479,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -11248,8 +11248,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 219,
-        "latinChars": 159
+        "arabicChars": 278,
+        "latinChars": 98
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11261,7 +11261,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Sop Scenarios: S and OP scenarios — available here: ↻ تحديث | ⇩ تصدير CSV | Scenario Create.",
+      "whatUserAccomplishes": "Sop Scenarios: S and OP scenarios — available here: ↻ تحديث | ⇩ تصدير CSV | إنشاء سيناريو.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -11535,7 +11535,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "توازن العرض والطلب",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Run",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | تشغيل",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11547,7 +11547,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 508,
+        "textLength": 500,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -11563,8 +11563,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 202,
-        "latinChars": 197
+        "arabicChars": 280,
+        "latinChars": 112
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11576,7 +11576,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Supply Demand Balance: Supply demand balance — available here: ↻ تحديث | ⇩ تصدير CSV | Run.",
+      "whatUserAccomplishes": "Supply Demand Balance: Supply demand balance — available here: ↻ تحديث | ⇩ تصدير CSV | تشغيل.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -12480,7 +12480,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "تنبيهات الخزينة",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Alert Acknowledge",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | إقرار التنبيه",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "alert_board",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12492,7 +12492,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 463,
+        "textLength": 453,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -12508,8 +12508,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 203,
-        "latinChars": 161
+        "arabicChars": 252,
+        "latinChars": 102
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12521,7 +12521,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Treasury Alerts: Treasury alerts — available here: ↻ تحديث | ⇩ تصدير CSV | Alert Acknowledge.",
+      "whatUserAccomplishes": "Treasury Alerts: Treasury alerts — available here: ↻ تحديث | ⇩ تصدير CSV | إقرار التنبيه.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {
@@ -12543,7 +12543,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز النقد بالخزينة",
-      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | Position Capture",
+      "actionsAvailable": "↻ تحديث | ⇩ تصدير CSV | التقاط مركز النقد",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12555,7 +12555,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 483,
+        "textLength": 478,
         "controls": 3,
         "inputs": 1,
         "searchInputs": 1,
@@ -12571,8 +12571,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 196,
-        "latinChars": 183
+        "arabicChars": 259,
+        "latinChars": 114
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12584,7 +12584,7 @@
       "emptinessCauseConfidence": null,
       "emptinessCauseEvidence": "not applicable — page has meaningful rendered content",
       "recommendedDisposition": "KEEP_PRIMARY",
-      "whatUserAccomplishes": "Treasury Cash Position: Treasury cash position — available here: ↻ تحديث | ⇩ تصدير CSV | Position Capture.",
+      "whatUserAccomplishes": "Treasury Cash Position: Treasury cash position — available here: ↻ تحديث | ⇩ تصدير CSV | التقاط مركز النقد.",
       "actionPersistenceEvidence": "NOT_MEASURED — read-only runtime inspection only; no automated proof an action here writes data"
     },
     {

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-22T03:31:06.460Z",
-  "startedAt": "2026-08-22T03:30:47.988Z",
+  "generatedAt": "2026-08-22T03:35:59.986Z",
+  "startedAt": "2026-08-22T03:35:24.161Z",
   "baseUrl": "http://127.0.0.1:8091",
   "method": "authenticated Chromium; visible navigation clicks only; page action buttons never clicked (read-only observation)",
   "totals": {
@@ -18,7 +18,7 @@
       "rendererType": "view",
       "rendererSource": "views/account_mapping.html",
       "requiredPermission": "account_mapping",
-      "durationMs": 1747,
+      "durationMs": 1655,
       "error": null,
       "activated": true,
       "observation": {
@@ -29,12 +29,12 @@
           "ربط الحسابات"
         ],
         "title": "ربط الحسابات",
-        "textLength": 469,
+        "textLength": 452,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Mapping Upsert"
+          "حفظ الربط"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -55,8 +55,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 198,
-        "latinChars": 169
+        "arabicChars": 249,
+        "latinChars": 102
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2119,7 +2119,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidated_reports.html",
       "requiredPermission": "consolidated_reports",
-      "durationMs": 4231,
+      "durationMs": 1582,
       "error": null,
       "activated": true,
       "observation": {
@@ -2130,7 +2130,7 @@
           "التقارير الموحدة"
         ],
         "title": "التقارير الموحدة",
-        "textLength": 513,
+        "textLength": 494,
         "controlCount": 2,
         "controlLabels": [
           "↻ تحديث",
@@ -2155,8 +2155,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 209
+        "arabicChars": 278,
+        "latinChars": 112
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2171,7 +2171,7 @@
       "rendererType": "view",
       "rendererSource": "views/consolidation_groups.html",
       "requiredPermission": "consolidation_groups",
-      "durationMs": 4303,
+      "durationMs": 1600,
       "error": null,
       "activated": true,
       "observation": {
@@ -2182,13 +2182,13 @@
           "مجموعات التوحيد"
         ],
         "title": "مجموعات التوحيد",
-        "textLength": 482,
+        "textLength": 468,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Group Create",
-          "Member Add"
+          "إنشاء مجموعة",
+          "إضافة عضو"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -2209,8 +2209,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 180
+        "arabicChars": 255,
+        "latinChars": 112
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -2722,7 +2722,7 @@
       "rendererType": "view",
       "rendererSource": "views/demand_planning.html",
       "requiredPermission": "demand_planning",
-      "durationMs": 4513,
+      "durationMs": 1749,
       "error": null,
       "activated": true,
       "observation": {
@@ -2733,12 +2733,12 @@
           "تخطيط الطلب"
         ],
         "title": "تخطيط الطلب",
-        "textLength": 434,
+        "textLength": 438,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Version Create"
+          "إنشاء إصدار"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -2759,8 +2759,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 190,
-        "latinChars": 145
+        "arabicChars": 237,
+        "latinChars": 102
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -3482,7 +3482,7 @@
       "rendererType": "view",
       "rendererSource": "views/eliminations.html",
       "requiredPermission": "eliminations",
-      "durationMs": 4680,
+      "durationMs": 1732,
       "error": null,
       "activated": true,
       "observation": {
@@ -3493,12 +3493,12 @@
           "قيود الاستبعاد"
         ],
         "title": "قيود الاستبعاد",
-        "textLength": 464,
+        "textLength": 457,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Elimination Approve"
+          "اعتماد الاستبعاد"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -3519,8 +3519,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 204,
-        "latinChars": 162
+        "arabicChars": 261,
+        "latinChars": 98
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4588,7 +4588,7 @@
       "rendererType": "view",
       "rendererSource": "views/financing_facilities.html",
       "requiredPermission": "financing_facilities",
-      "durationMs": 3602,
+      "durationMs": 1575,
       "error": null,
       "activated": true,
       "observation": {
@@ -4599,13 +4599,13 @@
           "تسهيلات التمويل"
         ],
         "title": "تسهيلات التمويل",
-        "textLength": 498,
+        "textLength": 493,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Facility Create",
-          "Facility Utilize"
+          "إنشاء تسهيل",
+          "سحب من التسهيل"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -4626,8 +4626,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 206,
-        "latinChars": 190
+        "arabicChars": 278,
+        "latinChars": 112
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -4912,7 +4912,7 @@
       "rendererType": "view",
       "rendererSource": "views/forecast_overrides.html",
       "requiredPermission": "forecast_overrides",
-      "durationMs": 3634,
+      "durationMs": 1712,
       "error": null,
       "activated": true,
       "observation": {
@@ -4923,13 +4923,13 @@
           "تعديلات التنبؤ"
         ],
         "title": "تعديلات التنبؤ",
-        "textLength": 485,
+        "textLength": 468,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Override Submit",
-          "Override Approve"
+          "تقديم تعديل",
+          "اعتماد التعديل"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -4950,8 +4950,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 183
+        "arabicChars": 260,
+        "latinChars": 108
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5752,7 +5752,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_reconciliation.html",
       "requiredPermission": "intercompany_reconciliation",
-      "durationMs": 3632,
+      "durationMs": 1712,
       "error": null,
       "activated": true,
       "observation": {
@@ -5763,13 +5763,13 @@
           "تسوية الشركات الشقيقة"
         ],
         "title": "تسوية الشركات الشقيقة",
-        "textLength": 495,
+        "textLength": 474,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Reconcile",
-          "Settlement Propose"
+          "تسوية",
+          "اقتراح تسوية"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -5790,8 +5790,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 197,
-        "latinChars": 197
+        "arabicChars": 249,
+        "latinChars": 126
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -5806,7 +5806,7 @@
       "rendererType": "view",
       "rendererSource": "views/intercompany_transactions.html",
       "requiredPermission": "intercompany_transactions",
-      "durationMs": 3498,
+      "durationMs": 1583,
       "error": null,
       "activated": true,
       "observation": {
@@ -5817,13 +5817,13 @@
           "معاملات الشركات الشقيقة"
         ],
         "title": "معاملات الشركات الشقيقة",
-        "textLength": 536,
+        "textLength": 510,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Operation Create",
-          "Operation Approve"
+          "إنشاء عملية",
+          "اعتماد العملية"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -5844,8 +5844,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 212,
-        "latinChars": 219
+        "arabicChars": 285,
+        "latinChars": 122
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6330,7 +6330,7 @@
       "rendererType": "view",
       "rendererSource": "views/liquidity_forecast.html",
       "requiredPermission": "liquidity_forecast",
-      "durationMs": 6338,
+      "durationMs": 1715,
       "error": null,
       "activated": true,
       "observation": {
@@ -6341,12 +6341,12 @@
           "تنبؤ السيولة"
         ],
         "title": "تنبؤ السيولة",
-        "textLength": 450,
+        "textLength": 451,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Liquidity Generate"
+          "توليد تنبؤ السيولة"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -6367,8 +6367,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 196,
-        "latinChars": 155
+        "arabicChars": 243,
+        "latinChars": 108
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6781,7 +6781,7 @@
       "rendererType": "view",
       "rendererSource": "views/mismatch_queue.html",
       "requiredPermission": "mismatch_queue",
-      "durationMs": 3638,
+      "durationMs": 1562,
       "error": null,
       "activated": true,
       "observation": {
@@ -6792,12 +6792,12 @@
           "قائمة عدم التطابق"
         ],
         "title": "قائمة عدم التطابق",
-        "textLength": 459,
+        "textLength": 448,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Mismatch Detect"
+          "كشف عدم التطابق"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -6818,8 +6818,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 199,
-        "latinChars": 161
+        "arabicChars": 248,
+        "latinChars": 100
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -6936,7 +6936,7 @@
       "rendererType": "view",
       "rendererSource": "views/mps.html",
       "requiredPermission": "mps",
-      "durationMs": 3801,
+      "durationMs": 1599,
       "error": null,
       "activated": true,
       "observation": {
@@ -6952,7 +6952,7 @@
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Run"
+          "تشغيل"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -6973,8 +6973,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 200,
-        "latinChars": 164
+        "arabicChars": 243,
+        "latinChars": 122
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7634,7 +7634,7 @@
       "rendererType": "view",
       "rendererSource": "views/payment_funding_proposals.html",
       "requiredPermission": "payment_funding_proposals",
-      "durationMs": 3811,
+      "durationMs": 1571,
       "error": null,
       "activated": true,
       "observation": {
@@ -7645,13 +7645,13 @@
           "مقترحات الدفع والتمويل"
         ],
         "title": "مقترحات الدفع والتمويل",
-        "textLength": 504,
+        "textLength": 496,
         "controlCount": 4,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Proposal Create",
-          "Proposal Approve"
+          "إنشاء مقترح",
+          "اعتماد المقترح"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -7672,8 +7672,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 210,
-        "latinChars": 187
+        "arabicChars": 269,
+        "latinChars": 120
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -7959,7 +7959,7 @@
       "rendererType": "view",
       "rendererSource": "views/planning_exceptions.html",
       "requiredPermission": "planning_exceptions",
-      "durationMs": 4053,
+      "durationMs": 1593,
       "error": null,
       "activated": true,
       "observation": {
@@ -7970,7 +7970,7 @@
           "استثناءات التخطيط"
         ],
         "title": "استثناءات التخطيط",
-        "textLength": 448,
+        "textLength": 441,
         "controlCount": 2,
         "controlLabels": [
           "↻ تحديث",
@@ -7995,8 +7995,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 205,
-        "latinChars": 147
+        "arabicChars": 236,
+        "latinChars": 110
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10244,7 +10244,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_review.html",
       "requiredPermission": "sop_review",
-      "durationMs": 5041,
+      "durationMs": 1571,
       "error": null,
       "activated": true,
       "observation": {
@@ -10255,14 +10255,14 @@
           "مراجعة المبيعات والعمليات"
         ],
         "title": "مراجعة المبيعات والعمليات",
-        "textLength": 482,
+        "textLength": 477,
         "controlCount": 5,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Cycle Create",
-          "Review Approve",
-          "Publish"
+          "إنشاء دورة",
+          "اعتماد المراجعة",
+          "نشر"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -10283,8 +10283,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 212,
-        "latinChars": 165
+        "arabicChars": 281,
+        "latinChars": 92
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10299,7 +10299,7 @@
       "rendererType": "view",
       "rendererSource": "views/sop_scenarios.html",
       "requiredPermission": "sop_scenarios",
-      "durationMs": 4288,
+      "durationMs": 1594,
       "error": null,
       "activated": true,
       "observation": {
@@ -10310,12 +10310,12 @@
           "سيناريوهات المبيعات والعمليات"
         ],
         "title": "سيناريوهات المبيعات والعمليات",
-        "textLength": 482,
+        "textLength": 479,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Scenario Create"
+          "إنشاء سيناريو"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -10336,8 +10336,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 219,
-        "latinChars": 159
+        "arabicChars": 278,
+        "latinChars": 98
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -10578,7 +10578,7 @@
       "rendererType": "view",
       "rendererSource": "views/supply_demand_balance.html",
       "requiredPermission": "supply_demand_balance",
-      "durationMs": 4600,
+      "durationMs": 1582,
       "error": null,
       "activated": true,
       "observation": {
@@ -10589,12 +10589,12 @@
           "توازن العرض والطلب"
         ],
         "title": "توازن العرض والطلب",
-        "textLength": 508,
+        "textLength": 500,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Run"
+          "تشغيل"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -10615,8 +10615,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 202,
-        "latinChars": 197
+        "arabicChars": 280,
+        "latinChars": 112
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11471,7 +11471,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_alerts.html",
       "requiredPermission": "treasury_alerts",
-      "durationMs": 4080,
+      "durationMs": 1585,
       "error": null,
       "activated": true,
       "observation": {
@@ -11482,12 +11482,12 @@
           "تنبيهات الخزينة"
         ],
         "title": "تنبيهات الخزينة",
-        "textLength": 463,
+        "textLength": 453,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Alert Acknowledge"
+          "إقرار التنبيه"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -11508,8 +11508,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 203,
-        "latinChars": 161
+        "arabicChars": 252,
+        "latinChars": 102
       },
       "consoleErrors": [],
       "pageErrors": [],
@@ -11524,7 +11524,7 @@
       "rendererType": "view",
       "rendererSource": "views/treasury_cash_position.html",
       "requiredPermission": "treasury_cash_position",
-      "durationMs": 5627,
+      "durationMs": 1650,
       "error": null,
       "activated": true,
       "observation": {
@@ -11535,12 +11535,12 @@
           "مركز النقد بالخزينة"
         ],
         "title": "مركز النقد بالخزينة",
-        "textLength": 483,
+        "textLength": 478,
         "controlCount": 3,
         "controlLabels": [
           "↻ تحديث",
           "⇩ تصدير CSV",
-          "Position Capture"
+          "التقاط مركز النقد"
         ],
         "inputCount": 1,
         "selectCount": 0,
@@ -11561,8 +11561,8 @@
         "rawIdCount": 0,
         "rawIdSamples": [],
         "rawJson": false,
-        "arabicChars": 196,
-        "latinChars": 183
+        "arabicChars": 259,
+        "latinChars": 114
       },
       "consoleErrors": [],
       "pageErrors": [],

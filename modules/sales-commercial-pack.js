@@ -8,6 +8,15 @@
 (function () {
   'use strict';
 
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   const root = window;
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   const num = value => Number(value || 0);
@@ -221,6 +230,7 @@
       </div>
       <div class="sc7j-tabs">${tabs.map(t => `<button type="button" class="${activeTab === t[0] ? 'active' : ''}" onclick="SalesCommercialPack.setTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
       <div class="sc7j-content">${content}</div>`;
+    arabicChrome(panel);
   }
 
   function addTarget(month, amount, owner) {

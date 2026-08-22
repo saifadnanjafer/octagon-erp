@@ -20,6 +20,15 @@
 (function () {
   'use strict';
 
+  // Panel chrome is emitted as concatenated HTML, so English literals cannot be
+  // wrapped at their source; the rendered container is translated by text node
+  // instead. Needed here because this panel renders after switchPage's own
+  // localize pass. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   /* ───────────────────────── shared helpers ───────────────────────── */
   function O() {
     if (typeof omni !== 'undefined' && omni) return omni;
@@ -620,6 +629,7 @@
     const tabs = [['dashboard', '📊 اللوحة'], ['recruitment', '🧑‍💼 التوظيف'], ['leave', '🌴 الإجازات'], ['expenses', '🧾 المصاريف'], ['appraisal', '⭐ التقييم'], ['hrms', 'HRMS Lifecycle']];
     body.innerHTML = `<div class="po-tabs">${tabs.map(([k, l]) => `<button class="po-tab-btn ${activeTab === k ? 'active' : ''}" onclick="poOpenTab('${k}')">${l}</button>`).join('')}</div>
       <div id="poDashBody"></div><div id="poRecBody"></div><div id="poLeaveBody"></div><div id="poExpBody"></div><div id="poAprBody"></div><div id="poHrmsBody"></div>`;
+    arabicChrome(body);
     renderTabContent();
   }
   window.renderPeopleOps = renderPeople;

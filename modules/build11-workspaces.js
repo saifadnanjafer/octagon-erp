@@ -96,7 +96,35 @@
   }
   function button(actionId, text, attrs = '') { return `<button type="button" class="b11-btn" data-b11-action="${escapeHtml(actionId)}" ${attrs}>${escapeHtml(text)}</button>`; }
   function select(name, options, selected = '', required = false) { return `<select name="${escapeHtml(name)}"${required ? ' required' : ''}>${options.map(([key, text]) => `<option value="${escapeHtml(key)}"${String(key) === String(selected) ? ' selected' : ''}>${escapeHtml(text)}</option>`).join('')}</select>`; }
-  function form(name, content, actionText = '') { return `<form class="b11-form" data-b11-form="${escapeHtml(name)}">${content}${actionText ? `<button class="b11-btn primary" type="submit">${escapeHtml(actionText)}</button>` : ''}</form>`; }
+  // form() submit text and actionFields() field labels were still English
+  // literals, so the commercial forms read as Arabic chrome around English
+  // inputs. Translated at those two render points; currency codes (USD/IQD)
+  // and anything unmapped deliberately fall through unchanged.
+  const FORM_AR = {
+    'Allowance': 'المخصص', 'Allowance metric (registered)': 'مقياس المخصص (مسجَّل)',
+    'Annual': 'سنوي', 'Base price': 'السعر الأساسي',
+    'Capabilities (registered)': 'القدرات (مسجَّلة)', 'Checksum': 'بصمة التحقق',
+    'Compatibility': 'التوافق', 'Currency': 'العملة',
+    'Dependencies (comma separated)': 'التبعيات (مفصولة بفواصل)', 'Discount': 'الخصم',
+    'Grace days': 'أيام السماح', 'Internal': 'داخلي', 'Managed SaaS': 'خدمة مُدارة',
+    'Manifest version': 'إصدار البيان', 'Monthly': 'شهري', 'Name': 'الاسم',
+    'Package ID': 'معرّف الحزمة', 'Primary company / tenant name': 'اسم الشركة الأساسية / المستأجر',
+    'Protected mutation': 'تعديل محمي', 'Provenance': 'المصدر', 'Publisher': 'الناشر',
+    'Quarterly': 'ربع سنوي', 'Read / historical': 'قراءة / تاريخي',
+    'Registered permissions (comma separated)': 'الصلاحيات المسجَّلة (مفصولة بفواصل)',
+    'Search': 'بحث', 'Seat/add-on unit amount': 'سعر المقعد/الإضافة',
+    'Signature': 'التوقيع', 'Simulated tax code': 'رمز ضريبة محاكاة',
+    'Simulated tax rate': 'نسبة ضريبة محاكاة', 'Standalone': 'مستقل',
+    'Tenant reference': 'مرجع المستأجر', 'Trial days': 'أيام التجربة', 'Unit': 'الوحدة',
+    'Usage overage': 'تجاوز الاستهلاك', 'Version': 'الإصدار',
+    'Version number': 'رقم الإصدار', 'Warning threshold': 'حد التحذير',
+    'Apply filters': 'تطبيق المرشحات', 'Create tenant': 'إنشاء مستأجر',
+    'Generate simulated invoice': 'توليد فاتورة محاكاة',
+    'Publish immutable version': 'نشر إصدار غير قابل للتغيير',
+    'Validate guided manifest': 'التحقق من البيان الموجّه',
+  };
+  const formLabel = (en) => (rtl() && FORM_AR[en]) ? FORM_AR[en] : en;
+  function form(name, content, actionText = '') { return `<form class="b11-form" data-b11-form="${escapeHtml(name)}">${content}${actionText ? `<button class="b11-btn primary" type="submit">${escapeHtml(formLabel(actionText))}</button>` : ''}</form>`; }
   function frame(host, pageId, body) {
     const meta = PAGE_META[pageId];
     host.innerHTML = `<div class="b11-shell"><header class="b11-header"><div><span class="b11-kicker">${label('COMMERCIAL AND SAAS', 'التجاري و SaaS')}</span><h2>${escapeHtml(label(meta.title, meta.titleAr))}</h2><p>${escapeHtml(label(meta.subtitle, meta.subtitleAr))}</p></div><div class="b11-header-actions"><span class="b11-permission" data-role="permission">${escapeHtml(meta.permission)}</span><button class="b11-btn" type="button" data-b11-refresh="${pageId}">${escapeHtml(label('Refresh', 'تحديث'))}</button></div></header><div class="b11-status" data-role="status" data-phase="loading">${escapeHtml(label('Loading…', 'جارٍ التحميل…'))}</div><div class="b11-content" data-role="content">${body || ''}</div></div>`;
@@ -106,7 +134,7 @@
   function actionResult(host, message) { setStatus(host, 'success', `${message} ${label('Audit result recorded.', 'تم تسجيل نتيجة التدقيق.')}`); }
   function tenantOptions(tenants, selected) { return rows(tenants).map((row) => [row.id, `${value(row, 'name')} (${value(row, 'lifecycle_state')})`]).concat(selected && !rows(tenants).some((row) => row.id === selected) ? [[selected, selected]] : []); }
   function tenantSelect(tenants, selected = currentTenant('tenant_detail')) { return select('tenant_id', tenantOptions(tenants, selected), selected, true); }
-  function actionFields(formName, fields) { return fields.map(([name, text, type = 'text', extra = '']) => `<label>${escapeHtml(text)}<input name="${escapeHtml(name)}" type="${type}" ${extra}></label>`).join(''); }
+  function actionFields(formName, fields) { return fields.map(([name, text, type = 'text', extra = '']) => `<label>${escapeHtml(formLabel(text))}<input name="${escapeHtml(name)}" type="${type}" ${extra}></label>`).join(''); }
   function lifecycleButtons(row) {
     const state = row?.lifecycle_state || 'draft';
     const next = { draft: ['provisioning'], provisioning: ['trial', 'active', 'provisioning_failed'], provisioning_failed: ['provisioning'], trial: ['active', 'grace', 'suspended', 'expired', 'cancelled'], active: ['grace', 'suspended', 'cancelled', 'archived'], grace: ['active', 'suspended', 'expired', 'cancelled'], suspended: ['active', 'grace', 'expired', 'cancelled', 'archived'], expired: ['active', 'cancelled', 'archived'], cancelled: ['active', 'archived'], archived: [] }[state] || [];

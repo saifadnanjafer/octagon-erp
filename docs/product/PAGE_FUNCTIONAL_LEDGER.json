@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-22T03:36:24.812Z",
+  "generatedAt": "2026-08-22T04:55:13.904Z",
   "generator": "scripts/product/build-ledger.mjs",
   "sources": {
     "registry": "docs/navigation/NAVIGATION_FORENSIC_REPORT.json",
     "staticInventory": "docs/review/PAGE_INVENTORY.json",
-    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T03:35:59.986Z)",
+    "runtimeInspection": "docs/product/PAGE_RUNTIME_INSPECTION.json (2026-08-22T04:05:24.441Z)",
     "clickAudit": "docs/autopilot/evidence/NAVIGATION-RECOVERY-1-click-audit-all.json (2026-08-22T01:46:39.262Z)"
   },
   "totalPrimaryPages": 221,
@@ -688,19 +688,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "ai_tools, ai_queue, ai_factory",
       "functionalState": "STRONG",
-      "functionalEvidence": "5 controls, 8 rendered records, 3 workflow link(s)",
+      "functionalEvidence": "5 controls, 9 rendered records, 3 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3506,
+        "textLength": 3617,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
-        "tables": 1,
-        "tableRows": 8,
+        "tables": 2,
+        "tableRows": 9,
         "listItems": 0,
         "links": 3,
         "states": {
@@ -711,8 +711,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1075,
-        "latinChars": 1775
+        "arabicChars": 1058,
+        "latinChars": 1869
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1310,7 +1310,7 @@
       "observedEndpoints": [],
       "pageArchetype": "FORM/ENTRY",
       "observedTitle": "محاكي الفوترة",
-      "actionsAvailable": "تحديث | Generate simulated invoice",
+      "actionsAvailable": "تحديث | توليد فاتورة محاكاة",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -1322,7 +1322,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 487,
+        "textLength": 471,
         "controls": 2,
         "inputs": 7,
         "searchInputs": 0,
@@ -1338,8 +1338,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 194,
-        "latinChars": 189
+        "arabicChars": 275,
+        "latinChars": 94
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -1823,7 +1823,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "الخطط التجارية",
-      "actionsAvailable": "تحديث | Publish immutable version",
+      "actionsAvailable": "تحديث | نشر إصدار غير قابل للتغيير",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -1835,7 +1835,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 771,
+        "textLength": 751,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -1851,8 +1851,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 206,
-        "latinChars": 353
+        "arabicChars": 323,
+        "latinChars": 214
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2234,7 +2234,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 452,
+        "textLength": 443,
         "controls": 2,
         "inputs": 4,
         "searchInputs": 0,
@@ -2250,8 +2250,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 138,
-        "latinChars": 233
+        "arabicChars": 182,
+        "latinChars": 180
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2626,19 +2626,19 @@
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
       "functionalState": "STRONG",
-      "functionalEvidence": "7 controls, 7 rendered records, 0 workflow link(s)",
+      "functionalEvidence": "7 controls, 5 rendered records, 0 workflow link(s)",
       "focusedFunctionalEvidence": null,
       "focusedFunctionalBlocker": null,
       "usabilityState": "STRONG",
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2556,
+        "textLength": 2238,
         "controls": 7,
         "inputs": 6,
         "searchInputs": 0,
         "tables": 1,
-        "tableRows": 7,
+        "tableRows": 5,
         "listItems": 0,
         "links": 0,
         "states": {
@@ -2649,8 +2649,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 968,
-        "latinChars": 1052
+        "arabicChars": 1067,
+        "latinChars": 701
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -2735,7 +2735,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🚀\nجاهزية التشغيل",
-      "actionsAvailable": "💾 نسخة احتياطية الآن | 🔄 إعادة الفحص | 📋 نسخ | Refresh | Verify latest backup | Restore dry-run | Mark done",
+      "actionsAvailable": "💾 نسخة احتياطية الآن | 🔄 إعادة الفحص | 📋 نسخ | تحديث | التحقق من أحدث نسخة احتياطية | محاكاة الاستعادة | وضع علامة منجز",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -2747,7 +2747,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 4522,
+        "textLength": 4652,
         "controls": 18,
         "inputs": 0,
         "searchInputs": 0,
@@ -2763,8 +2763,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1142,
-        "latinChars": 2219
+        "arabicChars": 1576,
+        "latinChars": 1880
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -3437,7 +3437,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 706,
+        "textLength": 707,
         "controls": 2,
         "inputs": 8,
         "searchInputs": 0,
@@ -3453,7 +3453,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 404,
+        "arabicChars": 405,
         "latinChars": 144
       },
       "runtimeConsoleErrors": 0,
@@ -3836,7 +3836,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 7273,
+        "textLength": 7276,
         "controls": 203,
         "inputs": 43,
         "searchInputs": 4,
@@ -3852,7 +3852,7 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 4746,
+        "arabicChars": 4745,
         "latinChars": 294
       },
       "runtimeConsoleErrors": 0,
@@ -3950,7 +3950,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 893,
+        "textLength": 883,
         "controls": 2,
         "inputs": 1,
         "searchInputs": 0,
@@ -3966,8 +3966,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 213,
-        "latinChars": 447
+        "arabicChars": 224,
+        "latinChars": 426
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4178,7 +4178,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 922,
+        "textLength": 921,
         "controls": 2,
         "inputs": 5,
         "searchInputs": 0,
@@ -4194,8 +4194,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 144,
-        "latinChars": 448
+        "arabicChars": 179,
+        "latinChars": 412
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4397,7 +4397,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "سوق الإضافات",
-      "actionsAvailable": "تحديث | Validate guided manifest",
+      "actionsAvailable": "تحديث | التحقق من البيان الموجّه",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -4409,7 +4409,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 814,
+        "textLength": 790,
         "controls": 2,
         "inputs": 12,
         "searchInputs": 0,
@@ -4425,8 +4425,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 226,
-        "latinChars": 440
+        "arabicChars": 367,
+        "latinChars": 273
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -4511,7 +4511,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "💹\nالداشبورد المالي",
-      "actionsAvailable": "لوحة التحكم | أعمار ديون العملاء والموردين | القيود المحاسبية | الدفعات | فواتير العملاء | فواتير الموردين | كشف حساب | مطابقة البنك | ميزان المراجعة | الأرباح والخسائر | دفتر الأستاذ | Preview audit export | Lock period",
+      "actionsAvailable": "لوحة التحكم | أعمار ديون العملاء والموردين | القيود المحاسبية | الدفعات | فواتير العملاء | فواتير الموردين | كشف حساب | مطابقة البنك | ميزان المراجعة | الأرباح والخسائر | دفتر الأستاذ | معاينة تصدير التدقيق | إقفال الفترة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "home, intelligence, scenario_planner",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -4523,7 +4523,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2975,
+        "textLength": 2984,
         "controls": 13,
         "inputs": 3,
         "searchInputs": 0,
@@ -4539,8 +4539,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1233,
-        "latinChars": 889
+        "arabicChars": 1330,
+        "latinChars": 800
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5426,7 +5426,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "📥\nمركز استيراد البيانات",
-      "actionsAvailable": "سحب الحقول بالذكاء الاصطناعي | Create validation batch",
+      "actionsAvailable": "سحب الحقول بالذكاء الاصطناعي | إنشاء دفعة تحقق",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "intelligence",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -5448,14 +5448,14 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": false,
+          "empty": true,
           "error": true,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 414,
-        "latinChars": 515
+        "arabicChars": 539,
+        "latinChars": 388
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5597,7 +5597,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز التكامل",
-      "actionsAvailable": "Refresh | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
+      "actionsAvailable": "تحديث | 🔌 اختبار الاتصال | تجهيز اتصال | مزامنة مرحلية",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -5609,7 +5609,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 3555,
+        "textLength": 3544,
         "controls": 15,
         "inputs": 1,
         "searchInputs": 1,
@@ -5625,8 +5625,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 2020,
-        "latinChars": 782
+        "arabicChars": 2140,
+        "latinChars": 651
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -5825,7 +5825,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧱\nالمخزون والمواد",
-      "actionsAvailable": "إضافة مادة | Preview reorder suggestions | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية | تسجيل الحركة",
+      "actionsAvailable": "إضافة مادة | معاينة مقترحات إعادة الطلب | المواد والمخزون | الموردون والكتالوج | طلبات وأوامر الشراء (RFQ/PO) | المواقع والتحويلات | مسح الباركود | النواقص والحجوزات | تقييم المخزون | مقترحات التوريد | سجل الاستلامات | إعادة الضبط | تصدير CSV | تحديث | استلام | صرف | تحويل | جرد/تسوية | تسجيل الحركة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "analytics, command_center, home, intelligence, scenario_planner",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -5837,7 +5837,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 2516,
+        "textLength": 2509,
         "controls": 20,
         "inputs": 9,
         "searchInputs": 1,
@@ -5853,8 +5853,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 1138,
-        "latinChars": 882
+        "arabicChars": 1173,
+        "latinChars": 839
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -6065,7 +6065,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 332,
+        "textLength": 322,
         "controls": 2,
         "inputs": 3,
         "searchInputs": 0,
@@ -6081,8 +6081,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 140,
-        "latinChars": 111
+        "arabicChars": 170,
+        "latinChars": 71
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -7535,7 +7535,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "🧑‍💼\nالموارد البشرية — التوظيف والإجازات",
-      "actionsAvailable": "📊 اللوحة | 🧑‍💼 التوظيف | 🌴 الإجازات | 🧾 المصاريف | ⭐ التقييم | HRMS Lifecycle | إدارة الإجازات",
+      "actionsAvailable": "📊 اللوحة | 🧑‍💼 التوظيف | 🌴 الإجازات | 🧾 المصاريف | ⭐ التقييم | دورة حياة الموارد البشرية | إدارة الإجازات",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -7547,7 +7547,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 438,
+        "textLength": 449,
         "controls": 7,
         "inputs": 0,
         "searchInputs": 0,
@@ -7563,8 +7563,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 312,
-        "latinChars": 16
+        "arabicChars": 334,
+        "latinChars": 3
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9035,7 +9035,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "إدارة المخاطر والامتثال",
-      "actionsAvailable": "Route Health | طابور الموافقات | سجل المخاطر | ضوابط الامتثال | إشارات النظام | تخفيف | مراجعة | إغلاق | حفظ الخطر",
+      "actionsAvailable": "صحة المسارات | طابور الموافقات | سجل المخاطر | ضوابط الامتثال | إشارات النظام | تخفيف | مراجعة | إغلاق | حفظ الخطر",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "route_health, ai_queue",
@@ -9063,8 +9063,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 873,
-        "latinChars": 11
+        "arabicChars": 884,
+        "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -9665,7 +9665,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "مركز الأمان والتدقيق",
-      "actionsAvailable": "Lock period",
+      "actionsAvailable": "إقفال الفترة",
       "actionsDeclaredStatic": "(no <button> labels found in static view file)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -9677,7 +9677,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1643,
+        "textLength": 1725,
         "controls": 1,
         "inputs": 3,
         "searchInputs": 0,
@@ -9687,14 +9687,14 @@
         "links": 0,
         "states": {
           "loading": false,
-          "empty": false,
-          "error": true,
+          "empty": true,
+          "error": false,
           "denied": false
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 502,
-        "latinChars": 765
+        "arabicChars": 798,
+        "latinChars": 522
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10380,8 +10380,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 400,
-        "latinChars": 471
+        "arabicChars": 417,
+        "latinChars": 454
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -10421,7 +10421,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1061,
+        "textLength": 1062,
         "controls": 5,
         "inputs": 0,
         "searchInputs": 0,
@@ -10751,7 +10751,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "فحص النظام الشامل",
-      "actionsAvailable": "فحص شامل | تصدير JSON | Route Health | Workshop Stabilization | Attendance Forecast Regression | Jarvis Audit Regression | Workshop Ledger | Handler Wiring Audit | Trial Balance | Schema Violations | Duplicate Function Count",
+      "actionsAvailable": "فحص شامل | تصدير JSON | صحة المسارات | استقرار الورشة | انحدار تنبؤ الحضور | انحدار تدقيق أومني | دفتر الورشة | تدقيق ربط المعالجات | ميزان المراجعة | مخالفات المخطط | عدد الدوال المكررة",
       "actionsDeclaredStatic": null,
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -10763,7 +10763,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 606,
+        "textLength": 568,
         "controls": 11,
         "inputs": 0,
         "searchInputs": 0,
@@ -10779,8 +10779,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 304,
-        "latinChars": 163
+        "arabicChars": 429,
+        "latinChars": 0
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -11150,7 +11150,7 @@
       "observedEndpoints": [],
       "pageArchetype": "LIST/REGISTER",
       "observedTitle": "دليل المستأجرين",
-      "actionsAvailable": "تحديث | Apply filters | Create tenant | فتح التفاصيل",
+      "actionsAvailable": "تحديث | تطبيق المرشحات | إنشاء مستأجر | فتح التفاصيل",
       "actionsDeclaredStatic": "(rendered by JS module — not statically inspectable)",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -11162,7 +11162,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 767,
+        "textLength": 765,
         "controls": 6,
         "inputs": 9,
         "searchInputs": 1,
@@ -11178,8 +11178,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 316,
-        "latinChars": 306
+        "arabicChars": 377,
+        "latinChars": 243
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12539,7 +12539,7 @@
       "usabilityEvidence": "titled, actionable, and links onward",
       "deadEnd": false,
       "measured": {
-        "textLength": 402,
+        "textLength": 399,
         "controls": 5,
         "inputs": 1,
         "searchInputs": 0,
@@ -12555,8 +12555,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 264,
-        "latinChars": 58
+        "arabicChars": 276,
+        "latinChars": 43
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,
@@ -12584,7 +12584,7 @@
       "observedEndpoints": [],
       "pageArchetype": "ACTION WORKSPACE",
       "observedTitle": "◈ جاهزية الورشة",
-      "actionsAvailable": "إعادة الفحص | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nWARNING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nREADY | L\nالحوكمة\n3 checks\nREADY | Open setup ↗",
+      "actionsAvailable": "إعادة الفحص | B\nالمؤسسة\n3 checks\nWARNING | U\nالمستخدمون والأدوار\n3 checks\nPERMISSION DENIED | B\nالمنتجات\n3 checks\nBLOCKED | W\nالمستودع\n3 checks\nREADY | G\nالإنتاج\n3 checks\nPERMISSION DENIED | S\nالجودة\n3 checks\nWARNING | T\nالتسليم\n3 checks\nWARNING | W\nالصيانة والأسطول\n3 checks\nPERMISSION DENIED | T\nالأجهزة والكشك والعمل دون اتصال\n3 checks\nREADY | L\nالحوكمة\n3 checks\nREADY | فتح صفحة الإعداد ↗",
       "actionsDeclaredStatic": "Recheck",
       "upstreamWorkflow": "none — no other workspace links here",
       "downstreamWorkflow": "none — no onward workflow link rendered",
@@ -12596,7 +12596,7 @@
       "usabilityEvidence": "titled and actionable",
       "deadEnd": false,
       "measured": {
-        "textLength": 1299,
+        "textLength": 1307,
         "controls": 12,
         "inputs": 0,
         "searchInputs": 0,
@@ -12612,8 +12612,8 @@
         },
         "rawIds": 0,
         "rawJson": false,
-        "arabicChars": 402,
-        "latinChars": 628
+        "arabicChars": 423,
+        "latinChars": 614
       },
       "runtimeConsoleErrors": 0,
       "runtimeFailedRequests": 0,

@@ -61,6 +61,24 @@
     return {};
   }
 
+  // Suite labels double as internal identity (they are threaded through
+  // result() and compared in places), so they stay English in the data and are
+  // translated only where they are painted.
+  const SUITE_AR = {
+    route_health: 'صحة المسارات',
+    workshop_stabilization: 'استقرار الورشة',
+    attendance_forecast: 'انحدار تنبؤ الحضور',
+    jarvis_audit: 'انحدار تدقيق أومني',
+    workshop_ledger: 'دفتر الورشة',
+    handler_wiring: 'تدقيق ربط المعالجات',
+    trial_balance: 'ميزان المراجعة',
+    schema_violations: 'مخالفات المخطط',
+    duplicate_functions: 'عدد الدوال المكررة',
+  };
+  const isAr = () => (document.documentElement.dir || '').toLowerCase() === 'rtl'
+    || (document.documentElement.lang || '').toLowerCase().startsWith('ar');
+  const suiteLabel = (suite) => (isAr() && SUITE_AR[suite && suite.id]) ? SUITE_AR[suite.id] : (suite && suite.label) || '';
+
   function result(id, label, ok, detail, data, options) {
     const total = options && Number.isFinite(options.total) ? options.total : null;
     const passed = options && Number.isFinite(options.passed) ? options.passed : null;
@@ -571,7 +589,7 @@
       const cls = statusClass(out);
       const count = out && out.total != null ? (String(out.passed == null ? '-' : out.passed) + '/' + out.total) : '-';
       return '<tr class="' + cls + '" data-suite="' + esc(suite.id) + '">'
-        + "<td><button class=\"sc-row-btn\" onclick=\"SystemCheck.selectSuite('" + esc(suite.id) + "')\">" + esc(suite.label) + '</button></td>'
+        + "<td><button class=\"sc-row-btn\" onclick=\"SystemCheck.selectSuite('" + esc(suite.id) + "')\">" + esc(suiteLabel(suite)) + '</button></td>'
         + '<td><span class="sc-pill ' + cls + '">' + statusText(out) + '</span></td>'
         + '<td>' + esc(count) + '</td>'
         + '<td>' + esc(out ? out.durationMs + 'ms' : '-') + '</td>'
@@ -587,7 +605,7 @@
     const suite = report.suites.find(s => s.id === selected);
     if (!suite) return '<div class="sc-detail-empty">اختر مجموعة من الجدول.</div>';
     return '<div class="sc-detail-head">'
-      + '<div><h3>' + esc(suite.label) + '</h3><p>' + esc(suite.detail || '') + '</p></div>'
+      + '<div><h3>' + esc(suiteLabel(suite)) + '</h3><p>' + esc(suite.detail || '') + '</p></div>'
       + '<span class="sc-pill ' + statusClass(suite) + '">' + statusText(suite) + '</span>'
       + '</div>'
       + '<pre class="sc-json">' + esc(JSON.stringify(suite.data || suite, null, 2)) + '</pre>';

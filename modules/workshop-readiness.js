@@ -30,9 +30,9 @@
     return `<article class="readiness-check" data-state="${shell.escapeHtml(check.state)}">
       <div class="readiness-check-state"><span aria-hidden="true"></span>${shell.escapeHtml(stateLabel(check.state))}</div>
       <div class="readiness-check-copy"><strong>${shell.escapeHtml(shell.bilingual(check))}</strong><p>${shell.escapeHtml(check.detail || '')}</p>
-        ${check.guidance?.actionable ? `<p class="readiness-guidance">${shell.escapeHtml(check.guidance.outcome)}<span>Owner: ${shell.escapeHtml(check.guidance.ownerRole)}</span></p>` : ''}
+        ${check.guidance?.actionable ? `<p class="readiness-guidance">${shell.escapeHtml(check.guidance.outcome)}<span>المسؤول: ${shell.escapeHtml(check.guidance.ownerRole)}</span></p>` : ''}
         <small>${check.mandatory ? 'إلزامي' : 'اختياري'}${check.value !== null && check.value !== undefined ? ` · ${shell.escapeHtml(check.value)}` : ''}</small></div>
-      ${actionable ? `<button type="button" class="btn-secondary readiness-setup-link" data-target="${shell.escapeHtml(check.target)}">Open setup ↗</button>` : ''}
+      ${actionable ? `<button type="button" class="btn-secondary readiness-setup-link" data-target="${shell.escapeHtml(check.target)}">فتح صفحة الإعداد ↗</button>` : ''}
     </article>`;
   }
 

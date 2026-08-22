@@ -4701,6 +4701,16 @@ function switchPage(page) {
         <div style="margin-top:18px;"><button class="btn-primary" onclick="switchPage('home')" style="padding:9px 20px;">العودة للرئيسية</button></div>
       </div>`;
   }
+  // Several legacy panels emit English table headers and empty states from
+  // concatenated HTML strings that cannot be translated at their source. This
+  // walks the rendered page's text nodes and swaps exact dictionary matches.
+  // It never touches elements or attributes, so handlers bound during render
+  // survive — and it runs once per navigation, not on a DOM observer.
+  try {
+    const renderedPageId = pageMap[page];
+    const renderedPage = renderedPageId && document.getElementById(renderedPageId);
+    if (renderedPage && window.OctagonArabicChrome) window.OctagonArabicChrome.localizeElement(renderedPage);
+  } catch (_) {}
   renderOmniNotificationBell();
 }
 

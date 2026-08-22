@@ -88,10 +88,10 @@
         <div class="ai7i-kpi"><strong>${fmt(m.totalReserved)}</strong><span>reserved units</span></div>
         <div class="ai7i-kpi"><strong>${m.suppliers.length}</strong><span>suppliers</span></div>
       </div>
-      <div class="ai7i-table-wrap"><table class="ai7i-table"><thead><tr><th>Capability</th><th>Status</th><th>Evidence</th></tr></thead>
+      <div class="ai7i-table-wrap"><table class="ai7i-table"><thead><tr><th>القدرة</th><th>الحالة</th><th>الدليل</th></tr></thead>
         <tbody>${m.checks.map(row => `<tr><td><strong>${esc(row[0])}</strong></td><td>${pill(row[1])}</td><td class="ai7i-note">${esc(row[2])}</td></tr>`).join('')}</tbody></table></div>
       <div class="ai7i-actions">
-        <button type="button" class="btn-secondary btn-sm" onclick="AdvancedInventory.renderReorderPreview()">Preview reorder suggestions</button>
+        <button type="button" class="btn-secondary btn-sm" onclick="AdvancedInventory.renderReorderPreview()">معاينة مقترحات إعادة الطلب</button>
       </div>
       <pre class="ai7i-pre" id="phase7iReorderPreview" style="display:none"></pre>`;
   }

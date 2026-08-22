@@ -1,6 +1,15 @@
 /* BUILD-05: governed Collaboration and Notification operations panel. */
 (function () {
   'use strict';
+
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
   const api = async (path) => {
     const response = await fetch('/api/v1/platform/' + path, { credentials: 'same-origin' });
     const payload = await response.json();
@@ -25,8 +34,9 @@
       + '<div class="pmk-panel"><h3>Job Queue</h3><p>Queued: ' + jobs.queued.length + '</p><p>Failed: ' + jobs.failed.length + '</p><p>Dead letters: ' + jobs.deadLetters.length + '</p></div>'
       + '<div class="pmk-panel"><h3>Delivery health</h3><p>Providers: ' + health.providers.length + '</p><p>Dead letters: ' + health.deadLetters.length + '</p><p>External providers remain staged or disabled.</p></div></div>';
     host.prepend(section);
+    arabicChrome(section);
     const input = section.querySelector('#platformGlobalSearch');
-    if (input) input.addEventListener('input', async () => { const query = input.value.trim(); const prior = section.querySelector('#platformSearchResults'); if (prior) prior.remove(); if (query.length < 2) return; const result = document.createElement('div'); result.id = 'platformSearchResults'; result.className = 'pmk-panel'; try { const rows = await api('search?q=' + encodeURIComponent(query)); result.innerHTML = '<h3>Search results</h3>' + (rows.map(r => '<p><strong>' + esc(r.id) + '</strong><br>' + esc(r.labelAr || r.labelEn || r.entityId || r.type) + '</p>').join('') || '<p>No registered matches.</p>'); } catch (e) { result.textContent = e.message; } section.append(result); });
+    if (input) input.addEventListener('input', async () => { const query = input.value.trim(); const prior = section.querySelector('#platformSearchResults'); if (prior) prior.remove(); if (query.length < 2) return; const result = document.createElement('div'); result.id = 'platformSearchResults'; result.className = 'pmk-panel'; try { const rows = await api('search?q=' + encodeURIComponent(query)); result.innerHTML = '<h3>Search results</h3>' + (rows.map(r => '<p><strong>' + esc(r.id) + '</strong><br>' + esc(r.labelAr || r.labelEn || r.entityId || r.type) + '</p>').join('') || '<p>No registered matches.</p>'); } catch (e) { result.textContent = e.message; } section.append(result); arabicChrome(result); });
   }
   function install() { const original = window.switchPage; if (typeof original !== 'function' || original.__platformServicesWrapped) return; const wrapped = function (page) { const result = original.apply(this, arguments); if (page === 'integration_hub') setTimeout(render, 420); return result; }; wrapped.__platformServicesWrapped = true; window.switchPage = wrapped; }
   window.PlatformServices = { refresh: render, version: 'build05-v2' };

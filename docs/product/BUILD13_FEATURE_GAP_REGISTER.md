@@ -88,13 +88,19 @@ it is called **only from tests**, never from production.
 untouched). What was lost is the client-facing *communication* of those decisions.
 
 **Blast radius** — three phase02 suites still assert the documented contract and therefore
-fail, across seven cases:
+fail, across **ten** cases (re-counted from a full run on 2026-08-22; an earlier revision of
+this register said seven and undercounted `browser-live-evidence.test.mjs` by three):
 
 | Suite | Failing cases |
 |---|---|
-| `security-suite.test.mjs` | §58.1 hidden-action payload, §56 role-specific bootstrap + RTL, §56 impersonation banner + field metadata |
-| `browser-evidence.test.mjs` | bootstrap payload shape / RTL identity, bootstrap page catalogue vs server contract |
-| `browser-live-evidence.test.mjs` | RTL identity on owner login, role-specific navigation hides privileged pages |
+| `security-suite.test.mjs` (3) | §58.1 direct API call to a hidden action, §56 bootstrap is role-specific and RTL, §56 impersonation banner and field metadata |
+| `browser-evidence.test.mjs` (2) | bootstrap payload shape and Arabic/RTL identity, bootstrap page catalogue matches server contract |
+| `browser-live-evidence.test.mjs` (5) | RTL identity and owner login bootstrap, role-specific navigation hides privileged pages, login and logout cycles return the user to the login overlay, tenant/company isolation enforces membership boundaries, field masking metadata is present in the bootstrap |
+
+Every failure is a `TypeError` reading `locale`, `map`, `id`, `active` or
+`companyMemberships` off `undefined`, or an assertion that `version` / field metadata is
+carried — all of it the shape `governance-bootstrap.mjs` no longer emits. None of them is a
+text or localization failure, which is what distinguishes this from ordinary UI churn.
 
 `payload.version` and `payload.generatedAt` were dropped by the same commit.
 

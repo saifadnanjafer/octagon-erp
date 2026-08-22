@@ -1,6 +1,15 @@
 (function () {
   'use strict';
 
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   const VERSION = 'phase7k-platform-marketplace-v1';
 
   function O() {
@@ -357,6 +366,7 @@
       + '<div class="pmk-panel"><h3>Webhook Registry</h3>' + renderWebhooks(root) + '</div>'
       + renderModuleCatalog(root, false) + '</div>';
     host.appendChild(shell);
+    arabicChrome(shell);
   }
 
   function renderAdminCatalog() {
@@ -367,7 +377,9 @@
     const wrap = document.createElement('div');
     wrap.id = 'platformMarketplaceAdminCatalog';
     wrap.innerHTML = renderModuleCatalog(ensureRoot(), false);
-    body.appendChild(wrap.firstElementChild);
+    const catalog = wrap.firstElementChild;
+    body.appendChild(catalog);
+    arabicChrome(catalog);
   }
 
   // Debounced single render — rebuilding the heavy integration_hub DOM four times

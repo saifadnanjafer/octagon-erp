@@ -140,6 +140,65 @@ the same as business completeness, and these are business capability gaps:
 **BUILD-13 recommendation: keep PENDING.** The pages are clean; the business
 chains above are not closed. Do not start BUILD-14.
 
+## Closure pass — English chrome on an Arabic-first product
+
+A page can pass every structural check and still be unusable to the people who
+run this workshop. Measuring control labels across all 221 pages found English
+chrome on 22 of them, but that metric only sees interactive controls — it never
+saw `<th>Scope</th>`. A second scan over rendered text nodes found the real
+surface: **17 modules, 155 distinct English strings**, including
+`phase7a-stabilization.js`, which had **zero Arabic characters in 643 lines**.
+
+Three different causes, three different fixes:
+
+| Cause | Modules | Fix |
+| --- | --- | --- |
+| Labels derived from snake_case ids via `humanize()` | build08 (19 pages) | `AR_FIELDS` / `AR_ACTIONS` consumed by all four render points |
+| English literals passed to a shared form/table helper | build11, build12 | `FORM_AR` / `LABELS_AR` at the helper, not the call sites |
+| English literals buried inside concatenated HTML strings | 9 legacy panels | one shared text-node localizer |
+
+The third case is why `modules/ui-arabic-chrome.js` exists. Those panels build
+markup by concatenating quoted fragments, so no individual literal can be
+wrapped in a translate call. Rewriting 155 of them into `' + t('x') + '` splices
+was attempted and **abandoned**: a scripted pass produced an unbalanced paren in
+`platform-services.js`, and `node --check` only caught it because it happened to
+land outside a string. The same error inside a quoted string is not a syntax
+error — it renders `' + t('x') + '` as visible text. That failure mode is
+undetectable by linting, so the approach was dropped rather than audited.
+
+The localizer instead translates **text nodes only** on the finished container.
+It never touches elements or attributes, so handlers bound during render
+survive — reassigning `innerHTML` would have silently destroyed them. It runs
+once per navigation from a `switchPage` hook, deliberately **not** from a DOM
+observer, which is what made the language layer slow before.
+
+**The `switchPage` hook is a floor, not a guarantee.** Panels that render
+asynchronously after navigation (`people_ops`, `risk_compliance`, and the five
+legacy injectors) are missed by it and carry their own explicit call. Both were
+initially misdiagnosed as a stale cache; bumping `?v=` did not fix them, which
+is what identified render timing as the real cause.
+
+### Measured result
+
+| | before | after |
+| --- | --- | --- |
+| Pages with English controls | 22 | **8** |
+| Aggregate Arabic characters | — | 128,807 |
+| Aggregate Latin characters | — | 43,007 |
+| Console errors / failed requests | 0 / 0 | **0 / 0** (221 pages) |
+
+The 8 remaining are English **by design** and were deliberately not translated:
+review-fixture record names (`[DEMO] …`, `Review System Administrator`), export
+format names (`CSV` / `Excel` / `JSON`), the product name `Meta API` with a docs
+path, and the acronyms `SOP` / `QC/SOP`. Code identifiers, shell commands, URLs
+and file names are absent from the dictionary for the same reason — translating
+an identifier to reach zero would be a worse product, not a better one.
+
+English mode is **reachable** (`omni-language-fix.js` switches `lang`/`dir` at
+runtime and re-renders via `switchPage`), so every translation is guarded rather
+than hardcoded. `index.html` ships `lang="ar" dir="rtl"` and nothing else mutates
+it, which makes the guards look dead on a static read — they are not.
+
 ## Final verdict
 
 **READY_WITH_OWNER_DECISIONS.** All retained P0/P1 destinations have clear purpose, usable evidence, persistence coverage where operational, and current full navigation/visual acceptance. The remaining THIN/PURPOSE_UNCLEAR rows are lower-priority product decisions and remain explicitly documented rather than being relabelled as complete.

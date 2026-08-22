@@ -1,6 +1,15 @@
 (function () {
   'use strict';
 
+  // These panels build HTML by concatenating quoted fragments, so their English
+  // literals cannot each be wrapped in a translate call. The rendered container
+  // is translated once instead, by text node, so listeners attached after
+  // render survive. See modules/ui-arabic-chrome.js.
+  const arabicChrome = (element) => {
+    try { return window.OctagonArabicChrome ? window.OctagonArabicChrome.localizeElement(element) : element; }
+    catch (_) { return element; }
+  };
+
   const VERSION = 'phase7k-implementation-methodology-v1';
 
   function O() {
@@ -229,6 +238,7 @@
       + '<div class="im7k-panel"><h3>Opening balance control</h3><p>Opening balances remain proof-and-approval records only. This phase does not post journals, stock moves, or asset values automatically.</p>'
       + '<div class="im7k-actions"><button class="im7k-btn primary" onclick="ImplementationMethodology.recordOpeningProof()">Record proof review</button>' + statusTag(root.openingBalances.status || 'draft', true) + '</div></div>';
     body.appendChild(wrap);
+    arabicChrome(wrap);
   }
 
   function renderImportPanel() {
@@ -248,6 +258,7 @@
       + '<table class="im7k-table"><thead><tr><th>Model</th><th>Required columns</th><th>Status</th></tr></thead><tbody>' + specs + '</tbody></table>'
       + '<table class="im7k-table"><thead><tr><th>Batch</th><th>Status</th><th>Rows</th><th>Errors</th></tr></thead><tbody>' + (batches || '<tr><td colspan="4">No validation batches yet.</td></tr>') + '</tbody></table></div>';
     host.appendChild(panel);
+    arabicChrome(panel);
   }
 
   function renderDeployPanel() {
@@ -265,6 +276,7 @@
       + '<h3>Go-live checklist</h3>' + renderChecklist(root.goLive.items, 'goLive')
       + '<h3 style="margin-top:14px;">Training checklist</h3>' + renderChecklist(root.training.items.map(item => ({ ...item, id: item.role, label: item.label })), 'training') + '</div>';
     host.appendChild(panel);
+    arabicChrome(panel);
   }
 
   function renderAll() {

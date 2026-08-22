@@ -120,10 +120,10 @@
         <div class="fc7h-kpi"><strong>${fmt(model.forecast.projectedNet30)} ${currency()}</strong><span>30-day cash forecast</span></div>
         <div class="fc7h-kpi"><strong>${model.budget.lines}</strong><span>budget lines for period</span></div>
       </div>
-      <div class="fc7h-table-wrap"><table class="fc7h-table"><thead><tr><th>Scope</th><th>Status</th><th>Evidence</th></tr></thead>
+      <div class="fc7h-table-wrap"><table class="fc7h-table"><thead><tr><th>النطاق</th><th>الحالة</th><th>الدليل</th></tr></thead>
         <tbody>${model.checks.map(row => `<tr><td><strong>${esc(row[0])}</strong></td><td>${pill(row[1], row[0] === 'Period lock UI hardening' && model.locked)}</td><td class="fc7h-note">${esc(row[2])}</td></tr>`).join('')}</tbody></table></div>
       <div class="fc7h-actions">
-        <button type="button" class="btn-secondary btn-sm" onclick="FinanceClosePlanning.renderAuditExport()">Preview audit export</button>
+        <button type="button" class="btn-secondary btn-sm" onclick="FinanceClosePlanning.renderAuditExport()">معاينة تصدير التدقيق</button>
       </div>
       <pre class="fc7h-pre" id="phase7hAuditExport" style="display:none"></pre>`;
   }
